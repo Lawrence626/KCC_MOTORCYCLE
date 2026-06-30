@@ -19,12 +19,7 @@
             'values' => [34, 24, 18, 12, 12],
         ];
 
-        $brandMomentum = $brandMomentum ?? [
-            ['brand' => 'Honda', 'value' => 0, 'share' => 0],
-            ['brand' => 'Yamaha', 'value' => 0, 'share' => 0],
-            ['brand' => 'Kawasaki', 'value' => 0, 'share' => 0],
-            ['brand' => 'Suzuki', 'value' => 0, 'share' => 0],
-        ];
+
 
         $topProducts = $topProducts ?? [
             ['rank' => 1, 'name' => 'Akrapovic Exhaust', 'category' => 'Exhausts', 'qty' => 132, 'revenue' => '₱15,840'],
@@ -88,9 +83,9 @@
                         <p class="text-xs text-slate-500 mt-1">Revenue progression across the selected date range.</p>
                     </div>
                     <div class="inline-flex rounded-2xl border border-slate-200 bg-slate-50 p-2 text-[11px] font-medium text-slate-600">
-                        <span class="px-2 py-1 rounded-xl bg-slate-100">Monthly</span>
-                        <span class="px-2 py-1 rounded-xl hover:bg-slate-100 cursor-pointer">Weekly</span>
-                        <span class="px-2 py-1 rounded-xl hover:bg-slate-100 cursor-pointer">Daily</span>
+                        <button type="button" data-range="monthly" class="sales-trend-range-btn px-2 py-1 rounded-xl bg-slate-900 text-white">Monthly</button>
+                        <button type="button" data-range="weekly" class="sales-trend-range-btn px-2 py-1 rounded-xl hover:bg-slate-100">Weekly</button>
+                        <button type="button" data-range="daily" class="sales-trend-range-btn px-2 py-1 rounded-xl hover:bg-slate-100">Daily</button>
                     </div>
                 </div>
                 <div class="mt-4 h-40">
@@ -102,22 +97,24 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 class="text-base font-semibold text-slate-900">Category distribution</h2>
-                        <p class="text-xs text-slate-500 mt-1">Where revenue is strongest by product segment.</p>
+                        <p class="text-xs text-slate-500 mt-1">Revenue contribution per product category.</p>
                     </div>
-                    <span class="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Share</span>
+                    <span class="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Revenue</span>
                 </div>
-                <div class="mt-3 flex flex-col items-start gap-3">
-                    <canvas id="categoryChart" class="h-32 w-32"></canvas>
-                    <div class="w-full grid grid-cols-1 gap-2 text-[11px]">
+                <div class="mt-4 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
+                    <div class="h-52 w-full">
+                        <canvas id="categoryChart" class="h-full w-full"></canvas>
+                    </div>
+                    <div class="max-h-52 overflow-y-auto pr-1 space-y-2 text-sm">
+                        @php
+                            $legendColors = ['bg-teal-500','bg-emerald-500','bg-amber-500','bg-sky-500','bg-rose-500','bg-violet-500','bg-cyan-500','bg-lime-500','bg-fuchsia-500','bg-orange-500'];
+                        @endphp
                         @foreach($categoryBreakdown['labels'] as $index => $label)
-                            @php
-                                $colors = ['bg-teal-500','bg-emerald-500','bg-amber-500','bg-sky-500','bg-rose-500'];
-                            @endphp
                             <div class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3">
-                                <span class="h-2.5 w-2.5 rounded-full {{ $colors[$index % count($colors)] }}"></span>
+                                <span class="h-2.5 w-2.5 rounded-full {{ $legendColors[$index % count($legendColors)] }}"></span>
                                 <div>
                                     <p class="font-semibold text-slate-900">{{ $label }}</p>
-                                    <p class="text-slate-500">{{ $categoryBreakdown['values'][$index] }}%</p>
+                                    <p class="text-slate-500">{{ $categoryBreakdown['formatted'][$index] }} • {{ $categoryBreakdown['shares'][$index] }}%</p>
                                 </div>
                             </div>
                         @endforeach
@@ -133,7 +130,7 @@
                         <h2 class="text-base font-semibold text-slate-900">Top selling products</h2>
                         <p class="text-[11px] text-slate-500 mt-1">The best performing SKUs by revenue and volume.</p>
                     </div>
-                    <button class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition">View all</button>
+                    <button class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition" id="viewAllTopProductsBtn">View all</button>
                 </div>
                 <div class="mt-4 overflow-x-auto">
                     <table class="min-w-full text-left text-sm text-slate-700">
@@ -146,8 +143,8 @@
                                 <th class="px-3 py-3">Revenue</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-200 bg-white">
-                            @foreach($topProducts as $product)
+                        <tbody class="divide-y divide-slate-200 bg-white" id="topProductsBody">
+                            @forelse($topProducts as $product)
                                 <tr class="hover:bg-slate-50 transition">
                                     <td class="px-3 py-3 font-semibold text-slate-900">{{ $product['rank'] }}</td>
                                     <td class="px-3 py-3">
@@ -157,29 +154,65 @@
                                     <td class="px-3 py-3 text-slate-900">{{ $product['qty'] }}</td>
                                     <td class="px-3 py-3 font-semibold text-slate-900">{{ $product['revenue'] }}</td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-3 py-3 text-center text-slate-500">No sales data available</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-base font-semibold text-slate-900">Fast-moving products</h2>
+                        <p class="text-[11px] text-slate-500 mt-1">Top 5 best-selling products by quantity.</p>
+                    </div>
+                </div>
+                <div class="mt-4 overflow-x-auto">
+                    <table class="min-w-full text-left text-sm text-slate-700">
+                        <thead class="bg-slate-50 text-xs uppercase tracking-[0.24em] text-slate-500">
+                            <tr>
+                                <th class="px-3 py-3">Product</th>
+                                <th class="px-3 py-3 text-right">Quantity Sold</th>
+                                <th class="px-3 py-3 text-right">Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 bg-white" id="fastMovingProductsBody">
+                            <tr>
+                                <td colspan="3" class="px-3 py-3 text-center text-slate-500">No sales data available</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
             <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-                <div>
-                    <h2 class="text-base font-semibold text-slate-900">Brand momentum</h2>
-                    <p class="text-xs text-slate-500 mt-1">Inventory exposure by top-performing brands.</p>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-base font-semibold text-slate-900">Slow-moving products</h2>
+                        <p class="text-[11px] text-slate-500 mt-1">Bottom 5 least-selling products by quantity.</p>
+                    </div>
                 </div>
-                <div class="mt-4 space-y-2">
-                    @foreach($brandMomentum as $brand)
-                        <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                            <div class="flex items-center justify-between gap-3">
-                                <div>
-                                    <p class="font-semibold text-slate-900">{{ $brand['brand'] }}</p>
-                                    <p class="text-sm text-slate-500">Inventory weight: {{ number_format($brand['value'], 2) }}</p>
-                                </div>
-                                <span class="text-sm font-semibold text-emerald-600">{{ $brand['share'] }}%</span>
-                            </div>
-                        </div>
-                    @endforeach
+                <div class="mt-4 overflow-x-auto">
+                    <table class="min-w-full text-left text-sm text-slate-700">
+                        <thead class="bg-slate-50 text-xs uppercase tracking-[0.24em] text-slate-500">
+                            <tr>
+                                <th class="px-3 py-3">Product</th>
+                                <th class="px-3 py-3 text-right">Quantity Sold</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 bg-white" id="slowMovingProductsBody">
+                            <tr>
+                                <td colspan="2" class="px-3 py-3 text-center text-slate-500">No sales data available</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -215,22 +248,219 @@
 
     @push('scripts')
         <script>
+            const salesTrendRangeButtons = document.querySelectorAll('.sales-trend-range-btn');
             const salesTrendCtx = document.getElementById('salesTrendChart');
+            const posSalesStorageKey = 'posTransactionHistory';
+
+            const defaultSalesTrendData = {
+                monthly: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    values: [0, 0, 0, 0, 0, 0],
+                },
+                weekly: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
+                    values: [0, 0, 0, 0, 0],
+                },
+                daily: {
+                    labels: ['Apr 1', 'Apr 5', 'Apr 10', 'Apr 15', 'Apr 20', 'Apr 25', 'Apr 30'],
+                    values: [0, 0, 0, 0, 0, 0, 0],
+                }
+            };
+
+            const parseLocalTransactionHistory = () => {
+                try {
+                    const stored = localStorage.getItem(posSalesStorageKey);
+                    if (!stored) return [];
+                    const parsed = JSON.parse(stored);
+                    return Array.isArray(parsed) ? parsed : [];
+                } catch (error) {
+                    console.error('Could not read POS transaction history', error);
+                    return [];
+                }
+            };
+
+            const salesFromTransactions = (transactions) => {
+                return transactions
+                    .map((transaction) => ({
+                        date: transaction.createdAt ? new Date(transaction.createdAt) : null,
+                        total: Number(transaction.total) || 0,
+                    }))
+                    .filter((transaction) => transaction.date instanceof Date && !Number.isNaN(transaction.date.getTime()) && transaction.total > 0);
+            };
+
+            const buildTrendData = () => {
+                const transactions = salesFromTransactions(parseLocalTransactionHistory());
+                if (!transactions.length) {
+                    return defaultSalesTrendData;
+                }
+
+                const now = new Date();
+                const monthlyLabels = [];
+                const monthlyValues = [];
+                for (let index = 5; index >= 0; index -= 1) {
+                    const month = new Date(now.getFullYear(), now.getMonth() - index, 1);
+                    monthlyLabels.push(month.toLocaleString('en-US', { month: 'short' }));
+                    monthlyValues.push(0);
+                }
+
+                const dailyLabels = [];
+                const dailyValues = [];
+                for (let index = 6; index >= 0; index -= 1) {
+                    const day = new Date(now.getFullYear(), now.getMonth(), now.getDate() - index);
+                    dailyLabels.push(day.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                    dailyValues.push(0);
+                }
+
+                const weeklyLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'];
+                const weeklyValues = [0, 0, 0, 0, 0];
+                const weekStart = new Date(now);
+                weekStart.setHours(0, 0, 0, 0);
+                weekStart.setDate(weekStart.getDate() - 34);
+
+                transactions.forEach(({ date, total }) => {
+                    const diffMs = date.getTime() - weekStart.getTime();
+                    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+                    const monthLabel = date.toLocaleString('en-US', { month: 'short' });
+                    const monthIndex = monthlyLabels.indexOf(monthLabel);
+                    if (monthIndex !== -1) {
+                        monthlyValues[monthIndex] += total;
+                    }
+
+                    const dayLabel = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const dayIndex = dailyLabels.indexOf(dayLabel);
+                    if (dayIndex !== -1) {
+                        dailyValues[dayIndex] += total;
+                    }
+
+                    if (diffDays >= 0 && diffDays < 35) {
+                        const weekIndex = Math.min(4, Math.floor(diffDays / 7));
+                        weeklyValues[weekIndex] += total;
+                    }
+                });
+
+                return {
+                    monthly: { labels: monthlyLabels, values: monthlyValues.map((value) => Number(value.toFixed(2))) },
+                    weekly: { labels: weeklyLabels, values: weeklyValues.map((value) => Number(value.toFixed(2))) },
+                    daily: { labels: dailyLabels, values: dailyValues.map((value) => Number(value.toFixed(2))) },
+                };
+            };
+
+            const serverSalesTrend = @json($salesTrend ?? null);
+            const salesTrendData = (() => {
+                const localData = buildTrendData();
+                const hasLocalSales = [
+                    ...localData.monthly.values,
+                    ...localData.weekly.values,
+                    ...localData.daily.values,
+                ].some((value) => value > 0);
+
+                if (hasLocalSales) {
+                    return localData;
+                }
+
+                if (serverSalesTrend && serverSalesTrend.weekly && Array.isArray(serverSalesTrend.weekly.values)) {
+                    return {
+                        monthly: localData.monthly,
+                        weekly: serverSalesTrend.weekly,
+                        daily: localData.daily,
+                    };
+                }
+
+                return localData;
+            })();
+
+            const salesTrendChartConfig = {
+                type: 'line',
+                data: {
+                    labels: salesTrendData.monthly.labels,
+                    datasets: [{
+                        label: 'Revenue',
+                        data: salesTrendData.monthly.values,
+                        borderColor: '#0f766e',
+                        backgroundColor: 'rgba(15, 118, 110, 0.12)',
+                        pointBackgroundColor: '#0f766e',
+                        pointBorderColor: '#fff',
+                        pointHoverRadius: 6,
+                        fill: true,
+                        tension: 0.35,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#475569' }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#e2e8f0' },
+                            ticks: {
+                                color: '#475569',
+                                callback: (value) => '₱' + value.toLocaleString()
+                            }
+                        }
+                    }
+                }
+            };
+
+            let salesTrendChart;
             if (salesTrendCtx) {
-                new Chart(salesTrendCtx, {
-                    type: 'line',
+                salesTrendChart = new Chart(salesTrendCtx, salesTrendChartConfig);
+            }
+
+            const setActiveSalesTrendButton = (activeRange) => {
+                salesTrendRangeButtons.forEach((button) => {
+                    const isActive = button.dataset.range === activeRange;
+                    button.classList.toggle('bg-slate-900', isActive);
+                    button.classList.toggle('text-white', isActive);
+                    button.classList.toggle('shadow-sm', isActive);
+                    button.classList.toggle('bg-slate-100', !isActive);
+                    button.classList.toggle('text-slate-600', !isActive);
+                });
+            };
+
+            const updateSalesTrendChart = (range) => {
+                const nextData = salesTrendData[range];
+                if (!salesTrendChart || !nextData) {
+                    return;
+                }
+                salesTrendChart.data.labels = nextData.labels;
+                salesTrendChart.data.datasets[0].data = nextData.values;
+                salesTrendChart.update();
+                setActiveSalesTrendButton(range);
+            };
+
+            salesTrendRangeButtons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    updateSalesTrendChart(button.dataset.range);
+                });
+            });
+
+            setActiveSalesTrendButton('monthly');
+
+            const categoryCtx = document.getElementById('categoryChart');
+            if (categoryCtx) {
+                const chartColors = ['#0f766e', '#16a34a', '#f59e0b', '#0ea5e9', '#ef4444', '#8b5cf6', '#06b6d4', '#84cc16', '#ec4899', '#f97316'];
+                const categories = @json($categoryBreakdown['labels']);
+                const values = @json($categoryBreakdown['values']);
+                const backgroundColors = categories.map((_, index) => chartColors[index % chartColors.length]);
+
+                new Chart(categoryCtx, {
+                    type: 'doughnut',
                     data: {
-                        labels: @json($salesTrend['labels']),
+                        labels: categories,
                         datasets: [{
-                            label: 'Revenue',
-                            data: @json($salesTrend['values']),
-                            borderColor: '#0f766e',
-                            backgroundColor: 'rgba(15, 118, 110, 0.12)',
-                            pointBackgroundColor: '#0f766e',
-                            pointBorderColor: '#fff',
-                            pointHoverRadius: 6,
-                            fill: true,
-                            tension: 0.35,
+                            data: values,
+                            backgroundColor: backgroundColors,
+                            borderColor: '#ffffff',
+                            borderWidth: 2,
                         }]
                     },
                     options: {
@@ -238,45 +468,162 @@
                         maintainAspectRatio: false,
                         plugins: {
                             legend: { display: false },
-                            tooltip: { mode: 'index', intersect: false }
-                        },
-                        scales: {
-                            x: {
-                                grid: { display: false },
-                                ticks: { color: '#475569' }
-                            },
-                            y: {
-                                grid: { color: '#e2e8f0' },
-                                ticks: {
-                                    color: '#475569',
-                                    callback: (value) => '₱' + value.toLocaleString()
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => {
+                                        const value = context.parsed || 0;
+                                        const total = context.dataset.data.reduce((sum, item) => sum + Number(item || 0), 0);
+                                        const percent = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+                                        return `${context.label}: ₱${Number(value).toLocaleString()} (${percent}%)`;
+                                    }
                                 }
                             }
-                        }
+                        },
+                        cutout: '65%'
                     }
                 });
             }
 
-            const categoryCtx = document.getElementById('categoryChart');
-            if (categoryCtx) {
-                new Chart(categoryCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: @json($categoryBreakdown['labels']),
-                        datasets: [{
-                            data: @json($categoryBreakdown['values']),
-                            backgroundColor: ['#0f766e', '#16a34a', '#f59e0b', '#0ea5e9', '#ef4444'],
-                            borderWidth: 0,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false }
-                        },
-                        cutout: '72%'
+            // Fast-Moving and Slow-Moving Products Logic
+            const aggregateProductsFromTransactions = () => {
+                const transactions = parseLocalTransactionHistory();
+                const productMap = new Map();
+
+                transactions.forEach(transaction => {
+                    if (!Array.isArray(transaction.items)) return;
+
+                    transaction.items.forEach(item => {
+                        const key = item.name || 'Unknown';
+                        if (!productMap.has(key)) {
+                            productMap.set(key, {
+                                name: key,
+                                quantity: 0,
+                                revenue: 0,
+                            });
+                        }
+                        const product = productMap.get(key);
+                        product.quantity += (item.qty || 1);
+                        product.revenue += (item.price * (item.qty || 1)) || 0;
+                    });
+                });
+
+                return Array.from(productMap.values());
+            };
+
+            const renderFastMovingProducts = () => {
+                const products = aggregateProductsFromTransactions();
+                const fastMoving = products
+                    .sort((a, b) => b.quantity - a.quantity)
+                    .slice(0, 5);
+
+                const tbody = document.getElementById('fastMovingProductsBody');
+                if (!tbody) return;
+
+                if (fastMoving.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="px-3 py-3 text-center text-slate-500">No sales data available</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = fastMoving.map((product) => {
+                    const formattedRevenue = '₱' + Number(product.revenue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    return `
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="px-3 py-3 font-medium text-slate-900">${product.name}</td>
+                            <td class="px-3 py-3 text-right text-slate-900">${product.quantity}</td>
+                            <td class="px-3 py-3 text-right font-semibold text-slate-900">${formattedRevenue}</td>
+                        </tr>
+                    `;
+                }).join('');
+            };
+
+            const renderSlowMovingProducts = () => {
+                const products = aggregateProductsFromTransactions();
+                const slowMoving = products
+                    .filter(p => p.quantity > 0)
+                    .sort((a, b) => a.quantity - b.quantity)
+                    .slice(0, 5);
+
+                const tbody = document.getElementById('slowMovingProductsBody');
+                if (!tbody) return;
+
+                if (slowMoving.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="2" class="px-3 py-3 text-center text-slate-500">No sales data available</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = slowMoving.map((product) => {
+                    return `
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="px-3 py-3 font-medium text-slate-900">${product.name}</td>
+                            <td class="px-3 py-3 text-right text-slate-900">${product.quantity}</td>
+                        </tr>
+                    `;
+                }).join('');
+            };
+
+            const updateProductTables = () => {
+                renderFastMovingProducts();
+                renderSlowMovingProducts();
+            };
+
+            // Initial render and update on range change
+            updateProductTables();
+            salesTrendRangeButtons.forEach((button) => {
+                button.addEventListener('click', updateProductTables);
+            });
+
+            // ===== TOP PRODUCTS AUTO-UPDATE FUNCTIONALITY =====
+            const topProductsBody = document.getElementById('topProductsBody');
+            const autoUpdateInterval = 30000; // 30 seconds
+
+            const fetchAndUpdateTopProducts = async () => {
+                try {
+                    const response = await fetch('/api/pos/transactions/top-selling?limit=5');
+                    if (!response.ok) {
+                        console.error('Failed to fetch top selling products');
+                        return;
                     }
+
+                    const data = await response.json();
+                    const topProducts = data.data || [];
+
+                    if (!topProducts.length) {
+                        if (topProductsBody) {
+                            topProductsBody.innerHTML = '<tr><td colspan="5" class="px-3 py-3 text-center text-slate-500">No sales data available</td></tr>';
+                        }
+                        return;
+                    }
+
+                    if (!topProductsBody) return;
+
+                    topProductsBody.innerHTML = topProducts.map((product) => {
+                        return `
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="px-3 py-3 font-semibold text-slate-900">${product.rank}</td>
+                                <td class="px-3 py-3">
+                                    <div class="font-medium text-slate-900">${product.name}</div>
+                                </td>
+                                <td class="px-3 py-3 text-slate-600">${product.category}</td>
+                                <td class="px-3 py-3 text-slate-900">${product.qty}</td>
+                                <td class="px-3 py-3 font-semibold text-slate-900">${product.revenue}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                } catch (error) {
+                    console.error('Error fetching top products:', error);
+                }
+            };
+
+            // Fetch and update top products on page load and then every 30 seconds
+            fetchAndUpdateTopProducts();
+            setInterval(fetchAndUpdateTopProducts, autoUpdateInterval);
+
+            // "View all" button - could navigate to a full products list
+            const viewAllBtn = document.getElementById('viewAllTopProductsBtn');
+            if (viewAllBtn) {
+                viewAllBtn.addEventListener('click', () => {
+                    console.log('View all top products');
+                    // You can implement pagination or full list view here
                 });
             }
         </script>
