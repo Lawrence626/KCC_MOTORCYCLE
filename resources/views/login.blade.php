@@ -36,13 +36,13 @@
                             @csrf
 
                             <div class="form-group">
-                                <label for="email">Email</label>
+                                <label for="email">Username</label>
                                 <div class="relative">
                                     <input
                                         type="text"
                                         id="email"
                                         name="email"
-                                        placeholder="Enter email address"
+                                        placeholder="Enter Username"
                                         class="form-input"
                                         value="{{ old('email') }}"
                                         autocomplete="off"
@@ -66,10 +66,10 @@
                                         autocomplete="off"
                                         required
                                     >
-                                    <button type="button" class="eye-icon-button" onclick="togglePassword(this)">
+                                    <button type="button" class="eye-icon-button" data-visible="false" onclick="togglePassword(this)" aria-label="Show password">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 012.223-3.488m.518-.59A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.074 5.123M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18" />
                                         </svg>
                                     </button>
                                 </div>
@@ -104,28 +104,34 @@
                             </button>
                         </form>
 
-                        <div id="otpModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 px-4 py-10 backdrop-blur-sm">
-                            <div class="otp-modal-card w-full max-w-md">
-                                <div class="flex items-start justify-between gap-4">
-                                    <div>
+                        <div id="otpModal" class="otp-modal-overlay hidden">
+                            <div class="otp-modal-content">
+                                <div class="otp-modal-header">
+                                    <div class="otp-modal-text">
                                         <h2 class="otp-modal-title">Enter verification code</h2>
-                                        <p class="otp-modal-message">We sent a 6-digit code to your email. Enter it here to finish login.</p>
+                                        <p class="otp-modal-description">We sent a 6-digit code to your email. Enter it here to finish login.</p>
                                     </div>
-                                    <button type="button" onclick="hideOtpModal()" class="otp-close-button">✕</button>
+                                    <button type="button" class="otp-close-btn" onclick="hideOtpModal()">×</button>
                                 </div>
 
-                                <div class="mt-6">
-                                    <label for="otpCode" class="block text-sm font-medium text-slate-700">Verification code</label>
-                                    <input id="otpCode" type="text" maxlength="6" class="otp-input mt-3" placeholder="000000" autocomplete="off" />
+                                <div class="otp-form-group">
+                                    <label class="otp-label">Verification code</label>
+                                    <div class="otp-inputs">
+                                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" autocomplete="off" />
+                                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" autocomplete="off" />
+                                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" autocomplete="off" />
+                                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" autocomplete="off" />
+                                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" autocomplete="off" />
+                                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" autocomplete="off" />
+                                    </div>
                                 </div>
 
-                                <div id="otpError" class="mt-3 text-sm text-red-600 hidden"></div>
-                                <div id="otpStatus" class="mt-3 text-sm text-emerald-600 hidden"></div>
+                                <div id="otpError" class="otp-error hidden"></div>
+                                <div id="otpStatus" class="otp-status hidden"></div>
 
-                                <div class="mt-6 grid gap-3 sm:grid-cols-3">
-                                    <button id="otpVerifyButton" type="button" class="otp-button-primary">Verify Code</button>
-                                    <button id="otpResendButton" type="button" class="otp-button-secondary">Resend Code</button>
-                                    <button id="otpCancelButton" type="button" class="otp-button-tertiary">Cancel</button>
+                                <div class="otp-button-group">
+                                    <button id="otpVerifyButton" type="button" class="otp-button-verify">Verify Code</button>
+                                    <button id="otpResendButton" type="button" class="otp-button-resend">Resend Code</button>
                                 </div>
                             </div>
                         </div>
@@ -142,13 +148,60 @@
         const passwordInput = document.getElementById('password');
         const loginButton = document.getElementById('loginButton');
         const otpModal = document.getElementById('otpModal');
-        const otpCodeInput = document.getElementById('otpCode');
+        const otpDigits = document.querySelectorAll('.otp-digit');
         const otpVerifyButton = document.getElementById('otpVerifyButton');
         const otpResendButton = document.getElementById('otpResendButton');
-        const otpCancelButton = document.getElementById('otpCancelButton');
         const otpError = document.getElementById('otpError');
         const otpStatus = document.getElementById('otpStatus');
         const loginForm = document.getElementById('loginForm');
+
+        // Setup OTP digit inputs
+        otpDigits.forEach((digit, index) => {
+            digit.addEventListener('input', (e) => {
+                // Only allow numeric input
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                
+                // Move to next input if filled
+                if (e.target.value.length === 1 && index < otpDigits.length - 1) {
+                    otpDigits[index + 1].focus();
+                }
+            });
+
+            digit.addEventListener('keydown', (e) => {
+                // Handle backspace
+                if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+                    otpDigits[index - 1].focus();
+                }
+                
+                // Allow arrow keys and other navigation
+                if (['ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                    if (e.key === 'ArrowLeft' && index > 0) {
+                        otpDigits[index - 1].focus();
+                        e.preventDefault();
+                    } else if (e.key === 'ArrowRight' && index < otpDigits.length - 1) {
+                        otpDigits[index + 1].focus();
+                        e.preventDefault();
+                    }
+                }
+            });
+
+            digit.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pastedData = (e.clipboardData || window.clipboardData).getData('text');
+                const digits = pastedData.replace(/[^0-9]/g, '').split('');
+                
+                digits.forEach((digit, i) => {
+                    if (index + i < otpDigits.length) {
+                        otpDigits[index + i].value = digit;
+                    }
+                });
+                
+                if (digits.length > 0) {
+                    const nextIndex = Math.min(index + digits.length - 1, otpDigits.length - 1);
+                    otpDigits[nextIndex].focus();
+                }
+            });
+        });
 
         rememberCheckbox.addEventListener('change', function() {
             rememberInput.value = this.checked ? '1' : '0';
@@ -156,20 +209,38 @@
 
         window.togglePassword = function(button) {
             const input = button.previousElementSibling;
-            const type = input.type === 'password' ? 'text' : 'password';
-            input.type = type;
+            const visible = input.type === 'password';
+            input.type = visible ? 'text' : 'password';
+            const svg = button.querySelector('svg');
+
+            if (visible) {
+                button.setAttribute('aria-label', 'Hide password');
+                svg.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                `;
+            } else {
+                button.setAttribute('aria-label', 'Show password');
+                svg.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 012.223-3.488m.518-.59A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.074 5.123M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18" />
+                `;
+            }
         };
 
         function showOtpModal() {
             otpModal.classList.remove('hidden');
             otpError.classList.add('hidden');
-            otpCodeInput.value = '';
+            otpStatus.classList.add('hidden');
+            otpDigits.forEach(digit => digit.value = '');
+            otpDigits[0].focus();
         }
 
         function hideOtpModal() {
             otpModal.classList.add('hidden');
             otpError.classList.add('hidden');
-            otpCodeInput.value = '';
+            otpStatus.classList.add('hidden');
+            otpDigits.forEach(digit => digit.value = '');
         }
 
         async function sendOtpRequest() {
@@ -209,6 +280,16 @@
         async function verifyOtpCode() {
             otpError.classList.add('hidden');
 
+            // Collect all 6 digits
+            const code = Array.from(otpDigits).map(digit => digit.value).join('');
+
+            // Validate that all digits are filled
+            if (code.length !== 6) {
+                otpError.textContent = 'Please enter all 6 digits of the verification code.';
+                otpError.classList.remove('hidden');
+                return;
+            }
+
             try {
                 const response = await fetch('{{ url('/login/otp/verify') }}', {
                     method: 'POST',
@@ -217,7 +298,7 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ code: otpCodeInput.value.trim() }),
+                    body: JSON.stringify({ code: code }),
                 });
 
                 const data = await response.json();
@@ -267,8 +348,8 @@
                 // Show success message
                 otpStatus.textContent = '✓ Verification code sent successfully!';
                 otpStatus.classList.remove('hidden');
-                otpCodeInput.value = '';
-                otpCodeInput.focus();
+                otpDigits.forEach(digit => digit.value = '');
+                otpDigits[0].focus();
 
                 // Re-enable button after 3 seconds
                 setTimeout(() => {
@@ -291,10 +372,6 @@
 
         otpResendButton.addEventListener('click', function() {
             resendOtpCode();
-        });
-
-        otpCancelButton.addEventListener('click', function() {
-            hideOtpModal();
         });
     </script>
 </body>
