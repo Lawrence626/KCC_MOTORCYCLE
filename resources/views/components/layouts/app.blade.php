@@ -64,6 +64,8 @@
         </div>
     </div>
 
+    @include('partials.admin-purchase-order-toasts')
+
     <script>
         const menuToggle = document.getElementById('mobile-menu-toggle');
         const sidebarWrapper = document.getElementById('sidebar-wrapper');

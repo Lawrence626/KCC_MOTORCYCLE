@@ -8,7 +8,9 @@ use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use App\Models\Supplier;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -248,7 +250,41 @@ class PurchaseOrderController extends Controller
             $purchaseOrder->items()->createMany($selectedProducts->toArray());
         });
 
+        $this->notifyAdminsOfNewPurchaseOrder($purchaseOrder);
+
         return redirect()->route('order.management')->with('success', 'Purchase order was created successfully. Waiting for admin approval.');
+    }
+
+    private function notifyAdminsOfNewPurchaseOrder(PurchaseOrder $purchaseOrder): void
+    {
+        $admins = User::query()
+            ->where('role', 'admin')
+            ->where('is_active', true)
+            ->get();
+
+        foreach ($admins as $admin) {
+            $key = $this->adminNotificationCacheKey($admin->id);
+            $notifications = Cache::get($key, []);
+
+            if (! is_array($notifications)) {
+                $notifications = [];
+            }
+
+            $notifications[] = [
+                'id' => Str::uuid()->toString(),
+                'order_id' => $purchaseOrder->id,
+                'order_number' => $purchaseOrder->order_number,
+                'message' => 'New Purchase Order Submitted – Approval Required.',
+                'url' => route('order.show', $purchaseOrder),
+            ];
+
+            Cache::put($key, $notifications, now()->addMinutes(10));
+        }
+    }
+
+    private function adminNotificationCacheKey(int $adminId): string
+    {
+        return "admin_purchase_order_notifications:{$adminId}";
     }
 
     public function show(PurchaseOrder $purchaseOrder)
