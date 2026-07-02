@@ -26,6 +26,10 @@ class Product extends Model
         'expiry_date',
         'is_active',
         'is_archived',
+        'disposal_status',
+        'disposal_date_identified',
+        'disposal_date_disposed',
+        'disposal_reason',
     ];
 
     protected $casts = [
@@ -34,6 +38,8 @@ class Product extends Model
         'expiry_date' => 'date',
         'is_active' => 'boolean',
         'is_archived' => 'boolean',
+        'disposal_date_identified' => 'date',
+        'disposal_date_disposed' => 'date',
     ];
 
     protected $appends = [

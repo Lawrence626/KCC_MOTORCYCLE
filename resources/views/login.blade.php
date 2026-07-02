@@ -285,6 +285,29 @@
             sendOtpRequest();
         });
 
+        // Enter key support for login form
+        emailInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                passwordInput.focus();
+            }
+        });
+
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendOtpRequest();
+            }
+        });
+
+        // Enter key support for OTP verification
+        otpCodeInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                verifyOtpCode();
+            }
+        });
+
         otpVerifyButton.addEventListener('click', function() {
             verifyOtpCode();
         });

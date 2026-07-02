@@ -80,9 +80,16 @@ function updateTotals() {
     }, 0);
     const extra = parseFloat(posState.extraCharge) || 0;
     const discount = parseFloat(posState.discount) || 0;
-    const subtotalWithExtras = subtotal + servicesTotal + extra - discount;
-    const tax = Math.max(0, subtotalWithExtras * 0.12);
-    const total = Math.max(0, subtotalWithExtras + tax);
+    
+    // VAT-Inclusive: Total = Subtotal + Services + Extra - Discount
+    // VAT is already included in all prices
+    const total = Math.max(0, subtotal + servicesTotal + extra - discount);
+    
+    // Included VAT = Total × (12 / 112)
+    const includedVat = total * (12 / 112);
+    
+    // VATable Sales = Total - Included VAT
+    const vatableSales = total - includedVat;
 
     document.getElementById('posSubtotal').textContent = formatCurrency(subtotal);
     document.getElementById('posServicesTotal').textContent = formatCurrency(servicesTotal);
@@ -90,7 +97,7 @@ function updateTotals() {
     document.getElementById('posDiscount').textContent = formatCurrency(discount);
     document.getElementById('posTotal').textContent = formatCurrency(total);
     const posTaxEl = document.getElementById('posTax');
-    if (posTaxEl) posTaxEl.textContent = formatCurrency(tax);
+    if (posTaxEl) posTaxEl.textContent = formatCurrency(includedVat);
     const posSubtotalSummaryEl = document.getElementById('posSubtotalSummary');
     if (posSubtotalSummaryEl) posSubtotalSummaryEl.textContent = formatCurrency(subtotal);
     const posServicesSummaryEl = document.getElementById('posServicesSummary');
@@ -411,6 +418,12 @@ async function searchProducts(query = '', page = 1) {
             const productName = product.product_name || product.name || 'Unnamed Product';
             const brand = product.brand ? `${product.brand}` : '';
             const compatibility = product.name && product.name !== productName ? product.name : '';
+            
+            // Calculate VAT breakdown
+            const sellingPrice = Number(product.unit_price || 0);
+            const includedVat = sellingPrice * (12 / 112);
+            const vatableSales = sellingPrice - includedVat;
+            
             card.innerHTML = `
                 <div class="mb-3">
                     <div class="pos-image-preview h-24 w-full overflow-hidden rounded-3xl bg-slate-200 bg-cover bg-center" style="background-image: url('${product.image || ''}')"></div>
@@ -425,7 +438,25 @@ async function searchProducts(query = '', page = 1) {
                         <p class="text-[11px] text-slate-500 mt-1">Stock: ${stockQty} pcs</p>
                     </div>
                     <div class="flex items-center justify-between gap-2">
-                        <span class="text-sm font-semibold text-slate-900">${formatCurrency(product.unit_price)}</span>
+                        <div class="flex-1">
+                            <span class="text-sm font-semibold text-slate-900">${formatCurrency(sellingPrice)}</span>
+                            <button type="button" class="pos-price-breakdown-toggle mt-1 flex items-center gap-1 text-[10px] text-slate-500 hover:text-slate-700 transition" data-product-id="${product.id}">
+                                <svg class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                                Price Breakdown
+                            </button>
+                            <div class="pos-price-breakdown hidden mt-2 p-2 bg-slate-100 rounded-lg text-[10px] space-y-1 overflow-hidden transition-all duration-200" data-product-id="${product.id}">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-600">VATable Sales</span>
+                                    <span class="font-medium text-slate-900">${formatCurrency(vatableSales)}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-600">Included VAT (12%)</span>
+                                    <span class="font-medium text-slate-900">${formatCurrency(includedVat)}</span>
+                                </div>
+                            </div>
+                        </div>
                         <button type="button" data-id="${product.id}" data-name="${productName}" data-sku="${product.sku || ''}" data-price="${product.unit_price || 0}" class="pos-add-card inline-flex h-8 rounded-2xl bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700">Add to Cart</button>
                     </div>
                 </div>
@@ -547,6 +578,19 @@ function updateDiscount(value) {
     updateTotals();
 }
 
+function togglePriceBreakdown(productId) {
+    const breakdown = document.querySelector(`.pos-price-breakdown[data-product-id="${productId}"]`);
+    const toggle = document.querySelector(`.pos-price-breakdown-toggle[data-product-id="${productId}"]`);
+    const chevron = toggle?.querySelector('svg');
+    
+    if (breakdown) {
+        breakdown.classList.toggle('hidden');
+        if (chevron) {
+            chevron.style.transform = breakdown.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+    }
+}
+
 function updatePaymentMethod(value) {
     posState.paymentMethod = value;
     document.querySelectorAll('.pos-payment-summary-method').forEach(el => {
@@ -592,9 +636,13 @@ function openPaymentModal() {
     const extra = parseFloat(posState.extraCharge) || 0;
     const discount = parseFloat(posState.discount) || 0;
     const subtotal = posState.cart.reduce((sum, item) => sum + item.unit_price * item.quantity, 0);
-    const subtotalWithExtras = subtotal + servicesTotal + extra - discount;
-    const tax = Math.max(0, subtotalWithExtras * 0.12);
-    const total = Math.max(0, subtotalWithExtras + tax);
+    
+    // VAT-Inclusive: Total = Subtotal + Services + Extra - Discount
+    // VAT is already included in all prices
+    const total = Math.max(0, subtotal + servicesTotal + extra - discount);
+    
+    // Included VAT = Total × (12 / 112)
+    const includedVat = total * (12 / 112);
 
     const now = new Date();
     invoiceLabel.textContent = `INV-${now.getFullYear()}${String(now.getMonth()+1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${now.getHours()}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`;
@@ -604,7 +652,7 @@ function openPaymentModal() {
     servicesLabel.textContent = formatCurrency(servicesTotal);
     extraLabel.textContent = formatCurrency(extra);
     discountLabel.textContent = formatCurrency(discount);
-    taxLabel.textContent = formatCurrency(tax);
+    taxLabel.textContent = formatCurrency(includedVat);
     totalLabel.textContent = formatCurrency(total);
 
     if (methodRadios.length > 0) {
@@ -663,9 +711,13 @@ function populateReceipt() {
     };
 
     if (!posState.lastReceipt) {
+        // VAT-Inclusive: Total = Subtotal + Services + Extra - Discount
         const subtotalWithExtras = receiptData.subtotal + receiptData.servicesTotal + receiptData.extra - receiptData.discount;
-        receiptData.tax = Math.max(0, subtotalWithExtras * 0.12);
-        receiptData.total = Math.max(0, subtotalWithExtras + receiptData.tax);
+        receiptData.total = Math.max(0, subtotalWithExtras);
+        
+        // Included VAT = Total × (12 / 112)
+        receiptData.tax = receiptData.total * (12 / 112);
+        
         receiptData.amountReceived = receiptData.total;
     }
 
@@ -772,6 +824,12 @@ function printReceipt() {
     const discount = document.getElementById('receiptDiscount')?.textContent || '₱0.00';
     const tax = document.getElementById('receiptTax')?.textContent || '₱0.00';
     const total = document.getElementById('receiptTotal')?.textContent || '₱0.00';
+    
+    // Calculate VATable Sales from total and included VAT
+    const totalValue = parseFloat(total.replace('₱', '').replace(',', '')) || 0;
+    const taxValue = parseFloat(tax.replace('₱', '').replace(',', '')) || 0;
+    const vatableSales = totalValue - taxValue;
+    
     const paid = document.getElementById('receiptPaid')?.textContent || '₱0.00';
     const paymentMethod = document.getElementById('receiptPaymentMethod')?.textContent || 'Cash';
 
@@ -836,8 +894,12 @@ function printReceipt() {
                             <span class="value">${discount}</span>
                         </div>
                         <div class="summary-row">
-                            <span class="label">Tax (12%)</span>
+                            <span class="label">Included VAT (12%)</span>
                             <span class="value">${tax}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="label">VATable Sales</span>
+                            <span class="value">${formatCurrency(vatableSales)}</span>
                         </div>
                         <div class="summary-row total">
                             <span class="label">TOTAL</span>
@@ -888,9 +950,14 @@ function confirmPayment() {
     }, 0);
     const extra = Number(posState.extraCharge || 0);
     const discount = Number(posState.discount || 0);
-    const subtotalWithExtras = subtotal + servicesTotal + extra - discount;
-    const tax = Math.max(0, subtotalWithExtras * 0.12);
-    const transactionTotal = Math.max(0, subtotalWithExtras + tax);
+    
+    // VAT-Inclusive: Total = Subtotal + Services + Extra - Discount
+    // VAT is already included in all prices
+    const transactionTotal = Math.max(0, subtotal + servicesTotal + extra - discount);
+    
+    // Included VAT = Total × (12 / 112)
+    const tax = transactionTotal * (12 / 112);
+    
     const items = posState.cart.map(item => ({ id: item.id, name: item.name, qty: item.quantity, price: item.unit_price }));
 
     posState.lastReceipt = {
@@ -1092,6 +1159,22 @@ function setupPosEvents() {
     document.getElementById('posCloseReceiptDoneButton')?.addEventListener('click', hideReceiptOverlay);
     document.getElementById('posPrintReceiptButton')?.addEventListener('click', printReceipt);
     document.getElementById('posViewInvoiceButton')?.addEventListener('click', viewInvoice);
+
+    // Mobile Scanner
+    document.getElementById('posOpenScannerButton')?.addEventListener('click', openMobileScanner);
+    
+    // Desktop QR Scanner
+    document.getElementById('posOpenDesktopScannerButton')?.addEventListener('click', openDesktopScanner);
+    document.getElementById('posCloseDesktopScannerButton')?.addEventListener('click', closeDesktopScanner);
+
+    // Price Breakdown Toggle (Event Delegation)
+    document.addEventListener('click', (event) => {
+        const toggle = event.target.closest('.pos-price-breakdown-toggle');
+        if (toggle) {
+            const productId = toggle.dataset.productId;
+            togglePriceBreakdown(productId);
+        }
+    });
 }
 
 function initializePos() {
@@ -1102,12 +1185,214 @@ function initializePos() {
     searchProducts('');
     applyProductImagePreviews();
     updateInvestmentLabels();
+    
+    // Start polling for mobile scans
+    startScanPolling();
+    
+    // Listen for localStorage changes (same-browser sync)
+    window.addEventListener('storage', handleStorageChange);
 }
 
 function updateInvestmentLabels() {
     document.querySelectorAll('.pos-payment-summary-method').forEach(el => {
         el.textContent = posState.paymentMethod === 'cash' ? 'Cash' : 'QR PH';
     });
+}
+
+// Mobile Scanner Functions
+let scanPollingInterval = null;
+let lastScanTimestamp = 0;
+
+function openMobileScanner() {
+    const scannerUrl = window.POS?.routes?.mobileScanner || '/pos/mobile-scanner';
+    window.open(scannerUrl, '_blank');
+}
+
+let desktopScanner = null;
+
+function openDesktopScanner() {
+    const modal = document.getElementById('posDesktopScannerModal');
+    modal.style.display = 'flex';
+    modal.classList.remove('hidden');
+    
+    // Initialize scanner
+    if (!desktopScanner) {
+        desktopScanner = new Html5Qrcode("posDesktopScannerReader");
+    }
+    
+    const config = { 
+        fps: 10, 
+        qrbox: { width: 250, height: 250 },
+        aspectRatio: 1.0
+    };
+
+    desktopScanner.start(
+        { facingMode: "environment" },
+        config,
+        onDesktopScanSuccess,
+        onDesktopScanFailure
+    ).catch(err => {
+        console.error("Desktop scanner error:", err);
+        document.getElementById('posDesktopScannerStatus').textContent = 'Camera access denied or not available';
+        document.getElementById('posDesktopScannerStatus').classList.add('text-red-400');
+    });
+}
+
+function closeDesktopScanner() {
+    const modal = document.getElementById('posDesktopScannerModal');
+    modal.style.display = 'none';
+    
+    if (desktopScanner) {
+        desktopScanner.stop().catch(err => console.error(err));
+    }
+    
+    document.getElementById('posDesktopScannerStatus').textContent = 'Position QR code within the frame';
+    document.getElementById('posDesktopScannerStatus').classList.remove('text-red-400');
+}
+
+function onDesktopScanSuccess(decodedText, decodedResult) {
+    // Play notification sound
+    playScanNotification();
+    
+    // Update status
+    document.getElementById('posDesktopScannerStatus').textContent = 'Scanned: ' + decodedText;
+    document.getElementById('posDesktopScannerStatus').classList.add('text-green-400');
+    
+    setTimeout(() => {
+        document.getElementById('posDesktopScannerStatus').classList.remove('text-green-400');
+        document.getElementById('posDesktopScannerStatus').textContent = 'Position QR code within the frame';
+    }, 2000);
+    
+    // Handle the scanned code
+    handleScannedCode(decodedText);
+}
+
+function onDesktopScanFailure(error) {
+    // Ignore scan failures, they're normal
+}
+
+function startScanPolling() {
+    // Poll server for new scans every 2 seconds
+    scanPollingInterval = setInterval(async () => {
+        try {
+            const response = await fetch('/api/pos/check-scan');
+            const data = await response.json();
+            
+            if (data.success && data.scan) {
+                const scanTimestamp = new Date(data.scan.timestamp).getTime();
+                if (scanTimestamp > lastScanTimestamp) {
+                    lastScanTimestamp = scanTimestamp;
+                    handleScannedCode(data.scan.code);
+                }
+            }
+        } catch (error) {
+            console.error('Error polling for scans:', error);
+        }
+    }, 2000);
+}
+
+function handleStorageChange(event) {
+    if (event.key === 'pos_scan_data') {
+        try {
+            const scanData = JSON.parse(event.newValue);
+            if (scanData.type === 'qr_scan') {
+                handleScannedCode(scanData.code);
+            }
+        } catch (error) {
+            console.error('Error parsing scan data:', error);
+        }
+    }
+}
+
+async function handleScannedCode(code) {
+    // Play notification sound
+    playScanNotification();
+    
+    console.log('Scanned code:', code);
+    
+    // Try to parse code as JSON (for QR codes with product data)
+    let searchCode = code;
+    try {
+        const parsed = JSON.parse(code);
+        console.log('Parsed QR data:', parsed);
+        if (parsed.sku) {
+            searchCode = parsed.sku;
+            console.log('Using SKU from QR:', searchCode);
+        } else if (parsed.product_id) {
+            searchCode = parsed.product_id.toString();
+            console.log('Using product_id from QR:', searchCode);
+        }
+    } catch (e) {
+        console.log('Not JSON, using original code');
+        // Not JSON, use original code
+    }
+    
+    // Try to find product by SKU or QR code
+    try {
+        const response = await fetch(posState.apiProductsUrl);
+        const result = await response.json();
+        
+        // Handle different response structures
+        let products = [];
+        if (Array.isArray(result)) {
+            products = result;
+        } else if (result.data && Array.isArray(result.data)) {
+            products = result.data;
+        } else if (result.products && Array.isArray(result.products)) {
+            products = result.products;
+        }
+        
+        console.log('API response:', result);
+        console.log('Loaded products:', products.length);
+        console.log('Searching for:', searchCode);
+        
+        const product = products.find(p => 
+            p.sku === searchCode || 
+            p.qr_code === searchCode ||
+            p.id.toString() === searchCode
+        );
+        
+        console.log('Found product:', product);
+        
+        if (product) {
+            addProductToCart(product);
+            showNotification(`Added: ${product.name}`);
+        } else {
+            showNotification(`Product not found: ${searchCode}`, 'error');
+        }
+    } catch (error) {
+        console.error('Error searching for product:', error);
+        showNotification('Error searching for product', 'error');
+    }
+}
+
+function playScanNotification() {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 600;
+    oscillator.type = 'sine';
+    gainNode.gain.value = 0.15;
+    
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.15);
+}
+
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-4 py-2 rounded-lg text-sm font-medium z-50 ${
+        type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+    }`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
 }
 
 window.addEventListener('DOMContentLoaded', initializePos);

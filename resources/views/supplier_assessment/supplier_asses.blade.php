@@ -8,18 +8,31 @@
 
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                 <button id="openSupplierModal" class="inline-flex items-center justify-center rounded-lg bg-cyan-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-cyan-700">
-                    + Add Supplier
+                    Add supplier
                 </button>
-                <a href="{{ route('supplier.assessment') }}" class="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50">
-                    Refresh
+                <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700">
+                    Active suppliers · {{ number_format($quickStats['activeSuppliers']) }}
+                </span>
+                <a href="{{ route('supplier.assessment.archived') }}" class="inline-flex items-center rounded-full bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 transition">
+                    Archive list
                 </a>
             </div>
         </div>
 
         @if(session('success'))
-            <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+            <div id="success-toast" class="fixed top-4 right-4 z-50 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800 shadow-lg">
                 {{ session('success') }}
             </div>
+            <script>
+                setTimeout(() => {
+                    const toast = document.getElementById('success-toast');
+                    if (toast) {
+                        toast.style.opacity = '0';
+                        toast.style.transition = 'opacity 0.5s ease';
+                        setTimeout(() => toast.remove(), 500);
+                    }
+                }, 3000);
+            </script>
         @endif
 
         @if($errors->any())
@@ -32,126 +45,159 @@
             </div>
         @endif
 
-        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-                <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Suppliers</p>
-                <p class="mt-3 text-3xl font-semibold text-slate-900">{{ number_format($quickStats['totalSuppliers']) }}</p>
-                <p class="mt-2 text-sm text-slate-500">Total suppliers tracked from inventory and supplier records.</p>
-            </div>
-            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-                <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Active suppliers</p>
-                <p class="mt-3 text-3xl font-semibold text-slate-900">{{ number_format($quickStats['activeSuppliers']) }}</p>
-                <p class="mt-2 text-sm text-slate-500">Suppliers currently marked as active.</p>
-            </div>
-            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-                <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Products connected</p>
-                <p class="mt-3 text-3xl font-semibold text-slate-900">{{ number_format($quickStats['trackedProducts']) }}</p>
-                <p class="mt-2 text-sm text-slate-500">Products currently linked with supplier names.</p>
-            </div>
-            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-                <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Supplier stock value</p>
-                <p class="mt-3 text-3xl font-semibold text-slate-900">₱{{ number_format($quickStats['stockValue'], 2) }}</p>
-                <p class="mt-2 text-sm text-slate-500">Combined value of supplier-stocked products.</p>
-            </div>
-        </div>
+        <div class="rounded-3xl border border-slate-200 bg-white p-4 md:p-6 shadow-sm">
+            <div class="grid gap-6 lg:grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)]">
+                <aside class="space-y-4">
+                    <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                        <div class="flex items-center justify-between gap-3">
+                            <div>
+                                <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Supplier search</p>
+                                <h2 class="mt-3 text-lg font-semibold text-slate-900">Find the right partner</h2>
+                            </div>
+                            <span class="rounded-full bg-cyan-100 px-3 py-1 text-xs font-semibold text-cyan-700">{{ number_format($supplierSummaries->count()) }} suppliers</span>
+                        </div>
 
-        <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-            <div class="grid gap-3 md:grid-cols-4">
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Search</label>
-                    <input id="supplierSearch" type="search" placeholder="Supplier name, contact or email" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100" />
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Status</label>
-                    <select id="supplierStatusFilter" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100">
-                        <option value="">All statuses</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Has supplier record</label>
-                    <select id="supplierRecordFilter" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100">
-                        <option value="">All suppliers</option>
-                        <option value="recorded">Registered</option>
-                        <option value="unrecorded">Unregistered</option>
-                    </select>
-                </div>
-                <div class="flex items-end">
-                    <button id="clearFilters" class="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Clear filters</button>
-                </div>
-            </div>
-        </div>
+                        <div class="mt-5 space-y-4">
+                            <input id="supplierSearch" type="search" placeholder="Search supplier, contact, email" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100" />
+                            <div class="grid gap-3 sm:grid-cols-1">
+                                <p class="text-sm text-slate-600">Search by supplier name, contact person, role, email, phone, or address.</p>
+                            </div>
+                        </div>
+                    </div>
 
-        <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-            <div class="overflow-x-auto">
-                <table class="min-w-full text-left text-sm text-slate-700">
-                    <thead class="bg-slate-50 text-xs uppercase tracking-[0.2em] text-slate-500">
-                        <tr>
-                            <th class="px-4 py-4">Supplier</th>
-                            <th class="px-4 py-4">Contact</th>
-                            <th class="px-4 py-4">Products</th>
-                            <th class="px-4 py-4">Min Price</th>
-                            <th class="px-4 py-4">Avg Price</th>
-                            <th class="px-4 py-4">Max Price</th>
-                            <th class="px-4 py-4">Stock Value</th>
-                            <th class="px-4 py-4">Last Restock</th>
-                            <th class="px-4 py-4">Status</th>
-                            <th class="px-4 py-4">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="supplierTableBody" class="divide-y divide-slate-200 bg-white">
-                        @foreach($supplierSummaries as $supplier)
-                            <tr class="supplier-row" data-name="{{ strtolower($supplier->name) }}" data-contact="{{ strtolower($supplier->contact_person ?? '') }}" data-email="{{ strtolower($supplier->email ?? '') }}" data-status="{{ $supplier->status }}" data-recorded="{{ $supplier->has_record ? 'recorded' : 'unrecorded' }}">
-                                <td class="px-4 py-4">
-                                    <div class="font-semibold text-slate-900">{{ $supplier->name }}</div>
-                                    <div class="text-xs text-slate-500">{{ $supplier->notes ?? 'No description available' }}</div>
-                                </td>
-                                <td class="px-4 py-4 space-y-1 text-slate-700">
-                                    <div>{{ $supplier->contact_person ?? '—' }}</div>
-                                    <div class="text-xs text-slate-500">{{ $supplier->email ?? $supplier->phone ?? 'No contact' }}</div>
-                                </td>
-                                <td class="px-4 py-4 font-semibold text-slate-900">{{ $supplier->product_count }}</td>
-                                <td class="px-4 py-4">₱{{ number_format($supplier->min_price, 2) }}</td>
-                                <td class="px-4 py-4">₱{{ number_format($supplier->avg_price, 2) }}</td>
-                                <td class="px-4 py-4">₱{{ number_format($supplier->max_price, 2) }}</td>
-                                <td class="px-4 py-4">₱{{ number_format($supplier->total_value, 2) }}</td>
-                                <td class="px-4 py-4 text-slate-600">{{ $supplier->last_restock_date ?? 'No restock' }}</td>
-                                <td class="px-4 py-4">
-                                    <span class="inline-flex rounded-2xl px-3 py-1 text-xs font-semibold {{ $supplier->status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600' }}">
-                                        {{ ucfirst($supplier->status) }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-4">
-                                    <div class="flex flex-wrap gap-2">
-                                        <button type="button" class="supplier-products-button inline-flex items-center rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50" data-supplier-name="{{ $supplier->name }}">
-                                            View product prices
-                                        </button>
-                                        @if($supplier->has_record)
-                                            <button type="button" class="supplier-edit-button inline-flex items-center rounded-2xl border border-cyan-200 bg-cyan-50 px-3 py-2 text-xs font-semibold text-cyan-700 transition hover:bg-cyan-100" data-supplier='{{ json_encode(["id" => $supplier->id, "name" => $supplier->name, "contact_person" => $supplier->contact_person, "email" => $supplier->email, "phone" => $supplier->phone, "status" => $supplier->status, "notes" => $supplier->notes]) }}'>
-                                                Edit
-                                            </button>
-                                            <form method="POST" action="{{ route('supplier.assessment.destroy', ['supplier' => $supplier->id]) }}" class="inline-block" onsubmit="return confirm('Delete supplier and clear linked products?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="inline-flex items-center rounded-2xl bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-100">Delete</button>
-                                            </form>
-                                        @else
-                                            <button type="button" class="supplier-create-button inline-flex items-center rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50" data-supplier-name="{{ $supplier->name }}">
-                                                Register
-                                            </button>
-                                        @endif
+                    <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+                        <div class="mb-4 flex items-center justify-between gap-3">
+                            <div>
+                                <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Supplier list</p>
+                                <h3 class="mt-2 text-lg font-semibold text-slate-900">Select a supplier</h3>
+                            </div>
+                            <span id="supplierListCount" class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{{ number_format($supplierSummaries->count()) }} total</span>
+                        </div>
+                        <div id="supplierList" class="space-y-3 max-h-[calc(100vh-34rem)] overflow-y-auto pr-2"></div>
+                        <div id="supplierPagination" class="mt-4 flex flex-col items-center gap-2 sm:flex-row sm:justify-between"></div>
+                    </div>
+                </aside>
+
+                <main class="space-y-4">
+                    <div id="supplierDetailPlaceholder" class="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-10 text-center text-slate-500">
+                        <p class="text-lg font-semibold text-slate-900">Supplier details will appear here</p>
+                        <p class="mt-3 text-sm text-slate-500">Click a supplier from the left panel to see pricing, performance, delivery reliability, and product coverage.</p>
+                    </div>
+
+                    <section id="supplierDetailPanel" class="hidden space-y-6">
+                        <div class="rounded-3xl border border-slate-200 bg-white p-4 md:p-6 shadow-sm">
+                            <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                                <div>
+                                    <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Supplier overview</p>
+                                    <h2 id="detailSupplierName" class="mt-3 text-2xl md:text-3xl font-semibold text-slate-900"></h2>
+                                    <p id="detailSupplierNotes" class="mt-2 text-sm text-slate-500"></p>
+                                    <p id="detailSupplierAddress" class="mt-3 text-sm text-slate-500"></p>
+                                </div>
+                                <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-2">
+                                    <div class="rounded-3xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                                        <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Role</p>
+                                        <p id="detailSupplierPosition" class="mt-2 font-semibold"></p>
                                     </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                                    <div class="rounded-3xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                                        <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Primary contact</p>
+                                        <p id="detailSupplierContact" class="mt-2"></p>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 flex flex-wrap items-center gap-3">
+                                    <button id="detailEditSupplierButton" type="button" class="w-full sm:w-auto rounded-2xl bg-cyan-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-cyan-700">Edit supplier</button>
+                                    <button id="detailArchiveSupplierButton" type="button" class="w-full sm:w-auto rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Archive supplier</button>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                                <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                                    <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Performance score</p>
+                                    <p id="detailPerformanceScore" class="mt-3 text-3xl font-semibold text-slate-900"></p>
+                                </div>
+                                <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                                    <p class="text-xs uppercase tracking-[0.2em] text-slate-400">On-time delivery</p>
+                                    <p id="detailOnTimeRate" class="mt-3 text-3xl font-semibold text-slate-900"></p>
+                                </div>
+                                <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                                    <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Order completion</p>
+                                    <p id="detailCompletionRate" class="mt-3 text-3xl font-semibold text-slate-900"></p>
+                                </div>
+                                <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                                    <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Total products</p>
+                                    <p id="detailProductCount" class="mt-3 text-3xl font-semibold text-slate-900"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="rounded-3xl border border-slate-200 bg-white p-4 md:p-6 shadow-sm">
+                            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                                <div>
+                                    <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Performance summary</p>
+                                    <h3 class="mt-2 text-lg md:text-xl font-semibold text-slate-900">Delivery and order reliability</h3>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700" id="detailDeliveredCount"></span>
+                                    <span class="rounded-full bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600" id="detailOrdersCount"></span>
+                                </div>
+                            </div>
+
+                            <div class="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
+                                <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                                    <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Latest orders</p>
+                                    <div id="detailOrderHistory" class="mt-4 space-y-3"></div>
+                                </div>
+                                <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                                    <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Delivery reliability</p>
+                                    <div class="mt-4 space-y-3">
+                                        <div>
+                                            <p class="text-sm text-slate-600">On-time deliveries</p>
+                                            <div class="mt-2 h-3 overflow-hidden rounded-full bg-slate-200">
+                                                <div id="detailOnTimeBar" class="h-full rounded-full bg-emerald-500" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-slate-600">Order completion</p>
+                                            <div class="mt-2 h-3 overflow-hidden rounded-full bg-slate-200">
+                                                <div id="detailCompletionBar" class="h-full rounded-full bg-cyan-500" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="rounded-3xl border border-slate-200 bg-white p-4 md:p-6 shadow-sm">
+                            <div class="mb-4 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                <div>
+                                    <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Supplier pricing</p>
+                                    <h3 class="mt-2 text-lg md:text-xl font-semibold text-slate-900">Product price list</h3>
+                                </div>
+                                <span id="detailTotalValue" class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600"></span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full text-left text-sm text-slate-700">
+                                    <thead class="bg-slate-50 text-xs uppercase tracking-[0.2em] text-slate-500">
+                                        <tr>
+                                            <th class="px-3 py-3 md:px-4">Product</th>
+                                            <th class="px-3 py-3 md:px-4">SKU</th>
+                                            <th class="px-3 py-3 md:px-4">Category</th>
+                                            <th class="px-3 py-3 md:px-4">Stock</th>
+                                            <th class="px-3 py-3 md:px-4">Unit price</th>
+                                            <th class="px-3 py-3 md:px-4">Restock</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="detailProductTable" class="divide-y divide-slate-200 bg-white"></tbody>
+                                </table>
+                            </div>
+                            <div id="productPagination" class="mt-4 flex flex-col items-center gap-2 sm:flex-row sm:justify-between"></div>
+                        </div>
+                    </section>
+                </main>
             </div>
         </div>
-    </div>
 
-    <div id="supplierModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 p-4">
+        <div id="supplierModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 p-4">
         <div class="w-full max-w-2xl overflow-hidden rounded-3xl bg-white shadow-2xl">
             <div class="flex items-start justify-between border-b border-slate-200 px-6 py-5">
                 <div>
@@ -190,12 +236,16 @@
 
                 <div class="grid gap-4 sm:grid-cols-2">
                     <label class="block text-sm font-medium text-slate-700">
-                        Status
-                        <select id="supplierStatusInput" name="status" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100">
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
+                        Contact position
+                        <input id="supplierPositionInput" name="contact_position" type="text" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100" />
                     </label>
+                    <label class="block text-sm font-medium text-slate-700">
+                        Address
+                        <input id="supplierAddressInput" name="address" type="text" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100" />
+                    </label>
+                </div>
+
+                <div class="grid gap-4 sm:grid-cols-1">
                     <label class="block text-sm font-medium text-slate-700">
                         Notes
                         <input id="supplierNotesInput" name="notes" type="text" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100" />
@@ -245,6 +295,11 @@
         </div>
     </div>
 
+    <form id="archiveSupplierForm" method="POST" class="hidden">
+        @csrf
+        @method('DELETE')
+    </form>
+
     @push('scripts')
         <script>
             const supplierSummaries = @json($supplierSummaries);
@@ -257,23 +312,52 @@
             const supplierId = document.getElementById('supplierId');
             const supplierNameInput = document.getElementById('supplierNameInput');
             const supplierContactInput = document.getElementById('supplierContactInput');
+            const supplierPositionInput = document.getElementById('supplierPositionInput');
+            const supplierAddressInput = document.getElementById('supplierAddressInput');
             const supplierEmailInput = document.getElementById('supplierEmailInput');
             const supplierPhoneInput = document.getElementById('supplierPhoneInput');
-            const supplierStatusInput = document.getElementById('supplierStatusInput');
             const supplierNotesInput = document.getElementById('supplierNotesInput');
             const supplierModalSubmit = document.getElementById('supplierModalSubmit');
             const openSupplierModalButton = document.getElementById('openSupplierModal');
             const closeSupplierModalButton = document.getElementById('closeSupplierModal');
             const cancelSupplierModalButton = document.getElementById('cancelSupplierModal');
             const supplierSearch = document.getElementById('supplierSearch');
-            const supplierStatusFilter = document.getElementById('supplierStatusFilter');
-            const supplierRecordFilter = document.getElementById('supplierRecordFilter');
             const clearFiltersButton = document.getElementById('clearFilters');
             const productsModalTitle = document.getElementById('productsModalTitle');
             const productsModalSubtitle = document.getElementById('productsModalSubtitle');
             const productsModalTableBody = document.getElementById('productsModalTableBody');
             const closeProductsModal = document.getElementById('closeProductsModal');
             const closeProductsModalButton = document.getElementById('closeProductsModalButton');
+            const supplierList = document.getElementById('supplierList');
+            const supplierListCount = document.getElementById('supplierListCount');
+            const supplierPagination = document.getElementById('supplierPagination');
+            const supplierDetailPanel = document.getElementById('supplierDetailPanel');
+            const supplierDetailPlaceholder = document.getElementById('supplierDetailPlaceholder');
+            const detailSupplierName = document.getElementById('detailSupplierName');
+            const detailSupplierNotes = document.getElementById('detailSupplierNotes');
+            const detailSupplierPosition = document.getElementById('detailSupplierPosition');
+            const detailSupplierAddress = document.getElementById('detailSupplierAddress');
+            const detailSupplierContact = document.getElementById('detailSupplierContact');
+            const detailPerformanceScore = document.getElementById('detailPerformanceScore');
+            const detailOnTimeRate = document.getElementById('detailOnTimeRate');
+            const detailCompletionRate = document.getElementById('detailCompletionRate');
+            const detailProductCount = document.getElementById('detailProductCount');
+            const detailDeliveredCount = document.getElementById('detailDeliveredCount');
+            const detailOrdersCount = document.getElementById('detailOrdersCount');
+            const detailOrderHistory = document.getElementById('detailOrderHistory');
+            const detailOnTimeBar = document.getElementById('detailOnTimeBar');
+            const detailCompletionBar = document.getElementById('detailCompletionBar');
+            const detailProductTable = document.getElementById('detailProductTable');
+            const detailTotalValue = document.getElementById('detailTotalValue');
+            const productPagination = document.getElementById('productPagination');
+            const detailEditSupplierButton = document.getElementById('detailEditSupplierButton');
+            const detailArchiveSupplierButton = document.getElementById('detailArchiveSupplierButton');
+            const archiveSupplierForm = document.getElementById('archiveSupplierForm');
+            let activeSupplier = null;
+            let currentPage = 1;
+            const itemsPerPage = 3;
+            let currentProductPage = 1;
+            const productsPerPage = 10;
 
             function openModal(modal) {
                 modal.classList.remove('hidden');
@@ -283,6 +367,18 @@
             function closeModal(modal) {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
+            }
+
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `fixed top-4 right-4 z-50 rounded-2xl border p-4 text-sm shadow-lg transition-opacity duration-500 ${type === 'success' ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-rose-200 bg-rose-50 text-rose-800'}`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 500);
+                }, 3000);
             }
 
             function resetSupplierForm() {
@@ -296,38 +392,232 @@
             }
 
             function fillSupplierForm(supplier) {
-                supplierModalTitle.textContent = 'Edit supplier';
-                supplierModalSubtitle.textContent = 'Update the supplier details and product links.';
-                supplierFormMethod.value = 'PATCH';
-                supplierId.value = supplier.id;
+                supplierModalTitle.textContent = supplier.id ? 'Edit supplier' : 'Add supplier';
+                supplierModalSubtitle.textContent = supplier.id
+                    ? 'Update the supplier details and product links.'
+                    : 'Create a supplier record and keep product links intact.';
+                supplierFormMethod.value = supplier.id ? 'PATCH' : 'POST';
+                supplierId.value = supplier.id || '';
                 supplierNameInput.value = supplier.name || '';
                 supplierContactInput.value = supplier.contact_person || '';
+                supplierPositionInput.value = supplier.contact_position || '';
+                supplierAddressInput.value = supplier.address || '';
                 supplierEmailInput.value = supplier.email || '';
                 supplierPhoneInput.value = supplier.phone || '';
-                supplierStatusInput.value = supplier.status || 'active';
                 supplierNotesInput.value = supplier.notes || '';
-                supplierForm.action = '{{ url('supplier-assessment/suppliers') }}/' + supplier.id;
-                supplierModalSubmit.textContent = 'Update supplier';
+                supplierForm.action = supplier.id
+                    ? '{{ url('supplier-assessment/suppliers') }}/' + supplier.id
+                    : '{{ route('supplier.assessment.store') }}';
+                supplierModalSubmit.textContent = supplier.id ? 'Update supplier' : 'Save supplier';
             }
 
-            function filterSupplierRows() {
-                const searchValue = supplierSearch.value.trim().toLowerCase();
-                const selectedStatus = supplierStatusFilter.value;
-                const selectedRecord = supplierRecordFilter.value;
+            function renderSupplierList() {
+                supplierList.innerHTML = '';
+                let visibleCount = 0;
+                const filteredSuppliers = [];
 
-                document.querySelectorAll('.supplier-row').forEach(row => {
-                    const name = row.dataset.name || '';
-                    const contact = row.dataset.contact || '';
-                    const email = row.dataset.email || '';
-                    const status = row.dataset.status || '';
-                    const recorded = row.dataset.recorded || '';
+                supplierSummaries.forEach(supplier => {
+                    const name = supplier.name.toLowerCase();
+                    const contact = (supplier.contact_person || '').toLowerCase();
+                    const contactPosition = (supplier.contact_position || '').toLowerCase();
+                    const email = (supplier.email || supplier.phone || supplier.address || '').toLowerCase();
+                    const searchValue = supplierSearch.value.trim().toLowerCase();
 
-                    const matchesSearch = [name, contact, email].some(value => value.includes(searchValue));
-                    const matchesStatus = selectedStatus ? status === selectedStatus : true;
-                    const matchesRecord = selectedRecord ? recorded === selectedRecord : true;
+                    const matchesSearch = [name, contact, contactPosition, email].some(value => value.includes(searchValue));
+                    const isVisible = matchesSearch;
 
-                    row.classList.toggle('hidden', !(matchesSearch && matchesStatus && matchesRecord));
+                    if (isVisible) {
+                        filteredSuppliers.push(supplier);
+                    }
                 });
+
+                const totalPages = Math.ceil(filteredSuppliers.length / itemsPerPage);
+                currentPage = Math.min(currentPage, totalPages) || 1;
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const paginatedSuppliers = filteredSuppliers.slice(startIndex, endIndex);
+
+                paginatedSuppliers.forEach(supplier => {
+                    visibleCount += 1;
+                    const card = document.createElement('div');
+                    card.dataset.supplierName = supplier.name;
+                    card.className = 'supplier-card w-full rounded-3xl border border-slate-200 bg-white p-3 md:p-4 text-left shadow-sm transition hover:border-cyan-300 hover:shadow-md';
+                    card.innerHTML = `
+                        <div class="flex items-start justify-between gap-2 md:gap-4">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-semibold text-slate-900 truncate">${supplier.name}</p>
+                                <p class="mt-1 text-xs text-slate-500 truncate">${supplier.contact_person || 'No contact'} · ${supplier.email || supplier.phone || 'No email'}</p>
+                            </div>
+                            <span class="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600 whitespace-nowrap">${supplier.contact_position || 'Supplier'}</span>
+                        </div>
+                        <div class="mt-4 grid gap-2 sm:grid-cols-2">
+                            <div class="rounded-3xl bg-slate-50 p-2 md:p-3 text-xs text-slate-600">
+                                <p class="font-semibold text-slate-900">${supplier.product_count}</p>
+                                <p>Products</p>
+                            </div>
+                            <div class="rounded-3xl bg-slate-50 p-2 md:p-3 text-xs text-slate-600">
+                                <p class="font-semibold text-slate-900">${supplier.performance_score}</p>
+                                <p>Performance</p>
+                            </div>
+                        </div>
+                    `;
+                    supplierList.appendChild(card);
+                });
+
+                supplierListCount.textContent = `${visibleCount} shown`;
+
+                // Render pagination
+                if (totalPages > 1) {
+                    supplierPagination.innerHTML = `
+                        <div class="text-sm text-slate-500">
+                            Page ${currentPage} of ${totalPages}
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap justify-center">
+                            <button data-page="${currentPage - 1}" class="pagination-btn px-3 py-1 text-sm ${currentPage === 1 ? 'text-slate-400 cursor-not-allowed' : 'text-slate-600 hover:text-slate-900'}" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>
+                            ${Array.from({length: totalPages}, (_, i) => i + 1).map(page => `
+                                <button data-page="${page}" class="pagination-btn px-3 py-1 text-sm ${page === currentPage ? 'font-medium text-white bg-cyan-600 rounded' : 'text-slate-600 hover:text-slate-900'}">${page}</button>
+                            `).join('')}
+                            <button data-page="${currentPage + 1}" class="pagination-btn px-3 py-1 text-sm ${currentPage === totalPages ? 'text-slate-400 cursor-not-allowed' : 'text-slate-600 hover:text-slate-900'}" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
+                        </div>
+                    `;
+                } else {
+                    supplierPagination.innerHTML = '';
+                }
+            }
+
+            window.changePage = function(page) {
+                currentPage = page;
+                renderSupplierList();
+            }
+
+            window.changeProductPage = function(page) {
+                currentProductPage = page;
+                if (activeSupplier) {
+                    setSupplierDetail(activeSupplier.name);
+                }
+            }
+
+            supplierList.addEventListener('click', event => {
+                const card = event.target.closest('.supplier-card');
+
+                if (card) {
+                    setSupplierDetail(card.dataset.supplierName);
+                }
+            });
+
+            detailEditSupplierButton.addEventListener('click', () => {
+                if (!activeSupplier) {
+                    return;
+                }
+                fillSupplierForm(activeSupplier);
+                openModal(supplierModal);
+            });
+
+            detailArchiveSupplierButton.addEventListener('click', () => {
+                if (!activeSupplier) {
+                    return;
+                }
+                if (!activeSupplier.id) {
+                    showToast('This supplier is not yet saved as a record and cannot be archived. Please add it first.', 'error');
+                    return;
+                }
+                archiveSupplierForm.action = '{{ url('supplier-assessment/suppliers') }}/' + activeSupplier.id;
+                if (confirm(`Archive "${activeSupplier.name}"? This will remove it from active supplier listings.`)) {
+                    archiveSupplierForm.submit();
+                }
+            });
+
+            function setSupplierDetail(supplierName) {
+                const supplier = supplierSummaries.find(item => item.name === supplierName);
+                if (!supplier) {
+                    return;
+                }
+
+                supplierDetailPlaceholder.classList.add('hidden');
+                supplierDetailPanel.classList.remove('hidden');
+
+                // Reset product page when switching to a different supplier
+                if (activeSupplier && activeSupplier.name !== supplierName) {
+                    currentProductPage = 1;
+                }
+
+                detailSupplierName.textContent = supplier.name;
+                detailSupplierNotes.textContent = supplier.notes || 'No additional notes provided.';
+                detailSupplierPosition.textContent = supplier.contact_position || 'Supplier';
+                detailSupplierAddress.textContent = supplier.address ? `📍 ${supplier.address}` : '';
+                detailSupplierContact.textContent = supplier.contact_person ? `${supplier.contact_person} · ${supplier.email || supplier.phone || 'No contact info'}` : (supplier.email || supplier.phone || 'No contact info');
+                activeSupplier = supplier;
+                detailPerformanceScore.textContent = `${supplier.performance_score}/100`;
+                detailOnTimeRate.textContent = `${supplier.on_time_rate}%`;
+                detailCompletionRate.textContent = `${supplier.completion_rate}%`;
+                detailProductCount.textContent = supplier.product_count;
+                detailDeliveredCount.textContent = `${supplier.delivered_orders_count} delivered`;
+                detailOrdersCount.textContent = `${supplier.orders_count} orders`;
+                detailOnTimeBar.style.width = `${supplier.on_time_rate}%`;
+                detailCompletionBar.style.width = `${supplier.completion_rate}%`;
+                detailTotalValue.textContent = `₱${Number(supplier.total_value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+                detailOrderHistory.innerHTML = '';
+                if (!supplier.orders.length) {
+                    detailOrderHistory.innerHTML = '<div class="rounded-3xl bg-white p-4 text-sm text-slate-500">No order history available for this supplier.</div>';
+                } else {
+                    supplier.orders.slice(0, 3).forEach(order => {
+                        detailOrderHistory.insertAdjacentHTML('beforeend', `
+                            <div class="rounded-3xl bg-white p-4 shadow-sm">
+                                <div class="flex items-center justify-between gap-2">
+                                    <p class="font-semibold text-slate-900">${order.order_number}</p>
+                                    <span class="text-xs ${order.status.toLowerCase() === 'delivered' ? 'text-emerald-700' : 'text-slate-500'}">${order.status}</span>
+                                </div>
+                                <div class="mt-2 text-sm text-slate-600">
+                                    Expected: ${order.expected_delivery_date || 'Unknown'} · Updated: ${order.updated_at || 'Unknown'}
+                                </div>
+                                <div class="mt-3 text-sm font-semibold text-slate-900">₱${Number(order.total_amount).toFixed(2)}</div>
+                            </div>
+                        `);
+                    });
+                }
+
+                detailProductTable.innerHTML = '';
+                if (!supplier.products.length) {
+                    detailProductTable.innerHTML = '<tr><td colspan="6" class="px-4 py-6 text-center text-sm text-slate-500">No product records linked to this supplier.</td></tr>';
+                    productPagination.innerHTML = '';
+                } else {
+                    const totalProductPages = Math.ceil(supplier.products.length / productsPerPage);
+                    const productStartIndex = (currentProductPage - 1) * productsPerPage;
+                    const productEndIndex = productStartIndex + productsPerPage;
+                    const paginatedProducts = supplier.products.slice(productStartIndex, productEndIndex);
+
+                    paginatedProducts.forEach(product => {
+                        detailProductTable.insertAdjacentHTML('beforeend', `
+                            <tr class="border-b border-slate-200">
+                                <td class="px-4 py-4 font-medium text-slate-900">${product.name}</td>
+                                <td class="px-4 py-4 text-slate-600">${product.sku}</td>
+                                <td class="px-4 py-4 text-slate-600">${product.category || 'Uncategorized'}</td>
+                                <td class="px-4 py-4 text-slate-900">${product.stock_quantity}</td>
+                                <td class="px-4 py-4 text-slate-900">₱${Number(product.price).toFixed(2)}</td>
+                                <td class="px-4 py-4 text-slate-600">${product.last_restock_date || 'N/A'}</td>
+                            </tr>
+                        `);
+                    });
+
+                    // Render product pagination
+                    if (totalProductPages > 1) {
+                        productPagination.innerHTML = `
+                            <div class="text-sm text-slate-500">
+                                Page ${currentProductPage} of ${totalProductPages}
+                            </div>
+                            <div class="flex items-center gap-2 flex-wrap justify-center">
+                                <button type="button" onclick="window.changeProductPage(${currentProductPage - 1})" ${currentProductPage === 1 ? 'disabled' : ''} class="px-3 py-1 text-sm ${currentProductPage === 1 ? 'text-slate-400 cursor-not-allowed' : 'text-slate-600 hover:text-slate-900'}">Previous</button>
+                                ${Array.from({length: totalProductPages}, (_, i) => i + 1).map(page => `
+                                    <button type="button" onclick="window.changeProductPage(${page})" class="px-3 py-1 text-sm ${page === currentProductPage ? 'font-medium text-white bg-cyan-600 rounded' : 'text-slate-600 hover:text-slate-900'}">${page}</button>
+                                `).join('')}
+                                <button type="button" onclick="window.changeProductPage(${currentProductPage + 1})" ${currentProductPage === totalProductPages ? 'disabled' : ''} class="px-3 py-1 text-sm ${currentProductPage === totalProductPages ? 'text-slate-400 cursor-not-allowed' : 'text-slate-600 hover:text-slate-900'}">Next</button>
+                            </div>
+                        `;
+                    } else {
+                        productPagination.innerHTML = '';
+                    }
+                }
             }
 
             function openProductsModal(supplierName) {
@@ -369,44 +659,36 @@
                 button.addEventListener('click', () => closeModal(supplierModal));
             });
 
-            document.querySelectorAll('.supplier-edit-button').forEach(button => {
-                button.addEventListener('click', event => {
-                    const supplier = JSON.parse(event.currentTarget.dataset.supplier);
-                    fillSupplierForm(supplier);
-                    openModal(supplierModal);
-                });
-            });
 
-            document.querySelectorAll('.supplier-create-button').forEach(button => {
-                button.addEventListener('click', event => {
-                    const name = event.currentTarget.dataset.supplierName;
-                    resetSupplierForm();
-                    supplierNameInput.value = name;
-                    openModal(supplierModal);
-                });
-            });
+            supplierSearch.addEventListener('input', renderSupplierList);
 
-            document.querySelectorAll('.supplier-products-button').forEach(button => {
-                button.addEventListener('click', event => {
-                    openProductsModal(event.currentTarget.dataset.supplierName);
-                });
-            });
-
-            [supplierSearch, supplierStatusFilter, supplierRecordFilter].forEach(control => {
-                control.addEventListener('input', filterSupplierRows);
-            });
-
-            clearFiltersButton.addEventListener('click', event => {
-                event.preventDefault();
-                supplierSearch.value = '';
-                supplierStatusFilter.value = '';
-                supplierRecordFilter.value = '';
-                filterSupplierRows();
+            // Event delegation for supplier pagination
+            supplierPagination.addEventListener('click', (e) => {
+                const button = e.target.closest('.pagination-btn');
+                if (button) {
+                    e.preventDefault();
+                    const page = parseInt(button.dataset.page);
+                    if (page >= 1 && page <= Math.ceil(supplierSummaries.length / itemsPerPage)) {
+                        currentPage = page;
+                        renderSupplierList();
+                    }
+                }
             });
 
             [closeProductsModal, closeProductsModalButton].forEach(button => {
                 button.addEventListener('click', () => closeModal(productsModal));
             });
+
+            renderSupplierList();
+
+            // Auto-select supplier if passed in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectedSupplier = urlParams.get('selected_supplier');
+            if (selectedSupplier) {
+                setTimeout(() => {
+                    setSupplierDetail(selectedSupplier);
+                }, 100);
+            }
         </script>
     @endpush
 </x-layouts.app>
