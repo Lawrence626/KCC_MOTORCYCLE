@@ -17,7 +17,12 @@
         $categoryBreakdown = $categoryBreakdown ?? [
             'labels' => ['Exhausts', 'Helmets', 'Tires', 'Brakes', 'Accessories'],
             'values' => [34, 24, 18, 12, 12],
+            'shares' => [34, 24, 18, 12, 12],
+            'formatted' => ['₱34.00', '₱24.00', '₱18.00', '₱12.00', '₱12.00'],
         ];
+
+        $categoryBreakdown['formatted'] = $categoryBreakdown['formatted'] ?? array_map(fn($value) => '₱' . number_format((float) $value, 2), $categoryBreakdown['values'] ?? []);
+        $categoryBreakdown['shares'] = $categoryBreakdown['shares'] ?? array_fill(0, count($categoryBreakdown['labels'] ?? []), 0);
 
 
 
@@ -114,7 +119,9 @@
                                 <span class="h-2.5 w-2.5 rounded-full {{ $legendColors[$index % count($legendColors)] }}"></span>
                                 <div>
                                     <p class="font-semibold text-slate-900">{{ $label }}</p>
-                                    <p class="text-slate-500">{{ $categoryBreakdown['formatted'][$index] }} • {{ $categoryBreakdown['shares'][$index] }}%</p>
+                                    <p class="text-slate-500">
+                                        {{ data_get($categoryBreakdown, 'formatted.' . $index, '—') }} • {{ data_get($categoryBreakdown, 'shares.' . $index, 0) }}%
+                                    </p>
                                 </div>
                             </div>
                         @endforeach

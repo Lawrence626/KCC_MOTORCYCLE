@@ -170,6 +170,10 @@ class AnalyticsController extends Controller
             $monthlyValues[] = round($salesByMonth->get($monthKey, 0), 2);
         }
 
+        $formattedCategoryBreakdown = $categoryBreakdown->map(function ($item) {
+            return '₱' . number_format((float) ($item['value'] ?? 0), 2);
+        })->values()->toArray();
+
         return view('data_analytics.sales-analytics', [
             'quickStats' => [
                 'total_inventory_value' => $totalInventoryValue,
@@ -191,6 +195,7 @@ class AnalyticsController extends Controller
                 'labels' => $categoryBreakdown->pluck('label')->toArray(),
                 'values' => $categoryBreakdown->pluck('value')->toArray(),
                 'shares' => $categoryBreakdown->pluck('share')->toArray(),
+                'formatted' => $formattedCategoryBreakdown,
                 'included_vat' => $categoryBreakdown->pluck('included_vat')->toArray(),
                 'vatable_sales' => $categoryBreakdown->pluck('vatable_sales')->toArray(),
             ],
