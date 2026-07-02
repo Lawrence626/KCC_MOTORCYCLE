@@ -1,11 +1,11 @@
 <div class="w-full md:w-70 text-white flex flex-col h-screen shadow-2xl border-r border-slate-700 rounded-r-[10px]"
-     style="background: linear-gradient(to bottom,#000000, #000000, #111111, #353535); position: relative; z-index: 9999999 !important;">
+     style="background: linear-gradient(to bottom,#000000, #111111, #353535); position: relative; z-index: 9999999 !important;">
 
     <a href="{{ route('dashboard') }}" class="px-6 py-5 border-b border-slate-700/50 flex-shrink-0 hover:opacity-80 transition-opacity">
         <div class="flex flex-col items-center justify-center">
             <div class="w-42">
                 <img src="{{ asset('images/Logo.png') }}" alt="KCC Logo" class="w-full h-full object-contain" />
-            </div>  
+            </div>
         </div>
     </a>
 
@@ -34,7 +34,7 @@
         <div id="profileDropdown" 
              class="absolute top-full left-1 right-3 mt-2 border border-slate-900/70 rounded-lg shadow-2xl z-50 
                     invisible opacity-0 max-h-0 scale-95 overflow-hidden origin-top transition-all duration-300 ease-in-out" 
-             style="background: linear-gradient(to bottom,  #000000, #080808)">
+             style="background: linear-gradient(to bottom,  #000000, #131313)">
             <div class="px-4 py-3 border-b border-slate-700/40">
                 <div class="flex items-center gap-3 mb-2">
                     <div class="w-10 h-10 rounded-full {{ $bgColor }} flex items-center justify-center overflow-hidden border border-slate-600 font-semibold text-white">
@@ -355,7 +355,6 @@ document.addEventListener('DOMContentLoaded', function() {
             profileDropdown.classList.toggle('dropdown-active', willOpen);
 
             if (profileArrow) {
-                // Default = up (rotate-180). Open = down (no rotate-180) + cyan.
                 profileArrow.classList.toggle('rotate-180', !willOpen);
                 profileArrow.classList.toggle('text-cyan-400', willOpen);
                 profileArrow.classList.toggle('text-slate-400', !willOpen);
@@ -378,17 +377,10 @@ document.addEventListener('DOMContentLoaded', function() {
     allGroups.forEach(group => {
         const button = group.querySelector('.sidebar-group-toggle');
         const content = group.querySelector('.sidebar-group-content');
-        const arrow = button ? button.querySelector('.sidebar-arrow') : null;
 
         if (!button || !content) return;
 
-        button.addEventListener('click', function() {
-            const isOpen = group.classList.toggle('open');
-            if (arrow) {
-                arrow.classList.toggle('text-cyan-400', isOpen);
-                arrow.classList.toggle('text-slate-400', !isOpen);
-            }
-        });
+        // No click behavior on button or arrow — hover only, color is purely from active-route state
 
         // Hover logic for flyout
         group.addEventListener('mouseenter', function() {

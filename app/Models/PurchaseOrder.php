@@ -15,10 +15,18 @@ class PurchaseOrder extends Model
         'expected_delivery_date',
         'notes',
         'total_amount',
+        'approved_at',
+        'sent_to_supplier_at',
+        'in_transit_at',
+        'completed_at',
     ];
 
     protected $casts = [
         'expected_delivery_date' => 'date',
+        'approved_at' => 'datetime',
+        'sent_to_supplier_at' => 'datetime',
+        'in_transit_at' => 'datetime',
+        'completed_at' => 'datetime',
         'total_amount' => 'decimal:2',
     ];
 

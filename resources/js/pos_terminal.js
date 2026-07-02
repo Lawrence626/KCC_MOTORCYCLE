@@ -62,6 +62,65 @@ function recordTransaction(invoice, date, total, paymentMethod, items) {
     };
     posState.transactionHistory.unshift(transaction);
     saveTransactionHistory();
+    
+    // Also save to database
+    saveTransactionToDatabase(invoice, total, paymentMethod, items);
+}
+
+function saveTransactionToDatabase(invoice, total, paymentMethod, items) {
+    // Calculate totals for the database
+    const subtotal = items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const extra = Number(document.getElementById('posExtraChargeInput')?.value || 0);
+    const discount = Number(document.getElementById('posDiscountInput')?.value || 0);
+    const servicesTotal = Array.from(posState.selectedServices).reduce((sum, serviceId) => {
+        const service = posState.services.find(s => s.id === serviceId);
+        return service ? sum + service.price : sum;
+    }, 0);
+    const subtotalWithExtras = subtotal + servicesTotal + extra - discount;
+    const tax = Math.max(0, subtotalWithExtras * 0.12);
+
+    // Prepare items with additional data
+    const transactionItems = items.map(item => ({
+        id: item.id,
+        name: item.name,
+        quantity: item.qty,
+        unit_price: item.price,
+        category: posState.cart.find(c => c.id === item.id)?.category || 'Uncategorized',
+    }));
+
+    const payload = {
+        invoice_number: invoice,
+        items: transactionItems,
+        subtotal: subtotal,
+        services_total: servicesTotal,
+        extra_charge: extra,
+        discount: discount,
+        tax: tax,
+        total_amount: total,
+        payment_method: paymentMethod === 'qr' ? 'qr' : 'cash',
+    };
+
+    fetch('/api/pos/transactions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+        },
+        body: JSON.stringify(payload),
+    })
+    .then(response => {
+        if (!response.ok) {
+            console.error('Failed to save transaction to database', response.status);
+            return;
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Transaction saved to database:', data);
+    })
+    .catch(error => {
+        console.error('Error saving transaction to database:', error);
+    });
 }
 
 function formatCurrency(value) {
