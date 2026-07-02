@@ -12,6 +12,7 @@ class PurchaseOrder extends Model
         'supplier_id',
         'supplier_name',
         'status',
+        'sync_status',
         'expected_delivery_date',
         'notes',
         'total_amount',

@@ -6,11 +6,19 @@ use App\Models\InventoryMovement;
 use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\POSTransaction;
+use App\Services\VatCalculationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AnalyticsController extends Controller
 {
+    private VatCalculationService $vatService;
+
+    public function __construct(VatCalculationService $vatService)
+    {
+        $this->vatService = $vatService;
+    }
+
     private function activeProducts()
     {
         return Product::where('is_archived', false)
@@ -30,8 +38,16 @@ class AnalyticsController extends Controller
     {
         $products = $this->activeProducts();
 
+        // Total inventory value (VAT-inclusive prices)
         $totalInventoryValue = (clone $products)->sum(DB::raw('stock_quantity * unit_price'));
-        $averageUnitPrice = (clone $products)->avg('unit_price') ?: 0;
+        
+        // Calculate included VAT from total inventory value
+        $includedVat = $this->vatService->calculateIncludedVat($totalInventoryValue);
+        
+        // VATable sales (net of VAT)
+        $vatableSales = $totalInventoryValue - $includedVat;
+
+        $averageUnitPrice = $products->avg('unit_price') ?: 0;
         $totalUnitsInStock = (clone $products)->sum('stock_quantity');
         $healthySkus = (clone $products)
             ->where('stock_quantity', '>', DB::raw('reorder_level'))
@@ -57,8 +73,25 @@ class AnalyticsController extends Controller
                 return [
                     'label' => $row->category ?: 'Uncategorized',
                     'value' => $value,
-                    'share' => $totalInventoryValue > 0 ? round($value / $totalInventoryValue * 100, 1) : 0,
-                    'formatted' => '₱' . number_format($value, 2),
+                    'included_vat' => $this->vatService->calculateIncludedVat($value),
+                    'vatable_sales' => $value - $this->vatService->calculateIncludedVat($value),
+                    'share' => $totalInventoryValue > 0 ? round($value / $totalInventoryValue * 100, 0) : 0,
+                ];
+            });
+
+        $brandMomentum = $products
+            ->select('brand', DB::raw('SUM(stock_quantity * unit_price) as value'))
+            ->groupBy('brand')
+            ->orderByDesc('value')
+            ->limit(4)
+            ->get()
+            ->map(function ($row) use ($totalInventoryValue) {
+                return [
+                    'brand' => $row->brand ?: 'Unknown Brand',
+                    'value' => $row->value,
+                    'included_vat' => $this->vatService->calculateIncludedVat($row->value),
+                    'vatable_sales' => $row->value - $this->vatService->calculateIncludedVat($row->value),
+                    'share' => $totalInventoryValue > 0 ? round($row->value / $totalInventoryValue * 100, 0) : 0,
                 ];
             });
 
@@ -137,9 +170,15 @@ class AnalyticsController extends Controller
             $monthlyValues[] = round($salesByMonth->get($monthKey, 0), 2);
         }
 
+        $formattedCategoryBreakdown = $categoryBreakdown->map(function ($item) {
+            return '₱' . number_format((float) ($item['value'] ?? 0), 2);
+        })->values()->toArray();
+
         return view('data_analytics.sales-analytics', [
             'quickStats' => [
                 'total_inventory_value' => $totalInventoryValue,
+                'included_vat' => $includedVat,
+                'vatable_sales' => $vatableSales,
                 'average_unit_price' => $averageUnitPrice,
                 'total_units_in_stock' => $totalUnitsInStock,
                 'healthy_skus' => $healthySkus,
@@ -156,7 +195,9 @@ class AnalyticsController extends Controller
                 'labels' => $categoryBreakdown->pluck('label')->toArray(),
                 'values' => $categoryBreakdown->pluck('value')->toArray(),
                 'shares' => $categoryBreakdown->pluck('share')->toArray(),
-                'formatted' => $categoryBreakdown->pluck('formatted')->toArray(),
+                'formatted' => $formattedCategoryBreakdown,
+                'included_vat' => $categoryBreakdown->pluck('included_vat')->toArray(),
+                'vatable_sales' => $categoryBreakdown->pluck('vatable_sales')->toArray(),
             ],
             'topProducts' => $topProducts,
         ]);    }

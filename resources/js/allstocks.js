@@ -27,6 +27,71 @@ function closeAddStockModal() {
     if (form) form.reset();
 }
 
+function openEditProductModal(productId) {
+    const modal = document.getElementById('editProductModal');
+    if (!modal) {
+        alert('Edit modal not found');
+        return;
+    }
+    
+    modal.classList.remove('hidden');
+    
+    // Fetch specific product data
+    fetch(window.AllStocks.routes.apiProducts + `?per_page=1000`)
+        .then(res => res.json())
+        .then(result => {
+            const product = result.data.find(p => p.id === parseInt(productId));
+            if (product) {
+                document.getElementById('editProductId').value = product.id;
+                document.getElementById('editName').value = product.name || '';
+                document.getElementById('editProductName').value = product.product_name || '';
+                document.getElementById('editSku').value = product.sku || '';
+                document.getElementById('editBrand').value = product.brand || '';
+                document.getElementById('editSize').value = product.size || '';
+                document.getElementById('editColor').value = product.color || '';
+                document.getElementById('editStockQuantity').value = product.stock_quantity || 0;
+                document.getElementById('editUnitPrice').value = product.unit_price || 0;
+                document.getElementById('editSupplier').value = product.supplier_name || '';
+                document.getElementById('editCategory').value = product.category || '';
+                document.getElementById('editLastRestock').value = product.last_restock_date || '';
+                document.getElementById('editExpiryDate').value = product.expiry_date || '';
+                document.getElementById('editReorderLevel').value = product.reorder_level || 0;
+                document.getElementById('editBarcode').value = product.barcode || '';
+                document.getElementById('editDescription').value = product.description || '';
+            } else {
+                alert('Product not found');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading product:', error);
+            alert('Error loading product data');
+        });
+}
+
+function closeEditProductModal() {
+    document.getElementById('editProductModal').classList.add('hidden');
+    const form = document.getElementById('editProductForm');
+    if (form) form.reset();
+}
+
+function handleEditClick(productId, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    openEditProductModal(productId);
+}
+
+// Make function globally accessible
+window.openEditModal = function(productId) {
+    openEditProductModal(productId);
+};
+
+// Direct edit modal function
+window.openEditModalDirect = function(productId) {
+    openEditProductModal(productId);
+};
+
 // Load products for select dropdown
 async function loadProductsForSelect() {
     try {
@@ -161,6 +226,15 @@ function attachUIEvents() {
     const addStockModal = document.getElementById('addStockModal');
     if (addStockModal) addStockModal.addEventListener('click', function(e) { if (e.target === this) closeAddStockModal(); });
 
+    // Edit product modal events
+    const closeEdit = document.getElementById('closeEditProductModal');
+    if (closeEdit) closeEdit.addEventListener('click', closeEditProductModal);
+    const cancelEdit = document.getElementById('cancelEditProduct');
+    if (cancelEdit) cancelEdit.addEventListener('click', closeEditProductModal);
+
+    const editProductModal = document.getElementById('editProductModal');
+    if (editProductModal) editProductModal.addEventListener('click', function(e) { if (e.target === this) closeEditProductModal(); });
+
     const addStockForm = document.getElementById('addStockForm');
     if (addStockForm) {
         addStockForm.addEventListener('submit', async function(e) {
@@ -208,6 +282,69 @@ function attachUIEvents() {
                 alert('❌ Error adding stock: ' + error.message);
             } finally {
                 if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Add Stock'; }
+            }
+        });
+    }
+
+    // Edit product form submission
+    const editProductForm = document.getElementById('editProductForm');
+    if (editProductForm) {
+        editProductForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const productId = document.getElementById('editProductId')?.value;
+            if (!productId) {
+                alert('Product ID is required');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitEditProduct');
+            if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Saving...'; }
+
+            try {
+                const formData = {
+                    name: document.getElementById('editName')?.value,
+                    product_name: document.getElementById('editProductName')?.value,
+                    sku: document.getElementById('editSku')?.value,
+                    brand: document.getElementById('editBrand')?.value,
+                    size: document.getElementById('editSize')?.value,
+                    color: document.getElementById('editColor')?.value,
+                    stock_quantity: parseInt(document.getElementById('editStockQuantity')?.value) || 0,
+                    unit_price: parseFloat(document.getElementById('editUnitPrice')?.value) || 0,
+                    supplier_name: document.getElementById('editSupplier')?.value,
+                    category: document.getElementById('editCategory')?.value,
+                    last_restock_date: document.getElementById('editLastRestock')?.value,
+                    expiry_date: document.getElementById('editExpiryDate')?.value,
+                    reorder_level: parseInt(document.getElementById('editReorderLevel')?.value) || 0,
+                    barcode: document.getElementById('editBarcode')?.value,
+                    description: document.getElementById('editDescription')?.value,
+                };
+
+                const url = window.AllStocks.routes.productUpdateBase + '/' + productId;
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': window.AllStocks.csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await res.json();
+                if (result.success) {
+                    alert('✅ Product updated successfully!');
+                    closeEditProductModal();
+                    loadStats();
+                    loadProducts(currentPage);
+                } else {
+                    alert('❌ ' + (result.message || 'Failed to update product'));
+                }
+            } catch (error) {
+                console.error('Error updating product:', error);
+                alert('❌ Error updating product: ' + error.message);
+            } finally {
+                if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Save Changes'; }
             }
         });
     }
@@ -303,6 +440,11 @@ async function loadStats() {
     }
 }
 
+let movementsData = [];
+let movementsPage = 1;
+let movementsPerPage = 10;
+let movementsDateFilter = '';
+
 async function loadMovements() {
     try {
         if (!window.AllStocks.routes.apiMovements) {
@@ -311,28 +453,90 @@ async function loadMovements() {
 
         const response = await fetch(window.AllStocks.routes.apiMovements);
         const result = await response.json();
-        const tbody = document.getElementById('movementFeed');
-        if (!tbody) return;
-
-        tbody.innerHTML = '';
-        if (result.data && result.data.length > 0) {
-            result.data.forEach(entry => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="px-2 py-2 text-slate-700">${entry.created_at}</td>
-                    <td class="px-2 py-2 text-slate-700">${entry.product_name} ${entry.sku ? '(' + entry.sku + ')' : ''}</td>
-                    <td class="px-2 py-2 text-slate-700 capitalize">${entry.type.replace(/_/g, ' ')}</td>
-                    <td class="px-2 py-2 text-center text-slate-700">${entry.quantity_change ?? '-'}</td>
-                    <td class="px-2 py-2 text-slate-700">${entry.notes || entry.supplier_name || '-'}</td>
-                `;
-                tbody.appendChild(row);
-            });
-        } else {
-            tbody.innerHTML = '<tr><td colspan="5" class="px-2 py-4 text-center text-slate-500">No recent movements</td></tr>';
-        }
+        
+        movementsData = result.data || [];
+        renderMovements();
     } catch (error) {
         console.error('Error loading movements:', error);
     }
+}
+
+function renderMovements() {
+    const tbody = document.getElementById('movementFeed');
+    const paginationInfo = document.getElementById('movementPaginationInfo');
+    const prevBtn = document.querySelector('.movement-prev');
+    const nextBtn = document.querySelector('.movement-next');
+    
+    if (!tbody) return;
+
+    // Filter by date range
+    let filteredMovements = movementsData;
+    if (movementsDateFilter) {
+        const now = new Date();
+        const today = now.toISOString().split('T')[0];
+        const yesterday = new Date(now);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toISOString().split('T')[0];
+        
+        const last7Days = new Date(now);
+        last7Days.setDate(last7Days.getDate() - 7);
+        const last7DaysStr = last7Days.toISOString().split('T')[0];
+        
+        const last30Days = new Date(now);
+        last30Days.setDate(last30Days.getDate() - 30);
+        const last30DaysStr = last30Days.toISOString().split('T')[0];
+
+        filteredMovements = movementsData.filter(entry => {
+            const entryDate = new Date(entry.created_at).toISOString().split('T')[0];
+            
+            switch(movementsDateFilter) {
+                case 'today':
+                    return entryDate === today;
+                case 'yesterday':
+                    return entryDate === yesterdayStr;
+                case 'last_7_days':
+                    return entryDate >= last7DaysStr && entryDate <= today;
+                case 'last_30_days':
+                    return entryDate >= last30DaysStr && entryDate <= today;
+                default:
+                    return true;
+            }
+        });
+    }
+
+    // Pagination
+    const totalPages = Math.max(1, Math.ceil(filteredMovements.length / movementsPerPage));
+    movementsPage = Math.min(Math.max(1, movementsPage), totalPages);
+    
+    const startIndex = (movementsPage - 1) * movementsPerPage;
+    const endIndex = startIndex + movementsPerPage;
+    const paginatedMovements = filteredMovements.slice(startIndex, endIndex);
+
+    tbody.innerHTML = '';
+    if (paginatedMovements.length > 0) {
+        paginatedMovements.forEach(entry => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="px-2 py-2 text-slate-700">${entry.created_at}</td>
+                <td class="px-2 py-2 text-slate-700">${entry.product_name} ${entry.sku ? '(' + entry.sku + ')' : ''}</td>
+                <td class="px-2 py-2 text-slate-700 capitalize">${entry.type.replace(/_/g, ' ')}</td>
+                <td class="px-2 py-2 text-center text-slate-700">${entry.quantity_change ?? '-'}</td>
+                <td class="px-2 py-2 text-slate-700">${entry.notes || entry.supplier_name || '-'}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    } else {
+        tbody.innerHTML = '<tr><td colspan="5" class="px-2 py-4 text-center text-slate-500">No movements found</td></tr>';
+    }
+
+    // Update pagination info
+    if (paginationInfo) {
+        paginationInfo.textContent = `Showing ${startIndex + 1}-${Math.min(endIndex, filteredMovements.length)} of ${filteredMovements.length} movements`;
+    }
+
+    // Update button states
+    if (prevBtn) prevBtn.disabled = movementsPage === 1;
+    if (nextBtn) nextBtn.disabled = movementsPage === totalPages;
 }
 
 let currentPage = 1;
@@ -364,11 +568,11 @@ async function loadProducts(page = 1) {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td class="px-3 py-2 w-6">
-                        <input type="checkbox" class="rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 cursor-pointer" />
+                        <input type="checkbox" class="product-checkbox rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 cursor-pointer" data-product-id="${product.id}" />
                     </td>
                     <td class="px-3 py-2 text-slate-900 font-medium">${product.name}</td>
                     <td class="px-3 py-2 text-slate-600">${product.product_name || 'Uncategorized'}</td>
-                    <td class="px-3 py-2 text-slate-600">${product.sku}</td>
+                    <td class="px-3 py-2 text-slate-600">${`KCC_${(product.sku || product.name || '').replace(/[^A-Za-z0-9\-\+]/g, '')}`}</td>
                     <td class="px-3 py-2 text-slate-600">${product.brand || '-'}</td>
                     <td class="px-3 py-2 text-slate-600">${product.size || '-'}</td>
                     <td class="px-3 py-2 text-slate-600">${product.color || '-'}</td>
@@ -383,10 +587,7 @@ async function loadProducts(page = 1) {
                     <td class="px-3 py-2 text-slate-600">${product.last_restock_date || '-'}</td>
                     <td class="px-3 py-2 text-slate-600">${product.expiry_date ? `${product.expiry_date} • ${product.expiry_status_label || 'Status'}` : 'Non-expiring'}</td>
                     <td class="px-3 py-2 text-center">
-                        <div class="inline-flex items-center gap-2">
-                            <button class="edit-price-btn text-cyan-600 hover:text-cyan-700 text-xs font-medium">Edit</button>
-                            <button class="cancel-price-btn hidden text-slate-500 hover:text-slate-700 text-xs">Cancel</button>
-                        </div>
+                        <a href="javascript:void(0)" onclick="const modal=document.getElementById('editProductModal'); if(modal){ modal.classList.remove('hidden'); modal.style.display='flex'; }" class="text-cyan-600 hover:text-cyan-700 text-xs font-medium cursor-pointer z-50 relative">Edit</a>
                     </td>
                 `;
                 tbody.appendChild(row);
@@ -405,27 +606,35 @@ async function loadProducts(page = 1) {
 
 // Update pagination controls
 function updatePagination(pagination) {
-    const paginationContainer = document.querySelector('.flex.gap-1');
-    if (paginationContainer) {
-        let html = `<button onclick="loadProducts(${Math.max(1, currentPage - 1)})" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">← Prev</button>`;
+    const paginationContainer = document.getElementById('paginationControls');
+    if (!paginationContainer) {
+        console.log('Pagination container not found');
+        return;
+    }
+    
+    if (!pagination || !pagination.last_page) {
+        console.log('Pagination data not available', pagination);
+        return;
+    }
+    
+    let html = `<button onclick="loadProducts(${Math.max(1, currentPage - 1)})" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">← Prev</button>`;
 
-        let startPage = Math.max(1, currentPage - 2);
-        let endPage = Math.min(pagination.last_page, startPage + 4);
-        if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(pagination.last_page, startPage + 4);
+    if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
 
-        for (let i = startPage; i <= endPage; i++) {
-            const btnClass = i === currentPage ? 'bg-cyan-600 text-white' : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50';
-            html += `<button onclick="loadProducts(${i})" class="px-2 py-1 rounded-lg text-xs font-medium ${btnClass}">${i}</button>`;
-        }
+    for (let i = startPage; i <= endPage; i++) {
+        const btnClass = i === currentPage ? 'bg-cyan-600 text-white' : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50';
+        html += `<button onclick="loadProducts(${i})" class="px-2 py-1 rounded-lg text-xs font-medium ${btnClass}">${i}</button>`;
+    }
 
-        html += `<button onclick="loadProducts(${Math.min(pagination.last_page, currentPage + 1)})" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">Next →</button>`;
+    html += `<button onclick="loadProducts(${Math.min(pagination.last_page, currentPage + 1)})" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">Next →</button>`;
 
-        paginationContainer.innerHTML = html;
+    paginationContainer.innerHTML = html;
 
-        const summary = paginationContainer.parentNode.querySelector('#paginationInfo');
-        if (summary) {
-            summary.textContent = `Showing ${(currentPage - 1) * perPage + 1} to ${Math.min(currentPage * perPage, pagination.total)} of ${pagination.total} items`;
-        }
+    const summary = document.getElementById('paginationInfo');
+    if (summary) {
+        summary.textContent = `Showing ${pagination.from || 0}-${pagination.to || 0} of ${pagination.total?.toLocaleString() || 0} items`;
     }
 }
 
@@ -448,85 +657,33 @@ function attachPriceEditing() {
     if (!tbody) return;
 
     tbody.addEventListener('click', async function(e) {
-        const editBtn = e.target.closest('.edit-price-btn');
-        const cancelBtn = e.target.closest('.cancel-price-btn');
+        const editProductBtn = e.target.closest('.edit-product-trigger');
 
-        if (editBtn) {
-            const row = editBtn.closest('tr');
-            const priceSpan = row.querySelector('.unit-price-text');
-            const priceInput = row.querySelector('.unit-price-input');
-            const cancel = row.querySelector('.cancel-price-btn');
-
-            if (editBtn.dataset.mode !== 'editing') {
-                priceSpan.classList.add('hidden');
-                priceInput.classList.remove('hidden');
-                priceInput.focus();
-                editBtn.textContent = 'Save';
-                editBtn.dataset.mode = 'editing';
-                cancel.classList.remove('hidden');
-                return;
+        // Handle full product edit
+        if (editProductBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            const productId = editProductBtn.dataset.editProductId;
+            if (productId) {
+                openEditProductModal(productId);
             }
-
-            const newVal = parseFloat(priceInput.value);
-            if (isNaN(newVal) || newVal < 0) {
-                alert('Please enter a valid non-negative price.');
-                return;
-            }
-
-            editBtn.disabled = true;
-            cancel.disabled = true;
-            const productId = priceInput.dataset.productId;
-
-            try {
-                const token = window.AllStocks.csrfToken || '';
-                const basePriceUrl = window.AllStocks.routes.apiUpdatePriceBase || (window.AllStocks.baseUrl + '/api/product');
-                const url = `${basePriceUrl}/${productId}/price`;
-                const res = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': token,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ unit_price: newVal })
-                });
-
-                const result = await res.json();
-                if (res.ok && result.success) {
-                    priceSpan.textContent = '₱' + newVal.toFixed(2);
-                    priceSpan.classList.remove('hidden');
-                    priceInput.classList.add('hidden');
-                    editBtn.textContent = 'Edit';
-                    editBtn.dataset.mode = '';
-                    cancel.classList.add('hidden');
-                } else {
-                    console.error('Price update failed', result);
-                    alert('Failed to update price: ' + (result.message || 'Unknown error'));
-                }
-            } catch (err) {
-                console.error('Price update network error:', err);
-                alert('Network error while updating price.');
-            } finally {
-                editBtn.disabled = false;
-                cancel.disabled = false;
-            }
-        }
-
-        if (cancelBtn) {
-            const row = cancelBtn.closest('tr');
-            const priceSpan = row.querySelector('.unit-price-text');
-            const priceInput = row.querySelector('.unit-price-input');
-            const edit = row.querySelector('.edit-price-btn');
-
-            priceInput.value = priceSpan.textContent.replace(/[^0-9.]/g, '') || '0.00';
-            priceSpan.classList.remove('hidden');
-            priceInput.classList.add('hidden');
-            edit.textContent = 'Edit';
-            edit.dataset.mode = '';
-            cancelBtn.classList.add('hidden');
+            return;
         }
     });
 }
+
+// Also attach directly to document as backup
+document.addEventListener('click', function(e) {
+    const editProductBtn = e.target.closest('.edit-product-trigger');
+    if (editProductBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const productId = editProductBtn.dataset.editProductId;
+        if (productId) {
+            openEditProductModal(productId);
+        }
+    }
+});
 
 // Initialize when DOM is ready
 function initializeAllStocksPage() {
@@ -547,10 +704,60 @@ function initializeAllStocksPage() {
     const exportBtn = document.getElementById('exportBtn');
     if (exportBtn) exportBtn.addEventListener('click', exportProducts);
 
+    // Wire QR code generation button
+    const generateQrBtn = document.getElementById('generateQrBtn');
+    if (generateQrBtn) {
+        generateQrBtn.addEventListener('click', openQRCodeModal);
+    }
+
     const refreshMovementsBtn = document.getElementById('refreshMovementsBtn');
     if (refreshMovementsBtn) refreshMovementsBtn.addEventListener('click', () => {
         loadMovements();
     });
+
+    // Wire movement date filter
+    const movementDateFilter = document.getElementById('movementDateFilter');
+    if (movementDateFilter) {
+        movementDateFilter.addEventListener('change', function() {
+            movementsDateFilter = this.value;
+            movementsPage = 1;
+            renderMovements();
+        });
+    }
+
+    // Wire movement pagination buttons
+    const movementPrevBtn = document.querySelector('.movement-prev');
+    const movementNextBtn = document.querySelector('.movement-next');
+    
+    if (movementPrevBtn) {
+        movementPrevBtn.addEventListener('click', function() {
+            if (movementsPage > 1) {
+                movementsPage--;
+                renderMovements();
+            }
+        });
+    }
+    
+    if (movementNextBtn) {
+        movementNextBtn.addEventListener('click', function() {
+            const totalPages = Math.ceil(movementsData.length / movementsPerPage);
+            if (movementsPage < totalPages) {
+                movementsPage++;
+                renderMovements();
+            }
+        });
+    }
+
+    // Wire select all checkbox
+    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+            const productCheckboxes = document.querySelectorAll('.product-checkbox');
+            productCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+    }
 }
 
 if (document.readyState === 'loading') {
@@ -571,10 +778,363 @@ window.AllStocksMethods = {
     performSearch,
     resetFilters,
     loadStats,
-    loadProducts
+    loadProducts,
+    openQRCodeModal,
+    generateQRCodes,
+    printQRCodes
 };
 
 // Expose key functions to global scope for onclick handlers
 window.loadProducts = loadProducts;
 window.performSearch = performSearch;
 window.resetFilters = resetFilters;
+window.openQRCodeModal = openQRCodeModal;
+window.generateQRCodes = generateQRCodes;
+window.printQRCodes = printQRCodes;
+window.downloadQRCodes = downloadQRCodes;
+window.updateRestockDates = updateRestockDates;
+
+// Store current selected products for restock date updates
+let currentSelectedProducts = [];
+
+// QR Code Generation Functions
+async function openQRCodeModal() {
+    const selectedCheckboxes = document.querySelectorAll('.product-checkbox:checked');
+    
+    if (selectedCheckboxes.length === 0) {
+        alert('Please select at least one product to generate QR codes.');
+        return;
+    }
+    
+    // Load all products for QR generation
+    try {
+        const response = await fetch(window.AllStocks.routes.apiProducts + '?per_page=1000');
+        const result = await response.json();
+        
+        if (result.data && result.data.length > 0) {
+            allProducts = result.data;
+        }
+    } catch (error) {
+        console.error('Error loading products:', error);
+        alert('Error loading products. Please try again.');
+        return;
+    }
+    
+    const selectedProducts = Array.from(selectedCheckboxes).map(cb => {
+        const productId = cb.dataset.productId;
+        const product = allProducts.find(p => p.id === parseInt(productId));
+        return product;
+    }).filter(p => p !== undefined);
+
+    if (selectedProducts.length === 0) {
+        alert('Please select at least one product to generate QR codes.');
+        return;
+    }
+
+    document.getElementById('selectedCount').textContent = selectedProducts.length;
+    const modal = document.getElementById('qrCodeModal');
+    
+    // Store selected products for restock date updates
+    currentSelectedProducts = selectedProducts;
+    
+    modal.style.display = 'flex';
+    modal.style.visibility = 'visible';
+    modal.style.opacity = '1';
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.right = '0';
+    modal.style.bottom = '0';
+    modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+    modal.style.zIndex = '99999';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
+    
+    const modalContent = modal.querySelector('div');
+    if (modalContent) {
+        modalContent.style.display = 'block';
+        modalContent.style.visibility = 'visible';
+    }
+    
+    generateQRCodes(selectedProducts);
+}
+
+function generateQRCodes(products) {
+    const previewContainer = document.getElementById('qrCodePreview');
+    const loadingIndicator = document.getElementById('qrLoading');
+    
+    if (!previewContainer) {
+        console.error('Preview container not found');
+        return;
+    }
+    
+    // Show loading indicator
+    previewContainer.innerHTML = '';
+    if (loadingIndicator) {
+        previewContainer.appendChild(loadingIndicator);
+        loadingIndicator.classList.remove('hidden');
+    }
+
+    // Generate QR codes with a small delay to allow UI to update
+    setTimeout(() => {
+        if (loadingIndicator) loadingIndicator.classList.add('hidden');
+        
+        products.forEach((product) => {
+            // Create QR code data with SKU and restock date
+            const qrData = JSON.stringify({
+                sku: product.sku,
+                restock_date: product.last_restock || 'N/A',
+                product_id: product.id
+            });
+
+            const qrCard = document.createElement('div');
+            qrCard.className = 'border border-slate-200 rounded-lg p-4 bg-white';
+            qrCard.innerHTML = `
+                <div class="flex items-start gap-4">
+                    <div id="qr-${product.id}" class="w-24 h-24 flex items-center justify-center bg-white"></div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-slate-900 text-sm">${product.name}</h3>
+                        <p class="text-xs text-slate-600">SKU: ${product.sku}</p>
+                        <p class="text-xs text-slate-600">Restock: ${product.last_restock || 'N/A'}</p>
+                        <p class="text-xs text-slate-500 mt-1">Scan to add to cart</p>
+                    </div>
+                </div>
+            `;
+
+            previewContainer.appendChild(qrCard);
+
+            // Generate QR code
+            try {
+                const qrElement = document.getElementById(`qr-${product.id}`);
+                if (!qrElement) return;
+                
+                // Clear any existing content
+                qrElement.innerHTML = '';
+                
+                new QRCode(qrElement, {
+                    text: qrData,
+                    width: 96,
+                    height: 96,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+                
+                // Force canvas to be visible
+                setTimeout(() => {
+                    const canvas = qrElement.querySelector('canvas');
+                    if (canvas) {
+                        canvas.style.display = 'block';
+                        canvas.style.width = '96px';
+                        canvas.style.height = '96px';
+                    }
+                }, 50);
+            } catch (error) {
+                console.error('Error generating QR code for product:', product.id, error);
+            }
+        });
+    }, 100);
+}
+
+function updateRestockDates() {
+    const restockDateInput = document.getElementById('restockDateInput');
+    const newRestockDate = restockDateInput.value;
+    
+    if (!newRestockDate) {
+        showToast('Please select a restock date.', 'error');
+        return;
+    }
+    
+    // Update all selected products with the new restock date
+    currentSelectedProducts.forEach(product => {
+        product.last_restock = newRestockDate;
+    });
+    
+    // Regenerate QR codes with updated restock date
+    generateQRCodes(currentSelectedProducts);
+    
+    showToast('Restock date updated for all QR codes!', 'success');
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+    
+    toastMessage.textContent = message;
+    
+    // Update toast styling based on type
+    const toastInner = toast.querySelector('div');
+    if (type === 'error') {
+        toastInner.classList.remove('border-emerald-500');
+        toastInner.classList.add('border-red-500');
+        toastInner.querySelector('svg').classList.remove('text-emerald-500');
+        toastInner.querySelector('svg').classList.add('text-red-500');
+    } else {
+        toastInner.classList.remove('border-red-500');
+        toastInner.classList.add('border-emerald-500');
+        toastInner.querySelector('svg').classList.remove('text-red-500');
+        toastInner.querySelector('svg').classList.add('text-emerald-500');
+    }
+    
+    // Show toast
+    toast.classList.remove('translate-x-full');
+    
+    // Hide after 3 seconds
+    setTimeout(() => {
+        toast.classList.add('translate-x-full');
+    }, 3000);
+}
+
+function downloadQRCodes() {
+    const previewContainer = document.getElementById('qrCodePreview');
+    
+    if (!previewContainer || previewContainer.children.length === 0) {
+        alert('No QR codes to download.');
+        return;
+    }
+    
+    // Create a canvas to combine all QR codes
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Calculate canvas size
+    const qrCards = previewContainer.querySelectorAll('.border');
+    const cardWidth = 300;
+    const cardHeight = 150;
+    const padding = 20;
+    const cols = 2;
+    const rows = Math.ceil(qrCards.length / cols);
+    
+    canvas.width = (cardWidth * cols) + (padding * (cols + 1));
+    canvas.height = (cardHeight * rows) + (padding * (rows + 1)) + 50; // +50 for title
+    
+    // White background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Title
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 20px Arial';
+    ctx.fillText('Product QR Codes', padding, 30);
+    
+    let loadedImages = 0;
+    const totalImages = qrCards.length;
+    
+    qrCards.forEach((card, index) => {
+        const canvasElement = card.querySelector('canvas');
+        if (!canvasElement) return;
+        
+        const col = index % cols;
+        const row = Math.floor(index / cols);
+        const x = padding + (col * (cardWidth + padding));
+        const y = 50 + padding + (row * (cardHeight + padding));
+        
+        // Draw card border
+        ctx.strokeStyle = '#cccccc';
+        ctx.strokeRect(x, y, cardWidth, cardHeight);
+        
+        // Draw QR code canvas
+        ctx.drawImage(canvasElement, x + 10, y + 10, 80, 80);
+        
+        // Draw text
+        const name = card.querySelector('h3').textContent;
+        const sku = card.querySelector('p:nth-child(2)').textContent;
+        const restock = card.querySelector('p:nth-child(3)').textContent;
+        
+        ctx.fillStyle = '#000000';
+        ctx.font = 'bold 12px Arial';
+        ctx.fillText(name.substring(0, 25), x + 100, y + 25);
+        
+        ctx.font = '10px Arial';
+        ctx.fillStyle = '#666666';
+        ctx.fillText(sku, x + 100, y + 45);
+        ctx.fillText(restock, x + 100, y + 60);
+        
+        loadedImages++;
+    });
+    
+    if (totalImages === 0) {
+        alert('No QR code images found.');
+        return;
+    }
+    
+    // Download the combined canvas
+    const link = document.createElement('a');
+    link.download = 'qr-codes.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    alert('QR codes downloaded successfully!');
+}
+
+function printQRCodes() {
+    const previewContainer = document.getElementById('qrCodePreview');
+    
+    if (!previewContainer || previewContainer.children.length === 0) {
+        alert('No QR codes to print.');
+        return;
+    }
+    
+    try {
+        const printWindow = window.open('', '_blank');
+        
+        if (!printWindow) {
+            alert('Popup blocked. Please allow popups for this site and try again.');
+            return;
+        }
+        
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>QR Codes Print</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        padding: 20px;
+                    }
+                    .qr-card {
+                        border: 1px solid #ccc;
+                        border-radius: 8px;
+                        padding: 15px;
+                        margin: 10px;
+                        display: inline-block;
+                        width: 200px;
+                        page-break-inside: avoid;
+                    }
+                    .qr-card canvas {
+                        width: 96px;
+                        height: 96px;
+                    }
+                    .product-name {
+                        font-weight: bold;
+                        font-size: 14px;
+                        margin: 5px 0;
+                    }
+                    .product-info {
+                        font-size: 12px;
+                        color: #666;
+                    }
+                </style>
+            </head>
+            <body>
+                <h2>Product QR Codes</h2>
+                <div id="print-content"></div>
+            </body>
+            </html>
+        `);
+
+        const printContent = printWindow.document.getElementById('print-content');
+        printContent.innerHTML = previewContainer.innerHTML;
+        
+        printWindow.document.close();
+        
+        // Wait for content to load before printing
+        setTimeout(() => {
+            printWindow.print();
+        }, 500);
+        
+    } catch (error) {
+        console.error('Error printing:', error);
+        alert('Error opening print dialog. Please try again.');
+    }
+}

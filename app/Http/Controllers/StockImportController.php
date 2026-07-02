@@ -558,7 +558,13 @@ class StockImportController extends Controller
     {
         $products = Product::where('is_archived', false);
         $totalItems = $products->count();
-        $totalValue = $products->sum(DB::raw('stock_quantity * unit_price'));
+        
+        // Calculate total value as sum of unit prices only (not multiplied by stock)
+        $productsList = Product::where('is_archived', false)->get();
+        $totalValue = $productsList->sum(function($product) {
+            return ($product->unit_price ?? 0);
+        });
+        
         $avgPrice = $totalItems > 0 ? $totalValue / $totalItems : 0;
         $categories = Product::where('is_archived', false)->distinct('category')->count('category');
 
@@ -629,6 +635,71 @@ class StockImportController extends Controller
             });
 
         return response()->json(['data' => $movements]);
+    }
+
+    /**
+     * Update product details
+     */
+    public function updateProduct(Request $request, $id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'product_name' => 'nullable|string|max:255',
+                'sku' => 'nullable|string|max:255',
+                'brand' => 'nullable|string|max:255',
+                'size' => 'nullable|string|max:255',
+                'color' => 'nullable|string|max:255',
+                'stock_quantity' => 'required|integer|min:0',
+                'unit_price' => 'required|numeric|min:0',
+                'supplier_name' => 'nullable|string|max:255',
+                'category' => 'nullable|string|max:255',
+                'last_restock_date' => 'nullable|date',
+                'expiry_date' => 'nullable|date',
+                'reorder_level' => 'nullable|integer|min:0',
+                'barcode' => 'nullable|string|max:255',
+                'description' => 'nullable|string',
+            ]);
+
+            // Update product fields
+            $product->name = $request->input('name');
+            $product->product_name = $request->input('product_name');
+            $product->sku = $request->input('sku');
+            $product->brand = $request->input('brand');
+            $product->size = $request->input('size');
+            $product->color = $request->input('color');
+            $product->stock_quantity = (int) $request->input('stock_quantity');
+            $product->unit_price = (float) $request->input('unit_price');
+            $product->supplier_name = $request->input('supplier_name');
+            $product->category = $request->input('category') ?: 'uncategorized';
+            $product->last_restock_date = $request->input('last_restock_date');
+            $product->expiry_date = $request->input('expiry_date');
+            $product->reorder_level = (int) $request->input('reorder_level');
+            $product->barcode = $request->input('barcode');
+            $product->description = $request->input('description');
+
+            $product->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product updated successfully',
+                'product' => $product,
+            ], 200);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->validator->errors()->all(),
+            ], 422);
+        } catch (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update product: ' . $e->getMessage(),
+            ], 400);
+        }
     }
 
     public function exportProducts(Request $request)
