@@ -6,6 +6,7 @@ use App\Http\Controllers\SupplierAssessmentController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\POSTransactionController;
 
 Route::view('/', 'login')->name('home');
 Route::view('/login', 'login')->name('login');
@@ -56,6 +57,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // POS API for mobile scanner sync
     Route::get('api/pos/check-scan', [App\Http\Controllers\PosController::class, 'checkScan'])->name('api.pos.check-scan');
+    
+    // POS Transaction APIs - Admin and Cashier only
+    Route::middleware('role:admin,cashier')->group(function () {
+        Route::post('api/pos/transactions', [POSTransactionController::class, 'store'])->name('api.pos.transactions.store');
+    });
+    // POS Transaction read access - Admin, Cashier, Inventory Clerk
+    Route::middleware('role:admin,cashier,inventory_clerk')->group(function () {
+        Route::get('api/pos/transactions', [POSTransactionController::class, 'index'])->name('api.pos.transactions.index');
+        Route::get('api/pos/transactions/top-selling', [POSTransactionController::class, 'topSellingProducts'])->name('api.pos.transactions.top_selling');
+    });
 
     // All Stocks - Admin, Inventory Clerk, Warehouse Personnel
     Route::middleware('role:admin,inventory_clerk,warehouse_personnel')->group(function () {
@@ -107,11 +118,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('warehouse-management/save-shelf', [App\Http\Controllers\WarehouseManagementController::class, 'saveShelf'])->name('warehouse.management.save_shelf');
     });
 
-    // Purchase Order Routes - Admin only
-    Route::middleware('role:admin')->group(function () {
+    // Purchase Order Routes - inventory clerk can create orders, admin can approve and send, warehouse and inventory can receive
+    Route::middleware('role:admin,inventory_clerk')->group(function () {
         Route::get('purchase-order/management', [PurchaseOrderController::class, 'management'])->name('order.management');
+        Route::get('purchase-order/create', [PurchaseOrderController::class, 'create'])->name('order.create');
+        Route::get('purchase-order/history', [PurchaseOrderController::class, 'history'])->name('order.history');
         Route::post('purchase-order', [PurchaseOrderController::class, 'store'])->name('order.store');
+    });
+
+    Route::middleware('role:admin,inventory_clerk,warehouse_personnel')->group(function () {
         Route::get('purchase-order/received', [PurchaseOrderController::class, 'receivedOrders'])->name('received.orders');
+        Route::get('purchase-order/{purchaseOrder}', [PurchaseOrderController::class, 'show'])->name('order.show');
+        Route::post('purchase-order/{purchaseOrder}/receive', [PurchaseOrderController::class, 'receive'])->name('order.receive');
+    });
+
+    Route::middleware('role:admin')->group(function () {
+        Route::post('purchase-order/{purchaseOrder}/approve', [PurchaseOrderController::class, 'approve'])->name('order.approve');
+        Route::post('purchase-order/{purchaseOrder}/reject', [PurchaseOrderController::class, 'reject'])->name('order.reject');
+        Route::post('purchase-order/{purchaseOrder}/send', [PurchaseOrderController::class, 'sendToSupplier'])->name('order.send');
+        Route::post('purchase-order/{purchaseOrder}/in-transit', [PurchaseOrderController::class, 'markInTransit'])->name('order.in_transit');
     });
 
     // Offline Data Reconciliation Routes - Admin only

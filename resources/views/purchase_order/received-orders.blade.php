@@ -44,10 +44,8 @@
                     <span class="text-xs font-semibold text-slate-500">Receipt status</span>
                     <select name="status" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none">
                         <option value="" {{ empty($status) ? 'selected' : '' }}>All statuses</option>
-                        <option value="delivered" {{ $status === 'delivered' ? 'selected' : '' }}>Delivered</option>
-                        <option value="pending" {{ $status === 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="in transit" {{ $status === 'in transit' ? 'selected' : '' }}>In transit</option>
-                        <option value="issue" {{ $status === 'issue' ? 'selected' : '' }}>Issue</option>
+                        <option value="completed" {{ $status === 'completed' ? 'selected' : '' }}>Completed</option>
+                        <option value="partially received" {{ $status === 'partially received' ? 'selected' : '' }}>Partially Received</option>
                     </select>
                 </label>
                 <label class="block text-sm text-slate-700">
@@ -80,8 +78,20 @@
                                 <td class="px-4 py-3">{{ $order->supplier_name }}</td>
                                 <td class="px-4 py-3">{{ optional($order->updated_at)->format('M j, Y') }}</td>
                                 <td class="px-4 py-3">
-                                    <span class="inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold {{ $order->status === 'pending' ? 'bg-amber-100 text-amber-800' : ($order->status === 'in transit' ? 'bg-sky-100 text-sky-800' : ($order->status === 'delivered' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800')) }}">
-                                        {{ ucfirst($order->status) }}
+                                    @php
+                                        $statusClass = match($order->status) {
+                                            'pending approval' => 'bg-amber-100 text-amber-800',
+                                            'approved' => 'bg-sky-100 text-sky-800',
+                                            'sent to supplier' => 'bg-blue-100 text-blue-800',
+                                            'in transit' => 'bg-sky-100 text-sky-800',
+                                            'partially received' => 'bg-amber-100 text-amber-800',
+                                            'completed' => 'bg-emerald-100 text-emerald-800',
+                                            'rejected' => 'bg-rose-100 text-rose-800',
+                                            default => 'bg-slate-100 text-slate-700',
+                                        };
+                                    @endphp
+                                    <span class="inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold {{ $statusClass }}">
+                                        {{ ucwords($order->status) }}
                                     </span>
                                 </td>
                             </tr>
