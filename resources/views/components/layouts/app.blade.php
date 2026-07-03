@@ -21,7 +21,7 @@
         <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
 
         <!-- Sidebar -->
-        <div id="sidebar-wrapper" class="fixed md:relative w-70 md:w-70 h-screen md:h-auto -translate-x-full md:translate-x-0 transition-transform duration-300 z-40 md:z-auto">
+        <div id="sidebar-wrapper" class="fixed md:relative w-70 md:w-70 h-screen md:h-auto -translate-x-full md:translate-x-0 transition-transform duration-300 z-50 md:z-auto" style="z-index:100000000; position:relative;">
             @include('sidebar')
         </div>
 

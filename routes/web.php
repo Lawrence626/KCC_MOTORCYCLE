@@ -10,7 +10,6 @@ use App\Http\Controllers\POSTransactionController;
 
 Route::view('/', 'login')->name('home');
 Route::view('/login', 'login')->name('login');
-Route::view('/forgot-password', 'auth.forgot-password')->name('password.request');
 Route::get('/reset-password/{token}', function ($token) {
     return view('auth.reset-password', ['token' => $token]);
 })->name('password.reset');

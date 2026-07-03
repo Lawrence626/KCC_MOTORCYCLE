@@ -291,7 +291,6 @@
         @endif
 
         @if(auth()->user() && auth()->user()->role === 'admin')
-<<<<<<< HEAD
         <a href="{{ route('offline.reconciliation') }}" @class(['sidebar-nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition', 'bg-cyan-500/15 text-cyan-400' => request()->routeIs('offline.reconciliation'), 'hover:bg-[#242b35] text-slate-300' => !request()->routeIs('offline.reconciliation')])>
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 11a1 1 0 100-2 1 1 0 000 2zm0 0a4 4 0 100 8 4 4 0 000-8zm0 0V3m0 0L9 6m3-3l3 3" />
@@ -299,35 +298,7 @@
             </svg>
             <span>Offline Reconciliation</span>
         </a>
-=======
-        <div class="group space-y-1 @if(request()->routeIs('offline.purchase-orders') || request()->routeIs('offline.inventory-movements') || request()->routeIs('offline.export') || request()->routeIs('offline.import') || request()->routeIs('offline.history') || request()->routeIs('offline.report') || request()->routeIs('offline.pending.imports')) open @endif">
-            <button type="button" class="sidebar-group-toggle w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-700/50 transition cursor-pointer">
-                <span class="flex items-center gap-3">
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3v.01M9 17h12a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zm3-10a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    <span>Offline Reconciliation</span>
-                </span>
-                <svg class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-            </button>
-            <div class="sidebar-group-content bg-slate-900/70 px-1 pb-3 rounded-xl">
-                <a href="{{ route('offline.purchase-orders') }}" class="sidebar-nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-700/50">
-                    <span class="w-2.5 h-2.5 rounded-full flex-shrink-0 {{ request()->routeIs('offline.purchase-orders') ? 'bg-cyan-400' : 'bg-slate-500' }}"></span>
-                    <span>Offline Purchase Orders</span>
-                </a>
-                <a href="{{ route('offline.import') }}" class="sidebar-nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-700/50">
-                    <span class="w-2.5 h-2.5 rounded-full flex-shrink-0 {{ request()->routeIs('offline.import') ? 'bg-cyan-400' : 'bg-slate-500' }}"></span>
-                    <span>Import Data</span>
-                </a>
-                <a href="{{ route('offline.pending.imports') }}" class="sidebar-nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-700/50">
-                    <span class="w-2.5 h-2.5 rounded-full flex-shrink-0 {{ request()->routeIs('offline.pending.imports') ? 'bg-cyan-400' : 'bg-slate-500' }}"></span>
-                    <span>Pending Imports</span>
-                </a>
-                <a href="{{ route('offline.history') }}" class="sidebar-nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-700/50">
-                    <span class="w-2.5 h-2.5 rounded-full flex-shrink-0 {{ request()->routeIs('offline.history') ? 'bg-cyan-400' : 'bg-slate-500' }}"></span>
-                    <span>Synchronization History</span>
-                </a>
-            </div>
-        </div>
->>>>>>> 83faba04c87105623853f9cb40fd6c9b6e50a94a
+
         @endif
 
     </nav>
@@ -349,6 +320,11 @@
         opacity: 0;
         visibility: hidden;
         transition: transform 0.25s ease-out, opacity 0.25s ease-out, visibility 0.25s ease-out;
+        z-index: 999999999 !important;
+    }
+
+    .sidebar-group-content {
+        z-index: 999999999 !important;
     }
 
     .group:hover .flyout-animated {
@@ -410,10 +386,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!button || !content) return;
 
-        // No click behavior on button or arrow — hover only, color is purely from active-route state
+        // No click behavior on button or arrow — hover only, active route state defines styling.
+        let hideTimeout;
 
-        // Hover logic for flyout
-        group.addEventListener('mouseenter', function() {
+        const showContent = () => {
+            clearTimeout(hideTimeout);
             allGroups.forEach(g => {
                 if (g !== group) g.querySelector('.sidebar-group-content')?.classList.add('hidden');
             });
@@ -421,11 +398,19 @@ document.addEventListener('DOMContentLoaded', function() {
             const rect = button.getBoundingClientRect();
             content.style.top = `${rect.top}px`;
             content.style.left = `${rect.right - 6}px`;
-        });
+        };
 
-        group.addEventListener('mouseleave', function() {
-            content.classList.add('hidden');
-        });
+        const hideContent = () => {
+            clearTimeout(hideTimeout);
+            hideTimeout = setTimeout(() => {
+                content.classList.add('hidden');
+            }, 100);
+        };
+
+        group.addEventListener('mouseenter', showContent);
+        group.addEventListener('mouseleave', hideContent);
+        content.addEventListener('mouseenter', showContent);
+        content.addEventListener('mouseleave', hideContent);
     });
 });
 </script>

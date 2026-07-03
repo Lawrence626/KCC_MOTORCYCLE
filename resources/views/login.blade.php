@@ -382,11 +382,13 @@
         });
 
         // Enter key support for OTP verification
-        otpCodeInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                verifyOtpCode();
-            }
+        otpDigits.forEach((digit) => {
+            digit.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    verifyOtpCode();
+                }
+            });
         });
 
         otpVerifyButton.addEventListener('click', function() {

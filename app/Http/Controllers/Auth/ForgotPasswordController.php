@@ -14,7 +14,7 @@ class ForgotPasswordController extends Controller
 {
     public function showForgotPassword()
     {
-        return view('auth.forgot-password');
+        return view('auth.forgot-password-page');
     }
 
     public function sendOtp(Request $request)
