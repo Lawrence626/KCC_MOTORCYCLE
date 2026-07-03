@@ -106,26 +106,31 @@
 
                         <div id="otpModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 px-4 py-10 backdrop-blur-sm">
                             <div class="otp-modal-card w-full max-w-md">
-                                <div class="flex items-start justify-between gap-4">
+                                <div class="flex flex-col gap-4">
                                     <div>
                                         <h2 class="otp-modal-title">Enter verification code</h2>
                                         <p class="otp-modal-message">We sent a 6-digit code to your email. Enter it here to finish login.</p>
                                     </div>
-                                    <button type="button" onclick="hideOtpModal()" class="otp-close-button">✕</button>
                                 </div>
 
                                 <div class="mt-6">
-                                    <label for="otpCode" class="block text-sm font-medium text-slate-700">Verification code</label>
-                                    <input id="otpCode" type="text" maxlength="6" class="otp-input mt-3" placeholder="000000" autocomplete="off" />
+                                    <label class="block text-sm font-medium text-gray-300">Verification code</label>
+                                    <div class="mt-3 flex gap-2 justify-center" id="otp-inputs">
+                                        <input type="text" maxlength="1" class="otp-digit-input" data-index="0" autocomplete="off" />
+                                        <input type="text" maxlength="1" class="otp-digit-input" data-index="1" autocomplete="off" />
+                                        <input type="text" maxlength="1" class="otp-digit-input" data-index="2" autocomplete="off" />
+                                        <input type="text" maxlength="1" class="otp-digit-input" data-index="3" autocomplete="off" />
+                                        <input type="text" maxlength="1" class="otp-digit-input" data-index="4" autocomplete="off" />
+                                        <input type="text" maxlength="1" class="otp-digit-input" data-index="5" autocomplete="off" />
+                                    </div>
                                 </div>
 
-                                <div id="otpError" class="mt-3 text-sm text-red-600 hidden"></div>
-                                <div id="otpStatus" class="mt-3 text-sm text-emerald-600 hidden"></div>
+                                <div id="otpError" class="mt-3 text-sm text-red-400 hidden"></div>
+                                <div id="otpStatus" class="mt-3 text-sm text-emerald-400 hidden"></div>
 
-                                <div class="mt-6 grid gap-3 sm:grid-cols-3">
+                                <div class="mt-6 grid gap-3 sm:grid-cols-2">
                                     <button id="otpVerifyButton" type="button" class="otp-button-primary">Verify Code</button>
                                     <button id="otpResendButton" type="button" class="otp-button-secondary">Resend Code</button>
-                                    <button id="otpCancelButton" type="button" class="otp-button-tertiary">Cancel</button>
                                 </div>
                             </div>
                         </div>
@@ -145,10 +150,74 @@
         const otpCodeInput = document.getElementById('otpCode');
         const otpVerifyButton = document.getElementById('otpVerifyButton');
         const otpResendButton = document.getElementById('otpResendButton');
-        const otpCancelButton = document.getElementById('otpCancelButton');
         const otpError = document.getElementById('otpError');
         const otpStatus = document.getElementById('otpStatus');
         const loginForm = document.getElementById('loginForm');
+        const otpInputs = document.querySelectorAll('.otp-digit-input');
+
+        // OTP digit input handling
+        otpInputs.forEach((input, index) => {
+            // Handle input
+            input.addEventListener('input', function(e) {
+                const value = e.target.value;
+                
+                // Only allow numbers
+                if (!/^\d*$/.test(value)) {
+                    e.target.value = value.replace(/\D/g, '');
+                    return;
+                }
+                
+                // Move to next input if value is entered
+                if (value.length === 1 && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+            });
+            
+            // Handle keydown for backspace
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+            
+            // Handle paste
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedData = e.clipboardData.getData('text').slice(0, 6);
+                
+                if (/^\d+$/.test(pastedData)) {
+                    pastedData.split('').forEach((digit, i) => {
+                        if (otpInputs[i]) {
+                            otpInputs[i].value = digit;
+                        }
+                    });
+                    
+                    // Focus the last filled input or the next empty one
+                    const lastIndex = Math.min(pastedData.length, otpInputs.length) - 1;
+                    if (otpInputs[lastIndex + 1]) {
+                        otpInputs[lastIndex + 1].focus();
+                    } else {
+                        otpInputs[lastIndex].focus();
+                    }
+                }
+            });
+        });
+
+        // Function to get the full OTP code
+        function getOtpCode() {
+            let code = '';
+            otpInputs.forEach(input => {
+                code += input.value;
+            });
+            return code;
+        }
+
+        // Function to clear OTP inputs
+        function clearOtpInputs() {
+            otpInputs.forEach(input => {
+                input.value = '';
+            });
+        }
 
         rememberCheckbox.addEventListener('change', function() {
             rememberInput.value = this.checked ? '1' : '0';
@@ -163,13 +232,14 @@
         function showOtpModal() {
             otpModal.classList.remove('hidden');
             otpError.classList.add('hidden');
-            otpCodeInput.value = '';
+            clearOtpInputs();
+            otpInputs[0].focus();
         }
 
         function hideOtpModal() {
             otpModal.classList.add('hidden');
             otpError.classList.add('hidden');
-            otpCodeInput.value = '';
+            clearOtpInputs();
         }
 
         async function sendOtpRequest() {
@@ -208,6 +278,13 @@
 
         async function verifyOtpCode() {
             otpError.classList.add('hidden');
+            const code = getOtpCode();
+            
+            if (code.length !== 6) {
+                otpError.textContent = 'Please enter all 6 digits.';
+                otpError.classList.remove('hidden');
+                return;
+            }
 
             try {
                 const response = await fetch('{{ url('/login/otp/verify') }}', {
@@ -217,7 +294,7 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ code: otpCodeInput.value.trim() }),
+                    body: JSON.stringify({ code: code }),
                 });
 
                 const data = await response.json();
@@ -267,8 +344,8 @@
                 // Show success message
                 otpStatus.textContent = '✓ Verification code sent successfully!';
                 otpStatus.classList.remove('hidden');
-                otpCodeInput.value = '';
-                otpCodeInput.focus();
+                clearOtpInputs();
+                otpInputs[0].focus();
 
                 // Re-enable button after 3 seconds
                 setTimeout(() => {
@@ -285,16 +362,35 @@
             sendOtpRequest();
         });
 
+        // Enter key support for login form
+        emailInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                passwordInput.focus();
+            }
+        });
+
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendOtpRequest();
+            }
+        });
+
+        // Enter key support for OTP verification (on last input)
+        otpInputs[5].addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                verifyOtpCode();
+            }
+        });
+
         otpVerifyButton.addEventListener('click', function() {
             verifyOtpCode();
         });
 
         otpResendButton.addEventListener('click', function() {
             resendOtpCode();
-        });
-
-        otpCancelButton.addEventListener('click', function() {
-            hideOtpModal();
         });
     </script>
 </body>

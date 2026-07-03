@@ -1,0 +1,477 @@
+let allProducts = [];
+let currentFilters = {
+    search: '',
+    status: '',
+    expiry_status: '',
+    restock_date: ''
+};
+let searchTimeout;
+
+// Movements pagination
+let movementsData = [];
+let movementsPage = 1;
+let movementsPerPage = 10;
+let movementsDateFilter = '';
+
+// Product pagination
+let currentPage = 1;
+let perPage = 10;
+
+// Modal functions
+function openEditProductModal(productId) {
+    const modal = document.getElementById('editProductModal');
+    if (!modal) {
+        alert('Edit modal not found');
+        return;
+    }
+    
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    
+    // Fetch specific product data
+    fetch(window.AllStocks.routes.apiProducts + `?per_page=1000`)
+        .then(res => res.json())
+        .then(result => {
+            const product = result.data.find(p => p.id === parseInt(productId));
+            if (product) {
+                document.getElementById('editProductId').value = product.id;
+                document.getElementById('editName').value = product.name || '';
+                document.getElementById('editProductName').value = product.product_name || '';
+                document.getElementById('editSku').value = product.sku || '';
+                document.getElementById('editBrand').value = product.brand || '';
+                document.getElementById('editSize').value = product.size || '';
+                document.getElementById('editColor').value = product.color || '';
+                document.getElementById('editStockQuantity').value = product.stock_quantity || 0;
+                document.getElementById('editUnitPrice').value = product.unit_price || 0;
+                document.getElementById('editSupplier').value = product.supplier_name || '';
+                document.getElementById('editCategory').value = product.category || '';
+                document.getElementById('editLastRestock').value = product.last_restock_date || '';
+                document.getElementById('editExpiryDate').value = product.expiry_date || '';
+                document.getElementById('editReorderLevel').value = product.reorder_level || 0;
+                document.getElementById('editBarcode').value = product.barcode || '';
+                document.getElementById('editDescription').value = product.description || '';
+            } else {
+                alert('Product not found');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading product:', error);
+            alert('Error loading product data');
+        });
+}
+
+function closeEditProductModal() {
+    const modal = document.getElementById('editProductModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+    }
+    const form = document.getElementById('editProductForm');
+    if (form) form.reset();
+}
+
+// Make function globally accessible
+window.openEditModal = function(productId) {
+    openEditProductModal(productId);
+};
+
+// Auto-filter with debounce
+function performSearch() {
+    currentPage = 1;
+    loadProducts(1);
+}
+
+function resetFilters() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.value = '';
+    ['statusFilter','expiryStatusFilter','restockDateFilter'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    currentFilters = { search: '', status: '', expiry_status: '', restock_date: '' };
+    currentPage = 1;
+    loadProducts(1);
+}
+
+// Attach UI events
+function attachUIEvents() {
+    const searchEl = document.getElementById('searchInput');
+    if (searchEl) {
+        searchEl.addEventListener('input', function(e) {
+            currentFilters.search = e.target.value;
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                performSearch();
+            }, 300);
+        });
+    }
+
+    const statusEl = document.getElementById('statusFilter');
+    if (statusEl) statusEl.addEventListener('change', function(e){ currentFilters.status = e.target.value; performSearch(); });
+    const expiryStatusEl = document.getElementById('expiryStatusFilter');
+    if (expiryStatusEl) expiryStatusEl.addEventListener('change', function(e){ currentFilters.expiry_status = e.target.value; performSearch(); });
+    const restockDateEl = document.getElementById('restockDateFilter');
+    if (restockDateEl) restockDateEl.addEventListener('change', function(e){ currentFilters.restock_date = e.target.value; performSearch(); });
+
+    // Edit product modal events
+    const closeEdit = document.getElementById('closeEditProductModal');
+    if (closeEdit) closeEdit.addEventListener('click', closeEditProductModal);
+    const cancelEdit = document.getElementById('cancelEditProduct');
+    if (cancelEdit) cancelEdit.addEventListener('click', closeEditProductModal);
+
+    const editProductModal = document.getElementById('editProductModal');
+    if (editProductModal) editProductModal.addEventListener('click', function(e) { if (e.target === this) closeEditProductModal(); });
+
+    // Edit product form submission
+    const editProductForm = document.getElementById('editProductForm');
+    if (editProductForm) {
+        editProductForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const productId = document.getElementById('editProductId')?.value;
+            if (!productId) {
+                alert('Product ID is required');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitEditProduct');
+            if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Saving...'; }
+
+            try {
+                const formData = {
+                    name: document.getElementById('editName')?.value,
+                    product_name: document.getElementById('editProductName')?.value,
+                    sku: document.getElementById('editSku')?.value,
+                    brand: document.getElementById('editBrand')?.value,
+                    size: document.getElementById('editSize')?.value,
+                    color: document.getElementById('editColor')?.value,
+                    stock_quantity: parseInt(document.getElementById('editStockQuantity')?.value) || 0,
+                    unit_price: parseFloat(document.getElementById('editUnitPrice')?.value) || 0,
+                    supplier_name: document.getElementById('editSupplier')?.value,
+                    category: document.getElementById('editCategory')?.value,
+                    last_restock_date: document.getElementById('editLastRestock')?.value,
+                    expiry_date: document.getElementById('editExpiryDate')?.value,
+                    reorder_level: parseInt(document.getElementById('editReorderLevel')?.value) || 0,
+                    barcode: document.getElementById('editBarcode')?.value,
+                    description: document.getElementById('editDescription')?.value,
+                };
+
+                const url = window.AllStocks.routes.productUpdateBase + '/' + productId;
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': window.AllStocks.csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await res.json();
+                if (result.success) {
+                    alert('✅ Product updated successfully!');
+                    closeEditProductModal();
+                    loadStats();
+                    loadProducts(currentPage);
+                } else {
+                    alert('❌ ' + (result.message || 'Failed to update product'));
+                }
+            } catch (error) {
+                console.error('Error updating product:', error);
+                alert('❌ Error updating product: ' + error.message);
+            } finally {
+                if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Save Changes'; }
+            }
+        });
+    }
+
+    // Wire select all checkbox
+    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+            const productCheckboxes = document.querySelectorAll('.product-checkbox');
+            productCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+    }
+
+    // Wire movement date filter
+    const movementDateFilter = document.getElementById('movementDateFilter');
+    if (movementDateFilter) {
+        movementDateFilter.addEventListener('change', function() {
+            movementsDateFilter = this.value;
+            movementsPage = 1;
+            renderMovements();
+        });
+    }
+
+    // Wire movement pagination buttons
+    const movementPrevBtn = document.querySelector('.movement-prev');
+    const movementNextBtn = document.querySelector('.movement-next');
+    
+    if (movementPrevBtn) {
+        movementPrevBtn.addEventListener('click', function() {
+            if (movementsPage > 1) {
+                movementsPage--;
+                renderMovements();
+            }
+        });
+    }
+    
+    if (movementNextBtn) {
+        movementNextBtn.addEventListener('click', function() {
+            const totalPages = Math.ceil(movementsData.length / movementsPerPage);
+            if (movementsPage < totalPages) {
+                movementsPage++;
+                renderMovements();
+            }
+        });
+    }
+
+    // Wire refresh movements button
+    const refreshMovementsBtn = document.getElementById('refreshMovementsBtn');
+    if (refreshMovementsBtn) {
+        refreshMovementsBtn.addEventListener('click', () => {
+            loadMovements();
+        });
+    }
+}
+
+// Load stats from API
+async function loadStats() {
+    try {
+        const response = await fetch(window.AllStocks.routes.apiStats);
+
+        if (!response.ok) {
+            const bodyText = await response.text();
+            throw new Error(`Stats request failed: ${response.status} ${response.statusText} - ${bodyText}`);
+        }
+
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+            const bodyText = await response.text();
+            throw new Error(`Stats request returned non-JSON response: ${contentType} - ${bodyText}`);
+        }
+
+        const stats = await response.json();
+
+        const totalProductsEl = document.getElementById('stat-total-products');
+        const activeItemsEl = document.getElementById('stat-active-items');
+        const lowStockEl = document.getElementById('stat-low-stock');
+        const outOfStockEl = document.getElementById('stat-out-of-stock');
+        const expiringSoonEl = document.getElementById('stat-expiring-soon');
+        const expiredEl = document.getElementById('stat-expired');
+
+        if (totalProductsEl) totalProductsEl.textContent = Number(stats.total_items || 0).toLocaleString();
+        if (activeItemsEl) activeItemsEl.textContent = Number(stats.active_items || 0).toLocaleString();
+        if (lowStockEl) lowStockEl.textContent = Number(stats.low_stock_count || 0).toLocaleString();
+        if (outOfStockEl) outOfStockEl.textContent = Number(stats.out_of_stock_count || 0).toLocaleString();
+        if (expiringSoonEl) expiringSoonEl.textContent = Number(stats.expiring_soon_count || 0).toLocaleString();
+        if (expiredEl) expiredEl.textContent = Number(stats.expired_count || 0).toLocaleString();
+    } catch (error) {
+        console.error('Error loading stats:', error);
+    }
+}
+
+async function loadMovements() {
+    try {
+        if (!window.AllStocks.routes.apiMovements) {
+            return;
+        }
+
+        const response = await fetch(window.AllStocks.routes.apiMovements);
+        const result = await response.json();
+        
+        movementsData = result.data || [];
+        renderMovements();
+    } catch (error) {
+        console.error('Error loading movements:', error);
+    }
+}
+
+function renderMovements() {
+    const tbody = document.getElementById('movementFeed');
+    const paginationInfo = document.getElementById('movementPaginationInfo');
+    const prevBtn = document.querySelector('.movement-prev');
+    const nextBtn = document.querySelector('.movement-next');
+    
+    if (!tbody) return;
+
+    // Filter by date range
+    let filteredMovements = movementsData;
+    if (movementsDateFilter) {
+        const now = new Date();
+        const today = now.toISOString().split('T')[0];
+        const yesterday = new Date(now);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toISOString().split('T')[0];
+        
+        const last7Days = new Date(now);
+        last7Days.setDate(last7Days.getDate() - 7);
+        const last7DaysStr = last7Days.toISOString().split('T')[0];
+        
+        const last30Days = new Date(now);
+        last30Days.setDate(last30Days.getDate() - 30);
+        const last30DaysStr = last30Days.toISOString().split('T')[0];
+
+        filteredMovements = movementsData.filter(entry => {
+            const entryDate = new Date(entry.created_at).toISOString().split('T')[0];
+            
+            switch(movementsDateFilter) {
+                case 'today':
+                    return entryDate === today;
+                case 'yesterday':
+                    return entryDate === yesterdayStr;
+                case 'last_7_days':
+                    return entryDate >= last7DaysStr && entryDate <= today;
+                case 'last_30_days':
+                    return entryDate >= last30DaysStr && entryDate <= today;
+                default:
+                    return true;
+            }
+        });
+    }
+
+    // Pagination
+    const totalPages = Math.max(1, Math.ceil(filteredMovements.length / movementsPerPage));
+    movementsPage = Math.min(Math.max(1, movementsPage), totalPages);
+    
+    const startIndex = (movementsPage - 1) * movementsPerPage;
+    const endIndex = startIndex + movementsPerPage;
+    const paginatedMovements = filteredMovements.slice(startIndex, endIndex);
+
+    tbody.innerHTML = '';
+    if (paginatedMovements.length > 0) {
+        paginatedMovements.forEach(entry => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="px-2 py-2 text-slate-700">${entry.created_at}</td>
+                <td class="px-2 py-2 text-slate-700">${entry.product_name} ${entry.sku ? '(' + entry.sku + ')' : ''}</td>
+                <td class="px-2 py-2 text-slate-700 capitalize">${entry.type.replace(/_/g, ' ')}</td>
+                <td class="px-2 py-2 text-center text-slate-700">${entry.quantity_change ?? '-'}</td>
+                <td class="px-2 py-2 text-slate-700">${entry.notes || entry.supplier_name || '-'}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    } else {
+        tbody.innerHTML = '<tr><td colspan="5" class="px-2 py-4 text-center text-slate-500">No movements found</td></tr>';
+    }
+
+    // Update pagination info
+    if (paginationInfo) {
+        paginationInfo.textContent = `Showing ${startIndex + 1}-${Math.min(endIndex, filteredMovements.length)} of ${filteredMovements.length} movements`;
+    }
+
+    // Update button states
+    if (prevBtn) prevBtn.disabled = movementsPage === 1;
+    if (nextBtn) nextBtn.disabled = movementsPage === totalPages;
+}
+
+// Load products from API
+async function loadProducts(page = 1) {
+    try {
+        let url = window.AllStocks.routes.apiProducts + `?page=${page}&per_page=${perPage}`;
+
+        if (currentFilters.search) url += `&search=${encodeURIComponent(currentFilters.search)}`;
+        if (currentFilters.status) url += `&status=${encodeURIComponent(currentFilters.status)}`;
+        if (currentFilters.expiry_status) url += `&expiry_status=${encodeURIComponent(currentFilters.expiry_status)}`;
+        if (currentFilters.restock_date) url += `&restock_date=${encodeURIComponent(currentFilters.restock_date)}`;
+
+        const response = await fetch(url);
+        const result = await response.json();
+
+        const tbody = document.querySelector('table tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        if (result.data && result.data.length > 0) {
+            result.data.forEach(product => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-3 py-2 w-6">
+                        <input type="checkbox" class="product-checkbox rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 cursor-pointer" data-product-id="${product.id}" />
+                    </td>
+                    <td class="px-3 py-2 text-slate-900 font-medium">${product.name}</td>
+                    <td class="px-3 py-2 text-slate-600">${product.product_name || 'Uncategorized'}</td>
+                    <td class="px-3 py-2 text-slate-600">${`KCC_${(product.sku || product.name || '').replace(/[^A-Za-z0-9\-\+]/g, '')}`}</td>
+                    <td class="px-3 py-2 text-slate-600">${product.brand || '-'}</td>
+                    <td class="px-3 py-2 text-slate-600">${product.size || '-'}</td>
+                    <td class="px-3 py-2 text-slate-600">${product.color || '-'}</td>
+                    <td class="px-3 py-2 text-center font-semibold ${product.stock_quantity === 0 ? 'text-red-600' : 'text-slate-900'}">${product.stock_quantity}</td>
+                    <td class="px-3 py-2 text-right text-slate-900">₱${parseFloat(product.unit_price).toFixed(2)}</td>
+                    <td class="px-3 py-2 text-slate-600">${product.supplier_name || '-'}</td>
+                    <td class="px-3 py-2 text-slate-600">${product.last_restock_date || '-'}</td>
+                    <td class="px-3 py-2 text-slate-600">${product.expiry_date ? `${product.expiry_date} • ${product.expiry_status_label || 'Status'}` : 'Non-expiring'}</td>
+                    <td class="px-3 py-2 text-center">
+                        <a href="javascript:void(0)" onclick="const modal=document.getElementById('editProductModal'); if(modal){ modal.classList.remove('hidden'); modal.style.display='flex'; }" class="text-cyan-600 hover:text-cyan-700 text-xs font-medium cursor-pointer z-50 relative">Edit</a>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        } else {
+            tbody.innerHTML = '<tr><td colspan="13" class="px-3 py-8 text-center text-slate-500">No products found</td></tr>';
+        }
+
+        currentPage = page;
+        updatePagination(result.pagination);
+    } catch (error) {
+        console.error('Error loading products:', error);
+    }
+}
+
+// Update pagination controls
+function updatePagination(pagination) {
+    const paginationContainer = document.getElementById('paginationControls');
+    if (!paginationContainer) {
+        console.log('Pagination container not found');
+        return;
+    }
+    
+    if (!pagination || !pagination.last_page) {
+        console.log('Pagination data not available', pagination);
+        return;
+    }
+    
+    let html = `<button onclick="loadProducts(${Math.max(1, currentPage - 1)})" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">← Prev</button>`;
+
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(pagination.last_page, startPage + 4);
+    if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
+
+    for (let i = startPage; i <= endPage; i++) {
+        const btnClass = i === currentPage ? 'bg-cyan-600 text-white' : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50';
+        html += `<button onclick="loadProducts(${i})" class="px-2 py-1 rounded-lg text-xs font-medium ${btnClass}">${i}</button>`;
+    }
+
+    html += `<button onclick="loadProducts(${Math.min(pagination.last_page, currentPage + 1)})" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">Next →</button>`;
+
+    paginationContainer.innerHTML = html;
+
+    const summary = document.getElementById('paginationInfo');
+    if (summary) {
+        summary.textContent = `Showing ${pagination.from || 0}-${pagination.to || 0} of ${pagination.total?.toLocaleString() || 0} items`;
+    }
+}
+
+// Initialize when DOM is ready
+function initializeMonitoringPage() {
+    attachUIEvents();
+
+    // Load initial data
+    loadStats();
+    loadProducts(1);
+    loadMovements();
+}
+
+// Expose key functions to global scope for onclick handlers
+window.loadProducts = loadProducts;
+window.performSearch = performSearch;
+window.resetFilters = resetFilters;
+window.openEditModal = openEditModal;
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeMonitoringPage);
+} else {
+    initializeMonitoringPage();
+}

@@ -7,6 +7,14 @@
                     <p class="text-sm text-slate-600">Process sales, service billing, and payments from one compact page.</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2 text-sm">
+                    <button id="posOpenDesktopScannerButton" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 hover:bg-slate-100">
+                        <svg class="h-4 w-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        Scan QR
+                    </button>
+                    <button id="posOpenScannerButton" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 hover:bg-slate-100">
+                        <svg class="h-4 w-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                        Mobile Scanner
+                    </button>
                     <button id="posOpenTransactionHistoryButton" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 hover:bg-slate-100">
                         <svg class="h-4 w-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/></svg>
                         Transaction History
@@ -93,7 +101,7 @@
                             <div class="flex items-center justify-between"><span>Services</span><span id="posServicesTotal">₱0.00</span></div>
                             <div class="flex items-center justify-between"><span>Extra</span><span id="posExtraCharge">₱0.00</span></div>
                             <div class="flex items-center justify-between"><span>Discount</span><span id="posDiscount">₱0.00</span></div>
-                            <div class="flex items-center justify-between"><span>VAT (12%)</span><span id="posTax">₱0.00</span></div>
+                            <div class="flex items-center justify-between"><span>Included VAT (12%)</span><span id="posTax">₱0.00</span></div>
                             <div class="flex items-center justify-between text-base font-semibold text-slate-900"><span>Total</span><span id="posTotal">₱0.00</span></div>
                         </div>
                         <button id="posProceedPaymentButton" class="w-full rounded-2xl bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700">Proceed to Payment</button>
@@ -198,7 +206,7 @@
                             <div class="flex items-center justify-between"><span>Services</span><span id="posPaymentServices">₱0.00</span></div>
                             <div class="flex items-center justify-between"><span>Extra Charges</span><span id="posPaymentExtra">₱0.00</span></div>
                             <div class="flex items-center justify-between"><span>Discount</span><span id="posPaymentDiscount">₱0.00</span></div>
-                            <div class="flex items-center justify-between"><span>Tax (12%)</span><span id="posPaymentTax">₱0.00</span></div>
+                            <div class="flex items-center justify-between"><span>Included VAT (12%)</span><span id="posPaymentTax">₱0.00</span></div>
                             <div class="flex items-center justify-between text-base font-semibold text-slate-900"><span>Total</span><span id="posPaymentTotal">₱0.00</span></div>
                         </div>
                     </div>
@@ -309,7 +317,7 @@
                                     <span id="invoiceDiscount" class="font-semibold text-slate-900">₱0.00</span>
                                 </div>
                                 <div class="flex justify-between text-xs">
-                                    <span class="text-slate-600">Tax (12%)</span>
+                                    <span class="text-slate-600">Included VAT (12%)</span>
                                     <span id="invoiceTax" class="font-semibold text-slate-900">₱0.00</span>
                                 </div>
                                 <div class="flex justify-between text-sm border-t-2 border-slate-900 pt-2 mt-2">
@@ -420,13 +428,44 @@
         </div>
     </div>
 
+    <!-- Desktop QR Scanner Modal -->
+    <div id="posDesktopScannerModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4">
+            <div class="bg-gradient-to-r from-emerald-600 to-cyan-600 px-6 py-4 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-white/20 rounded-lg p-2">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
+                        <h2 class="text-xl font-bold text-white">QR Code Scanner</h2>
+                    </div>
+                    <button id="posCloseDesktopScannerButton" class="text-white/80 hover:text-white transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <div id="posDesktopScannerReader" class="w-full bg-black rounded-xl overflow-hidden mb-4"></div>
+                <div id="posDesktopScannerStatus" class="text-center text-sm text-slate-600">Position QR code within the frame</div>
+            </div>
+        </div>
+    </div>
+
     <script>
         window.POS = {
             routes: {
-                apiProducts: '{{ route("api.products") }}'
+                apiProducts: '{{ route("api.products") }}',
+                mobileScanner: '{{ route("pos.mobile-scanner") }}'
             }
         };
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     @vite(['resources/js/pos_terminal.js'])
 </x-layouts.app>

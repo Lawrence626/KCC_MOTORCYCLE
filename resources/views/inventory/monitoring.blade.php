@@ -139,7 +139,7 @@
                     <thead class="bg-slate-50 border-b border-slate-200">
                         <tr>
                             <th class="px-3 py-2 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide w-6">
-                                <input type="checkbox" class="rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 cursor-pointer" />
+                                <input type="checkbox" id="selectAllCheckbox" class="rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 cursor-pointer" />
                             </th>
                             <th class="px-3 py-2 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">Motorcycle Compatibility</th>
                             <th class="px-3 py-2 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">Product Name</th>
@@ -166,7 +166,7 @@
             <!-- Pagination -->
             <div class="px-3 py-2 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs">
                 <p id="paginationInfo" class="text-slate-600">Showing 0 of 0 items</p>
-                <div class="flex gap-1">
+                <div id="paginationControls" class="flex gap-1">
                     <button class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">← Prev</button>
                     <button class="px-2 py-1 rounded-lg bg-cyan-600 text-xs font-medium text-white hover:bg-cyan-700">1</button>
                     <button class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">2</button>
@@ -231,7 +231,16 @@
                     <h2 class="text-sm font-semibold text-slate-900">Recent Inventory Movements</h2>
                     <p class="text-xs text-slate-500 mt-1">Latest stock changes, restocks, and price updates.</p>
                 </div>
-                <button id="refreshMovementsBtn" class="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 transition">Refresh</button>
+                <div class="flex items-center gap-2">
+                    <select id="movementDateFilter" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+                        <option value="">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="yesterday">Yesterday</option>
+                        <option value="last_7_days">Last 7 Days</option>
+                        <option value="last_30_days">Last 30 Days</option>
+                    </select>
+                    <button id="refreshMovementsBtn" class="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 transition">Refresh</button>
+                </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-xs text-left divide-y divide-slate-200">
@@ -251,6 +260,117 @@
                     </tbody>
                 </table>
             </div>
+            <!-- Movements Pagination -->
+            <div class="px-3 py-2 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs">
+                <p id="movementPaginationInfo" class="text-slate-600">Showing 0 of 0 movements</p>
+                <div id="movementPaginationControls" class="flex gap-1">
+                    <button class="movement-prev px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">← Prev</button>
+                    <button class="movement-next px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">Next →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Product Modal -->
+    <div id="editProductModal" class="hidden fixed inset-0 backdrop-blur-sm bg-black/30 z-[9999] flex items-center justify-center">
+        <div class="bg-white rounded-2xl shadow-2xl w-full mx-4 md:mx-0 sm:max-w-lg md:max-w-3xl lg:max-w-4xl overflow-hidden transform transition-all max-h-[90vh] relative z-[10000]">
+                <!-- Header with gradient -->
+                <div class="px-6 py-6 bg-linear-to-r from-slate-900 via-slate-800 to-slate-900 relative">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h2 class="text-xl font-bold text-white mb-1">Edit Product</h2>
+                            <p class="text-xs text-slate-300">Update all product details</p>
+                        </div>
+                        <button id="closeEditProductModal" onclick="event.preventDefault(); event.stopPropagation(); const modal=document.getElementById('editProductModal'); if(modal){ modal.classList.add('hidden'); modal.style.display='none'; }" class="text-slate-400 hover:text-white transition p-1 hover:bg-slate-700/50 rounded-lg cursor-pointer">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <form id="editProductForm" class="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+                    <input type="hidden" id="editProductId" />
+                    
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700">Motorcycle Compatibility</label>
+                            <input type="text" id="editName" name="name" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700">Product Name</label>
+                            <input type="text" id="editProductName" name="product_name" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700">SKU</label>
+                            <input type="text" id="editSku" name="sku" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700">Brand</label>
+                            <input type="text" id="editBrand" name="brand" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700">Size</label>
+                            <input type="text" id="editSize" name="size" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700">Color</label>
+                            <input type="text" id="editColor" name="color" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700">Stock Quantity</label>
+                            <input type="number" id="editStockQuantity" name="stock_quantity" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700">Unit Price</label>
+                            <input type="number" step="0.01" id="editUnitPrice" name="unit_price" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700">Supplier</label>
+                            <input type="text" id="editSupplier" name="supplier_name" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700">Category</label>
+                            <select id="editCategory" name="category" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300">
+                                <option value="">Select category</option>
+                                <option value="engine_oil">Engine Oil</option>
+                                <option value="lubricants">Lubricants</option>
+                                <option value="battery">Battery</option>
+                                <option value="spark_plug">Spark Plug</option>
+                                <option value="brake_pads">Brake Pads</option>
+                                <option value="tires">Tires</option>
+                                <option value="filters">Filters</option>
+                                <option value="accessories">Accessories</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700">Last Restock Date</label>
+                            <input type="date" id="editLastRestock" name="last_restock_date" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700">Expiry Date</label>
+                            <input type="date" id="editExpiryDate" name="expiry_date" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700">Reorder Level</label>
+                            <input type="number" id="editReorderLevel" name="reorder_level" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700">Barcode</label>
+                            <input type="text" id="editBarcode" name="barcode" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+                        </div>
+                        <div class="space-y-2 md:col-span-2">
+                            <label class="block text-sm font-semibold text-slate-700">Description</label>
+                            <textarea id="editDescription" name="description" rows="3" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3 mt-6">
+                        <button type="button" id="cancelEditProduct" onclick="event.preventDefault(); event.stopPropagation(); const modal=document.getElementById('editProductModal'); if(modal){ modal.classList.add('hidden'); modal.style.display='none'; }" class="px-6 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer">Cancel</button>
+                        <button type="submit" id="submitEditProduct" class="px-6 py-2.5 rounded-lg bg-gradient-to-r from-cyan-600 to-cyan-500 text-sm font-semibold text-white hover:from-cyan-700 hover:to-cyan-600 transition shadow-lg shadow-cyan-500/20">Save Changes</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -260,11 +380,12 @@
                 apiProducts: '{{ route("api.products") }}',
                 apiStats: '{{ route("api.stats") }}',
                 apiMovements: '{{ route("api.movements") }}',
-                apiUpdatePriceBase: '{{ url("api/product") }}'
+                apiUpdatePriceBase: '{{ url("api/product") }}',
+                productUpdateBase: '{{ url('product') }}'
             },
             baseUrl: '{{ url("") }}',
             csrfToken: '{{ csrf_token() }}'
         };
     </script>
-    @vite('resources/js/allstocks.js')
+    @vite('resources/js/monitoring.js')
 </x-layouts.app>

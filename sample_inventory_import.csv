@@ -1,0 +1,4 @@
+type,product_id,product_name,movement_type,quantity_change,unit_price,supplier_name,notes,created_at,updated_at
+inventory_movement,1,Brake Pad,in,10,250.00,ABC Parts Supply,Stock replenishment,2026-06-28 10:00:00,2026-06-28 10:00:00
+inventory_movement,2,Spark Plug,in,20,50.00,XYZ Motors,New stock,2026-06-28 11:00:00,2026-06-28 11:00:00
+inventory_movement,1,Brake Pad,out,5,250.00,Customer Sale,Sold to customer,2026-06-28 12:00:00,2026-06-28 12:00:00

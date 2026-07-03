@@ -1,0 +1,3 @@
+type,order_number,supplier_id,supplier_name,status,expected_delivery_date,notes,total_amount,created_at,updated_at
+purchase_order,PO-2026-001,1,ABC Parts Supply,pending,2026-07-15,Test offline order,5000.00,2026-06-28 10:00:00,2026-06-28 10:00:00
+purchase_order,PO-2026-002,2,XYZ Motors,pending,2026-07-20,Another test order,7500.00,2026-06-28 11:00:00,2026-06-28 11:00:00

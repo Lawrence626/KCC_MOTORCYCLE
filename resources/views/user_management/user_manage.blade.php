@@ -47,7 +47,7 @@
                             </div>
                             <div class="space-y-1">
                                 <label class="block text-xs font-medium text-slate-700">Email</label>
-                                <input type="email" name="email" value="{{ old('email') }}" required autocomplete="email" class="w-full rounded-lg border border-slate-300 bg-slate-100 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 shadow-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-200" />
+                                <input type="email" name="email" value="{{ old('email') }}" required autocomplete="username" class="w-full rounded-lg border border-slate-300 bg-slate-100 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 shadow-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-200" />
                             </div>
                             <div class="space-y-1">
                                 <label class="block text-xs font-medium text-slate-700">Role</label>
@@ -153,7 +153,7 @@
                             </div>
                             <div class="space-y-1">
                                 <label class="block text-xs font-medium text-slate-700">Email</label>
-                                <input type="email" name="email" id="edit_email" required autocomplete="email" class="w-full rounded-lg border border-slate-300 bg-slate-100 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 shadow-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-200" />
+                                <input type="email" name="email" id="edit_email" required autocomplete="username" class="w-full rounded-lg border border-slate-300 bg-slate-100 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 shadow-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-200" />
                             </div>
                             <div class="space-y-1">
                                 <label class="block text-xs font-medium text-slate-700">Role</label>
@@ -188,11 +188,12 @@
                             <div class="sm:col-span-2 space-y-1">
                                 <label class="block text-xs font-medium text-slate-700">Password</label>
                                 <div class="relative">
-                                    <input name="password" id="edit_password" type="password" placeholder="Leave blank to keep current" autocomplete="new-password" class="w-full rounded-lg border border-slate-300 bg-slate-100 px-3 py-2 pr-8 text-xs text-slate-900 placeholder:text-slate-400 shadow-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-200" />
+                                    <input name="password" id="edit_password" type="password" placeholder="Leave blank if you don't change your password" autocomplete="new-password" class="w-full rounded-lg border border-slate-300 bg-slate-100 px-3 py-2 pr-8 text-xs text-slate-900 placeholder:text-slate-400 shadow-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-200" />
                                     <button type="button" class="toggle-password absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600" data-target="#edit_password">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5,12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                     </button>
                                 </div>
+                                <p class="text-[10px] text-slate-500 mt-1">Just fill up to change your password</p>
                                 <div id="edit_password_requirements" class="text-[11px] space-y-0.5 mt-1 p-2 bg-red-50 border border-red-200 rounded-lg hidden">
                                     <div class="font-semibold text-red-700 text-xs">Password must contain:</div>
                                     <div class="flex items-center gap-1" data-requirement="lowercase">

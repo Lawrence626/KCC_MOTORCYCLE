@@ -1,38 +1,116 @@
 <x-layouts.app :title="__('Warehouse Management')">
     <style>
         :root {
-            --brand: #10b981; /* green accent */
-            --brand-dark: #047857;
+            --brand: #0f766e; /* professional teal */
+            --brand-soft: #d1fae5;
+            --brand-dark: #134e4a;
             --card-bg: #ffffff;
+            --surface: #f8fafc;
             --muted: #6b7280;
+            --border: rgba(148,163,184,0.2);
         }
-        .wm-badge { background: linear-gradient(90deg,var(--brand),var(--brand-dark)); color: #fff }
-        .wm-card { border: 1px solid rgba(2,6,23,0.04); background: var(--card-bg) }
-        .wm-location { background: #f7fdf8; border: 1px dashed rgba(4,120,87,0.06) }
-        .product-chip { background: rgba(16,185,129,0.08); border: 1px solid rgba(4,120,87,0.12); color: var(--brand-dark) }
-        .warehouse-shelves { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: minmax(220px, auto); }
+        .wm-badge { background: linear-gradient(90deg,var(--brand),var(--brand-dark)); color: #fff; box-shadow: 0 10px 30px rgba(15,118,110,0.08); }
+        .wm-card { border: 1px solid var(--border); background: var(--card-bg); box-shadow: 0 12px 30px rgba(15,23,42,0.06); }
+        .wm-location { background: #f8fafc; border: 1px dashed rgba(15,118,110,0.16); }
+        .product-chip { background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.12); color: var(--brand-dark); font-size: 0.78rem; padding: 0.35rem 0.6rem; border-radius: 0.8rem; display:flex; align-items:center; justify-content:space-between; gap:0.5rem; }
+        .product-chip .left { display:flex; flex-direction:column; gap:0.08rem; }
+        .product-chip .name { font-weight:600; font-size:0.84rem; color:#0f172a; }
+        .product-chip .meta { font-size:0.62rem; color:#475569; }
+        .product-chip .qty { font-weight:700; font-size:0.84rem; color:#0f172a; margin-left:0.4rem; min-width:44px; text-align:right; }
+        .warehouse-shelves { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(220px, auto); }
+        .map-unit { min-height: 220px; }
+        .modal-panel { width: min(100%, 960px); border-radius: 1.5rem; background: #ffffff; box-shadow: 0 28px 80px rgba(15,23,42,0.18); }
+        .modal-field { border: 1px solid rgba(148,163,184,0.35); background: #f8fafc; border-radius: 0.85rem; }
+        .modal-field input,
+        .modal-field select { border: none; background: transparent; outline: none; }
+        .modal-field label { color: #334155; }
+        .product-row-card { background: #f8fafc; border: 1px solid rgba(148,163,184,0.2); border-radius: 1rem; padding: 0.85rem; }
+        .product-row-card .row-grid { gap: 0.75rem; }
+        .product-row-card .product-sku,
+        .product-row-card .product-qty,
+        .product-row-card .product-price,
+        .product-row-card .product-select { background: #ffffff; border: 1px solid rgba(148,163,184,0.25); border-radius: 0.85rem; }
+        .product-row-card .product-sku { background: #f1f5f9; }
+        .product-row-card .product-select,
+        .product-row-card .product-sku,
+        .product-row-card .product-qty,
+        .product-row-card .product-price { padding: 0.75rem; }
+        .remove-product-row { color: #ef4444; transition: color 0.2s ease; }
+        .remove-product-row:hover { color: #b91c1c; }
+        .modal-actions { border-top: 1px solid rgba(148,163,184,0.25); padding-top: 0.85rem; }
+        .modal-footer-button { border-radius: 0.85rem; padding: 0.75rem 1.2rem; font-weight: 600; }
+        .modal-footer-button.primary { background: var(--brand); color: #fff; }
+        .modal-footer-button.secondary { background: #f8fafc; color: #334155; border: 1px solid rgba(148,163,184,0.35); }
+        .product-row-card label { font-size: 0.72rem; }
+        .product-row-card .remove-product-row { font-size: 0.85rem; }
+        .modal-panel { max-height: 95vh; overflow: auto; }
+        #modal-product-rows { max-height: 440px; }
+        .toast-container { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 60; display: flex; flex-direction: column; gap: 0.85rem; pointer-events: none; width: max-content; min-width: 280px; }
+        .toast { pointer-events: auto; display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; background: #0f766e; color: #fff; border-radius: 1rem; box-shadow: 0 18px 50px rgba(15,23,42,0.18); padding: 0.85rem 1rem; font-size: 0.95rem; animation: toast-in 0.22s ease forwards; }
+        .toast.success { background: #0f766e; }
+        .toast.error { background: #ef4444; }
+        .toast button { background: transparent; border: none; color: rgba(255,255,255,0.95); cursor: pointer; font-size: 1rem; line-height: 1; padding: 0; }
+        @keyframes toast-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         @media (max-width: 1024px) { .warehouse-shelves { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-        @media (max-width: 640px) { .warehouse-shelves { grid-template-columns: 1fr; } }
+        @media (max-width: 770px) {
+            .warehouse-shelves { grid-template-columns: 1fr; }
+            .product-row-card { padding: 0.85rem; }
+            .map-unit { min-height: 200px; }
+        }
     </style>
 
     <div class="space-y-6">
+        <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
         <div class="flex items-start justify-between">
             <div>
                 <h1 class="text-3xl font-extrabold text-slate-900">Warehouse Management</h1>
                 <p class="mt-2 text-sm text-gray-500">Track and manage storage locations and products across your warehouses.</p>
             </div>
-            <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-3">
                 <input id="wm-search" type="search" placeholder="Search product or SKU..." class="px-5 py-3 text-base border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-300" />
-                <button id="add-shelf-button" type="button" class="inline-flex items-center px-5 py-3 wm-badge rounded-xl text-base font-medium">Add Shelf</button>
+                <button id="wm-generate-qr" type="button" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white rounded-xl text-sm font-medium shadow-md hover:from-emerald-700 hover:to-cyan-700 transition">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+                    </svg>
+                    Generate QR Codes
+                </button>
+                <button id="wm-scan-qr" type="button" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-slate-600 to-slate-700 text-white rounded-xl text-sm font-medium shadow-md hover:from-slate-700 hover:to-slate-800 transition">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    Scan QR
+                </button>
+                <button id="wm-mobile-scanner" type="button" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-xl text-sm font-medium shadow-md hover:from-emerald-700 hover:to-emerald-800 transition">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                    </svg>
+                    Mobile Scanner
+                </button>
+                <button id="view-archived-shelves" type="button" class="px-3 py-2 border rounded-xl text-sm">Archived</button>
+                <button id="add-shelf-button" type="button" class="inline-flex items-center px-3 py-2 wm-badge rounded-xl text-sm font-medium">Add Shelf</button>
             </div>
         </div>
 
-        <div class="mt-4 flex items-center space-x-4">
-            <label for="warehouse-select" class="text-base font-medium text-gray-700">Select Warehouse:</label>
-            <select id="warehouse-select" class="px-5 py-3 text-base border rounded-xl">
-                <option value="all">-- Select --</option>
+        <div class="mt-4 flex items-center gap-4">
+            <label class="text-sm font-medium text-slate-700">Select a warehouse:</label>
+            <select id="warehouse-selector" class="px-4 py-3 border rounded-xl bg-white text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-green-300">
+                @foreach($warehouses as $index => $wh)
+                    <option value="{{ $index }}">{{ $wh['name'] }}</option>
+                @endforeach
             </select>
+            <div class="flex items-center gap-3">
+                <div class="rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
+                    <p class="uppercase tracking-[0.18em] text-xs text-slate-400">Products</p>
+                    <p id="selectedWarehouseProducts" class="mt-1 text-lg font-semibold text-slate-900">0</p>
+                </div>
+                <div class="rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
+                    <p class="uppercase tracking-[0.18em] text-xs text-slate-400">Empty Slots</p>
+                    <p id="selectedWarehouseEmptySlots" class="mt-1 text-lg font-semibold text-slate-900">0</p>
+                </div>
+            </div>
         </div>
+
 
         <div class="grid gap-6 mt-4">
             @foreach($warehouses as $index => $wh)
@@ -69,412 +147,87 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const warehouses = @json($warehouses);
-            const products = @json($products);
-            const PRODUCTS_PER_SHELF = 10;
-            const productOptionsHtml = `
-                <option value="">Select product</option>
-                ${products.map(p => `<option value="${p.id}" data-sku="${p.sku}" data-name="${p.name}" data-price="${p.price}">${p.name} (${p.sku})</option>`).join('')}
-            `;
-            const select = document.getElementById('warehouse-select');
-            warehouses.forEach((w, i) => {
-                const opt = document.createElement('option');
-                opt.value = i;
-                opt.text = w.name;
-                select.appendChild(opt);
-            });
-
-            const warehousePage = warehouses.map(() => 0);
-
-            select.addEventListener('change', function() {
-                showIndex(this.value);
-            });
-
-            if (warehouses.length) {
-                select.selectedIndex = 1; // Warehouse A
-                showIndex(select.value);
-            }
-
-            function showIndex(i) {
-                document.querySelectorAll('.wh-card').forEach(el => el.style.display = 'none');
-                if (i === 'all' || i === null) return;
-                const index = parseInt(i, 10);
-                const el = document.querySelector('.wh-card[data-index="'+index+'"]');
-                if (el) {
-                    el.style.display = '';
-                    renderWarehousePage(index, warehousePage[index] || 0);
-                }
-            }
-
-            document.getElementById('modal-close').addEventListener('click', closeModal);
-            document.getElementById('modal-cancel').addEventListener('click', closeModal);
-            document.getElementById('modal-form').addEventListener('submit', handleModalSave);
-            const addShelfButton = document.getElementById('add-shelf-button');
-            if (addShelfButton) {
-                addShelfButton.addEventListener('click', function() {
-                    const currentWarehouse = parseInt(select.value, 10);
-                    if (Number.isNaN(currentWarehouse)) return;
-                    const nextSlot = warehouses[currentWarehouse].locations.length;
-                    showModal('Add Shelf', currentWarehouse, nextSlot);
-                });
-            }
-
-            document.querySelectorAll('.prev-page').forEach(button => {
-                button.addEventListener('click', function() {
-                    const warehouseIndex = parseInt(this.dataset.index, 10);
-                    warehousePage[warehouseIndex] = Math.max(0, warehousePage[warehouseIndex] - 1);
-                    renderWarehousePage(warehouseIndex, warehousePage[warehouseIndex]);
-                });
-            });
-
-            document.querySelectorAll('.next-page').forEach(button => {
-                button.addEventListener('click', function() {
-                    const warehouseIndex = parseInt(this.dataset.index, 10);
-                    const warehouse = warehouses[warehouseIndex];
-                    const totalPages = Math.max(1, Math.ceil(warehouse.locations.length / 9));
-                    warehousePage[warehouseIndex] = Math.min(totalPages - 1, warehousePage[warehouseIndex] + 1);
-                    renderWarehousePage(warehouseIndex, warehousePage[warehouseIndex]);
-                });
-            });
-
-            function renderWarehousePage(warehouseIndex, pageIndex = 0) {
-                const warehouse = warehouses[warehouseIndex];
-                const start = pageIndex * 9;
-                const shelvesContainer = document.querySelector(`.warehouse-shelves[data-index="${warehouseIndex}"]`);
-                const pageInfo = document.querySelector(`.page-info[data-index="${warehouseIndex}"]`);
-                const prevButton = document.querySelector(`.prev-page[data-index="${warehouseIndex}"]`);
-                const nextButton = document.querySelector(`.next-page[data-index="${warehouseIndex}"]`);
-                const totalPages = Math.max(1, Math.ceil(warehouse.locations.length / 9));
-
-                shelvesContainer.classList.add('grid', 'grid-cols-3', 'gap-6');
-
-                let html = '';
-                for (let slot = 1; slot <= 9; slot += 1) {
-                    const absoluteIndex = start + slot - 1;
-                    const loc = warehouse.locations[absoluteIndex] || null;
-                        const slotCount = loc ? loc.products.length : 0;
-                    let productsHtml = '';
-                    for (let productSlot = 0; productSlot < PRODUCTS_PER_SHELF; productSlot += 1) {
-                        const product = loc ? (loc.products[productSlot] || null) : null;
-                        if (product) {
-                            productsHtml += `<div class="product-chip rounded-xl px-3 py-2 text-sm flex items-center justify-between"><div class="font-medium">${product.name}</div><div class="text-gray-600">${product.qty}</div></div>`;
-                        } else {
-                            productsHtml += `<div class="product-chip opacity-50 rounded-xl px-3 py-2 text-sm text-gray-500 border border-dashed border-gray-200">Empty slot</div>`;
-                        }
-                    }
-                    const addProductOption = loc && loc.products.length < PRODUCTS_PER_SHELF ? '<option value="add-product">Add Product</option>' : '';
-                    html += `
-                        <div class="map-unit rounded-2xl shadow-lg relative bg-white border border-gray-200" style="min-height: 220px; padding: 1.25rem;">
-                            <div class="flex items-start justify-between gap-4">
-                                <div>
-                                    <div class="text-base font-semibold text-slate-900">Shelf ${slot}</div>
-                                    <div class="text-sm text-gray-500">${loc ? loc.name : 'Empty slot'}</div>
-                                    <div class="text-xs text-gray-400 mt-1">${loc ? `${slotCount}/${PRODUCTS_PER_SHELF} products` : `0/${PRODUCTS_PER_SHELF} products`}</div>
-                                </div>
-                                <div>
-                                    <label class="sr-only" for="action-select-${warehouseIndex}-${slot}">Shelf actions</label>
-                                    <select id="action-select-${warehouseIndex}-${slot}" class="action-select text-sm text-slate-700 px-4 py-2 border border-gray-200 rounded-full bg-white hover:bg-gray-50 cursor-pointer appearance-none pr-8" data-index="${warehouseIndex}" data-slot="${absoluteIndex}">
-                                        <option value="">Actions</option>
-                                        ${loc ? `${addProductOption}<option value="archive-shelf">Archive Shelf</option><option value="delete-shelf">Delete Shelf</option>` : '<option value="add-shelf">Add Shelf</option>'}
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="mt-4 grid gap-2 grid-cols-2">
-                                ${productsHtml}
-                            </div>
-                        </div>
-                    `;
-                }
-
-                shelvesContainer.innerHTML = html;
-                pageInfo.textContent = `Page ${pageIndex + 1} of ${totalPages}`;
-                prevButton.disabled = pageIndex === 0;
-                nextButton.disabled = pageIndex === totalPages - 1;
-
-                shelvesContainer.querySelectorAll('.action-select').forEach(selectEl => {
-                    selectEl.addEventListener('change', function() {
-                        const action = this.value;
-                        const slotIndex = parseInt(this.dataset.slot, 10);
-                        if (action === 'add-shelf') {
-                            openShelfModal(slotIndex);
-                        } else if (action === 'add-product') {
-                            openProductModal(slotIndex);
-                        } else if (action === 'archive-shelf') {
-                            archiveShelf(slotIndex);
-                        } else if (action === 'delete-shelf') {
-                            deleteShelf(slotIndex);
-                        }
-                        this.value = '';
-                    });
-                });
-            }
-
-            function openShelfModal(slotIndex) {
-                const currentWarehouse = parseInt(select.value, 10);
-                if (Number.isNaN(currentWarehouse)) return;
-                showModal('Add Shelf', currentWarehouse, slotIndex, 'addShelf');
-            }
-
-            function openProductModal(slotIndex) {
-                const currentWarehouse = parseInt(select.value, 10);
-                if (Number.isNaN(currentWarehouse)) return;
-                showModal('Add Product', currentWarehouse, slotIndex, 'addProduct');
-            }
-
-            function showModal(title, warehouseIndex, slot, mode = 'addShelf') {
-                document.getElementById('modal-title').textContent = title;
-                document.getElementById('modal-warehouse-index').value = warehouseIndex;
-                document.getElementById('modal-slot').value = slot;
-                document.getElementById('modal-mode').value = mode;
-                const shelfName = document.getElementById('modal-shelf-name');
-                const currentShelf = warehouses[warehouseIndex].locations[slot] || null;
-
-                if (mode === 'addProduct' && currentShelf) {
-                    shelfName.value = currentShelf.name;
-                    shelfName.readOnly = true;
-                    resetProductRows(currentShelf.products);
-                } else {
-                    shelfName.value = currentShelf ? currentShelf.name : '';
-                    shelfName.readOnly = false;
-                    resetProductRows([]);
-                }
-
-                document.getElementById('modal-backdrop').classList.remove('hidden');
-                document.getElementById('modal-backdrop').classList.add('flex');
-            }
-
-            async function saveStock(productId, quantity, price, notes) {
-                try {
-                    const response = await fetch('{{ route('warehouse.management.add_product') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        },
-                        body: JSON.stringify({
-                            product_id: productId,
-                            quantity,
-                            unit_price: price,
-                            notes,
-                        }),
-                    });
-                    const result = await response.json();
-                    if (!response.ok || !result.success) {
-                        alert(result.message || 'Failed to save stock.');
-                        return false;
-                    }
-                    return true;
-                } catch (error) {
-                    alert('Failed to save stock: ' + error.message);
-                    return false;
-                }
-            }
-
-            function closeModal() {
-                document.getElementById('modal-backdrop').classList.add('hidden');
-                document.getElementById('modal-backdrop').classList.remove('flex');
-            }
-
-            function getProductRows() {
-                return Array.from(document.querySelectorAll('.product-row')).map(row => {
-                    const select = row.querySelector('.product-select');
-                    const productId = select.value ? parseInt(select.value, 10) : null;
-                    const sku = row.querySelector('.product-sku').value.trim();
-                    const name = select.selectedOptions[0]?.dataset.name || '';
-                    const qty = parseInt(row.querySelector('.product-qty').value, 10) || 0;
-                    const price = parseFloat(row.querySelector('.product-price').value) || 0;
-                    return { product_id: productId, sku, name, qty, price };
-                }).filter(p => p.product_id && p.qty > 0);
-            }
-
-            function addProductRow(product = {}) {
-                const container = document.getElementById('modal-product-rows');
-                if (container.querySelectorAll('.product-row').length >= PRODUCTS_PER_SHELF) {
-                    return;
-                }
-                const row = document.createElement('div');
-                row.className = 'product-row grid gap-3 md:grid-cols-5 items-end';
-                row.innerHTML = `
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-medium text-slate-700">Product</label>
-                        <select class="product-select mt-1 block w-full border rounded-md px-3 py-2" data-selected="${product.product_id || ''}">
-                            ${productOptionsHtml}
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-700">SKU</label>
-                        <input type="text" readonly class="product-sku mt-1 block w-full border rounded-md px-3 py-2 bg-slate-50" value="${product.sku || ''}" placeholder="SKU" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-700">Qty</label>
-                        <input type="number" min="0" class="product-qty mt-1 block w-full border rounded-md px-3 py-2" value="${product.qty || ''}" placeholder="Qty" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-700">Price</label>
-                        <input type="number" step="0.01" min="0" class="product-price mt-1 block w-full border rounded-md px-3 py-2" value="${product.price || ''}" placeholder="Price" />
-                    </div>
-                    <div class="flex items-end">
-                        <button type="button" class="remove-product-row text-sm text-red-600 hover:text-red-800">✕</button>
-                    </div>
-                `;
-                container.appendChild(row);
-
-                const selectEl = row.querySelector('.product-select');
-                const skuInput = row.querySelector('.product-sku');
-                const priceInput = row.querySelector('.product-price');
-
-                selectEl.addEventListener('change', function() {
-                    const selected = selectEl.selectedOptions[0];
-                    skuInput.value = selected.dataset.sku || '';
-                    if (!priceInput.value) {
-                        priceInput.value = selected.dataset.price || '';
-                    }
-                });
-
-                if (product.product_id) {
-                    selectEl.value = product.product_id;
-                }
-
-                row.querySelector('.remove-product-row').addEventListener('click', () => {
-                    row.remove();
-                    updateAddRowButtonState();
-                });
-                updateAddRowButtonState();
-            }
-
-            function updateAddRowButtonState() {
-                const container = document.getElementById('modal-product-rows');
-                const addButton = document.getElementById('modal-add-product-row');
-                const rowCount = container.querySelectorAll('.product-row').length;
-                addButton.disabled = rowCount >= PRODUCTS_PER_SHELF;
-                addButton.classList.toggle('opacity-40', addButton.disabled);
-            }
-
-            function resetProductRows(products = []) {
-                const container = document.getElementById('modal-product-rows');
-                container.innerHTML = '';
-                const rows = products.slice(0, PRODUCTS_PER_SHELF);
-                rows.forEach(addProductRow);
-                for (let i = rows.length; i < PRODUCTS_PER_SHELF; i += 1) {
-                    addProductRow();
-                }
-                updateAddRowButtonState();
-            }
-
-            document.getElementById('modal-add-product-row').addEventListener('click', function() {
-                addProductRow();
-            });
-
-            function archiveShelf(slot) {
-                closeModal();
-                alert('Archive shelf ' + slot + '. This is a UI mockup; backend persistence is not wired yet.');
-            }
-
-            function deleteShelf(slot) {
-                closeModal();
-                alert('Delete shelf ' + slot + '. This is a UI mockup; backend persistence is not wired yet.');
-            }
-
-            async function handleModalSave(event) {
-                event.preventDefault();
-                const warehouseIndex = parseInt(document.getElementById('modal-warehouse-index').value, 10);
-                const slotIndex = parseInt(document.getElementById('modal-slot').value, 10);
-                const mode = document.getElementById('modal-mode').value;
-                const shelfName = document.getElementById('modal-shelf-name').value.trim() || `New Shelf ${slotIndex + 1}`;
-                const rows = getProductRows();
-                const product = rows[0] || null;
-
-                if (!Number.isNaN(warehouseIndex) && warehouses[warehouseIndex]) {
-                    if (mode === 'addProduct' && warehouses[warehouseIndex].locations[slotIndex]) {
-                        const existingShelf = warehouses[warehouseIndex].locations[slotIndex];
-                        const productRows = getProductRows().slice(0, PRODUCTS_PER_SHELF);
-                        existingShelf.products = productRows;
-
-                        for (const row of productRows) {
-                            if (!row.product_id || row.qty <= 0) continue;
-                            await saveStock(row.product_id, row.qty, row.price, `Added to shelf ${existingShelf.name}`);
-                        }
-                        renderWarehousePage(warehouseIndex, warehousePage[warehouseIndex]);
-                        closeModal();
-                        return;
-                    }
-
-                    for (const row of rows) {
-                        if (!row.product_id || row.qty <= 0) continue;
-                        const saved = await saveStock(row.product_id, row.qty, row.price, `Added to ${shelfName}`);
-                        if (!saved) {
-                            return;
-                        }
-                    }
-
-                    const newShelf = {
-                        name: shelfName,
-                        layout: { x: 1, y: 1, w: 3, h: 2 },
-                        products: rows.map(row => ({
-                            product_id: row.product_id,
-                            sku: row.sku,
-                            name: row.name,
-                            qty: row.qty,
-                            price: row.price,
-                        })),
-                    };
-
-                    const warehouse = warehouses[warehouseIndex];
-                    if (slotIndex >= warehouse.locations.length) {
-                        warehouse.locations[slotIndex] = newShelf;
-                    } else if (!warehouse.locations[slotIndex]) {
-                        warehouse.locations.splice(slotIndex, 0, newShelf);
-                    } else {
-                        warehouse.locations[slotIndex] = newShelf;
-                    }
-
-                    renderWarehousePage(warehouseIndex, warehousePage[warehouseIndex]);
-                }
-
-                closeModal();
-            }
-
-            // select first warehouse (A) by default
-            if (warehouses.length) {
-                select.value = 0;
-                showIndex(0);
-            }
-        });
+        window.WarehouseData = {
+            warehouses: @json($warehouses),
+            products: @json($products),
+            routes: {
+                addProduct: '{{ route('warehouse.management.add_product') }}',
+                saveShelf: '{{ route('warehouse.management.save_shelf') }}',
+                mobileScanner: '{{ route("warehouse.mobile.scanner") }}'
+            },
+            csrfToken: '{{ csrf_token() }}'
+        };
     </script>
+    @vite('resources/js/warehouse_management.js')
 
-    <div id="modal-backdrop" class="fixed inset-0 bg-black/30 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-xl p-6">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+    <div id="modal-backdrop" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center z-50 px-4 py-8">
+        <div class="modal-panel p-6 max-w-2xl">
             <div class="flex items-center justify-between mb-4">
-                <h2 id="modal-title" class="text-xl font-semibold text-slate-900">Modal Title</h2>
-                <button id="modal-close" class="text-slate-500 hover:text-slate-800">✕</button>
+                <h2 id="modal-title" class="text-2xl font-semibold text-slate-900">Modal Title</h2>
+                <button id="modal-close" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 transition hover:bg-slate-200">✕</button>
             </div>
-            <form id="modal-form" class="space-y-4">
+
+            <form id="modal-form" class="space-y-6">
                 <input type="hidden" id="modal-warehouse-index" />
                 <input type="hidden" id="modal-slot" />
                 <input type="hidden" id="modal-mode" value="addShelf" />
 
-                <div class="space-y-3">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700">Shelf Name</label>
-                        <input id="modal-shelf-name" type="text" class="mt-1 block w-full border rounded-md px-3 py-2" placeholder="Enter shelf name" />
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-[1.2fr_1fr]">
+                        <div class="modal-field p-4">
+                            <label class="block text-sm font-semibold text-slate-800 mb-2">Warehouse</label>
+                            <select id="modal-warehouse-select" class="block w-full rounded-md border border-slate-300 bg-white px-3 py-3 text-sm text-slate-900">
+                                @foreach($warehouses as $index => $wh)
+                                    <option value="{{ $index }}">{{ $wh['name'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="modal-field p-4">
+                            <label class="block text-sm font-semibold text-slate-800 mb-2">Shelf Name</label>
+                            <input id="modal-shelf-name" type="text" class="block w-full px-4 py-3 text-sm text-slate-900 rounded-md border border-slate-300" placeholder="Enter shelf name" />
+                        </div>
                     </div>
 
-                    <div>
-                        <div class="flex items-center justify-between">
-                            <label class="block text-sm font-medium text-slate-700">Products</label>
-                            <button type="button" id="modal-add-product-row" class="text-sm text-slate-600 hover:text-slate-900">+ Add product</button>
+                    <div class="modal-field p-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                            <div>
+                                <p class="text-sm font-semibold text-slate-800">Products (Max 10)</p>
+                                <p class="text-xs text-slate-500 mt-1">Choose existing inventory items, quantity, and price before saving.</p>
+                            </div>
+                            <button type="button" id="modal-add-product-row" class="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">+ Add product</button>
                         </div>
-                        <div id="modal-product-rows" class="space-y-3 mt-3"></div>
-                        <p class="mt-2 text-xs text-gray-500">Choose existing inventory items, quantity, and price before saving.</p>
+                        <div id="modal-product-rows" class="grid gap-3 max-h-[540px] overflow-y-auto"></div>
                     </div>
                 </div>
 
-                <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
-                    <button type="button" id="modal-cancel" class="px-4 py-2 text-sm rounded-md border border-gray-300">Cancel</button>
-                    <button type="submit" class="px-4 py-2 text-sm rounded-md text-white bg-emerald-600">Save</button>
+                <div class="modal-actions flex flex-col gap-3 sm:flex-row sm:justify-end">
+                    <button type="button" id="modal-cancel" class="modal-footer-button secondary">Cancel</button>
+                    <button type="submit" class="modal-footer-button primary">Save shelf</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <div id="archived-backdrop" class="fixed inset-0 bg-black/30 hidden items-center justify-center z-50 px-4 py-8">
+        <div class="modal-panel p-6 max-w-2xl">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">Archived Shelves</h3>
+                <button id="archived-close" class="text-slate-600">✕</button>
+            </div>
+            <div id="archived-list" class="space-y-2 max-h-64 overflow-y-auto border rounded-md p-3 bg-surface"></div>
+
+            <div class="archived-pagination mt-4 flex items-center justify-center gap-3">
+                <button id="archived-prev" class="px-3 py-1 rounded-md border text-sm">Previous</button>
+                <div id="archived-page-info" class="text-sm text-slate-600">Page 1 of 1</div>
+                <button id="archived-next" class="px-3 py-1 rounded-md border text-sm">Next</button>
+            </div>
+
+            <div class="mt-4 text-right">
+                <button id="archived-done" class="px-4 py-2 rounded-md bg-slate-100">Close</button>
+            </div>
         </div>
     </div>
 
@@ -482,4 +235,200 @@
             <strong class="text-slate-800">Note:</strong> This page is now backed by live inventory data from the system. Shelves display actual products and quantities where available.
         </div>
     </div>
+
+    <!-- QR Code Generation Modal -->
+    <div id="wm-qr-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="bg-gradient-to-r from-emerald-600 to-cyan-600 px-6 py-4 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-white/20 rounded-lg p-2">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+                            </svg>
+                        </div>
+                        <h2 class="text-xl font-bold text-white">Generate QR Codes</h2>
+                    </div>
+                    <button onclick="document.getElementById('wm-qr-modal').style.display='none'" class="text-white/80 hover:text-white transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6 space-y-6">
+                <!-- Product Rows -->
+                <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                        <div>
+                            <p class="text-sm font-semibold text-slate-800">New Stock Products</p>
+                            <p class="text-xs text-slate-500 mt-1">Enter product names to generate QR codes for multiple items at once.</p>
+                        </div>
+                        <button type="button" onclick="wmAddProductRow()" class="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">+ Add Product</button>
+                    </div>
+                    <div id="wm-product-rows" class="grid gap-3 max-h-[300px] overflow-y-auto"></div>
+                </div>
+
+                <!-- Restock Date Display (Fixed to today) -->
+                <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                    <label class="block text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        Restock Date (Today)
+                    </label>
+                    <input type="text" id="wm-qr-restock-date" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg bg-slate-50 text-sm transition" readonly>
+                </div>
+
+                <!-- QR Code Preview -->
+                <div id="wm-qr-preview" class="space-y-4">
+                    <div id="wm-qr-loading" class="hidden text-center py-12">
+                        <div class="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-600 mb-4"></div>
+                        <p class="text-sm text-slate-600">Generating QR codes...</p>
+                    </div>
+                    <!-- QR codes will be generated here -->
+                </div>
+
+                <!-- Pagination -->
+                <div id="wm-qr-pagination" class="hidden flex items-center justify-between pt-4 border-t border-slate-200">
+                    <button onclick="wmPrevPage()" class="px-4 py-2 rounded-lg border border-slate-300 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" id="wm-prev-page">Previous</button>
+                    <span id="wm-page-info" class="text-sm text-slate-600">Page 1 of 1</span>
+                    <button onclick="wmNextPage()" class="px-4 py-2 rounded-lg border border-slate-300 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" id="wm-next-page">Next</button>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-3 pt-4 border-t border-slate-200">
+                    <button onclick="wmGenerateAllQR()" class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold hover:from-emerald-700 hover:to-emerald-800 transition shadow-md">
+                        Generate All QR Codes
+                    </button>
+                    <button onclick="wmPrintAllQR()" class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-slate-600 to-slate-700 text-white font-semibold hover:from-slate-700 hover:to-slate-800 transition shadow-md">
+                        Print All QR Codes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Stock Details Modal -->
+    <div id="wm-new-stock-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4">
+            <div class="bg-gradient-to-r from-emerald-600 to-cyan-600 px-6 py-4 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-white/20 rounded-lg p-2">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+                            </svg>
+                        </div>
+                        <h2 class="text-xl font-bold text-white">New Stock Details</h2>
+                    </div>
+                    <button onclick="wmCloseNewStockModal()" class="text-white/80 hover:text-white transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                    <p class="text-sm text-slate-600"><strong>Product Name:</strong> <span id="wm-ns-product-name">-</span></p>
+                    <p class="text-sm text-slate-600"><strong>SKU:</strong> <span id="wm-ns-sku">-</span></p>
+                    <p class="text-sm text-slate-600"><strong>Restock Date:</strong> <span id="wm-ns-restock-date">-</span></p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Price</label>
+                    <input type="number" id="wm-ns-price" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm" placeholder="Enter price" step="0.01">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Quantity</label>
+                    <input type="number" id="wm-ns-quantity" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm" placeholder="Enter quantity" min="1">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Category</label>
+                    <select id="wm-ns-category" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm">
+                        <option value="">Select category</option>
+                        <option value="Parts">Parts</option>
+                        <option value="Accessories">Accessories</option>
+                        <option value="Oil">Oil</option>
+                        <option value="Tires">Tires</option>
+                        <option value="Battery">Battery</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Description (Optional)</label>
+                    <textarea id="wm-ns-description" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm" rows="2" placeholder="Enter description"></textarea>
+                </div>
+
+                <div class="flex gap-3 pt-4 border-t border-slate-200">
+                    <button onclick="wmCloseNewStockModal()" class="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200 transition">Cancel</button>
+                    <button onclick="wmSaveNewStock()" class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold hover:from-emerald-700 hover:to-emerald-800 transition shadow-md">Save & Add to Warehouse</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Code Scanner Modal -->
+    <div id="wm-scan-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-4">
+            <div class="bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-4 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-white/20 rounded-lg p-2">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
+                        <h2 class="text-xl font-bold text-white">QR Code Scanner</h2>
+                    </div>
+                    <button onclick="wmCloseScanner()" class="text-white/80 hover:text-white transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row p-6 gap-6">
+                <!-- Scanner Section -->
+                <div class="flex-1">
+                    <div id="wm-scanner-reader" class="w-full bg-black rounded-xl overflow-hidden min-h-[400px]"></div>
+                    <div id="wm-scanner-status" class="text-center text-sm text-slate-600 mt-2">Position QR code within the frame</div>
+                </div>
+                
+                <!-- Scanned Items Section -->
+                <div class="w-full md:w-80">
+                    <div id="wm-scanned-items" class="hidden">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-sm font-semibold text-slate-700">Scanned Items (<span id="wm-scan-count">0</span>)</h3>
+                            <button onclick="wmClearScannedItems()" class="text-xs text-red-500 hover:text-red-700">Clear All</button>
+                        </div>
+                        <div id="wm-scan-list" class="max-h-48 overflow-y-auto space-y-2"></div>
+                        
+                        <!-- Pagination -->
+                        <div id="wm-scan-pagination" class="hidden flex items-center justify-between mt-3 pt-3 border-t border-slate-200">
+                            <button onclick="wmScanPrevPage()" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" id="wm-scan-prev-page">Previous</button>
+                            <span id="wm-scan-page-info" class="text-xs text-slate-600">Page 1 of 1</span>
+                            <button onclick="wmScanNextPage()" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" id="wm-scan-next-page">Next</button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-3 mt-4">
+                        <button onclick="wmCloseScanner()" class="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200 transition">Cancel</button>
+                        <button onclick="wmProceedToDetails()" class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold hover:from-emerald-700 hover:to-emerald-800 transition shadow-md" id="wm-proceed-btn" disabled>Proceed to Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </x-layouts.app>
