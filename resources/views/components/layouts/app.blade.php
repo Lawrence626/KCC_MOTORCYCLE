@@ -28,41 +28,12 @@
         <!-- Main Content -->
         <div class="flex-1 overflow-auto md:ml-0">
             <div class="p-6">
-                @auth
-                    <div class="mb-6 flex items-center justify-end gap-4">
-                        <div class="relative">
-                            <button id="profileDropdownButton" type="button" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500">
-                                @if(optional(auth()->user())->avatar)
-                                    <img src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="avatar" class="h-8 w-8 rounded-full object-cover" />
-                                @else
-                                    <span class="h-8 w-8 rounded-full bg-teal-100 text-teal-700 grid place-items-center text-sm font-semibold">{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}</span>
-                                @endif
-                                <span class="hidden sm:inline-block">{{ auth()->user()->name }}</span>
-                                <svg class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/></svg>
-                            </button>
-                            <div id="profileDropdownMenu" class="hidden absolute right-0 z-50 mt-2 w-48 rounded-2xl border border-slate-200 bg-white shadow-xl ring-1 ring-black/5 transition duration-200 ease-out transform opacity-0 scale-95">
-                                <div class="px-4 py-3 border-b border-slate-200">
-                                    <p class="text-sm font-semibold text-slate-900">{{ auth()->user()->name }}</p>
-                                    <p class="text-xs text-slate-500 truncate">{{ auth()->user()->email }}</p>
-                                    <p class="text-xs text-cyan-600 font-medium mt-1">{{ ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'user')) }}</p>
-                                </div>
-                                <div class="py-2">
-                                    <a href="{{ route('profile.show') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">View Profile</a>
-                                    <a href="{{ route('settings.general') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Settings</a>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-slate-100">Logout</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endauth
-
                 {{ $slot }}
             </div>
         </div>
     </div>
+
+    @include('partials.admin-purchase-order-toasts')
 
     <script>
         const menuToggle = document.getElementById('mobile-menu-toggle');
@@ -89,55 +60,6 @@
                 overlay.classList.add('hidden');
             });
         });
-
-        const profileButton = document.getElementById('profileDropdownButton');
-        const profileMenu = document.getElementById('profileDropdownMenu');
-
-        if (profileButton && profileMenu) {
-            let profileMenuTimeout;
-
-            const showProfileMenu = () => {
-                clearTimeout(profileMenuTimeout);
-                profileMenu.classList.remove('hidden', 'opacity-0', 'scale-95');
-                profileMenu.classList.add('opacity-100', 'scale-100');
-            };
-
-            const hideProfileMenu = () => {
-                profileMenuTimeout = setTimeout(() => {
-                    profileMenu.classList.add('opacity-0', 'scale-95');
-                    profileMenu.classList.remove('opacity-100', 'scale-100');
-                    setTimeout(() => profileMenu.classList.add('hidden'), 150);
-                }, 180);
-            };
-
-            [profileButton, profileMenu].forEach((element) => {
-                element.addEventListener('mouseenter', showProfileMenu);
-                element.addEventListener('mouseleave', hideProfileMenu);
-            });
-
-            // allow click to toggle (helps on touch devices and when hover isn't available)
-            const toggleProfileMenu = () => {
-                if (profileMenu.classList.contains('hidden')) {
-                    profileMenu.classList.remove('hidden', 'opacity-0', 'scale-95');
-                    profileMenu.classList.add('opacity-100', 'scale-100');
-                } else {
-                    profileMenu.classList.add('opacity-0', 'scale-95');
-                    profileMenu.classList.remove('opacity-100', 'scale-100');
-                    setTimeout(() => profileMenu.classList.add('hidden'), 150);
-                }
-            };
-
-            profileButton.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleProfileMenu();
-            });
-
-            document.addEventListener('click', function(event) {
-                if (!event.target.closest('#profileDropdownMenu') && !event.target.closest('#profileDropdownButton')) {
-                    profileMenu.classList.add('hidden', 'opacity-0', 'scale-95');
-                }
-            });
-        }
     </script>
 
     @stack('scripts')

@@ -17,6 +17,7 @@
             <div id="status" class="mt-4 text-center text-sm text-slate-400">
                 Position QR code within the frame
             </div>
+<<<<<<< HEAD
             <div id="permission-error" class="hidden mt-4 max-w-md text-center">
                 <div class="bg-red-900/50 border border-red-500 rounded-lg p-4">
                     <p class="text-red-400 text-sm font-medium mb-2">Camera Access Denied</p>
@@ -29,6 +30,8 @@
             <button id="start-scanner-btn" onclick="initScanner()" class="hidden mt-4 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
                 Start Scanner
             </button>
+=======
+>>>>>>> 55261fdf8c0856ecab9d26ddd532e9ca004a9774
         </div>
 
         <!-- Scanned Items -->
@@ -69,6 +72,7 @@
         const ITEMS_PER_PAGE = 4;
 
         document.addEventListener('DOMContentLoaded', function() {
+<<<<<<< HEAD
             checkCameraSupport();
             checkConnection();
         });
@@ -104,6 +108,12 @@
             }
         }
 
+=======
+            initScanner();
+            checkConnection();
+        });
+
+>>>>>>> 55261fdf8c0856ecab9d26ddd532e9ca004a9774
         function initScanner() {
             html5QrcodeScanner = new Html5Qrcode("reader");
             
@@ -118,6 +128,7 @@
                 config,
                 onScanSuccess,
                 onScanFailure
+<<<<<<< HEAD
             ).then(() => {
                 document.getElementById('status').textContent = 'Position QR code within the frame';
                 document.getElementById('permission-error').classList.add('hidden');
@@ -179,6 +190,15 @@
             }
         }
 
+=======
+            ).catch(err => {
+                console.error("Scanner error:", err);
+                document.getElementById('status').textContent = 'Camera access denied or not available';
+                document.getElementById('status').classList.add('text-red-400');
+            });
+        }
+
+>>>>>>> 55261fdf8c0856ecab9d26ddd532e9ca004a9774
         function onScanSuccess(decodedText, decodedResult) {
             try {
                 const parsed = JSON.parse(decodedText);

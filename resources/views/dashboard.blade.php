@@ -1,6 +1,5 @@
 <x-layouts.app :title="__('Dashboard')">
     <div class="space-y-3">
-        <!-- Page Header -->
         <div class="flex items-center justify-between">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
@@ -306,6 +305,5 @@
             </div>
         </div>
     </div>
-
 
 </x-layouts.app>
