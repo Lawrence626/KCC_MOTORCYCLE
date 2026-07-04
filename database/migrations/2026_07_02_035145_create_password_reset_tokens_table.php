@@ -14,11 +14,13 @@ return new class extends Migration
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->id();
             $table->string('email');
-            $table->string('otp');
+            $table->string('token', 6); // 6-digit code
             $table->timestamp('expires_at');
+            $table->boolean('used')->default(false);
             $table->timestamps();
             
             $table->index('email');
+            $table->index('token');
             $table->index('expires_at');
         });
     }

@@ -111,7 +111,7 @@
                                         <h2 class="otp-modal-title">Enter verification code</h2>
                                         <p class="otp-modal-description">We sent a 6-digit code to your email. Enter it here to finish login.</p>
                                     </div>
-                                    <button type="button" class="otp-close-btn" onclick="hideOtpModal()">×</button>
+                                    <button type="button" class="otp-close-btn" onclick="hideOtpModal()" aria-label="Close verification modal">×</button>
                                 </div>
 
                                 <div class="otp-form-group">
@@ -158,23 +158,19 @@
         // Setup OTP digit inputs
         otpDigits.forEach((digit, index) => {
             digit.addEventListener('input', (e) => {
-                // Only allow numeric input
                 e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                
-                // Move to next input if filled
+
                 if (e.target.value.length === 1 && index < otpDigits.length - 1) {
                     otpDigits[index + 1].focus();
                 }
             });
 
             digit.addEventListener('keydown', (e) => {
-                // Handle backspace
                 if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
                     otpDigits[index - 1].focus();
                 }
-                
-                // Allow arrow keys and other navigation
-                if (['ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+
+                if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
                     if (e.key === 'ArrowLeft' && index > 0) {
                         otpDigits[index - 1].focus();
                         e.preventDefault();
@@ -187,21 +183,36 @@
 
             digit.addEventListener('paste', (e) => {
                 e.preventDefault();
-                const pastedData = (e.clipboardData || window.clipboardData).getData('text');
-                const digits = pastedData.replace(/[^0-9]/g, '').split('');
-                
-                digits.forEach((digit, i) => {
+                const pastedData = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+                const digits = pastedData.split('');
+
+                digits.forEach((char, i) => {
                     if (index + i < otpDigits.length) {
-                        otpDigits[index + i].value = digit;
+                        otpDigits[index + i].value = char;
                     }
                 });
-                
+
                 if (digits.length > 0) {
                     const nextIndex = Math.min(index + digits.length - 1, otpDigits.length - 1);
                     otpDigits[nextIndex].focus();
                 }
             });
+
+            digit.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    verifyOtpCode();
+                }
+            });
         });
+
+        function getOtpCode() {
+            return Array.from(otpDigits).map(digit => digit.value).join('');
+        }
+
+        function clearOtpFields() {
+            otpDigits.forEach(digit => digit.value = '');
+        }
 
         rememberCheckbox.addEventListener('change', function() {
             rememberInput.value = this.checked ? '1' : '0';
@@ -232,7 +243,7 @@
             otpModal.classList.remove('hidden');
             otpError.classList.add('hidden');
             otpStatus.classList.add('hidden');
-            otpDigits.forEach(digit => digit.value = '');
+            clearOtpFields();
             otpDigits[0].focus();
         }
 
@@ -240,11 +251,12 @@
             otpModal.classList.add('hidden');
             otpError.classList.add('hidden');
             otpStatus.classList.add('hidden');
-            otpDigits.forEach(digit => digit.value = '');
+            clearOtpFields();
         }
 
         async function sendOtpRequest() {
             otpError.classList.add('hidden');
+            otpStatus.classList.add('hidden');
             const payload = {
                 email: emailInput.value.trim(),
                 password: passwordInput.value,
@@ -279,11 +291,9 @@
 
         async function verifyOtpCode() {
             otpError.classList.add('hidden');
+            otpStatus.classList.add('hidden');
 
-            // Collect all 6 digits
-            const code = Array.from(otpDigits).map(digit => digit.value).join('');
-
-            // Validate that all digits are filled
+            const code = getOtpCode();
             if (code.length !== 6) {
                 otpError.textContent = 'Please enter all 6 digits of the verification code.';
                 otpError.classList.remove('hidden');
@@ -298,7 +308,7 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ code: code }),
+                    body: JSON.stringify({ code }),
                 });
 
                 const data = await response.json();
@@ -345,13 +355,11 @@
                     return;
                 }
 
-                // Show success message
                 otpStatus.textContent = '✓ Verification code sent successfully!';
                 otpStatus.classList.remove('hidden');
-                otpDigits.forEach(digit => digit.value = '');
+                clearOtpFields();
                 otpDigits[0].focus();
 
-                // Re-enable button after 3 seconds
                 setTimeout(() => {
                     otpResendButton.disabled = false;
                 }, 3000);
@@ -366,7 +374,6 @@
             sendOtpRequest();
         });
 
-        // Enter key support for login form
         emailInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();

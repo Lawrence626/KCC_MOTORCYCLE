@@ -289,6 +289,7 @@
             </form>
         </div>
     </div>
+</div>
 
     <!-- Edit Product Modal -->
     <div id="editProductModal" class="hidden fixed inset-0 backdrop-blur-sm bg-black/30 z-[9999]">
@@ -538,6 +539,7 @@
         window.AllStocks = {
             routes: {
                 apiProducts: '{{ route("api.products") }}',
+                apiProductShowBase: '{{ url("api/products") }}',
                 stockAdd: '{{ route("stock.add") }}',
                 apiStats: '{{ route("api.stats") }}',
                 apiMovements: '{{ route("api.movements") }}',

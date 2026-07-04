@@ -180,6 +180,16 @@
                     Cancel
                 </button>
             </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-3 pt-4">
+                <button type="submit" class="flex-1 rounded-2xl bg-gradient-to-r from-cyan-600 to-cyan-500 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:shadow-lg hover:from-cyan-700 hover:to-cyan-600">
+                    Save Changes
+                </button>
+                <button type="button" id="cancelEditProfile" class="rounded-2xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                    Cancel
+                </button>
+            </div>
         </form>
     </div>
 </div>

@@ -10,8 +10,18 @@
         ];
 
         $salesTrend = $salesTrend ?? [
-            'labels' => ['Apr 1', 'Apr 5', 'Apr 10', 'Apr 15', 'Apr 20', 'Apr 25', 'Apr 30'],
-            'values' => [11800, 14200, 13500, 15800, 17200, 16800, 18400],
+            'monthly' => [
+                'labels' => ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                'values' => [0, 0, 11800, 14200, 16800, 18400],
+            ],
+            'weekly' => [
+                'labels' => ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
+                'values' => [0, 0, 0, 0, 0],
+            ],
+            'daily' => [
+                'labels' => ['Apr 1', 'Apr 5', 'Apr 10', 'Apr 15', 'Apr 20', 'Apr 25', 'Apr 30'],
+                'values' => [11800, 14200, 13500, 15800, 17200, 16800, 18400],
+            ],
         ];
 
         $categoryBreakdown = $categoryBreakdown ?? [
@@ -356,22 +366,14 @@
             const serverSalesTrend = @json($salesTrend ?? null);
             const salesTrendData = (() => {
                 const localData = buildTrendData();
-                const hasLocalSales = [
-                    ...localData.monthly.values,
-                    ...localData.weekly.values,
-                    ...localData.daily.values,
-                ].some((value) => value > 0);
+                const serverData = serverSalesTrend && serverSalesTrend.monthly && Array.isArray(serverSalesTrend.monthly.values)
+                    && serverSalesTrend.weekly && Array.isArray(serverSalesTrend.weekly.values)
+                    && serverSalesTrend.daily && Array.isArray(serverSalesTrend.daily.values)
+                    ? serverSalesTrend
+                    : null;
 
-                if (hasLocalSales) {
-                    return localData;
-                }
-
-                if (serverSalesTrend && serverSalesTrend.weekly && Array.isArray(serverSalesTrend.weekly.values)) {
-                    return {
-                        monthly: localData.monthly,
-                        weekly: serverSalesTrend.weekly,
-                        daily: localData.daily,
-                    };
+                if (serverData) {
+                    return serverData;
                 }
 
                 return localData;

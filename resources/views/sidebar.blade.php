@@ -303,7 +303,14 @@
         opacity: 0;
         max-height: 0;
         overflow: hidden;
-        transition: max-height 0.25s ease, opacity 0.25s ease;
+        visibility: hidden;
+        transform: translateY(-4px);
+        transition: max-height 0.25s ease, opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
+        z-index: 999999999 !important;
+    }
+
+    .sidebar-group-content {
+        z-index: 999999999 !important;
     }
 
     .group.open .sidebar-group-content,
@@ -311,6 +318,8 @@
         display: block;
         opacity: 1;
         max-height: 999px;
+        visibility: visible;
+        transform: translateY(0);
     }
 
     .sidebar-nav-item.active {
@@ -389,23 +398,22 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function(event) {
             event.preventDefault();
             const isOpen = group.classList.contains('open');
-            
+
             clearAllHighlights();
             clearDirectNavHighlights();
             closeAllMenus();
-            
-            // Restore highlighting for groups with active submodules
+
             allGroups.forEach(g => {
                 if (hasActiveSubmodule(g)) {
                     highlightParentButton(g);
                 }
             });
-            
+
             if (!isOpen) {
                 group.classList.add('open');
                 highlightParentButton(group);
             }
-            
+
             document.querySelectorAll('.sidebar-group-content .sidebar-nav-item.active').forEach(activeItem => {
                 activeItem.classList.remove('active');
             });
@@ -418,8 +426,7 @@ document.addEventListener('DOMContentLoaded', function() {
         item.addEventListener('click', function() {
             allSubmodules.forEach(i => i.classList.remove('active'));
             this.classList.add('active');
-            
-            // Find parent group and highlight its button
+
             const parentGroup = this.closest('.group');
             if (parentGroup) {
                 clearAllHighlights();
