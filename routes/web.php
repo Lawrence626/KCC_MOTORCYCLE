@@ -10,9 +10,22 @@ use App\Http\Controllers\POSTransactionController;
 
 Route::view('/', 'login')->name('home');
 Route::view('/login', 'login')->name('login');
+
+
+
+Route::view('/forgot-password', 'forgot-password')->name('forgot-password');
+
+// Forgot Password routes (public)
+Route::post('/forgot-password/send', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendResetCode'])->name('password.send-code');
+Route::post('/forgot-password/verify', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'verifyCode'])->name('password.verify-code');
+Route::post('/forgot-password/reset', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'resetPassword'])->name('password.reset.code');
+
+Route::view('/forgot-password', 'auth.forgot-password')->name('password.request');
+
 Route::get('/reset-password/{token}', function ($token) {
     return view('auth.reset-password', ['token' => $token]);
 })->name('password.reset');
+
 
 // Login routes
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login.store');
@@ -33,7 +46,8 @@ Route::post('/reset-password', [App\Http\Controllers\Auth\ForgotPasswordControll
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard - All authenticated users
-    Route::view('dashboard', 'dashboard')->name('dashboard');
+    Route::get('dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('dashboard/data', [App\Http\Controllers\DashboardController::class, 'data'])->name('dashboard.data');
 
     // Profile update for authenticated users
     Route::match(['patch','post'], 'profile', [UserController::class, 'updateProfile'])->name('profile.update');
@@ -57,11 +71,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Shared inventory APIs for monitoring and stock overview
     Route::get('api/products', [App\Http\Controllers\StockImportController::class, 'getProducts'])->name('api.products');
+    Route::get('api/products/{id}', [App\Http\Controllers\StockImportController::class, 'getProduct'])->name('api.product.show');
     Route::get('api/stats', [App\Http\Controllers\StockImportController::class, 'getStats'])->name('api.stats');
     Route::get('api/movements', [App\Http\Controllers\StockImportController::class, 'getMovements'])->name('api.movements');
 
     // POS API for mobile scanner sync
     Route::get('api/pos/check-scan', [App\Http\Controllers\PosController::class, 'checkScan'])->name('api.pos.check-scan');
+
+
     
     // POS Transaction APIs - Admin and Cashier only
     Route::middleware('role:admin,cashier')->group(function () {
@@ -72,6 +89,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('api/pos/transactions', [POSTransactionController::class, 'index'])->name('api.pos.transactions.index');
         Route::get('api/pos/transactions/top-selling', [POSTransactionController::class, 'topSellingProducts'])->name('api.pos.transactions.top_selling');
     });
+
 
     // All Stocks - Admin, Inventory Clerk, Warehouse Personnel
     Route::middleware('role:admin,inventory_clerk,warehouse_personnel')->group(function () {
@@ -142,6 +160,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('purchase-order/{purchaseOrder}/reject', [PurchaseOrderController::class, 'reject'])->name('order.reject');
         Route::post('purchase-order/{purchaseOrder}/send', [PurchaseOrderController::class, 'sendToSupplier'])->name('order.send');
         Route::post('purchase-order/{purchaseOrder}/in-transit', [PurchaseOrderController::class, 'markInTransit'])->name('order.in_transit');
+    });
+
+    // Offline Data Reconciliation Routes - Admin only
+    Route::prefix('offline-reconciliation')->group(function () {
+        Route::get('purchase-orders', [App\Http\Controllers\OfflineReconciliationController::class, 'index'])->name('offline.purchase-orders');
+        Route::get('inventory-movements', [App\Http\Controllers\OfflineReconciliationController::class, 'inventoryMovements'])->name('offline.inventory-movements');
+        Route::get('export', [App\Http\Controllers\ExportController::class, 'index'])->name('offline.export');
+        Route::post('export/csv', [App\Http\Controllers\ExportController::class, 'exportCsv'])->name('offline.export.csv');
+        Route::post('export/excel', [App\Http\Controllers\ExportController::class, 'exportExcel'])->name('offline.export.excel');
+        Route::get('import', [App\Http\Controllers\ImportController::class, 'index'])->name('offline.import');
+        Route::post('import', [App\Http\Controllers\ImportController::class, 'import'])->name('offline.import.store');
+        Route::post('import/validate', [App\Http\Controllers\ImportController::class, 'validateFile'])->name('offline.import.validate');
+        Route::get('pending-imports', [App\Http\Controllers\ImportController::class, 'pendingImports'])->name('offline.pending.imports');
+        Route::get('pending-imports/{id}/review', [App\Http\Controllers\ImportController::class, 'review'])->name('offline.pending.review');
+        Route::post('pending-imports/{id}/approve', [App\Http\Controllers\ImportController::class, 'approve'])->name('offline.pending.approve');
+        Route::post('pending-imports/{id}/reject', [App\Http\Controllers\ImportController::class, 'reject'])->name('offline.pending.reject');
+        Route::get('history', [App\Http\Controllers\OfflineReconciliationController::class, 'history'])->name('offline.history');
+        Route::get('report/{id}', [App\Http\Controllers\OfflineReconciliationController::class, 'report'])->name('offline.report');
+        Route::delete('history/{id}', [App\Http\Controllers\OfflineReconciliationController::class, 'destroyHistory'])->name('offline.history.destroy');
+        Route::get('api/stats', [App\Http\Controllers\OfflineReconciliationController::class, 'stats'])->name('offline.api.stats');
+        Route::get('local-orders', [App\Http\Controllers\OfflineReconciliationController::class, 'localOrders'])->name('offline.local.orders');
+        Route::post('sync-order', [App\Http\Controllers\OfflineReconciliationController::class, 'syncOrder'])->name('offline.sync.order');
+        Route::post('sync-movement', [App\Http\Controllers\OfflineReconciliationController::class, 'syncMovement'])->name('offline.sync.movement');
     });
 
     // Offline Data Reconciliation Routes - Admin only

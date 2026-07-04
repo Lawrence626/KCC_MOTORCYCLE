@@ -14,6 +14,46 @@ let currentFilters = {
     restock_date: ''
 };
 let searchTimeout;
+let currentEditProduct = null;
+
+function setEditFieldError(fieldId, message) {
+    const field = document.getElementById(fieldId);
+    if (!field) return;
+    let errorContainer = field.parentElement.querySelector('.edit-field-error');
+    if (!errorContainer) {
+        errorContainer = document.createElement('div');
+        errorContainer.className = 'edit-field-error mt-1 text-xs text-red-600 min-h-[1.1rem]';
+        field.parentElement.appendChild(errorContainer);
+    }
+    errorContainer.textContent = message || '';
+}
+
+function clearEditProductErrors() {
+    document.querySelectorAll('#editProductForm .edit-field-error').forEach(el => {
+        el.textContent = '';
+    });
+}
+
+function populateEditProductForm(product) {
+    currentEditProduct = product;
+    document.getElementById('editProductId').value = product.id;
+    document.getElementById('editName').value = product.name || '';
+    document.getElementById('editProductName').value = product.product_name || '';
+    document.getElementById('editSku').value = product.sku || '';
+    document.getElementById('editBrand').value = product.brand || '';
+    document.getElementById('editSize').value = product.size || '';
+    document.getElementById('editColor').value = product.color || '';
+    document.getElementById('editStockQuantity').value = product.stock_quantity ?? 0;
+    document.getElementById('editUnitPrice').value = product.unit_price ?? 0;
+    document.getElementById('editSupplier').value = product.supplier_name || '';
+    document.getElementById('editCategory').value = product.category || '';
+    document.getElementById('editLastRestock').value = product.last_restock_date || '';
+    document.getElementById('editExpiryDate').value = product.expiry_date || '';
+    document.getElementById('editReorderLevel').value = product.reorder_level ?? 0;
+    document.getElementById('editBarcode').value = product.barcode || '';
+    document.getElementById('editDescription').value = product.description || '';
+    clearEditProductErrors();
+}
 
 // Modal functions
 function openAddStockModal() {
@@ -33,45 +73,44 @@ function openEditProductModal(productId) {
         alert('Edit modal not found');
         return;
     }
-    
+
     modal.classList.remove('hidden');
-    
-    // Fetch specific product data
-    fetch(window.AllStocks.routes.apiProducts + `?per_page=1000`)
-        .then(res => res.json())
-        .then(result => {
-            const product = result.data.find(p => p.id === parseInt(productId));
-            if (product) {
-                document.getElementById('editProductId').value = product.id;
-                document.getElementById('editName').value = product.name || '';
-                document.getElementById('editProductName').value = product.product_name || '';
-                document.getElementById('editSku').value = product.sku || '';
-                document.getElementById('editBrand').value = product.brand || '';
-                document.getElementById('editSize').value = product.size || '';
-                document.getElementById('editColor').value = product.color || '';
-                document.getElementById('editStockQuantity').value = product.stock_quantity || 0;
-                document.getElementById('editUnitPrice').value = product.unit_price || 0;
-                document.getElementById('editSupplier').value = product.supplier_name || '';
-                document.getElementById('editCategory').value = product.category || '';
-                document.getElementById('editLastRestock').value = product.last_restock_date || '';
-                document.getElementById('editExpiryDate').value = product.expiry_date || '';
-                document.getElementById('editReorderLevel').value = product.reorder_level || 0;
-                document.getElementById('editBarcode').value = product.barcode || '';
-                document.getElementById('editDescription').value = product.description || '';
+    const form = document.getElementById('editProductForm');
+    if (form) {
+        form.reset();
+        clearEditProductErrors();
+    }
+    currentEditProduct = null;
+
+    fetch(`${window.AllStocks.routes.apiProductShowBase}/${productId}`)
+        .then(async res => {
+            const result = await res.json();
+            if (!res.ok) {
+                throw new Error(result.message || 'Unable to load product');
+            }
+            if (result.product) {
+                populateEditProductForm(result.product);
             } else {
-                alert('Product not found');
+                showToast('Product not found.', 'error');
             }
         })
         .catch(error => {
             console.error('Error loading product:', error);
-            alert('Error loading product data');
+            showToast('Error loading product data.', 'error');
         });
 }
 
 function closeEditProductModal() {
-    document.getElementById('editProductModal').classList.add('hidden');
+    const modal = document.getElementById('editProductModal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
     const form = document.getElementById('editProductForm');
-    if (form) form.reset();
+    if (form) {
+        form.reset();
+        clearEditProductErrors();
+    }
+    currentEditProduct = null;
 }
 
 function handleEditClick(productId, event) {
@@ -302,7 +341,8 @@ function attachUIEvents() {
             if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Saving...'; }
 
             try {
-                const formData = {
+                const payload = {};
+                const fieldMap = {
                     name: document.getElementById('editName')?.value,
                     product_name: document.getElementById('editProductName')?.value,
                     sku: document.getElementById('editSku')?.value,
@@ -320,6 +360,15 @@ function attachUIEvents() {
                     description: document.getElementById('editDescription')?.value,
                 };
 
+                Object.entries(fieldMap).forEach(([field, value]) => {
+                    const currentValue = currentEditProduct?.[field];
+                    const normalizedCurrent = currentValue === null || currentValue === undefined ? '' : String(currentValue);
+                    const normalizedValue = value === null || value === undefined ? '' : String(value);
+                    if (normalizedCurrent !== normalizedValue) {
+                        payload[field] = value;
+                    }
+                });
+
                 const url = window.AllStocks.routes.productUpdateBase + '/' + productId;
                 const res = await fetch(url, {
                     method: 'POST',
@@ -328,21 +377,46 @@ function attachUIEvents() {
                         'X-CSRF-TOKEN': window.AllStocks.csrfToken,
                         'Accept': 'application/json',
                     },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify(payload)
                 });
 
                 const result = await res.json();
                 if (result.success) {
-                    alert('✅ Product updated successfully!');
+                    showToast(result.message || 'Product updated successfully.', 'success');
                     closeEditProductModal();
                     loadStats();
                     loadProducts(currentPage);
                 } else {
-                    alert('❌ ' + (result.message || 'Failed to update product'));
+                    clearEditProductErrors();
+                    if (result.errors && typeof result.errors === 'object') {
+                        Object.entries(result.errors).forEach(([field, messages]) => {
+                            const inputId = {
+                                name: 'editName',
+                                product_name: 'editProductName',
+                                sku: 'editSku',
+                                brand: 'editBrand',
+                                size: 'editSize',
+                                color: 'editColor',
+                                stock_quantity: 'editStockQuantity',
+                                unit_price: 'editUnitPrice',
+                                supplier_name: 'editSupplier',
+                                category: 'editCategory',
+                                last_restock_date: 'editLastRestock',
+                                expiry_date: 'editExpiryDate',
+                                reorder_level: 'editReorderLevel',
+                                barcode: 'editBarcode',
+                                description: 'editDescription',
+                            }[field] || null;
+                            if (inputId) {
+                                setEditFieldError(inputId, Array.isArray(messages) ? messages[0] : messages);
+                            }
+                        });
+                    }
+                    showToast(result.message || 'Failed to update product', 'error');
                 }
             } catch (error) {
                 console.error('Error updating product:', error);
-                alert('❌ Error updating product: ' + error.message);
+                showToast('Error updating product: ' + error.message, 'error');
             } finally {
                 if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Save Changes'; }
             }
@@ -587,7 +661,7 @@ async function loadProducts(page = 1) {
                     <td class="px-3 py-2 text-slate-600">${product.last_restock_date || '-'}</td>
                     <td class="px-3 py-2 text-slate-600">${product.expiry_date ? `${product.expiry_date} • ${product.expiry_status_label || 'Status'}` : 'Non-expiring'}</td>
                     <td class="px-3 py-2 text-center">
-                        <a href="javascript:void(0)" onclick="const modal=document.getElementById('editProductModal'); if(modal){ modal.classList.remove('hidden'); modal.style.display='flex'; }" class="text-cyan-600 hover:text-cyan-700 text-xs font-medium cursor-pointer z-50 relative">Edit</a>
+                        <a href="javascript:void(0)" onclick="event.preventDefault(); openEditModal(${product.id});" class="text-cyan-600 hover:text-cyan-700 text-xs font-medium cursor-pointer z-50 relative">Edit</a>
                     </td>
                 `;
                 tbody.appendChild(row);

@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\InventoryMovement;
 use App\Models\Product;
-use App\Models\PurchaseOrder;
 use App\Models\POSTransaction;
+use App\Models\PurchaseOrder;
 use App\Services\VatCalculationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -61,23 +61,11 @@ class AnalyticsController extends Controller
             ->where('stock_quantity', '<=', 0)
             ->count();
 
-        $topProducts = $this->getTopSellingProductsFromTransactions();
+        $startOfMonth = now()->startOfMonth();
+        $endOfMonth = now()->endOfMonth();
 
-        $categoryBreakdown = (clone $products)
-            ->select('category', DB::raw('SUM(stock_quantity * unit_price) as value'))
-            ->groupBy('category')
-            ->orderByDesc('value')
-            ->get()
-            ->map(function ($row) use ($totalInventoryValue) {
-                $value = (float) $row->value;
-                return [
-                    'label' => $row->category ?: 'Uncategorized',
-                    'value' => $value,
-                    'included_vat' => $this->vatService->calculateIncludedVat($value),
-                    'vatable_sales' => $value - $this->vatService->calculateIncludedVat($value),
-                    'share' => $totalInventoryValue > 0 ? round($value / $totalInventoryValue * 100, 0) : 0,
-                ];
-            });
+        $topProducts = $this->getTopSellingProductsFromTransactions(5, $startOfMonth, $endOfMonth);
+        $categoryBreakdown = $this->getCategoryBreakdownFromTransactions($startOfMonth, $endOfMonth);
 
         $brandMomentum = $products
             ->select('brand', DB::raw('SUM(stock_quantity * unit_price) as value'))
@@ -185,22 +173,62 @@ class AnalyticsController extends Controller
                 'low_stock_skus' => $lowStockSkus,
                 'out_of_stock_skus' => $outOfStockSkus,
             ],
-            'salesTrend' => [
-                'weekly' => [
-                    'labels' => $weeklyLabels,
-                    'values' => $weeklyValues,
-                ],
-            ],
+            'salesTrend' => $this->buildSalesTrendData(),
             'categoryBreakdown' => [
                 'labels' => $categoryBreakdown->pluck('label')->toArray(),
                 'values' => $categoryBreakdown->pluck('value')->toArray(),
+                'formatted' => $categoryBreakdown->map(fn($item) => '₱' . number_format($item['value'], 2))->values()->toArray(),
                 'shares' => $categoryBreakdown->pluck('share')->toArray(),
-                'formatted' => $formattedCategoryBreakdown,
-                'included_vat' => $categoryBreakdown->pluck('included_vat')->toArray(),
-                'vatable_sales' => $categoryBreakdown->pluck('vatable_sales')->toArray(),
             ],
             'topProducts' => $topProducts,
-        ]);    }
+        ]);
+    }
+
+    protected function buildSalesTrendData()
+    {
+        $now = now();
+
+        $monthlyLabels = [];
+        $monthlyValues = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $month = $now->copy()->subMonthsNoOverflow($i);
+            $monthlyLabels[] = $month->format('M');
+            $monthlyValues[] = (float) POSTransaction::query()
+                ->completed()
+                ->whereBetween('completed_at', [$month->copy()->startOfMonth(), $month->copy()->endOfMonth()])
+                ->sum('total_amount');
+        }
+
+        $dailyLabels = [];
+        $dailyValues = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $day = $now->copy()->subDays($i);
+            $dailyLabels[] = $day->format('M j');
+            $dailyValues[] = (float) POSTransaction::query()
+                ->completed()
+                ->whereDate('completed_at', $day)
+                ->sum('total_amount');
+        }
+
+        $weeklyLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'];
+        $weeklyValues = [];
+        $weekStart = $now->copy()->startOfDay()->subDays(34);
+
+        for ($week = 0; $week < 5; $week++) {
+            $start = $weekStart->copy()->addDays($week * 7);
+            $end = $start->copy()->endOfDay()->addDays(6);
+            $weeklyValues[] = (float) POSTransaction::query()
+                ->completed()
+                ->whereBetween('completed_at', [$start, $end])
+                ->sum('total_amount');
+        }
+
+        return [
+            'monthly' => ['labels' => $monthlyLabels, 'values' => $monthlyValues],
+            'weekly' => ['labels' => $weeklyLabels, 'values' => $weeklyValues],
+            'daily' => ['labels' => $dailyLabels, 'values' => $dailyValues],
+        ];
+    }
 
     public function pricing()
     {
@@ -371,12 +399,26 @@ class AnalyticsController extends Controller
                 return [
                     'id' => $productId,
                     'name' => $product?->name ?? 'Unknown Product',
-                    'category' => $product?->category ?? 'Uncategorized',
+                    'category' => $this->normalizeCategory($product?->category ?? 'Uncategorized'),
                     'qty' => $sales['qty'],
                     'revenue' => $sales['revenue'],
                 ];
             })
             ->filter(fn ($product) => $product['qty'] > 0)
+            ->values()
+            ->groupBy(function ($product) {
+                return strtolower(trim($product['name'])) . '|' . strtolower(trim($product['category']));
+            })
+            ->map(function ($groupedProducts) {
+                $first = $groupedProducts->first();
+                return [
+                    'id' => $first['id'],
+                    'name' => $first['name'],
+                    'category' => $first['category'],
+                    'qty' => $groupedProducts->sum('qty'),
+                    'revenue' => $groupedProducts->sum('revenue'),
+                ];
+            })
             ->sortByDesc('qty')
             ->values()
             ->slice(0, $limit);
@@ -390,5 +432,156 @@ class AnalyticsController extends Controller
                 'revenue' => '₱' . number_format($product['revenue'], 2),
             ];
         });
+    }
+
+    private function getCategoryBreakdownFromTransactions($startDate = null, $endDate = null)
+    {
+        if (!$startDate || !$endDate) {
+            $startDate = now()->startOfMonth();
+            $endDate = now()->endOfMonth();
+        }
+
+        $transactions = POSTransaction::where('status', 'completed')
+            ->whereNotNull('completed_at')
+            ->whereBetween('completed_at', [$startDate, $endDate])
+            ->get();
+
+        $categoryRevenue = [];
+        $productIds = [];
+
+        foreach ($transactions as $transaction) {
+            if (!is_array($transaction->items)) {
+                continue;
+            }
+
+            foreach ($transaction->items as $item) {
+                $productId = $item['id'] ?? null;
+                if ($productId) {
+                    $productIds[$productId] = $productId;
+                }
+            }
+        }
+
+        $productCategories = Product::whereIn('id', array_keys($productIds))
+            ->pluck('category', 'id')
+            ->all();
+
+        foreach ($transactions as $transaction) {
+            if (!is_array($transaction->items)) {
+                continue;
+            }
+
+            foreach ($transaction->items as $item) {
+                $quantity = (int) ($item['quantity'] ?? $item['qty'] ?? 0);
+                $unitPrice = (float) ($item['unit_price'] ?? $item['price'] ?? 0);
+                $productId = $item['id'] ?? null;
+                $revenue = $quantity * $unitPrice;
+
+                if ($revenue <= 0) {
+                    continue;
+                }
+
+                $categoryValue = $item['category'] ?? null;
+                if ((!$categoryValue || strcasecmp(trim($categoryValue), 'uncategorized') === 0) && $productId) {
+                    $categoryValue = $productCategories[$productId] ?? null;
+                }
+
+                $category = trim((string) $categoryValue);
+                if ($category === '') {
+                    $category = 'Uncategorized';
+                }
+
+                $category = $this->normalizeCategory($category);
+                $categoryRevenue[$category] = ($categoryRevenue[$category] ?? 0) + $revenue;
+            }
+        }
+
+        if (empty($categoryRevenue)) {
+            return collect();
+        }
+
+        $totalRevenue = array_sum($categoryRevenue);
+
+        return collect($categoryRevenue)
+            ->map(function ($value, $label) use ($totalRevenue) {
+                return [
+                    'label' => $label,
+                    'value' => (float) $value,
+                    'share' => $totalRevenue > 0 ? round(($value / $totalRevenue) * 100, 0) : 0,
+                ];
+            })
+            ->sortByDesc('value')
+            ->values();
+    }
+
+    protected function normalizeCategory($value)
+    {
+        $allowed = [
+            'engine_oil' => 'Engine Oil',
+            'engine oil' => 'Engine Oil',
+            'oil' => 'Engine Oil',
+            'battery' => 'Battery',
+            'batteries' => 'Battery',
+            'spark_plug' => 'Spark Plug',
+            'spark plug' => 'Spark Plug',
+            'sparkplug' => 'Spark Plug',
+            'brake_pads' => 'Brake Pads',
+            'brake pads' => 'Brake Pads',
+            'brakes' => 'Brake Pads',
+            'tires' => 'Tires',
+            'tire' => 'Tires',
+            'filters' => 'Filters',
+            'filter' => 'Filters',
+            'lubricants' => 'Lubricants',
+            'lubricant' => 'Lubricants',
+            'accessories' => 'Accessories',
+            'accessory' => 'Accessories',
+        ];
+
+        if (empty($value)) {
+            return 'Uncategorized';
+        }
+
+        $normalized = strtolower(trim($value));
+        $normalized = str_replace(['-', '_'], ' ', $normalized);
+        $normalized = preg_replace('/\s+/', ' ', $normalized);
+
+        if (strpos($normalized, 'engine oil') !== false || (strpos($normalized, 'engine') !== false && strpos($normalized, 'oil') !== false)) {
+            return 'Engine Oil';
+        }
+
+        if (strpos($normalized, 'battery') !== false) {
+            return 'Battery';
+        }
+
+        if (strpos($normalized, 'spark') !== false) {
+            return 'Spark Plug';
+        }
+
+        if (strpos($normalized, 'brake') !== false) {
+            return 'Brake Pads';
+        }
+
+        if (strpos($normalized, 'tire') !== false || strpos($normalized, 'tyre') !== false) {
+            return 'Tires';
+        }
+
+        if (strpos($normalized, 'filter') !== false) {
+            return 'Filters';
+        }
+
+        if (strpos($normalized, 'lubricant') !== false || strpos($normalized, 'oil') !== false) {
+            return 'Lubricants';
+        }
+
+        if (strpos($normalized, 'accessory') !== false) {
+            return 'Accessories';
+        }
+
+        if (in_array($normalized, ['uncategorized', 'unknown', 'n/a'], true)) {
+            return 'Uncategorized';
+        }
+
+        return $allowed[$normalized] ?? 'Uncategorized';
     }
 }

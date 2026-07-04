@@ -378,6 +378,7 @@
         window.AllStocks = {
             routes: {
                 apiProducts: '{{ route("api.products") }}',
+                apiProductShowBase: '{{ url("api/products") }}',
                 apiStats: '{{ route("api.stats") }}',
                 apiMovements: '{{ route("api.movements") }}',
                 apiUpdatePriceBase: '{{ url("api/product") }}',
@@ -387,5 +388,5 @@
             csrfToken: '{{ csrf_token() }}'
         };
     </script>
-    @vite('resources/js/allstocks.js')
+    @vite('resources/js/monitoring.js')
 </x-layouts.app>

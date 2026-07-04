@@ -638,7 +638,20 @@ class StockImportController extends Controller
     }
 
     /**
-     * Update product details
+     * Get a single product for the edit modal.
+     */
+    public function getProduct($id)
+    {
+        $product = Product::findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'product' => $product,
+        ], 200);
+    }
+
+    /**
+     * Update product details.
      */
     public function updateProduct(Request $request, $id)
     {
@@ -646,45 +659,88 @@ class StockImportController extends Controller
             $product = Product::findOrFail($id);
 
             $request->validate([
-                'name' => 'required|string|max:255',
-                'product_name' => 'nullable|string|max:255',
-                'sku' => 'nullable|string|max:255',
-                'brand' => 'nullable|string|max:255',
-                'size' => 'nullable|string|max:255',
-                'color' => 'nullable|string|max:255',
-                'stock_quantity' => 'required|integer|min:0',
-                'unit_price' => 'required|numeric|min:0',
-                'supplier_name' => 'nullable|string|max:255',
-                'category' => 'nullable|string|max:255',
-                'last_restock_date' => 'nullable|date',
-                'expiry_date' => 'nullable|date',
-                'reorder_level' => 'nullable|integer|min:0',
-                'barcode' => 'nullable|string|max:255',
-                'description' => 'nullable|string',
+                'name' => 'sometimes|required|string|max:255',
+                'product_name' => 'sometimes|nullable|string|max:255',
+                'sku' => 'sometimes|nullable|string|max:255',
+                'brand' => 'sometimes|nullable|string|max:255',
+                'size' => 'sometimes|nullable|string|max:255',
+                'color' => 'sometimes|nullable|string|max:255',
+                'stock_quantity' => 'sometimes|required|integer|min:0',
+                'unit_price' => 'sometimes|required|numeric|min:0',
+                'supplier_name' => 'sometimes|nullable|string|max:255',
+                'category' => 'sometimes|nullable|string|max:255',
+                'last_restock_date' => 'sometimes|nullable|date',
+                'expiry_date' => 'sometimes|nullable|date',
+                'reorder_level' => 'sometimes|nullable|integer|min:0',
+                'barcode' => 'sometimes|nullable|string|max:255',
+                'description' => 'sometimes|nullable|string',
             ]);
 
-            // Update product fields
-            $product->name = $request->input('name');
-            $product->product_name = $request->input('product_name');
-            $product->sku = $request->input('sku');
-            $product->brand = $request->input('brand');
-            $product->size = $request->input('size');
-            $product->color = $request->input('color');
-            $product->stock_quantity = (int) $request->input('stock_quantity');
-            $product->unit_price = (float) $request->input('unit_price');
-            $product->supplier_name = $request->input('supplier_name');
-            $product->category = $request->input('category') ?: 'uncategorized';
-            $product->last_restock_date = $request->input('last_restock_date');
-            $product->expiry_date = $request->input('expiry_date');
-            $product->reorder_level = (int) $request->input('reorder_level');
-            $product->barcode = $request->input('barcode');
-            $product->description = $request->input('description');
+            $payload = [];
+            $fields = [
+                'name',
+                'product_name',
+                'sku',
+                'brand',
+                'size',
+                'color',
+                'stock_quantity',
+                'unit_price',
+                'supplier_name',
+                'category',
+                'last_restock_date',
+                'expiry_date',
+                'reorder_level',
+                'barcode',
+                'description',
+            ];
 
+            foreach ($fields as $field) {
+                if (!$request->exists($field)) {
+                    continue;
+                }
+
+                $newValue = $request->input($field);
+
+                switch ($field) {
+                    case 'stock_quantity':
+                    case 'reorder_level':
+                        $newValue = (int) $newValue;
+                        break;
+                    case 'unit_price':
+                        $newValue = (float) $newValue;
+                        break;
+                    case 'category':
+                        $newValue = $newValue ?: 'uncategorized';
+                        break;
+                    case 'last_restock_date':
+                    case 'expiry_date':
+                        $newValue = $newValue === '' ? null : $newValue;
+                        break;
+                    default:
+                        $newValue = $newValue === '' ? null : $newValue;
+                        break;
+                }
+
+                if ($this->normalizeValueForComparison($product->{$field}) !== $this->normalizeValueForComparison($newValue)) {
+                    $payload[$field] = $newValue;
+                }
+            }
+
+            if (empty($payload)) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'No changes detected.',
+                    'product' => $product,
+                ], 200);
+            }
+
+            $product->fill($payload);
             $product->save();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Product updated successfully',
+                'message' => 'Product updated successfully.',
                 'product' => $product,
             ], 200);
 
@@ -692,7 +748,7 @@ class StockImportController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $e->validator->errors()->all(),
+                'errors' => $e->validator->errors()->toArray(),
             ], 422);
         } catch (Throwable $e) {
             return response()->json([
@@ -700,6 +756,19 @@ class StockImportController extends Controller
                 'message' => 'Failed to update product: ' . $e->getMessage(),
             ], 400);
         }
+    }
+
+    private function normalizeValueForComparison($value)
+    {
+        if ($value === null) {
+            return '';
+        }
+
+        if ($value instanceof \DateTimeInterface) {
+            return $value->format('Y-m-d');
+        }
+
+        return (string) $value;
     }
 
     public function exportProducts(Request $request)

@@ -298,7 +298,6 @@
             </svg>
             <span>Offline Reconciliation</span>
         </a>
-
         @endif
 
     </nav>

@@ -1,13 +1,13 @@
 <x-layouts.app :title="__('Dashboard')">
-    <div class="space-y-3">
+    <div id="dashboard-root" data-dashboard-url="{{ route('dashboard.data') }}" data-refresh-interval="15000" class="space-y-3">
         <div class="flex items-center justify-between">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
                 <p class="text-gray-600 text-xs mt-0.5">Overview of sales, inventory and performance insights</p>
             </div>
             <div class="flex items-center gap-2">
-                <button class="flex items-center gap-2 px-3 py-1 bg-white border border-gray-300 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50 transition">
-                    📅 Apr 1, 2026 · Apr 30, 2026
+                <button id="dashboardRangeLabel" class="flex items-center gap-2 px-3 py-1 bg-white border border-gray-300 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50 transition">
+                    📅 Loading…
                 </button>
                 <button class="flex items-center gap-2 px-3 py-1 bg-white border border-gray-300 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50 transition">
                     📥 Export Report
@@ -23,8 +23,8 @@
                     <div class="flex-1">
                         <p class="text-gray-600 text-xs font-medium">Total Sales</p>
                         <div class="mt-1">
-                            <p class="text-2xl font-bold text-gray-900">₱78,930.00</p>
-                            <p class="text-teal-500 text-xs mt-1 font-medium">↑ 12.5% vs. Mar 1 - Mar 31</p>
+                            <p id="salesValue" class="text-2xl font-bold text-gray-900">—</p>
+                            <p id="salesComparison" class="text-teal-500 text-xs mt-1 font-medium">Loading…</p>
                         </div>
                     </div>
                     <div class="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -41,8 +41,8 @@
                     <div class="flex-1">
                         <p class="text-gray-600 text-xs font-medium">Total Transaction</p>
                         <div class="mt-1">
-                            <p class="text-2xl font-bold text-gray-900">342</p>
-                            <p class="text-orange-500 text-xs mt-1 font-medium">↑ 8.3% vs. Mar 1 - Mar 31</p>
+                            <p id="transactionsValue" class="text-2xl font-bold text-gray-900">—</p>
+                            <p id="transactionsComparison" class="text-orange-500 text-xs mt-1 font-medium">Loading…</p>
                         </div>
                     </div>
                     <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -59,8 +59,8 @@
                     <div class="flex-1">
                         <p class="text-gray-600 text-xs font-medium">Total Profit</p>
                         <div class="mt-1">
-                            <p class="text-2xl font-bold text-gray-900">₱24,730.00</p>
-                            <p class="text-blue-500 text-xs mt-1 font-medium">↑ 15.7% vs. Mar 1 - Mar 31</p>
+                            <p id="profitValue" class="text-2xl font-bold text-gray-900">—</p>
+                            <p id="profitComparison" class="text-blue-500 text-xs mt-1 font-medium">Loading…</p>
                         </div>
                     </div>
                     <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -77,8 +77,8 @@
                     <div class="flex-1">
                         <p class="text-gray-600 text-xs font-medium">Total Item Sold</p>
                         <div class="mt-1">
-                            <p class="text-2xl font-bold text-gray-900">1,250</p>
-                            <p class="text-red-500 text-xs mt-1 font-medium">↑ 10.2% vs. Mar 1 - Mar 31</p>
+                            <p id="itemsSoldValue" class="text-2xl font-bold text-gray-900">—</p>
+                            <p id="itemsSoldComparison" class="text-red-500 text-xs mt-1 font-medium">Loading…</p>
                         </div>
                     </div>
                     <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -97,9 +97,9 @@
                 <div class="flex items-center justify-between mb-2">
                     <h2 class="text-sm font-bold text-gray-900">Sales Overview</h2>
                     <div class="flex gap-1">
-                        <button class="px-2 py-0.5 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded transition">Day</button>
-                        <button class="px-2 py-0.5 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded transition">Week</button>
-                        <button class="px-2 py-0.5 text-xs font-medium text-white bg-teal-500 hover:bg-teal-600 rounded transition">Month</button>
+                        <button type="button" data-range="daily" class="sales-range-btn px-2 py-0.5 text-xs font-medium text-gray-600 bg-slate-100 rounded transition">Day</button>
+                        <button type="button" data-range="weekly" class="sales-range-btn px-2 py-0.5 text-xs font-medium text-gray-600 bg-slate-100 rounded transition">Week</button>
+                        <button type="button" data-range="monthly" class="sales-range-btn px-2 py-0.5 text-xs font-medium text-white bg-teal-500 rounded transition">Month</button>
                     </div>
                 </div>
                 <canvas id="salesChart" height="60"></canvas>
@@ -112,43 +112,7 @@
                     <div class="flex-shrink-0">
                         <canvas id="categoryChart" width="100" height="100"></canvas>
                     </div>
-                    <div class="flex-1 space-y-1 text-xs">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-1">
-                                <span class="w-2 h-2 bg-teal-500 rounded-full"></span>
-                                <span class="text-gray-700">Exhausts</span>
-                            </div>
-                            <span class="text-gray-900 font-medium">35%</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-1">
-                                <span class="w-2 h-2 bg-green-500 rounded-full"></span>
-                                <span class="text-gray-700">Helmets</span>
-                            </div>
-                            <span class="text-gray-900 font-medium">25%</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-1">
-                                <span class="w-2 h-2 bg-yellow-500 rounded-full"></span>
-                                <span class="text-gray-700">Tires</span>
-                            </div>
-                            <span class="text-gray-900 font-medium">20%</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-1">
-                                <span class="w-2 h-2 bg-purple-500 rounded-full"></span>
-                                <span class="text-gray-700">Brakes</span>
-                            </div>
-                            <span class="text-gray-900 font-medium">10%</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-1">
-                                <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
-                                <span class="text-gray-700">Others</span>
-                            </div>
-                            <span class="text-gray-900 font-medium">10%</span>
-                        </div>
-                    </div>
+                    <div id="categoryLegend" class="flex-1 space-y-1 text-xs"></div>
                 </div>
             </div>
         </div>
@@ -169,66 +133,9 @@
                                 <th class="text-left text-gray-600 font-medium py-1 px-1">Revenue</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="py-1 px-1"><span class="font-bold text-gray-900">1</span></td>
-                                <td class="py-1 px-1">
-                                    <div class="flex items-center gap-1">
-                                        <div class="w-4 h-4 bg-gray-200 rounded"></div>
-                                        <span class="text-gray-900 font-medium text-xs">Akrapovic</span>
-                                    </div>
-                                </td>
-                                <td class="py-1 px-1 text-gray-600">Exhausts</td>
-                                <td class="py-1 px-1 text-gray-900">120</td>
-                                <td class="py-1 px-1 text-gray-900 font-medium">₱11,980</td>
-                            </tr>
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="py-1 px-1"><span class="font-bold text-gray-900">2</span></td>
-                                <td class="py-1 px-1">
-                                    <div class="flex items-center gap-1">
-                                        <div class="w-4 h-4 bg-gray-200 rounded"></div>
-                                        <span class="text-gray-900 font-medium text-xs">SHARK EVO</span>
-                                    </div>
-                                </td>
-                                <td class="py-1 px-1 text-gray-600">Helmets</td>
-                                <td class="py-1 px-1 text-gray-900">85</td>
-                                <td class="py-1 px-1 text-gray-900 font-medium">₱9,350</td>
-                            </tr>
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="py-1 px-1"><span class="font-bold text-gray-900">3</span></td>
-                                <td class="py-1 px-1">
-                                    <div class="flex items-center gap-1">
-                                        <div class="w-4 h-4 bg-gray-200 rounded"></div>
-                                        <span class="text-gray-900 font-medium text-xs">Dunlop Q3+</span>
-                                    </div>
-                                </td>
-                                <td class="py-1 px-1 text-gray-600">Tires</td>
-                                <td class="py-1 px-1 text-gray-900">70</td>
-                                <td class="py-1 px-1 text-gray-900 font-medium">₱8,673</td>
-                            </tr>
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="py-1 px-1"><span class="font-bold text-gray-900">4</span></td>
-                                <td class="py-1 px-1">
-                                    <div class="flex items-center gap-1">
-                                        <div class="w-4 h-4 bg-gray-200 rounded"></div>
-                                        <span class="text-gray-900 font-medium text-xs">Brembo Pads</span>
-                                    </div>
-                                </td>
-                                <td class="py-1 px-1 text-gray-600">Brakes</td>
-                                <td class="py-1 px-1 text-gray-900">55</td>
-                                <td class="py-1 px-1 text-gray-900 font-medium">₱5,575</td>
-                            </tr>
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="py-1 px-1"><span class="font-bold text-gray-900">5</span></td>
-                                <td class="py-1 px-1">
-                                    <div class="flex items-center gap-1">
-                                        <div class="w-4 h-4 bg-gray-200 rounded"></div>
-                                        <span class="text-gray-900 font-medium text-xs">Cub Battery</span>
-                                    </div>
-                                </td>
-                                <td class="py-1 px-1 text-gray-600">Exhausts</td>
-                                <td class="py-1 px-1 text-gray-900">40</td>
-                                <td class="py-1 px-1 text-gray-900 font-medium">₱2,260</td>
+                        <tbody id="topItemsTableBody" class="divide-y divide-gray-100">
+                            <tr>
+                                <td colspan="5" class="py-2 px-1 text-center text-gray-500 text-xs">Loading…</td>
                             </tr>
                         </tbody>
                     </table>
@@ -249,7 +156,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-600 text-xs font-medium">Total Products</p>
-                        <p class="text-2xl font-bold text-gray-900 mt-1">1,250</p>
+                        <p id="totalProductsValue" class="text-2xl font-bold text-gray-900 mt-1">—</p>
                     </div>
                     <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
                         <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
@@ -264,7 +171,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-600 text-xs font-medium">Low Stock Items</p>
-                        <p class="text-2xl font-bold text-red-600 mt-1">34</p>
+                        <p id="lowStockValue" class="text-2xl font-bold text-red-600 mt-1">—</p>
                     </div>
                     <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
                         <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 24 24">
@@ -279,7 +186,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-600 text-xs font-medium">Out of Stock Items</p>
-                        <p class="text-2xl font-bold text-gray-900 mt-1">12</p>
+                        <p id="outOfStockValue" class="text-2xl font-bold text-gray-900 mt-1">—</p>
                     </div>
                     <div class="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
                         <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
@@ -294,7 +201,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-600 text-xs font-medium">In Stock Items</p>
-                        <p class="text-2xl font-bold text-green-600 mt-1">1,204</p>
+                        <p id="inStockValue" class="text-2xl font-bold text-green-600 mt-1">—</p>
                     </div>
                     <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
                         <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 24 24">
@@ -306,4 +213,7 @@
         </div>
     </div>
 
+@push('scripts')
+    @vite('resources/js/dashboard.js')
+@endpush
 </x-layouts.app>
