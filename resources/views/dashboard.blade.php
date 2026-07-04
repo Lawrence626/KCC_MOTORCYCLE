@@ -1,18 +1,8 @@
 <x-layouts.app :title="__('Dashboard')">
-    <div class="space-y-3">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
-                <p class="text-gray-600 text-xs mt-0.5">Overview of sales, inventory and performance insights</p>
-            </div>
-            <div class="flex items-center gap-2">
-                <button class="flex items-center gap-2 px-3 py-1 bg-white border border-gray-300 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50 transition">
-                    📅 Apr 1, 2026 · Apr 30, 2026
-                </button>
-                <button class="flex items-center gap-2 px-3 py-1 bg-white border border-gray-300 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50 transition">
-                    📥 Export Report
-                </button>
-            </div>
+    <div class="space-y-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+            <p class="text-gray-600 text-xs mt-0.5">Overview of sales, inventory and performance insights</p>
         </div>
 
         <!-- Stats Grid -->

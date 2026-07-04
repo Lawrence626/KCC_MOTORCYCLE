@@ -30,31 +30,20 @@
 }
 
 /* Updated Flyout Dropdown Content */
-.sidebar-group-content {
-    position: absolute;
-    left: 100%;                  /* Places the box directly to the right of the sidebar */
-    top: 205px;                   /* Aligns cleanly with the hovered menu option */
-    width: 260px;                /* Explicit width matching your image design */
-    margin-left: 8px;            /* Clear visible gap from the sidebar boundary */
-    background-color: #171e2e;   /* Dark navy/slate backdrop hue matching the screenshot */
-    border-radius: 12px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
-    z-index: 50;
-    
-    /* Animation Properties */
-    max-height: max-content;     /* Setting this to max-content allows height to match items */
-    overflow: hidden;
+.sidebar-group-content,
+.flyout-animated {
+    display: none;
     opacity: 0;
-    transform: translateX(-10px); /* Smooth flyout transition entry from the left */
-    pointer-events: none;
-    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease, opacity 0.25s ease;
 }
 
-.group:hover .sidebar-group-content,
-.group:focus-within .sidebar-group-content {
+.group.open .sidebar-group-content,
+.group.open .flyout-animated {
+    display: block;
     opacity: 1;
-    transform: translateX(0);
-    pointer-events: auto;
+    max-height: 999px;
 }
 
 /* Responsive mobile styles */
@@ -62,49 +51,11 @@
     #sidebar-wrapper {
         width: 280px;
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
-    }
-
-    #sidebar-wrapper {
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     body.sidebar-open {
         overflow: hidden;
     }
-    
-    /* On mobile view, revert back to normal inline accordion stack instead of popups */
-    .sidebar-group-content {
-        position: relative;
-        left: 0;
-        top: 0;
-        width: 100%;
-        margin-left: 0;
-        box-shadow: none;
-        max-height: 0;
-        transform: translateY(-8px);
-        transition: max-height 0.35s ease, opacity 0.35s ease, transform 0.35s ease;
-    }
-    .group:hover .sidebar-group-content,
-    .group:focus-within .sidebar-group-content {
-        max-height: 28rem;
-        transform: translateY(0);
-    }
 }
-            /* Responsive mobile styles */
-            @media (max-width: 768px) {
-                #sidebar-wrapper {
-                    width: 280px;
-                    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
-                }
-
-                /* Smoother slide animation on mobile */
-                #sidebar-wrapper {
-                    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                }
-
-                /* Prevent body scroll when sidebar is open */
-                body.sidebar-open {
-                    overflow: hidden;
-                }
-            }
 
