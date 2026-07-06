@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\POSTransaction;
 use App\Models\Product;
+use App\Services\SalesCategoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -78,32 +79,8 @@ class DashboardController extends Controller
             ->all();
 
         // Use TODAY's transactions for category breakdown (daily reset)
-        $categoryBreakdown = $todayTransactions->flatMap(function ($transaction) use ($productCategories) {
-            return collect($transaction->items ?? [])->map(function ($item) use ($productCategories) {
-                $quantity = (int) ($item['quantity'] ?? $item['qty'] ?? 0);
-                $unitPrice = (float) ($item['unit_price'] ?? $item['price'] ?? 0);
-                $productId = $item['id'] ?? null;
-                $categoryValue = $item['category'] ?? null;
-
-                if ((!$categoryValue || strcasecmp(trim($categoryValue), 'uncategorized') === 0) && $productId) {
-                    $categoryValue = $productCategories[$productId] ?? null;
-                }
-
-                $category = $this->normalizeCategory($categoryValue);
-
-                return [
-                    'category' => $category,
-                    'amount' => $quantity * $unitPrice,
-                    'quantity' => $quantity,
-                ];
-            });
-        })->groupBy('category')->map(function ($items) {
-            $amount = $items->sum('amount');
-            return [
-                'amount' => $amount,
-                'quantity' => $items->sum('quantity'),
-            ];
-        })->sortByDesc('amount');
+        $categoryService = new SalesCategoryService();
+        $categoryBreakdown = $categoryService->getTodaysCategoryBreakdown();
 
         $topItems = $currentTransactions->flatMap(function ($transaction) use ($productCategories) {
             return collect($transaction->items ?? [])->map(function ($item) use ($productCategories) {

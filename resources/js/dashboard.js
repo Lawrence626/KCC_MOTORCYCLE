@@ -22,13 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // kasama dahil filter lang ito, hindi isang category). Bawat isa may sariling
     // kulay mula sa ibinigay na palette (dark -> neon/light teal). ----
     const CATEGORY_DEFS = [
-        { name: 'Exhaust', color: '#32FFFD' },
-        { name: 'Helmets', color: '#94FC13' },
-        { name: 'Tires', color: '#FFF600' },
-        { name: 'Brakes', color: '#FF0000' },
-        { name: 'Oils', color: '#F6850C' },
-        { name: 'Batteries', color: '#153E90' },
-        { name: 'Accessories', color: '#A3F3EB' },
+        { name: 'Exhaust', color: '#06b6d4' },
+        { name: 'Helmets', color: '#a3e635' },
+        { name: 'Tires', color: '#fbbf24' },
+        { name: 'Brakes', color: '#ef4444' },
+        { name: 'Oils', color: '#fb923c' },
+        { name: 'Batteries', color: '#3b82f6' },
+        { name: 'Accessories', color: '#10b981' },
     ];
     const INACTIVE_DOT_COLOR = '#4b5563'; // muted/gray — kapag walang benta ang category sa araw na 'yon
     const EMPTY_RING_COLOR = '#3a3a3a'; // flat gray track kapag walang laman/sales
@@ -128,32 +128,43 @@ document.addEventListener('DOMContentLoaded', () => {
             window.dashboardCategoryChart.destroy();
         }
 
-        // I-map ang data mula sa backend papunta sa fixed 7 categories.
-        // Case-insensitive match sa `label` para di kailangan mag-alala sa
-        // pagkaka-letra (Exhaust vs exhaust, etc).
+        // Use incoming data directly from backend - support both predefined and custom categories
         const incomingLabels = chartData?.labels || [];
         const incomingValues = chartData?.data || [];
-        const valueByName = {};
-        incomingLabels.forEach((label, index) => {
-            const key = String(label).trim().toLowerCase();
-            valueByName[key] = (valueByName[key] || 0) + (Number(incomingValues[index]) || 0);
+        
+        // Create a color map for predefined categories
+        const colorMap = {};
+        CATEGORY_DEFS.forEach(cat => {
+            colorMap[cat.name.toLowerCase()] = cat.color;
+        });
+        
+        // Color palette for custom categories (not in predefined list)
+        const customColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
+        let customColorIndex = 0;
+        
+        // Assign colors to incoming categories
+        const categoryColors = incomingLabels.map((label, index) => {
+            const lowerLabel = String(label).trim().toLowerCase();
+            if (colorMap[lowerLabel]) {
+                return colorMap[lowerLabel];
+            }
+            // Use custom color for non-predefined categories
+            const color = customColors[customColorIndex % customColors.length];
+            customColorIndex++;
+            return color;
         });
 
-        const values = CATEGORY_DEFS.map((cat) => valueByName[cat.name.toLowerCase()] || 0);
-        const activeFlags = values.map((value) => value > 0);
-        const total = values.reduce((sum, value) => sum + value, 0);
+        const total = incomingValues.reduce((sum, value) => sum + Number(value || 0), 0);
         const isEmpty = total <= 0;
 
-        const chartLabels = isEmpty ? ['No data'] : CATEGORY_DEFS.map((cat) => cat.name);
-        const chartValues = isEmpty ? [1] : values;
-        const colors = isEmpty
-            ? [EMPTY_RING_COLOR]
-            : CATEGORY_DEFS.map((cat) => cat.color);
+        const chartLabels = isEmpty ? ['No data'] : incomingLabels;
+        const chartValues = isEmpty ? [1] : incomingValues.map(v => Number(v || 0));
+        const colors = isEmpty ? [EMPTY_RING_COLOR] : categoryColors;
 
         const ctx = canvas.getContext('2d');
         window.dashboardCategoryChart = new Chart(ctx, {
             type: 'doughnut',
-            plugins: [glowActiveSegmentsPlugin],
+            plugins: [],
             data: {
                 labels: chartLabels,
                 datasets: [{
@@ -190,6 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
             },
         });
 
+        const activeFlags = chartValues.map((value) => value > 0);
         window.dashboardCategoryChart.$activeFlags = isEmpty ? [false] : activeFlags;
 
         const centerValueEl = document.getElementById('categoryCenterValue');
@@ -202,13 +214,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (legend) {
-            legend.innerHTML = CATEGORY_DEFS.map((cat, index) => {
-                const active = !isEmpty && activeFlags[index];
+            // Always show all predefined categories with their colors
+            // Create a map of incoming data for lookup
+            const valueMap = {};
+            incomingLabels.forEach((label, index) => {
+                valueMap[String(label).trim().toLowerCase()] = chartValues[index] || 0;
+            });
+
+            legend.innerHTML = CATEGORY_DEFS.map((cat) => {
+                const catLower = cat.name.toLowerCase();
+                const value = valueMap[catLower] || 0;
+                const hasValue = value > 0;
                 const dotStyle = `background-color: ${cat.color};`;
                 return `
-                    <div class="cat-legend-row">
-                        <span class="cat-dot" style="${dotStyle}"></span>
-                        <span class="cat-label${active ? ' cat-label-active' : ''}">${cat.name}</span>
+                    <div class="cat-legend-row" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 0;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="cat-dot" style="${dotStyle} width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;"></span>
+                            <span class="cat-label" style="color: ${hasValue ? '#ffffff' : 'rgba(255,255,255,0.5)'};">${cat.name}</span>
+                        </div>
+                        ${hasValue ? `<span class="cat-value" style="color: ${cat.color}; font-weight: 600;">${currency.format(value)}</span>` : ''}
                     </div>
                 `;
             }).join('');
