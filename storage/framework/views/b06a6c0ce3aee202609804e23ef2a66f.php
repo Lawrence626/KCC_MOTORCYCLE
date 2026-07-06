@@ -1,5 +1,14 @@
-<x-layouts.app :title="__('Dashboard')">
-    <div id="dashboard-root" data-dashboard-url="{{ route('dashboard.data') }}" data-refresh-interval="15000" class="space-y-3">
+<?php if (isset($component)) { $__componentOriginal5863877a5171c196453bfa0bd807e410 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal5863877a5171c196453bfa0bd807e410 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.layouts.app','data' => ['title' => __('Dashboard')]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('layouts.app'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(__('Dashboard'))]); ?>
+    <div id="dashboard-root" data-dashboard-url="<?php echo e(route('dashboard.data')); ?>" data-refresh-interval="15000" class="space-y-3">
         <div class="flex items-center justify-between">
            
         </div>
@@ -124,7 +133,7 @@
                     z-index: 40;
                     background-color: #0f0f0f;">
                     <div style="width: 100%; height: 100%; overflow: hidden; border-radius: 20px;">
-                        <img src="{{ asset('images/H.png') }}" alt="Sales Report" id="salesOverviewImg" style="
+                        <img src="<?php echo e(asset('images/H.png')); ?>" alt="Sales Report" id="salesOverviewImg" style="
                             width: 100%;
                             height: 100%;
                             object-fit: cover;
@@ -473,8 +482,8 @@
         }
     </style>
 
-@push('scripts')
-    @vite('resources/js/dashboard.js')
+<?php $__env->startPush('scripts'); ?>
+    <?php echo app('Illuminate\Foundation\Vite')('resources/js/dashboard.js'); ?>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -699,5 +708,14 @@
 
         });
     </script>
-@endpush
-</x-layouts.app>
+<?php $__env->stopPush(); ?>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal5863877a5171c196453bfa0bd807e410)): ?>
+<?php $attributes = $__attributesOriginal5863877a5171c196453bfa0bd807e410; ?>
+<?php unset($__attributesOriginal5863877a5171c196453bfa0bd807e410); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal5863877a5171c196453bfa0bd807e410)): ?>
+<?php $component = $__componentOriginal5863877a5171c196453bfa0bd807e410; ?>
+<?php unset($__componentOriginal5863877a5171c196453bfa0bd807e410); ?>
+<?php endif; ?><?php /**PATH C:\Users\Admin\Desktop\WEQW\KCC_MOTORCYCLE\resources\views/dashboard.blade.php ENDPATH**/ ?>

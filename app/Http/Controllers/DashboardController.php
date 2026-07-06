@@ -25,6 +25,14 @@ class DashboardController extends Controller
             ->whereBetween('completed_at', [$startDate->startOfDay(), $endDate->endOfDay()])
             ->get();
 
+        // Get today's transactions ONLY for Sales by Category chart (daily reset)
+        $todayStart = now()->startOfDay();
+        $todayEnd = now()->endOfDay();
+        $todayTransactions = POSTransaction::query()
+            ->completed()
+            ->whereBetween('completed_at', [$todayStart, $todayEnd])
+            ->get();
+
         $previousStart = (clone $startDate)->subMonthsNoOverflow(1);
         $previousEnd = (clone $endDate)->subMonthsNoOverflow(1);
 
@@ -53,17 +61,24 @@ class DashboardController extends Controller
         $previousTransactionsCount = $previousTransactions->count();
         $transactionsComparison = $this->buildComparison($currentTransactionsCount, $previousTransactionsCount);
 
+        // Get product IDs from today's transactions for category chart
+        $todayProductIds = $todayTransactions->flatMap(function ($transaction) {
+            return collect($transaction->items ?? [])->pluck('id');
+        })->filter()->unique()->all();
+
+        // Get all product categories (for backup lookup)
         $productIds = $currentTransactions->flatMap(function ($transaction) {
             return collect($transaction->items ?? [])->pluck('id');
         })->filter()->unique()->all();
 
         $productCategories = Product::query()
-            ->whereIn('id', $productIds)
+            ->whereIn('id', array_merge($productIds, $todayProductIds))
             ->where('is_archived', false)
             ->pluck('category', 'id')
             ->all();
 
-        $categoryBreakdown = $currentTransactions->flatMap(function ($transaction) use ($productCategories) {
+        // Use TODAY's transactions for category breakdown (daily reset)
+        $categoryBreakdown = $todayTransactions->flatMap(function ($transaction) use ($productCategories) {
             return collect($transaction->items ?? [])->map(function ($item) use ($productCategories) {
                 $quantity = (int) ($item['quantity'] ?? $item['qty'] ?? 0);
                 $unitPrice = (float) ($item['unit_price'] ?? $item['price'] ?? 0);
@@ -257,73 +272,14 @@ class DashboardController extends Controller
 
     protected function normalizeCategory($value)
     {
-        $allowed = [
-            'engine_oil' => 'Engine Oil',
-            'engine oil' => 'Engine Oil',
-            'oil' => 'Engine Oil',
-            'battery' => 'Battery',
-            'batteries' => 'Battery',
-            'spark_plug' => 'Spark Plug',
-            'spark plug' => 'Spark Plug',
-            'sparkplug' => 'Spark Plug',
-            'brake_pads' => 'Brake Pads',
-            'brake pads' => 'Brake Pads',
-            'brakes' => 'Brake Pads',
-            'tires' => 'Tires',
-            'tire' => 'Tires',
-            'filters' => 'Filters',
-            'filter' => 'Filters',
-            'lubricants' => 'Lubricants',
-            'lubricant' => 'Lubricants',
-            'accessories' => 'Accessories',
-            'accessory' => 'Accessories',
-        ];
-
         if (empty($value)) {
             return 'Uncategorized';
         }
 
-        $normalized = strtolower(trim($value));
-        $normalized = str_replace(['-', '_'], ' ', $normalized);
-        $normalized = preg_replace('/\s+/', ' ', $normalized);
+        $normalized = trim($value);
 
-        // Map raw values into the defined dashboard categories
-        if (strpos($normalized, 'engine oil') !== false || (strpos($normalized, 'engine') !== false && strpos($normalized, 'oil') !== false)) {
-            return 'Engine Oil';
-        }
-
-        if (strpos($normalized, 'battery') !== false) {
-            return 'Battery';
-        }
-
-        if (strpos($normalized, 'spark') !== false) {
-            return 'Spark Plug';
-        }
-
-        if (strpos($normalized, 'brake') !== false) {
-            return 'Brake Pads';
-        }
-
-        if (strpos($normalized, 'tire') !== false || strpos($normalized, 'tyre') !== false) {
-            return 'Tires';
-        }
-
-        if (strpos($normalized, 'filter') !== false) {
-            return 'Filters';
-        }
-
-        if (strpos($normalized, 'lubricant') !== false || strpos($normalized, 'oil') !== false) {
-            return 'Lubricants';
-        }
-
-        if (strpos($normalized, 'accessory') !== false) {
-            return 'Accessories';
-        }
-
-        if (in_array($normalized, ['uncategorized', 'unknown', 'n/a'], true)) {
-            return 'Uncategorized';
-        }
-
-        return $allowed[$normalized] ?? 'Uncategorized';
+        // Return the category as-is if it's not empty
+        // This way we show all the actual product categories with their own colors
+        return !empty($normalized) ? $normalized : 'Uncategorized';
     }
 }
