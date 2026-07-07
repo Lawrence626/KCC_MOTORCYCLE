@@ -35,33 +35,33 @@
                             <svg id="dashboardProfileArrow" class="w-5 h-5 text-current transition-colors duration-200" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5H7z"/></svg>
                         </button>
 
-                        <div id="dashboardProfileDropdown" class="absolute right-0 top-full mt-2 w-65 min-h-[100px] rounded-[15px] bg-[#f0f0f0] shadow-2xl shadow-black/20 z-50 hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right" style="color: #000;">
-                            <div class="px-4 py-4 border-b border-slate-300/60">
+                        <div id="dashboardProfileDropdown" class="absolute right-0 top-full mt-2 w-65 min-h-[100px] rounded-[15px] bg-[#0f0f0f] shadow-2xl shadow-black/20 z-50 hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right" style="color: #ffffff;">
+                            <div class="px-4 py-4 border-b border-slate-700/60">
                                 <div class="flex items-center gap-3">
                                     <span class="w-12 h-12 rounded-full bg-gray-200 text-black grid place-items-center overflow-hidden text-lg font-semibold">
                                         <?php echo e(strtoupper(substr(auth()->user()->name ?? 'U', 0, 1))); ?>
 
                                     </span>
                                     <div>
-                                        <div class="text-[13px] font-semibold text-black"><?php echo e(auth()->user()->name ?? 'Admin'); ?></div>
-                                        <div class="text-[12px] text-black"><?php echo e(auth()->user()->email ?? ''); ?></div>
+                                        <div class="text-[13px] font-semibold text-white"><?php echo e(auth()->user()->name ?? 'Admin'); ?></div>
+                                        <div class="text-[12px] text-gray-400"><?php echo e(auth()->user()->email ?? ''); ?></div>
                                     </div>
                                 </div>
                                 <div class="mt-3">
-                                    <span class="inline-flex items-center rounded-full border border-gray-200/20 bg-gray-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-700">
+                                    <span class="inline-flex items-center rounded-full border border-gray-600/30 bg-gray-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style="color: #32FFFD;">
                                         <?php echo e(ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'user'))); ?>
 
                                     </span>
                                 </div>
                             </div>
                             <div class="flex flex-col gap-1 px-2 py-2">
-                                <a href="<?php echo e(route('profile.show')); ?>" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm text-black hover:bg-slate-200 transition">
+                                <a href="<?php echo e(route('profile.show')); ?>" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/60 transition">
                                     <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-700 text-white">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9 9 0 1118.879 6.196 9 9 0 015.12 17.804z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                     </span>
                                     <span>View Profile</span>
                                 </a>
-                                <a href="<?php echo e(route('settings.general')); ?>" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm text-black hover:bg-slate-200 transition">
+                                <a href="<?php echo e(route('settings.general')); ?>" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/60 transition">
                                     <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-700 text-white">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                     </span>
@@ -69,7 +69,7 @@
                                 </a>
                                 <form action="<?php echo e(route('logout')); ?>" method="POST">
                                     <?php echo csrf_field(); ?>
-                                    <button type="submit" class="flex w-full items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm text-black hover:bg-slate-200 transition">
+                                    <button type="submit" class="flex w-full items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/60 transition">
                                         <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-700 text-white">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                                         </span>
