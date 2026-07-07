@@ -15,13 +15,14 @@
                     <h1 class="text-3xl font-bold text-slate-900">Dashboard</h1>
                     <p class="text-gray-600 text-sm mt-1">Overview of sales, inventory and performance insights</p>
                 </div>
-                <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div class="flex flex-col gap-1 sm:flex-row sm:items-center">
                     
                    
-                    <button type="button" class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-slate-900 text-white border border-slate-700 hover:bg-slate-800 transition" aria-label="Notifications">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a6 6 0 00-6 6v4.586l-1.707 1.707A1 1 0 005 16h14a1 1 0 00.707-1.707L18 12.586V8a6 6 0 00-6-6zm0 18a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 20z"/></svg>
-                    </button>
-                    <div class="relative inline-flex items-center gap-1.5 rounded-[20px] px-3 py-2 text-left">
+                    <div class="relative inline-flex items-center gap-2 rounded-[20px] px-3 py-2 text-left">
+                        <button type="button" class="inline-flex h-11 w-11 items-center justify-center transition text-black" aria-label="Notifications" style="background: transparent; border: none;">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a6 6 0 00-6 6v4.586l-1.707 1.707A1 1 0 005 16h14a1 1 0 00.707-1.707L18 12.586V8a6 6 0 00-6-6zm0 18a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 20z"/></svg>
+                        </button>
+                        <div class="inline-flex items-center gap-1.5 rounded-[20px] px-3 py-2 text-left">
                         <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-white">
                             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                         </span>
