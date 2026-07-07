@@ -20,13 +20,26 @@
 /* Professional sidebar styling */
 .sidebar-nav-item {
     transition: all 0.25s ease;
+    padding-right: 0.75rem;
 }
 .sidebar-nav-item:hover {
-    transform: translateX(6px);
+    transform: translateX(3px);
 }
 
-.sidebar-group-toggle {
+..sidebar-group-toggle {
     transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
+    justify-content: flex-start;
+    gap: 0.4rem;
+    padding-left: 1.25rem !important;
+    padding-right: 0.75rem !important;
+}
+.sidebar-group-toggle > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem !important;
+}
+.sidebar-group-toggle .sidebar-arrow {
+    margin: 0 0 0 0.4rem;
 }
 
 /* Updated Flyout Dropdown Content */

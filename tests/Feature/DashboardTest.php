@@ -86,7 +86,16 @@ it('returns dashboard analytics for completed pos transactions', function () {
     POSTransaction::create([
         'invoice_number' => 'INV-1002',
         'user_id' => $user->id,
-        'items' => [],
+        'items' => [
+            [
+                'id' => 2,
+                'name' => 'Pipe Set',
+                'quantity' => 3,
+                'unit_price' => 1200,
+                'cost_price' => 900,
+                'category' => 'pipe',
+            ],
+        ],
         'subtotal' => 100,
         'services_total' => 0,
         'extra_charge' => 0,
@@ -94,8 +103,8 @@ it('returns dashboard analytics for completed pos transactions', function () {
         'tax' => 12,
         'total_amount' => 112,
         'payment_method' => 'cash',
-        'status' => 'pending',
-        'completed_at' => null,
+        'status' => 'completed',
+        'completed_at' => now(),
     ]);
 
     $response = $this->actingAs($user)->getJson(route('dashboard.data'));
@@ -110,6 +119,7 @@ it('returns dashboard analytics for completed pos transactions', function () {
             'inventory',
             'range_label',
         ])
-        ->assertJsonPath('metrics.sales.value', 3360)
-        ->assertJsonPath('comparison_chart.labels.0', 'Current Period');
+        ->assertJsonPath('metrics.sales.value', 3472)
+        ->assertJsonPath('comparison_chart.labels.0', 'Current Period')
+        ->assertJsonPath('top_items.0.category', 'Exhaust');
 });

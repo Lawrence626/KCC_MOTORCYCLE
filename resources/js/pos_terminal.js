@@ -417,6 +417,7 @@ function addProductToCart(product) {
             id: product.id,
             name: product.name || product.product_name || 'Unnamed Product',
             sku: product.sku,
+            category: product.category ?? 'Uncategorized',
             unit_price: Number(product.unit_price || 0),
             quantity: 1,
         });

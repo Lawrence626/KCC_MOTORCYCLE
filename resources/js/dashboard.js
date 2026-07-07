@@ -270,8 +270,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: comparisonChart.datasets.map((dataset, index) => ({
                     label: dataset.label,
                     data: dataset.data,
-                    backgroundColor: dataset.backgroundColor || ['#32FFFD', '#153E90'],
-                    borderColor: dataset.borderColor || ['#32FFFD', '#153E90'],
+                    backgroundColor: dataset.backgroundColor || (index === 0 ? '#32FFFD' : '#A4DD00'),
+                    borderColor: dataset.borderColor || (index === 0 ? '#32FFFD' : '#A4DD00'),
                     borderWidth: 1,
                 })),
             },
@@ -284,7 +284,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: { callback: (value) => currency.format(value) },
+                        grid: { color: 'rgba(255,255,255,0.06)' },
+                        ticks: { color: '#9ca3af', callback: (value) => currency.format(value) },
+                    },
+                    x: {
+                        grid: { color: 'rgba(255,255,255,0.06)' },
+                        ticks: { color: '#9ca3af' },
                     },
                 },
             },
@@ -363,22 +368,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // ---- Glow effect plugin para sa Sales Overview line chart ----
-    const glowLinePlugin = {
-        id: 'glowLine',
-        beforeDatasetsDraw(chart) {
-            const { ctx } = chart;
-            ctx.save();
-            ctx.shadowColor = '#1ab3ce';
-            ctx.shadowBlur = 15;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 0;
-        },
-        afterDatasetsDraw(chart) {
-            chart.ctx.restore();
-        },
-    };
-
     const updateSalesChart = (range) => {
         currentSalesRange = range; // i-remember yung pinili ng user
 
@@ -427,7 +416,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.dashboardSalesChart = new Chart(ctx, {
             type: 'line',
-            plugins: [glowLinePlugin],
             data: {
                 labels: chartData.labels,
                 datasets: [{

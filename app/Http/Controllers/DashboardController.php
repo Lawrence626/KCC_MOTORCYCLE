@@ -86,14 +86,19 @@ class DashboardController extends Controller
             return collect($transaction->items ?? [])->map(function ($item) use ($productCategories) {
                 $quantity = (int) ($item['quantity'] ?? $item['qty'] ?? 0);
                 $unitPrice = (float) ($item['unit_price'] ?? $item['price'] ?? 0);
-                $productId = $item['id'] ?? null;
-                $categoryValue = $item['category'] ?? null;
+            $productId = $item['id'] ?? null;
+                $categoryValue = null;
 
-                if ((!$categoryValue || strcasecmp(trim($categoryValue), 'uncategorized') === 0) && $productId) {
-                    $categoryValue = $productCategories[$productId] ?? null;
+                if ($productId && isset($productCategories[$productId])) {
+                    $categoryValue = $productCategories[$productId];
+                }
+
+                if (($categoryValue === null || strcasecmp(trim($categoryValue), 'uncategorized') === 0) && isset($item['category'])) {
+                    $categoryValue = $item['category'];
                 }
 
                 return [
+                    'product_id' => $productId,
                     'name' => $item['name'] ?? 'Unknown Product',
                     'category' => $this->normalizeCategory($categoryValue),
                     'quantity' => $quantity,
@@ -102,6 +107,7 @@ class DashboardController extends Controller
             });
         })->groupBy('name')->map(function ($items) {
             return [
+                'product_id' => $items->first()['product_id'] ?? null,
                 'name' => $items->first()['name'],
                 'category' => $items->first()['category'],
                 'quantity' => $items->sum('quantity'),
@@ -142,14 +148,15 @@ class DashboardController extends Controller
                     [
                         'label' => 'Sales Comparison',
                         'data' => [(float) $currentSales, (float) $previousSales],
-                        'backgroundColor' => ['#14b8a6', '#818CF8'],
-                        'borderColor' => ['#14b8a6', '#818CF8'],
+                        'backgroundColor' => ['#A4DD00', '#A4DD00'],
+                        'borderColor' => ['#A4DD00', '#A4DD00'],
                     ],
                 ],
             ],
             'top_items' => $topItems->map(function ($item, $index) {
                 return [
                     'rank' => $index + 1,
+                    'product_id' => $item['product_id'] ?? null,
                     'name' => $item['name'],
                     'category' => $item['category'],
                     'qty' => $item['quantity'],
@@ -253,10 +260,58 @@ class DashboardController extends Controller
             return 'Uncategorized';
         }
 
-        $normalized = trim($value);
+        $normalized = strtolower(trim((string) $value));
+        $normalized = str_replace(['-', '_'], ' ', $normalized);
+        $normalized = preg_replace('/\s+/', ' ', $normalized);
 
-        // Return the category as-is if it's not empty
-        // This way we show all the actual product categories with their own colors
-        return !empty($normalized) ? $normalized : 'Uncategorized';
+        $categoryMap = [
+            'pipe' => 'Exhaust',
+            'exhaust' => 'Exhaust',
+            'muffler' => 'Exhaust',
+            'silencer' => 'Exhaust',
+            'helmet' => 'Helmets',
+            'helmets' => 'Helmets',
+            'tire' => 'Tires',
+            'tires' => 'Tires',
+            'wheel' => 'Tires',
+            'rim' => 'Tires',
+            'mags' => 'Tires',
+            'brake' => 'Brakes',
+            'brakes' => 'Brakes',
+            'brake master' => 'Brakes',
+            'brake shoe' => 'Brakes',
+            'caliper' => 'Brakes',
+            'disc' => 'Brakes',
+            'oil' => 'Oils',
+            'oils' => 'Oils',
+            'engine oil' => 'Oils',
+            'engine_oil' => 'Oils',
+            'battery' => 'Batteries',
+            'batteries' => 'Batteries',
+            'shock' => 'Accessories',
+            'spring' => 'Accessories',
+            'suspension' => 'Accessories',
+            'seat' => 'Accessories',
+            'mirror' => 'Accessories',
+            'lever' => 'Accessories',
+            'clutch' => 'Accessories',
+            'perch' => 'Accessories',
+            'stand' => 'Accessories',
+            'support' => 'Accessories',
+            'cover' => 'Accessories',
+            'frame' => 'Accessories',
+        ];
+
+        if (isset($categoryMap[$normalized])) {
+            return $categoryMap[$normalized];
+        }
+
+        foreach ($categoryMap as $key => $mappedCategory) {
+            if (str_contains($normalized, $key)) {
+                return $mappedCategory;
+            }
+        }
+
+        return !empty(trim((string) $value)) ? trim((string) $value) : 'Uncategorized';
     }
 }
