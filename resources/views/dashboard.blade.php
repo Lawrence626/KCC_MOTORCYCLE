@@ -1,4 +1,7 @@
 <x-layouts.app :title="__('Dashboard')">
+    @php
+        $dashboardAlert = collect($lowStockNotifications ?? [])->first(fn ($notification) => ($notification['status'] ?? 'active') !== 'dismissed');
+    @endphp
     <div id="dashboard-root" data-dashboard-url="{{ route('dashboard.data') }}" data-refresh-interval="15000" class="space-y-3">
        
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -9,10 +12,44 @@
                 <div class="flex flex-col gap-1 sm:flex-row sm:items-center">
                     
                    
-                    <div class="relative inline-flex items-center gap-2 rounded-[20px] px-3 py-2 text-left">
-                        <button type="button" class="inline-flex h-11 w-11 items-center justify-center transition text-black" aria-label="Notifications" style="background: transparent; border: none;">
+                    <div class="relative z-30 inline-flex items-center gap-2 rounded-[20px] px-3 py-2 text-left">
+                        <button id="dashboardNotificationButton" type="button" class="relative z-40 inline-flex h-11 w-11 cursor-pointer items-center justify-center transition text-black" aria-label="Notifications" style="background: transparent; border: none;" onclick="event.stopPropagation(); const dropdown=document.getElementById('dashboardNotificationDropdown'); if (dropdown) { dropdown.classList.toggle('hidden'); }">
                             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a6 6 0 00-6 6v4.586l-1.707 1.707A1 1 0 005 16h14a1 1 0 00.707-1.707L18 12.586V8a6 6 0 00-6-6zm0 18a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 20z"/></svg>
+                            @if(!empty($lowStockNotifications))
+                                <span class="absolute -top-1 -right-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-rose-600 px-1.5 text-[10px] font-semibold text-white">{{ count($lowStockNotifications) }}</span>
+                            @endif
                         </button>
+                        <div id="dashboardNotificationDropdown" class="hidden absolute right-0 top-full z-50 mt-2 w-[24rem] overflow-hidden rounded-[20px] border border-slate-200 bg-white shadow-xl shadow-slate-900/10">
+                            <div class="px-4 py-4 border-b border-slate-200">
+                                <div class="flex items-center justify-between gap-3">
+                                    <div>
+                                        <p class="text-sm font-semibold text-slate-900">Notifications</p>
+                                        <p class="text-xs text-slate-500">Recent alerts and purchase order reminders.</p>
+                                    </div>
+                                    <button id="dashboardNotificationClose" type="button" class="text-slate-400 transition hover:text-slate-700" aria-label="Close notifications">×</button>
+                                </div>
+                            </div>
+                            <div id="dashboardNotificationList" class="max-h-80 overflow-y-auto">
+                                @if(empty($lowStockNotifications))
+                                    <div class="p-4 text-sm text-slate-600">You have no new reorder notifications.</div>
+                                @else
+                                    @foreach($lowStockNotifications as $notification)
+                                        <div class="border-b border-slate-100 px-4 py-3 last:border-b-0 {{ ($notification['is_dashboard_alert'] ?? false) ? 'bg-amber-50' : '' }}" data-notification-item data-product-id="{{ $notification['product_id'] ?? '' }}">
+                                            <div class="flex items-start justify-between gap-3">
+                                                <div>
+                                                    <p class="text-sm font-semibold text-slate-900">{{ $notification['product_name'] ?? 'Product' }}</p>
+                                                    <p class="mt-1 text-sm text-slate-600">{{ $notification['message'] ?? 'Low stock alert.' }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3 flex items-center justify-between gap-2">
+                                                <span class="text-xs font-semibold uppercase tracking-[0.16em] text-amber-600">Stock {{ $notification['stock_quantity'] ?? 0 }} • Reorder {{ $notification['reorder_level'] ?? 0 }}</span>
+                                                <a href="{{ $notification['url'] ?? route('order.create', ['product_id' => $notification['product_id']]) }}" class="rounded-xl bg-emerald-600 px-3 py-2 text-[13px] font-semibold text-white transition hover:bg-emerald-700">Create order</a>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
                         <div class="inline-flex items-center gap-1.5 rounded-[20px] px-3 py-2 text-left">
                         <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-cyan-500 text-white grid place-items-center text-lg font-semibold overflow-hidden">
                             {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
@@ -70,6 +107,28 @@
                 </div>
             </div>
         </div>
+
+        @if($dashboardAlert)
+            <div id="dashboardLowStockBanner"
+                 role="status"
+                 aria-live="polite"
+                 class="pointer-events-auto fixed right-4 top-24 z-[60] hidden w-[min(24rem,calc(100%-2rem))] translate-x-6 rounded-[20px] border border-amber-200 bg-white/95 p-4 shadow-2xl shadow-slate-900/20 backdrop-blur transition-all duration-300"
+                 data-alert-product-id="{{ $dashboardAlert['product_id'] ?? '' }}"
+                 data-alert-delay-ms="{{ $dashboardAlert['dashboard_alert_delay_ms'] ?? 60000 }}">
+                <div class="flex items-start justify-between gap-3">
+                    <div class="flex-1">
+                        <div class="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-700">Low stock alert</div>
+                        <p class="banner-title mt-2 text-sm font-semibold text-slate-900">Low stock alert</p>
+                        <p class="banner-message mt-1 text-sm text-slate-600">{{ $dashboardAlert['message'] ?? 'A product is running low on stock.' }}</p>
+                    </div>
+                    <button type="button" id="dashboardLowStockBannerDismiss" class="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700" aria-label="Dismiss alert">×</button>
+                </div>
+                <div class="mt-3 flex items-center justify-between gap-2">
+                    <span class="text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-600">Moves to notifications after a minute</span>
+                    <a href="{{ $dashboardAlert['url'] ?? route('order.create', ['product_id' => $dashboardAlert['product_id']]) }}" class="rounded-xl bg-emerald-600 px-3 py-2 text-[13px] font-semibold text-white transition hover:bg-emerald-700">Create order</a>
+                </div>
+            </div>
+        @endif
 
         <!-- Stats Grid -->
         <div class="container mx-auto px-4 mb-6">
@@ -438,6 +497,22 @@
         #closeSalesOverviewBtn:hover {
             background-color: #2a2a2a !important;
         }
+        #dashboardNotificationButton {
+            position: relative;
+            z-index: 60;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        #dashboardNotificationButton:hover {
+            color: #0f0f0f;
+        }
+
+        #dashboardNotificationDropdown {
+            pointer-events: auto;
+            z-index: 70;
+        }
+
         #dashboardProfileButton {
             background-color: transparent !important;
             color: #0f0f0f !important;
@@ -1040,6 +1115,28 @@
                 }
             }
 
+            const notificationButton = document.getElementById('dashboardNotificationButton');
+            const notificationDropdown = document.getElementById('dashboardNotificationDropdown');
+            const notificationClose = document.getElementById('dashboardNotificationClose');
+
+            if (notificationButton && notificationDropdown) {
+                notificationButton.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    notificationDropdown.classList.toggle('hidden');
+                });
+            }
+
+            if (notificationClose && notificationDropdown) {
+                notificationClose.addEventListener('click', function() {
+                    notificationDropdown.classList.add('hidden');
+                });
+            }
+
+            window.addEventListener('click', function(event) {
+                if (notificationDropdown && !notificationDropdown.contains(event.target) && !notificationButton.contains(event.target)) {
+                    notificationDropdown.classList.add('hidden');
+                }
+            });
         });
     </script>
 @endpush

@@ -17,6 +17,152 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSalesRange = 'monthly'; // <-- itong variable ang mag-remember kung anong button ang huling na-click
     const salesRangeButtons = Array.from(document.querySelectorAll('.sales-range-btn'));
 
+    const notificationButton = document.getElementById('dashboardNotificationButton');
+    const notificationDropdown = document.getElementById('dashboardNotificationDropdown');
+    const notificationClose = document.getElementById('dashboardNotificationClose');
+    const notificationList = document.getElementById('dashboardNotificationList');
+    const lowStockBanner = document.getElementById('dashboardLowStockBanner');
+    const lowStockBannerDismiss = document.getElementById('dashboardLowStockBannerDismiss');
+    let lowStockAlertTimer = null;
+    let currentBannerProductId = null;
+    let lowStockBannerHandled = false;
+
+    const clearLowStockAlertTimer = () => {
+        if (lowStockAlertTimer) {
+            window.clearTimeout(lowStockAlertTimer);
+            lowStockAlertTimer = null;
+        }
+    };
+
+    const updateNotificationBadge = (count) => {
+        if (!notificationButton) {
+            return;
+        }
+
+        const badge = notificationButton.querySelector('span');
+        if (!badge) {
+            return;
+        }
+
+        if (count > 0) {
+            badge.textContent = count;
+            badge.classList.remove('hidden');
+        } else {
+            badge.textContent = '0';
+            badge.classList.add('hidden');
+        }
+    };
+
+    const renderNotificationList = (notifications) => {
+        if (!notificationList) {
+            return;
+        }
+
+        const items = Array.isArray(notifications) ? notifications : [];
+        if (items.length === 0) {
+            notificationList.innerHTML = '<div class="p-4 text-sm text-slate-600">You have no new reorder notifications.</div>';
+            return;
+        }
+
+        notificationList.innerHTML = items.map((notification) => `
+            <div class="border-b border-slate-100 px-4 py-3 last:border-b-0 ${notification.is_dashboard_alert ? 'bg-amber-50' : ''}" data-notification-item data-product-id="${notification.product_id ?? ''}">
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <p class="text-sm font-semibold text-slate-900">${notification.product_name ?? 'Product'}</p>
+                        <p class="mt-1 text-sm text-slate-600">${notification.message ?? 'Low stock alert.'}</p>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-center justify-between gap-2">
+                    <span class="text-xs font-semibold uppercase tracking-[0.16em] text-amber-600">Stock ${notification.stock_quantity ?? 0} • Reorder ${notification.reorder_level ?? 0}</span>
+                    <a href="${notification.url ?? '/order/create'}" class="rounded-xl bg-emerald-600 px-3 py-2 text-[13px] font-semibold text-white transition hover:bg-emerald-700">Create order</a>
+                </div>
+            </div>
+        `).join('');
+    };
+
+    const highlightNotification = (productId) => {
+        if (!productId || !notificationList) {
+            return;
+        }
+
+        const item = notificationList.querySelector(`[data-product-id="${productId}"]`);
+        if (item) {
+            item.classList.add('bg-amber-50', 'border-amber-200');
+            item.scrollIntoView({ block: 'nearest' });
+        }
+    };
+
+    const promoteLowStockAlert = () => {
+        if (!lowStockBanner) {
+            return;
+        }
+
+        clearLowStockAlertTimer();
+        lowStockBannerHandled = true;
+        lowStockBanner.classList.add('hidden', 'translate-x-6', 'opacity-0');
+        lowStockBanner.classList.remove('translate-x-0', 'opacity-100');
+        if (notificationDropdown) {
+            notificationDropdown.classList.remove('hidden');
+        }
+
+        highlightNotification(currentBannerProductId);
+    };
+
+    const showLowStockBanner = (notification) => {
+        if (!lowStockBanner || !notification) {
+            return;
+        }
+
+        if (lowStockBannerHandled && currentBannerProductId === (notification.product_id ?? null)) {
+            return;
+        }
+
+        const delay = parseInt(notification.dashboard_alert_delay_ms || '60000', 10);
+        currentBannerProductId = notification.product_id || null;
+        lowStockBannerHandled = false;
+        lowStockBanner.dataset.alertProductId = notification.product_id || '';
+        lowStockBanner.dataset.alertDelayMs = String(delay);
+        lowStockBanner.classList.remove('hidden');
+        window.requestAnimationFrame(() => {
+            lowStockBanner.classList.remove('translate-x-6', 'opacity-0');
+            lowStockBanner.classList.add('translate-x-0', 'opacity-100');
+        });
+
+        const title = lowStockBanner.querySelector('.banner-title');
+        const message = lowStockBanner.querySelector('.banner-message');
+        if (title) {
+            title.textContent = 'Low stock alert';
+        }
+        if (message) {
+            message.textContent = notification.message || 'A product is running low on stock.';
+        }
+
+        clearLowStockAlertTimer();
+        lowStockAlertTimer = window.setTimeout(() => {
+            promoteLowStockAlert();
+        }, delay);
+    };
+
+    const renderLowStockNotifications = (notifications) => {
+        const items = Array.isArray(notifications) ? notifications.filter((notification) => (notification.status ?? 'active') !== 'dismissed') : [];
+        updateNotificationBadge(items.length);
+        renderNotificationList(items);
+
+        const bannerNotification = items.find((notification) => notification.is_dashboard_alert || notification.dashboard_alert_visible) || items[0] || null;
+        if (bannerNotification) {
+            showLowStockBanner(bannerNotification);
+            return;
+        }
+
+        clearLowStockAlertTimer();
+        currentBannerProductId = null;
+        lowStockBannerHandled = false;
+        if (lowStockBanner) {
+            lowStockBanner.classList.add('hidden', 'translate-x-6', 'opacity-0');
+            lowStockBanner.classList.remove('translate-x-0', 'opacity-100');
+        }
+    };
+
     // ---- Fixed na listahan ng categories (galing sa filter chips: All, Exhaust,
     // Helmets, Tires, Brakes, Oils, Batteries, Accessories — "All" ay hindi
     // kasama dahil filter lang ito, hindi isang category). Bawat isa may sariling
@@ -498,6 +644,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderComparisonChart(data.comparison_chart);
                 renderTopItems(data.top_items);
                 renderInventory(data.inventory);
+                renderLowStockNotifications(data.low_stock_notifications || []);
             })
             .catch((error) => {
                 console.error('Dashboard load failed', error);
@@ -508,6 +655,36 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', () => {
             updateSalesChart(button.dataset.range);
         });
+    });
+
+    if (notificationButton && notificationDropdown) {
+        notificationButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            notificationDropdown.classList.toggle('hidden');
+        });
+    }
+
+    if (notificationClose && notificationDropdown) {
+        notificationClose.addEventListener('click', () => {
+            notificationDropdown.classList.add('hidden');
+        });
+    }
+
+    if (lowStockBannerDismiss) {
+        lowStockBannerDismiss.addEventListener('click', (event) => {
+            event.stopPropagation();
+            clearLowStockAlertTimer();
+            if (lowStockBanner) {
+                lowStockBanner.classList.add('hidden');
+                lowStockBannerHandled = true;
+            }
+        });
+    }
+
+    window.addEventListener('click', (event) => {
+        if (notificationDropdown && !notificationDropdown.contains(event.target) && !notificationButton?.contains(event.target)) {
+            notificationDropdown.classList.add('hidden');
+        }
     });
 
     loadDashboard();

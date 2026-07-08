@@ -54,6 +54,11 @@
                 </label>
 
                 <div class="rounded-[26px] border border-slate-200 bg-slate-50 p-4">
+                    <?php if(!empty($selectedProductIds)): ?>
+                        <div class="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                            The low-stock alert preselected these products for replenishment.
+                        </div>
+                    <?php endif; ?>
                     <h3 class="text-sm font-semibold text-slate-700">Low stock products</h3>
                     <p class="mt-1 text-sm text-slate-500">Select the items to include in the order.</p>
 
@@ -75,7 +80,7 @@
                                 <?php $__empty_1 = true; $__currentLoopData = $lowStockProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                     <tr class="hover:bg-white">
                                         <td class="px-4 py-3">
-                                            <input type="checkbox" name="products[<?php echo e($loop->index); ?>][selected]" value="1" class="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" />
+                                            <input type="checkbox" name="products[<?php echo e($loop->index); ?>][selected]" value="1" <?php echo e(in_array($product->id, $selectedProductIds, true) ? 'checked' : ''); ?> class="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" />
                                             <input type="hidden" name="products[<?php echo e($loop->index); ?>][product_id]" value="<?php echo e($product->id); ?>" />
                                             <input type="hidden" name="products[<?php echo e($loop->index); ?>][product_name]" value="<?php echo e($product->product_name ?? $product->name); ?>" />
                                             <input type="hidden" name="products[<?php echo e($loop->index); ?>][sku]" value="<?php echo e($product->sku); ?>" />
@@ -86,10 +91,10 @@
                                         <td class="px-4 py-3"><?php echo e($product->stock_quantity); ?></td>
                                         <td class="px-4 py-3"><?php echo e($product->reorder_level); ?></td>
                                         <td class="px-4 py-3">
-                                            <input name="products[<?php echo e($loop->index); ?>][quantity]" type="number" min="1" value="<?php echo e(max(1, $product->reorder_level - $product->stock_quantity)); ?>" class="w-20 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none" />
+                                            <input name="products[<?php echo e($loop->index); ?>][quantity]" type="number" min="1" value="<?php echo e(old('products.' . $loop->index . '.quantity', max(1, $product->reorder_level - $product->stock_quantity))); ?>" class="w-20 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none" />
                                         </td>
                                         <td class="px-4 py-3">
-                                            <input name="products[<?php echo e($loop->index); ?>][unit_price]" type="number" step="0.01" min="0" value="<?php echo e($product->unit_price); ?>" class="w-28 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none" />
+                                            <input name="products[<?php echo e($loop->index); ?>][unit_price]" type="number" step="0.01" min="0" value="<?php echo e(old('products.' . $loop->index . '.unit_price', $product->unit_price)); ?>" class="w-28 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none" />
                                         </td>
                                     </tr>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>

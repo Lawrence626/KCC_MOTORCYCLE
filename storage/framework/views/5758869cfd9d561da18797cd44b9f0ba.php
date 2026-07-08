@@ -36,13 +36,13 @@
                             <?php echo csrf_field(); ?>
 
                             <div class="form-group">
-                                <label for="email">Username</label>
+                                <label for="email">Email</label>
                                 <div class="relative">
                                     <input
-                                        type="text"
+                                        type="email"
                                         id="email"
                                         name="email"
-                                        placeholder="Enter Username"
+                                        placeholder="Enter Email"
                                         class="form-input"
                                         value="<?php echo e(old('email')); ?>"
                                         autocomplete="off"
@@ -400,6 +400,16 @@ unset($__errorArgs, $__bag); ?>
                 e.preventDefault();
                 sendOtpRequest();
             }
+        });
+
+        // Enter key support for OTP verification on each digit
+        otpDigits.forEach((digit) => {
+            digit.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    verifyOtpCode();
+                }
+            });
         });
 
         otpVerifyButton.addEventListener('click', function() {

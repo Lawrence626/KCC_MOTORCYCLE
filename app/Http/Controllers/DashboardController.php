@@ -7,13 +7,17 @@ use App\Models\Product;
 use App\Services\SalesCategoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        return view('dashboard');
+        $lowStockNotifications = $this->getLowStockNotificationsForUser(auth()->id());
+
+        return view('dashboard', compact('lowStockNotifications'));
     }
 
     public function data(Request $request)
@@ -123,6 +127,7 @@ class DashboardController extends Controller
         ];
 
         $salesChart = $this->buildSalesTrendData();
+        $lowStockNotifications = $this->getLowStockNotificationsForUser($request->user()?->id);
 
         return response()->json([
             'metrics' => [
@@ -165,7 +170,120 @@ class DashboardController extends Controller
             })->values()->all(),
             'inventory' => $inventory,
             'range_label' => $startDate->format('M j, Y') . ' - ' . $endDate->format('M j, Y'),
+            'low_stock_notifications' => $lowStockNotifications,
         ]);
+    }
+
+    public function dismissLowStockNotification(Request $request, Product $product)
+    {
+        $userId = auth()->id();
+
+        if (! $userId) {
+            abort(403);
+        }
+
+        $key = $this->lowStockNotificationCacheKey($userId);
+        $notifications = Cache::get($key, []);
+
+        if (! is_array($notifications)) {
+            $notifications = [];
+        }
+
+        $notifications = collect($notifications)
+            ->map(function ($notification) use ($product) {
+                if (($notification['product_id'] ?? null) == $product->id) {
+                    $notification['status'] = 'dismissed';
+                    $notification['dismissed_at'] = now()->toISOString();
+                }
+
+                return $notification;
+            })
+            ->values()
+            ->all();
+
+        Cache::put($key, $notifications, now()->addDays(7));
+
+        return back()->with('success', 'Low-stock reminder dismissed.');
+    }
+
+    protected function getLowStockNotificationsForUser(?int $userId): array
+    {
+        if (! $userId) {
+            return [];
+        }
+
+        $products = Product::query()
+            ->where('is_active', true)
+            ->where('is_archived', false)
+            ->where('stock_quantity', '<=', 10)
+            ->orderBy('stock_quantity')
+            ->orderBy('name')
+            ->get();
+
+        $key = $this->lowStockNotificationCacheKey($userId);
+        $notifications = Cache::get($key, []);
+
+        if (! is_array($notifications)) {
+            $notifications = [];
+        }
+
+        $notifications = collect($notifications)
+            ->filter(fn ($notification) => ($notification['status'] ?? 'active') !== 'dismissed')
+            ->values()
+            ->all();
+
+        $currentNotifications = [];
+        foreach ($products as $product) {
+            $existing = collect($notifications)->firstWhere('product_id', $product->id);
+
+            if ($existing) {
+                $existing['product_name'] = $product->product_name ?? $product->name;
+                $existing['stock_quantity'] = (int) $product->stock_quantity;
+                $existing['reorder_level'] = (int) $product->reorder_level;
+                $existing['sku'] = $product->sku;
+                $existing['supplier_name'] = $product->supplier_name;
+                $existing['message'] = 'Stock for ' . ($product->product_name ?? $product->name) . ' is at ' . (int) $product->stock_quantity . '. Reorder now.';
+                $existing['url'] = route('order.create', ['product_id' => $product->id]);
+                $existing['is_dashboard_alert'] = true;
+                $existing['dashboard_alert_visible'] = true;
+                $existing['dashboard_alert_delay_ms'] = 60000;
+                $currentNotifications[] = $existing;
+                continue;
+            }
+
+            $currentNotifications[] = $this->buildLowStockNotification($product);
+        }
+
+        Cache::put($key, $currentNotifications, now()->addDays(7));
+
+        return $currentNotifications;
+    }
+
+    protected function buildLowStockNotification(Product $product): array
+    {
+        $productName = $product->product_name ?? $product->name;
+
+        return [
+            'id' => (string) Str::uuid(),
+            'product_id' => $product->id,
+            'product_name' => $productName,
+            'sku' => $product->sku,
+            'stock_quantity' => (int) $product->stock_quantity,
+            'reorder_level' => (int) $product->reorder_level,
+            'supplier_name' => $product->supplier_name,
+            'message' => 'Stock for ' . $productName . ' is at ' . (int) $product->stock_quantity . '. Reorder now.',
+            'url' => route('order.create', ['product_id' => $product->id]),
+            'created_at' => now()->toISOString(),
+            'status' => 'active',
+            'is_dashboard_alert' => true,
+            'dashboard_alert_visible' => true,
+            'dashboard_alert_delay_ms' => 60000,
+        ];
+    }
+
+    protected function lowStockNotificationCacheKey(int $userId): string
+    {
+        return "admin_low_stock_notifications:{$userId}";
     }
 
     protected function calculateProfit($transactions)

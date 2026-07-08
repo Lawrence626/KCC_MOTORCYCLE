@@ -75,14 +75,18 @@
                     <label class="block text-slate-600 font-medium mb-0.5 text-xs">Category</label>
                     <select id="categoryFilter" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 bg-slate-50 text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
                         <option value="">All Categories</option>
-                        <option value="engine_oil">Engine Oil</option>
-                        <option value="battery">Battery</option>
-                        <option value="spark_plug">Spark Plug</option>
-                        <option value="brake_pads">Brake Pads</option>
-                        <option value="tires">Tires</option>
-                        <option value="filters">Filters</option>
-                        <option value="lubricants">Lubricants</option>
-                        <option value="accessories">Accessories</option>
+                        <option value="Tires & Wheels">Tires & Wheels</option>
+                        <option value="Brakes">Brakes</option>
+                        <option value="Engine & Transmission">Engine & Transmission</option>
+                        <option value="Suspension">Suspension</option>
+                        <option value="Electrical">Electrical</option>
+                        <option value="Exhaust">Exhaust</option>
+                        <option value="Cooling System">Cooling System</option>
+                        <option value="Body Parts">Body Parts</option>
+                        <option value="Controls (Levers, Clutch, etc.)">Controls (Levers, Clutch, etc.)</option>
+                        <option value="Accessories">Accessories</option>
+                        <option value="Helmets & Safety Gear">Helmets & Safety Gear</option>
+                        <option value="Oils & Lubricants">Oils & Lubricants</option>
                     </select>
                 </div>
 

@@ -86,17 +86,29 @@
 
     @push('scripts')
         <script>
-            const pricingCategoryCtx = document.getElementById('pricingCategoryChart');
-            if (pricingCategoryCtx) {
-                new Chart(pricingCategoryCtx, {
+            document.addEventListener('DOMContentLoaded', function () {
+                const pricingCategoryCanvas = document.getElementById('pricingCategoryChart');
+                if (!pricingCategoryCanvas || typeof Chart === 'undefined') {
+                    return;
+                }
+
+                const categoryLabels = @json($pricingByCategory->pluck('label')->map(fn($label) => $label ?: 'Uncategorized')->toArray());
+                const categoryPrices = @json($pricingByCategory->pluck('avg_price')->map(fn($price) => (float) $price)->toArray());
+
+                if (!categoryLabels.length || !categoryPrices.length) {
+                    return;
+                }
+
+                new Chart(pricingCategoryCanvas, {
                     type: 'bar',
                     data: {
-                        labels: @json($pricingByCategory->pluck('label')->toArray()),
+                        labels: categoryLabels,
                         datasets: [{
                             label: 'Average unit price',
-                            data: @json($pricingByCategory->pluck('avg_price')->toArray()),
-                            backgroundColor: '#0f766e',
+                            data: categoryPrices,
+                            backgroundColor: categoryLabels.map(() => '#0f766e'),
                             borderRadius: 12,
+                            maxBarThickness: 40,
                         }]
                     },
                     options: {
@@ -106,7 +118,9 @@
                             legend: { display: false },
                             tooltip: {
                                 callbacks: {
-                                    label: (context) => `₱${context.parsed.y.toLocaleString()}`
+                                    label: function (context) {
+                                        return '₱' + Number(context.parsed.y).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                    }
                                 }
                             }
                         },
@@ -116,16 +130,19 @@
                                 ticks: { color: '#475569' }
                             },
                             y: {
+                                beginAtZero: true,
                                 grid: { color: '#e2e8f0' },
                                 ticks: {
                                     color: '#475569',
-                                    callback: (value) => '₱' + value.toLocaleString()
+                                    callback: function (value) {
+                                        return '₱' + Number(value).toLocaleString();
+                                    }
                                 }
                             }
                         }
                     }
                 });
-            }
+            });
         </script>
     @endpush
 </x-layouts.app>

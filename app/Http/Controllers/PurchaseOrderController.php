@@ -81,47 +81,40 @@ class PurchaseOrderController extends Controller
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
+        $selectedProductIds = collect($request->query('product_id') ? [$request->query('product_id')] : [])
+            ->merge($request->query('product_ids', []))
+            ->filter()
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values()
+            ->all();
+
         $lowStockProducts = Product::where('is_active', true)
             ->where('is_archived', false)
-            ->whereRaw('stock_quantity < reorder_level')
+            ->where(function ($query) use ($selectedProductIds) {
+                $query->where('stock_quantity', '<=', 10);
+
+                if (! empty($selectedProductIds)) {
+                    $query->orWhereIn('id', $selectedProductIds);
+                }
+            })
+            ->orderBy('stock_quantity')
+            ->orderBy('name')
             ->paginate(8)
             ->withQueryString();
 
         return view('purchase_order.create', [
             'lowStockProducts' => $lowStockProducts,
             'suppliers' => Supplier::orderBy('name')->get(),
+            'selectedProductIds' => $selectedProductIds,
         ]);
     }
 
     public function history(Request $request)
     {
-        $search = $request->query('search');
-        $supplier = $request->query('supplier');
-        $dateFrom = $request->query('date_from');
-        $dateTo = $request->query('date_to');
-
-        $orders = PurchaseOrder::whereIn('status', ['completed', 'archived'])
-            ->when($search, fn ($query, $search) => $query->where(function ($query) use ($search) {
-                $query->where('order_number', 'like', "%{$search}%")
-                    ->orWhere('supplier_name', 'like', "%{$search}%");
-            }))
-            ->when($supplier, fn ($query, $supplier) => $query->where('supplier_name', $supplier))
-            ->when($dateFrom, fn ($query, $dateFrom) => $query->whereDate('completed_at', '>=', $dateFrom))
-            ->when($dateTo, fn ($query, $dateTo) => $query->whereDate('completed_at', '<=', $dateTo))
-            ->latest('completed_at')
-            ->paginate(10)
-            ->withQueryString();
-
-        return view('purchase_order.history', [
-            'orders' => $orders,
-            'suppliers' => Supplier::orderBy('name')->get(),
-            'search' => $search,
-            'supplierFilter' => $supplier,
-            'dateFrom' => $dateFrom,
-            'dateTo' => $dateTo,
-        ]);
+        return redirect()->route('order.management');
     }
 
     private function filteredPurchaseOrders(Request $request, array $statuses, string $prefix)

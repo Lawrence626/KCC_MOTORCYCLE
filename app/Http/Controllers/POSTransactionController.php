@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InventoryMovement;
 use App\Models\POSTransaction;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -25,26 +27,103 @@ class POSTransactionController extends Controller
             'payment_method' => 'required|in:cash,qr',
         ]);
 
-        $transaction = POSTransaction::create([
-            'invoice_number' => $validated['invoice_number'],
-            'user_id' => auth()->id(),
-            'items' => $validated['items'],
-            'subtotal' => $validated['subtotal'],
-            'services_total' => $validated['services_total'],
-            'extra_charge' => $validated['extra_charge'],
-            'discount' => $validated['discount'],
-            'tax' => $validated['tax'],
-            'total_amount' => $validated['total_amount'],
-            'payment_method' => $validated['payment_method'],
-            'status' => 'completed',
-            'completed_at' => now(),
-        ]);
+        $transaction = DB::transaction(function () use ($validated) {
+            $transaction = POSTransaction::create([
+                'invoice_number' => $validated['invoice_number'],
+                'user_id' => auth()->id(),
+                'items' => $validated['items'],
+                'subtotal' => $validated['subtotal'],
+                'services_total' => $validated['services_total'],
+                'extra_charge' => $validated['extra_charge'],
+                'discount' => $validated['discount'],
+                'tax' => $validated['tax'],
+                'total_amount' => $validated['total_amount'],
+                'payment_method' => $validated['payment_method'],
+                'status' => 'completed',
+                'completed_at' => now(),
+            ]);
+
+            foreach ($validated['items'] as $item) {
+                $quantity = max(0, (int) ($item['quantity'] ?? $item['qty'] ?? 0));
+
+                if ($quantity <= 0) {
+                    continue;
+                }
+
+                $product = $this->resolveProductFromItem($item);
+                if (!$product) {
+                    continue;
+                }
+
+                if ($product->stock_quantity < $quantity) {
+                    throw new \RuntimeException('Insufficient stock for product: ' . ($product->name ?? $product->product_name ?? $product->id));
+                }
+
+                $product->decrement('stock_quantity', $quantity);
+
+                InventoryMovement::create([
+                    'product_id' => $product->id,
+                    'type' => 'sale',
+                    'quantity_change' => -$quantity,
+                    'unit_price' => $item['unit_price'] ?? $product->unit_price,
+                    'supplier_name' => null,
+                    'notes' => 'Sold via POS invoice ' . $validated['invoice_number'],
+                    'metadata' => [
+                        'pos_transaction_id' => $transaction->id,
+                        'invoice_number' => $validated['invoice_number'],
+                    ],
+                ]);
+            }
+
+            return $transaction;
+        });
 
         return response()->json([
             'success' => true,
             'message' => 'Transaction saved successfully',
             'transaction' => $transaction,
         ], 201);
+    }
+
+    protected function resolveProductFromItem(array $item): ?Product
+    {
+        foreach (['product_id', 'id', 'productId'] as $key) {
+            $value = $item[$key] ?? null;
+            if ($value === null || $value === '') {
+                continue;
+            }
+
+            $product = Product::find($value);
+            if ($product) {
+                return $product;
+            }
+        }
+
+        foreach (['sku', 'barcode'] as $key) {
+            $value = $item[$key] ?? null;
+            if ($value === null || $value === '') {
+                continue;
+            }
+
+            $product = Product::where('sku', $value)
+                ->orWhere('barcode', $value)
+                ->first();
+            if ($product) {
+                return $product;
+            }
+        }
+
+        $name = $item['name'] ?? $item['product_name'] ?? null;
+        if ($name) {
+            $product = Product::where('name', $name)
+                ->orWhere('product_name', $name)
+                ->first();
+            if ($product) {
+                return $product;
+            }
+        }
+
+        return null;
     }
 
     /**

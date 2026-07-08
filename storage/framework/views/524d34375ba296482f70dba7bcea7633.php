@@ -288,8 +288,9 @@
     /* FIX: dagdag na color transition para sa direct nav links (Dashboard,
        Warehouse Management, atbp.) para pareho ring sabay ang font sa
        background wipe animation kapag na-click. */
-    .sidebar-nav-item {
-        transition: color 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+    .sidebar-nav-item,
+    .sidebar-group-toggle {
+        transition: color 0.2s ease, background-color 0.2s ease;
     }
 
     .sidebar-group-content,
@@ -300,7 +301,7 @@
         overflow: hidden;
         visibility: hidden;
         transform: translateY(-4px);
-        transition: max-height 0.25s ease, opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
+        transition: max-height 0.2s ease, opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
     }
 
     .group.open .sidebar-group-content,
@@ -341,6 +342,7 @@
         overflow: hidden;
         z-index: 0;
         isolation: isolate;
+        transition: transform 0.2s ease, color 0.2s ease, background-color 0.2s ease;
     }
 
     .sidebar-nav-item::before,
@@ -355,15 +357,17 @@
         background: rgba(123, 123, 123, 0.35);
         transform: scaleX(0);
         transform-origin: left;
-        transition: none; /* instant show/hide on plain hover */
+        transition: transform 0.2s ease, opacity 0.2s ease;
+        opacity: 0;
         z-index: -1;
         pointer-events: none;
     }
 
-    /* Plain hover: instantly visible, no animation */
+    /* Plain hover: smooth fade/scale on hover */
     .sidebar-nav-item:hover::before,
     .sidebar-group-toggle:hover::before {
         transform: scaleX(1);
+        opacity: 1;
     }
 
     /* Walang hover BOX ang mga sub-menu items (Inventory Monitoring, All Stocks, etc.) */
@@ -376,6 +380,12 @@
        ibang effect */
     .sidebar-group-content .sidebar-nav-item:hover {
         color: #ffffff;
+        transform: translateY(-2px) scale(1.01);
+    }
+
+    .sidebar-nav-item:hover,
+    .sidebar-group-toggle:hover {
+        transform: translateY(-2px) scale(1.01);
     }
 
     /* Once already active/clicked, no more hover box (it already has its own

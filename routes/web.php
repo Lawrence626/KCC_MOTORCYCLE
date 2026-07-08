@@ -48,6 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard - All authenticated users
     Route::get('dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     Route::get('dashboard/data', [App\Http\Controllers\DashboardController::class, 'data'])->name('dashboard.data');
+    Route::post('dashboard/low-stock/{product}/dismiss', [App\Http\Controllers\DashboardController::class, 'dismissLowStockNotification'])->name('dashboard.low-stock.dismiss');
 
     // Profile update for authenticated users
     Route::match(['patch','post'], 'profile', [UserController::class, 'updateProfile'])->name('profile.update');

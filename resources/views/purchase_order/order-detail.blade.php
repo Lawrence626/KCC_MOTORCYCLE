@@ -5,7 +5,7 @@
                 <h1 class="text-3xl font-bold text-slate-900">Purchase Order {{ $purchaseOrder->order_number }}</h1>
                 <p class="max-w-2xl text-sm text-slate-500">Review full purchase order details and manage the lifecycle.</p>
             </div>
-            <a href="{{ route('order.history') }}" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:border-emerald-500 hover:text-slate-900">Back to Purchase Order History</a>
+            <a href="{{ route('order.management') }}" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:border-emerald-500 hover:text-slate-900">Back to Orders</a>
         </div>
 
         @if(session('success'))

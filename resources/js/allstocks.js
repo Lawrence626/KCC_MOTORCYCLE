@@ -241,7 +241,13 @@ function attachUIEvents() {
     }
 
     const categoryEl = document.getElementById('categoryFilter');
-    if (categoryEl) categoryEl.addEventListener('change', function(e){ currentFilters.category = e.target.value; performSearch(); });
+    if (categoryEl) {
+        categoryEl.addEventListener('change', function(e) {
+            currentFilters.category = e.target.value;
+            renderCategoryChips();
+            performSearch();
+        });
+    }
     const productNameEl = document.getElementById('productNameFilter');
     if (productNameEl) productNameEl.addEventListener('change', function(e){ currentFilters.product_name = e.target.value; performSearch(); });
     const brandEl = document.getElementById('brandFilter');

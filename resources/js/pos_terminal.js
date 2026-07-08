@@ -82,7 +82,10 @@ function saveTransactionToDatabase(invoice, total, paymentMethod, items) {
     // Prepare items with additional data
     const transactionItems = items.map(item => ({
         id: item.id,
+        product_id: item.id,
         name: item.name,
+        sku: item.sku || '',
+        barcode: item.barcode || '',
         quantity: item.qty,
         unit_price: item.price,
         category: posState.cart.find(c => c.id === item.id)?.category || 'Uncategorized',
