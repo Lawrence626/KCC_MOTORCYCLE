@@ -9,7 +9,7 @@
                     <h1 class="text-3xl font-bold text-slate-900">Dashboard</h1>
                     <p class="text-gray-600 text-sm mt-1">Overview of sales, inventory and performance insights</p>
                 </div>
-                <div class="flex flex-col gap-1 sm:flex-row sm:items-center">
+                <div class="flex flex-col gap-1 sm:flex-row sm:items-center pr-4">
                     
                    
                     <div class="relative z-30 inline-flex items-center gap-2 rounded-[20px] px-3 py-2 text-left">
@@ -51,7 +51,7 @@
                             </div>
                         </div>
                         <div class="inline-flex items-center gap-1.5 rounded-[20px] px-3 py-2 text-left">
-                        <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-cyan-500 text-white grid place-items-center text-lg font-semibold overflow-hidden">
+                        <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-black grid place-items-center text-lg font-semibold overflow-hidden">
                             {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
                         </span>
                         <div class="flex flex-col leading-tight">
@@ -62,31 +62,31 @@
                             <svg id="dashboardProfileArrow" class="w-5 h-5 text-current transition-colors duration-200" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5H7z"/></svg>
                         </button>
 
-                        <div id="dashboardProfileDropdown" class="absolute right-0 top-full mt-2 w-65 min-h-[100px] rounded-[15px] bg-[#f0f0f0] shadow-2xl shadow-black/20 z-50 hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right" style="color: #000;">
-                            <div class="px-4 py-4 border-b border-slate-300/60">
+                        <div id="dashboardProfileDropdown" class="absolute right-0 top-full mt-2 w-65 min-h-[100px] rounded-[15px] bg-[#0f0f0f] shadow-2xl shadow-black/20 z-50 hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right" style="color: #ffffff;">
+                            <div class="px-4 py-4 border-b border-slate-700/60">
                                 <div class="flex items-center gap-3">
-                                    <span class="w-12 h-12 rounded-full bg-cyan-500 text-white grid place-items-center overflow-hidden text-lg font-semibold">
+                                    <span class="w-12 h-12 rounded-full bg-gray-200 text-black grid place-items-center overflow-hidden text-lg font-semibold">
                                         {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
                                     </span>
                                     <div>
-                                        <div class="text-[13px] font-semibold text-black">{{ auth()->user()->name ?? 'Admin' }}</div>
-                                        <div class="text-[12px] text-black">{{ auth()->user()->email ?? '' }}</div>
+                                        <div class="text-[13px] font-semibold text-white">{{ auth()->user()->name ?? 'Admin' }}</div>
+                                        <div class="text-[12px] text-gray-400">{{ auth()->user()->email ?? '' }}</div>
                                     </div>
                                 </div>
                                 <div class="mt-3">
-                                    <span class="inline-flex items-center rounded-full border border-cyan-500/20 bg-cyan-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-cyan-700">
+                                    <span class="inline-flex items-center rounded-full border border-gray-600/30 bg-gray-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style="color: #32FFFD;">
                                         {{ ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'user')) }}
                                     </span>
                                 </div>
                             </div>
                             <div class="flex flex-col gap-1 px-2 py-2">
-                                <a href="{{ route('profile.show') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm text-black hover:bg-slate-200 transition">
+                                <a href="{{ route('profile.show') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/60 transition">
                                     <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-700 text-white">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9 9 0 1118.879 6.196 9 9 0 015.12 17.804z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                     </span>
                                     <span>View Profile</span>
                                 </a>
-                                <a href="{{ route('settings.general') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm text-black hover:bg-slate-200 transition">
+                                <a href="{{ route('settings.general') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/60 transition">
                                     <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-700 text-white">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                     </span>
@@ -94,7 +94,7 @@
                                 </a>
                                 <form action="{{ route('logout') }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="flex w-full items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm text-black hover:bg-slate-200 transition">
+                                    <button type="submit" class="flex w-full items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/60 transition">
                                         <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-700 text-white">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                                         </span>
@@ -134,17 +134,17 @@
         <div class="container mx-auto px-4 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                 <!-- Total Sales -->
-                <div class="border border-gray-200 p-3 hover:shadow-sm transition" style="border-radius: 20px; background-color: #0f0f0f;">
+                <div class="border border-gray-200 p-3 hover:shadow-sm transition" style="border-radius: 20px; background-color: #ffffff;">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
-                            <p class="text-white text-xs font-semibold">Total Sales</p>
+                            <p class="text-black text-xs font-semibold">Total Sales</p>
                             <div class="mt-1">
-                                <p id="salesValue" class="text-2xl font-bold text-white">—</p>
-                                <p id="salesComparison" class="text-cyan-400 text-xs mt-1 font-medium">Loading…</p>
+                                <p id="salesValue" class="text-2xl font-bold text-black">—</p>
+                                <p id="salesComparison" class="text-gray-500 text-xs mt-1 font-medium">Loading…</p>
                             </div>
                         </div>
                         <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 20px; background-color: #A4DD00;">
-                            <svg class="w-5 h-5" style="color: #0f0f0f;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5" style="color: #ffffff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                 <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
                             </svg>
                         </div>
@@ -152,17 +152,17 @@
                 </div>
 
             <!-- Total Transaction -->
-            <div class="border border-gray-200 p-3 hover:shadow-sm transition" style="border-radius: 20px; background-color: #0f0f0f;">
+            <div class="border border-gray-200 p-3 hover:shadow-sm transition" style="border-radius: 20px; background-color: #ffffff;">
                 <div class="flex items-start justify-between">
                     <div class="flex-1">
-                        <p class="text-black text-xs font-semibold" style="color: #ffffff;">Total Transaction</p>
+                        <p class="text-black text-xs font-semibold" style="color: #000000;">Total Transaction</p>
                         <div class="mt-1">
-                            <p id="transactionsValue" class="text-2xl font-bold" style="color: #ffffff;">—</p>
-                            <p id="transactionsComparison" class="text-cyan-400 text-xs mt-1 font-medium;">Loading…</p>
+                            <p id="transactionsValue" class="text-2xl font-bold" style="color: #000000;">—</p>
+                            <p id="transactionsComparison" class="text-gray-500 text-xs mt-1 font-medium;">Loading…</p>
                         </div>
                     </div>
                     <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 20px; background-color: #ffe600;">
-                        <svg class="w-5 h-5" style="color: #000000;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5" style="color: #ffffff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/>
                         </svg>
                     </div>
@@ -170,17 +170,17 @@
             </div>
 
             <!-- Total Profit -->
-            <div class="border border-gray-200 p-3 hover:shadow-sm transition" style="border-radius: 20px; background-color: #0f0f0f;">
+            <div class="border border-gray-200 p-3 hover:shadow-sm transition" style="border-radius: 20px; background-color: #ffffff;">
                 <div class="flex items-start justify-between">
                     <div class="flex-1">
-                        <p class="text-black text-xs font-semibold" style="color: #ffffff;">Total Profit</p>
+                        <p class="text-black text-xs font-semibold" style="color: #000000;">Total Profit</p>
                         <div class="mt-1">
-                            <p id="profitValue" class="text-2xl font-bold" style="color: #f0f0f0;">—</p>
-                            <p id="profitComparison" class="text-cyan-400 text-xs mt-1 font-medium;">Loading…</p>
+                            <p id="profitValue" class="text-2xl font-bold" style="color: #000000;">—</p>
+                            <p id="profitComparison" class="text-gray-500 text-xs mt-1 font-medium;">Loading…</p>
                         </div>
                     </div>
                     <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 20px; background-color: #ff9900;">
-                        <svg class="w-5 h-5" style="color: #000000;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5" style="color: #ffffff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
                         </svg>
                     </div>
@@ -188,17 +188,17 @@
             </div>
 
             <!-- Total Item Sold -->
-            <div class="border border-gray-200 p-3 hover:shadow-sm transition" style="border-radius: 20px; background-color: #0f0f0f;">
+            <div class="border border-gray-200 p-3 hover:shadow-sm transition" style="border-radius: 20px; background-color:    #ffffff;">
                 <div class="flex items-start justify-between">
                     <div class="flex-1">
-                        <p class="text-black text-xs font-semibold" style="color: #ffffff;">Total Item Sold</p>
+                        <p class="text-black text-xs font-semibold" style="color: #000000;">Total Item Sold</p>
                         <div class="mt-1">
-                            <p id="itemsSoldValue" class="text-2xl font-bold" style="color: #ffffff;">—</p>
-                            <p id="itemsSoldComparison" class="text-cyan-400 text-xs mt-1 font-medium;">Loading…</p>
+                            <p id="itemsSoldValue" class="text-2xl font-bold" style="color: #030303;">—</p>
+                            <p id="itemsSoldComparison" class="text-gray-500 text-xs mt-1 font-medium;">Loading…</p>
                         </div>
                     </div>
                     <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 20px; background-color: #ff6600;">
-                        <svg class="w-5 h-5" style="color: #000000;" fill="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5" style="color: #ffffff;" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                         </svg>
                     </div>
@@ -209,24 +209,17 @@
         <!-- Charts Row -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 pt-4">
             <!-- Sales Overview Chart -->
-            <div id="salesOverviewCard" class="lg:col-span-2 border border-gray-200 p-4 relative overflow-hidden" style="border-radius: 20px; background-color: #0f0f0f; min-height: 240px; box-sizing: border-box;">
+            <div id="salesOverviewCard" class="lg:col-span-2 border border-gray-200 p-4 relative overflow-hidden" style="border-radius: 20px; background-color: #ffffff; min-height: 240px; box-sizing: border-box;">
 
                 <!-- Header (title + range buttons) -->
                 <div id="salesOverviewHeader" class="flex items-center justify-between mb-3 relative">
                     <div class="flex items-center gap-2">
-                        <button type="button" id="closeSalesOverviewBtn" title="Close report"
-                            class="w-7 h-7 flex items-center justify-center rounded-full flex-shrink-0 transition"
-                            style="background-color: #1a1a1a; border: 1px solid rgba(255,255,255,0.15);">
-                            <svg class="w-4 h-4" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <polyline points="15 5 8 12 15 19"></polyline>
-                            </svg>
-                        </button>
-                       <h2 id="salesOverviewTitle" class="font-semibold tracking-wide text-white" style="font-size: 20px; font-family: 'Poppins', sans-serif;">Sales Overview</h2>
+                       <h2 id="salesOverviewTitle" class="font-semibold tracking-wide text-black" style="font-size: 20px; font-family: 'Poppins', sans-serif;">Sales Overview</h2>
                     </div>
                     <div class="flex gap-2">
-                        <button type="button" data-range="daily" class="sales-range-btn px-3 py-1 text-sm font-medium text-gray-300 bg-neutral-800 rounded transition">Day</button>
-                        <button type="button" data-range="weekly" class="sales-range-btn px-3 py-1 text-sm font-medium text-gray-300 bg-neutral-800 rounded transition">Week</button>
-                        <button type="button" data-range="monthly" class="sales-range-btn px-3 py-1 text-sm font-medium text-black rounded transition" style="background-color: #1ab3ce;">Month</button>
+                        <button type="button" data-range="daily" class="sales-range-btn px-3 py-1 text-sm font-medium rounded transition">Day</button>
+                        <button type="button" data-range="weekly" class="sales-range-btn px-3 py-1 text-sm font-medium rounded transition">Week</button>
+                        <button type="button" data-range="monthly" class="sales-range-btn px-3 py-1 text-sm font-medium rounded transition active">Month</button>
                     </div>
                 </div>
 
@@ -234,122 +227,11 @@
                 <div id="salesOverviewBody" class="relative w-full" style="height:360px;">
                     <canvas id="salesChart"></canvas>
                 </div>
-
-                <!--
-                    FIXED: Overlay Picture container.
-                    Instead of relying only on the Tailwind "absolute inset-0" utility (which can
-                    fail to size correctly if not compiled), we now pin every edge explicitly and
-                    force width/height to 100% + border-box, so this overlay is GUARANTEED to be
-                    exactly the same size/shape as its parent (#salesOverviewCard), corner for corner.
-                -->
-                <div id="salesOverviewOverlay" class="absolute" style="
-                    top: 0; left: 0; right: 0; bottom: 0;
-                    width: 100%; height: 100%;
-                    box-sizing: border-box;
-                    border-radius: 20px;
-                    overflow: hidden;
-                    z-index: 40;
-                    background-color: #0f0f0f;">
-                    <div style="width: 100%; height: 100%; overflow: hidden; border-radius: 20px;">
-                        <img src="{{ asset('images/H.png') }}" alt="Sales Report" id="salesOverviewImg" style="
-                            width: 100%;
-                            height: 100%;
-                            object-fit: cover;
-                            object-position: center 85%;
-                            transform: scale(1);
-                            transform-origin: center 15%;
-                            display: block;">
-                    </div>
-
-                    <div class="absolute top-3 right-3 flex items-center gap-2">
-                        <!-- View Report button -->
-                        <button type="button" id="viewReportBtn" class="report-toggle-btn flex items-center px-3 py-2 rounded-[10px] text-xs font-semibold text-white" style="background-color: #0f0f0f; backdrop-filter: blur(4px);">
-                            <span id="viewReportLabel" style="font-family: 'Poppins', sans-serif;">View Report</span>
-                        </button>
-
-                        <!-- Calendar icon (toggles the panel below) -->
-                        <button type="button" id="calendarBtn" class="cal-toggle-btn w-9 h-9 flex items-center justify-center rounded-full transition" style="background-color: #0f0f0f; backdrop-filter: blur(4px);">
-                            <svg class="w-5 h-5" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <rect x="3" y="4" width="18" height="18" rx="3"></rect>
-                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                <line x1="3" y1="10" x2="21" y2="10"></line>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!--
-                        FIXED: CALENDAR PANEL.
-                        Same fix here - explicit top/left/right/bottom:0 + width/height:100% +
-                        box-sizing:border-box + overflow:hidden + matching border-radius, so the
-                        dark calendar background is pinned exactly to the picture container's
-                        bounds. No more square corner poking out past the rounded card.
-                    -->
-                    <div id="calendarPanel"
-                         class="flex flex-col p-4 md:p-5 text-white opacity-0 scale-[0.98] pointer-events-none"
-                         style="position: absolute; top: 14px; left: 14px; right: 14px; bottom: 14px;
-                                width: calc(100% - 28px); height: calc(100% - 28px); box-sizing: border-box;
-                                background-color: rgba(0,0,0,0.6); border-radius: 16px;
-                                overflow: hidden; z-index: 45;
-                                transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);">
-
-                        <!-- Top row: nav arrows (left) + close (right) -->
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex gap-2">
-                                <button type="button" id="prevMonthBtn"
-                                    class="w-8 h-8 flex items-center justify-center rounded-full transition"
-                                    style="background-color: rgba(255,255,255,0.12);">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <polyline points="15 19 8 12 15 5"></polyline>
-                                    </svg>
-                                </button>
-                                <button type="button" id="nextMonthBtn"
-                                    class="w-8 h-8 flex items-center justify-center rounded-full transition"
-                                    style="background-color: rgba(255,255,255,0.12);">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <polyline points="9 5 16 12 9 19"></polyline>
-                                    </svg>
-                                </button>
-                            </div>
-                            <button type="button" id="closeCalendarBtn"
-                                class="w-8 h-8 flex items-center justify-center rounded-full transition"
-                                style="background-color: rgba(255,255,255,0.12);">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
-                                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                                </svg>
-                            </button>
-                        </div>
-
-                        <!-- CALENDAR label + big year/month, right aligned -->
-                        <div class="text-right mb-5 pr-4 md:pr-7">
-                            <p class="uppercase tracking-[0.35em] text-[10px] md:text-[11px] text-white/70 mb-1">Calendar</p>
-                            <h2 id="monthYearDisplay" class="font-bold leading-none text-xl md:text-3xl">July 2026</h2>
-                        </div>
-
-                        <!-- Days of Week Header -->
-                        <div class="grid grid-cols-7 gap-1 mb-5 text-center">
-                            <div class="text-[10px] md:text-[14px] font-semibold text-white/70 py-1">Mon</div>
-                            <div class="text-[10px] md:text-[14px] font-semibold text-white/70 py-1">Tue</div>
-                            <div class="text-[10px] md:text-[14px] font-semibold text-white/70 py-1">Wed</div>
-                            <div class="text-[10px] md:text-[14px] font-semibold text-white/70 py-1">Thu</div>
-                            <div class="text-[10px] md:text-[14px] font-semibold text-white/70 py-1">Fri</div>
-                            <div class="text-[10px] md:text-[14px] font-semibold text-white/70 py-1">Sat</div>
-                            <div class="text-[10px] md:text-[14px] font-semibold text-white/70 py-1">Sun</div>
-                        </div>
-
-                        <!-- Calendar Grid -->
-                        <div id="calendarGrid" class="grid grid-cols-7 gap-1 flex-1 content-start" style="grid-template-columns: repeat(7, minmax(0, 1fr));">
-                            <!-- Generated dynamically by JavaScript -->
-                        </div>
-                    </div>
-                    <!-- =================== END CALENDAR PANEL =================== -->
-                </div>
             </div>
 
             <!-- Sales by Category (full-circle ring + white knockout center + neon-on-sale legend) -->
-            <div class="border border-gray-200 p-3" style="border-radius: 20px; background-color: #0f0f0f;">
-                <h2 class="text-sm font-bold text-white mb-2" style="font-family: 'Poppins', sans-serif;">Sales by Category</h2>
+            <div class="border border-gray-200 p-3" style="border-radius: 20px; background-color: #ffffff;">
+                <h2 class="text-sm font-bold text-black mb-2" style="font-family: 'Poppins', sans-serif;">Sales by Category</h2>
                 <div class="flex flex-col items-center gap-3">
                     <div style="position: relative; width: 150px; height: 160px; max-width: 160px; max-height: 160px; aspect-ratio: 1 / 1;">
                         <canvas id="categoryChart"></canvas>
@@ -363,8 +245,8 @@
                             align-items: center; justify-content: center;
                             text-align: center;
                             pointer-events: none;">
-                            <span id="categoryCenterValue" style="color: #ffffff; font-weight: 700; font-size: 15px; line-height: 1.1;">0</span>
-                            <span id="categoryCenterCaption" style="color: rgba(255,255,255,0.6); font-size: 9px; margin-top: 6px;">No sales today</span>
+                            <span id="categoryCenterValue" style="color: #000000; font-weight: 700; font-size: 15px; line-height: 1.1;">0</span>
+                            <span id="categoryCenterCaption" style="color: rgba(0,0,0,0.6); font-size: 9px; margin-top: 6px;">No sales today</span>
                         </div>
                     </div>
 
@@ -379,7 +261,7 @@
             <!-- Inventory Levels (compact card, stacked/overlapping rows, no popup) -->
             <div id="inventoryCardWrap" class="relative">
 
-                <div id="inventoryCard" class="border border-gray-200 p-3" style="border-radius: 20px; background-color: #f0f0f0;">
+                <div id="inventoryCard" class="border border-gray-200 p-3" style="border-radius: 20px; background-color: #ffffff;">
                     <div class="flex items-center justify-between mb-2">
                         <h2 class="text-black text-sm font-bold">Inventory Levels</h2>
                     </div>
@@ -387,32 +269,32 @@
                     <div class="inv-stack" style="position: relative;">
 
                         <!-- Total Products (top of the stack) -->
-                        <div class="inv-row flex items-center gap-2 px-3 py-3" style="border-radius: 18px; background-color: #0f0f0f; position: relative; z-index: 40;">
+                        <div class="inv-row flex items-center gap-2 px-3 py-3" style="border-radius: 18px; background-color: #ffffff; position: relative; z-index: 40;">
                             <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-full" style="background-color: #A4DD00;">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <path d="M21 8l-9-5-9 5 9 5 9-5z"></path>
                                     <path d="M3 8v8l9 5 9-5V8"></path>
                                 </svg>
                             </div>
-                            <span class="text-white text-xs font-semibold flex-1">Total Products</span>
-                            <span id="totalProductsValue" class="text-white text-xs font-bold">—</span>
+                            <span class="text-black text-xs font-semibold flex-1">Total Products</span>
+                            <span id="totalProductsValue" class="text-black text-xs font-bold">—</span>
                         </div>
 
                         <!-- Low Stock Items -->
-                        <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 18px; background-color: #202020; position: relative; z-index: 30; margin-top: -12px; padding-top: 20px; padding-bottom: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
+                        <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 18px; background-color: #ffffff; position: relative; z-index: 30; margin-top: -12px; padding-top: 20px; padding-bottom: 12px; border-top: 1px solid rgba(0,0,0,0.06);">
                             <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-full" style="background-color: #ff3300;">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="#030303" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <path d="M12 9v4"></path>
                                     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
                                     <path d="M12 17h.01"></path>
                                 </svg>
                             </div>
-                            <span class="text-white text-xs font-semibold flex-1">Low Stock Items</span>
-                            <span id="lowStockValue" class="text-white text-xs font-bold">—</span>
+                            <span class="text-black text-xs font-semibold flex-1">Low Stock Items</span>
+                            <span id="lowStockValue" class="text-black text-xs font-bold">—</span>
                         </div>
 
                         <!-- Out of Stock Items -->
-                        <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 18px; background-color: #414040; position: relative; z-index: 20; margin-top: -12px; padding-top: 20px; padding-bottom: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
+                        <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 18px; background-color: #ffffff; position: relative; z-index: 20; margin-top: -12px; padding-top: 20px; padding-bottom: 12px; border-top: 1px solid rgba(0,0,0,0.06);">
                             <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-full" style="background-color: #ffe600;">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <circle cx="12" cy="12" r="9"></circle>
@@ -420,27 +302,27 @@
                                     <line x1="15" y1="9" x2="9" y2="15"></line>
                                 </svg>
                             </div>
-                            <span class="text-white text-xs font-semibold flex-1">Out of Stock Items</span>
-                            <span id="outOfStockValue" class="text-white text-xs font-bold">—</span>
+                            <span class="text-black text-xs font-semibold flex-1">Out of Stock Items</span>
+                            <span id="outOfStockValue" class="text-black text-xs font-bold">—</span>
                         </div>
 
                         <!-- In Stock Items (bottom of the stack) -->
-                        <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 18px; background-color: #5c5c5c; position: relative; z-index: 10; margin-top: -12px; padding-top: 20px; padding-bottom: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
+                        <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 18px; background-color: #ffffff; position: relative; z-index: 10; margin-top: -12px; padding-top: 20px; padding-bottom: 12px; border-top: 1px solid rgba(0,0,0,0.06);">
                             <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-full" style="background-color: #ff9900;">    
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <circle cx="12" cy="12" r="9"></circle>
                                     <polyline points="8 12 11 15 16 9"></polyline>
                                 </svg>
                             </div>
-                            <span class="text-white text-xs font-semibold flex-1">In Stock Items</span>
-                            <span id="inStockValue" class="text-white text-xs font-bold">—</span>
+                            <span class="text-black text-xs font-semibold flex-1">In Stock Items</span>
+                            <span id="inStockValue" class="text-black text-xs font-bold">—</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Top Selling Item (slideshow widget) -->
-            <div id="topSellingWidget" class="lg:col-span-1 bg-[#f0f0f0] border border-gray-200 p-3" style="border-radius: 20px;">
+            <div id="topSellingWidget" class="lg:col-span-1 bg-[#ffffff] border border-gray-200 p-3" style="border-radius: 20px;">
                 <div class="flex items-center justify-between mb-2">
                     <h2 class="text-sm font-bold text-gray-900" style="font-family: 'Poppins', sans-serif;">Top Selling Item</h2>
                         <button id="topSellingOpenBtn" type="button" aria-label="Open top selling" class="inline-flex items-center justify-center rounded-full" style="width:32px; height:32px;">
@@ -463,8 +345,8 @@
             </div>
 
             <!-- Monthly Sales Comparison -->
-            <div class="lg:col-span-1 border border-gray-200 p-3" style="border-radius: 20px; background-color: #0f0f0f;">
-                <h2 class="text-sm font-bold text-white mb-2" style="font-family: 'Poppins', sans-serif;">Monthly Sales Comparison</h2>
+            <div class="lg:col-span-1 border border-gray-200 p-3" style="border-radius: 20px; background-color: #ffffff;">
+                <h2 class="text-sm font-bold text-black mb-2" style="font-family: 'Poppins', sans-serif;">Monthly Sales Comparison</h2>
                 <div class="w-full overflow-hidden" style="max-width: 100%;">
                     <canvas id="barChart" class="w-full" height="180" style="max-width: 100%; display: block;"></canvas>
                 </div>
@@ -473,30 +355,6 @@
     </div>
 
     <style>
-        /* ---- Sales Overview picture-overlay animations ---- */
-        @keyframes salesOverlaySlideOut {
-            from { transform: translateX(0); }
-            to   { transform: translateX(-100%); }
-        }
-        @keyframes salesOverlaySlideIn {
-            from { transform: translateX(-100%); }
-            to   { transform: translateX(0); }
-        }
-        #salesOverviewOverlay.overlay-slide-out {
-            animation: salesOverlaySlideOut 0.6s ease forwards;
-        }
-        #salesOverviewOverlay.overlay-slide-in {
-            animation: salesOverlaySlideIn 0.6s ease forwards;
-        }
-        #calendarBtn:hover {
-            background-color: #4e4e4e !important;
-        }
-        #viewReportBtn:hover {
-            background-color: #4e4e4e !important;
-        }
-        #closeSalesOverviewBtn:hover {
-            background-color: #2a2a2a !important;
-        }
         #dashboardNotificationButton {
             position: relative;
             z-index: 60;
@@ -527,55 +385,6 @@
             color: #9ca3af !important;
         }
 
-        #closeSalesOverviewBtn.is-active {
-            background-color: #1ab3ce !important;
-            border-color: #1ab3ce !important;
-        }
-
-        .report-toggle-btn {
-            transition: background-color 0.2s ease, color 0.2s ease,
-                        padding 0.3s ease, border-radius 0.3s ease, width 0.3s ease;
-        }
-        .report-toggle-btn.is-active {
-            background-color: #1ab3ce !important;
-            color: #ffffff !important;
-            border-color: #1ab3ce !important;
-        }
-        .report-toggle-btn.is-active {
-            width: 32px;
-            height: 32px;
-            padding: 0;
-            border-radius: 50%;
-            justify-content: center;
-        }
-
-        /* ---- Calendar panel: pinned exactly to the picture container, smooth fade + scale ---- */
-        #calendarPanel.is-open {
-            opacity: 1 !important;
-            transform: scale(1) !important;
-            pointer-events: auto !important;
-        }
-        #calendarBtn.is-hidden,
-        #viewReportBtn.is-hidden {
-            opacity: 0 !important;
-            pointer-events: none !important;
-            transition: opacity 0.25s ease;
-        }
-        #prevMonthBtn:hover,
-        #nextMonthBtn:hover,
-        #closeCalendarBtn:hover {
-            background-color: rgba(255,255,255,0.2) !important;
-        }
-        #closeCalendarCancelBtn:hover {
-            background-color: rgba(255,255,255,0.18) !important;
-        }
-        #applyDateRangeBtn:hover {
-            filter: brightness(1.08);
-        }
-        #calendarGrid button.cal-day:hover {
-            background-color: rgba(255,255,255,0.14) !important;
-        }
-
         /* ---- Inventory Levels (compact stacked card) ---- */
         .inv-row {
             transition: transform 0.2s ease;
@@ -600,11 +409,11 @@
             transition: background-color 0.25s ease, box-shadow 0.25s ease;
         }
         #categoryLegend .cat-label {
-            color: rgba(255,255,255,0.5);
+            color: rgba(0,0,0,0.65);
             font-weight: 500;
         }
         #categoryLegend .cat-label-active {
-            color: #ffffff;
+            color: #000000;
             font-weight: 600;
         }
 
@@ -634,7 +443,7 @@
             display: block;
         }
 
-        /* ---- Top Selling open button: dark circle (#0f0f0f), turns gray on hover ---- */
+        /* ---- Top Selling open button: light circle and black arrow; hover -> black@30% ---- */
         #topSellingOpenBtn {
             width: 32px;
             height: 32px;
@@ -642,17 +451,17 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background-color: #0f0f0f;
-            color: #ffffff;
-            border: none;
-            box-shadow: 0 2px 6px rgba(2,6,23,0.12);
-            transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            background-color: #e4e2e2; /* default circle color requested */
+            color: #000000; /* arrow color */
+            border: none;   
+            box-shadow: none;
+            transition: background-color 0.18s ease, color 0.18s ease, transform 0.12s ease;
             cursor: pointer;
         }
         #topSellingOpenBtn:hover {
-            background-color: #6b7280; /* gray on hover */
-            color: #ffffff;
-            box-shadow: 0 6px 18px rgba(2,6,23,0.18);
+            background-color: rgba(0,0,0,0.3); /* black at 30% opacity on hover */
+            color: #ffffff; /* arrow becomes white for contrast */
+            transform: translateY(-1px);
         }
         #topSellingOpenBtn:active { transform: none; }
         #topSellingOpenBtn .top-selling-icon { color: currentColor; width: 16px; height: 16px; }
@@ -702,15 +511,39 @@
             border-bottom: 1px solid rgba(107,114,128,0.20);
         }
         #topItemsModal #closeTopItemsModal {
-            background-color: #0f0f0f !important;
-            color: #ffffff !important;
+            background-color: #e4e2e2 !important;
+            color: #000000 !important;
             border-radius: 9999px;
             border: none;
             cursor: pointer;
-            transition: background-color 0.2s ease, color 0.2s ease;
+            transition: background-color 0.18s ease, color 0.18s ease, transform 0.12s ease;
         }
         #topItemsModal #closeTopItemsModal:hover {
-            background-color: #6b7280 !important;
+            background-color: rgba(0,0,0,0.3) !important; /* black at 30% opacity */
+            color: #ffffff !important;
+            transform: translateY(-1px);
+        }
+        /* Range buttons: light background and simple color-change on hover */
+        .sales-range-btn {
+            background-color: #f6f6f6;
+            color: #000000;
+            border: 1px solid rgba(0,0,0,0.02);
+            box-shadow: none;
+            padding-top: 0.35rem;
+            padding-bottom: 0.35rem;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            transition: background-color 0.14s ease, color 0.14s ease;
+        }
+
+        .sales-range-btn:hover {
+            background-color: rgba(0, 0, 0, 0.2); /* black at 30% opacity */
+            color: #000000;
+        }
+
+        .sales-range-btn.active {
+            background-color: #f6f6f6;
+            color: #000000;
         }
     </style>
 

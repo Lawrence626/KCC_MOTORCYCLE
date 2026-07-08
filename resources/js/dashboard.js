@@ -262,6 +262,23 @@ document.addEventListener('DOMContentLoaded', () => {
         },
     };
 
+    // Plugin to ensure no canvas shadow/glow is applied to the sales line chart
+    const clearLineShadowPlugin = {
+        id: 'clearLineShadow',
+        beforeDatasetsDraw(chart) {
+            if (!chart || !chart.ctx) return;
+            if (chart.canvas.id === 'salesChart') {
+                const ctx = chart.ctx;
+                ctx.save();
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.restore();
+            }
+        }
+    };
+
     const renderCategoryChart = (chartData) => {
         const legend = document.getElementById('categoryLegend');
         const canvas = document.getElementById('categoryChart');
@@ -316,10 +333,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: [{
                     data: chartValues,
                     backgroundColor: colors,
-                    borderColor: '#0f0f0f',
-                    borderWidth: isEmpty ? 0 : 1,
+                    borderColor: 'transparent',
+                    borderWidth: 0,
+                    hoverBorderColor: 'transparent',
+                    hoverBorderWidth: 0,
                     borderRadius: 8,
-                    hoverOffset: isEmpty ? 0 : 6,
+                    hoverOffset: 0,
                 }],
             },
             options: {
@@ -376,9 +395,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="cat-legend-row" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 0;">
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <span class="cat-dot" style="${dotStyle} width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;"></span>
-                            <span class="cat-label" style="color: ${hasValue ? '#ffffff' : 'rgba(255,255,255,0.5)'};">${cat.name}</span>
+                            <span class="cat-label" style="color: ${hasValue ? '#000000' : 'rgba(0,0,0,0.55)'};">${cat.name}</span>
                         </div>
-                        ${hasValue ? `<span class="cat-value" style="color: ${cat.color}; font-weight: 600;">${currency.format(value)}</span>` : ''}
+                        ${hasValue ? `<span class="cat-value" style="color: #000000; font-weight: 600;">${currency.format(value)}</span>` : ''}
                     </div>
                 `;
             }).join('');
@@ -416,8 +435,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: comparisonChart.datasets.map((dataset, index) => ({
                     label: dataset.label,
                     data: dataset.data,
-                    backgroundColor: dataset.backgroundColor || (index === 0 ? '#32FFFD' : '#A4DD00'),
-                    borderColor: dataset.borderColor || (index === 0 ? '#32FFFD' : '#A4DD00'),
+                    backgroundColor: dataset.backgroundColor || (index === 0 ? '#A4DD00' : '#A4DD00'),
+                    borderColor: dataset.borderColor || (index === 0 ? '#A4DD00' : '#A4DD00'),
                     borderWidth: 1,
                 })),
             },
@@ -426,17 +445,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 maintainAspectRatio: true,
                 plugins: {
                     legend: { position: 'top', labels: { font: { size: 11 } } },
+                    tooltip: {
+                        backgroundColor: '#1a1a1a',
+                        titleColor: '#A4DD00',
+                        bodyColor: '#ffffff',
+                        borderColor: '#A4DD00',
+                        borderWidth: 1,
+                        padding: 10,
+                        displayColors: false,
+                        titleFont: { size: 11, weight: 'bold' },
+                        bodyFont: { size: 12, weight: '500' },
+                        callbacks: {
+                            label: (context) => currency.format(context.parsed.y),
+                        },
+                    },
                 },
                 scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: 'rgba(255,255,255,0.06)' },
-                        ticks: { color: '#9ca3af', callback: (value) => currency.format(value) },
-                    },
-                    x: {
-                        grid: { color: 'rgba(255,255,255,0.06)' },
-                        ticks: { color: '#9ca3af' },
-                    },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(107,114,128,0.12)' },
+                            ticks: { color: '#374151', callback: (value) => currency.format(value) },
+                        },
+                        x: {
+                            grid: { color: 'rgba(107,114,128,0.08)' },
+                            ticks: { color: '#374151' },
+                        },
                 },
             },
         });
@@ -556,26 +589,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
 
         // subtle gradient fill sa ilalim ng linya
-        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height || 200);
-        gradient.addColorStop(0, 'rgba(0, 100, 200, 0.35)');
-        gradient.addColorStop(1, 'rgba(0, 90, 150, 0)');
+        // No gradient fill for light theme: keep background transparent
+        const gradient = 'transparent';
 
         window.dashboardSalesChart = new Chart(ctx, {
             type: 'line',
+            plugins: [clearLineShadowPlugin],
             data: {
                 labels: chartData.labels,
                 datasets: [{
                     label: 'Revenue',
                     data: chartData.values,
-                    borderColor: '#32FFFD',
-                    backgroundColor: gradient,
+                    borderColor: '#0fe4d2',
+                    backgroundColor: 'transparent',
                     borderWidth: 2.5,
-                    fill: true,
+                    fill: false,
                     tension: 0.4,
                     pointRadius: 0,
                     pointHoverRadius: 5,
-                    pointBackgroundColor: '#32FFFD',
-                    pointHoverBackgroundColor: '#32FFFD',
+                    pointBackgroundColor: '#0fe4d2',
+                    pointHoverBackgroundColor: '#0fe4d2',
                     pointHoverBorderColor: '#0f0f0f',
                     pointHoverBorderWidth: 2,
                 }],
@@ -610,18 +643,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 scales: {
                     x: {
-                        grid: { display: false },
-                        ticks: { color: '#9ca3af', font: { size: 10 } },
-                    },
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: 'rgba(255,255,255,0.06)' },
-                        ticks: {
-                            color: '#9ca3af',
-                            font: { size: 10 },
-                            callback: (value) => currency.format(value),
+                            grid: { color: 'rgb(214, 214, 214)' },
+                            ticks: { color: '#374151', font: { size: 10 } },
                         },
-                    },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgb(214, 214, 214)' },
+                            ticks: {
+                                color: '#616161',
+                                font: { size: 10 },
+                                callback: (value) => currency.format(value),
+                            },
+                        },
                 },
             },
         });
