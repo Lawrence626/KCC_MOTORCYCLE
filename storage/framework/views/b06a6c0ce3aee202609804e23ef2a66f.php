@@ -96,7 +96,7 @@
                                 <p id="salesComparison" class="text-gray-500 text-xs mt-1 font-medium">Loading…</p>
                             </div>
                         </div>
-                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 20px; background-color: #A4DD00;">
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 20px; background-color: #2ea300;">
                             <svg class="w-5 h-5" style="color: #ffffff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                 <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
                             </svg>
@@ -114,7 +114,7 @@
                             <p id="transactionsComparison" class="text-gray-500 text-xs mt-1 font-medium;">Loading…</p>
                         </div>
                     </div>
-                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 20px; background-color: #ffe600;">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 20px; background-color: #ebd300;">
                         <svg class="w-5 h-5" style="color: #ffffff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/>
                         </svg>
@@ -170,9 +170,9 @@
                        <h2 id="salesOverviewTitle" class="font-semibold tracking-wide text-black" style="font-size: 20px; font-family: 'Poppins', sans-serif;">Sales Overview</h2>
                     </div>
                     <div class="flex gap-2">
-                        <button type="button" data-range="daily" class="sales-range-btn px-3 py-1 text-sm font-medium rounded transition">Day</button>
-                        <button type="button" data-range="weekly" class="sales-range-btn px-3 py-1 text-sm font-medium rounded transition">Week</button>
-                        <button type="button" data-range="monthly" class="sales-range-btn px-3 py-1 text-sm font-medium rounded transition active">Month</button>
+                        <button type="button" data-range="daily" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Day</button>
+                        <button type="button" data-range="weekly" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Week</button>
+                        <button type="button" data-range="monthly" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition active">Month</button>
                     </div>
                 </div>
 
@@ -223,8 +223,8 @@
 
                         <!-- Total Products (top of the stack) -->
                         <div class="inv-row flex items-center gap-2 px-3 py-3" style="border-radius: 18px; background-color: #ffffff; position: relative; z-index: 40;">
-                            <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-full" style="background-color: #A4DD00;">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-full" style="background-color: #00c000;">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <path d="M21 8l-9-5-9 5 9 5 9-5z"></path>
                                     <path d="M3 8v8l9 5 9-5V8"></path>
                                 </svg>
@@ -236,7 +236,7 @@
                         <!-- Low Stock Items -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 18px; background-color: #ffffff; position: relative; z-index: 30; margin-top: -12px; padding-top: 20px; padding-bottom: 12px; border-top: 1px solid rgba(0,0,0,0.06);">
                             <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-full" style="background-color: #ff3300;">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <path d="M12 9v4"></path>
                                     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
                                     <path d="M12 17h.01"></path>
@@ -248,12 +248,12 @@
 
                         <!-- Out of Stock Items -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 18px; background-color: #ffffff; position: relative; z-index: 20; margin-top: -12px; padding-top: 20px; padding-bottom: 12px; border-top: 1px solid rgba(0,0,0,0.06);">
-                            <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-full" style="background-color: #ffe600;">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-full" style="background-color: #1ea19b;">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <circle cx="12" cy="12" r="9"></circle>
                                     <line x1="9" y1="9" x2="15" y2="15"></line>
                                     <line x1="15" y1="9" x2="9" y2="15"></line>
-                                </svg>
+                                </svg>  
                             </div>
                             <span class="text-black text-xs font-semibold flex-1">Out of Stock Items</span>
                             <span id="outOfStockValue" class="text-black text-xs font-bold">—</span>
@@ -262,7 +262,7 @@
                         <!-- In Stock Items (bottom of the stack) -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 18px; background-color: #ffffff; position: relative; z-index: 10; margin-top: -12px; padding-top: 20px; padding-bottom: 12px; border-top: 1px solid rgba(0,0,0,0.06);">
                             <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-full" style="background-color: #ff9900;">    
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <circle cx="12" cy="12" r="9"></circle>
                                     <polyline points="8 12 11 15 16 9"></polyline>
                                 </svg>
@@ -380,27 +380,26 @@
             display: block;
         }
 
-        /* ---- Top Selling open button: light circle and black arrow; hover -> black@30% ---- */
+        /* ---- Top Selling open button: emerald background with white text, 10px radius ---- */
         #topSellingOpenBtn {
             width: 32px;
             height: 32px;
-            border-radius: 9999px;
+            border-radius: 10px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background-color: #e4e2e2; /* default circle color requested */
-            color: #000000; /* arrow color */
+            background-color: #059669;
+            color: #ffffff;
             border: none;   
             box-shadow: none;
-            transition: background-color 0.18s ease, color 0.18s ease, transform 0.12s ease;
+            transition: background-color 0.18s ease, color 0.18s ease;
             cursor: pointer;
         }
         #topSellingOpenBtn:hover {
-            background-color: rgba(0,0,0,0.3); /* black at 30% opacity on hover */
-            color: #ffffff; /* arrow becomes white for contrast */
-            transform: translateY(-1px);
+            background-color: #047857;
+            color: #ffffff;
         }
-        #topSellingOpenBtn:active { transform: none; }
+        #topSellingOpenBtn:active { background-color: #047857; }
         #topSellingOpenBtn .top-selling-icon { color: currentColor; width: 16px; height: 16px; }
 
         /* ---- Small slideshow dot indicators ---- */
@@ -448,22 +447,21 @@
             border-bottom: 1px solid rgba(107,114,128,0.20);
         }
         #topItemsModal #closeTopItemsModal {
-            background-color: #e4e2e2 !important;
-            color: #000000 !important;
-            border-radius: 9999px;
+            background-color: #059669 !important;
+            color: #ffffff !important;
+            border-radius: 10px;
             border: none;
             cursor: pointer;
-            transition: background-color 0.18s ease, color 0.18s ease, transform 0.12s ease;
+            transition: background-color 0.18s ease, color 0.18s ease;
         }
         #topItemsModal #closeTopItemsModal:hover {
-            background-color: rgba(0,0,0,0.3) !important; /* black at 30% opacity */
+            background-color: #047857 !important;
             color: #ffffff !important;
-            transform: translateY(-1px);
         }
-        /* Range buttons: light background and simple color-change on hover */
+        /* Range buttons: emerald background with white text */
         .sales-range-btn {
-            background-color: #f6f6f6;
-            color: #000000;
+            background-color: #059669;
+            color: #ffffff;
             border: 1px solid rgba(0,0,0,0.02);
             box-shadow: none;
             padding-top: 0.35rem;
@@ -474,13 +472,18 @@
         }
 
         .sales-range-btn:hover {
-            background-color: rgba(0, 0, 0, 0.2); /* black at 30% opacity */
-            color: #000000;
+            background-color: #047857;
+            color: #ffffff;
         }
 
         .sales-range-btn.active {
-            background-color: #f6f6f6;
-            color: #000000;
+            background-color: #059669;
+            color: #ffffff;
+        }
+
+        .sales-range-btn.active:hover {
+            background-color: #047857;
+            color: #ffffff;
         }
     </style>
 
@@ -616,7 +619,7 @@
                         <div class="modal-panel" style="position:relative;border-radius:16px;padding:18px;max-width:900px;width:95%;max-height:80%;overflow:auto;margin:auto;">
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
                                 <h3 style="margin:0;color:#000000;font-family:'Poppins',sans-serif;font-weight:700;font-size:1.15rem;">Top Selling Items</h3>
-                                <button id="closeTopItemsModal" style="border:none;background:#0f0f0f;color:#ffffff;border-radius:9999px;width:30px;height:30px;cursor:pointer">×</button>
+                                <button id="closeTopItemsModal" style="border:none;background:#059669;color:#ffffff;border-radius:10px;width:30px;height:30px;cursor:pointer">×</button>
                             </div>
                             <div>
                                 <table style="width:100%;border-collapse:collapse">

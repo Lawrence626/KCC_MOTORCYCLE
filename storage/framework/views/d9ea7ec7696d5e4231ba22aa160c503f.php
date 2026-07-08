@@ -9,54 +9,57 @@
 <?php endif; ?>
 <?php $component->withAttributes(['title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(__('POS Terminal'))]); ?>
     <div class="space-y-3 max-w-[1480px] mx-auto px-3">
-        <div class="rounded-[28px] border border-slate-200 bg-white p-3 shadow-sm">
-            <div class="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                    <h1 class="text-xl font-bold text-slate-900">Point of Sale (POS)</h1>
-                    <p class="text-sm text-slate-600">Process sales, service billing, and payments from one compact page.</p>
-                </div>
-                <div class="flex flex-wrap items-center gap-2 text-sm">
-                    <button id="posOpenDesktopScannerButton" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 hover:bg-slate-100">
-                        <svg class="h-4 w-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                        Scan QR
-                    </button>
-                    <button id="posOpenScannerButton" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 hover:bg-slate-100">
-                        <svg class="h-4 w-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
-                        Mobile Scanner
-                    </button>
-                    <button id="posOpenTransactionHistoryButton" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 hover:bg-slate-100">
-                        <svg class="h-4 w-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/></svg>
-                        Transaction History
-                    </button>
-                </div>
+        <div class="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900">Point of Sale (POS)</h1>
+                <p class="text-gray-600 text-sm mt-1">Process sales, service billing, and payments from one compact page.</p>
+            </div>
+               
+            <button id="posOpenDesktopScannerButton" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 hover:bg-slate-100">
+                    <svg class="h-4 w-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    Scan QR
+                </button>
+                <button id="posOpenScannerButton" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 hover:bg-slate-100">
+                    <svg class="h-4 w-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                    Mobile Scanner
+                </button>
+                <button id="posOpenTransactionHistoryButton" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 hover:bg-slate-100">
+                    <svg class="h-4 w-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/></svg>
+                    Transaction History
+                </button>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 xl:grid-cols-[1.65fr_1fr] gap-4">
+        <div class="grid grid-cols-1 xl:grid-cols-[1.65fr_1fr] gap-4 mt-6">
             <div class="space-y-3">
-                <div class="rounded-[28px] border border-slate-200 bg-white p-3 shadow-sm">
-                    <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                        <div class="flex flex-wrap gap-2">
-                            <button class="rounded-full bg-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-sm">All</button>
-                            <button class="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-emerald-500">Exhaust</button>
-                            <button class="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-emerald-500">Helmets</button>
-                            <button class="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-emerald-500">Tires</button>
-                            <button class="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-emerald-500">Brakes</button>
-                            <button class="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-emerald-500">Oils</button>
-                            <button class="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-emerald-500">Batteries</button>
-                            <button class="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-emerald-500">Accessories</button>
-                        </div>
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-                            <div class="relative w-full sm:w-[260px]">
-                                <input id="posProductSearchInput" type="text" placeholder="Search products..." class="w-full rounded-full border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                <div class="rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm">
+                    <div class="flex flex-col gap-4">
+                        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                            <div class="flex flex-wrap gap-2">
+                                <button class="rounded-[10px] bg-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-sm">All</button>
+                                <button class="rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-emerald-500">Exhaust</button>
+                                <button class="rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-emerald-500">Helmets</button>
+                                <button class="rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-emerald-500">Tires</button>
+                                <button class="rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-emerald-500">Brakes</button>
+                                <button class="rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-emerald-500">Oils</button>
+                                <button class="rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-emerald-500">Batteries</button>
+                                <button class="rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-emerald-500">Accessories</button>
                             </div>
-                            <button class="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">Filter</button>
+                        </div>
+                        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                            <div class="flex w-full max-w-[420px] items-center gap-2">
+                                <div class="relative flex-1">
+                                    <label for="posProductSearchInput" class="sr-only">Search products</label>
+                                    <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/></svg>
+                                    <input id="posProductSearchInput" type="text" placeholder="Search products..." class="w-full rounded-[10px] border border-slate-200 bg-white px-10 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                                </div>
+                                <button id="posFilterToggleButton" type="button" aria-label="Open filter" class="inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-white text-slate-700 border border-slate-200 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L15 13.414V18a1 1 0 01-1.447.894l-4-2A1 1 0 019 16v-2.586L3.293 6.707A1 1 0 013 6V4z"/></svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="rounded-[28px] border border-slate-200 bg-white p-3 shadow-sm">
-                    <div id="posProductGrid" class="grid gap-3 grid-cols-3">
+                    <div id="posProductGrid" class="grid gap-3 grid-cols-3 mt-4">
                         <div class="col-span-full rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-slate-500">
                             Search for products or scan a barcode to load items from All Stocks.
                         </div>
@@ -67,44 +70,44 @@
 
             </div>
 
-            <aside class="space-y-3 xl:sticky xl:top-4">
-                <div class="rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm">
+            <aside class="space-y-5 xl:sticky xl:top-4">
+                <div class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm space-y-4">
                     <div class="flex items-center justify-between mb-3 gap-3">
                         <div>
                             <h2 class="text-sm font-semibold text-slate-900">Cart</h2>
                             <p class="text-xs text-slate-500">Selected items show here.</p>
                         </div>
-                        <button id="posEmptyCartButton" class="rounded-full border border-slate-300 px-3 py-1.5 text-[11px] font-semibold text-slate-700 hover:bg-slate-50">Empty</button>
+                        <button id="posEmptyCartButton" class="rounded-[10px] border border-slate-300 px-3 py-1.5 text-[11px] font-semibold text-slate-700 hover:bg-slate-50">Empty</button>
                     </div>
                     <div class="overflow-x-auto">
                         <table id="posCartTable" class="min-w-full text-left text-[11px]">
                             <thead>
                                 <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wide text-[10px]">
-                                    <th class="px-2 py-2">Item</th>
-                                    <th class="px-2 py-2">SKU</th>
-                                    <th class="px-2 py-2 text-right">Price</th>
-                                    <th class="px-2 py-2 text-center">Qty</th>
-                                    <th class="px-2 py-2 text-right">Total</th>
-                                    <th class="px-2 py-2 text-center">Action</th>
+                                    <th class="px-3 py-2">Item</th>
+                                    <th class="px-3 py-2">SKU</th>
+                                    <th class="px-6 py-2 text-right">Price</th>
+                                    <th class="px-3 py-2 text-center">Qty</th>
+                                    <th class="px-6 py-2 text-right">Total</th>
+                                    <th class="px-3 py-2 text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="posCartBody"></tbody>
                         </table>
-                        <div id="posEmptyCartMessage" class="rounded-[24px] border border-dashed border-slate-300 bg-slate-50 px-3 py-6 text-center text-slate-500 text-sm">Cart empty.</div>
+                        <div id="posEmptyCartMessage" class="mt-6 rounded-[10px] border border-dashed border-slate-300 bg-slate-50 px-3 py-6 text-center text-slate-500 text-sm">Cart empty.</div>
                     </div>
-                    <div class="rounded-[24px] border border-slate-200 bg-slate-50 p-4 shadow-sm mb-4">
+                    <div class="rounded-[10px] border border-slate-200 bg-slate-50 p-4 shadow-sm">
                         <div class="grid gap-3">
                             <label class="block text-sm text-slate-700">
                                 <span class="font-semibold">Extra Charges</span>
-                                <input id="posExtraChargeInput" type="number" min="0" step="0.01" value="0" placeholder="0.00" class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                                <input id="posExtraChargeInput" type="number" min="0" step="0.01" value="0" placeholder="0.00" class="mt-2 w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
                             </label>
                             <label class="block text-sm text-slate-700">
                                 <span class="font-semibold">Discount</span>
-                                <input id="posDiscountInput" type="number" min="0" step="0.01" value="0" placeholder="0.00" class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                                <input id="posDiscountInput" type="number" min="0" step="0.01" value="0" placeholder="0.00" class="mt-2 w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
                             </label>
                         </div>
                     </div>
-                    <div id="posCartFooter" class="mt-4 space-y-2 hidden text-sm text-slate-600">
+                    <div id="posCartFooter" class="space-y-2 hidden text-sm text-slate-600">
                         <div class="grid gap-2">
                             <div class="flex items-center justify-between"><span>Subtotal</span><span id="posSubtotal">₱0.00</span></div>
                             <div class="flex items-center justify-between"><span>Services</span><span id="posServicesTotal">₱0.00</span></div>
@@ -113,24 +116,6 @@
                             <div class="flex items-center justify-between"><span>Included VAT (12%)</span><span id="posTax">₱0.00</span></div>
                             <div class="flex items-center justify-between text-base font-semibold text-slate-900"><span>Total</span><span id="posTotal">₱0.00</span></div>
                         </div>
-                        <button id="posProceedPaymentButton" class="w-full rounded-2xl bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700">Proceed to Payment</button>
-                    </div>
-                </div>
-
-                <div class="rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm">
-                    <div class="flex items-center justify-between mb-3">
-                        <h2 class="text-sm font-semibold text-slate-900">Payment Method</h2>
-                        <span class="text-xs text-slate-500">Quick select</span>
-                    </div>
-                    <div class="grid gap-3">
-                        <label class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 px-3 py-2 text-sm cursor-pointer hover:border-emerald-500">
-                            <input type="radio" name="posPaymentMethod" value="cash" class="pos-payment-method h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-400" checked />
-                            <span>Cash</span>
-                        </label>
-                        <label class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 px-3 py-2 text-sm cursor-pointer hover:border-emerald-500">
-                            <input type="radio" name="posPaymentMethod" value="qr" class="pos-payment-method h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-400" />
-                            <span>QR PH</span>
-                        </label>
                     </div>
                 </div>
 
@@ -140,27 +125,45 @@
                         <span class="text-xs text-slate-500">Add labor services</span>
                     </div>
                     <div class="grid gap-2 text-sm">
-                        <label class="flex items-center gap-2 rounded-2xl border border-slate-200 px-3 py-2 cursor-pointer hover:border-emerald-500">
+                        <label class="flex items-center gap-2 rounded-[10px] border border-slate-200 px-3 py-2 cursor-pointer hover:border-emerald-500">
                             <input type="checkbox" value="installation" class="pos-service-checkbox h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-400" />
                             <div class="space-y-0.5">
                                 <p class="font-medium text-slate-900">Installation</p>
                                 <p class="text-slate-500 text-[11px]">₱120</p>
                             </div>
                         </label>
-                        <label class="flex items-center gap-2 rounded-2xl border border-slate-200 px-3 py-2 cursor-pointer hover:border-emerald-500">
+                        <label class="flex items-center gap-2 rounded-[10px] border border-slate-200 px-3 py-2 cursor-pointer hover:border-emerald-500">
                             <input type="checkbox" value="tuneup" class="pos-service-checkbox h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-400" />
                             <div class="space-y-0.5">
                                 <p class="font-medium text-slate-900">Tune-up</p>
                                 <p class="text-slate-500 text-[11px]">₱250</p>
                             </div>
                         </label>
-                        <label class="flex items-center gap-2 rounded-2xl border border-slate-200 px-3 py-2 cursor-pointer hover:border-emerald-500">
+                        <label class="flex items-center gap-2 rounded-[10px] border border-slate-200 px-3 py-2 cursor-pointer hover:border-emerald-500">
                             <input type="checkbox" value="brake_adjust" class="pos-service-checkbox h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-400" />
                             <div class="space-y-0.5">
                                 <p class="font-medium text-slate-900">Brake Adjust</p>
                                 <p class="text-slate-500 text-[11px]">₱180</p>
                             </div>
                         </label>
+                    </div>
+                </div>
+
+                <div class="rounded-[28px] border border-slate-200 bg-white p-7 shadow-sm">
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="text-sm font-semibold text-slate-900">Payment Method</h2>
+                        <span class="text-xs text-slate-500">Quick select</span>
+                    </div>
+                    <div class="grid gap-3">
+                        <label class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 px-3 py-2 text-sm cursor-pointer hover:border-emerald-500">
+                            <input type="radio" name="posPaymentMethod" value="cash" class="pos-payment-method h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-400" checked />
+                            <span>Cash</span>
+                        </label>
+                        <label class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 px-3 py-2 text-sm cursor-pointer hover:border-emerald-500">
+                            <input type="radio" name="posPaymentMethod" value="qr" class="pos-payment-method h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-400" />
+                            <span>QR PH</span>
+                        </label>
+                        <button id="posProceedPaymentButton" class="w-full rounded-[10px] bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700">Proceed to Payment</button>
                     </div>
                 </div>
 
@@ -440,7 +443,7 @@
     <!-- Desktop QR Scanner Modal -->
     <div id="posDesktopScannerModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4">
-            <div class="bg-gradient-to-r from-emerald-600 to-cyan-600 px-6 py-4 rounded-t-2xl">
+            <div class="bg-emerald-600 px-6 py-4 rounded-t-2xl">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="bg-white/20 rounded-lg p-2">
