@@ -847,37 +847,29 @@ function printReceipt() {
     const printStyles = `
         <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: white; }
-            .receipt-container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
-            .receipt-header { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 20px; }
-            .header-left { display: flex; gap: 12px; align-items: flex-start; }
-            .header-left-logo { width: 60px; height: 60px; background: #e8f5e9; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #2d6a4f; font-size: 12px; }
-            .header-left-text h2 { font-size: 14px; font-weight: bold; margin-bottom: 4px; }
-            .header-left-text p { font-size: 11px; color: #666; line-height: 1.5; }
-            .header-right { text-align: right; }
-            .header-right p { font-size: 12px; margin-bottom: 4px; }
-            .header-right .label { color: #666; font-weight: 600; }
-            .header-right .value { font-weight: bold; }
-
-            .items-section { margin: 30px 0; }
-            .items-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-            .items-table thead { background: #f5f5f5; }
-            .items-table th { padding: 10px; text-align: left; font-weight: 600; font-size: 11px; border-bottom: 2px solid #000; text-transform: uppercase; letter-spacing: 0.5px; }
-            .items-table td { padding: 12px 10px; border-bottom: 1px solid #ddd; font-size: 12px; }
-            .items-table .text-right { text-align: right; }
-
-            .summary-section { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px; }
-            .summary-left { }
-            .summary-right { text-align: right; }
-            .summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 12px; }
-            .summary-row .label { color: #666; }
-            .summary-row.total { font-weight: bold; font-size: 14px; border-top: 2px solid #000; border-bottom: 2px solid #000; padding: 8px 0; margin: 12px 0; }
-            .summary-row.amount-received .label { font-weight: 600; }
-            .summary-row.change .value { color: #2d6a4f; font-weight: bold; }
-
+            body { background: #f3f4f6; font-family: 'Courier New', Courier, monospace; color: #111827; }
+            .receipt-wrapper { width: 100mm; max-width: 100mm; margin: 0 auto; padding: 8px 10px 12px; }
+            .receipt-paper { background: #ffffff; border: 1px solid #d1d5db; border-radius: 0; padding: 18px 16px 22px; }
+            .receipt-header { text-align: center; margin-bottom: 14px; }
+            .receipt-header h1 { font-size: 20px; letter-spacing: 0.35em; margin-bottom: 12px; }
+            .receipt-header p { font-size: 10px; line-height: 1.6; color: #4b5563; }
+            .receipt-divider { border-top: 1px dotted #d1d5db; margin: 14px 0; }
+            .receipt-meta { font-size: 10px; color: #374151; margin-bottom: 14px; }
+            .receipt-meta div { display: flex; justify-content: space-between; margin-bottom: 5px; }
+            .receipt-meta .label { font-weight: 700; }
+            .receipt-items { width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 14px; }
+            .receipt-items td { padding: 5px 0; vertical-align: top; }
+            .receipt-items .item-name { width: 100%; }
+            .receipt-items .qty, .receipt-items .price { text-align: right; width: 18%; }
+            .receipt-summary { font-size: 10px; margin-top: 10px; }
+            .receipt-summary div { display: flex; justify-content: space-between; padding: 5px 0; }
+            .receipt-summary .total { font-weight: 700; border-top: 1px dotted #d1d5db; border-bottom: 1px dotted #d1d5db; padding: 8px 0; margin: 8px 0; }
+            .receipt-footer { text-align: center; font-size: 11px; letter-spacing: 0.2em; font-weight: 700; margin-top: 12px; }
+            @page { size: 100mm auto; margin: 5mm; }
             @media print {
-                body { margin: 0; padding: 0; }
-                .receipt-container { max-width: 100%; padding: 20px; }
+                body { background: #fff; }
+                .receipt-wrapper { width: 100mm; margin: 0 auto; padding: 0; }
+                .receipt-paper { border: none; box-shadow: none; border-radius: 0; }
             }
         </style>
     `;
@@ -893,26 +885,17 @@ function printReceipt() {
     }));
 
     const subtotal = document.getElementById('posPaymentSubtotal')?.textContent || '₱0.00';
-    const services = document.getElementById('receiptServices')?.textContent || '₱0.00';
-    const extra = document.getElementById('receiptExtra')?.textContent || '₱0.00';
-    const discount = document.getElementById('receiptDiscount')?.textContent || '₱0.00';
     const tax = document.getElementById('receiptTax')?.textContent || '₱0.00';
     const total = document.getElementById('receiptTotal')?.textContent || '₱0.00';
-    
-    // Calculate VATable Sales from total and included VAT
-    const totalValue = parseFloat(total.replace('₱', '').replace(',', '')) || 0;
-    const taxValue = parseFloat(tax.replace('₱', '').replace(',', '')) || 0;
-    const vatableSales = totalValue - taxValue;
-    
     const paid = document.getElementById('receiptPaid')?.textContent || '₱0.00';
     const paymentMethod = document.getElementById('receiptPaymentMethod')?.textContent || 'Cash';
 
     const itemsHTML = items.map(item => `
         <tr>
-            <td>${item.name}</td>
-            <td style="text-align: center;">${item.qty}</td>
-            <td class="text-right">${item.price}</td>
-            <td class="text-right">${item.total}</td>
+            <td class="item-name">${item.name}</td>
+            <td class="qty">${item.qty}</td>
+            <td class="price">${item.price}</td>
+            <td class="price">${item.total}</td>
         </tr>
     `).join('');
 
@@ -925,75 +908,33 @@ function printReceipt() {
             ${printStyles}
         </head>
         <body>
-            <div class="receipt-container">
-                <div class="receipt-header">
-                    <div class="header-left">
-                        <div class="header-left-logo">KCC</div>
-                        <div class="header-left-text">
-                            <h2>MOTORCYCLE PARTS<br/>AND ACCESSORIES</h2>
-                            <p>129 Motorcycle St., Barangay 123<br/>City, Philippines<br/>Tel: (02) 1234-56578</p>
-                        </div>
+            <div class="receipt-wrapper">
+                <div class="receipt-paper">
+                    <div class="receipt-header">
+                        <h1>KCC</h1>
+                        <p>43 Don P. Campos Ave. Zone 2 Dasmariñas Cavite<br/>Tel: 0965 799 8611</p>
                     </div>
-                    <div class="header-right">
-                        <p><span class="label">Invoice #:</span> <span class="value">${invoiceNum}</span></p>
-                        <p><span class="label">Date:</span> <span class="value">${receiptDateText}</span></p>
-                        <p><span class="label">Cashier:</span> <span class="value">Admin</span></p>
+                    <div class="receipt-divider"></div>
+                    <div class="receipt-meta">
+                        <div><span class="label">Date</span><span>${receiptDateText}</span></div>
+                        <div><span class="label">Invoice</span><span>${invoiceNum}</span></div>
+                        <div><span class="label">Cashier</span><span>Admin</span></div>
                     </div>
-                </div>
-
-                <div class="items-section">
-                    <table class="items-table">
-                        <thead>
-                            <tr>
-                                <th>Item</th>
-                                <th style="text-align: center;">Qty</th>
-                                <th class="text-right">Price</th>
-                                <th class="text-right" style="width: 15%;">Total</th>
-                            </tr>
-                        </thead>
+                    <div class="receipt-divider"></div>
+                    <table class="receipt-items">
                         <tbody>
                             ${itemsHTML}
                         </tbody>
                     </table>
-                </div>
-
-                <div class="summary-section">
-                    <div class="summary-left">
-                        <div class="summary-row">
-                            <span class="label">Subtotal</span>
-                            <span class="value">${subtotal}</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="label">Discount</span>
-                            <span class="value">${discount}</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="label">Included VAT (12%)</span>
-                            <span class="value">${tax}</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="label">VATable Sales</span>
-                            <span class="value">${formatCurrency(vatableSales)}</span>
-                        </div>
-                        <div class="summary-row total">
-                            <span class="label">TOTAL</span>
-                            <span class="value">${total}</span>
-                        </div>
+                    <div class="receipt-divider"></div>
+                    <div class="receipt-summary">
+                        <div><span class="label">Subtotal</span><span>${subtotal}</span></div>
+                        <div><span class="label">Sales Tax</span><span>${tax}</span></div>
+                        <div class="total"><span>Total</span><span>${total}</span></div>
+                        <div><span class="label">Payment</span><span>${paid}</span></div>
+                        <div><span class="label">Method</span><span>${paymentMethod}</span></div>
                     </div>
-                    <div class="summary-right">
-                        <div class="summary-row amount-received">
-                            <span class="label">Amount Received</span>
-                            <span class="value">${paid}</span>
-                        </div>
-                        <div class="summary-row change">
-                            <span class="label">Change</span>
-                            <span class="value">₱0.00</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="label">Payment Method</span>
-                            <span class="value">${paymentMethod}</span>
-                        </div>
-                    </div>
+                    <div class="receipt-footer">THANK YOU</div>
                 </div>
             </div>
         </body>

@@ -10,8 +10,10 @@
                     
                    
                     <div class="relative inline-flex items-center gap-2 rounded-[20px] px-3 py-2 text-left">
-                        <button type="button" class="inline-flex h-11 w-11 items-center justify-center transition text-black" aria-label="Notifications" style="background: transparent; border: none;">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a6 6 0 00-6 6v4.586l-1.707 1.707A1 1 0 005 16h14a1 1 0 00.707-1.707L18 12.586V8a6 6 0 00-6-6zm0 18a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 20z"/></svg>
+                        <button type="button" class="relative p-2 text-slate-600 hover:bg-slate-100 rounded-lg" aria-label="Notifications">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                            </svg>
                         </button>
                         <div class="inline-flex items-center gap-1.5 rounded-[20px] px-3 py-2 text-left">
                         <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-black grid place-items-center text-lg font-semibold overflow-hidden">
@@ -186,7 +188,7 @@
                             align-items: center; justify-content: center;
                             text-align: center;
                             pointer-events: none;">
-                            <span id="categoryCenterValue" style="color: #000000; font-weight: 700; font-size: 15px; line-height: 1.1;">0</span>
+                            <span id="categoryCenterValue" style="color: #000000; font-weight: 700; font-size: 14px; line-height: 1.1;">0</span>
                             <span id="categoryCenterCaption" style="color: rgba(0,0,0,0.6); font-size: 9px; margin-top: 6px;">No sales today</span>
                         </div>
                     </div>
@@ -376,18 +378,18 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background-color: #059669;
-            color: #ffffff;
+            background-color: #0596682a;
+            color: #047857;
             border: none;   
             box-shadow: none;
             transition: background-color 0.18s ease, color 0.18s ease;
-            cursor: pointer;
+            
         }
         #topSellingOpenBtn:hover {
-            background-color: #047857;
-            color: #ffffff;
+            background-color: #04785749;
+            color: #047857;
         }
-        #topSellingOpenBtn:active { background-color: #047857; }
+    
         #topSellingOpenBtn .top-selling-icon { color: currentColor; width: 16px; height: 16px; }
 
         /* ---- Small slideshow dot indicators ---- */
@@ -435,16 +437,16 @@
             border-bottom: 1px solid rgba(107,114,128,0.20);
         }
         #topItemsModal #closeTopItemsModal {
-            background-color: #059669 !important;
-            color: #ffffff !important;
+            background-color: #0596682a !important;
+            color: #047857 !important;
             border-radius: 10px;
             border: none;
             cursor: pointer;
             transition: background-color 0.18s ease, color 0.18s ease;
         }
         #topItemsModal #closeTopItemsModal:hover {
-            background-color: #047857 !important;
-            color: #ffffff !important;
+            background-color: #04785749 !important;
+            color: #047857 !important;
         }
         /* Range buttons: emerald background with white text */
         .sales-range-btn {
@@ -472,6 +474,17 @@
         .sales-range-btn.active:hover {
             background-color: #047857;
             color: #ffffff;
+        }
+
+        /* Dashboard cards shadow — mimic POS terminal containers */
+        .border.border-gray-200 {
+            box-shadow: 0 10px 30px rgba(2,6,23,0.08);
+            transition: box-shadow 0.18s ease;
+        }
+        /* Neutralize hover lift/shadow so shadow is constant like POS terminal */
+        .border.border-gray-200:hover {
+            box-shadow: 0 10px 30px rgba(2,6,23,0.08) !important;
+            transform: none !important;
         }
     </style>
 

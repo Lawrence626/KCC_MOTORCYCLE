@@ -15,15 +15,15 @@
                 <p class="text-gray-600 text-sm mt-1">Process sales, service billing, and payments from one compact page.</p>
             </div>
             <div class="flex flex-wrap gap-2">
-            <button id="posOpenDesktopScannerButton" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 hover:bg-slate-100">
+            <button id="posOpenDesktopScannerButton" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 hover:bg-slate-100">
                     <svg class="h-4 w-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     Scan QR
                 </button>
-                <button id="posOpenScannerButton" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 hover:bg-slate-100">
+                <button id="posOpenScannerButton" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 hover:bg-slate-100">
                     <svg class="h-4 w-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
                     Mobile Scanner
                 </button>
-                <button id="posOpenTransactionHistoryButton" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 hover:bg-slate-100">
+                <button id="posOpenTransactionHistoryButton" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 hover:bg-slate-100">
                     <svg class="h-4 w-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/></svg>
                     Transaction History
                 </button>
@@ -173,18 +173,18 @@
 
     <div id="posPaymentModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 backdrop-blur-xl px-4 py-6">
         <div class="w-full max-w-4xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
-            <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+            <div class="flex items-center justify-between border-b border-emerald-700 bg-emerald-600 px-6 py-5">
                 <div>
-                    <h2 class="text-xl font-semibold text-slate-900">Process Payment</h2>
-                    <p class="text-sm text-slate-500">Review the transaction and confirm payment.</p>
+                    <h2 class="text-xl font-semibold text-white">Process Payment</h2>
+                    <p class="text-sm text-emerald-100">Review the transaction and confirm payment.</p>
                 </div>
-                <button id="posPaymentModalClose" class="rounded-full p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700">
+                <button id="posPaymentModalClose" class="rounded-full p-2 text-emerald-100 hover:bg-emerald-500 hover:text-white">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
             <div class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] px-6 py-6">
                 <div class="space-y-5">
-                    <div class="grid grid-cols-2 gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+                    <div class="grid grid-cols-2 gap-4 rounded-[15px] border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
                         <div>
                             <p class="font-semibold text-slate-900">Invoice #</p>
                             <p id="posPaymentInvoice">INV-000000</p>
@@ -194,15 +194,15 @@
                             <p id="posPaymentDate">Apr 30, 2024 10:30 AM</p>
                         </div>
                     </div>
-                    <div class="rounded-[28px] border border-slate-200 p-4">
+                    <div class="rounded-[15px] border border-slate-200 p-4">
                         <div class="mb-3 flex items-center justify-between">
                             <div>
-                                <h3 class="text-base font-semibold text-slate-900">Order Summary</h3>
+                                <h3 class="text-sm font-semibold text-slate-900">Order Summary</h3>
                                 <p class="text-xs text-slate-500">Items, services, and additional charges.</p>
                             </div>
                         </div>
                         <div class="overflow-x-auto">
-                            <table class="min-w-full text-left text-sm text-slate-700">
+                            <table class="min-w-full text-left text-xs text-slate-700">
                                 <thead>
                                     <tr class="border-b border-slate-200 text-slate-500 text-[11px] uppercase tracking-wide">
                                         <th class="px-3 py-2">Item</th>
@@ -224,26 +224,26 @@
                     </div>
                 </div>
                 <div class="space-y-5">
-                    <div class="rounded-[28px] border border-slate-200 p-4">
+                    <div class="rounded-[15px] border border-slate-200 p-4">
                         <h3 class="text-base font-semibold text-slate-900 mb-3">Payment Method</h3>
                         <div class="grid gap-3">
-                            <label class="inline-flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 cursor-pointer hover:border-emerald-500">
-                                <input type="radio" name="posPaymentModalMethod" value="cash" class="h-4 w-4 text-emerald-600 focus:ring-emerald-400" checked />
+                            <label class="inline-flex items-center gap-3 rounded-[10px] border border-slate-200 px-4 py-3 cursor-pointer hover:border-emerald-500">
+                                <input type="radio" name="posPaymentModalMethod" value="cash" class="h-4 w-4 text-emerald-600 rounded-[10px] focus:ring-emerald-400" checked />
                                 <span class="font-medium text-slate-900">Cash</span>
                             </label>
-                            <div class="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 hover:border-emerald-500">
-                                <input type="radio" name="posPaymentModalMethod" value="qr" class="h-4 w-4 text-emerald-600 focus:ring-emerald-400" />
+                            <div class="flex items-center gap-3 rounded-[10px] border border-slate-200 px-4 py-3 hover:border-emerald-500">
+                                <input type="radio" name="posPaymentModalMethod" value="qr" class="h-4 w-4 text-emerald-600 rounded-[10px] focus:ring-emerald-400" />
                                 <span class="font-medium text-slate-900">QR PH</span>
                             </div>
                         </div>
                     </div>
-                    <div class="rounded-[28px] border border-slate-200 p-4">
+                    <div class="rounded-[10px] border border-slate-200 p-4">
                         <h3 class="text-base font-semibold text-slate-900 mb-3">Notes</h3>
                         <p class="text-sm text-slate-500">Confirm the transaction after verifying the total, services, and charges.</p>
                     </div>
                     <div class="flex gap-3">
-                        <button id="posPaymentModalCancel" class="flex-1 rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-50">Cancel</button>
-                        <button id="posPaymentModalConfirm" class="flex-1 rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-700">Confirm Payment</button>
+                        <button id="posPaymentModalCancel" class="flex-1 rounded-[10px] border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-50">Cancel</button>
+                        <button id="posPaymentModalConfirm" class="flex-1 rounded-[10px] bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-700">Confirm Payment</button>
                     </div>
                 </div>
             </div>
@@ -253,36 +253,36 @@
     <div id="posReceiptOverlay" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 px-4 py-6">
         <div class="w-full max-w-3xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
             <div class="receipt-content">
-                <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+                <div class="flex items-center justify-between border-b border-emerald-700 bg-emerald-600 px-6 py-5">
                     <div class="flex items-center gap-4">
                         <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                         </span>
                         <div>
-                            <h2 class="text-xl font-semibold text-slate-900">Payment Successful!</h2>
-                            <p class="text-sm text-slate-500">Transaction has been recorded successfully.</p>
-                            <p class="mt-2 text-sm text-slate-500">Invoice #: <span id="receiptInvoice">INV-000000</span></p>
+                            <h2 class="text-xl font-semibold text-white">Payment Successful!</h2>
+                            <p class="text-sm text-emerald-100">Transaction has been recorded successfully.</p>
+                            <p class="mt-1 text-sm text-emerald-100">Invoice #: <span id="receiptInvoice">INV-000000</span></p>
                             <p id="receiptDate" class="hidden"></p>
                         </div>
                     </div>
-                    <button id="posCloseReceiptButton" class="rounded-full p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700">
+                    <button id="posCloseReceiptButton" class="rounded-full p-2 text-emerald-100 hover:bg-emerald-500 hover:text-white">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
                 <div class="px-6 py-6">
                     <div class="grid gap-4 sm:grid-cols-2 mb-6">
-                        <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                        <div class="rounded-[15px] border border-slate-200 bg-slate-50 p-4">
                             <p class="text-sm text-slate-500">Paid Amount</p>
                             <p id="receiptPaid" class="mt-2 text-xl font-semibold text-slate-900">₱0.00</p>
                         </div>
-                        <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                        <div class="rounded-[15px] border border-slate-200 bg-slate-50 p-4">
                             <p class="text-sm text-slate-500">Payment Method</p>
                             <p id="receiptPaymentMethod" class="mt-2 text-xl font-semibold text-slate-900">Cash</p>
                         </div>
                     </div>
                     <div id="receiptInvoiceDetails" class="hidden">
                         <!-- Invoice Header with Logo and Business Details -->
-                        <div class="mb-4 pb-3 border-b-2 border-slate-900">
+                        <div class="mb-4 pb-3 border-b-2 border-slate-300">
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="flex gap-2">
                                     <div class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0">
@@ -305,7 +305,7 @@
                         <div class="mb-4">
                             <table class="w-full text-xs">
                                 <thead>
-                                    <tr class="border-b-2 border-slate-900 text-slate-900">
+                                    <tr class="border-b-2 border-slate-300 text-slate-900">
                                         <th class="text-left py-1 text-[10px] font-bold uppercase tracking-wide">Item</th>
                                         <th class="text-center py-1 text-[10px] font-bold uppercase tracking-wide">Qty</th>
                                         <th class="text-right py-1 text-[10px] font-bold uppercase tracking-wide">Price</th>
@@ -332,7 +332,7 @@
                                     <span class="text-slate-600">Included VAT (12%)</span>
                                     <span id="invoiceTax" class="font-semibold text-slate-900">₱0.00</span>
                                 </div>
-                                <div class="flex justify-between text-sm border-t-2 border-slate-900 pt-2 mt-2">
+                                <div class="flex justify-between text-sm border-t-2 border-slate-300 pt-2 mt-2">
                                     <span class="font-bold text-slate-900">TOTAL</span>
                                     <span id="invoiceTotalAmount" class="font-bold text-emerald-700">₱0.00</span>
                                 </div>
@@ -354,9 +354,9 @@
                         </div>
                     </div>
                     <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-                        <button id="posViewInvoiceButton" class="flex-1 rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white hover:bg-slate-800">View Invoice</button>
-                        <button id="posPrintReceiptButton" class="flex-1 rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-700 hidden">Print Receipt</button>
-                        <button id="posCloseReceiptDoneButton" class="flex-1 rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-50">Close</button>
+                        <button id="posCloseReceiptDoneButton" class="flex-1 rounded-[10px] border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-50">Close</button>
+                        <button id="posPrintReceiptButton" class="flex-1 rounded-[10px] bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-700 hidden">Print Receipt</button>
+                        <button id="posViewInvoiceButton" class="flex-1 rounded-[10px] bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700">View Invoice</button>
                     </div>
                 </div>
             </div>

@@ -9,8 +9,8 @@
         </div>
     </a>
 
-    <div class="px-4 pt-2 pb-3 flex-shrink-0 flex justify-center">
-        <div class="relative w-[85%]">
+    <div class="px-4 pt-2 pb-3 flex-shrink-0">
+        <div class="relative w-[93%]">
             <svg class="w-4.5 h-4.5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="11" cy="11" r="7" />
                 <path d="M21 21l-4.35-4.35" />

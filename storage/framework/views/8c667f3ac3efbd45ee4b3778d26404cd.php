@@ -29,46 +29,51 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
                     </svg>
-                    <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                 </button>
             </div>
         </div>
 
         <!-- Controls Section -->
-        <div class="flex items-center justify-between gap-4">
-            <button onclick="openNewReplacementModal()" class="inline-flex items-center gap-2 px-5 py-3 bg-emerald-600 text-white rounded-2xl font-semibold text-base hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-500/10">
+        <div class="flex items-center gap-3 w-full">
+            <button onclick="openNewReplacementModal()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-[10px] font-semibold text-sm hover:bg-emerald-700 transition-all ring-1 ring-emerald-500/10">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
                 New Replacement
             </button>
 
-            <div class="flex-1 flex items-center gap-3">
-                <div class="flex-1 relative">
-                    <svg class="absolute left-3 top-2.5 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex items-center gap-3 flex-1 min-w-0">
+                <div class="relative flex-1 min-w-0">
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
-                    <input
-                        type="text"
-                        placeholder="Search receipt no. / product"
-                        class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    />
+                        <input
+                            type="text" placeholder="Search receipt no. / product"
+                                class="w-full pl-10 pr-10 py-2.5 rounded-[10px] border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        />
                 </div>
-                <select class="px-4 py-2 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <option>Status: All</option>
-                    <option>Pending</option>
-                    <option>Approved</option>
-                    <option>Completed</option>
-                </select>
+                <!-- Custom Dropdown -->
+                <div class="relative">
+                    <button onclick="toggleStatusDropdown()" class="appearance-none pl-4 pr-10 py-2.5 rounded-[10px] border border-slate-300 bg-white text-sm font-medium text-slate-700 text-center focus:outline-none focus:ring-2 focus:ring-green-500 flex items-center gap-2 whitespace-nowrap w-40"
+                        style="background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 20 20\' fill=\'none\' stroke=\'%2338445d\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M6 8l4 4 4-4\'/%3E%3C/svg%3E'); background-repeat:no-repeat; background-position:right 0.85rem center; background-size:1.2em; line-height:1.25rem;">
+                        <span id="statusLabel">Status: All</span>
+                    </button>
+                    <div id="statusDropdown" class="hidden absolute top-full mt-2 -right-0 w-56 bg-white border border-slate-300 rounded-lg shadow-xl z-50 p-3 space-y-1">
+                        <button onclick="selectStatus('Status: All')" class="w-full px-4 py-2.5 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Status: All</button>
+                        <button onclick="selectStatus('Pending')" class="w-full px-4 py-2.5 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Pending</button>
+                        <button onclick="selectStatus('Approved')" class="w-full px-4 py-2.5 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Approved</button>
+                        <button onclick="selectStatus('Completed')" class="w-full px-4 py-2.5 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Completed</button>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Table Section -->
-        <div class="bg-white rounded-lg border border-slate-200 overflow-hidden">
-            <div class="overflow-x-auto">
+        <div class="bg-white rounded-lg border border-slate-200 overflow-hidden flex flex-col" style="min-height: calc(100vh - 220px);">
+            <div class="overflow-x-auto flex-1">
                 <table class="w-full">
                     <thead>
-                        <tr class="border-b border-slate-200 bg-slate-50">
+                        <tr class="border-b  border-slate-200 bg-slate-50">
                             <th class="px-6 py-3 text-left text-xs font-semibold text-slate-900">Ref No.</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-slate-900">Date</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-slate-900">Returned Item</th>
@@ -97,7 +102,7 @@
                 <p class="text-sm text-slate-600">Showing 0 of 0 entries</p>
                 <div class="flex gap-1">
                     <button class="px-3 py-1 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>← Prev</button>
-                    <button class="px-3 py-1 rounded-lg bg-cyan-600 text-sm font-medium text-white">1</button>
+                    <button class="px-3 py-1 rounded-lg bg-slate-400 text-sm font-medium text-white">1</button>
                     <button class="px-3 py-1 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>Next →</button>
                 </div>
             </div>
@@ -181,9 +186,9 @@
     <!-- New Replacement Modal -->
     <div id="newReplacementModal" class="hidden fixed inset-0 bg-slate-950/40 backdrop-blur-xl flex items-center justify-center z-50 px-4 py-6">
         <div class="bg-white/95 backdrop-blur-sm rounded-[28px] shadow-[0_30px_100px_rgba(15,23,42,0.18)] border border-slate-200/80 max-w-2xl w-full overflow-hidden">
-            <div class="flex items-center justify-between px-8 py-5 border-b border-slate-200/80">
-                <h2 class="text-2xl font-semibold text-slate-900">New Replacement</h2>
-                <button onclick="closeNewReplacementModal()" class="text-slate-500 hover:text-slate-700 transition-colors p-2 rounded-full hover:bg-slate-100">
+            <div class="flex items-center justify-between px-8 py-5 border-b border-transparent bg-emerald-600 rounded-t-[28px]">
+                <h2 class="text-2xl font-semibold text-white">New Replacement</h2>
+                <button onclick="closeNewReplacementModal()" class="text-white transition-colors p-2 rounded-[10px] hover:bg-white/15">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -194,36 +199,50 @@
                 <!-- Receipt Number -->
                 <div>
                     <label class="block text-sm font-semibold text-slate-900 mb-3">Receipt No.</label>
-                    <input id="newReceiptNo" type="text" placeholder="Enter receipt number" class="w-full px-5 py-3 rounded-2xl border border-slate-200 bg-slate-50 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent shadow-sm" />
+                    <input id="newReceiptNo" type="text" placeholder="Enter receipt number" class="w-full px-5 py-3 rounded-[10px] border border-slate-200 bg-slate-50 text-slate-600 placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent shadow-sm" />
                 </div>
 
                 <!-- Returned Item -->
-                <div>
+                <div class="relative">
                     <label class="block text-sm font-semibold text-slate-900 mb-3">Returned Item</label>
-                    <select id="newReturnedItem" class="w-full px-5 py-3 rounded-2xl border border-slate-200 bg-slate-50 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent shadow-sm">
-                        <option>Select returned item...</option>
-                        <option>Brembo Brake Pad</option>
-                        <option>NGK Spark Plug</option>
-                        <option>Motul 4T 10W40 Oil</option>
-                    </select>
+                    <input id="newReturnedItem" type="hidden" value="" />
+                    <button type="button" id="returnedItemButton" onclick="toggleDropdown('returnedItemDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-emerald-500/20 bg-white text-left text-slate-700 text-sm font-semibold flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent ring-1 ring-emerald-500/10 shadow-sm hover:bg-emerald-50">
+                        <span id="returnedItemLabel">Select returned item...</span>
+                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                        </svg>
+                    </button>
+                    <div id="returnedItemDropdown" class="hidden absolute z-50 w-full mt-2 bg-white border border-slate-200 rounded-[10px] shadow-xl p-2 space-y-1 max-h-56 overflow-y-auto">
+                        <button type="button" onclick="selectDropdown('newReturnedItem', 'Brembo Brake Pad', 'returnedItemLabel', 'returnedItemDropdown')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Brembo Brake Pad</button>
+                        <button type="button" onclick="selectDropdown('newReturnedItem', 'NGK Spark Plug', 'returnedItemLabel', 'returnedItemDropdown')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">NGK Spark Plug</button>
+                        <button type="button" onclick="selectDropdown('newReturnedItem', 'Motul 4T 10W40 Oil', 'returnedItemLabel', 'returnedItemDropdown')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Motul 4T 10W40 Oil</button>
+                    </div>
                 </div>
 
                 <!-- Reason -->
-                <div>
+                <div class="relative">
                     <label class="block text-sm font-semibold text-slate-900 mb-3">Reason</label>
-                    <select id="newReason" class="w-full px-5 py-3 rounded-2xl border border-slate-200 bg-slate-50 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent shadow-sm">
-                        <option>Defective Item</option>
-                        <option>Wrong Item Sent</option>
-                        <option>Customer Request</option>
-                        <option>Quality Issue</option>
-                    </select>
+                    <input id="newReason" type="hidden" value="Defective Item" />
+                    <button type="button" id="newReasonButton" onclick="toggleDropdown('reasonDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-emerald-500/20 bg-white text-left text-slate-700 text-sm font-semibold flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent ring-1 ring-emerald-500/10 shadow-sm hover:bg-emerald-50">
+                        <span id="newReasonLabel">Defective Item</span>
+                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                        </svg>
+                    </button>
+                    <div id="reasonDropdown" class="hidden absolute z-50 w-full mt-2 bg-white border border-slate-200 rounded-[10px] shadow-xl p-2 space-y-1 max-h-56 overflow-y-auto">
+                        <button type="button" onclick="selectDropdown('newReason', 'Defective Item', 'newReasonLabel', 'reasonDropdown')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Defective Item</button>
+                        <button type="button" onclick="selectDropdown('newReason', 'Wrong Item Sent', 'newReasonLabel', 'reasonDropdown')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Wrong Item Sent</button>
+                        <button type="button" onclick="selectDropdown('newReason', 'Customer Request', 'newReasonLabel', 'reasonDropdown')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Customer Request</button>
+                        <button type="button" onclick="selectDropdown('newReason', 'Quality Issue', 'newReasonLabel', 'reasonDropdown')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Quality Issue</button>
+                    </div>
                 </div>
 
                 <!-- Replacement Product & Quantity (Side by Side) -->
                 <div class="grid grid-cols-3 gap-4">
                     <div class="col-span-2">
                         <label class="block text-sm font-semibold text-slate-900 mb-3">Replacement Product</label>
-                        <select id="newReplacementProduct" class="w-full px-5 py-3 rounded-2xl border border-slate-200 bg-slate-50 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent shadow-sm">
+                        <select id="newReplacementProduct" class="w-full px-5 pr-10 py-3 rounded-[10px] border border-slate-200 bg-slate-50 text-slate-600 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent shadow-sm"
+                            style="background-image: url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 20 20\' fill=\'none\' stroke=\'%2338445d\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M6 8l4 4 4-4\'/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1rem;">
                             <option>Select product...</option>
                             <option>Brembo Brake Pad</option>
                             <option>NGK Spark Plug</option>
@@ -233,16 +252,12 @@
                     <div>
                         <label class="block text-sm font-semibold text-slate-900 mb-2">Quantity</label>
                         <div class="flex items-center gap-2">
-                            <button onclick="decreaseNewQuantity()" class="p-2.5 rounded-lg border border-slate-300 hover:bg-slate-100 transition-colors">
-                                <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-                                </svg>
+                            <button onclick="decreaseNewQuantity()" class="inline-flex items-center justify-center h-10 w-10 rounded-[10px] border border-slate-300 bg-white text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="text-lg font-semibold">−</span>
                             </button>
-                            <input id="newQuantity" type="text" value="1" readonly class="flex-1 px-3 py-2.5 rounded-lg border border-slate-300 text-center text-slate-900 font-semibold text-sm" />
-                            <button onclick="increaseNewQuantity()" class="p-2.5 rounded-lg border border-slate-300 hover:bg-slate-100 transition-colors">
-                                <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                                </svg>
+                            <input id="newQuantity" type="text" value="1" readonly class="w-16 px-2.5 py-2 rounded-[10px] border border-slate-300 text-center text-slate-600 font-semibold text-sm" />
+                            <button onclick="increaseNewQuantity()" class="inline-flex items-center justify-center h-10 w-10 rounded-[10px] border border-slate-300 bg-white text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="text-lg font-semibold">+</span>
                             </button>
                         </div>
                     </div>
@@ -250,9 +265,9 @@
             </div>
 
             <!-- Modal Actions -->
-            <div class="px-8 py-5 border-t border-slate-200 flex gap-3 justify-end bg-slate-50 rounded-b-[28px]">
-                <button onclick="closeNewReplacementModal()" class="px-6 py-3 rounded-2xl border border-slate-300 bg-white text-slate-900 font-semibold text-sm hover:bg-slate-100 transition-all">Cancel</button>
-                <button onclick="submitNewReplacement()" class="px-6 py-3 rounded-2xl bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20">Create Replacement</button>
+            <div class="px-8 py-5 border-t border-slate-200 flex gap-3 justify-end bg-slate-50 rounded-b-[10px]">
+                <button onclick="closeNewReplacementModal()" class="px-6 py-3 rounded-[10px] border border-slate-300 bg-white text-slate-900 font-semibold text-sm hover:bg-slate-100 transition-all">Cancel</button>
+                <button onclick="submitNewReplacement()" class="px-6 py-3 rounded-[10px] bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20">Create Replacement</button>
             </div>
         </div>
     </div>
