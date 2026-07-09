@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSalesRange = 'monthly'; // <-- itong variable ang mag-remember kung anong button ang huling na-click
     const salesRangeButtons = Array.from(document.querySelectorAll('.sales-range-btn'));
 
+    // Notification system variables
     const notificationButton = document.getElementById('dashboardNotificationButton');
     const notificationDropdown = document.getElementById('dashboardNotificationDropdown');
     const notificationClose = document.getElementById('dashboardNotificationClose');
@@ -162,11 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
             lowStockBanner.classList.remove('translate-x-0', 'opacity-100');
         }
     };
-
-    // ---- Fixed na listahan ng categories (galing sa filter chips: All, Exhaust,
-    // Helmets, Tires, Brakes, Oils, Batteries, Accessories — "All" ay hindi
-    // kasama dahil filter lang ito, hindi isang category). Bawat isa may sariling
-    // kulay mula sa ibinigay na palette (dark -> neon/light teal). ----
     const CATEGORY_DEFS = [
         { name: 'Exhaust', color: '#06b6d4' },
         { name: 'Helmets', color: '#a3e635' },
@@ -176,8 +172,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: 'Batteries', color: '#3b82f6' },
         { name: 'Accessories', color: '#10b981' },
     ];
-    const INACTIVE_DOT_COLOR = '#4b5563'; // muted/gray — kapag walang benta ang category sa araw na 'yon
-    const EMPTY_RING_COLOR = '#3a3a3a'; // flat gray track kapag walang laman/sales
+    const INACTIVE_DOT_COLOR = '#7e7e7e8c'; // muted/gray — kapag walang benta ang category sa araw na 'yon
+    const EMPTY_RING_COLOR = '#7e7e7e8c'; // flat gray track kapag walang laman/sales
 
     const setMetric = (element, value, prefix = '') => {
         if (!element) {
@@ -435,8 +431,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: comparisonChart.datasets.map((dataset, index) => ({
                     label: dataset.label,
                     data: dataset.data,
-                    backgroundColor: dataset.backgroundColor || (index === 0 ? '#A4DD00' : '#A4DD00'),
-                    borderColor: dataset.borderColor || (index === 0 ? '#A4DD00' : '#A4DD00'),
+                    backgroundColor: dataset.backgroundColor || (index === 0 ? '#175000' : '#175000'),
+                    borderColor: dataset.borderColor || (index === 0 ? '#175000' : '#175000'),
                     borderWidth: 1,
                 })),
             },
@@ -447,9 +443,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     legend: { position: 'top', labels: { font: { size: 11 } } },
                     tooltip: {
                         backgroundColor: '#1a1a1a',
-                        titleColor: '#A4DD00',
+                        titleColor: '#2ea300',
                         bodyColor: '#ffffff',
-                        borderColor: '#A4DD00',
+                        borderColor: '#2ea300',
                         borderWidth: 1,
                         padding: 10,
                         displayColors: false,
@@ -539,11 +535,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const setActiveSalesRange = (range) => {
         salesRangeButtons.forEach((button) => {
             const isActive = button.dataset.range === range;
-            button.classList.toggle('text-black', isActive);
-            button.classList.toggle('shadow-sm', isActive);
-            button.style.backgroundColor = isActive ? '#32FFFD' : '';
-            button.classList.toggle('bg-neutral-800', !isActive);
-            button.classList.toggle('text-gray-300', !isActive);
+            button.classList.toggle('active', isActive);
+            button.style.backgroundColor = '';
         });
     };
 
@@ -600,15 +593,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: [{
                     label: 'Revenue',
                     data: chartData.values,
-                    borderColor: '#0fe4d2',
+                    borderColor: '#059669',
                     backgroundColor: 'transparent',
                     borderWidth: 2.5,
                     fill: false,
                     tension: 0.4,
                     pointRadius: 0,
                     pointHoverRadius: 5,
-                    pointBackgroundColor: '#0fe4d2',
-                    pointHoverBackgroundColor: '#0fe4d2',
+                    pointBackgroundColor: '#059669',
+                    pointHoverBackgroundColor: '#059669',
                     pointHoverBorderColor: '#0f0f0f',
                     pointHoverBorderWidth: 2,
                 }],
@@ -628,9 +621,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         mode: 'index',
                         intersect: false,
                         backgroundColor: '#1a1a1a',
-                        titleColor: '#32FFFD',
+                        titleColor: '#059669',
                         bodyColor: '#ffffff',
-                        borderColor: '#32FFFD',
+                        borderColor: '#059669',
                         borderWidth: 1,
                         padding: 10,
                         displayColors: false,

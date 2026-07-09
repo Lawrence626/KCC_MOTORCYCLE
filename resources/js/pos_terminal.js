@@ -382,19 +382,19 @@ function renderCart() {
         const row = document.createElement('tr');
         row.className = 'border-b border-slate-200';
         row.innerHTML = `
-            <td class="px-3 py-3 text-slate-700 text-sm font-medium">${item.name}</td>
-            <td class="px-3 py-3 text-slate-600 text-sm">${item.sku || '-'}</td>
-            <td class="px-3 py-3 text-right text-slate-700 text-sm">${formatCurrency(item.unit_price)}</td>
-            <td class="px-3 py-3 text-center text-slate-700 text-sm">
+            <td class="px-3 py-3 text-slate-700 text-xs font-medium">${item.name}</td>
+            <td class="px-3 py-3 text-slate-600 text-xs">${item.sku || '-'}</td>
+            <td class="px-3 py-3 text-right text-slate-700 text-xs">${formatCurrency(item.unit_price)}</td>
+            <td class="px-3 py-3 text-center text-slate-700 text-xs">
                 <div class="inline-flex items-center rounded-lg border border-slate-200 overflow-hidden">
                     <button data-action="decrement" data-id="${item.id}" class="px-2 py-1 text-slate-700 hover:bg-slate-100">−</button>
-                    <span class="px-3 text-slate-900 text-sm">${item.quantity}</span>
+                    <span class="px-3 text-slate-900 text-xs">${item.quantity}</span>
                     <button data-action="increment" data-id="${item.id}" class="px-2 py-1 text-slate-700 hover:bg-slate-100">+</button>
                 </div>
             </td>
-            <td class="px-3 py-3 text-right text-slate-700 text-sm">${formatCurrency(item.unit_price * item.quantity)}</td>
-            <td class="px-3 py-3 text-center text-slate-700 text-sm">
-                <button data-action="remove" data-id="${item.id}" class="text-red-600 hover:text-red-800 text-sm font-semibold">Remove</button>
+            <td class="px-3 py-3 text-right text-slate-700 text-xs">${formatCurrency(item.unit_price * item.quantity)}</td>
+            <td class="px-3 py-3 text-center text-slate-700 text-xs">
+                <button data-action="remove" data-id="${item.id}" class="text-red-600 hover:text-red-800 text-xs font-semibold">Remove</button>
             </td>
         `;
         tbody.appendChild(row);
@@ -475,7 +475,7 @@ async function searchProducts(query = '', page = 1) {
         productGrid.innerHTML = '';
         json.data.forEach(product => {
             const card = document.createElement('div');
-            card.className = 'pos-image-upload-card relative rounded-3xl border border-slate-200 bg-slate-50 p-3 shadow-sm flex flex-col justify-between';
+            card.className = 'pos-image-upload-card relative rounded-3xl border border-slate-200 bg-slate-50 p-3 flex flex-col justify-between';
             card.dataset.productId = product.id;
             const stockQty = product.stock_quantity ?? product.stock ?? 'N/A';
             const productName = product.product_name || product.name || 'Unnamed Product';
@@ -488,39 +488,53 @@ async function searchProducts(query = '', page = 1) {
             const vatableSales = sellingPrice - includedVat;
             
             card.innerHTML = `
-                <div class="mb-3">
-                    <div class="pos-image-preview h-24 w-full overflow-hidden rounded-3xl bg-slate-200 bg-cover bg-center" style="background-image: url('${product.image || ''}')"></div>
+                <div class="mb-1">
+                    <div class="pos-image-preview h-24 w-full overflow-hidden rounded-[10px] bg-slate-200 bg-cover bg-center" style="background-image: url('${product.image || ''}')"></div>
                     <input type="file" accept="image/*" class="pos-image-uploader hidden" data-id="${product.id}" />
-                    <button type="button" class="pos-image-upload-trigger mt-2 inline-flex items-center rounded-full border border-slate-300 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-700 hover:bg-slate-100">Upload Image</button>
-                </div>
-                <div class="space-y-1">
-                    <div>
-                        <h3 class="text-sm font-semibold text-slate-900 line-clamp-2">${productName}</h3>
-                        ${brand ? `<p class="text-[10px] text-slate-600">${brand}</p>` : ''}
-                        ${compatibility ? `<p class="text-[9px] text-slate-500 line-clamp-1">${compatibility}</p>` : ''}
-                        <p class="text-[11px] text-slate-500 mt-1">Stock: ${stockQty} pcs</p>
-                    </div>
-                    <div class="flex items-center justify-between gap-2">
-                        <div class="flex-1">
-                            <span class="text-sm font-semibold text-slate-900">${formatCurrency(sellingPrice)}</span>
-                            <button type="button" class="pos-price-breakdown-toggle mt-1 flex items-center gap-1 text-[10px] text-slate-500 hover:text-slate-700 transition" data-product-id="${product.id}">
-                                <svg class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    <div class="mt-2 flex items-center justify-between">
+                        <div class="flex-1 pr-2">
+                            <h3 class="text-sm font-semibold text-slate-900 line-clamp-2 mb-0">${productName}</h3>
+                            ${brand ? `<p class="text-[10px] text-slate-600">${brand}</p>` : ''}
+                            ${compatibility ? `<p class="text-[9px] text-slate-500 line-clamp-1">${compatibility}</p>` : ''}
+                        </div>
+                        <div class="ml-2 flex-shrink-0">
+                            <button type="button" aria-label="Upload image" title="Upload image" class="pos-image-upload-trigger inline-flex h-9 w-9 items-center justify-center rounded-[10px] border border-slate-200 bg-white text-slate-700 hover:bg-slate-100">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                 </svg>
-                                Price Breakdown
                             </button>
-                            <div class="pos-price-breakdown hidden mt-2 p-2 bg-slate-100 rounded-lg text-[10px] space-y-1 overflow-hidden transition-all duration-200" data-product-id="${product.id}">
-                                <div class="flex justify-between">
-                                    <span class="text-slate-600">VATable Sales</span>
-                                    <span class="font-medium text-slate-900">${formatCurrency(vatableSales)}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-slate-600">Included VAT (12%)</span>
-                                    <span class="font-medium text-slate-900">${formatCurrency(includedVat)}</span>
-                                </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-2 flex flex-col justify-between flex-1">
+                    <div class="space-y-1">
+                        <p class="text-[11px] text-slate-500 mt-0">Stock: ${stockQty} pcs</p>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-semibold text-slate-900">${formatCurrency(sellingPrice)}</span>
+                                <button type="button" class="pos-price-breakdown-toggle group relative inline-flex items-center gap-1 text-[10px] text-slate-500 hover:text-slate-1000 transition" data-product-id="${product.id}" data-vatable="${vatableSales}" data-included-vat="${includedVat}" title="Price Breakdown">
+                                 
+                                    <svg class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
                             </div>
                         </div>
-                        <button type="button" data-id="${product.id}" data-name="${productName}" data-sku="${product.sku || ''}" data-price="${product.unit_price || 0}" class="pos-add-card inline-flex h-8 rounded-2xl bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700">Add to Cart</button>
+                        <div class="pos-price-breakdown hidden mt-2 p-2 bg-slate-100 rounded-lg text-[10px] space-y-1 overflow-hidden transition-all duration-200" data-product-id="${product.id}">
+                            <div class="flex justify-between">
+                                <span class="text-slate-600">VATable Sales</span>
+                                <span class="font-medium text-slate-900">${formatCurrency(vatableSales)}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-600">Included VAT (12%)</span>
+                                <span class="font-medium text-slate-900">${formatCurrency(includedVat)}</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-center">
+                            <button type="button" data-id="${product.id}" data-name="${productName}" data-sku="${product.sku || ''}" data-price="${product.unit_price || 0}" class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-emerald-600 px-4 text-sm font-semibold text-white hover:bg-emerald-700">Add to Cart</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -553,7 +567,7 @@ function renderProductPagination(pagination) {
 
     const prevButton = document.createElement('button');
     prevButton.type = 'button';
-    prevButton.className = 'inline-flex items-center rounded-full border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed';
+    prevButton.className = 'inline-flex items-center rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed';
     prevButton.textContent = '← Prev';
     prevButton.disabled = currentPage <= 1;
     prevButton.onclick = () => searchProducts(posState.productSearchQuery, currentPage - 1);
@@ -571,9 +585,9 @@ function renderProductPagination(pagination) {
         const pageButton = document.createElement('button');
         pageButton.type = 'button';
         if (page === currentPage) {
-            pageButton.className = 'inline-flex items-center justify-center rounded-full bg-teal-500 text-white w-8 h-8 text-sm font-semibold';
+            pageButton.className = 'inline-flex items-center justify-center rounded-[10px] bg-slate-400 text-white w-8 h-8 text-sm font-semibold';
         } else {
-            pageButton.className = 'inline-flex items-center justify-center rounded-full border border-slate-300 bg-white text-slate-700 w-8 h-8 text-sm font-semibold hover:bg-slate-50';
+            pageButton.className = 'inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-sm font-semibold hover:bg-slate-50';
         }
         pageButton.textContent = page;
         pageButton.onclick = () => searchProducts(posState.productSearchQuery, page);
@@ -582,7 +596,7 @@ function renderProductPagination(pagination) {
 
     const nextButton = document.createElement('button');
     nextButton.type = 'button';
-    nextButton.className = 'inline-flex items-center rounded-full border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed';
+    nextButton.className = 'inline-flex items-center rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed';
     nextButton.textContent = 'Next →';
     nextButton.disabled = currentPage >= totalPages;
     nextButton.onclick = () => searchProducts(posState.productSearchQuery, currentPage + 1);
@@ -1230,12 +1244,119 @@ function setupPosEvents() {
     document.getElementById('posOpenDesktopScannerButton')?.addEventListener('click', openDesktopScanner);
     document.getElementById('posCloseDesktopScannerButton')?.addEventListener('click', closeDesktopScanner);
 
-    // Price Breakdown Toggle (Event Delegation)
+    // Price Breakdown Toggle (Floating popover)
+    let currentFloatingBreakdown = null;
+    let currentFloatingCleanup = null;
+    function removeFloatingBreakdown() {
+        if (currentFloatingBreakdown) {
+            currentFloatingBreakdown.remove();
+            currentFloatingBreakdown = null;
+        }
+        if (typeof currentFloatingCleanup === 'function') {
+            try { currentFloatingCleanup(); } catch (e) { console.error(e); }
+            currentFloatingCleanup = null;
+        }
+    }
+
     document.addEventListener('click', (event) => {
         const toggle = event.target.closest('.pos-price-breakdown-toggle');
         if (toggle) {
+            event.preventDefault();
+            event.stopPropagation();
             const productId = toggle.dataset.productId;
-            togglePriceBreakdown(productId);
+
+            // If the same product's popover is open, close it
+            if (currentFloatingBreakdown && currentFloatingBreakdown.dataset.productId === productId) {
+                removeFloatingBreakdown();
+                return;
+            }
+
+            removeFloatingBreakdown();
+
+            const vatable = parseFloat(toggle.dataset.vatable) || 0;
+            const includedVat = parseFloat(toggle.dataset.includedVat) || 0;
+
+            const pop = document.createElement('div');
+            pop.className = 'pos-floating-breakdown absolute z-50 p-2 bg-white/100 border border-slate-200 rounded-lg text-[10px] text-white space-y-1 overflow-hidden shadow-md';
+            pop.dataset.productId = productId;
+            pop.innerHTML = `
+                <div class="flex justify-between">
+                    <span class="text-black/80">VATable Sales</span>
+                    <span class="font-medium text-black">${formatCurrency(vatable)}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-black/80">Included VAT (12%)</span>
+                    <span class="font-medium text-white">${formatCurrency(includedVat)}</span>
+                </div>
+            `;
+
+            document.body.appendChild(pop);
+
+            function positionPop() {
+                if (!toggle || !pop) return;
+                const rect = toggle.getBoundingClientRect();
+                let left = rect.left + window.scrollX;
+                let top = rect.bottom + window.scrollY + 6;
+                const addBtn = document.querySelector('.pos-add-card[data-id="' + toggle.dataset.productId + '"]');
+
+                // Reset visibility to measure
+                pop.style.left = '0px';
+                pop.style.top = '0px';
+
+                const popRect = pop.getBoundingClientRect();
+
+                if (addBtn) {
+                    const addRect = addBtn.getBoundingClientRect();
+                    left = addRect.left + window.scrollX + (addRect.width / 2) - (popRect.width / 2);
+                    top = addRect.top + window.scrollY + (addRect.height / 2) - (popRect.height / 2) - 8;
+                }
+
+                // Ensure popover doesn't go off the right edge
+                const viewportRight = window.scrollX + document.documentElement.clientWidth;
+                const rightOverflow = (left + popRect.width) - viewportRight;
+                let computedLeft = left;
+                if (rightOverflow > 0) {
+                    computedLeft = Math.max(window.scrollX + 8, left - rightOverflow - 8);
+                }
+                if (computedLeft < window.scrollX + 8) {
+                    computedLeft = window.scrollX + 8;
+                }
+
+                // Keep popover inside viewport vertically
+                if (top < window.scrollY + 8) {
+                    top = window.scrollY + 8;
+                }
+                if (top + popRect.height > window.scrollY + document.documentElement.clientHeight - 8) {
+                    top = window.scrollY + document.documentElement.clientHeight - popRect.height - 8;
+                }
+
+                pop.style.left = `${computedLeft}px`;
+                pop.style.top = `${top}px`;
+            }
+
+            // Initial positioning
+            positionPop();
+
+            // Reposition on scroll/resize and when window repaints
+            const reposition = () => requestAnimationFrame(positionPop);
+            window.addEventListener('resize', reposition, { passive: true });
+            // capture phase to catch scrolling inside containers
+            window.addEventListener('scroll', reposition, { passive: true, capture: true });
+            document.addEventListener('scroll', reposition, { passive: true, capture: true });
+
+            currentFloatingCleanup = () => {
+                window.removeEventListener('resize', reposition, { passive: true });
+                window.removeEventListener('scroll', reposition, { passive: true, capture: true });
+                document.removeEventListener('scroll', reposition, { passive: true, capture: true });
+            };
+
+            currentFloatingBreakdown = pop;
+            return;
+        }
+
+        // Clicked outside a toggle; close any open floating breakdown
+        if (!event.target.closest('.pos-floating-breakdown')) {
+            removeFloatingBreakdown();
         }
     });
 }

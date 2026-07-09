@@ -45,7 +45,7 @@
                     </svg>
                     <span>Inventory Management</span>
                 </span>
-                <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-0 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-0 flex-shrink-0 arrow-left" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M6 10l6 6 6-6H6z" />
                 </svg>
             </button>
@@ -116,7 +116,7 @@
                     </svg>
                     <span>Point of Sales</span>
                 </span>
-                <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-0 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-0 flex-shrink-0 arrow-left" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M6 10l6 6 6-6H6z" />
                 </svg>
             </button>
@@ -144,7 +144,7 @@
                     </svg>
                     <span>Purchase Order</span>
                 </span>
-                <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-0 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-0 flex-shrink-0 arrow-left" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M6 10l6 6 6-6H6z" />
                 </svg>
             </button>
@@ -171,7 +171,7 @@
                     </svg>
                     <span>Data Analytics</span>
                 </span>
-                <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-0 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-0 flex-shrink-0 arrow-left-4" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M6 10l6 6 6-6H6z" />
                 </svg>
             </button>
@@ -349,11 +349,11 @@
     .sidebar-group-toggle::before {
         content: "";
         position: absolute;
-        top: 4px;
-        bottom: 4px;
-        left: 10px;
-        right: 10px;
-        border-radius: 15px;
+        top: 5px;
+        bottom: 5px;
+        left: 12px;
+        right: 18px;
+        border-radius: 16px;
         background: rgba(123, 123, 123, 0.35);
         transform: scaleX(0);
         transform-origin: left;
@@ -429,11 +429,11 @@
     .sidebar-group-toggle.bg-cyan-500\/5::after {
         content: "";
         position: absolute;
-        top: 4px;
-        bottom: 4px;
-        left: 10px;
-        right: 10px;
-        border-radius: 15px;
+        top: 5px;
+        bottom: 5px;
+        left: 12px;
+        right: 18px;
+        border-radius: 16px;
         background: #00ddd2;
         transform: scaleX(1);
         transform-origin: left;
