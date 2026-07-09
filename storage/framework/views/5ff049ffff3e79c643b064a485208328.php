@@ -513,7 +513,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function hasActiveSubmodule(group) {
-        const activeSubmodule = group.querySelector('.sidebar-group-content .sidebar-nav-item.text-cyan-300');
+        const activeSubmodule = group.querySelector('.sidebar-group-content .sidebar-nav-item.text-cyan-300, .sidebar-group-content .sidebar-nav-item.font-semibold');
         return activeSubmodule !== null;
     }
 
@@ -575,22 +575,6 @@ document.addEventListener('DOMContentLoaded', function() {
             clearAllHighlights();
             closeAllMenus();
         });
-            content.style.top = `${rect.top}px`;
-            content.style.left = `${rect.right - 6}px`;
-        };
-
-        const hideContent = () => {
-            clearTimeout(hideTimeout);
-            hideTimeout = setTimeout(() => {
-                content.classList.add('hidden');
-            }, 100);
-        };
-
-        group.addEventListener('mouseenter', showContent);
-        group.addEventListener('mouseleave', hideContent);
-        content.addEventListener('mouseenter', showContent);
-        content.addEventListener('mouseleave', hideContent);
->>>>>>> Stashed changes
     });
 });
 </script><?php /**PATH C:\Users\ilano\Herd\KCC_MOTORCYCLE\KCC_MOTORCYCLE\resources\views/sidebar.blade.php ENDPATH**/ ?>

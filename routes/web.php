@@ -73,6 +73,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Shared inventory APIs for monitoring and stock overview
     Route::get('api/products', [App\Http\Controllers\StockImportController::class, 'getProducts'])->name('api.products');
+    Route::get('api/products/archived', [App\Http\Controllers\StockImportController::class, 'getArchivedProducts'])->name('api.products.archived');
     Route::get('api/products/{id}', [App\Http\Controllers\StockImportController::class, 'getProduct'])->name('api.product.show');
     Route::get('api/stats', [App\Http\Controllers\StockImportController::class, 'getStats'])->name('api.stats');
     Route::get('api/movements', [App\Http\Controllers\StockImportController::class, 'getMovements'])->name('api.movements');
@@ -104,7 +105,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('stock/import-status', [App\Http\Controllers\StockImportController::class, 'status'])->name('stock.import.status');
         Route::post('api/product/{id}/archive', [App\Http\Controllers\StockImportController::class, 'archiveProduct'])->name('api.product.archive');
         Route::post('api/product/{id}/restore', [App\Http\Controllers\StockImportController::class, 'restoreProduct'])->name('api.product.restore');
-        Route::get('api/products/archived', [App\Http\Controllers\StockImportController::class, 'getArchivedProducts'])->name('api.products.archived');
         Route::delete('api/product/{id}/permanent', [App\Http\Controllers\StockImportController::class, 'permanentDeleteProduct'])->name('api.product.permanent_delete');
     });
 

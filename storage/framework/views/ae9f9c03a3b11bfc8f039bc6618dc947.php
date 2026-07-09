@@ -1,4 +1,13 @@
-<x-layouts.app :title="__('Transfer Products')">
+<?php if (isset($component)) { $__componentOriginal5863877a5171c196453bfa0bd807e410 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal5863877a5171c196453bfa0bd807e410 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.layouts.app','data' => ['title' => __('Transfer Products')]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('layouts.app'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(__('Transfer Products'))]); ?>
     <style>
         :root {
             --brand: #0f766e;
@@ -40,14 +49,14 @@
 
     <div class="space-y-6">
         <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
-
+        
         <div class="flex items-start justify-between">
             <div>
                 <h1 class="text-3xl font-extrabold text-slate-900">Transfer Products</h1>
-                <p class="mt-2 text-sm text-gray-500">Move products from <strong class="text-emerald-600">{{ is_array($shelf) ? ($shelf['name'] ?? 'Unknown') : ($shelf->name ?? 'Unknown') }}</strong> to another shelf</p>
+                <p class="mt-2 text-sm text-gray-500">Move products from <strong class="text-emerald-600"><?php echo e(is_array($shelf) ? ($shelf['name'] ?? 'Unknown') : ($shelf->name ?? 'Unknown')); ?></strong> to another shelf</p>
             </div>
             <div class="flex items-center gap-3">
-                <a href="{{ route('warehouse.management') }}" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:border-emerald-500 hover:text-slate-900 transition">
+                <a href="<?php echo e(route('warehouse.management')); ?>" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:border-emerald-500 hover:text-slate-900 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
@@ -64,16 +73,16 @@
             </div>
         </div>
 
-        @if($errors->any())
+        <?php if($errors->any()): ?>
             <div class="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
                 <strong class="block font-semibold">Please fix the following:</strong>
                 <ul class="mt-2 list-disc space-y-1 pl-5">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
+                    <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <li><?php echo e($error); ?></li>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </ul>
             </div>
-        @endif
+        <?php endif; ?>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Source Shelf Products -->
@@ -86,35 +95,35 @@
                     </div>
                     <div>
                         <h2 class="text-lg font-semibold text-slate-900">Source Shelf</h2>
-                        <p class="text-xs text-slate-500">{{ is_array($shelf) ? ($shelf['name'] ?? 'Unknown') : ($shelf->name ?? 'Unknown') }}</p>
+                        <p class="text-xs text-slate-500"><?php echo e(is_array($shelf) ? ($shelf['name'] ?? 'Unknown') : ($shelf->name ?? 'Unknown')); ?></p>
                     </div>
                 </div>
 
-                @if(empty($shelfProducts))
+                <?php if(empty($shelfProducts)): ?>
                     <div class="text-center py-8">
                         <svg class="w-12 h-12 mx-auto text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
                         </svg>
                         <p class="text-sm text-gray-500">No products on this shelf</p>
                     </div>
-                @else
+                <?php else: ?>
                     <div class="space-y-2">
-                        @php $productIndex = 0; @endphp
-                        @foreach($shelfProducts as $product)
+                        <?php $productIndex = 0; ?>
+                        <?php $__currentLoopData = $shelfProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="product-chip">
                                 <div class="left">
-                                    <span class="name">{{ $product['name'] }}</span>
-                                    <span class="meta">{{ $product['sku'] }}</span>
+                                    <span class="name"><?php echo e($product['name']); ?></span>
+                                    <span class="meta"><?php echo e($product['sku']); ?></span>
                                 </div>
                                 <div class="flex items-center gap-3">
-                                    <span class="qty-badge">Qty: {{ $product['qty'] }}</span>
-                                    <input type="checkbox" id="product-{{ $productIndex }}" class="transfer-checkbox h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 focus:ring-offset-0" data-index="{{ $productIndex }}" />
+                                    <span class="qty-badge">Qty: <?php echo e($product['qty']); ?></span>
+                                    <input type="checkbox" id="product-<?php echo e($productIndex); ?>" class="transfer-checkbox h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 focus:ring-offset-0" data-index="<?php echo e($productIndex); ?>" />
                                 </div>
                             </div>
-                            @php $productIndex++; @endphp
-                        @endforeach
+                            <?php $productIndex++; ?>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
 
             <!-- Destination Shelf -->
@@ -131,42 +140,43 @@
                         <p class="text-xs text-slate-500">Select a shelf with available space</p>
                     </div>
                 </div>
-
-                @if(empty($availableShelves))
+                
+                <?php if(empty($availableShelves)): ?>
                     <div class="text-center py-8">
                         <svg class="w-12 h-12 mx-auto text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                         </svg>
                         <p class="text-sm text-gray-500">No shelves with available space</p>
                     </div>
-                @else
+                <?php else: ?>
                     <div class="space-y-2">
-                        @foreach($availableShelves as $shelf)
+                        <?php $__currentLoopData = $availableShelves; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $shelf): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <label class="shelf-option flex items-center gap-3 p-4 rounded-xl cursor-pointer">
-                                <input type="radio" name="destination_slot" value="{{ $shelf['slot_index'] }}" class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 focus:ring-offset-0" required />
+                                <input type="radio" name="destination_slot" value="<?php echo e($shelf['slot_index']); ?>" class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 focus:ring-offset-0" required />
                                 <div class="flex-1">
-                                    <p class="text-sm font-semibold text-slate-900">{{ $shelf['name'] }}</p>
+                                    <p class="text-sm font-semibold text-slate-900"><?php echo e($shelf['name']); ?></p>
                                     <p class="text-xs text-slate-500 mt-1">
-                                        {{ $shelf['current_occupancy'] }} / {{ $shelfCapacity }} occupied
-                                        <span class="text-emerald-600 font-medium">• {{ $shelf['available_space'] }} slots available</span>
+                                        <?php echo e($shelf['current_occupancy']); ?> / <?php echo e($shelfCapacity); ?> occupied
+                                        <span class="text-emerald-600 font-medium">• <?php echo e($shelf['available_space']); ?> slots available</span>
                                     </p>
                                 </div>
-                                <span class="status-badge {{ $shelf['status'] === 'Available' ? 'status-available' : ($shelf['status'] === 'Almost Full' ? 'status-almost-full' : 'status-limited') }}">
-                                    {{ $shelf['status'] }}
+                                <span class="status-badge <?php echo e($shelf['status'] === 'Available' ? 'status-available' : ($shelf['status'] === 'Almost Full' ? 'status-almost-full' : 'status-limited')); ?>">
+                                    <?php echo e($shelf['status']); ?>
+
                                 </span>
                             </label>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
 
     </div>
 
-    <form id="transfer-form" action="{{ route('warehouse.transfer.execute') }}" method="POST" class="hidden">
-        @csrf
-        <input type="hidden" name="warehouse_id" value="{{ $warehouseId }}" />
-        <input type="hidden" name="source_slot_index" value="{{ $slotIndex }}" />
+    <form id="transfer-form" action="<?php echo e(route('warehouse.transfer.execute')); ?>" method="POST" class="hidden">
+        <?php echo csrf_field(); ?>
+        <input type="hidden" name="warehouse_id" value="<?php echo e($warehouseId); ?>" />
+        <input type="hidden" name="source_slot_index" value="<?php echo e($slotIndex); ?>" />
         <input type="hidden" name="destination_slot_index" id="form-destination-slot" />
         <div id="form-transfers"></div>
     </form>
@@ -181,10 +191,10 @@
             const formTransfers = document.getElementById('form-transfers');
             const toastContainer = document.getElementById('toast-container');
 
-            const shelfProducts = @json($shelfProducts ?? []);
+            const shelfProducts = <?php echo json_encode($shelfProducts ?? [], 15, 512) ?>;
             console.log('Shelf products loaded:', shelfProducts);
-            console.log('Warehouse ID:', {{ $warehouseId }});
-            console.log('Slot index:', {{ $slotIndex }});
+            console.log('Warehouse ID:', <?php echo e($warehouseId); ?>);
+            console.log('Slot index:', <?php echo e($slotIndex); ?>);
 
             let selectedProducts = [];
             let selectedDestination = null;
@@ -222,9 +232,9 @@
             });
 
             function updateConfirmButton() {
-                const availableShelves = @json($availableShelves);
+                const availableShelves = <?php echo json_encode($availableShelves, 15, 512) ?>;
                 const destShelf = selectedDestination ? availableShelves.find(s => s.slot_index == selectedDestination) : null;
-
+                
                 // Shelf capacity is based on number of products, not quantity
                 const numberOfProductsToTransfer = selectedProducts.length;
                 const availableAfterTransfer = destShelf ? destShelf.available_space - numberOfProductsToTransfer : 0;
@@ -249,7 +259,7 @@
 
                 console.log('Selected product indices:', selectedProducts);
                 console.log('shelfProducts array:', shelfProducts);
-
+                
                 const transferData = {
                     warehouse_id: formDestinationSlot.closest('form').querySelector('input[name="warehouse_id"]').value,
                     source_slot_index: formDestinationSlot.closest('form').querySelector('input[name="source_slot_index"]').value,
@@ -275,7 +285,7 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                             'Accept': 'application/json'
                         },
                         body: JSON.stringify(transferData)
@@ -287,7 +297,7 @@
                     if (data.success) {
                         showToast('Products transferred successfully!', 'success');
                         setTimeout(() => {
-                            window.location.href = '{{ route("warehouse.management") }}';
+                            window.location.href = '<?php echo e(route("warehouse.management")); ?>';
                         }, 1500);
                     } else {
                         showToast(data.message || 'Transfer failed', 'error');
@@ -317,4 +327,14 @@
             });
         });
     </script>
-</x-layouts.app>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal5863877a5171c196453bfa0bd807e410)): ?>
+<?php $attributes = $__attributesOriginal5863877a5171c196453bfa0bd807e410; ?>
+<?php unset($__attributesOriginal5863877a5171c196453bfa0bd807e410); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal5863877a5171c196453bfa0bd807e410)): ?>
+<?php $component = $__componentOriginal5863877a5171c196453bfa0bd807e410; ?>
+<?php unset($__componentOriginal5863877a5171c196453bfa0bd807e410); ?>
+<?php endif; ?>
+<?php /**PATH C:\Users\ilano\Herd\KCC_MOTORCYCLE\KCC_MOTORCYCLE\resources\views/warehouse_management/transfer.blade.php ENDPATH**/ ?>

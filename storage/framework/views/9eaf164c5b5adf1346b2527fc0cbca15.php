@@ -238,6 +238,42 @@
             csrfToken: '<?php echo e(csrf_token()); ?>'
         };
 
+        document.addEventListener('DOMContentLoaded', function() {
+            const warehouses = window.WarehouseData.warehouses;
+            const products = window.WarehouseData.products;
+            const PRODUCTS_PER_SHELF = 10;
+            const SHELVES_PER_PAGE = 4;
+            const warehousePage = {};
+            let warehouseSearchQuery = '';
+            const searchInput = document.getElementById('wm-search');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    warehouseSearchQuery = this.value.trim().toLowerCase();
+                    const currentId = getCurrentWarehouseId();
+                    if (currentId) {
+                        const currentIndex = warehouses.findIndex(wh => wh.id === currentId);
+                        if (currentIndex !== -1) {
+                            warehousePage[currentIndex] = 0;
+                            renderWarehousePage(currentId, 0);
+                        }
+                    }
+                });
+            }
+
+            function updateWarehouseStats(index) {
+                const warehouse = warehouses[index];
+                if (!warehouse || !warehouse.locations) return;
+
+                let totalProducts = 0;
+                let usedSlots = 0;
+
+                warehouse.locations.forEach(location => {
+                    if (Array.isArray(location.products)) {
+                        totalProducts += location.products.length;
+                        usedSlots += location.products.length;
+                    }
+                });
+
                 const totalSlots = warehouse.locations.length * PRODUCTS_PER_SHELF;
                 const emptySlots = Math.max(0, totalSlots - usedSlots);
 
@@ -308,7 +344,7 @@
                     el.style.display = 'block';
                     const warehouseIndex = warehouses.findIndex(wh => wh.id === warehouseId);
                     renderWarehousePage(warehouseId, warehousePage[warehouseId] || 0);
-                    updateWarehouseStats(warehouseId);
+                    updateWarehouseStats(warehouseIndex);
                 }
             }
 
@@ -1317,7 +1353,7 @@
                         renderArchivedPage(archivedPage);
                         const current = getCurrentWarehouseIndex();
                         if (current === wi) {
-                            renderWarehousePage(wi, warehousePage[wi]);
+                            renderWarehousePage(warehouses[wi].id, warehousePage[wi]);
                             updateWarehouseStats(wi);
                         }
                     });
@@ -1876,7 +1912,7 @@
                 warehouse.archivedShelves.sort((a, b) => (a.slot_index || 0) - (b.slot_index || 0));
 
                 renderWarehousePage(warehouses[warehouseIndex].id, warehousePage[warehouseIndex]);
-                updateWarehouseStats(warehouses[warehouseIndex].id);
+                updateWarehouseStats(warehouseIndex);
                 closeModal();
                 showToast(`${shelf.name || 'Shelf '+(slot+1)} archived from ${warehouse.name}.`, 'success');
             }
@@ -1890,7 +1926,7 @@
                     if (shelfIndex !== -1) {
                         warehouse.locations.splice(shelfIndex, 1);
                         renderWarehousePage(warehouses[warehouseIndex].id, warehousePage[warehouseIndex]);
-                        updateWarehouseStats(warehouses[warehouseIndex].id);
+                        updateWarehouseStats(warehouseIndex);
                     }
                 }
                 closeModal();
@@ -2017,11 +2053,7 @@
                 closeModal();
             }
         });
->>>>>>> Stashed changes
     </script>
-    <?php echo app('Illuminate\Foundation\Vite')('resources/js/warehouse_management.js'); ?>
-
-    <?php echo app('Illuminate\Foundation\Vite')('resources/js/warehouse_management.js'); ?>
 
     <div id="modal-backdrop" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center z-50 px-4 py-8">
         <div class="modal-panel p-6 max-w-2xl">

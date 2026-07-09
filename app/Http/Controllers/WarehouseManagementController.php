@@ -591,20 +591,8 @@ class WarehouseManagementController extends Controller
                 return response()->json(['success' => false, 'message' => 'Source shelf not found'], 404);
             }
 
-            // Check if destination warehouse already has a shelf with the same slot_index
-            $destinationShelf = WarehouseShelf::where('warehouse_id', $destinationWarehouseId)
-                ->where('slot_index', $slotIndex)
-                ->where('archived', false)
-                ->first();
-
-            if ($destinationShelf) {
-                return response()->json(['success' => false, 'message' => 'Destination warehouse already has a shelf in this slot. Please choose a different slot or archive the existing shelf first.'], 422);
-            }
-
             // Get the next available slot in destination warehouse
-            $nextSlot = WarehouseShelf::where('warehouse_id', $destinationWarehouseId)
-                ->max('slot_index') ?? 0;
-            $nextSlot++;
+            $nextSlot = (WarehouseShelf::where('warehouse_id', $destinationWarehouseId)->max('slot_index') ?? -1) + 1;
 
             // Update the shelf to move it to the new warehouse
             $sourceShelf->update([

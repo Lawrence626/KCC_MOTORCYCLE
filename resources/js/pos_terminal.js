@@ -648,6 +648,7 @@ async function searchProducts(query = '', page = 1) {
                         <div class="flex-1 pr-2">
                             <h3 class="text-sm font-semibold text-slate-900 line-clamp-2 mb-0">${productName}</h3>
                             ${brand ? `<p class="text-[10px] text-slate-600">${brand}</p>` : ''}
+                            ${product.sku ? `<p class="text-[9px] text-slate-500">SKU: ${product.sku}</p>` : ''}
                             ${compatibility ? `<p class="text-[9px] text-slate-500 line-clamp-1">${compatibility}</p>` : ''}
                         </div>
                         <div class="ml-2 flex-shrink-0">
@@ -668,12 +669,17 @@ async function searchProducts(query = '', page = 1) {
                             <div class="flex items-center gap-2">
                                 <span class="text-sm font-semibold text-slate-900">${formatCurrency(sellingPrice)}</span>
                                 <button type="button" class="pos-price-breakdown-toggle group relative inline-flex items-center gap-1 text-[10px] text-slate-500 hover:text-slate-1000 transition" data-product-id="${product.id}" data-vatable="${vatableSales}" data-included-vat="${includedVat}" title="Price Breakdown">
-                                 
                                     <svg class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                     </svg>
                                 </button>
                             </div>
+                            <button type="button" onclick="posArchiveProduct(${product.id})" class="text-red-600 hover:text-red-700 text-[10px] font-medium flex items-center gap-1" title="Archive Product">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                                </svg>
+                                Archive
+                            </button>
                         </div>
                         <div class="pos-price-breakdown hidden mt-2 p-2 bg-slate-100 rounded-lg text-[10px] space-y-1 overflow-hidden transition-all duration-200" data-product-id="${product.id}">
                             <div class="flex justify-between">
