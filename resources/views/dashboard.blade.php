@@ -13,13 +13,13 @@
                     
                    
                     <div class="relative z-30 inline-flex items-center gap-2 rounded-[20px] px-3 py-2 text-left">
-                        <button id="dashboardNotificationButton" type="button" class="relative z-40 inline-flex h-11 w-11 cursor-pointer items-center justify-center transition text-black" aria-label="Notifications" style="background: transparent; border: none;" onclick="event.stopPropagation(); const dropdown=document.getElementById('dashboardNotificationDropdown'); if (dropdown) { dropdown.classList.toggle('hidden'); }">
+                        <button id="dashboardNotificationButton" type="button" class="relative z-[80] inline-flex h-11 w-11 cursor-pointer items-center justify-center transition text-black" aria-label="Notifications" style="background: transparent; border: none;">
                             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a6 6 0 00-6 6v4.586l-1.707 1.707A1 1 0 005 16h14a1 1 0 00.707-1.707L18 12.586V8a6 6 0 00-6-6zm0 18a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 20z"/></svg>
                             @if(!empty($lowStockNotifications))
                                 <span class="absolute -top-1 -right-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-rose-600 px-1.5 text-[10px] font-semibold text-white">{{ count($lowStockNotifications) }}</span>
                             @endif
                         </button>
-                        <div id="dashboardNotificationDropdown" class="hidden absolute right-0 top-full z-50 mt-2 w-[24rem] overflow-hidden rounded-[20px] border border-slate-200 bg-white shadow-xl shadow-slate-900/10">
+                        <div id="dashboardNotificationDropdown" class="hidden absolute right-0 top-full z-[90] mt-2 w-[24rem] overflow-hidden rounded-[20px] border border-slate-200 bg-white shadow-xl shadow-slate-900/10">
                             <div class="px-4 py-4 border-b border-slate-200">
                                 <div class="flex items-center justify-between gap-3">
                                     <div>
@@ -112,7 +112,7 @@
             <div id="dashboardLowStockBanner"
                  role="status"
                  aria-live="polite"
-                 class="pointer-events-auto fixed right-4 top-24 z-[60] hidden w-[min(24rem,calc(100%-2rem))] translate-x-6 rounded-[20px] border border-amber-200 bg-white/95 p-4 shadow-2xl shadow-slate-900/20 backdrop-blur transition-all duration-300"
+                 class="pointer-events-auto fixed right-4 top-24 z-30 hidden w-[min(24rem,calc(100%-2rem))] translate-x-6 rounded-[20px] border border-amber-200 bg-white/95 p-4 shadow-2xl shadow-slate-900/20 backdrop-blur transition-all duration-300"
                  data-alert-product-id="{{ $dashboardAlert['product_id'] ?? '' }}"
                  data-alert-delay-ms="{{ $dashboardAlert['dashboard_alert_delay_ms'] ?? 60000 }}">
                 <div class="flex items-start justify-between gap-3">
@@ -357,7 +357,7 @@
     <style>
         #dashboardNotificationButton {
             position: relative;
-            z-index: 60;
+            z-index: 80;
             cursor: pointer;
             pointer-events: auto;
         }
@@ -368,7 +368,7 @@
 
         #dashboardNotificationDropdown {
             pointer-events: auto;
-            z-index: 70;
+            z-index: 90;
         }
 
         #dashboardProfileButton {

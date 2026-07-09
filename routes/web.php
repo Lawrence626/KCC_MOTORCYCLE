@@ -148,6 +148,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('purchase-order/create', [PurchaseOrderController::class, 'create'])->name('order.create');
         Route::get('purchase-order/history', [PurchaseOrderController::class, 'history'])->name('order.history');
         Route::post('purchase-order', [PurchaseOrderController::class, 'store'])->name('order.store');
+        // Intelligent purchasing workflow APIs
+        Route::get('api/purchase-order/filtered-suppliers', [PurchaseOrderController::class, 'filteredSuppliers'])->name('api.order.filtered_suppliers');
+        Route::get('api/purchase-order/supplier-details', [PurchaseOrderController::class, 'supplierDetails'])->name('api.order.supplier_details');
+        Route::get('api/purchase-order/supplier-comparison', [PurchaseOrderController::class, 'supplierComparison'])->name('api.order.supplier_comparison');
     });
 
     Route::middleware('role:admin,inventory_clerk,warehouse_personnel')->group(function () {

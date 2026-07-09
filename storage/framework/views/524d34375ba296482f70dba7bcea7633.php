@@ -45,7 +45,7 @@
                     </svg>
                     <span>Inventory Management</span>
                 </span>
-                <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-0 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M6 10l6 6 6-6H6z" />
                 </svg>
             </button>
@@ -84,7 +84,7 @@
                     </svg>
                     <span>Inventory Management</span>
                 </span>
-                <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-0 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M6 10l6 6 6-6H6z" />
                 </svg>
             </button>
@@ -116,7 +116,7 @@
                     </svg>
                     <span>Point of Sales</span>
                 </span>
-                <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-0 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M6 10l6 6 6-6H6z" />
                 </svg>
             </button>
@@ -144,7 +144,7 @@
                     </svg>
                     <span>Purchase Order</span>
                 </span>
-                <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-0 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M6 10l6 6 6-6H6z" />
                 </svg>
             </button>
@@ -171,7 +171,7 @@
                     </svg>
                     <span>Data Analytics</span>
                 </span>
-                <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-0 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M6 10l6 6 6-6H6z" />
                 </svg>
             </button>
@@ -450,6 +450,18 @@
             transform: scaleX(1);
         }
     }
+
+/* ===========================
+   ARROW ALIGNMENT FIX
+   =========================== */
+.sidebar-group-toggle{
+    padding-right:20px !important;
+}
+.sidebar-group-toggle .sidebar-arrow{
+    margin-right:8px !important;
+    flex-shrink:0;
+}
+
 </style>
 
 <script>

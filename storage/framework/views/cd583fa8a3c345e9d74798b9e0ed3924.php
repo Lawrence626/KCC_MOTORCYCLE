@@ -141,6 +141,7 @@
                                         <th class="px-4 py-3">Ordered</th>
                                         <th class="px-4 py-3">Received</th>
                                         <th class="px-4 py-3">Remaining</th>
+                                        <th class="px-4 py-3">Supplier Cost/Unit</th>
                                         <th class="px-4 py-3">Receive quantity</th>
                                     </tr>
                                 </thead>
@@ -154,6 +155,9 @@
                                             <td class="px-4 py-3"><?php echo e($item->quantity); ?></td>
                                             <td class="px-4 py-3"><?php echo e($item->received_quantity ?? 0); ?></td>
                                             <td class="px-4 py-3"><?php echo e($remainingQuantity); ?></td>
+                                            <td class="px-4 py-3">
+                                                <input name="items[<?php echo e($item->id); ?>][unit_price]" type="number" step="0.01" min="0" value="<?php echo e((float) $item->unit_price); ?>" class="w-28 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none" placeholder="0.00" />
+                                            </td>
                                             <td class="px-4 py-3">
                                                 <input name="items[<?php echo e($item->id); ?>][item_id]" type="hidden" value="<?php echo e($item->id); ?>" />
                                                 <input name="items[<?php echo e($item->id); ?>][received_quantity]" type="number" min="0" max="<?php echo e($remainingQuantity); ?>" value="<?php echo e($remainingQuantity); ?>" class="w-24 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none" />

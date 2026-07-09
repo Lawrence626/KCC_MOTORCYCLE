@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use App\Models\Supplier;
+use App\Models\SupplierPriceHistory;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -231,21 +232,245 @@ class PurchaseOrderController extends Controller
 
         DB::transaction(function () use ($supplier, $validated, $selectedProducts, $totalAmount, $orderNumber, &$purchaseOrder) {
             $purchaseOrder = PurchaseOrder::create([
-                'order_number' => $orderNumber,
-                'supplier_id' => $supplier->id,
-                'supplier_name' => $supplier->name,
-                'status' => 'pending approval',
-                'expected_delivery_date' => $validated['expected_delivery_date'] ?? null,
-                'notes' => $validated['notes'] ?? null,
-                'total_amount' => $totalAmount,
+                'order_number'            => $orderNumber,
+                'supplier_id'             => $supplier->id,
+                'supplier_name'           => $supplier->name,
+                'status'                  => 'pending approval',
+                'expected_delivery_date'  => $validated['expected_delivery_date'] ?? null,
+                'notes'                   => $validated['notes'] ?? null,
+                'total_amount'            => $totalAmount,
             ]);
 
             $purchaseOrder->items()->createMany($selectedProducts->toArray());
+
+            // Ensure supplier_products pivot is up to date for each ordered product
+            foreach ($selectedProducts as $item) {
+                if (! empty($item['product_id'])) {
+                    DB::table('supplier_products')->insertOrIgnore([
+                        'supplier_id' => $supplier->id,
+                        'product_id'  => $item['product_id'],
+                        'created_at'  => now(),
+                        'updated_at'  => now(),
+                    ]);
+                }
+            }
         });
 
         $this->notifyAdminsOfNewPurchaseOrder($purchaseOrder);
 
         return redirect()->route('order.management')->with('success', 'Purchase order was created successfully. Waiting for admin approval.');
+    }
+
+    public function filteredSuppliers(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $productIds = array_values(array_filter(array_map('intval', (array) $request->input('product_ids', []))));
+
+        if (empty($productIds)) {
+            return response()->json(['suppliers' => [], 'message' => 'Select at least one product first.']);
+        }
+
+        // Only include suppliers that supply EVERY selected product
+        $supplierIds = DB::table('supplier_products')
+            ->whereIn('product_id', $productIds)
+            ->select('supplier_id')
+            ->groupBy('supplier_id')
+            ->havingRaw('COUNT(DISTINCT product_id) = ?', [count($productIds)])
+            ->pluck('supplier_id');
+
+        if ($supplierIds->isEmpty()) {
+            return response()->json([
+                'suppliers' => [],
+                'message'   => 'No supplier can fulfill all selected products. Please select another supplier or split the purchase order.',
+            ]);
+        }
+
+        $suppliers = Supplier::whereIn('id', $supplierIds)
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get(['id', 'name', 'contact_person', 'email', 'phone']);
+
+        return response()->json(['suppliers' => $suppliers, 'message' => null]);
+    }
+
+    public function supplierDetails(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $supplierId = (int) $request->input('supplier_id');
+        $productIds = array_values(array_filter(array_map('intval', (array) $request->input('product_ids', []))));
+
+        if (! $supplierId || empty($productIds)) {
+            return response()->json(['error' => 'Invalid parameters.'], 422);
+        }
+
+        $supplier = Supplier::find($supplierId);
+        if (! $supplier) {
+            return response()->json(['error' => 'Supplier not found.'], 404);
+        }
+
+        $lastPO = PurchaseOrder::where('supplier_id', $supplierId)
+            ->whereIn('status', ['completed', 'partially received'])
+            ->latest('completed_at')
+            ->first();
+
+        $totalOrders    = PurchaseOrder::where('supplier_id', $supplierId)->count();
+        $deliveredOrders = PurchaseOrder::where('supplier_id', $supplierId)->where('status', 'completed')->count();
+        $reliabilityScore = $totalOrders > 0 ? round(($deliveredOrders / $totalOrders) * 100) : null;
+
+        $priceHistories = [];
+        foreach ($productIds as $productId) {
+            $product = \App\Models\Product::find($productId);
+            if (! $product) {
+                continue;
+            }
+
+            $histories = SupplierPriceHistory::where('supplier_id', $supplierId)
+                ->where('product_id', $productId)
+                ->with('purchaseOrder:id,order_number')
+                ->latest()
+                ->take(10)
+                ->get();
+
+            $currentCost  = $histories->first()?->supplier_cost;
+            $previousCost = $histories->skip(1)->first()?->supplier_cost;
+
+            $changePercentage = null;
+            $trend = 'stable';
+            if ($currentCost !== null && $previousCost !== null && $previousCost > 0) {
+                $changePercentage = round((((float) $currentCost - (float) $previousCost) / (float) $previousCost) * 100, 2);
+                if ($changePercentage > 0.005) {
+                    $trend = 'increasing';
+                } elseif ($changePercentage < -0.005) {
+                    $trend = 'decreasing';
+                }
+            }
+
+            $recommendation = match ($trend) {
+                'increasing' => 'Supplier cost has increased. Review the suggested retail price to maintain your target profit margin.',
+                'decreasing' => 'Supplier cost has decreased. Maintaining the current retail price will increase your profit margin.',
+                default      => 'Supplier pricing is stable. Maintain the current retail price.',
+            };
+
+            $priceHistories[] = [
+                'product_id'        => $productId,
+                'product_name'      => $product->product_name ?? $product->name,
+                'current_cost'      => $currentCost !== null ? (float) $currentCost : null,
+                'previous_cost'     => $previousCost !== null ? (float) $previousCost : null,
+                'change_percentage' => $changePercentage,
+                'trend'             => $trend,
+                'recommendation'    => $recommendation,
+                'histories'         => $histories->map(fn ($h) => [
+                    'date'      => $h->created_at?->format('M j, Y'),
+                    'cost'      => (float) $h->supplier_cost,
+                    'po_number' => $h->purchaseOrder?->order_number,
+                ])->values(),
+            ];
+        }
+
+        return response()->json([
+            'supplier' => [
+                'id'                 => $supplier->id,
+                'name'               => $supplier->name,
+                'contact_person'     => $supplier->contact_person,
+                'email'              => $supplier->email,
+                'phone'              => $supplier->phone,
+                'last_purchase_date' => $lastPO?->completed_at?->format('M j, Y')
+                    ?? $lastPO?->updated_at?->format('M j, Y'),
+                'reliability_score'  => $reliabilityScore,
+                'total_orders'       => $totalOrders,
+            ],
+            'price_histories' => $priceHistories,
+        ]);
+    }
+
+    public function supplierComparison(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $productIds = array_values(array_filter(array_map('intval', (array) $request->input('product_ids', []))));
+
+        if (empty($productIds)) {
+            return response()->json(['comparison' => [], 'recommended' => null]);
+        }
+
+        $supplierIds = DB::table('supplier_products')
+            ->whereIn('product_id', $productIds)
+            ->select('supplier_id')
+            ->groupBy('supplier_id')
+            ->havingRaw('COUNT(DISTINCT product_id) = ?', [count($productIds)])
+            ->pluck('supplier_id');
+
+        if ($supplierIds->isEmpty()) {
+            return response()->json(['comparison' => [], 'recommended' => null]);
+        }
+
+        $comparison = [];
+        foreach ($supplierIds as $supplierId) {
+            $supplier = Supplier::find($supplierId);
+            if (! $supplier || $supplier->status !== 'active') {
+                continue;
+            }
+
+            $totalCurrentCost = 0;
+            $hasHistory       = false;
+            $latestPODate     = null;
+            $changes          = [];
+
+            foreach ($productIds as $productId) {
+                $histories = SupplierPriceHistory::where('supplier_id', $supplierId)
+                    ->where('product_id', $productId)
+                    ->latest()
+                    ->take(2)
+                    ->get();
+
+                $current  = $histories->first();
+                $previous = $histories->skip(1)->first();
+
+                if ($current) {
+                    $hasHistory = true;
+                    $totalCurrentCost += (float) $current->supplier_cost;
+                    if (! $latestPODate || $current->created_at > $latestPODate) {
+                        $latestPODate = $current->created_at;
+                    }
+                    if ($previous && $previous->supplier_cost > 0) {
+                        $changes[] = (((float) $current->supplier_cost - (float) $previous->supplier_cost) / (float) $previous->supplier_cost) * 100;
+                    }
+                }
+            }
+
+            $avgChange = count($changes) > 0 ? round(array_sum($changes) / count($changes), 2) : 0;
+
+            $comparison[] = [
+                'supplier_id'          => $supplierId,
+                'supplier_name'        => $supplier->name,
+                'latest_total_cost'    => $totalCurrentCost,
+                'avg_change_percentage' => $avgChange,
+                'last_purchase_date'   => $latestPODate?->format('M j, Y'),
+                'has_history'          => $hasHistory,
+            ];
+        }
+
+        usort($comparison, fn ($a, $b) => $a['latest_total_cost'] <=> $b['latest_total_cost']);
+
+        // Recommend: lowest cost supplier
+        $recommended = ! empty($comparison) ? $comparison[0] : null;
+
+        $recommendedPayload = null;
+        if ($recommended) {
+            $reasons = ['Lowest current supplier cost'];
+            if (abs($recommended['avg_change_percentage']) <= 5) {
+                $reasons[] = 'Stable pricing';
+            }
+            if ($recommended['last_purchase_date']) {
+                $reasons[] = 'Recent transaction history';
+            }
+            $recommendedPayload = [
+                'id'      => $recommended['supplier_id'],
+                'name'    => $recommended['supplier_name'],
+                'reasons' => $reasons,
+            ];
+        }
+
+        return response()->json([
+            'comparison'  => $comparison,
+            'recommended' => $recommendedPayload,
+        ]);
     }
 
     private function notifyAdminsOfNewPurchaseOrder(PurchaseOrder $purchaseOrder): void
@@ -362,6 +587,7 @@ class PurchaseOrderController extends Controller
         $validated = $request->validate([
             'items' => 'required|array',
             'items.*.item_id' => 'required|exists:purchase_order_items,id',
+            'items.*.unit_price' => 'nullable|numeric|min:0',
             'items.*.received_quantity' => 'required|integer|min:0',
         ]);
 
@@ -383,11 +609,72 @@ class PurchaseOrderController extends Controller
                     continue;
                 }
 
+                // Update unit price if provided
+                if (isset($receivedData[$item->id]['unit_price'])) {
+                    $item->update(['unit_price' => $receivedData[$item->id]['unit_price']]);
+                }
+
                 $item->update(['received_quantity' => $currentReceived + $quantityChange]);
                 $receivedSomething = true;
 
                 $product = $item->product;
                 if ($product) {
+                    // Get the previous supplier cost from SupplierPriceHistory first
+                    $previousCostRecord = SupplierPriceHistory::where('product_id', $product->id)
+                        ->where('supplier_id', $purchaseOrder->supplier_id)
+                        ->latest()
+                        ->first();
+                    
+                    $previousCost = $previousCostRecord?->supplier_cost;
+                    
+                    // If no SupplierPriceHistory exists or previous_cost is null, check previous purchase orders from same supplier
+                    if ($previousCost === null) {
+                        $previousPoItem = PurchaseOrderItem::whereHas('purchaseOrder', function ($query) use ($purchaseOrder) {
+                            $query->where('supplier_id', $purchaseOrder->supplier_id)
+                                ->where('id', '!=', $purchaseOrder->id);
+                        })
+                            ->where('product_id', $product->id)
+                            ->where('received_quantity', '>', 0)
+                            ->latest()
+                            ->first();
+                        
+                        $previousCost = $previousPoItem?->unit_price;
+                    }
+                    
+                    $currentCost = (float) $item->unit_price;
+                    $changePercentage = $previousCost && $previousCost > 0
+                        ? round((($currentCost - (float) $previousCost) / (float) $previousCost) * 100, 2)
+                        : 0;
+
+                    $recommendation = match (true) {
+                        $currentCost > $previousCost => 'Increase retail price',
+                        $currentCost < $previousCost => 'Maintain or lower retail price',
+                        default => 'Maintain current retail price',
+                    };
+
+                    $reason = match (true) {
+                        $currentCost > $previousCost => 'Supplier cost increased while maintaining the desired profit margin.',
+                        $currentCost < $previousCost => 'Supplier cost decreased, allowing for higher profit or more competitive pricing.',
+                        default => 'Supplier cost has not changed.',
+                    };
+
+                    $targetProfitMargin = 0.30;
+                    $suggestedRetailPrice = $currentCost > 0
+                        ? round($currentCost / (1 - $targetProfitMargin), 2)
+                        : 0;
+
+                    SupplierPriceHistory::create([
+                        'product_id' => $product->id,
+                        'supplier_id' => $purchaseOrder->supplier_id,
+                        'purchase_order_id' => $purchaseOrder->id,
+                        'previous_cost' => $previousCost ?: null,
+                        'supplier_cost' => $currentCost,
+                        'change_percentage' => $changePercentage,
+                        'recommendation' => $recommendation,
+                        'reason' => $reason,
+                        'suggested_retail_price' => $suggestedRetailPrice,
+                    ]);
+
                     $product->increment('stock_quantity', $quantityChange);
                     $product->update(['last_restock_date' => now()]);
 

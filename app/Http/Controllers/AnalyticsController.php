@@ -6,6 +6,8 @@ use App\Models\InventoryMovement;
 use App\Models\Product;
 use App\Models\POSTransaction;
 use App\Models\PurchaseOrder;
+use App\Models\PurchaseOrderItem;
+use App\Models\SupplierPriceHistory;
 use App\Services\VatCalculationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -239,20 +241,13 @@ class AnalyticsController extends Controller
         $cheapest = $products->orderBy('unit_price')->first();
 
         $priceUpdates = InventoryMovement::where('type', 'price_update')
+            ->where(function ($query) {
+                $query->whereRaw("JSON_EXTRACT(metadata, '$.old_price') IS NOT NULL")
+                    ->whereRaw("JSON_EXTRACT(metadata, '$.old_price') != unit_price");
+            })
             ->latest()
-            ->limit(10)
             ->with('product')
-            ->get()
-            ->map(function ($movement) {
-                return [
-                    'product' => $movement->product->name ?? 'Unknown',
-                    'sku' => $movement->product->sku ?? 'N/A',
-                    'old_price' => data_get($movement, 'metadata.old_price') ?? null,
-                    'new_price' => $movement->unit_price,
-                    'notes' => $movement->notes,
-                    'updated_at' => $movement->created_at->format('M d, Y'),
-                ];
-            });
+            ->paginate(10);
 
         $pricingByCategory = $products
             ->select('category', DB::raw('AVG(unit_price) as avg_price'), DB::raw('SUM(stock_quantity) as total_qty'))
@@ -260,12 +255,82 @@ class AnalyticsController extends Controller
             ->orderByDesc('total_qty')
             ->get();
 
+        // Supplier Cost Analysis: dynamically calculate Current Cost and Previous Cost
+        // from Purchase Order Items (not from SupplierPriceHistory's stored previous_cost field).
+        // This ensures accurate data even if SupplierPriceHistory records have null previous_cost.
+        
+        // Get all product IDs that have at least one PO item with received quantity
+        $productIdsWithPOs = PurchaseOrderItem::where('received_quantity', '>', 0)
+            ->whereHas('purchaseOrder')
+            ->select('product_id')
+            ->distinct()
+            ->pluck('product_id');
+
+        // Paginate products that have PO history
+        $products = Product::whereIn('id', $productIdsWithPOs)
+            ->paginate(8);
+
+        $paginatedProductIds = $products->pluck('id');
+
+        // Get ALL received PO items for these paginated products, with their purchase order dates
+        // Use id for chronological ordering as it's more reliable than created_at
+        $poItems = PurchaseOrderItem::whereIn('product_id', $paginatedProductIds)
+            ->where('received_quantity', '>', 0)
+            ->whereHas('purchaseOrder')
+            ->with('purchaseOrder')
+            ->get()
+            ->groupBy('product_id');
+
+        // Build analysis data that matches the expected interface (->product, ->supplier_cost, ->previous_cost, etc.)
+        $analysisCollection = $products->getCollection()->map(function ($product) use ($poItems) {
+            $items = collect($poItems->get($product->id, collect()))
+                ->sortByDesc(fn($item) => $item->purchaseOrder?->id)
+                ->values();
+
+            $currentCost = $items->count() > 0 ? (float) $items[0]->unit_price : 0;
+            $previousCost = $items->count() >= 2 ? (float) $items[1]->unit_price : null;
+
+            $changePercentage = $previousCost && $previousCost > 0
+                ? round((($currentCost - $previousCost) / $previousCost) * 100, 2)
+                : 0;
+
+            // DSS Recommendation: based on supplier cost change
+            $recommendation = match (true) {
+                $previousCost !== null && $currentCost > $previousCost => 'Increase the retail price to maintain a 30% profit margin.',
+                $previousCost !== null && $currentCost < $previousCost => 'Maintain the current retail price to increase profit margin.',
+                default => 'Maintain current retail price.',
+            };
+
+            return (object) [
+                'product' => $product,
+                'product_id' => $product->id,
+                'supplier_cost' => $currentCost,
+                'previous_cost' => $previousCost,
+                'change_percentage' => $changePercentage,
+                'recommendation' => $recommendation,
+                'suggested_retail_price' => $currentCost > 0 ? round($currentCost / 0.70, 2) : 0,
+                'supplier' => null,
+            ];
+        });
+
+        $products->setCollection($analysisCollection);
+        $supplierCostAnalysis = $products;
+
+        $supplierCostAlerts = collect($supplierCostAnalysis->items())
+            ->filter(fn ($entry) => $entry->change_percentage && (float) $entry->change_percentage > 0)
+            ->values();
+
+        $supplierCostHighlight = $supplierCostAlerts->first();
+
         return view('data_analytics.pricing-module', [
             'averageUnitPrice' => $averageUnitPrice,
             'mostExpensive' => $mostExpensive,
             'cheapest' => $cheapest,
             'priceUpdates' => $priceUpdates,
             'pricingByCategory' => $pricingByCategory,
+            'supplierCostAnalysis' => $supplierCostAnalysis,
+            'supplierCostAlerts' => $supplierCostAlerts,
+            'supplierCostHighlight' => $supplierCostHighlight,
         ]);
     }
 

@@ -36,9 +36,54 @@
                             {{ $header }}
                         </div>
                         <div class="flex items-center gap-3 md:mt-2 mt-2">
-                            <button id="headerNotificationButton" type="button" class="inline-flex h-9 w-9 items-center justify-center border border-slate-700 text-white transition focus:outline-none invisible" style="border-radius: 20px; background-color: #0f0f0f;" aria-label="Notifications">
-                                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a6 6 0 00-6 6v4.586l-1.707 1.707A1 1 0 005 16h14a1 1 0 00.707-1.707L18 12.586V8a6 6 0 00-6-6zm0 18a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 20z"/></svg>
-                            </button>
+                            <div class="relative inline-flex items-center z-50">
+                                <button id="headerNotificationButton" type="button" class="relative inline-flex h-9 w-9 items-center justify-center border border-slate-700 text-white transition focus:outline-none" style="border-radius: 20px; background-color: #0f0f0f;" aria-label="Notifications">
+                                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a6 6 0 00-6 6v4.586l-1.707 1.707A1 1 0 005 16h14a1 1 0 00.707-1.707L18 12.586V8a6 6 0 00-6-6zm0 18a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 20z"/></svg>
+                                    @if(auth()->check())
+                                        @php
+                                            $lowStockNotifications = app(\App\Http\Controllers\DashboardController::class)->getLowStockNotificationsForUser(auth()->id());
+                                        @endphp
+                                        @if(!empty($lowStockNotifications))
+                                            <span class="absolute -top-1 -right-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-rose-600 px-1.5 text-[10px] font-semibold text-white">{{ count($lowStockNotifications) }}</span>
+                                        @endif
+                                    @endif
+                                </button>
+                                <div id="headerNotificationDropdown" class="absolute right-0 top-full z-[99999] mt-2 w-[24rem] overflow-hidden rounded-[15px] border border-slate-700/60 bg-gradient-to-b from-[#0b0c10] to-[#20232a] shadow-2xl shadow-black/40 hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right">
+                                    <div class="px-4 py-4 border-b border-slate-800/60">
+                                        <div class="flex items-center justify-between gap-3">
+                                            <div>
+                                                <p class="text-sm font-semibold text-white">Notifications</p>
+                                                <p class="text-xs text-slate-400">Recent alerts and reminders.</p>
+                                            </div>
+                                            <button id="headerNotificationClose" type="button" class="text-slate-400 transition hover:text-slate-200" aria-label="Close notifications">×</button>
+                                        </div>
+                                    </div>
+                                    <div id="headerNotificationList" class="max-h-80 overflow-y-auto">
+                                        @if(auth()->check())
+                                            @if(empty($lowStockNotifications))
+                                                <div class="p-4 text-sm text-slate-400">You have no new notifications.</div>
+                                            @else
+                                                @foreach($lowStockNotifications as $notification)
+                                                    <div class="border-b border-slate-800/60 px-4 py-3 last:border-b-0 {{ ($notification['is_dashboard_alert'] ?? false) ? 'bg-amber-900/20' : '' }}" data-notification-item data-product-id="{{ $notification['product_id'] ?? '' }}">
+                                                        <div class="flex items-start justify-between gap-3">
+                                                            <div>
+                                                                <p class="text-sm font-semibold text-white">{{ $notification['product_name'] ?? 'Product' }}</p>
+                                                                <p class="mt-1 text-sm text-slate-400">{{ $notification['message'] ?? 'Low stock alert.' }}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mt-3 flex items-center justify-between gap-2">
+                                                            <span class="text-xs font-semibold uppercase tracking-[0.16em] text-amber-400">Stock {{ $notification['stock_quantity'] ?? 0 }} • Reorder {{ $notification['reorder_level'] ?? 0 }}</span>
+                                                            <a href="{{ $notification['url'] ?? route('order.create', ['product_id' => $notification['product_id']]) }}" class="rounded-xl bg-emerald-600 px-3 py-2 text-[13px] font-semibold text-white transition hover:bg-emerald-700">Create order</a>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            @endif
+                                        @else
+                                            <div class="p-4 text-sm text-slate-400">Please log in to view notifications.</div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                             <div class="relative inline-flex items-center z-50">
                                 <button id="headerProfileButton" type="button" class="inline-flex h-9 items-center gap-2 border border-slate-700 px-3 text-white transition focus:outline-none invisible" style="border-radius: 20px; background-color: #0f0f0f;">
                                     <span class="w-5.5 h-5.5 rounded-full bg-cyan-500 text-white grid place-items-center overflow-hidden text-sm font-semibold">
@@ -153,7 +198,8 @@
         const headerProfileDropdown = document.getElementById('headerProfileDropdown');
         const headerProfileArrow = document.getElementById('headerProfileArrow');
         const headerNotificationButton = document.getElementById('headerNotificationButton');
-        const headerNotificationIcon = headerNotificationButton?.querySelector('svg');
+        const headerNotificationDropdown = document.getElementById('headerNotificationDropdown');
+        const headerNotificationClose = document.getElementById('headerNotificationClose');
         const dashboardHeader = document.getElementById('dashboardHeader');
         const mainScrollArea = document.getElementById('mainScrollArea');
         const topScrollFade = document.getElementById('topScrollFade');
@@ -176,6 +222,17 @@
             headerProfileArrow.classList.add('text-cyan-400');
         }
 
+        function closeNotificationDropdown() {
+            headerNotificationDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
+            headerNotificationDropdown.classList.remove('block', 'opacity-100', 'scale-100');
+            headerNotificationButton.blur();
+        }
+
+        function openNotificationDropdown() {
+            headerNotificationDropdown.classList.remove('hidden', 'opacity-0', 'scale-95');
+            headerNotificationDropdown.classList.add('block', 'opacity-100', 'scale-100');
+        }
+
         if (headerProfileButton && headerProfileDropdown && headerProfileArrow) {
             headerProfileDropdown.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -191,16 +248,37 @@
                 }
             });
 
-            if (headerNotificationButton && headerNotificationIcon) {
-                headerNotificationButton.addEventListener('click', function() {
-                    headerNotificationIcon.classList.toggle('text-cyan-400');
-                    headerNotificationIcon.classList.toggle('text-white');
+            window.addEventListener('click', function(e) {
+                if (!headerProfileDropdown.contains(e.target) && !headerProfileButton.contains(e.target)) {
+                    closeProfileDropdown();
+                }
+            });
+        }
+
+        if (headerNotificationButton && headerNotificationDropdown) {
+            headerNotificationDropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+
+            headerNotificationButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isOpen = !headerNotificationDropdown.classList.contains('hidden');
+                if (isOpen) {
+                    closeNotificationDropdown();
+                } else {
+                    openNotificationDropdown();
+                }
+            });
+
+            if (headerNotificationClose) {
+                headerNotificationClose.addEventListener('click', function() {
+                    closeNotificationDropdown();
                 });
             }
 
             window.addEventListener('click', function(e) {
-                if (!headerProfileDropdown.contains(e.target) && !headerProfileButton.contains(e.target)) {
-                    closeProfileDropdown();
+                if (!headerNotificationDropdown.contains(e.target) && !headerNotificationButton.contains(e.target)) {
+                    closeNotificationDropdown();
                 }
             });
         }

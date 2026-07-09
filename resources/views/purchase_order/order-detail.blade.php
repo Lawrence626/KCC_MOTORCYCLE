@@ -132,6 +132,7 @@
                                         <th class="px-4 py-3">Ordered</th>
                                         <th class="px-4 py-3">Received</th>
                                         <th class="px-4 py-3">Remaining</th>
+                                        <th class="px-4 py-3">Supplier Cost/Unit</th>
                                         <th class="px-4 py-3">Receive quantity</th>
                                     </tr>
                                 </thead>
@@ -145,6 +146,9 @@
                                             <td class="px-4 py-3">{{ $item->quantity }}</td>
                                             <td class="px-4 py-3">{{ $item->received_quantity ?? 0 }}</td>
                                             <td class="px-4 py-3">{{ $remainingQuantity }}</td>
+                                            <td class="px-4 py-3">
+                                                <input name="items[{{ $item->id }}][unit_price]" type="number" step="0.01" min="0" value="{{ (float) $item->unit_price }}" class="w-28 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none" placeholder="0.00" />
+                                            </td>
                                             <td class="px-4 py-3">
                                                 <input name="items[{{ $item->id }}][item_id]" type="hidden" value="{{ $item->id }}" />
                                                 <input name="items[{{ $item->id }}][received_quantity]" type="number" min="0" max="{{ $remainingQuantity }}" value="{{ $remainingQuantity }}" class="w-24 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none" />

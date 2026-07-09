@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\InventoryMovement;
+use App\Models\Supplier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
@@ -47,6 +48,14 @@ class Product extends Model
         'expiry_status_label',
         'days_until_expiry',
     ];
+
+    /**
+     * Suppliers mapped to this product via the supplier_products pivot table.
+     */
+    public function suppliers()
+    {
+        return $this->belongsToMany(Supplier::class, 'supplier_products');
+    }
 
     public function getTotalValueAttribute()
     {
@@ -93,5 +102,10 @@ class Product extends Model
     public function inventoryMovements()
     {
         return $this->hasMany(InventoryMovement::class);
+    }
+
+    public function supplierPriceHistory()
+    {
+        return $this->hasMany(SupplierPriceHistory::class);
     }
 }
