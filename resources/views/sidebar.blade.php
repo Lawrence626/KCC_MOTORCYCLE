@@ -220,6 +220,15 @@
         </a>
         @endif
 
+        @if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk'))
+        <a href="{{ route('shop.inventory') }}" @class(['sidebar-nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition', 'bg-cyan-500/15 text-cyan-400' => request()->routeIs('shop.inventory'), 'hover:bg-[#242b35] text-slate-300' => !request()->routeIs('shop.inventory')])>
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            <span>Shop Inventory Items</span>
+        </a>
+        @endif
+
         @if(auth()->user() && auth()->user()->role === 'admin')
         <a href="{{ route('supplier.assessment') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-3 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('supplier.assessment'), 'text-slate-300 border-transparent' => !request()->routeIs('supplier.assessment')])>
             <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
@@ -239,18 +248,10 @@
         @endif
 
         @if(auth()->user() && auth()->user()->role === 'admin')
-        <a href="{{ route('offline.reconciliation') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-3 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('offline.reconciliation'), 'text-slate-300 border-transparent' => !request()->routeIs('offline.reconciliation')])>
-            <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <defs>
-                    <mask id="arc-mask">
-                        <rect x="0" y="0" width="24" height="24" fill="white" />
-                        <rect x="9" y="0" width="6" height="24" fill="black" />
-                    </mask>
-                </defs>
-                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" mask="url(#arc-mask)" />
-                <circle cx="12" cy="12" r="6" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" mask="url(#arc-mask)" />
-                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" mask="url(#arc-mask)" />
-                <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+        <a href="{{ route('offline.reconciliation') }}" @class(['sidebar-nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition', 'bg-cyan-500/15 text-cyan-400' => request()->routeIs('offline.reconciliation'), 'hover:bg-[#242b35] text-slate-300' => !request()->routeIs('offline.reconciliation')])>
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 11a1 1 0 100-2 1 1 0 000 2zm0 0a4 4 0 100 8 4 4 0 000-8zm0 0V3m0 0L9 6m3-3l3 3" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.071 4.929a10 10 0 00-14.142 0M16.243 7.757a6 6 0 00-8.486 0" />
             </svg>
             <span>Offline Reconciliation</span>
         </a>
@@ -574,6 +575,22 @@ document.addEventListener('DOMContentLoaded', function() {
             clearAllHighlights();
             closeAllMenus();
         });
+            content.style.top = `${rect.top}px`;
+            content.style.left = `${rect.right - 6}px`;
+        };
+
+        const hideContent = () => {
+            clearTimeout(hideTimeout);
+            hideTimeout = setTimeout(() => {
+                content.classList.add('hidden');
+            }, 100);
+        };
+
+        group.addEventListener('mouseenter', showContent);
+        group.addEventListener('mouseleave', hideContent);
+        content.addEventListener('mouseenter', showContent);
+        content.addEventListener('mouseleave', hideContent);
+>>>>>>> Stashed changes
     });
 });
 </script>

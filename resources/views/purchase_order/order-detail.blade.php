@@ -122,7 +122,7 @@
                     @csrf
                     <div class="rounded-[26px] border border-slate-200 bg-slate-50 p-4">
                         <h3 class="text-sm font-semibold text-slate-700">Receive Order</h3>
-                        <p class="mt-1 text-sm text-slate-500">Confirm received quantities and update inventory.</p>
+                        <p class="mt-1 text-sm text-slate-500">Confirm received quantities (inventory will NOT be updated yet).</p>
 
                         <div class="mt-4 overflow-hidden rounded-3xl border border-slate-200">
                             <table class="min-w-full text-left text-sm">
@@ -157,7 +157,45 @@
                     </div>
 
                     <div class="flex flex-wrap items-center justify-between gap-3">
-                        <button type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-emerald-500/20 hover:bg-emerald-700">Receive Order</button>
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-emerald-500/20 hover:bg-emerald-700">Record Receipt</button>
+                    </div>
+                </form>
+            @endif
+
+            @if(in_array($purchaseOrder->status, ['awaiting confirmation', 'partially received'], true))
+                <form method="POST" action="{{ route('order.confirm_receive', $purchaseOrder) }}" class="mt-6 space-y-4">
+                    @csrf
+                    <div class="rounded-[26px] border border-emerald-200 bg-emerald-50 p-4">
+                        <h3 class="text-sm font-semibold text-emerald-700">Confirm & Add to Inventory</h3>
+                        <p class="mt-1 text-sm text-emerald-600">Select warehouse and shelf location, then confirm to update inventory.</p>
+
+                        <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-2">Warehouse</label>
+                                <select name="warehouse_index" required class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none">
+                                    <option value="0">Warehouse A</option>
+                                    <option value="1">Warehouse B</option>
+                                    <option value="2">Warehouse C</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-2">Shelf (Optional)</label>
+                                <select name="shelf_id" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none">
+                                    <option value="">No specific shelf</option>
+                                    @php
+                                        $warehouseIndex = 0; // Default to Warehouse A for shelf options
+                                        $shelves = \App\Models\WarehouseShelf::where('warehouse_index', $warehouseIndex)->where('archived', false)->get();
+                                    @endphp
+                                    @foreach($shelves as $shelf)
+                                        <option value="{{ $shelf->id }}">{{ $shelf->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-emerald-500/20 hover:bg-emerald-700">Confirm & Add to Inventory</button>
                     </div>
                 </form>
             @endif

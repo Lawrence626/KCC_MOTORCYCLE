@@ -131,6 +131,38 @@ window.openEditModalDirect = function(productId) {
     openEditProductModal(productId);
 };
 
+// Archive product function
+async function archiveProduct(productId) {
+    if (!confirm('Are you sure you want to archive this product? It will be hidden from the main inventory.')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/product/${productId}/archive`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': window.AllStocks.csrfToken,
+                'Content-Type': 'application/json'
+            }
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Product archived successfully');
+            loadStats();
+            loadProducts(currentPage);
+        } else {
+            alert('Failed to archive product: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error archiving product:', error);
+        alert('Error archiving product');
+    }
+}
+
+// Make archiveProduct globally accessible
+window.archiveProduct = archiveProduct;
+
 // Load products for select dropdown
 async function loadProductsForSelect() {
     try {
