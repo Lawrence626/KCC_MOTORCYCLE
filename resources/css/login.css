@@ -209,6 +209,21 @@ body{
     margin-top:5px;
 }
 
+.login-error{
+    color:#ff8b8b;
+    font-size:12px;
+    text-align:center;
+    margin-bottom:15px;
+    padding:10px 12px;
+    background:rgba(255,139,139,.15);
+    border-radius:8px;
+    line-height:1.4;
+}
+
+.login-error.hidden{
+    display:none;
+}
+
 /* Hide Sign Up */
 
 .sign-up-section{

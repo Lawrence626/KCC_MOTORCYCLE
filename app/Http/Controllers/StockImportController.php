@@ -857,4 +857,114 @@ class StockImportController extends Controller
 
         return response()->streamDownload($callback, $filename, $headers);
     }
+
+    /**
+     * Archive a product
+     */
+    public function archiveProduct($id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            $product->is_archived = true;
+            $product->save();
+
+            \Log::info('Product archived successfully', ['id' => $id, 'is_archived' => $product->is_archived]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product archived successfully',
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to archive product', ['id' => $id, 'error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to archive product: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Restore an archived product
+     */
+    public function restoreProduct($id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            $product->is_archived = false;
+            $product->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product restored successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to restore product: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get archived products
+     */
+    public function getArchivedProducts(Request $request)
+    {
+        $query = Product::query()->where('is_archived', true);
+
+        \Log::info('Fetching archived products', ['count' => $query->count()]);
+
+        // Apply search filter
+        if ($request->has('search') && !empty($request->input('search'))) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('sku', 'like', "%{$search}%")
+                  ->orWhere('barcode', 'like', "%{$search}%")
+                  ->orWhere('product_name', 'like', "%{$search}%")
+                  ->orWhere('brand', 'like', "%{$search}%");
+            });
+        }
+
+        // Apply category filter
+        if ($request->has('category') && !empty($request->input('category'))) {
+            $query->where('category', $request->input('category'));
+        }
+
+        $products = $query->orderBy('updated_at', 'desc')->paginate($request->input('per_page', 10));
+
+        \Log::info('Archived products fetched', ['total' => $products->total(), 'items_count' => count($products->items())]);
+
+        return response()->json([
+            'success' => true,
+            'data' => $products->items(),
+            'pagination' => [
+                'total' => $products->total(),
+                'per_page' => $products->perPage(),
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+            ]
+        ]);
+    }
+
+    /**
+     * Permanently delete a product
+     */
+    public function permanentDeleteProduct($id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            $product->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product permanently deleted',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete product: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }

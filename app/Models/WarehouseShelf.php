@@ -10,6 +10,7 @@ class WarehouseShelf extends Model
     use HasFactory;
 
     protected $fillable = [
+        'warehouse_id',
         'warehouse_code',
         'warehouse_index',
         'slot_index',
@@ -23,4 +24,9 @@ class WarehouseShelf extends Model
         'products' => 'array',
         'archived' => 'boolean',
     ];
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
+    }
 }

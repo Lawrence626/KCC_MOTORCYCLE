@@ -6,11 +6,22 @@
                 <h1 class="text-2xl font-bold text-slate-900">Offline Reconciliation</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Manage offline data synchronization</p>
             </div>
+            <div class="flex items-center gap-2">
+                <div id="offline-indicator" class="hidden"></div>
+                <button onclick="window.offlineManager.manualSync()" class="px-3 py-2 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Sync Now
+                </button>
+            </div>
         </div>
+
+        @include('partials.offline-submenu')
 
         <!-- Dashboard Widgets -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
-            <a href="{{ route('offline.purchase-orders') }}" class="bg-white border border-slate-200 rounded-lg p-3 shadow-sm hover:shadow-md transition cursor-pointer">
+            <div class="bg-white border border-slate-200 rounded-lg p-3 shadow-sm hover:shadow-md transition cursor-pointer">
                 <div class="flex items-center justify-between mb-2">
                     <div class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
                         <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -21,9 +32,9 @@
                 </div>
                 <p class="text-2xl font-bold text-slate-900" id="pending-sync-count">--</p>
                 <p class="text-xs text-slate-500 mt-0.5">Offline transactions</p>
-            </a>
+            </div>
 
-            <a href="{{ route('offline.export') }}" class="bg-white border border-slate-200 rounded-lg p-3 shadow-sm hover:shadow-md transition cursor-pointer">
+            <div class="bg-white border border-slate-200 rounded-lg p-3 shadow-sm hover:shadow-md transition cursor-pointer">
                 <div class="flex items-center justify-between mb-2">
                     <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
                         <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -34,9 +45,9 @@
                 </div>
                 <p class="text-2xl font-bold text-slate-900" id="exported-count">--</p>
                 <p class="text-xs text-slate-500 mt-0.5">Ready for import</p>
-            </a>
+            </div>
 
-            <a href="{{ route('offline.history') }}" class="bg-white border border-slate-200 rounded-lg p-3 shadow-sm hover:shadow-md transition cursor-pointer">
+            <div class="bg-white border border-slate-200 rounded-lg p-3 shadow-sm hover:shadow-md transition cursor-pointer">
                 <div class="flex items-center justify-between mb-2">
                     <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
                         <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,9 +58,9 @@
                 </div>
                 <p class="text-2xl font-bold text-slate-900" id="synchronized-count">--</p>
                 <p class="text-xs text-slate-500 mt-0.5">Successfully synced</p>
-            </a>
+            </div>
 
-            <a href="{{ route('offline.history') }}" class="bg-white border border-slate-200 rounded-lg p-3 shadow-sm hover:shadow-md transition cursor-pointer">
+            <div class="bg-white border border-slate-200 rounded-lg p-3 shadow-sm hover:shadow-md transition cursor-pointer">
                 <div class="flex items-center justify-between mb-2">
                     <div class="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center">
                         <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,7 +71,7 @@
                 </div>
                 <p class="text-2xl font-bold text-slate-900" id="failed-count">--</p>
                 <p class="text-xs text-slate-500 mt-0.5">Sync errors</p>
-            </a>
+            </div>
         </div>
 
         <!-- Quick Actions -->
@@ -119,26 +130,6 @@
 
         <!-- Navigation Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-            <a href="{{ route('offline.purchase-orders') }}" class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:shadow-md transition cursor-pointer">
-                <div class="flex items-center gap-3 mb-3">
-                    <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-sm font-semibold text-slate-900">Purchase Orders</p>
-                        <p class="text-xs text-slate-500">View offline POs</p>
-                    </div>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-xs text-slate-600">Manage purchase orders</span>
-                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </div>
-            </a>
-
             <a href="{{ route('offline.inventory-movements') }}" class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:shadow-md transition cursor-pointer">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
@@ -153,6 +144,26 @@
                 </div>
                 <div class="flex items-center justify-between">
                     <span class="text-xs text-slate-600">Track inventory changes</span>
+                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </div>
+            </a>
+
+            <a href="{{ route('offline.purchase-orders') }}" class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:shadow-md transition cursor-pointer">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-slate-900">Purchase Orders</p>
+                        <p class="text-xs text-slate-500">View offline POs</p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-600">Manage purchase orders</span>
                     <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                     </svg>
@@ -212,6 +223,7 @@
         </div>
     </div>
 
+    <script src="{{ asset('js/offline-manager.js') }}"></script>
     <script>
         // Load synchronization stats
         document.addEventListener('DOMContentLoaded', function() {
@@ -220,15 +232,15 @@
                 .then(data => {
                     const stats = data.stats;
                     const pending = stats.pending_sync;
-                    
+
                     // Update counts
-                    document.getElementById('pending-sync-count').textContent = 
+                    document.getElementById('pending-sync-count').textContent =
                         (pending.purchase_orders || 0) + (pending.inventory_movements || 0);
-                    document.getElementById('exported-count').textContent = 
+                    document.getElementById('exported-count').textContent =
                         (stats.exported.purchase_orders || 0) + (stats.exported.inventory_movements || 0);
-                    document.getElementById('synchronized-count').textContent = 
+                    document.getElementById('synchronized-count').textContent =
                         (stats.synchronized.purchase_orders || 0) + (stats.synchronized.inventory_movements || 0);
-                    document.getElementById('failed-count').textContent = 
+                    document.getElementById('failed-count').textContent =
                         (stats.failed.purchase_orders || 0) + (stats.failed.inventory_movements || 0);
                 })
                 .catch(error => {

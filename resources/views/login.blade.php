@@ -78,6 +78,8 @@
                                 @enderror
                             </div>
 
+                            <div id="loginError" class="login-error hidden"></div>
+
                             <input type="hidden" name="remember" id="rememberInput" value="0">
 
                             <div class="form-footer">
@@ -154,6 +156,7 @@
         const otpError = document.getElementById('otpError');
         const otpStatus = document.getElementById('otpStatus');
         const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
 
         // Setup OTP digit inputs
         otpDigits.forEach((digit, index) => {
@@ -255,6 +258,7 @@
         }
 
         async function sendOtpRequest() {
+            loginError.classList.add('hidden');
             otpError.classList.add('hidden');
             otpStatus.classList.add('hidden');
             const payload = {
@@ -277,15 +281,15 @@
                 const data = await response.json();
 
                 if (! response.ok) {
-                    otpError.textContent = data.message || 'Unable to send verification code.';
-                    otpError.classList.remove('hidden');
+                    loginError.textContent = data.message || 'Invalid email or password. Please try again.';
+                    loginError.classList.remove('hidden');
                     return;
                 }
 
                 showOtpModal();
             } catch (error) {
-                otpError.textContent = 'Unable to send verification code. Please try again.';
-                otpError.classList.remove('hidden');
+                loginError.textContent = 'Unable to send verification code. Please try again.';
+                loginError.classList.remove('hidden');
             }
         }
 
@@ -388,7 +392,7 @@
             }
         });
 
-        // Enter key support for OTP verification on each digit
+        // Enter key support for OTP verification
         otpDigits.forEach((digit) => {
             digit.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {

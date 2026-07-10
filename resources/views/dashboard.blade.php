@@ -1,7 +1,4 @@
 <x-layouts.app :title="__('Dashboard')">
-    @php
-        $dashboardAlert = collect($lowStockNotifications ?? [])->first(fn ($notification) => ($notification['status'] ?? 'active') !== 'dismissed');
-    @endphp
     <div id="dashboard-root" data-dashboard-url="{{ route('dashboard.data') }}" data-refresh-interval="15000" class="space-y-3">
        
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -12,44 +9,12 @@
                 <div class="flex flex-col gap-1 sm:flex-row sm:items-center pr-4">
                     
                    
-                    <div class="relative z-30 inline-flex items-center gap-2 rounded-[20px] px-3 py-2 text-left">
-                        <button id="dashboardNotificationButton" type="button" class="relative z-[80] inline-flex h-11 w-11 cursor-pointer items-center justify-center transition text-black" aria-label="Notifications" style="background: transparent; border: none;">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a6 6 0 00-6 6v4.586l-1.707 1.707A1 1 0 005 16h14a1 1 0 00.707-1.707L18 12.586V8a6 6 0 00-6-6zm0 18a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 20z"/></svg>
-                            @if(!empty($lowStockNotifications))
-                                <span class="absolute -top-1 -right-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-rose-600 px-1.5 text-[10px] font-semibold text-white">{{ count($lowStockNotifications) }}</span>
-                            @endif
+                    <div class="relative inline-flex items-center gap-2 rounded-[20px] px-3 py-2 text-left">
+                        <button type="button" class="relative p-2 text-slate-600 hover:bg-slate-100 rounded-lg" aria-label="Notifications">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                            </svg>
                         </button>
-                        <div id="dashboardNotificationDropdown" class="hidden absolute right-0 top-full z-[90] mt-2 w-[24rem] overflow-hidden rounded-[20px] border border-slate-200 bg-white shadow-xl shadow-slate-900/10">
-                            <div class="px-4 py-4 border-b border-slate-200">
-                                <div class="flex items-center justify-between gap-3">
-                                    <div>
-                                        <p class="text-sm font-semibold text-slate-900">Notifications</p>
-                                        <p class="text-xs text-slate-500">Recent alerts and purchase order reminders.</p>
-                                    </div>
-                                    <button id="dashboardNotificationClose" type="button" class="text-slate-400 transition hover:text-slate-700" aria-label="Close notifications">×</button>
-                                </div>
-                            </div>
-                            <div id="dashboardNotificationList" class="max-h-80 overflow-y-auto">
-                                @if(empty($lowStockNotifications))
-                                    <div class="p-4 text-sm text-slate-600">You have no new reorder notifications.</div>
-                                @else
-                                    @foreach($lowStockNotifications as $notification)
-                                        <div class="border-b border-slate-100 px-4 py-3 last:border-b-0 {{ ($notification['is_dashboard_alert'] ?? false) ? 'bg-amber-50' : '' }}" data-notification-item data-product-id="{{ $notification['product_id'] ?? '' }}">
-                                            <div class="flex items-start justify-between gap-3">
-                                                <div>
-                                                    <p class="text-sm font-semibold text-slate-900">{{ $notification['product_name'] ?? 'Product' }}</p>
-                                                    <p class="mt-1 text-sm text-slate-600">{{ $notification['message'] ?? 'Low stock alert.' }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="mt-3 flex items-center justify-between gap-2">
-                                                <span class="text-xs font-semibold uppercase tracking-[0.16em] text-amber-600">Stock {{ $notification['stock_quantity'] ?? 0 }} • Reorder {{ $notification['reorder_level'] ?? 0 }}</span>
-                                                <a href="{{ $notification['url'] ?? route('order.create', ['product_id' => $notification['product_id']]) }}" class="rounded-xl bg-emerald-600 px-3 py-2 text-[13px] font-semibold text-white transition hover:bg-emerald-700">Create order</a>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                @endif
-                            </div>
-                        </div>
                         <div class="inline-flex items-center gap-1.5 rounded-[20px] px-3 py-2 text-left">
                         <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-black grid place-items-center text-lg font-semibold overflow-hidden">
                             {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
@@ -107,28 +72,6 @@
                 </div>
             </div>
         </div>
-
-        @if($dashboardAlert)
-            <div id="dashboardLowStockBanner"
-                 role="status"
-                 aria-live="polite"
-                 class="pointer-events-auto fixed right-4 top-24 z-30 hidden w-[min(24rem,calc(100%-2rem))] translate-x-6 rounded-[20px] border border-amber-200 bg-white/95 p-4 shadow-2xl shadow-slate-900/20 backdrop-blur transition-all duration-300"
-                 data-alert-product-id="{{ $dashboardAlert['product_id'] ?? '' }}"
-                 data-alert-delay-ms="{{ $dashboardAlert['dashboard_alert_delay_ms'] ?? 60000 }}">
-                <div class="flex items-start justify-between gap-3">
-                    <div class="flex-1">
-                        <div class="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-700">Low stock alert</div>
-                        <p class="banner-title mt-2 text-sm font-semibold text-slate-900">Low stock alert</p>
-                        <p class="banner-message mt-1 text-sm text-slate-600">{{ $dashboardAlert['message'] ?? 'A product is running low on stock.' }}</p>
-                    </div>
-                    <button type="button" id="dashboardLowStockBannerDismiss" class="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700" aria-label="Dismiss alert">×</button>
-                </div>
-                <div class="mt-3 flex items-center justify-between gap-2">
-                    <span class="text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-600">Moves to notifications after a minute</span>
-                    <a href="{{ $dashboardAlert['url'] ?? route('order.create', ['product_id' => $dashboardAlert['product_id']]) }}" class="rounded-xl bg-emerald-600 px-3 py-2 text-[13px] font-semibold text-white transition hover:bg-emerald-700">Create order</a>
-                </div>
-            </div>
-        @endif
 
         <!-- Stats Grid -->
         <div class="container mx-auto px-4 mb-6">
@@ -245,7 +188,7 @@
                             align-items: center; justify-content: center;
                             text-align: center;
                             pointer-events: none;">
-                            <span id="categoryCenterValue" style="color: #000000; font-weight: 700; font-size: 15px; line-height: 1.1;">0</span>
+                            <span id="categoryCenterValue" style="color: #000000; font-weight: 700; font-size: 14px; line-height: 1.1;">0</span>
                             <span id="categoryCenterCaption" style="color: rgba(0,0,0,0.6); font-size: 9px; margin-top: 6px;">No sales today</span>
                         </div>
                     </div>
@@ -355,22 +298,6 @@
     </div>
 
     <style>
-        #dashboardNotificationButton {
-            position: relative;
-            z-index: 80;
-            cursor: pointer;
-            pointer-events: auto;
-        }
-
-        #dashboardNotificationButton:hover {
-            color: #0f0f0f;
-        }
-
-        #dashboardNotificationDropdown {
-            pointer-events: auto;
-            z-index: 90;
-        }
-
         #dashboardProfileButton {
             background-color: transparent !important;
             color: #0f0f0f !important;
@@ -451,18 +378,18 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background-color: #059669;
-            color: #ffffff;
+            background-color: #0596682a;
+            color: #047857;
             border: none;   
             box-shadow: none;
             transition: background-color 0.18s ease, color 0.18s ease;
-            cursor: pointer;
+            
         }
         #topSellingOpenBtn:hover {
-            background-color: #047857;
-            color: #ffffff;
+            background-color: #04785749;
+            color: #047857;
         }
-        #topSellingOpenBtn:active { background-color: #047857; }
+    
         #topSellingOpenBtn .top-selling-icon { color: currentColor; width: 16px; height: 16px; }
 
         /* ---- Small slideshow dot indicators ---- */
@@ -510,16 +437,16 @@
             border-bottom: 1px solid rgba(107,114,128,0.20);
         }
         #topItemsModal #closeTopItemsModal {
-            background-color: #059669 !important;
-            color: #ffffff !important;
+            background-color: #0596682a !important;
+            color: #047857 !important;
             border-radius: 10px;
             border: none;
             cursor: pointer;
             transition: background-color 0.18s ease, color 0.18s ease;
         }
         #topItemsModal #closeTopItemsModal:hover {
-            background-color: #047857 !important;
-            color: #ffffff !important;
+            background-color: #04785749 !important;
+            color: #047857 !important;
         }
         /* Range buttons: emerald background with white text */
         .sales-range-btn {
@@ -547,6 +474,17 @@
         .sales-range-btn.active:hover {
             background-color: #047857;
             color: #ffffff;
+        }
+
+        /* Dashboard cards shadow — mimic POS terminal containers */
+        .border.border-gray-200 {
+            box-shadow: 0 10px 30px rgba(2,6,23,0.08);
+            transition: box-shadow 0.18s ease;
+        }
+        /* Neutralize hover lift/shadow so shadow is constant like POS terminal */
+        .border.border-gray-200:hover {
+            box-shadow: 0 10px 30px rgba(2,6,23,0.08) !important;
+            transform: none !important;
         }
     </style>
 
@@ -951,28 +889,6 @@
                 }
             }
 
-            const notificationButton = document.getElementById('dashboardNotificationButton');
-            const notificationDropdown = document.getElementById('dashboardNotificationDropdown');
-            const notificationClose = document.getElementById('dashboardNotificationClose');
-
-            if (notificationButton && notificationDropdown) {
-                notificationButton.addEventListener('click', function(event) {
-                    event.stopPropagation();
-                    notificationDropdown.classList.toggle('hidden');
-                });
-            }
-
-            if (notificationClose && notificationDropdown) {
-                notificationClose.addEventListener('click', function() {
-                    notificationDropdown.classList.add('hidden');
-                });
-            }
-
-            window.addEventListener('click', function(event) {
-                if (notificationDropdown && !notificationDropdown.contains(event.target) && !notificationButton.contains(event.target)) {
-                    notificationDropdown.classList.add('hidden');
-                }
-            });
         });
     </script>
 @endpush

@@ -31,6 +31,7 @@ class Product extends Model
         'disposal_date_identified',
         'disposal_date_disposed',
         'disposal_reason',
+        'compatibility',
     ];
 
     protected $casts = [

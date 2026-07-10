@@ -443,9 +443,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     legend: { position: 'top', labels: { font: { size: 11 } } },
                     tooltip: {
                         backgroundColor: '#1a1a1a',
-                        titleColor: '#2ea300',
+                        titleColor: '#84e900',
                         bodyColor: '#ffffff',
-                        borderColor: '#2ea300',
+                        borderColor: '#84e900',
                         borderWidth: 1,
                         padding: 10,
                         displayColors: false,
