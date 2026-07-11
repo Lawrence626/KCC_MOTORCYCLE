@@ -1,32 +1,32 @@
 <x-layouts.app :title="__('Received Orders')">
     <div class="space-y-5">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div class="space-y-2">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div class="pl-3 lg:pl-2">
                 <h1 class="text-3xl font-bold text-slate-900">Received Orders</h1>
                 <p class="max-w-2xl text-sm text-slate-500">Track completed deliveries, confirm order receipts, and view inventory impact.</p>
             </div>
-            <button class="inline-flex items-center gap-2 rounded-2xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-emerald-500/20 hover:bg-emerald-700">Confirm Receipt</button>
+            <button class="inline-flex items-center gap-2 rounded-[10px] bg-[#105f68] px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-[#105f68]/20 hover:bg-[#0c474e]">Confirm Receipt</button>
         </div>
 
-        <div class="grid gap-3 sm:grid-cols-3">
-            <div class="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="grid gap-3 sm:grid-cols-3 items-stretch">
+            <div class="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm flex flex-col justify-between h-full">
                 <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Delivered today</p>
                 <p class="mt-3 text-3xl font-semibold text-slate-900">{{ number_format($deliveredToday) }}</p>
                 <p class="mt-2 text-sm text-slate-500">Orders received and logged today.</p>
             </div>
-            <div class="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm flex flex-col justify-between h-full">
                 <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Pending confirmation</p>
                 <p class="mt-3 text-3xl font-semibold text-slate-900">{{ number_format($pendingConfirmation) }}</p>
                 <p class="mt-2 text-sm text-slate-500">Awaiting goods inspection or paperwork.</p>
             </div>
-            <div class="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm flex flex-col justify-between h-full">
                 <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Issues found</p>
                 <p class="mt-3 text-3xl font-semibold text-slate-900">{{ number_format($issuesFound) }}</p>
                 <p class="mt-2 text-sm text-slate-500">Discrepancies requiring follow-up.</p>
             </div>
         </div>
 
-        <section class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+        <section class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm" style="min-height: calc(100vh - 220px);">
             <div class="flex items-center justify-between gap-4">
                 <div>
                     <h2 class="text-lg font-semibold text-slate-900">Latest received orders</h2>
@@ -35,33 +35,49 @@
                 <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">Verified</span>
             </div>
 
-            <form method="GET" action="{{ route('received.orders') }}" class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <form id="receivedOrdersForm" method="GET" action="{{ route('received.orders') }}" class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 <label class="block text-sm text-slate-700">
                     <span class="text-xs font-semibold text-slate-500">Search deliveries</span>
-                    <input name="search" type="search" value="{{ $search ?? '' }}" placeholder="Order ID or supplier" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none" />
+                    <input name="search" type="search" value="{{ $search ?? '' }}" placeholder="Order ID or supplier" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-[#105f68] focus:ring-2 focus:ring-[#105f68]/20 outline-none" />
                 </label>
-                <label class="block text-sm text-slate-700">
+                <label class="block text-sm text-slate-700 relative" data-dropdown-wrapper="receivedOrdersStatus">
                     <span class="text-xs font-semibold text-slate-500">Receipt status</span>
-                    <select name="status" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none">
-                        <option value="" {{ empty($status) ? 'selected' : '' }}>All statuses</option>
-                        <option value="completed" {{ $status === 'completed' ? 'selected' : '' }}>Completed</option>
-                        <option value="partially received" {{ $status === 'partially received' ? 'selected' : '' }}>Partially Received</option>
-                    </select>
+                    <input type="hidden" name="status" id="receivedOrdersStatusInput" value="{{ $status ?? '' }}" />
+                    <button type="button" id="receivedOrdersStatusButton" onclick="toggleDropdown('receivedOrdersStatusDropdown')" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-white px-4 py-3 text-left text-sm text-slate-900 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#105f68]/20">
+                        <span>{{ !empty($status) ? ucwords($status) : 'All statuses' }}</span>
+                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                        </svg>
+                    </button>
+                    <div id="receivedOrdersStatusDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-300 bg-white shadow-xl p-3 space-y-1">
+                        <button type="button" onclick="selectDropdown(event, 'receivedOrdersStatusInput', '', 'receivedOrdersStatusButton', 'All statuses', 'receivedOrdersStatusDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-left text-sm {{ empty($status) ? 'font-semibold text-[#105f68] bg-[#105f68]/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">All statuses</button>
+                        @foreach(['completed' => 'Completed', 'partially received' => 'Partially Received'] as $value => $label)
+                            <button type="button" onclick="selectDropdown(event, 'receivedOrdersStatusInput', '{{ $value }}', 'receivedOrdersStatusButton', '{{ $label }}', 'receivedOrdersStatusDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-left text-sm {{ ($status ?? '') === $value ? 'font-semibold text-[#105f68] bg-[#105f68]/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
+                        @endforeach
+                    </div>
                 </label>
-                <label class="block text-sm text-slate-700">
+                <label class="block text-sm text-slate-700 relative" data-dropdown-wrapper="receivedOrdersWarehouse">
                     <span class="text-xs font-semibold text-slate-500">Warehouse</span>
-                    <select name="warehouse" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none">
-                        <option value="" {{ empty($warehouse) ? 'selected' : '' }}>All warehouses</option>
-                        <option value="main" {{ $warehouse === 'main' ? 'selected' : '' }}>Main stock</option>
-                        <option value="service" {{ $warehouse === 'service' ? 'selected' : '' }}>Service bay</option>
-                    </select>
+                    <input type="hidden" name="warehouse" id="receivedOrdersWarehouseInput" value="{{ $warehouse ?? '' }}" />
+                    <button type="button" id="receivedOrdersWarehouseButton" onclick="toggleDropdown('receivedOrdersWarehouseDropdown')" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-white px-4 py-3 text-left text-sm text-slate-900 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#105f68]/20">
+                        <span>{{ !empty($warehouse) ? ($warehouse === 'main' ? 'Main stock' : 'Service bay') : 'All warehouses' }}</span>
+                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                        </svg>
+                    </button>
+                    <div id="receivedOrdersWarehouseDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-300 bg-white shadow-xl p-3 space-y-1">
+                        <button type="button" onclick="selectDropdown(event, 'receivedOrdersWarehouseInput', '', 'receivedOrdersWarehouseButton', 'All warehouses', 'receivedOrdersWarehouseDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-left text-sm {{ empty($warehouse) ? 'font-semibold text-[#105f68] bg-[#105f68]/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">All warehouses</button>
+                        @foreach(['main' => 'Main stock', 'service' => 'Service bay'] as $value => $label)
+                            <button type="button" onclick="selectDropdown(event, 'receivedOrdersWarehouseInput', '{{ $value }}', 'receivedOrdersWarehouseButton', '{{ $label }}', 'receivedOrdersWarehouseDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-left text-sm {{ ($warehouse ?? '') === $value ? 'font-semibold text-[#105f68] bg-[#105f68]/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
+                        @endforeach
+                    </div>
                 </label>
                 <div class="flex items-end">
-                    <button type="submit" class="inline-flex w-full justify-center rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-sm shadow-emerald-500/20 hover:bg-emerald-700">Filter</button>
+                    <button type="submit" class="inline-flex w-full justify-center rounded-[10px] bg-[#105f68] px-4 py-3 text-sm font-semibold text-white shadow-sm shadow-[#105f68]/20 hover:bg-[#0c474e]">Filter</button>
                 </div>
             </form>
 
-            <div class="mt-6 overflow-hidden rounded-[26px] border border-slate-200">
+            <div class="mt-6 overflow-hidden rounded-[10px] border border-slate-200">
                 <table class="min-w-full text-left text-sm">
                     <thead class="bg-slate-50 text-slate-500 text-[11px] uppercase tracking-[0.18em]">
                         <tr>
@@ -108,4 +124,62 @@
             </div>
         </section>
     </div>
+
+    <script>
+        function resetDropdownButtonStyles() {
+            document.querySelectorAll('[id$="Button"]').forEach(btn => {
+                btn.style.borderColor = '';
+                btn.style.borderWidth = '';
+                btn.style.boxShadow = '';
+            });
+        }
+
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
+            const allDropdowns = document.querySelectorAll('.dropdown-menu');
+            const button = document.getElementById(id.replace('Dropdown', 'Button'));
+
+            allDropdowns.forEach(d => {
+                if (d.id !== id) d.classList.add('hidden');
+            });
+
+            resetDropdownButtonStyles();
+
+            if (dropdown.classList.contains('hidden')) {
+                dropdown.classList.remove('hidden');
+                if (button) {
+                    button.style.borderColor = '#105f68';
+                    button.style.borderWidth = '2px';
+                    button.style.boxShadow = 'none';
+                }
+            } else {
+                dropdown.classList.add('hidden');
+            }
+        }
+
+        function selectDropdown(event, inputId, value, buttonId, label, dropdownId, formId) {
+            if (event && typeof event.preventDefault === 'function') {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            document.getElementById(inputId).value = value;
+            document.getElementById(buttonId).querySelector('span').textContent = label;
+            document.getElementById(dropdownId).classList.add('hidden');
+            const button = document.getElementById(buttonId);
+            if (button) {
+                button.style.borderColor = '';
+                button.style.borderWidth = '';
+                button.style.boxShadow = '';
+            }
+            document.getElementById(formId).submit();
+        }
+
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.dropdown-menu') && !event.target.closest('[onclick^="toggleDropdown"]')) {
+                document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.add('hidden'));
+                resetDropdownButtonStyles();
+            }
+        });
+    </script>
 </x-layouts.app>

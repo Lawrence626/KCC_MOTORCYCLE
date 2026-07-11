@@ -11,7 +11,7 @@
     <div id="dashboard-root" data-dashboard-url="<?php echo e(route('dashboard.data')); ?>" data-refresh-interval="15000" class="space-y-3">
        
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div class="pl-3 lg:pl-6">
+                <div class="pl-3 lg:pl-2">
                     <h1 class="text-3xl font-bold text-slate-900">Dashboard</h1>
                     <p class="text-gray-600 text-sm mt-1">Overview of sales, inventory and performance insights</p>
                 </div>

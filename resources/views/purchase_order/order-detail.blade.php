@@ -5,7 +5,7 @@
                 <h1 class="text-3xl font-bold text-slate-900">Purchase Order {{ $purchaseOrder->order_number }}</h1>
                 <p class="max-w-2xl text-sm text-slate-500">Review full purchase order details and manage the lifecycle.</p>
             </div>
-            <a href="{{ route('order.history') }}" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:border-emerald-500 hover:text-slate-900">Back to Purchase Order History</a>
+            <a href="{{ route('order.history') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:border-[#105f68] hover:text-slate-900">Back to Purchase Order History</a>
         </div>
 
         @if(session('success'))
@@ -70,27 +70,27 @@
                     @if($purchaseOrder->status === 'pending approval')
                         <form method="POST" action="{{ route('order.approve', $purchaseOrder) }}">
                             @csrf
-                            <button type="submit" class="rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-700">Approve</button>
+                            <button type="submit" class="rounded-[10px] bg-[#105f68] px-4 py-3 text-sm font-semibold text-white hover:bg-[#0c474e]">Approve</button>
                         </form>
                         <form method="POST" action="{{ route('order.reject', $purchaseOrder) }}">
                             @csrf
-                            <button type="submit" class="rounded-2xl border border-rose-200 bg-white px-4 py-3 text-sm font-semibold text-rose-700 hover:bg-rose-50">Reject</button>
+                            <button type="submit" class="rounded-[10px] border border-rose-200 bg-white px-4 py-3 text-sm font-semibold text-rose-700 hover:bg-rose-50">Reject</button>
                         </form>
                     @elseif($purchaseOrder->status === 'approved')
                         <form method="POST" action="{{ route('order.send', $purchaseOrder) }}">
                             @csrf
-                            <button type="submit" class="rounded-2xl bg-cyan-600 px-4 py-3 text-sm font-semibold text-white hover:bg-cyan-700">Send to Supplier</button>
+                            <button type="submit" class="rounded-[10px] bg-[#105f68] px-4 py-3 text-sm font-semibold text-white hover:bg-[#0c474e]">Send to Supplier</button>
                         </form>
                     @elseif($purchaseOrder->status === 'sent to supplier')
                         <form method="POST" action="{{ route('order.in_transit', $purchaseOrder) }}">
                             @csrf
-                            <button type="submit" class="rounded-2xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white hover:bg-sky-700">Mark In Transit</button>
+                            <button type="submit" class="rounded-[10px] bg-[#105f68] px-4 py-3 text-sm font-semibold text-white hover:bg-[#0c474e]">Mark In Transit</button>
                         </form>
                     @endif
                 </div>
             </div>
 
-            <div class="mt-4 overflow-hidden rounded-3xl border border-slate-200">
+            <div class="mt-4 overflow-hidden rounded-[10px] border border-slate-200">
                 <table class="min-w-full text-left text-sm">
                     <thead class="bg-slate-100 text-slate-500 text-[11px] uppercase tracking-[0.18em]">
                         <tr>
@@ -124,7 +124,7 @@
                         <h3 class="text-sm font-semibold text-slate-700">Receive Order</h3>
                         <p class="mt-1 text-sm text-slate-500">Confirm received quantities and update inventory.</p>
 
-                        <div class="mt-4 overflow-hidden rounded-3xl border border-slate-200">
+                        <div class="mt-4 overflow-hidden rounded-[10px] border border-slate-200">
                             <table class="min-w-full text-left text-sm">
                                 <thead class="bg-slate-100 text-slate-500 text-[11px] uppercase tracking-[0.18em]">
                                     <tr>
@@ -147,7 +147,7 @@
                                             <td class="px-4 py-3">{{ $remainingQuantity }}</td>
                                             <td class="px-4 py-3">
                                                 <input name="items[{{ $item->id }}][item_id]" type="hidden" value="{{ $item->id }}" />
-                                                <input name="items[{{ $item->id }}][received_quantity]" type="number" min="0" max="{{ $remainingQuantity }}" value="{{ $remainingQuantity }}" class="w-24 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none" />
+                                                <input name="items[{{ $item->id }}][received_quantity]" type="number" min="0" max="{{ $remainingQuantity }}" value="{{ $remainingQuantity }}" class="w-24 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none" />
                                             </td>
                                         </tr>
                                     @endforeach
@@ -157,14 +157,14 @@
                     </div>
 
                     <div class="flex flex-wrap items-center justify-between gap-3">
-                        <button type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-emerald-500/20 hover:bg-emerald-700">Receive Order</button>
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-[10px] bg-[#105f68] px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-[#105f68]/20 hover:bg-[#0c474e]">Receive Order</button>
                     </div>
                 </form>
             @endif
         </div>
 
         @if($purchaseOrder->notes)
-            <div class="rounded-[26px] border border-slate-200 bg-white p-6 shadow-sm">
+            <div class="rounded-[10px] border border-slate-200 bg-white p-6 shadow-sm">
                 <h2 class="text-lg font-semibold text-slate-900">Notes</h2>
                 <p class="mt-3 text-sm text-slate-700">{{ $purchaseOrder->notes }}</p>
             </div>

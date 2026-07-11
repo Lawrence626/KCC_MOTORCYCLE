@@ -133,7 +133,7 @@
 
         <?php if(auth()->user() && auth()->user()->role === 'admin'): ?>
         <?php
-            $isPoActive = request()->routeIs('order.management') || request()->routeIs('purchase.requests') || request()->routeIs('received.orders');
+            $isPoActive = request()->routeIs('order.*') || request()->routeIs('purchase.requests') || request()->routeIs('received.orders');
         ?>
         <div class="group space-y-1 <?php if($isPoActive): ?> open <?php endif; ?>">
             <button type="button" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-group-toggle w-full flex items-center justify-between gap-3 pl-6 pr-4 py-3 text-sm font-medium cursor-pointer text-slate-300 border-l-[3px] border-transparent']); ?>">
@@ -149,7 +149,7 @@
                 </svg>
             </button>
             <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-cyan-400/40 space-y-0.5 mt-1">
-                <a href="<?php echo e(route('order.management')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('order.management'), 'text-slate-400' => !request()->routeIs('order.management')]); ?>">
+                <a href="<?php echo e(route('order.management')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('order.*'), 'text-slate-400' => !request()->routeIs('order.*')]); ?>">
                     <span>Order Management</span>
                 </a>
                 <a href="<?php echo e(route('received.orders')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('received.orders'), 'text-slate-400' => !request()->routeIs('received.orders')]); ?>">

@@ -1,7 +1,7 @@
 <x-layouts.app :title="__('POS Terminal')">
     <div class="space-y-3 max-w-[1480px] mx-auto px-3">
-        <div class="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-            <div>
+         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div class="pl-3 lg:pl-2">
                 <h1 class="text-3xl font-bold text-slate-900">Point of Sale (POS)</h1>
                 <p class="text-gray-600 text-sm mt-1">Process sales, service billing, and payments from one compact page.</p>
             </div>

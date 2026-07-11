@@ -1,8 +1,8 @@
 <x-layouts.app :title="__('Replacing Items')">
     <div class="space-y-6">
         <!-- Header Section -->
-        <div class="flex items-start justify-between">
-            <div>
+         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div class="pl-3 lg:pl-1">
                 <h1 class="text-3xl font-bold text-slate-900">Replacing Items</h1>
                 <p class="text-slate-600 text-sm mt-1">Manage returned products and issue replacements.</p>
             </div>
@@ -49,11 +49,10 @@
                         style="background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 20 20\' fill=\'none\' stroke=\'%2338445d\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M6 8l4 4 4-4\'/%3E%3C/svg%3E'); background-repeat:no-repeat; background-position:right 0.85rem center; background-size:1.2em; line-height:1.25rem;">
                         <span id="statusLabel">Status: All</span>
                     </button>
-                    <div id="statusDropdown" class="hidden absolute top-full mt-2 -right-0 w-56 bg-white border border-slate-300 rounded-lg shadow-xl z-50 p-3 space-y-1">
-                        <button onclick="selectStatus('Status: All')" class="w-full px-4 py-2.5 text-center text-sm font-semibold text-[#105f68] bg-[#105f68]/10 hover:bg-[#105f68]/15 rounded-[10px]">Status: All</button>
-                        <button onclick="selectStatus('Pending')" class="w-full px-4 py-2.5 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Pending</button>
-                        <button onclick="selectStatus('Approved')" class="w-full px-4 py-2.5 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Approved</button>
-                        <button onclick="selectStatus('Completed')" class="w-full px-4 py-2.5 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Completed</button>
+                    <div id="statusDropdown" class="hidden absolute top-full mt-2 -right-0 w-40 bg-white border border-slate-300 rounded-lg shadow-xl z-50 p-3 space-y-1">
+                        <button onclick="selectStatus('Pending')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Pending</button>
+                        <button onclick="selectStatus('Approved')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Approved</button>
+                        <button onclick="selectStatus('Completed')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Completed</button>
                     </div>
                 </div>
             </div>
