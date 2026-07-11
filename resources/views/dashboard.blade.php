@@ -74,10 +74,10 @@
         </div>
 
         <!-- Stats Grid -->
-        <div class="container mx-auto px-4 mb-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="mb-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                 <!-- Total Sales -->
-                <div class="border border-gray-200 p-3 hover:shadow-sm transition" style="border-radius: 20px; background-color: #ffffff;">
+                <div class="border border-gray-200 p-4" style="border-radius: 20px; background-color: #ffffff;">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <p class="text-black text-xs font-semibold">Total Sales</p>
@@ -86,7 +86,7 @@
                                 <p id="salesComparison" class="text-gray-500 text-xs mt-1 font-medium">Loading…</p>
                             </div>
                         </div>
-                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 20px; background-color: #2ea300;">
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #2ea300;">
                             <svg class="w-5 h-5" style="color: #ffffff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                 <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
                             </svg>
@@ -94,63 +94,64 @@
                     </div>
                 </div>
 
-            <!-- Total Transaction -->
-            <div class="border border-gray-200 p-3 hover:shadow-sm transition" style="border-radius: 20px; background-color: #ffffff;">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
-                        <p class="text-black text-xs font-semibold" style="color: #000000;">Total Transaction</p>
-                        <div class="mt-1">
-                            <p id="transactionsValue" class="text-2xl font-bold" style="color: #000000;">—</p>
-                            <p id="transactionsComparison" class="text-gray-500 text-xs mt-1 font-medium;">Loading…</p>
+                <!-- Total Transaction -->
+                <div class="border border-gray-200 p-4" style="border-radius: 20px; background-color: #ffffff;">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-black text-xs font-semibold" style="color: #000000;">Total Transaction</p>
+                            <div class="mt-1">
+                                <p id="transactionsValue" class="text-2xl font-bold" style="color: #000000;">—</p>
+                                <p id="transactionsComparison" class="text-gray-500 text-xs mt-1 font-medium;">Loading…</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 20px; background-color: #ebd300;">
-                        <svg class="w-5 h-5" style="color: #ffffff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
-                            <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/>
-                        </svg>
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #ebd300;">
+                            <svg class="w-5 h-5" style="color: #ffffff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                                <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/>
+                            </svg>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Total Profit -->
-            <div class="border border-gray-200 p-3 hover:shadow-sm transition" style="border-radius: 20px; background-color: #ffffff;">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
-                        <p class="text-black text-xs font-semibold" style="color: #000000;">Total Profit</p>
-                        <div class="mt-1">
-                            <p id="profitValue" class="text-2xl font-bold" style="color: #000000;">—</p>
-                            <p id="profitComparison" class="text-gray-500 text-xs mt-1 font-medium;">Loading…</p>
+                <!-- Total Profit -->
+                <div class="border border-gray-200 p-4" style="border-radius: 20px; background-color: #ffffff;">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-black text-xs font-semibold" style="color: #000000;">Total Profit</p>
+                            <div class="mt-1">
+                                <p id="profitValue" class="text-2xl font-bold" style="color: #000000;">—</p>
+                                <p id="profitComparison" class="text-gray-500 text-xs mt-1 font-medium;">Loading…</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 20px; background-color: #ff9900;">
-                        <svg class="w-5 h-5" style="color: #ffffff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
-                            <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
-                        </svg>
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #ff9900;">
+                            <svg class="w-5 h-5" style="color: #ffffff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                                <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+                            </svg>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Total Item Sold -->
-            <div class="border border-gray-200 p-3 hover:shadow-sm transition" style="border-radius: 20px; background-color:    #ffffff;">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
-                        <p class="text-black text-xs font-semibold" style="color: #000000;">Total Item Sold</p>
-                        <div class="mt-1">
-                            <p id="itemsSoldValue" class="text-2xl font-bold" style="color: #030303;">—</p>
-                            <p id="itemsSoldComparison" class="text-gray-500 text-xs mt-1 font-medium;">Loading…</p>
+                <!-- Total Item Sold -->
+                <div class="border border-gray-200 p-4" style="border-radius: 20px; background-color: #ffffff;">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-black text-xs font-semibold" style="color: #000000;">Total Item Sold</p>
+                            <div class="mt-1">
+                                <p id="itemsSoldValue" class="text-2xl font-bold" style="color: #030303;">—</p>
+                                <p id="itemsSoldComparison" class="text-gray-500 text-xs mt-1 font-medium;">Loading…</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 20px; background-color: #ff6600;">
-                        <svg class="w-5 h-5" style="color: #ffffff;" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-                        </svg>
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #ff6600;">
+                            <svg class="w-5 h-5" style="color: #ffffff;" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                            </svg>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Charts Row -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 pt-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 pt-1">
             <!-- Sales Overview Chart -->
             <div id="salesOverviewCard" class="lg:col-span-2 border border-gray-200 p-4 relative overflow-hidden" style="border-radius: 20px; background-color: #ffffff; min-height: 240px; box-sizing: border-box;">
 
@@ -202,15 +203,15 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 pt-4">
 
             <!-- Inventory Levels (compact card, stacked/overlapping rows, no popup) -->
-            <div id="inventoryCardWrap" class="relative">
-
-                <div id="inventoryCard" class="border border-gray-200 p-3" style="border-radius: 20px; background-color: #ffffff;">
-                    <div class="flex items-center justify-between mb-2">
-                        <h2 class="text-black text-sm font-bold">Inventory Levels</h2>
+         <div id="inventoryCardWrap" class="relative">
+ 
+                <div id="inventoryCard" class="border border-gray-200 p-4" style="border-radius: 20px; background-color: #ffffff;">
+                    <div class="flex items-center justify-between mb-2" border-radius: 20px 20px 0 0; box-shadow: 0 10px 30px rgba(2,6,23,0.08);">
+                        <h2 class="text-sm font-bold" style="color: #000000;">Inventory Levels</h2>
                     </div>
-
+ 
                     <div class="inv-stack" style="position: relative;">
-
+ 
                         <!-- Total Products (top of the stack) -->
                         <div class="inv-row flex items-center gap-2 px-3 py-3" style="border-radius: 18px; background-color: #ffffff; position: relative; z-index: 40;">
                             <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-full" style="background-color: #00c000;">
@@ -222,7 +223,7 @@
                             <span class="text-black text-xs font-semibold flex-1">Total Products</span>
                             <span id="totalProductsValue" class="text-black text-xs font-bold">—</span>
                         </div>
-
+ 
                         <!-- Low Stock Items -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 18px; background-color: #ffffff; position: relative; z-index: 30; margin-top: -12px; padding-top: 20px; padding-bottom: 12px; border-top: 1px solid rgba(0,0,0,0.06);">
                             <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-full" style="background-color: #ff3300;">
@@ -235,7 +236,7 @@
                             <span class="text-black text-xs font-semibold flex-1">Low Stock Items</span>
                             <span id="lowStockValue" class="text-black text-xs font-bold">—</span>
                         </div>
-
+ 
                         <!-- Out of Stock Items -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 18px; background-color: #ffffff; position: relative; z-index: 20; margin-top: -12px; padding-top: 20px; padding-bottom: 12px; border-top: 1px solid rgba(0,0,0,0.06);">
                             <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-full" style="background-color: #1ea19b;">
@@ -248,7 +249,7 @@
                             <span class="text-black text-xs font-semibold flex-1">Out of Stock Items</span>
                             <span id="outOfStockValue" class="text-black text-xs font-bold">—</span>
                         </div>
-
+ 
                         <!-- In Stock Items (bottom of the stack) -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 18px; background-color: #ffffff; position: relative; z-index: 10; margin-top: -12px; padding-top: 20px; padding-bottom: 12px; border-top: 1px solid rgba(0,0,0,0.06);">
                             <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-full" style="background-color: #ff9900;">    
@@ -263,7 +264,7 @@
                     </div>
                 </div>
             </div>
-
+ 
             <!-- Top Selling Item (slideshow widget) -->
             <div id="topSellingWidget" class="lg:col-span-1 bg-[#ffffff] border border-gray-200 p-3" style="border-radius: 20px;">
                 <div class="flex items-center justify-between mb-2">
@@ -272,7 +273,7 @@
                             <svg class="w-4 h-4 top-selling-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l10-10"/><path d="M7 7h10v10"/></svg>
                         </button>
                 </div>
-
+ 
                 <div id="topSellingCarousel" class="rounded-lg overflow-hidden" style="background:#fff; position: relative;">
                     <div id="topSlideTrack" style="display:flex;width:100%;height:140px;position:relative;">
                         <!-- slides inserted here (absolute positioned, cross-fade) -->
@@ -280,7 +281,7 @@
                     <!-- Small slideshow dot indicators, centered at the bottom of the carousel -->
                     <div id="topSlideDots" style="position:absolute; left:0; right:0; bottom:6px; display:flex; align-items:center; justify-content:center; gap:5px; z-index:5;"></div>
                 </div>
-
+ 
                 <div id="topSellingInfo" class="mt-3 text-xs text-gray-700">
                     <!-- rank and product name shown here -->
                     <div id="topSellingPlaceholder" class="text-sm text-gray-500">Loading…</div>
@@ -379,7 +380,7 @@
             align-items: center;
             justify-content: center;
             background-color: #0596682a;
-            color: #047857;
+            color: #105f68;
             border: none;   
             box-shadow: none;
             transition: background-color 0.18s ease, color 0.18s ease;
@@ -387,7 +388,7 @@
         }
         #topSellingOpenBtn:hover {
             background-color: #04785749;
-            color: #047857;
+            color: #105f68;
         }
     
         #topSellingOpenBtn .top-selling-icon { color: currentColor; width: 16px; height: 16px; }
@@ -438,7 +439,7 @@
         }
         #topItemsModal #closeTopItemsModal {
             background-color: #0596682a !important;
-            color: #047857 !important;
+            color: #105f68 !important;
             border-radius: 10px;
             border: none;
             cursor: pointer;
@@ -446,12 +447,12 @@
         }
         #topItemsModal #closeTopItemsModal:hover {
             background-color: #04785749 !important;
-            color: #047857 !important;
+            color: #105f68 !important;
         }
-        /* Range buttons: emerald background with white text */
+        /* Range buttons: unselected = light teal tint, selected (clicked) = solid #105f68 */
         .sales-range-btn {
-            background-color: #059669;
-            color: #ffffff;
+            background-color: #e3edee;
+            color: #105f68;
             border: 1px solid rgba(0,0,0,0.02);
             box-shadow: none;
             padding-top: 0.35rem;
@@ -462,17 +463,17 @@
         }
 
         .sales-range-btn:hover {
-            background-color: #047857;
-            color: #ffffff;
+            background-color: #cfe0e1;
+            color: #105f68;
         }
 
         .sales-range-btn.active {
-            background-color: #059669;
+            background-color: #105f68;
             color: #ffffff;
         }
 
         .sales-range-btn.active:hover {
-            background-color: #047857;
+            background-color: #0c4a51;
             color: #ffffff;
         }
 

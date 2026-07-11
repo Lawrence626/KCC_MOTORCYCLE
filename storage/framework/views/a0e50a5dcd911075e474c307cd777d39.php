@@ -1,5 +1,5 @@
 <div class="w-full md:w-70 text-white flex flex-col h-screen shadow-2xl border-r border-slate-700 "
-     style="background: linear-gradient( #0f0f0f); position: relative;">
+     style="background: linear-gradient( #000000, #2b2b2b); position: relative;">
 
     <a href="<?php echo e(route('dashboard')); ?>" class="px-6 py-5 flex-shrink-0">
         <div class="flex flex-col items-center justify-center">
@@ -293,6 +293,17 @@
         transition: color 0.2s ease, background-color 0.2s ease;
     }
 
+    /* FIX (equal hover/click box size): dati iba-iba ang row height ng bawat
+       item dahil magkakaiba ang laki ng icons (w-5.5, w-5, w-4.5). Ngayon,
+       fixed ang height ng lahat ng nav item / group toggle (parehong may
+       submodule at wala), kaya pareho na rin lagi ang laki ng hover/click
+       box sa lahat ng button, kahit anong laki ng icon sa loob. */
+    nav > a.sidebar-nav-item,
+    .sidebar-group-toggle {
+        height: 48px;
+        box-sizing: border-box;
+    }
+
     .sidebar-group-content,
     .flyout-animated {
         display: none;
@@ -499,7 +510,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!button) return;
 
         button.classList.remove('text-slate-300', 'border-transparent');
-        button.classList.add('bg-cyan-500/5', 'text-cyan-400', 'shadow-sm', 'border-cyan-400');
+        button.classList.add('bg-cyan-500/5', 'text-cyan-400', 'border-cyan-400');
 
         if (arrow) {
             arrow.classList.remove('text-slate-400');

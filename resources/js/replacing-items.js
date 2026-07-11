@@ -8,6 +8,7 @@ function closeNewReplacementModal() {
     document.getElementById('newReturnedItem').value = '';
     document.getElementById('newReason').value = 'Defective Item';
     document.getElementById('newReplacementProduct').value = '';
+    document.getElementById('newReplacementProductLabel').textContent = 'Select product...';
     document.getElementById('newQuantity').value = '1';
 }
 
@@ -73,10 +74,25 @@ function updateDateDisplay() {
     dateDisplay.textContent = today.toLocaleDateString('en-US', options);
 }
 
+function closeAllDropdowns(exceptId) {
+    console.log('closeAllDropdowns called, keeping open:', exceptId);
+    const allDropdownIds = ['statusDropdown', 'returnedItemDropdown', 'reasonDropdown', 'replacementProductDropdown'];
+    allDropdownIds.forEach(id => {
+        if (id === exceptId) return;
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+    });
+}
+
 function toggleStatusDropdown() {
     const dropdown = document.getElementById('statusDropdown');
-    if (dropdown) {
-        dropdown.classList.toggle('hidden');
+    if (!dropdown) return;
+    const isHidden = dropdown.classList.contains('hidden');
+    closeAllDropdowns('statusDropdown');
+    if (isHidden) {
+        dropdown.classList.remove('hidden');
+    } else {
+        dropdown.classList.add('hidden');
     }
 }
 
@@ -86,14 +102,14 @@ function selectStatus(status) {
     
     if (label) label.textContent = status;
     
-    // Remove emerald from all buttons and add to the selected one
+    // Remove brand color from all buttons and add to the selected one
     const dropdownButtons = dropdown?.querySelectorAll('button');
     dropdownButtons?.forEach(btn => {
         if (btn.textContent.trim() === status) {
-            btn.classList.add('bg-emerald-100', 'text-emerald-700', 'font-semibold');
+            btn.classList.add('bg-[#105f68]/10', 'text-[#105f68]', 'font-semibold');
             btn.classList.remove('hover:bg-slate-100', 'text-slate-700');
         } else {
-            btn.classList.remove('bg-emerald-100', 'text-emerald-700', 'font-semibold');
+            btn.classList.remove('bg-[#105f68]/10', 'text-[#105f68]', 'font-semibold');
             btn.classList.add('hover:bg-slate-100', 'text-slate-700');
         }
     });
@@ -103,8 +119,13 @@ function selectStatus(status) {
 
 function toggleDropdown(id) {
     const dropdown = document.getElementById(id);
-    if (dropdown) {
-        dropdown.classList.toggle('hidden');
+    if (!dropdown) return;
+    const isHidden = dropdown.classList.contains('hidden');
+    closeAllDropdowns(id);
+    if (isHidden) {
+        dropdown.classList.remove('hidden');
+    } else {
+        dropdown.classList.add('hidden');
     }
 }
 
@@ -115,6 +136,19 @@ function selectDropdown(inputId, value, labelId, dropdownId) {
 
     if (input) input.value = value;
     if (label) label.textContent = value;
+
+    // Highlight the selected option, matching the status dropdown style
+    const dropdownButtons = dropdown?.querySelectorAll('button');
+    dropdownButtons?.forEach(btn => {
+        if (btn.textContent.trim() === value) {
+            btn.classList.add('bg-[#105f68]/10', 'text-[#105f68]', 'font-semibold');
+            btn.classList.remove('hover:bg-slate-100', 'text-slate-700');
+        } else {
+            btn.classList.remove('bg-[#105f68]/10', 'text-[#105f68]', 'font-semibold');
+            btn.classList.add('hover:bg-slate-100', 'text-slate-700');
+        }
+    });
+
     if (dropdown) dropdown.classList.add('hidden');
 }
 
@@ -123,9 +157,11 @@ document.addEventListener('click', function(event) {
     const statusDropdown = document.getElementById('statusDropdown');
     const returnedDropdown = document.getElementById('returnedItemDropdown');
     const reasonDropdown = document.getElementById('reasonDropdown');
+    const replacementProductDropdown = document.getElementById('replacementProductDropdown');
     const statusButton = event.target.closest('button[onclick*="toggleStatusDropdown"]');
     const returnedButton = event.target.closest('#returnedItemButton');
     const reasonButton = event.target.closest('#newReasonButton');
+    const replacementProductButton = event.target.closest('#replacementProductButton');
 
     if (!statusButton && statusDropdown && !statusDropdown.contains(event.target)) {
         statusDropdown.classList.add('hidden');
@@ -135,6 +171,9 @@ document.addEventListener('click', function(event) {
     }
     if (!reasonButton && reasonDropdown && !reasonDropdown.contains(event.target)) {
         reasonDropdown.classList.add('hidden');
+    }
+    if (!replacementProductButton && replacementProductDropdown && !replacementProductDropdown.contains(event.target)) {
+        replacementProductDropdown.classList.add('hidden');
     }
 });
 
