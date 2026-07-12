@@ -52,14 +52,18 @@
                 </div>
                 <!-- Date Filter -->
                 <div class="relative">
-                    <select id="dateFilter" class="appearance-none pl-4 pr-10 py-2.5 rounded-[10px] border border-slate-300 bg-white text-sm font-medium text-slate-700 text-left focus:outline-none focus:ring-2 focus:ring-[#105f68] w-40 cursor-pointer"
+                    <button type="button" onclick="toggleDateDropdown()" class="appearance-none pl-4 pr-10 py-2.5 rounded-[10px] border border-slate-300 bg-white text-sm font-medium text-slate-700 text-left focus:outline-none focus:ring-2 focus:ring-[#105f68] flex items-center gap-2 whitespace-nowrap w-40"
                         style="background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 20 20\' fill=\'none\' stroke=\'%2338445d\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M6 8l4 4 4-4\'/%3E%3C/svg%3E'); background-repeat:no-repeat; background-position:right 0.85rem center; background-size:1.2em; line-height:1.25rem;">
-                        <option value="today">Today</option>
-                        <option value="this_week">This Week</option>
-                        <option value="this_month">This Month</option>
-                        <option value="last_month">Last Month</option>
-                        <option value="custom">Custom Range</option>
-                    </select>
+                        <span id="dateFilterLabel">Today</span>
+                    </button>
+                    <input type="hidden" id="dateFilter" value="today" />
+                    <div id="dateDropdown" class="hidden absolute top-full mt-2 -right-0 w-40 bg-white border border-slate-300 rounded-lg shadow-xl z-50 p-3 space-y-1">
+                        <button type="button" onclick="selectDateFilter('today', 'Today')" class="w-full px-4 py-2 text-center text-sm bg-[#105f68]/10 text-[#105f68] font-semibold rounded-[10px]">Today</button>
+                        <button type="button" onclick="selectDateFilter('this_week', 'This Week')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">This Week</button>
+                        <button type="button" onclick="selectDateFilter('this_month', 'This Month')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">This Month</button>
+                        <button type="button" onclick="selectDateFilter('last_month', 'Last Month')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Last Month</button>
+                        <button type="button" onclick="selectDateFilter('custom', 'Custom Range')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Custom Range</button>
+                    </div>
                 </div>
             </div>
         </div>
