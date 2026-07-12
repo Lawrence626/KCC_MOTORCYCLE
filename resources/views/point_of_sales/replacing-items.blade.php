@@ -30,7 +30,7 @@
                 </div>
                 <!-- Custom Dropdown -->
                 <div class="relative">
-                    <button type="button" onclick="toggleStatusDropdown()" class="appearance-none pl-4 pr-10 py-2.5 rounded-[10px] border border-slate-300 bg-white text-sm font-medium text-slate-700 text-center focus:outline-none focus:ring-2 focus:ring-[#105f68] flex items-center gap-2 whitespace-nowrap w-40"
+                    <button type="button" onclick="toggleStatusDropdown()" class="appearance-none pl-4 pr-10 py-2.5 rounded-[10px] border border-slate-300 bg-white text-sm font-medium text-slate-700 text-left focus:outline-none focus:ring-2 focus:ring-[#105f68] flex items-center gap-2 whitespace-nowrap w-40"
                         style="background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 20 20\' fill=\'none\' stroke=\'%2338445d\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M6 8l4 4 4-4\'/%3E%3C/svg%3E'); background-repeat:no-repeat; background-position:right 0.85rem center; background-size:1.2em; line-height:1.25rem;">
                         <span id="statusLabel">All Status</span>
                     </button>
@@ -43,7 +43,7 @@
                 </div>
                 <!-- Date Filter -->
                 <div class="relative">
-                    <select id="dateFilter" class="appearance-none pl-4 pr-10 py-2.5 rounded-[10px] border border-slate-300 bg-white text-sm font-medium text-slate-700 text-center focus:outline-none focus:ring-2 focus:ring-[#105f68] w-40 cursor-pointer"
+                    <select id="dateFilter" class="appearance-none pl-4 pr-10 py-2.5 rounded-[10px] border border-slate-300 bg-white text-sm font-medium text-slate-700 text-left focus:outline-none focus:ring-2 focus:ring-[#105f68] w-40 cursor-pointer"
                         style="background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 20 20\' fill=\'none\' stroke=\'%2338445d\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M6 8l4 4 4-4\'/%3E%3C/svg%3E'); background-repeat:no-repeat; background-position:right 0.85rem center; background-size:1.2em; line-height:1.25rem;">
                         <option value="today">Today</option>
                         <option value="this_week">This Week</option>
