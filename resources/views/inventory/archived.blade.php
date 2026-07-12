@@ -7,18 +7,12 @@
                 <p class="text-xs text-slate-500 mt-0.5">Archived inventory items. Restore or permanently delete</p>
             </div>
             <div class="flex gap-2 items-center">
-                <button class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 transition">
+                <a href="{{ url()->previous() ?: route('allstocks') }}" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 transition">
                     <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
-                    Export
-                </button>
-                <button class="px-3 py-1.5 rounded-lg bg-cyan-600 text-white text-xs font-medium hover:bg-cyan-700 transition">
-                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Go Back
-                </button>
+                    BACK TO POS
+                </a>
             </div>
         </div>
 
@@ -26,29 +20,29 @@
         <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
             <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-sm">
                 <p class="text-xs text-slate-600 font-medium mb-0.5">Archived Items</p>
-                <p class="text-lg font-bold text-slate-900">12</p>
+                <p id="archivedCount" class="text-lg font-bold text-slate-900">0</p>
                 <p class="text-xs text-slate-500 mt-0.5">Total archived</p>
             </div>
             <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-sm">
                 <p class="text-xs text-slate-600 font-medium mb-0.5">Archive Value</p>
-                <p class="text-lg font-bold text-slate-900">₱45,200</p>
+                <p id="archiveValue" class="text-lg font-bold text-slate-900">₱0</p>
                 <p class="text-xs text-slate-500 mt-0.5">Total value</p>
             </div>
             <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-sm">
                 <p class="text-xs text-slate-600 font-medium mb-0.5">Avg Price</p>
-                <p class="text-lg font-bold text-slate-900">₱3,767</p>
+                <p id="avgPrice" class="text-lg font-bold text-slate-900">₱0</p>
                 <p class="text-xs text-slate-500 mt-0.5">Per item</p>
             </div>
         </div>
 
         <!-- Search & Filters -->
         <div class="bg-white rounded-lg border border-slate-200 p-2.5 shadow-sm space-y-2">
-            <input type="search" placeholder="Search by product name, SKU, or barcode..." class="w-full px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-50 text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent" />
+            <input id="searchInput" type="search" placeholder="Search by product name, SKU, or barcode..." class="w-full px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-50 text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent" />
 
             <div class="flex gap-2 items-end">
                 <div class="flex-1">
                     <label class="block text-slate-600 font-medium mb-0.5 text-xs">Category</label>
-                    <select class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 bg-slate-50 text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+                    <select id="categoryFilter" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 bg-slate-50 text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
                         <option value="">All Categories</option>
                         <option value="engine_oil">Engine Oil</option>
                         <option value="battery">Battery</option>
@@ -60,22 +54,8 @@
                         <option value="accessories">Accessories</option>
                     </select>
                 </div>
-                <div class="flex-1">
-                    <label class="block text-slate-600 font-medium mb-0.5 text-xs">Stock Level</label>
-                    <select class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 bg-slate-50 text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
-                        <option value="">All Levels</option>
-                        <option value="high">High (>50)</option>
-                        <option value="medium">Medium (10-50)</option>
-                        <option value="low">Low (1-10)</option>
-                        <option value="zero">Out of Stock</option>
-                    </select>
-                </div>
-                <button class="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 transition whitespace-nowrap">Apply</button>
-                <button class="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-600 hover:bg-slate-50 transition whitespace-nowrap">Reset</button>
-                <div class="flex items-center gap-1.5 text-xs text-slate-600">
-                    <input type="checkbox" id="select-all" class="rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 cursor-pointer" />
-                    <label for="select-all" class="cursor-pointer whitespace-nowrap">Select All</label>
-                </div>
+                <button id="applyFilter" class="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 transition whitespace-nowrap">Apply</button>
+                <button id="resetFilter" class="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-600 hover:bg-slate-50 transition whitespace-nowrap">Reset</button>
             </div>
         </div>
 
@@ -85,9 +65,6 @@
                 <table class="w-full divide-y divide-slate-200 text-xs">
                     <thead class="bg-slate-50 border-b border-slate-200">
                         <tr>
-                            <th class="px-3 py-2 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide w-6">
-                                <input type="checkbox" class="rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 cursor-pointer" />
-                            </th>
                             <th class="px-3 py-2 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">Product</th>
                             <th class="px-3 py-2 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">SKU</th>
                             <th class="px-3 py-2 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">Category</th>
@@ -98,165 +75,201 @@
                             <th class="px-3 py-2 text-center text-xs font-semibold text-slate-700 uppercase tracking-wide">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-200">
-                        <!-- Sample Row 1 -->
-                        <tr class="hover:bg-slate-50 transition opacity-70">
-                            <td class="px-3 py-2">
-                                <input type="checkbox" class="rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 cursor-pointer" />
-                            </td>
-                            <td class="px-3 py-2">
-                                <div>
-                                    <p class="font-medium text-slate-900">Discontinued Motor Oil</p>
-                                    <p class="text-xs text-slate-500">Old Formula - 1L</p>
-                                </div>
-                            </td>
-                            <td class="px-3 py-2 text-slate-600">MOT-OLD-1L</td>
-                            <td class="px-3 py-2">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700">Engine Oil</span>
-                            </td>
-                            <td class="px-3 py-2 text-center">
-                                <div class="flex flex-col items-center">
-                                    <span class="font-semibold text-slate-900">3</span>
-                                    <span class="text-xs text-slate-500">units</span>
-                                </div>
-                            </td>
-                            <td class="px-3 py-2 text-right font-medium text-slate-900">₱150.00</td>
-                            <td class="px-3 py-2 text-right font-medium text-slate-900">₱450</td>
-                            <td class="px-3 py-2 text-slate-600">Jun 10, 2026</td>
-                            <td class="px-3 py-2 text-center">
-                                <div class="flex gap-1 justify-center">
-                                    <button class="p-1 text-cyan-600 hover:bg-cyan-50 rounded transition" title="Restore">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                        </svg>
-                                    </button>
-                                    <button class="p-1 text-red-600 hover:bg-red-50 rounded transition" title="Permanently Delete">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- Sample Row 2 -->
-                        <tr class="hover:bg-slate-50 transition opacity-70">
-                            <td class="px-3 py-2">
-                                <input type="checkbox" class="rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 cursor-pointer" />
-                            </td>
-                            <td class="px-3 py-2">
-                                <div>
-                                    <p class="font-medium text-slate-900">Obsolete Battery Model</p>
-                                    <p class="text-xs text-slate-500">12V - Legacy</p>
-                                </div>
-                            </td>
-                            <td class="px-3 py-2 text-slate-600">BAT-OLD-12</td>
-                            <td class="px-3 py-2">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700">Battery</span>
-                            </td>
-                            <td class="px-3 py-2 text-center">
-                                <div class="flex flex-col items-center">
-                                    <span class="font-semibold text-slate-900">1</span>
-                                    <span class="text-xs text-slate-500">units</span>
-                                </div>
-                            </td>
-                            <td class="px-3 py-2 text-right font-medium text-slate-900">₱1,800.00</td>
-                            <td class="px-3 py-2 text-right font-medium text-slate-900">₱1,800</td>
-                            <td class="px-3 py-2 text-slate-600">Jun 8, 2026</td>
-                            <td class="px-3 py-2 text-center">
-                                <div class="flex gap-1 justify-center">
-                                    <button class="p-1 text-cyan-600 hover:bg-cyan-50 rounded transition" title="Restore">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                        </svg>
-                                    </button>
-                                    <button class="p-1 text-red-600 hover:bg-red-50 rounded transition" title="Permanently Delete">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- Sample Row 3 -->
-                        <tr class="hover:bg-slate-50 transition opacity-70">
-                            <td class="px-3 py-2">
-                                <input type="checkbox" class="rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 cursor-pointer" />
-                            </td>
-                            <td class="px-3 py-2">
-                                <div>
-                                    <p class="font-medium text-slate-900">Superseded Spark Plug</p>
-                                    <p class="text-xs text-slate-500">Standard Grade</p>
-                                </div>
-                            </td>
-                            <td class="px-3 py-2 text-slate-600">SPA-STD-OLD</td>
-                            <td class="px-3 py-2">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700">Spark Plug</span>
-                            </td>
-                            <td class="px-3 py-2 text-center">
-                                <div class="flex flex-col items-center">
-                                    <span class="font-semibold text-slate-900">8</span>
-                                    <span class="text-xs text-slate-500">units</span>
-                                </div>
-                            </td>
-                            <td class="px-3 py-2 text-right font-medium text-slate-900">₱320.00</td>
-                            <td class="px-3 py-2 text-right font-medium text-slate-900">₱2,560</td>
-                            <td class="px-3 py-2 text-slate-600">Jun 9, 2026</td>
-                            <td class="px-3 py-2 text-center">
-                                <div class="flex gap-1 justify-center">
-                                    <button class="p-1 text-cyan-600 hover:bg-cyan-50 rounded transition" title="Restore">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                        </svg>
-                                    </button>
-                                    <button class="p-1 text-red-600 hover:bg-red-50 rounded transition" title="Permanently Delete">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
+                    <tbody id="archivedTableBody" class="divide-y divide-slate-200">
+                        <tr>
+                            <td colspan="8" class="px-3 py-8 text-center text-slate-500">Loading archived items...</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
             <!-- Table Footer - Pagination -->
-            <div class="px-3 py-2 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs">
+            <div id="pagination" class="hidden px-3 py-2 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs">
                 <div class="flex items-center gap-2 text-slate-600">
                     <span>Showing</span>
-                    <select class="px-2 py-1 rounded border border-slate-300 bg-white text-xs">
-                        <option>10</option>
-                        <option>25</option>
-                        <option>50</option>
-                        <option>100</option>
+                    <select id="perPage" class="px-2 py-1 rounded border border-slate-300 bg-white text-xs">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
                     </select>
-                    <span>of 12 items</span>
+                    <span id="showingText">of 0 items</span>
                 </div>
                 <div class="flex gap-1">
-                    <button class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">← Prev</button>
-                    <button class="px-2 py-1 rounded-lg bg-cyan-600 text-xs font-medium text-white hover:bg-cyan-700">1</button>
-                    <button class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">Next →</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bulk Actions Bar (visible when items selected) -->
-        <div class="hidden bg-cyan-50 border border-cyan-200 rounded-lg p-3 shadow-sm">
-            <div class="flex items-center justify-between">
-                <div class="text-sm text-cyan-900">
-                    <span class="font-semibold">2 items selected</span>
-                </div>
-                <div class="flex gap-2">
-                    <button class="px-3 py-1.5 rounded-lg border border-cyan-300 bg-white text-xs font-medium text-cyan-700 hover:bg-cyan-50 transition">
-                        Restore Selected
-                    </button>
-                    <button class="px-3 py-1.5 rounded-lg border border-red-300 bg-white text-xs font-medium text-red-600 hover:bg-red-50 transition">
-                        Delete Permanently
-                    </button>
+                    <button id="prevPage" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">← Prev</button>
+                    <button id="nextPage" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">Next →</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        let currentPage = 1;
+        let perPage = 10;
+        let totalPages = 1;
+
+        async function loadArchivedProducts() {
+            const search = document.getElementById('searchInput').value;
+            const category = document.getElementById('categoryFilter').value;
+            
+            const url = new URL('/api/products/archived', window.location.origin);
+            url.searchParams.set('page', currentPage);
+            url.searchParams.set('per_page', perPage);
+            if (search) url.searchParams.set('search', search);
+            if (category) url.searchParams.set('category', category);
+
+            try {
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                console.log('Archived products response:', result);
+                
+                if (result.success) {
+                    renderTable(result.data);
+                    updatePagination(result.pagination);
+                    updateStats(result.data);
+                } else {
+                    console.error('API returned error:', result.message);
+                    document.getElementById('archivedTableBody').innerHTML = '<tr><td colspan="8" class="px-3 py-8 text-center text-red-500">Error loading archived items: ' + (result.message || 'Unknown error') + '</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading archived products:', error);
+                document.getElementById('archivedTableBody').innerHTML = '<tr><td colspan="8" class="px-3 py-8 text-center text-red-500">Error loading archived items. Please check console for details.</td></tr>';
+            }
+        }
+
+        function renderTable(products) {
+            const tbody = document.getElementById('archivedTableBody');
+            tbody.innerHTML = '';
+
+            if (products.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="px-3 py-8 text-center text-slate-500">No archived items found</td></tr>';
+                return;
+            }
+
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-slate-50 transition opacity-70';
+                const unitPrice = parseFloat(product.unit_price) || 0;
+                const totalValue = (product.stock_quantity || 0) * unitPrice;
+                const archivedDate = product.updated_at ? new Date(product.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+                
+                row.innerHTML = `
+                    <td class="px-3 py-2">
+                        <div>
+                            <p class="font-medium text-slate-900">${product.product_name || product.name || 'Unnamed'}</p>
+                            <p class="text-xs text-slate-500">${product.description || ''}</p>
+                        </div>
+                    </td>
+                    <td class="px-3 py-2 text-slate-600">${product.sku || 'N/A'}</td>
+                    <td class="px-3 py-2">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700">${product.category || 'Uncategorized'}</span>
+                    </td>
+                    <td class="px-3 py-2 text-center">
+                        <div class="flex flex-col items-center">
+                            <span class="font-semibold text-slate-900">${product.stock_quantity || 0}</span>
+                            <span class="text-xs text-slate-500">units</span>
+                        </div>
+                    </td>
+                    <td class="px-3 py-2 text-right font-medium text-slate-900">₱${unitPrice.toFixed(2)}</td>
+                    <td class="px-3 py-2 text-right font-medium text-slate-900">₱${totalValue.toFixed(2)}</td>
+                    <td class="px-3 py-2 text-slate-600">${archivedDate}</td>
+                    <td class="px-3 py-2 text-center">
+                        <div class="flex gap-1 justify-center">
+                            <button onclick="restoreProduct(${product.id})" class="p-1 text-cyan-600 hover:bg-cyan-50 rounded transition" title="Restore">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                            </button>
+                            <button onclick="permanentDeleteProduct(${product.id})" class="p-1 text-red-600 hover:bg-red-50 rounded transition" title="Permanently Delete">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updatePagination(pagination) {
+            totalPages = pagination.last_page;
+            currentPage = pagination.current_page;
+            
+            document.getElementById('showingText').textContent = `of ${pagination.total} items`;
+            document.getElementById('prevPage').disabled = currentPage <= 1;
+            document.getElementById('nextPage').disabled = currentPage >= totalPages;
+            
+            const paginationDiv = document.getElementById('pagination');
+            if (pagination.total > 0) {
+                paginationDiv.classList.remove('hidden');
+            } else {
+                paginationDiv.classList.add('hidden');
+            }
+        }
+
+        function updateStats(products) {
+            const count = products.length;
+            const totalValue = products.reduce((sum, p) => sum + ((p.stock_quantity || 0) * (p.unit_price || 0)), 0);
+            const avgPrice = count > 0 ? totalValue / count : 0;
+            
+            document.getElementById('archivedCount').textContent = count;
+            document.getElementById('archiveValue').textContent = `₱${totalValue.toFixed(2)}`;
+            document.getElementById('avgPrice').textContent = `₱${avgPrice.toFixed(2)}`;
+        }
+
+        async function restoreProduct(id) {
+            if (!confirm('Are you sure you want to restore this product?')) return;
+            
+            try {
+                const response = await fetch(`/api/product/${id}/restore`, { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Product restored successfully');
+                    loadArchivedProducts();
+                } else {
+                    alert('Failed to restore product: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error restoring product:', error);
+                alert('Error restoring product');
+            }
+        }
+
+        async function permanentDeleteProduct(id) {
+            if (!confirm('Are you sure you want to permanently delete this product? This action cannot be undone.')) return;
+            
+            try {
+                const response = await fetch(`/api/product/${id}/permanent`, { method: 'DELETE' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Product permanently deleted');
+                    loadArchivedProducts();
+                } else {
+                    alert('Failed to delete product: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                alert('Error deleting product');
+            }
+        }
+
+        // Event listeners
+        document.getElementById('applyFilter').addEventListener('click', () => { currentPage = 1; loadArchivedProducts(); });
+        document.getElementById('resetFilter').addEventListener('click', () => {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('categoryFilter').value = '';
+            currentPage = 1;
+            loadArchivedProducts();
+        });
+        document.getElementById('prevPage').addEventListener('click', () => { if (currentPage > 1) { currentPage--; loadArchivedProducts(); } });
+        document.getElementById('nextPage').addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; loadArchivedProducts(); } });
+        document.getElementById('perPage').addEventListener('change', (e) => { perPage = parseInt(e.target.value); currentPage = 1; loadArchivedProducts(); });
+
+        // Load on page load
+        loadArchivedProducts();
+    </script>
 </x-layouts.app>

@@ -14,7 +14,7 @@ const posState = {
     transactionHistory: [],
     transactionHistoryPage: 1,
     transactionHistoryPageSize: 8,
-    apiProductsUrl: window.POS?.routes?.apiProducts || '/api/products',
+    apiProductsUrl: window.POS?.routes?.apiProducts || '/api/shop-inventory/products',
     productPage: 1,
     productPageSize: 9,
     productTotalCount: 0,
@@ -52,17 +52,42 @@ function formatDateIso(date) {
 }
 
 function recordTransaction(invoice, date, total, paymentMethod, items) {
+    // Include SKU and other details in transaction history items
+    const itemsWithDetails = items.map(item => {
+        const cartItem = posState.cart.find(c => c.id === item.id);
+        return {
+            id: item.id,
+            name: item.name,
+            sku: cartItem?.sku || '',
+            compatibility: cartItem?.compatibility || '',
+            quantity: item.qty,
+            price: item.price,
+        };
+    });
+
     const transaction = {
         invoice,
         date,
         total,
         paymentMethod,
-        items,
+        items: itemsWithDetails,
         createdAt: new Date().toISOString(),
+        services: {
+            selected: Array.from(posState.selectedServices),
+            total: Array.from(posState.selectedServices).reduce((sum, serviceId) => {
+                const service = posState.services.find(s => s.id === serviceId);
+                return service ? sum + service.price : sum;
+            }, 0)
+        },
+        extraCharge: Number(document.getElementById('posExtraChargeInput')?.value || 0),
+        discount: Number(document.getElementById('posDiscountInput')?.value || 0),
+        tax: 0,
+        amountReceived: posState.amountReceived || total,
+        change: posState.change || 0,
     };
     posState.transactionHistory.unshift(transaction);
     saveTransactionHistory();
-    
+
     // Also save to database
     saveTransactionToDatabase(invoice, total, paymentMethod, items);
 }
@@ -80,13 +105,18 @@ function saveTransactionToDatabase(invoice, total, paymentMethod, items) {
     const tax = Math.max(0, subtotalWithExtras * 0.12);
 
     // Prepare items with additional data
-    const transactionItems = items.map(item => ({
-        id: item.id,
-        name: item.name,
-        quantity: item.qty,
-        unit_price: item.price,
-        category: posState.cart.find(c => c.id === item.id)?.category || 'Uncategorized',
-    }));
+    const transactionItems = items.map(item => {
+        const cartItem = posState.cart.find(c => c.id === item.id);
+        return {
+            id: item.id,
+            name: item.name,
+            sku: cartItem?.sku || '',
+            compatibility: cartItem?.compatibility || '',
+            quantity: item.qty,
+            unit_price: item.price,
+            category: cartItem?.category || 'Uncategorized',
+        };
+    });
 
     const payload = {
         invoice_number: invoice,
@@ -139,14 +169,14 @@ function updateTotals() {
     }, 0);
     const extra = parseFloat(posState.extraCharge) || 0;
     const discount = parseFloat(posState.discount) || 0;
-    
+
     // VAT-Inclusive: Total = Subtotal + Services + Extra - Discount
     // VAT is already included in all prices
     const total = Math.max(0, subtotal + servicesTotal + extra - discount);
-    
+
     // Included VAT = Total × (12 / 112)
     const includedVat = total * (12 / 112);
-    
+
     // VATable Sales = Total - Included VAT
     const vatableSales = total - includedVat;
 
@@ -278,12 +308,22 @@ function renderTransactionHistory() {
     pageTransactions.forEach(transaction => {
         const row = document.createElement('tr');
         row.className = 'border-b border-slate-200';
+        const isChecked = selectedInvoices.has(transaction.invoice);
+        const skus = transaction.items.map(item => item.sku || 'N/A').join(', ');
         row.innerHTML = `
+            <td class="px-3 py-4 text-center">
+                <input type="checkbox" class="transaction-checkbox rounded border-slate-300 text-red-600 focus:ring-red-500 cursor-pointer" data-invoice="${transaction.invoice}" ${isChecked ? 'checked' : ''}>
+            </td>
             <td class="px-3 py-4 text-slate-700 font-medium">${transaction.invoice}</td>
+            <td class="px-3 py-4 text-slate-700 text-xs">${skus}</td>
             <td class="px-3 py-4 text-slate-700">${formatDateForHistory(transaction.createdAt)}</td>
             <td class="px-3 py-4 text-slate-700">${transaction.paymentMethod === 'cash' ? 'Cash' : 'QR PH'}</td>
             <td class="px-3 py-4 text-center text-slate-700">${transaction.items.length}</td>
             <td class="px-3 py-4 text-right text-slate-900 font-semibold">${formatCurrency(transaction.total)}</td>
+            <td class="px-3 py-4 text-center">
+                <button onclick="viewTransactionInvoice('${transaction.invoice}')" class="text-emerald-600 hover:text-emerald-700 font-medium text-xs mr-2">View</button>
+                <button onclick="deleteTransaction('${transaction.invoice}')" class="text-red-600 hover:text-red-700 font-medium text-xs">Delete</button>
+            </td>
         `;
         body.appendChild(row);
     });
@@ -306,6 +346,122 @@ function closeTransactionHistory() {
     const modal = document.getElementById('posTransactionHistoryModal');
     if (!modal) return;
     modal.classList.add('hidden');
+}
+
+function viewTransactionInvoice(invoiceNumber) {
+    const transaction = posState.transactionHistory.find(t => t.invoice === invoiceNumber);
+    if (!transaction) {
+        alert('Transaction not found');
+        return;
+    }
+
+    const invoiceModal = document.getElementById('posInvoiceModal');
+    if (!invoiceModal) return;
+
+    // Populate invoice details
+    document.getElementById('posInvoiceNumber').textContent = transaction.invoice;
+    document.getElementById('posInvoiceNumHeader').textContent = transaction.invoice;
+    document.getElementById('posInvoiceDateHeader').textContent = formatDateForHistory(transaction.createdAt);
+    document.getElementById('posInvoicePaymentMethod').textContent = transaction.paymentMethod === 'cash' ? 'Cash' : 'QR PH';
+    document.getElementById('posInvoiceTotalAmount').textContent = formatCurrency(transaction.total);
+    document.getElementById('posInvoiceAmountReceived').textContent = formatCurrency(transaction.amountReceived || transaction.total);
+    document.getElementById('posInvoiceChange').textContent = formatCurrency(transaction.change || 0);
+
+    // Calculate and populate summary
+    const subtotal = transaction.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const services = transaction.services?.total || 0;
+    const extra = transaction.extraCharge || 0;
+    const discount = transaction.discount || 0;
+    const tax = transaction.tax || 0;
+
+    document.getElementById('posInvoiceSubtotal').textContent = formatCurrency(subtotal);
+    document.getElementById('posInvoiceServices').textContent = formatCurrency(services);
+    document.getElementById('posInvoiceExtra').textContent = formatCurrency(extra);
+    document.getElementById('posInvoiceDiscount').textContent = formatCurrency(discount);
+    document.getElementById('posInvoiceTax').textContent = formatCurrency(tax);
+
+    // Populate items table
+    const itemsBody = document.getElementById('posInvoiceItemsTable');
+    itemsBody.innerHTML = '';
+
+    transaction.items.forEach(item => {
+        const row = document.createElement('tr');
+        row.className = 'border-b border-slate-200';
+        row.innerHTML = `
+            <td class="py-1 text-slate-900 font-medium">${item.name}</td>
+            <td class="py-1 text-slate-700">${item.sku || 'N/A'}</td>
+            <td class="py-1 text-center text-slate-700">${item.quantity}</td>
+            <td class="py-1 text-right text-slate-900">${formatCurrency(item.price)}</td>
+            <td class="py-1 text-right text-slate-900 font-semibold">${formatCurrency(item.price * item.quantity)}</td>
+        `;
+        itemsBody.appendChild(row);
+    });
+
+    invoiceModal.classList.remove('hidden');
+}
+
+function closeInvoiceModal() {
+    const modal = document.getElementById('posInvoiceModal');
+    if (!modal) return;
+    modal.classList.add('hidden');
+}
+
+function deleteTransaction(invoiceNumber) {
+    if (!confirm(`Are you sure you want to delete transaction ${invoiceNumber}? This action cannot be undone.`)) {
+        return;
+    }
+
+    posState.transactionHistory = posState.transactionHistory.filter(t => t.invoice !== invoiceNumber);
+    saveTransactionHistory();
+    renderTransactionHistory();
+}
+
+// Store selected invoices
+let selectedInvoices = new Set();
+
+// Bulk delete transactions
+function bulkDeleteTransactions() {
+    const checkboxes = document.querySelectorAll('.transaction-checkbox:checked');
+    const selectedInvoicesList = Array.from(checkboxes).map(cb => cb.dataset.invoice);
+
+    console.log('Selected invoices:', selectedInvoicesList);
+    console.log('Total transactions before delete:', posState.transactionHistory.length);
+
+    if (selectedInvoicesList.length === 0) {
+        alert('Please select at least one transaction to delete');
+        return;
+    }
+
+    if (!confirm(`YOU WANT TO DELETE THIS PERMANENTLY?\n\nYou are about to delete ${selectedInvoicesList.length} transaction(s):\n${selectedInvoicesList.join(', ')}\n\nThis action cannot be undone.`)) {
+        return;
+    }
+
+    posState.transactionHistory = posState.transactionHistory.filter(t => !selectedInvoicesList.includes(t.invoice));
+
+    console.log('Total transactions after delete:', posState.transactionHistory.length);
+
+    saveTransactionHistory();
+    renderTransactionHistory();
+
+    // Clear selections
+    selectedInvoices.clear();
+    document.querySelectorAll('.transaction-checkbox').forEach(cb => cb.checked = false);
+    document.getElementById('posSelectAllTransactions').checked = false;
+    updateBulkActions();
+}
+
+// Update bulk actions visibility
+function updateBulkActions() {
+    const checkboxes = document.querySelectorAll('.transaction-checkbox:checked');
+    const bulkActions = document.getElementById('posTransactionHistoryBulkActions');
+    const selectedCount = document.getElementById('posSelectedCount');
+
+    if (checkboxes.length > 0) {
+        bulkActions.classList.remove('hidden');
+        selectedCount.textContent = checkboxes.length;
+    } else {
+        bulkActions.classList.add('hidden');
+    }
 }
 
 function clearHistoryFilters() {
@@ -478,12 +634,12 @@ async function searchProducts(query = '', page = 1) {
             const productName = product.product_name || product.name || 'Unnamed Product';
             const brand = product.brand ? `${product.brand}` : '';
             const compatibility = product.name && product.name !== productName ? product.name : '';
-            
+
             // Calculate VAT breakdown
             const sellingPrice = Number(product.unit_price || 0);
             const includedVat = sellingPrice * (12 / 112);
             const vatableSales = sellingPrice - includedVat;
-            
+
             card.innerHTML = `
                 <div class="mb-1">
                     <div class="pos-image-preview h-24 w-full overflow-hidden rounded-[10px] bg-slate-200 bg-cover bg-center" style="background-image: url('${product.image || ''}')"></div>
@@ -492,6 +648,7 @@ async function searchProducts(query = '', page = 1) {
                         <div class="flex-1 pr-2">
                             <h3 class="text-sm font-semibold text-slate-900 line-clamp-2 mb-0">${productName}</h3>
                             ${brand ? `<p class="text-[10px] text-slate-600">${brand}</p>` : ''}
+                            ${product.sku ? `<p class="text-[9px] text-slate-500">SKU: ${product.sku}</p>` : ''}
                             ${compatibility ? `<p class="text-[9px] text-slate-500 line-clamp-1">${compatibility}</p>` : ''}
                         </div>
                         <div class="ml-2 flex-shrink-0">
@@ -512,12 +669,17 @@ async function searchProducts(query = '', page = 1) {
                             <div class="flex items-center gap-2">
                                 <span class="text-sm font-semibold text-slate-900">${formatCurrency(sellingPrice)}</span>
                                 <button type="button" class="pos-price-breakdown-toggle group relative inline-flex items-center gap-1 text-[10px] text-slate-500 hover:text-slate-1000 transition" data-product-id="${product.id}" data-vatable="${vatableSales}" data-included-vat="${includedVat}" title="Price Breakdown">
-                                 
                                     <svg class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                     </svg>
                                 </button>
                             </div>
+                            <button type="button" onclick="posArchiveProduct(${product.id})" class="text-red-600 hover:text-red-700 text-[10px] font-medium flex items-center gap-1" title="Archive Product">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                                </svg>
+                                Archive
+                            </button>
                         </div>
                         <div class="pos-price-breakdown hidden mt-2 p-2 bg-slate-100 rounded-lg text-[10px] space-y-1 overflow-hidden transition-all duration-200" data-product-id="${product.id}">
                             <div class="flex justify-between">
@@ -620,9 +782,15 @@ async function scanProduct() {
         const json = await response.json();
 
         if (json.data && json.data.length > 0) {
-            addProductToCart(json.data[0]);
+            const product = json.data[0];
+            addProductToCart({
+                id: product.id,
+                name: product.name || product.product_name,
+                sku: product.sku || '',
+                unit_price: product.unit_price
+            });
             scanInput.value = '';
-            if (scanFeedback) scanFeedback.textContent = `Added ${json.data[0].name} to cart.`;
+            if (scanFeedback) scanFeedback.textContent = `Added ${product.name} to cart.`;
         } else if (scanFeedback) {
             scanFeedback.textContent = 'Product not found. Please try another barcode or SKU.';
         }
@@ -656,7 +824,7 @@ function togglePriceBreakdown(productId) {
     const breakdown = document.querySelector(`.pos-price-breakdown[data-product-id="${productId}"]`);
     const toggle = document.querySelector(`.pos-price-breakdown-toggle[data-product-id="${productId}"]`);
     const chevron = toggle?.querySelector('svg');
-    
+
     if (breakdown) {
         breakdown.classList.toggle('hidden');
         if (chevron) {
@@ -696,6 +864,7 @@ function openPaymentModal() {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td class="px-3 py-2 text-slate-700">${item.name}</td>
+            <td class="px-3 py-2 text-slate-700">${item.sku || 'N/A'}</td>
             <td class="px-3 py-2 text-slate-700">${item.quantity}</td>
             <td class="px-3 py-2 text-right text-slate-700">${formatCurrency(item.unit_price * item.quantity)}</td>
         `;
@@ -710,11 +879,11 @@ function openPaymentModal() {
     const extra = parseFloat(posState.extraCharge) || 0;
     const discount = parseFloat(posState.discount) || 0;
     const subtotal = posState.cart.reduce((sum, item) => sum + item.unit_price * item.quantity, 0);
-    
+
     // VAT-Inclusive: Total = Subtotal + Services + Extra - Discount
     // VAT is already included in all prices
     const total = Math.max(0, subtotal + servicesTotal + extra - discount);
-    
+
     // Included VAT = Total × (12 / 112)
     const includedVat = total * (12 / 112);
 
@@ -770,7 +939,7 @@ function populateReceipt() {
     const receiptData = posState.lastReceipt || {
         invoiceNumber: document.getElementById('posPaymentInvoice')?.textContent || 'INV-000000',
         date: new Date().toISOString(),
-        items: posState.cart.map(item => ({ id: item.id, name: item.name, qty: item.quantity, price: item.unit_price })),
+        items: posState.cart.map(item => ({ id: item.id, name: item.name, sku: item.sku || '', qty: item.quantity, price: item.unit_price })),
         subtotal: posState.cart.reduce((sum, item) => sum + item.unit_price * item.quantity, 0),
         servicesTotal: Array.from(posState.selectedServices).reduce((sum, serviceId) => {
             const service = posState.services.find(s => s.id === serviceId);
@@ -788,10 +957,10 @@ function populateReceipt() {
         // VAT-Inclusive: Total = Subtotal + Services + Extra - Discount
         const subtotalWithExtras = receiptData.subtotal + receiptData.servicesTotal + receiptData.extra - receiptData.discount;
         receiptData.total = Math.max(0, subtotalWithExtras);
-        
+
         // Included VAT = Total × (12 / 112)
         receiptData.tax = receiptData.total * (12 / 112);
-        
+
         receiptData.amountReceived = receiptData.total;
     }
 
@@ -826,6 +995,7 @@ function populateReceipt() {
             row.className = 'border-b border-slate-200';
             row.innerHTML = `
                 <td class="text-slate-700 py-1 text-xs">${item.name}</td>
+                <td class="text-slate-700 py-1 text-xs">${item.sku || 'N/A'}</td>
                 <td class="text-center text-slate-700 py-1 text-xs">${item.qty}</td>
                 <td class="text-right text-slate-700 py-1 text-xs">${formatCurrency(item.price)}</td>
                 <td class="text-right text-slate-700 py-1 text-xs">${formatCurrency(item.price * item.qty)}</td>
@@ -838,10 +1008,11 @@ function populateReceipt() {
     if (invoiceDiscount) invoiceDiscount.textContent = formatCurrency(receiptData.discount);
     if (invoiceTax) invoiceTax.textContent = formatCurrency(receiptData.tax);
     if (invoiceTotalAmount) invoiceTotalAmount.textContent = formatCurrency(receiptData.total);
-    if (invoiceAmountReceived) invoiceAmountReceived.textContent = formatCurrency(receiptData.total);
-    if (invoiceChange) invoiceChange.textContent = formatCurrency(0);
+    if (invoiceAmountReceived) invoiceAmountReceived.textContent = formatCurrency(receiptData.amountReceived ?? receiptData.total);
+    if (invoiceChange) invoiceChange.textContent = formatCurrency(Math.max(0, (receiptData.amountReceived ?? receiptData.total) - receiptData.total));
     if (invoicePaymentMethod) invoicePaymentMethod.textContent = receiptData.paymentMethod === 'qr' ? 'QR PH' : 'Cash';
 }
+
 
 /* =========================================================================
    PRINT RECEIPT
@@ -1032,15 +1203,193 @@ function printReceipt() {
         </html>
     `;
 
+    openPrintWindow(receiptHTML);
+}
+
+function buildInvoiceHTML(receiptData, cashierName) {
+    const invoiceNum   = receiptData.invoiceNumber || 'INV-000000';
+    const dateStr      = new Date(receiptData.date).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const subtotal     = receiptData.subtotal    || 0;
+    const discount     = receiptData.discount    || 0;
+    const tax          = receiptData.tax         || 0;
+    const total        = receiptData.total       || 0;
+    const amtReceived  = receiptData.amountReceived != null ? receiptData.amountReceived : total;
+    const change       = Math.max(0, amtReceived - total);
+    const vatableSales = total - tax;
+    const payMethod    = receiptData.paymentMethod === 'qr' ? 'QR PH / GCash' : (receiptData.paymentMethod || 'Cash');
+
+    const rowsHTML = (receiptData.items || []).map(item => {
+        const skuDisplay = item.sku ? item.sku : '—';
+        const lineTotal  = item.price * item.qty;
+        return `
+            <tr>
+                <td class="item-name">${item.name}</td>
+                <td class="item-sku">${skuDisplay}</td>
+                <td class="text-center">${item.qty}</td>
+                <td class="text-right">${formatCurrency(item.price)}</td>
+                <td class="text-right">${formatCurrency(lineTotal)}</td>
+            </tr>`;
+    }).join('');
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Invoice ${invoiceNum}</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  @page { size: A4 portrait; margin: 18mm 16mm; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; color: #1a1a1a; background: #fff; }
+
+  /* ── Header ── */
+  .inv-header { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 14px; border-bottom: 2.5px solid #1a1a1a; margin-bottom: 20px; }
+  .brand-block { display: flex; gap: 14px; align-items: flex-start; }
+  .brand-logo { width: 52px; height: 52px; border-radius: 8px; background: #d1fae5; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #065f46; letter-spacing: 0.04em; flex-shrink: 0; }
+  .brand-name { font-size: 14px; font-weight: 800; text-transform: uppercase; line-height: 1.25; color: #0f172a; margin-bottom: 5px; }
+  .brand-address { font-size: 10px; color: #475569; line-height: 1.6; }
+  .inv-meta { text-align: right; }
+  .inv-meta .inv-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; }
+  .inv-meta .inv-value { font-size: 12px; font-weight: 700; color: #0f172a; }
+  .inv-meta .inv-badge { display: inline-block; background: #0f172a; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 4px; letter-spacing: 0.04em; margin-bottom: 8px; }
+
+  /* ── Official Receipt label ── */
+  .doc-title { text-align: center; margin-bottom: 18px; }
+  .doc-title h1 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #0f172a; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; display: inline-block; padding: 4px 24px; }
+
+  /* ── Items table ── */
+  .items-table { width: 100%; border-collapse: collapse; margin-bottom: 22px; }
+  .items-table thead tr { background: #0f172a; color: #fff; }
+  .items-table thead th { padding: 8px 10px; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+  .items-table tbody tr { border-bottom: 1px solid #e2e8f0; }
+  .items-table tbody tr:nth-child(even) { background: #f8fafc; }
+  .items-table tbody td { padding: 9px 10px; font-size: 11px; vertical-align: top; }
+  .item-name { font-weight: 600; color: #0f172a; }
+  .item-sku  { font-family: 'Courier New', monospace; font-size: 10px; color: #64748b; }
+  .items-table .text-right  { text-align: right; }
+  .items-table .text-center { text-align: center; }
+
+  /* ── Summary ── */
+  .summary-wrap { display: flex; justify-content: flex-end; margin-bottom: 28px; }
+  .summary-box { width: 300px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; }
+  .summary-box .s-row { display: flex; justify-content: space-between; padding: 6px 14px; font-size: 11px; border-bottom: 1px solid #f1f5f9; }
+  .summary-box .s-row:last-child { border-bottom: none; }
+  .summary-box .s-label { color: #475569; }
+  .summary-box .s-value { font-weight: 600; color: #0f172a; }
+  .summary-box .s-total { background: #0f172a; color: #fff; }
+  .summary-box .s-total .s-label { color: #94a3b8; font-weight: 700; font-size: 12px; }
+  .summary-box .s-total .s-value { color: #34d399; font-weight: 800; font-size: 13px; }
+
+  /* ── Payment info ── */
+  .payment-section { display: flex; gap: 16px; margin-bottom: 28px; }
+  .pay-box { flex: 1; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 14px; }
+  .pay-box .pay-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.07em; color: #94a3b8; margin-bottom: 3px; }
+  .pay-box .pay-value { font-size: 13px; font-weight: 700; color: #0f172a; }
+  .pay-box .pay-value.change { color: #059669; }
+
+  /* ── Footer ── */
+  .inv-footer { text-align: center; margin-top: 20px; padding-top: 14px; border-top: 1px dashed #cbd5e1; }
+  .inv-footer p { font-size: 10px; color: #64748b; line-height: 1.7; }
+  .inv-footer .thank-you { font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="inv-header">
+    <div class="brand-block">
+      <div class="brand-logo">KCC</div>
+      <div>
+        <div class="brand-name">KCC Motorcycle Parts<br>&amp; Accessories</div>
+        <div class="brand-address">
+          129 Motorcycle St., Barangay 123, City, Philippines<br>
+          Tel: (02) 1234-56578
+        </div>
+      </div>
+    </div>
+    <div class="inv-meta">
+      <div class="inv-badge">OFFICIAL RECEIPT</div><br>
+      <span class="inv-label">Invoice #</span><br>
+      <span class="inv-value">${invoiceNum}</span><br><br>
+      <span class="inv-label">Date</span><br>
+      <span class="inv-value" style="font-size:11px;">${dateStr}</span><br><br>
+      <span class="inv-label">Cashier</span><br>
+      <span class="inv-value" style="font-size:11px;">${cashierName}</span>
+    </div>
+  </div>
+
+  <!-- Items Table -->
+  <table class="items-table">
+    <thead>
+      <tr>
+        <th style="text-align:left; width:38%">Item / Description</th>
+        <th style="text-align:left; width:22%">SKU</th>
+        <th style="text-align:center; width:8%">Qty</th>
+        <th style="text-align:right; width:16%">Unit Price</th>
+        <th style="text-align:right; width:16%">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rowsHTML || '<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:16px;">No items</td></tr>'}
+    </tbody>
+  </table>
+
+  <!-- Summary -->
+  <div class="summary-wrap">
+    <div class="summary-box">
+      <div class="s-row"><span class="s-label">Subtotal</span><span class="s-value">${formatCurrency(subtotal)}</span></div>
+      <div class="s-row"><span class="s-label">Discount</span><span class="s-value">−${formatCurrency(discount)}</span></div>
+      <div class="s-row"><span class="s-label">VATable Sales</span><span class="s-value">${formatCurrency(vatableSales)}</span></div>
+      <div class="s-row"><span class="s-label">Included VAT (12%)</span><span class="s-value">${formatCurrency(tax)}</span></div>
+      <div class="s-row s-total"><span class="s-label">TOTAL</span><span class="s-value">${formatCurrency(total)}</span></div>
+    </div>
+  </div>
+
+  <!-- Payment -->
+  <div class="payment-section">
+    <div class="pay-box">
+      <div class="pay-label">Payment Method</div>
+      <div class="pay-value">${payMethod}</div>
+    </div>
+    <div class="pay-box">
+      <div class="pay-label">Amount Received</div>
+      <div class="pay-value">${formatCurrency(amtReceived)}</div>
+    </div>
+    <div class="pay-box">
+      <div class="pay-label">Change</div>
+      <div class="pay-value change">${formatCurrency(change)}</div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="inv-footer">
+    <div class="thank-you">Thank you for your purchase!</div>
+    <p>This serves as your official receipt. Please keep this for your records.</p>
+    <p>For concerns, please contact us at Tel: (02) 1234-56578</p>
+  </div>
+
+</body>
+</html>`;
+}
+
+function printInvoice() {
+    const receiptData = posState.lastReceipt;
+    if (!receiptData) return;
+    const cashierName = document.getElementById('receiptCashierName')?.textContent
+        || window.POS?.cashier || 'Cashier';
+    openPrintWindow(buildInvoiceHTML(receiptData, cashierName));
+}
+
+function openPrintWindow(html) {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
-
-    printWindow.document.write(receiptHTML);
+    printWindow.document.write(html);
     printWindow.document.close();
     printWindow.focus();
-    setTimeout(() => {
-        printWindow.print();
-    }, 250);
+    setTimeout(() => { printWindow.print(); }, 350);
 }
 
 function confirmPayment() {
@@ -1056,15 +1405,15 @@ function confirmPayment() {
     }, 0);
     const extra = Number(posState.extraCharge || 0);
     const discount = Number(posState.discount || 0);
-    
+
     // VAT-Inclusive: Total = Subtotal + Services + Extra - Discount
     // VAT is already included in all prices
     const transactionTotal = Math.max(0, subtotal + servicesTotal + extra - discount);
-    
+
     // Included VAT = Total × (12 / 112)
     const tax = transactionTotal * (12 / 112);
-    
-    const items = posState.cart.map(item => ({ id: item.id, name: item.name, qty: item.quantity, price: item.unit_price }));
+
+    const items = posState.cart.map(item => ({ id: item.id, name: item.name, sku: item.sku || '', qty: item.quantity, price: item.unit_price }));
 
     posState.lastReceipt = {
         invoiceNumber,
@@ -1257,6 +1606,74 @@ function setupPosEvents() {
     document.getElementById('posHistoryFilterClearButton')?.addEventListener('click', () => { posState.transactionHistoryPage = 1; clearHistoryFilters(); });
     document.getElementById('posHistoryPrevPage')?.addEventListener('click', () => goToTransactionHistoryPage(posState.transactionHistoryPage - 1));
     document.getElementById('posHistoryNextPage')?.addEventListener('click', () => goToTransactionHistoryPage(posState.transactionHistoryPage + 1));
+    document.getElementById('posCloseInvoiceModalButton')?.addEventListener('click', closeInvoiceModal);
+    document.getElementById('posCloseInvoiceDoneButton')?.addEventListener('click', closeInvoiceModal);
+    document.getElementById('posPrintInvoiceButton')?.addEventListener('click', () => {
+        const invoiceNum = document.getElementById('posInvoiceNumber')?.textContent || 'INV-000000';
+        const tx = posState.transactionHistory.find(t => t.invoice === invoiceNum);
+        const cashierName = document.getElementById('posInvoiceCashierName')?.textContent
+            || window.POS?.cashier || 'Cashier';
+        if (tx) {
+            const subtotal = tx.total;
+            const tax = subtotal * (12 / 112);
+            const receiptData = {
+                invoiceNumber: tx.invoice,
+                date: tx.createdAt,
+                items: (tx.items || []).map(i => ({ name: i.name, sku: i.sku || '', qty: i.qty, price: i.price })),
+                subtotal,
+                discount: 0,
+                tax,
+                total: subtotal,
+                amountReceived: subtotal,
+                paymentMethod: tx.paymentMethod,
+            };
+            openPrintWindow(buildInvoiceHTML(receiptData, cashierName));
+        } else if (posState.lastReceipt) {
+            openPrintWindow(buildInvoiceHTML(posState.lastReceipt, cashierName));
+        }
+    });
+
+    // Transaction history checkboxes
+    document.getElementById('posSelectAllTransactions')?.addEventListener('change', (event) => {
+        const checkboxes = document.querySelectorAll('.transaction-checkbox');
+        checkboxes.forEach(cb => {
+            cb.checked = event.target.checked;
+            const invoice = cb.dataset.invoice;
+            if (event.target.checked) {
+                selectedInvoices.add(invoice);
+            } else {
+                selectedInvoices.delete(invoice);
+            }
+        });
+        updateBulkActions();
+    });
+
+    document.getElementById('posTransactionHistoryBody')?.addEventListener('change', (event) => {
+        if (event.target.classList.contains('transaction-checkbox')) {
+            const invoice = event.target.dataset.invoice;
+            if (event.target.checked) {
+                selectedInvoices.add(invoice);
+            } else {
+                selectedInvoices.delete(invoice);
+            }
+            updateBulkActions();
+        }
+    });
+
+    // Also add event delegation for dynamically added checkboxes
+    document.addEventListener('change', (event) => {
+        if (event.target.classList.contains('transaction-checkbox')) {
+            const invoice = event.target.dataset.invoice;
+            if (event.target.checked) {
+                selectedInvoices.add(invoice);
+            } else {
+                selectedInvoices.delete(invoice);
+            }
+            updateBulkActions();
+        }
+    });
+
+    document.getElementById('posBulkDeleteTransactions')?.addEventListener('click', bulkDeleteTransactions);
 
     document.getElementById('posQRPaymentCompleteButton')?.addEventListener('click', completeQRPayment);
     document.getElementById('posCloseQRPaymentButton')?.addEventListener('click', closeQRPaymentModal);
@@ -1268,7 +1685,8 @@ function setupPosEvents() {
 
     // Mobile Scanner
     document.getElementById('posOpenScannerButton')?.addEventListener('click', openMobileScanner);
-    
+    document.getElementById('posCloseMobileScannerButton')?.addEventListener('click', closeMobileScanner);
+
     // Desktop QR Scanner
     document.getElementById('posOpenDesktopScannerButton')?.addEventListener('click', openDesktopScanner);
     document.getElementById('posCloseDesktopScannerButton')?.addEventListener('click', closeDesktopScanner);
@@ -1398,12 +1816,46 @@ function initializePos() {
     searchProducts('');
     applyProductImagePreviews();
     updateInvestmentLabels();
-    
+
     // Start polling for mobile scans
     startScanPolling();
-    
+
     // Listen for localStorage changes (same-browser sync)
     window.addEventListener('storage', handleStorageChange);
+}
+
+// Expose functions globally for onclick handlers
+window.viewTransactionInvoice = viewTransactionInvoice;
+window.closeInvoiceModal = closeInvoiceModal;
+window.deleteTransaction = deleteTransaction;
+window.posArchiveProduct = posArchiveProduct;
+window.bulkDeleteTransactions = bulkDeleteTransactions;
+
+async function posArchiveProduct(productId) {
+    if (!confirm('Are you sure you want to archive this product? It will be hidden from both POS and All Stocks inventory.')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/product/${productId}/archive`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content
+            }
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Product archived successfully');
+            searchProducts(''); // Refresh product grid
+        } else {
+            alert('Failed to archive product: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error archiving product:', error);
+        alert('Error archiving product');
+    }
 }
 
 function updateInvestmentLabels() {
@@ -1417,8 +1869,127 @@ let scanPollingInterval = null;
 let lastScanTimestamp = 0;
 
 function openMobileScanner() {
-    const scannerUrl = window.POS?.routes?.mobileScanner || '/pos/mobile-scanner';
-    window.open(scannerUrl, '_blank');
+    const modal = document.getElementById('posMobileScannerModal');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    initMobileScanner();
+}
+
+function closeMobileScanner() {
+    const modal = document.getElementById('posMobileScannerModal');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    stopMobileScanner();
+}
+
+let mobileHtml5QrcodeScanner = null;
+let mobileScannedItems = [];
+
+function initMobileScanner() {
+    if (mobileHtml5QrcodeScanner) {
+        mobileHtml5QrcodeScanner.stop().catch(err => console.error(err));
+    }
+
+    mobileHtml5QrcodeScanner = new Html5Qrcode("posMobileScannerReader");
+
+    const config = {
+        fps: 10,
+        qrbox: { width: 250, height: 250 },
+        aspectRatio: 1.0
+    };
+
+    mobileHtml5QrcodeScanner.start(
+        { facingMode: "environment" },
+        config,
+        onMobileScanSuccess,
+        onMobileScanFailure
+    ).catch(err => {
+        console.error("Mobile scanner error:", err);
+        const status = document.getElementById('posMobileScannerStatus');
+        if (status) {
+            status.textContent = 'Camera access denied or not available';
+            status.classList.add('text-red-400');
+        }
+    });
+}
+
+function stopMobileScanner() {
+    if (mobileHtml5QrcodeScanner) {
+        mobileHtml5QrcodeScanner.stop().catch(err => console.error(err));
+        mobileHtml5QrcodeScanner = null;
+    }
+}
+
+function onMobileScanSuccess(decodedText, decodedResult) {
+    playMobileBeep();
+
+    const status = document.getElementById('posMobileScannerStatus');
+    if (status) {
+        status.textContent = 'Scanned: ' + decodedText;
+        status.classList.add('text-green-400');
+    }
+
+    setTimeout(() => {
+        if (status) {
+            status.classList.remove('text-green-400');
+            status.textContent = 'Position QR code within the frame';
+        }
+    }, 2000);
+
+    addToMobileRecentScans(decodedText);
+    sendMobileScanToTerminal(decodedText);
+}
+
+function onMobileScanFailure(error) {
+    // Ignore scan failures
+}
+
+function playMobileBeep() {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    oscillator.frequency.value = 800;
+    oscillator.type = 'sine';
+    gainNode.gain.value = 0.1;
+
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.1);
+}
+
+function addToMobileRecentScans(code) {
+    const timestamp = new Date().toLocaleTimeString();
+    mobileScannedItems.unshift({ code, timestamp });
+
+    if (mobileScannedItems.length > 10) {
+        mobileScannedItems.pop();
+    }
+
+    const container = document.getElementById('posMobileScannerRecent');
+    if (!container) return;
+    container.innerHTML = mobileScannedItems.map(item => `
+        <div class="flex items-center justify-between bg-slate-700 rounded-lg px-3 py-2">
+            <div>
+                <div class="text-xs font-medium text-white">${item.code}</div>
+                <div class="text-[10px] text-slate-400">${item.timestamp}</div>
+            </div>
+            <span class="text-green-400 text-xs">✓</span>
+        </div>
+    `).join('');
+}
+
+function sendMobileScanToTerminal(code) {
+    // Add product to cart
+    const scanInput = document.getElementById('posScanInput');
+    if (scanInput) {
+        scanInput.value = code;
+        scanProduct();
+    }
 }
 
 let desktopScanner = null;
@@ -1427,14 +1998,14 @@ function openDesktopScanner() {
     const modal = document.getElementById('posDesktopScannerModal');
     modal.style.display = 'flex';
     modal.classList.remove('hidden');
-    
+
     // Initialize scanner
     if (!desktopScanner) {
         desktopScanner = new Html5Qrcode("posDesktopScannerReader");
     }
-    
-    const config = { 
-        fps: 10, 
+
+    const config = {
+        fps: 10,
         qrbox: { width: 250, height: 250 },
         aspectRatio: 1.0
     };
@@ -1454,11 +2025,11 @@ function openDesktopScanner() {
 function closeDesktopScanner() {
     const modal = document.getElementById('posDesktopScannerModal');
     modal.style.display = 'none';
-    
+
     if (desktopScanner) {
         desktopScanner.stop().catch(err => console.error(err));
     }
-    
+
     document.getElementById('posDesktopScannerStatus').textContent = 'Position QR code within the frame';
     document.getElementById('posDesktopScannerStatus').classList.remove('text-red-400');
 }
@@ -1466,16 +2037,16 @@ function closeDesktopScanner() {
 function onDesktopScanSuccess(decodedText, decodedResult) {
     // Play notification sound
     playScanNotification();
-    
+
     // Update status
     document.getElementById('posDesktopScannerStatus').textContent = 'Scanned: ' + decodedText;
     document.getElementById('posDesktopScannerStatus').classList.add('text-green-400');
-    
+
     setTimeout(() => {
         document.getElementById('posDesktopScannerStatus').classList.remove('text-green-400');
         document.getElementById('posDesktopScannerStatus').textContent = 'Position QR code within the frame';
     }, 2000);
-    
+
     // Handle the scanned code
     handleScannedCode(decodedText);
 }
@@ -1490,7 +2061,7 @@ function startScanPolling() {
         try {
             const response = await fetch('/api/pos/check-scan');
             const data = await response.json();
-            
+
             if (data.success && data.scan) {
                 const scanTimestamp = new Date(data.scan.timestamp).getTime();
                 if (scanTimestamp > lastScanTimestamp) {
@@ -1520,9 +2091,9 @@ function handleStorageChange(event) {
 async function handleScannedCode(code) {
     // Play notification sound
     playScanNotification();
-    
+
     console.log('Scanned code:', code);
-    
+
     // Try to parse code as JSON (for QR codes with product data)
     let searchCode = code;
     try {
@@ -1539,12 +2110,12 @@ async function handleScannedCode(code) {
         console.log('Not JSON, using original code');
         // Not JSON, use original code
     }
-    
+
     // Try to find product by SKU or QR code
     try {
         const response = await fetch(posState.apiProductsUrl);
         const result = await response.json();
-        
+
         // Handle different response structures
         let products = [];
         if (Array.isArray(result)) {
@@ -1554,19 +2125,19 @@ async function handleScannedCode(code) {
         } else if (result.products && Array.isArray(result.products)) {
             products = result.products;
         }
-        
+
         console.log('API response:', result);
         console.log('Loaded products:', products.length);
         console.log('Searching for:', searchCode);
-        
-        const product = products.find(p => 
-            p.sku === searchCode || 
+
+        const product = products.find(p =>
+            p.sku === searchCode ||
             p.qr_code === searchCode ||
             p.id.toString() === searchCode
         );
-        
+
         console.log('Found product:', product);
-        
+
         if (product) {
             addProductToCart(product);
             showNotification(`Added: ${product.name}`);
@@ -1583,14 +2154,14 @@ function playScanNotification() {
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
-    
+
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
-    
+
     oscillator.frequency.value = 600;
     oscillator.type = 'sine';
     gainNode.gain.value = 0.15;
-    
+
     oscillator.start();
     oscillator.stop(audioContext.currentTime + 0.15);
 }
@@ -1602,7 +2173,7 @@ function showNotification(message, type = 'success') {
     }`;
     notification.textContent = message;
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
         notification.remove();
     }, 3000);

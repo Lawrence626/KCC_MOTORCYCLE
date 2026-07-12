@@ -7,11 +7,10 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\POSTransactionController;
+use App\Http\Controllers\ShopInventoryController;
 
 Route::view('/', 'login')->name('home');
 Route::view('/login', 'login')->name('login');
-
-
 
 Route::view('/forgot-password', 'forgot-password')->name('forgot-password');
 
@@ -20,12 +19,9 @@ Route::post('/forgot-password/send', [App\Http\Controllers\Auth\ForgotPasswordCo
 Route::post('/forgot-password/verify', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'verifyCode'])->name('password.verify-code');
 Route::post('/forgot-password/reset', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'resetPassword'])->name('password.reset.code');
 
-Route::view('/forgot-password', 'auth.forgot-password')->name('password.request');
-
 Route::get('/reset-password/{token}', function ($token) {
     return view('auth.reset-password', ['token' => $token]);
 })->name('password.reset');
-
 
 // Login routes
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login.store');
@@ -60,6 +56,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::view('pos/mobile-scanner', 'point_of_sales.mobile-scanner')->name('pos.mobile-scanner');
         Route::post('pos/scan', [App\Http\Controllers\PosController::class, 'handleScan'])->name('pos.scan');
         Route::view('replacing-items', 'point_of_sales.replacing-items')->name('replacing.items');
+
+        // Replacements API routes
+        Route::get('api/replacements', [App\Http\Controllers\ReplacementController::class, 'index'])->name('api.replacements.index');
+        Route::post('api/replacements', [App\Http\Controllers\ReplacementController::class, 'store'])->name('api.replacements.store');
+        Route::put('api/replacements/{id}', [App\Http\Controllers\ReplacementController::class, 'update'])->name('api.replacements.update');
+        Route::delete('api/replacements/{id}', [App\Http\Controllers\ReplacementController::class, 'destroy'])->name('api.replacements.destroy');
     });
 
     // Inventory Management Routes - Different access per role
@@ -71,6 +73,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Shared inventory APIs for monitoring and stock overview
     Route::get('api/products', [App\Http\Controllers\StockImportController::class, 'getProducts'])->name('api.products');
+    Route::get('api/products/archived', [App\Http\Controllers\StockImportController::class, 'getArchivedProducts'])->name('api.products.archived');
     Route::get('api/products/{id}', [App\Http\Controllers\StockImportController::class, 'getProduct'])->name('api.product.show');
     Route::get('api/stats', [App\Http\Controllers\StockImportController::class, 'getStats'])->name('api.stats');
     Route::get('api/movements', [App\Http\Controllers\StockImportController::class, 'getMovements'])->name('api.movements');
@@ -79,7 +82,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('api/pos/check-scan', [App\Http\Controllers\PosController::class, 'checkScan'])->name('api.pos.check-scan');
 
 
-    
     // POS Transaction APIs - Admin and Cashier only
     Route::middleware('role:admin,cashier')->group(function () {
         Route::post('api/pos/transactions', [POSTransactionController::class, 'store'])->name('api.pos.transactions.store');
@@ -101,6 +103,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('product/{id}', [App\Http\Controllers\StockImportController::class, 'updateProduct'])->name('product.update');
         Route::get('stock/export', [App\Http\Controllers\StockImportController::class, 'exportProducts'])->name('stock.export');
         Route::get('stock/import-status', [App\Http\Controllers\StockImportController::class, 'status'])->name('stock.import.status');
+        Route::post('api/product/{id}/archive', [App\Http\Controllers\StockImportController::class, 'archiveProduct'])->name('api.product.archive');
+        Route::post('api/product/{id}/restore', [App\Http\Controllers\StockImportController::class, 'restoreProduct'])->name('api.product.restore');
+        Route::delete('api/product/{id}/permanent', [App\Http\Controllers\StockImportController::class, 'permanentDeleteProduct'])->name('api.product.permanent_delete');
     });
 
     // Item Disposal & Reverse Logistics - Admin and Inventory Clerk only
@@ -110,7 +115,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('item/disposal/{id}/dispose', [App\Http\Controllers\ItemDisposalController::class, 'markAsDisposed'])->name('item.disposal.dispose');
         Route::post('item/disposal/from-reverse-logistics/{id}', [App\Http\Controllers\ItemDisposalController::class, 'createFromReverseLogistics'])->name('item.disposal.from-reverse-logistics');
         Route::view('reverse-logistics', 'inventory.reverse-logistics')->name('reverse-logistics');
-        
+
         // Reverse Logistics API routes
         Route::get('api/reverse-logistics', [App\Http\Controllers\ReverseLogisticsController::class, 'index'])->name('api.reverse-logistics.index');
         Route::post('api/reverse-logistics', [App\Http\Controllers\ReverseLogisticsController::class, 'store'])->name('api.reverse-logistics.store');
@@ -139,6 +144,47 @@ Route::middleware(['auth', 'verified'])->group(function () {
         })->name('warehouse.mobile.scanner');
         Route::post('warehouse-management/add-product', [App\Http\Controllers\WarehouseManagementController::class, 'addProduct'])->name('warehouse.management.add_product');
         Route::post('warehouse-management/save-shelf', [App\Http\Controllers\WarehouseManagementController::class, 'saveShelf'])->name('warehouse.management.save_shelf');
+        Route::post('warehouse-management/add-warehouse', [App\Http\Controllers\WarehouseManagementController::class, 'addWarehouse'])->name('warehouse.management.add_warehouse');
+        Route::get('warehouse-management/list', [App\Http\Controllers\WarehouseManagementController::class, 'listWarehouses'])->name('warehouse.management.list');
+        Route::post('warehouse-management/transfer-shelf', [App\Http\Controllers\WarehouseManagementController::class, 'transferShelf'])->name('warehouse.management.transfer_shelf');
+        Route::get('warehouse/transfer/{warehouseId}/{slotIndex}', [App\Http\Controllers\WarehouseManagementController::class, 'showTransfer'])->name('warehouse.transfer');
+        Route::post('warehouse/transfer/execute', [App\Http\Controllers\WarehouseManagementController::class, 'executeTransfer'])->name('warehouse.transfer.execute');
+        Route::post('warehouse-management/archive/{id}', [App\Http\Controllers\WarehouseManagementController::class, 'archiveWarehouse'])->name('warehouse.management.archive');
+        Route::post('warehouse-management/restore/{id}', [App\Http\Controllers\WarehouseManagementController::class, 'restoreWarehouse'])->name('warehouse.management.restore');
+        Route::get('warehouse-management/archived', [App\Http\Controllers\WarehouseManagementController::class, 'archivedWarehouses'])->name('warehouse.management.archived');
+        Route::post('warehouse-management/stock-arrival/{id}/assign', [App\Http\Controllers\WarehouseManagementController::class, 'assignStockArrival'])->name('warehouse.management.assign_arrival');
+    });
+
+    // Shop Inventory Management Routes - Admin and Inventory Clerk only
+    Route::middleware('role:admin,inventory_clerk')->group(function () {
+        Route::get('shop-inventory', [ShopInventoryController::class, 'index'])->name('shop.inventory');
+        Route::get('shop-inventory/archived', [ShopInventoryController::class, 'archived'])->name('shop.inventory.archived');
+        Route::get('shop-inventory/edit/{id}', [ShopInventoryController::class, 'edit'])->name('shop.inventory.edit');
+        Route::get('shop-inventory/shelf/{id}/data', [ShopInventoryController::class, 'getShelfData'])->name('shop.inventory.get_shelf_data');
+        Route::post('shop-inventory/shelf', [ShopInventoryController::class, 'createShelf'])->name('shop.inventory.create_shelf');
+        Route::put('shop-inventory/shelf/{id}', [ShopInventoryController::class, 'updateShelf'])->name('shop.inventory.update_shelf');
+        Route::delete('shop-inventory/shelf/{id}', [ShopInventoryController::class, 'archiveShelf'])->name('shop.inventory.archive_shelf');
+        Route::post('shop-inventory/shelf/{id}/restore', [ShopInventoryController::class, 'restoreShelf'])->name('shop.inventory.restore_shelf');
+        Route::delete('shop-inventory/shelf/{id}/permanent', [ShopInventoryController::class, 'deleteShelf'])->name('shop.inventory.delete_shelf');
+        Route::get('shop-inventory/transfer/{shelfId}', [ShopInventoryController::class, 'showTransfer'])->name('shop.inventory.show_transfer');
+        Route::post('shop-inventory/transfer/execute', [ShopInventoryController::class, 'executeTransfer'])->name('shop.inventory.execute_transfer');
+    });
+
+    // Shop Inventory API Routes - Remove role middleware temporarily for testing
+    Route::get('api/shop-inventory/shelves', [ShopInventoryController::class, 'getShelves'])->name('api.shop.inventory.shelves');
+    Route::get('api/shop-inventory/warehouse-shelves', [ShopInventoryController::class, 'getWarehouseShelves'])->name('api.shop.inventory.warehouse_shelves');
+    Route::get('api/shop-inventory/warehouse-products', [ShopInventoryController::class, 'getWarehouseProducts'])->name('api.shop.inventory.warehouse_products');
+    Route::get('api/shop-inventory/shop-sections', [ShopInventoryController::class, 'getShopSections'])->name('api.shop.inventory.shop_sections');
+    Route::get('api/shop-inventory/shop-products', [ShopInventoryController::class, 'getShopProducts'])->name('api.shop.inventory.shop_products');
+    Route::post('api/shop-inventory/transfer-from-warehouse', [ShopInventoryController::class, 'transferFromWarehouse'])->name('api.shop.inventory.transfer_from_warehouse');
+    Route::post('api/shop-inventory/transfer-between-shelves', [ShopInventoryController::class, 'transferBetweenShelves'])->name('api.shop.inventory.transfer_between_shelves');
+    Route::post('api/shop-inventory/return-to-warehouse', [ShopInventoryController::class, 'returnToWarehouse'])->name('api.shop.inventory.return_to_warehouse');
+    Route::get('api/shop-inventory/history', [ShopInventoryController::class, 'getHistory'])->name('api.shop.inventory.history');
+
+    // Shop Inventory API for POS - Admin and Cashier only
+    Route::middleware('role:admin,cashier')->group(function () {
+        Route::get('api/shop-inventory/products', [ShopInventoryController::class, 'getProductsForPOS'])->name('api.shop.inventory.products');
+        Route::post('api/shop-inventory/deduct', [ShopInventoryController::class, 'deductFromShopInventory'])->name('api.shop.inventory.deduct');
     });
 
     // Purchase Order Routes - inventory clerk can create orders, admin can approve and send, warehouse and inventory can receive
@@ -153,6 +199,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('purchase-order/received', [PurchaseOrderController::class, 'receivedOrders'])->name('received.orders');
         Route::get('purchase-order/{purchaseOrder}', [PurchaseOrderController::class, 'show'])->name('order.show');
         Route::post('purchase-order/{purchaseOrder}/receive', [PurchaseOrderController::class, 'receive'])->name('order.receive');
+        Route::post('purchase-order/{purchaseOrder}/confirm-receive', [PurchaseOrderController::class, 'confirmReceive'])->name('order.confirm_receive');
     });
 
     Route::middleware('role:admin')->group(function () {
@@ -232,6 +279,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Offline Reconciliation Route - Admin only
     Route::middleware('role:admin')->group(function () {
         Route::view('offline-reconciliation', 'offline_reconciliation.offline_recon')->name('offline.reconciliation');
+        Route::view('offline-reconciliation/test', 'offline_reconciliation.test-offline')->name('offline.reconciliation.test');
     });
 
     // Settings Routes - Admin only

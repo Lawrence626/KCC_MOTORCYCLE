@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Mail\PurchaseOrderSentMail;
 use App\Models\InventoryMovement;
+use App\Models\POSTransaction;
 use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
+use App\Models\StockArrivalNotice;
 use App\Models\Supplier;
 use App\Models\User;
+use App\Models\WarehouseShelf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -81,18 +84,106 @@ class PurchaseOrderController extends Controller
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        $lowStockProducts = Product::where('is_active', true)
-            ->where('is_archived', false)
-            ->whereRaw('stock_quantity < reorder_level')
-            ->paginate(8)
-            ->withQueryString();
+        // Get all active products (not just low stock) for filtering by movement category
+        $query = Product::where('is_active', true)
+            ->where('is_archived', false);
+
+        // Get all products first to assign movement categories
+        $allProducts = $query->get();
+        $recentSales = $this->getRecentProductSales(30);
+
+        $allProducts->transform(function ($product) use ($recentSales) {
+            $soldLast30Days = $recentSales[$product->id] ?? 0;
+            $product->sales_count = $soldLast30Days;
+            $product->movement_category = $this->getProductMovementCategory($soldLast30Days);
+            return $product;
+        });
+
+        // Apply client-side filter based on movement category
+        $movementFilter = $request->query('movement', 'all');
+        if ($movementFilter === 'all') {
+            // Show fast moving and slow moving, exclude special order
+            $allProducts = $allProducts->where('movement_category', '!=', 'special_order');
+        } else {
+            // Show only the selected category
+            $allProducts = $allProducts->where('movement_category', $movementFilter);
+        }
+
+        // Manually paginate the filtered collection
+        $page = $request->query('page', 1);
+        $perPage = 20;
+        $offset = ($page - 1) * $perPage;
+        $paginatedProducts = new \Illuminate\Pagination\LengthAwarePaginator(
+            $allProducts->slice($offset, $perPage),
+            $allProducts->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
         return view('purchase_order.create', [
-            'lowStockProducts' => $lowStockProducts,
+            'lowStockProducts' => $paginatedProducts,
             'suppliers' => Supplier::orderBy('name')->get(),
+            'currentFilter' => $movementFilter,
         ]);
+    }
+
+    private function getRecentProductSales(int $days = 30): array
+    {
+        $startDate = now()->subDays($days)->startOfDay();
+        $endDate = now()->endOfDay();
+
+        $transactions = POSTransaction::completed()
+            ->whereBetween('completed_at', [$startDate, $endDate])
+            ->get();
+
+        $productSales = [];
+
+        foreach ($transactions as $transaction) {
+            if (!is_array($transaction->items) || empty($transaction->items)) {
+                continue;
+            }
+
+            foreach ($transaction->items as $item) {
+                $productId = $item['id'] ?? null;
+                $quantity = (int) ($item['quantity'] ?? 0);
+
+                if (!$productId || $quantity <= 0) {
+                    continue;
+                }
+
+                $productSales[$productId] = ($productSales[$productId] ?? 0) + $quantity;
+            }
+        }
+
+        return $productSales;
+    }
+
+    private function getProductMovementCategory(int $salesCount): string
+    {
+        // For testing purposes, assign random categories if no sales data
+        // More balanced distribution: 50% fast_moving, 30% slow_moving, 20% special_order
+        if ($salesCount === 0) {
+            $random = rand(1, 10);
+            if ($random <= 5) {
+                return 'fast_moving';
+            } elseif ($random <= 8) {
+                return 'slow_moving';
+            }
+            return 'special_order';
+        }
+
+        if ($salesCount >= 10) {
+            return 'fast_moving';
+        }
+
+        if ($salesCount >= 1) {
+            return 'slow_moving';
+        }
+
+        return 'special_order';
     }
 
     public function history(Request $request)
@@ -236,7 +327,7 @@ class PurchaseOrderController extends Controller
         $totalAmount = $selectedProducts->sum('total_price');
         $orderNumber = 'PO-' . now()->format('YmdHis') . '-' . Str::upper(Str::random(4));
 
-        DB::transaction(function () use ($supplier, $validated, $selectedProducts, $totalAmount, $orderNumber, &$purchaseOrder) {
+        $purchaseOrder = DB::transaction(function () use ($supplier, $validated, $selectedProducts, $totalAmount, $orderNumber) {
             $purchaseOrder = PurchaseOrder::create([
                 'order_number' => $orderNumber,
                 'supplier_id' => $supplier->id,
@@ -248,6 +339,8 @@ class PurchaseOrderController extends Controller
             ]);
 
             $purchaseOrder->items()->createMany($selectedProducts->toArray());
+
+            return $purchaseOrder;
         });
 
         $this->notifyAdminsOfNewPurchaseOrder($purchaseOrder);
@@ -390,27 +483,9 @@ class PurchaseOrderController extends Controller
                     continue;
                 }
 
+                // Only record received quantity, do NOT update inventory yet
                 $item->update(['received_quantity' => $currentReceived + $quantityChange]);
                 $receivedSomething = true;
-
-                $product = $item->product;
-                if ($product) {
-                    $product->increment('stock_quantity', $quantityChange);
-                    $product->update(['last_restock_date' => now()]);
-
-                    InventoryMovement::create([
-                        'product_id' => $product->id,
-                        'type' => 'restock',
-                        'quantity_change' => $quantityChange,
-                        'unit_price' => $item->unit_price,
-                        'supplier_name' => $purchaseOrder->supplier_name,
-                        'notes' => 'Received from purchase order ' . $purchaseOrder->order_number,
-                        'metadata' => [
-                            'purchase_order_id' => $purchaseOrder->id,
-                            'purchase_order_item_id' => $item->id,
-                        ],
-                    ]);
-                }
             }
 
             $purchaseOrder->load('items');
@@ -418,7 +493,7 @@ class PurchaseOrderController extends Controller
             $anyItemsReceived = $purchaseOrder->items->contains(fn ($item) => (int) $item->received_quantity > 0);
 
             $purchaseOrder->update([
-                'status' => $allItemsReceived ? 'completed' : ($anyItemsReceived ? 'partially received' : $purchaseOrder->status),
+                'status' => $allItemsReceived ? 'awaiting confirmation' : ($anyItemsReceived ? 'partially received' : $purchaseOrder->status),
                 'completed_at' => $allItemsReceived ? now() : null,
             ]);
         });
@@ -427,6 +502,102 @@ class PurchaseOrderController extends Controller
             return redirect()->route('order.show', $purchaseOrder)->with('warning', 'No new quantities were received.');
         }
 
-        return redirect()->route('order.show', $purchaseOrder)->with('success', 'Purchase order receipt recorded and inventory updated.');
+        return redirect()->route('order.show', $purchaseOrder)->with('success', 'Purchase order receipt recorded. Please confirm to add to inventory.');
+    }
+
+    public function confirmReceive(Request $request, PurchaseOrder $purchaseOrder)
+    {
+        if (! in_array($purchaseOrder->status, ['awaiting confirmation', 'partially received'], true)) {
+            return redirect()->route('order.show', $purchaseOrder)->with('warning', 'Only orders awaiting confirmation can be confirmed.');
+        }
+
+        $validated = $request->validate([
+            'warehouse_index' => 'required|integer|min:0|max:2',
+            'shelf_id' => 'nullable|integer|exists:warehouse_shelves,id',
+        ]);
+
+        $warehouseIndex = $validated['warehouse_index'];
+        $shelfId = $validated['shelf_id'] ?? null;
+
+        DB::transaction(function () use ($purchaseOrder, $warehouseIndex, $shelfId) {
+            $purchaseOrder->loadMissing('items');
+
+            foreach ($purchaseOrder->items as $item) {
+                if ((int) $item->received_quantity === 0) {
+                    continue;
+                }
+
+                $product = $item->product;
+                if ($product) {
+                    // Update product stock quantity
+                    $product->increment('stock_quantity', $item->received_quantity);
+                    $product->update(['last_restock_date' => now()]);
+
+                    // Create stock arrival notice for warehouse assignment
+                    StockArrivalNotice::create([
+                        'product_id'             => $product->id,
+                        'product_name'           => $product->name,
+                        'sku'                    => $product->sku,
+                        'quantity'               => $item->received_quantity,
+                        'purchase_order_id'      => $purchaseOrder->id,
+                        'purchase_order_number'  => $purchaseOrder->order_number,
+                        'supplier_name'          => $purchaseOrder->supplier_name,
+                        'arrived_at'             => now(),
+                        'is_assigned'            => false,
+                    ]);
+
+                    // Create inventory movement record
+                    InventoryMovement::create([
+                        'product_id' => $product->id,
+                        'type' => 'restock',
+                        'quantity_change' => $item->received_quantity,
+                        'unit_price' => $item->unit_price,
+                        'supplier_name' => $purchaseOrder->supplier_name,
+                        'notes' => 'Received from purchase order ' . $purchaseOrder->order_number,
+                        'metadata' => [
+                            'purchase_order_id' => $purchaseOrder->id,
+                            'purchase_order_item_id' => $item->id,
+                            'warehouse_index' => $warehouseIndex,
+                            'shelf_id' => $shelfId,
+                        ],
+                    ]);
+
+                    // Add to warehouse shelf if specified
+                    if ($shelfId) {
+                        $shelf = WarehouseShelf::find($shelfId);
+                        if ($shelf) {
+                            $products = $shelf->products ?? [];
+                            $existingProductIndex = collect($products)->search(function ($p) use ($product) {
+                                return isset($p['product_id']) && $p['product_id'] === $product->id;
+                            });
+
+                            if ($existingProductIndex !== false) {
+                                // Update existing product quantity
+                                $products[$existingProductIndex]['qty'] += $item->received_quantity;
+                            } else {
+                                // Add new product to shelf
+                                $products[] = [
+                                    'product_id' => $product->id,
+                                    'sku' => $product->sku,
+                                    'name' => $product->name,
+                                    'qty' => $item->received_quantity,
+                                    'price' => (float) $item->unit_price,
+                                ];
+                            }
+
+                            $shelf->update(['products' => array_values($products)]);
+                        }
+                    }
+                }
+            }
+
+            // Update purchase order status to completed
+            $purchaseOrder->update([
+                'status' => 'completed',
+                'completed_at' => now(),
+            ]);
+        });
+
+        return redirect()->route('order.show', $purchaseOrder)->with('success', 'Purchase order confirmed and inventory updated.');
     }
 }

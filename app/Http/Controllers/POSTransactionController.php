@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\POSTransaction;
+use App\Http\Controllers\ShopInventoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -39,6 +40,18 @@ class POSTransactionController extends Controller
             'status' => 'completed',
             'completed_at' => now(),
         ]);
+
+        // Deduct stock from shop inventory
+        $shopInventoryController = new ShopInventoryController();
+        $itemsForDeduction = collect($validated['items'])->map(function ($item) {
+            return [
+                'product_id' => $item['id'],
+                'quantity' => $item['quantity'],
+            ];
+        })->toArray();
+
+        $deductRequest = new Request(['items' => $itemsForDeduction]);
+        $shopInventoryController->deductFromShopInventory($deductRequest);
 
         return response()->json([
             'success' => true,
