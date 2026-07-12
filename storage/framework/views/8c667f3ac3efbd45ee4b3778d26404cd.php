@@ -41,10 +41,10 @@
                 <div class="relative">
                     <button type="button" onclick="toggleStatusDropdown()" class="appearance-none pl-4 pr-10 py-2.5 rounded-[10px] border border-slate-300 bg-white text-sm font-medium text-slate-700 text-center focus:outline-none focus:ring-2 focus:ring-[#105f68] flex items-center gap-2 whitespace-nowrap w-40"
                         style="background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 20 20\' fill=\'none\' stroke=\'%2338445d\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M6 8l4 4 4-4\'/%3E%3C/svg%3E'); background-repeat:no-repeat; background-position:right 0.85rem center; background-size:1.2em; line-height:1.25rem;">
-                        <span id="statusLabel">Status: All</span>
+                        <span id="statusLabel">All Status</span>
                     </button>
                     <div id="statusDropdown" class="hidden absolute top-full mt-2 -right-0 w-40 bg-white border border-slate-300 rounded-lg shadow-xl z-50 p-3 space-y-1">
-                        <button type="button" onclick="selectStatus('Status: All')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">All</button>
+                        <button type="button" onclick="selectStatus('All Status')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">All</button>
                         <button type="button" onclick="selectStatus('Pending')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Pending</button>
                         <button type="button" onclick="selectStatus('Approved')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Approved</button>
                         <button type="button" onclick="selectStatus('Completed')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Completed</button>

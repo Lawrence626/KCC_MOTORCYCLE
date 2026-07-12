@@ -402,7 +402,7 @@ function selectStatus(status) {
     const label = document.getElementById('statusLabel');
     const dropdown = document.getElementById('statusDropdown');
     
-    if (label) label.textContent = (status === 'All') ? 'Status: All' : status;
+    if (label) label.textContent = status;
     
     const dropdownButtons = dropdown?.querySelectorAll('button');
     dropdownButtons?.forEach(btn => {
