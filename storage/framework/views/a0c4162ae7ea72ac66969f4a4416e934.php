@@ -32,15 +32,22 @@
             <form action="<?php echo e(route('order.store')); ?>" method="POST" class="space-y-6">
                 <?php echo csrf_field(); ?>
                 <div class="grid gap-4 lg:grid-cols-2">
-                    <label class="block text-sm text-slate-700">
+                    <div class="block text-sm text-slate-700">
                         <span class="text-xs font-semibold text-slate-500">Supplier</span>
-                        <select name="supplier_id" required class="appearance-none mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-[#105f68] focus:ring-2 focus:ring-[#105f68]/20 outline-none pr-8" style="background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 20 20%27 fill=%27none%27 stroke=%27%2338445d%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M6 8l4 4 4-4%27/%3E%3C/svg%3E'); background-repeat:no-repeat; background-position:right 0.75rem center; background-size:1.2em;">
-                            <option value="">Select supplier</option>
-                            <?php $__currentLoopData = $suppliers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $supplier): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <option value="<?php echo e($supplier->id); ?>" <?php echo e(old('supplier_id') == $supplier->id ? 'selected' : ''); ?>><?php echo e($supplier->name); ?></option>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        </select>
-                    </label>
+                        <input type="hidden" name="supplier_id" id="supplierInput" value="<?php echo e(old('supplier_id')); ?>" required />
+                        <div class="relative mt-2">
+                            <button type="button" id="supplierDropdownBtn" onclick="toggleSupplierDropdown()" class="w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-left text-slate-900 focus:border-[#105f68] focus:ring-2 focus:ring-[#105f68]/20 outline-none flex items-center justify-between">
+                                <span id="supplierLabel">Select supplier</span>
+                                <svg class="w-4 h-4 text-slate-500 transition-transform" id="supplierChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div id="supplierDropdown" class="hidden absolute top-full mt-2 left-0 w-full bg-white border border-slate-300 rounded-lg shadow-xl z-50 p-3 space-y-1 max-h-60 overflow-y-auto">
+                                <button type="button" onclick="selectSupplier('', 'Select supplier')" class="w-full px-4 py-2 text-left text-sm text-slate-400 hover:bg-slate-100 rounded-[10px]">Select supplier</button>
+                                <?php $__currentLoopData = $suppliers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $supplier): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <button type="button" onclick="selectSupplier('<?php echo e($supplier->id); ?>', '<?php echo e(addslashes($supplier->name)); ?>')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] supplier-option" data-value="<?php echo e($supplier->id); ?>"><?php echo e($supplier->name); ?></button>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </div>
+                        </div>
+                    </div>
 
                     <label class="block text-sm text-slate-700">
                         <span class="text-xs font-semibold text-slate-500">Expected delivery date</span>
@@ -159,6 +166,53 @@
                     setActiveButton(activeButton);
                 } else {
                     setActiveButton(buttons[0]);
+                }
+            }
+        });
+
+        // Supplier custom dropdown
+        function toggleSupplierDropdown() {
+            const dd = document.getElementById('supplierDropdown');
+            const chevron = document.getElementById('supplierChevron');
+            dd.classList.toggle('hidden');
+            chevron.style.transform = dd.classList.contains('hidden') ? '' : 'rotate(180deg)';
+        }
+
+        function selectSupplier(value, label) {
+            document.getElementById('supplierInput').value = value;
+            document.getElementById('supplierLabel').textContent = label;
+            document.getElementById('supplierLabel').classList.toggle('text-slate-400', !value);
+            document.getElementById('supplierLabel').classList.toggle('text-slate-900', !!value);
+            document.getElementById('supplierDropdown').classList.add('hidden');
+            document.getElementById('supplierChevron').style.transform = '';
+
+            // Highlight active option
+            document.querySelectorAll('.supplier-option').forEach(btn => {
+                const isActive = btn.dataset.value === value;
+                btn.classList.toggle('bg-[#105f68]/10', isActive);
+                btn.classList.toggle('text-[#105f68]', isActive);
+                btn.classList.toggle('font-semibold', isActive);
+                btn.classList.toggle('text-slate-700', !isActive);
+            });
+        }
+
+        // Click outside to close
+        document.addEventListener('click', function(e) {
+            const dd = document.getElementById('supplierDropdown');
+            const btn = document.getElementById('supplierDropdownBtn');
+            if (dd && btn && !dd.contains(e.target) && !btn.contains(e.target)) {
+                dd.classList.add('hidden');
+                document.getElementById('supplierChevron').style.transform = '';
+            }
+        });
+
+        // Set initial selection if old value exists
+        document.addEventListener('DOMContentLoaded', function() {
+            const oldVal = document.getElementById('supplierInput').value;
+            if (oldVal) {
+                const opt = document.querySelector('.supplier-option[data-value="' + oldVal + '"]');
+                if (opt) {
+                    selectSupplier(oldVal, opt.textContent.trim());
                 }
             }
         });

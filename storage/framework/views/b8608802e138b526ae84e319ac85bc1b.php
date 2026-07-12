@@ -1,4 +1,13 @@
-<x-layouts.app :title="__('All Stocks')">
+<?php if (isset($component)) { $__componentOriginal5863877a5171c196453bfa0bd807e410 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal5863877a5171c196453bfa0bd807e410 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.layouts.app','data' => ['title' => __('All Stocks')]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('layouts.app'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(__('All Stocks'))]); ?>
     <div class="space-y-3">
         <!-- Header -->
         <div class="flex items-center justify-between">
@@ -7,7 +16,7 @@
                 <p class="text-xs text-slate-500 mt-0.5">Complete inventory list with pricing and categories</p>
             </div>
             <div class="flex gap-2 items-center">
-                <a href="{{ route('archived') }}" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 transition">
+                <a href="<?php echo e(route('archived')); ?>" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 transition">
                     <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
                     </svg>
@@ -20,7 +29,7 @@
                     Export
                 </button>
                 <form id="importForm" class="hidden">
-                    @csrf
+                    <?php echo csrf_field(); ?>
                     <input type="file" id="importFile" accept=".xlsx,.xls" />
                 </form>
                 <label for="importFile" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 transition cursor-pointer inline-flex items-center gap-1">
@@ -219,7 +228,7 @@
 
             <!-- Form Content -->
             <form id="addStockForm" class="space-y-5 p-6">
-                @csrf
+                <?php echo csrf_field(); ?>
 
                 <!-- Product Select -->
                 <div class="space-y-2">
@@ -320,8 +329,8 @@
 
                 <!-- Form Content -->
                 <form id="editProductForm" class="space-y-4 p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-                    @csrf
-                    @method('PATCH')
+                    <?php echo csrf_field(); ?>
+                    <?php echo method_field('PATCH'); ?>
                     <input type="hidden" id="editProductId" name="id" />
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -544,19 +553,29 @@
     <script>
         window.AllStocks = {
             routes: {
-                apiProducts: '{{ route("api.products") }}',
-                apiProductShowBase: '{{ url("api/products") }}',
-                stockAdd: '{{ route("stock.add") }}',
-                apiStats: '{{ route("api.stats") }}',
-                apiMovements: '{{ route("api.movements") }}',
-                stockExport: '{{ route("stock.export") }}',
-                stockImport: '{{ route("stock.import") }}',
-                productUpdateBase: '{{ url('product') }}'
+                apiProducts: '<?php echo e(route("api.products")); ?>',
+                apiProductShowBase: '<?php echo e(url("api/products")); ?>',
+                stockAdd: '<?php echo e(route("stock.add")); ?>',
+                apiStats: '<?php echo e(route("api.stats")); ?>',
+                apiMovements: '<?php echo e(route("api.movements")); ?>',
+                stockExport: '<?php echo e(route("stock.export")); ?>',
+                stockImport: '<?php echo e(route("stock.import")); ?>',
+                productUpdateBase: '<?php echo e(url('product')); ?>'
             },
-            baseUrl: '{{ url("") }}',
-            csrfToken: '{{ csrf_token() }}'
+            baseUrl: '<?php echo e(url("")); ?>',
+            csrfToken: '<?php echo e(csrf_token()); ?>'
         };
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    @vite('resources/js/allstocks.js')
-</x-layouts.app>
+    <?php echo app('Illuminate\Foundation\Vite')('resources/js/allstocks.js'); ?>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal5863877a5171c196453bfa0bd807e410)): ?>
+<?php $attributes = $__attributesOriginal5863877a5171c196453bfa0bd807e410; ?>
+<?php unset($__attributesOriginal5863877a5171c196453bfa0bd807e410); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal5863877a5171c196453bfa0bd807e410)): ?>
+<?php $component = $__componentOriginal5863877a5171c196453bfa0bd807e410; ?>
+<?php unset($__componentOriginal5863877a5171c196453bfa0bd807e410); ?>
+<?php endif; ?>
+<?php /**PATH C:\Users\Admin\Desktop\WEQW\KCC_MOTORCYCLE\resources\views/inventory/allstocks.blade.php ENDPATH**/ ?>

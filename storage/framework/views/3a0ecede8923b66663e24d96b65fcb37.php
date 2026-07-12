@@ -113,7 +113,7 @@
             <!-- Content Container - Scrollable -->
             <div id="mainScrollArea" class="flex-1 min-h-0 overflow-y-auto relative flex flex-col z-40">
                 <div id="topScrollFade" class="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-white/95 via-white/70 to-transparent opacity-0 transition-opacity duration-200"></div>
-                <div class="w-full max-w-full flex-1">
+                <div class="w-full max-w-full flex-1 flex flex-col">
                     <div class="bg-white border border-slate-300 border-t-0 shadow-sm overflow-hidden flex-1 min-h-0 rounded-[10px]">
                         <div class="h-full px-8 py-6 space-y-8">
                             <?php echo e($slot); ?>

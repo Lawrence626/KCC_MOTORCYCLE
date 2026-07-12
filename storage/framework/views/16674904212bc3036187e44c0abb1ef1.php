@@ -217,7 +217,7 @@
     <!-- QR Code Generation Modal -->
     <div id="ro-qr-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-            <div class="bg-gradient-to-r from-emerald-600 to-cyan-600 px-6 py-4 rounded-t-2xl">
+            <div class="bg-[#105f68] px-6 py-4 rounded-t-2xl">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="bg-white/20 rounded-lg p-2">
@@ -276,10 +276,10 @@
 
                 <!-- Action Buttons -->
                 <div class="flex gap-3 pt-4 border-t border-slate-200">
-                    <button onclick="roGenerateAllQR()" class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold hover:from-emerald-700 hover:to-emerald-800 transition shadow-md">
+                    <button onclick="roGenerateAllQR()" class="flex-1 px-4 py-3 rounded-xl bg-[#105f68] text-white font-semibold hover:bg-[#0d4f56] transition shadow-md">
                         Generate All QR Codes
                     </button>
-                    <button onclick="roPrintAllQR()" class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-slate-600 to-slate-700 text-white font-semibold hover:from-slate-700 hover:to-slate-800 transition shadow-md">
+                    <button onclick="roPrintAllQR()" class="flex-1 px-4 py-3 rounded-xl bg-[#105f68] text-white font-semibold hover:bg-[#0d4f56] transition shadow-md">
                         Print All QR Codes
                     </button>
                 </div>
@@ -290,7 +290,7 @@
     <!-- New Stock Details Modal -->
     <div id="ro-new-stock-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4">
-            <div class="bg-gradient-to-r from-emerald-600 to-cyan-600 px-6 py-4 rounded-t-2xl">
+            <div class="bg-[#105f68] px-6 py-4 rounded-t-2xl">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="bg-white/20 rounded-lg p-2">
@@ -345,7 +345,7 @@
 
                 <div class="flex gap-3 pt-4 border-t border-slate-200">
                     <button onclick="roCloseNewStockModal()" class="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200 transition">Cancel</button>
-                    <button onclick="roSaveNewStock()" class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold hover:from-emerald-700 hover:to-emerald-800 transition shadow-md">Save & Add to Warehouse</button>
+                    <button onclick="roSaveNewStock()" class="flex-1 px-4 py-3 rounded-xl bg-[#105f68] text-white font-semibold hover:bg-[#0d4f56] transition shadow-md">Save & Add to Warehouse</button>
                 </div>
             </div>
         </div>
@@ -354,7 +354,7 @@
     <!-- QR Code Scanner Modal -->
     <div id="ro-scan-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-4">
-            <div class="bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-4 rounded-t-2xl">
+            <div class="bg-[#105f68] px-6 py-4 rounded-t-2xl">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="bg-white/20 rounded-lg p-2">
@@ -399,7 +399,7 @@
                     
                     <div class="flex gap-3 mt-4">
                         <button onclick="roCloseScanner()" class="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200 transition">Cancel</button>
-                        <button onclick="roProceedToDetails()" class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold hover:from-emerald-700 hover:to-emerald-800 transition shadow-md" id="ro-proceed-btn" disabled>Proceed to Details</button>
+                        <button onclick="roProceedToDetails()" class="flex-1 px-4 py-3 rounded-xl bg-[#105f68] text-white font-semibold hover:bg-[#0d4f56] transition shadow-md" id="ro-proceed-btn" disabled>Proceed to Details</button>
                     </div>
                 </div>
             </div>

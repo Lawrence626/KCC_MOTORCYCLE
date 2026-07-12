@@ -1,66 +1,68 @@
 <x-layouts.app :title="__('Archived Items')">
-    <div class="space-y-3">
+    <div class="flex flex-col gap-5" style="min-height: calc(100vh - 200px);">
         <!-- Header -->
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-slate-900">Archived Items</h1>
-                <p class="text-xs text-slate-500 mt-0.5">Archived inventory items. Restore or permanently delete</p>
+       <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div class="pl-3 lg:pl-2">
+                <h1 class="text-3xl font-bold text-slate-900">Archived Items</h1>
+                <p class="text-2XL text-slate-500 mt-0.5">Archived inventory items. Restore or permanently delete</p>
             </div>
             <div class="flex gap-2 items-center">
-                <a href="{{ url()->previous() ?: route('allstocks') }}" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 transition">
-                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                    </svg>
+                <a href="{{ route('pos.terminal') }}" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 transition">
                     BACK TO POS
                 </a>
             </div>
         </div>
 
         <!-- Quick Stats -->
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-            <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-sm">
-                <p class="text-xs text-slate-600 font-medium mb-0.5">Archived Items</p>
-                <p id="archivedCount" class="text-lg font-bold text-slate-900">0</p>
-                <p class="text-xs text-slate-500 mt-0.5">Total archived</p>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div class="bg-white border border-slate-200 rounded-[28px] p-5 shadow-sm">
+                <p class="text-sm text-slate-600 font-medium mb-1">Archived Items</p>
+                <p id="archivedCount" class="text-2xl font-bold text-slate-900">0</p>
+                <p class="text-sm text-slate-500 mt-1">Total archived</p>
             </div>
-            <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-sm">
-                <p class="text-xs text-slate-600 font-medium mb-0.5">Archive Value</p>
-                <p id="archiveValue" class="text-lg font-bold text-slate-900">₱0</p>
-                <p class="text-xs text-slate-500 mt-0.5">Total value</p>
+            <div class="bg-white border border-slate-200 rounded-[28px] p-5 shadow-sm">
+                <p class="text-sm text-slate-600 font-medium mb-1">Archive Value</p>
+                <p id="archiveValue" class="text-2xl font-bold text-slate-900">₱0</p>
+                <p class="text-sm text-slate-500 mt-1">Total value</p>
             </div>
-            <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-sm">
-                <p class="text-xs text-slate-600 font-medium mb-0.5">Avg Price</p>
-                <p id="avgPrice" class="text-lg font-bold text-slate-900">₱0</p>
-                <p class="text-xs text-slate-500 mt-0.5">Per item</p>
+            <div class="bg-white border border-slate-200 rounded-[28px] p-5 shadow-sm">
+                <p class="text-sm text-slate-600 font-medium mb-1">Avg Price</p>
+                <p id="avgPrice" class="text-2xl font-bold text-slate-900">₱0</p>
+                <p class="text-sm text-slate-500 mt-1">Per item</p>
             </div>
         </div>
 
         <!-- Search & Filters -->
-        <div class="bg-white rounded-lg border border-slate-200 p-2.5 shadow-sm space-y-2">
-            <input id="searchInput" type="search" placeholder="Search by product name, SKU, or barcode..." class="w-full px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-50 text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent" />
+        <div class="bg-white rounded-lg border border-slate-200 p-4 shadow-sm space-y-4">
+            <input id="searchInput" type="search" placeholder="Search by product name, SKU, or barcode..." class="w-full px-4 py-3 rounded-lg border border-slate-300 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-[#105f68] focus:border-transparent" />
 
-            <div class="flex gap-2 items-end">
-                <div class="flex-1">
-                    <label class="block text-slate-600 font-medium mb-0.5 text-xs">Category</label>
-                    <select id="categoryFilter" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 bg-slate-50 text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
-                        <option value="">All Categories</option>
-                        <option value="engine_oil">Engine Oil</option>
-                        <option value="battery">Battery</option>
-                        <option value="spark_plug">Spark Plug</option>
-                        <option value="brake_pads">Brake Pads</option>
-                        <option value="tires">Tires</option>
-                        <option value="filters">Filters</option>
-                        <option value="lubricants">Lubricants</option>
-                        <option value="accessories">Accessories</option>
-                    </select>
+            <div class="flex gap-3 items-end">
+                <div class="flex-1 relative">
+                    <label class="block text-slate-600 font-medium mb-1.5 text-sm">Category</label>
+                    <input type="hidden" id="categoryFilter" value="" />
+                    <button type="button" id="categoryDropdownBtn" onclick="toggleCategoryDropdown()" class="w-full px-4 py-3 rounded-[10px] border border-slate-300 bg-slate-50 text-sm text-left text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#105f68] focus:border-transparent flex items-center justify-between">
+                        <span id="categoryLabel">All Categories</span>
+                        <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" id="categoryChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div id="categoryDropdown" class="hidden absolute top-full mt-2 left-0 w-full bg-white border border-slate-300 rounded-lg shadow-xl z-50 p-3 space-y-1 max-h-60 overflow-y-auto">
+                        <button type="button" onclick="selectCategory('', 'All Categories')" class="w-full px-4 py-2 text-left text-sm bg-[#105f68]/10 text-[#105f68] font-semibold rounded-[10px] category-option" data-value="">All Categories</button>
+                        <button type="button" onclick="selectCategory('engine_oil', 'Engine Oil')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="engine_oil">Engine Oil</button>
+                        <button type="button" onclick="selectCategory('battery', 'Battery')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="battery">Battery</button>
+                        <button type="button" onclick="selectCategory('spark_plug', 'Spark Plug')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="spark_plug">Spark Plug</button>
+                        <button type="button" onclick="selectCategory('brake_pads', 'Brake Pads')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="brake_pads">Brake Pads</button>
+                        <button type="button" onclick="selectCategory('tires', 'Tires')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="tires">Tires</button>
+                        <button type="button" onclick="selectCategory('filters', 'Filters')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="filters">Filters</button>
+                        <button type="button" onclick="selectCategory('lubricants', 'Lubricants')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="lubricants">Lubricants</button>
+                        <button type="button" onclick="selectCategory('accessories', 'Accessories')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="accessories">Accessories</button>
+                    </div>
                 </div>
-                <button id="applyFilter" class="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 transition whitespace-nowrap">Apply</button>
-                <button id="resetFilter" class="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-600 hover:bg-slate-50 transition whitespace-nowrap">Reset</button>
+                <button id="applyFilter" class="h-[46px] px-6 rounded-[10px] border border-slate-300 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 transition whitespace-nowrap flex items-center justify-center">Apply</button>
+                <button id="resetFilter" class="h-[46px] px-6 rounded-[10px] border border-slate-300 bg-white text-sm font-semibold text-slate-600 hover:bg-slate-50 transition whitespace-nowrap flex items-center justify-center">Reset</button>
             </div>
         </div>
 
         <!-- Archived Table -->
-        <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+        <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden flex-1 flex flex-col">
             <div class="overflow-x-auto">
                 <table class="w-full divide-y divide-slate-200 text-xs">
                     <thead class="bg-slate-50 border-b border-slate-200">
@@ -257,11 +259,42 @@
             }
         }
 
+        // Category custom dropdown
+        function toggleCategoryDropdown() {
+            const dd = document.getElementById('categoryDropdown');
+            dd.classList.toggle('hidden');
+        }
+
+        function selectCategory(value, label) {
+            document.getElementById('categoryFilter').value = value;
+            document.getElementById('categoryLabel').textContent = label;
+            document.getElementById('categoryDropdown').classList.add('hidden');
+
+            // Highlight active option
+            document.querySelectorAll('.category-option').forEach(btn => {
+                const isActive = btn.dataset.value === value;
+                btn.classList.toggle('bg-[#105f68]/10', isActive);
+                btn.classList.toggle('text-[#105f68]', isActive);
+                btn.classList.toggle('font-semibold', isActive);
+                btn.classList.toggle('text-slate-700', !isActive);
+                btn.classList.toggle('hover:bg-slate-100', !isActive);
+            });
+        }
+
+        // Click outside to close category dropdown
+        document.addEventListener('click', function(e) {
+            const dd = document.getElementById('categoryDropdown');
+            const btn = document.getElementById('categoryDropdownBtn');
+            if (dd && btn && !dd.contains(e.target) && !btn.contains(e.target)) {
+                dd.classList.add('hidden');
+            }
+        });
+
         // Event listeners
         document.getElementById('applyFilter').addEventListener('click', () => { currentPage = 1; loadArchivedProducts(); });
         document.getElementById('resetFilter').addEventListener('click', () => {
             document.getElementById('searchInput').value = '';
-            document.getElementById('categoryFilter').value = '';
+            selectCategory('', 'All Categories');
             currentPage = 1;
             loadArchivedProducts();
         });
