@@ -51,10 +51,10 @@
                             <p class="mt-1 text-sm text-slate-500">Select the items to include in the order.</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2">
-                            <button type="button" data-filter="all" class="movement-filter-button rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#105f68] hover:text-slate-900">All</button>
-                            <button type="button" data-filter="fast_moving" class="movement-filter-button rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#105f68] hover:text-slate-900">Fast moving</button>
-                            <button type="button" data-filter="slow_moving" class="movement-filter-button rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#105f68] hover:text-slate-900">Slow moving</button>
-                            <button type="button" data-filter="special_order" class="movement-filter-button rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#105f68] hover:text-slate-900">Special order</button>
+                            <button type="button" data-filter="all" class="movement-filter-button rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-all duration-200 hover:text-slate-900 hover:shadow-md">All</button>
+                            <button type="button" data-filter="fast_moving" class="movement-filter-button rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-all duration-200 hover:text-slate-900 hover:shadow-md">Fast moving</button>
+                            <button type="button" data-filter="slow_moving" class="movement-filter-button rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-all duration-200 hover:text-slate-900 hover:shadow-md">Slow moving</button>
+                            <button type="button" data-filter="special_order" class="movement-filter-button rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-all duration-200 hover:text-slate-900 hover:shadow-md">Special order</button>
                         </div>
                     </div>
 
