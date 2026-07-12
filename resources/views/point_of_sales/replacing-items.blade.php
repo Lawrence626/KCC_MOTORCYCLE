@@ -93,7 +93,7 @@
                 <p class="text-sm text-slate-600">Showing 0 of 0 entries</p>
                 <div class="flex gap-1">
                     <button class="px-3 py-1 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>← Prev</button>
-                    <button class="px-3 py-1 rounded-lg bg-cyan-600 text-sm font-medium text-white">1</button>
+                    <button class="px-3 py-1 rounded-lg bg-[#8c9db6] text-sm font-medium text-white shadow-sm">1</button>
                     <button class="px-3 py-1 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>Next →</button>
                 </div>
             </div>
