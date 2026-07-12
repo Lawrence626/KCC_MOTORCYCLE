@@ -53,15 +53,15 @@
                     <span class="text-xs font-semibold text-slate-500">Receipt status</span>
                     <input type="hidden" name="status" id="receivedOrdersStatusInput" value="<?php echo e($status ?? ''); ?>" />
                     <button type="button" id="receivedOrdersStatusButton" onclick="toggleDropdown('receivedOrdersStatusDropdown')" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-white px-4 py-3 text-left text-sm text-slate-900 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#105f68]/20">
-                        <span><?php echo e(!empty($status) ? ucwords($status) : 'All statuses'); ?></span>
+                        <span><?php echo e(!empty($status) ? ucwords($status) : 'All status'); ?></span>
                         <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                         </svg>
                     </button>
                     <div id="receivedOrdersStatusDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-300 bg-white shadow-xl p-3 space-y-1">
-                        <button type="button" onclick="selectDropdown(event, 'receivedOrdersStatusInput', '', 'receivedOrdersStatusButton', 'All statuses', 'receivedOrdersStatusDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-left text-sm <?php echo e(empty($status) ? 'font-semibold text-[#105f68] bg-[#105f68]/10' : 'text-slate-700 hover:bg-slate-100'); ?> rounded-[10px]">All statuses</button>
+                        <button type="button" onclick="selectDropdown(event, 'receivedOrdersStatusInput', '', 'receivedOrdersStatusButton', 'All status', 'receivedOrdersStatusDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-center text-sm <?php echo e(empty($status) ? 'font-semibold text-[#105f68] bg-[#105f68]/10' : 'text-slate-700 hover:bg-slate-100'); ?> rounded-[10px]">All status</button>
                         <?php $__currentLoopData = ['completed' => 'Completed', 'partially received' => 'Partially Received']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <button type="button" onclick="selectDropdown(event, 'receivedOrdersStatusInput', '<?php echo e($value); ?>', 'receivedOrdersStatusButton', '<?php echo e($label); ?>', 'receivedOrdersStatusDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-left text-sm <?php echo e(($status ?? '') === $value ? 'font-semibold text-[#105f68] bg-[#105f68]/10' : 'text-slate-700 hover:bg-slate-100'); ?> rounded-[10px]"><?php echo e($label); ?></button>
+                            <button type="button" onclick="selectDropdown(event, 'receivedOrdersStatusInput', '<?php echo e($value); ?>', 'receivedOrdersStatusButton', '<?php echo e($label); ?>', 'receivedOrdersStatusDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-center text-sm <?php echo e(($status ?? '') === $value ? 'font-semibold text-[#105f68] bg-[#105f68]/10' : 'text-slate-700 hover:bg-slate-100'); ?> rounded-[10px]"><?php echo e($label); ?></button>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                 </label>
@@ -75,9 +75,9 @@
                         </svg>
                     </button>
                     <div id="receivedOrdersWarehouseDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-300 bg-white shadow-xl p-3 space-y-1">
-                        <button type="button" onclick="selectDropdown(event, 'receivedOrdersWarehouseInput', '', 'receivedOrdersWarehouseButton', 'All warehouses', 'receivedOrdersWarehouseDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-left text-sm <?php echo e(empty($warehouse) ? 'font-semibold text-[#105f68] bg-[#105f68]/10' : 'text-slate-700 hover:bg-slate-100'); ?> rounded-[10px]">All warehouses</button>
+                        <button type="button" onclick="selectDropdown(event, 'receivedOrdersWarehouseInput', '', 'receivedOrdersWarehouseButton', 'All warehouses', 'receivedOrdersWarehouseDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-center text-sm <?php echo e(empty($warehouse) ? 'font-semibold text-[#105f68] bg-[#105f68]/10' : 'text-slate-700 hover:bg-slate-100'); ?> rounded-[10px]">All warehouses</button>
                         <?php $__currentLoopData = ['main' => 'Main stock', 'service' => 'Service bay']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <button type="button" onclick="selectDropdown(event, 'receivedOrdersWarehouseInput', '<?php echo e($value); ?>', 'receivedOrdersWarehouseButton', '<?php echo e($label); ?>', 'receivedOrdersWarehouseDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-left text-sm <?php echo e(($warehouse ?? '') === $value ? 'font-semibold text-[#105f68] bg-[#105f68]/10' : 'text-slate-700 hover:bg-slate-100'); ?> rounded-[10px]"><?php echo e($label); ?></button>
+                            <button type="button" onclick="selectDropdown(event, 'receivedOrdersWarehouseInput', '<?php echo e($value); ?>', 'receivedOrdersWarehouseButton', '<?php echo e($label); ?>', 'receivedOrdersWarehouseDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-center text-sm <?php echo e(($warehouse ?? '') === $value ? 'font-semibold text-[#105f68] bg-[#105f68]/10' : 'text-slate-700 hover:bg-slate-100'); ?> rounded-[10px]"><?php echo e($label); ?></button>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                 </label>

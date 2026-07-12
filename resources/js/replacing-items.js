@@ -100,7 +100,7 @@ function selectStatus(status) {
     const label = document.getElementById('statusLabel');
     const dropdown = document.getElementById('statusDropdown');
     
-    if (label) label.textContent = status;
+    if (label) label.textContent = (status === 'All') ? 'Status: All' : status;
     
     // Remove brand color from all buttons and add to the selected one
     const dropdownButtons = dropdown?.querySelectorAll('button');
