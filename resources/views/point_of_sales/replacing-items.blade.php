@@ -6,15 +6,6 @@
                 <h1 class="text-3xl font-bold text-slate-900">Replacing Items</h1>
                 <p class="text-slate-600 text-sm mt-1">Manage returned products and issue replacements.</p>
             </div>
-            <div class="flex items-center gap-4">
-                <select id="dateFilter" class="px-4 py-2 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <option value="today">Today</option>
-                    <option value="this_week">This Week</option>
-                    <option value="this_month">This Month</option>
-                    <option value="last_month">Last Month</option>
-                    <option value="custom">Custom Range</option>
-                </select>
-            </div>
         </div>
 
         <!-- Controls Section -->
@@ -49,6 +40,17 @@
                         <button type="button" onclick="selectStatus('Approved')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Approved</button>
                         <button type="button" onclick="selectStatus('Completed')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Completed</button>
                     </div>
+                </div>
+                <!-- Date Filter -->
+                <div class="relative">
+                    <select id="dateFilter" class="appearance-none pl-4 pr-10 py-2.5 rounded-[10px] border border-slate-300 bg-white text-sm font-medium text-slate-700 text-center focus:outline-none focus:ring-2 focus:ring-[#105f68] w-40 cursor-pointer"
+                        style="background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 20 20\' fill=\'none\' stroke=\'%2338445d\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M6 8l4 4 4-4\'/%3E%3C/svg%3E'); background-repeat:no-repeat; background-position:right 0.85rem center; background-size:1.2em; line-height:1.25rem;">
+                        <option value="today">Today</option>
+                        <option value="this_week">This Week</option>
+                        <option value="this_month">This Month</option>
+                        <option value="last_month">Last Month</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
                 </div>
             </div>
         </div>
