@@ -352,6 +352,30 @@ function handleDateFilterChange() {
     const dateFilter = document.getElementById('dateFilter');
     if (!dateFilter) return;
 
+    const selectedValue = dateFilter.value;
+    console.log('Date filter changed to:', selectedValue);
+
+    // Implement date filtering logic here
+    // This would typically fetch data based on the selected date range
+    switch (selectedValue) {
+        case 'today':
+            console.log('Filtering for today');
+            break;
+        case 'this_week':
+            console.log('Filtering for this week');
+            break;
+        case 'this_month':
+            console.log('Filtering for this month');
+            break;
+        case 'last_month':
+            console.log('Filtering for last month');
+            break;
+        case 'custom':
+            console.log('Show custom date range picker');
+            break;
+    }
+}
+
 function closeAllDropdowns(exceptId) {
     console.log('closeAllDropdowns called, keeping open:', exceptId);
     const allDropdownIds = ['statusDropdown', 'returnedItemDropdown', 'reasonDropdown', 'replacementProductDropdown'];
@@ -452,30 +476,6 @@ document.addEventListener('click', function(event) {
         replacementProductDropdown.classList.add('hidden');
     }
 });
-
-    const selectedValue = dateFilter.value;
-    console.log('Date filter changed to:', selectedValue);
-
-    // Implement date filtering logic here
-    // This would typically fetch data based on the selected date range
-    switch (selectedValue) {
-        case 'today':
-            console.log('Filtering for today');
-            break;
-        case 'this_week':
-            console.log('Filtering for this week');
-            break;
-        case 'this_month':
-            console.log('Filtering for this month');
-            break;
-        case 'last_month':
-            console.log('Filtering for last month');
-            break;
-        case 'custom':
-            console.log('Show custom date range picker');
-            break;
-    }
-}
 
 
 window.addEventListener('DOMContentLoaded', function() {
