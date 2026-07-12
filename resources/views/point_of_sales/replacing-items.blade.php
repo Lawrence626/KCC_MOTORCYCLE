@@ -35,7 +35,7 @@
                         <span id="statusLabel">All Status</span>
                     </button>
                     <div id="statusDropdown" class="hidden absolute top-full mt-2 -right-0 w-40 bg-white border border-slate-300 rounded-lg shadow-xl z-50 p-3 space-y-1">
-                        <button type="button" onclick="selectStatus('All Status')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">All</button>
+                        <button type="button" onclick="selectStatus('All Status')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">All Status</button>
                         <button type="button" onclick="selectStatus('Pending')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Pending</button>
                         <button type="button" onclick="selectStatus('Approved')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Approved</button>
                         <button type="button" onclick="selectStatus('Completed')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Completed</button>
