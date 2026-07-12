@@ -51,10 +51,10 @@
                             <p class="mt-1 text-sm text-slate-500">Select the items to include in the order.</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2">
-                            <button type="button" data-filter="all" class="movement-filter-button rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-emerald-400 hover:text-slate-900">All</button>
-                            <button type="button" data-filter="fast_moving" class="movement-filter-button rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-emerald-400 hover:text-slate-900">Fast moving</button>
-                            <button type="button" data-filter="slow_moving" class="movement-filter-button rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-emerald-400 hover:text-slate-900">Slow moving</button>
-                            <button type="button" data-filter="special_order" class="movement-filter-button rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-emerald-400 hover:text-slate-900">Special order</button>
+                            <button type="button" data-filter="all" class="movement-filter-button rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#105f68] hover:text-slate-900">All</button>
+                            <button type="button" data-filter="fast_moving" class="movement-filter-button rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#105f68] hover:text-slate-900">Fast moving</button>
+                            <button type="button" data-filter="slow_moving" class="movement-filter-button rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#105f68] hover:text-slate-900">Slow moving</button>
+                            <button type="button" data-filter="special_order" class="movement-filter-button rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#105f68] hover:text-slate-900">Special order</button>
                         </div>
                     </div>
 
@@ -123,12 +123,12 @@
                 buttons.forEach(button => {
                     const isActive = button === selectedButton;
 
-                    button.classList.toggle('bg-emerald-600', isActive);
+                    button.classList.toggle('bg-[#105f68]', isActive);
                     button.classList.toggle('bg-white', !isActive);
                     button.classList.toggle('text-white', isActive);
                     button.classList.toggle('text-slate-700', !isActive);
                     button.classList.toggle('border-slate-200', !isActive);
-                    button.classList.toggle('border-emerald-500', isActive);
+                    button.classList.toggle('border-[#105f68]', isActive);
                 });
             }
 

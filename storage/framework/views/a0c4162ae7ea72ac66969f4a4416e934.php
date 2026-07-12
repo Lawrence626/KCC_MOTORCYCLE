@@ -54,8 +54,18 @@
                     </label>
 
                 <div class="rounded-[26px] border border-slate-200 bg-slate-50 p-4">
-                    <h3 class="text-sm font-semibold text-slate-700">Low stock products</h3>
-                    <p class="mt-1 text-sm text-slate-500">Select the items to include in the order.</p>
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h3 class="text-sm font-semibold text-slate-700">Low stock products</h3>
+                            <p class="mt-1 text-sm text-slate-500">Select the items to include in the order.</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button type="button" data-filter="all" class="movement-filter-button rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#105f68] hover:text-slate-900">All</button>
+                            <button type="button" data-filter="fast_moving" class="movement-filter-button rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#105f68] hover:text-slate-900">Fast moving</button>
+                            <button type="button" data-filter="slow_moving" class="movement-filter-button rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#105f68] hover:text-slate-900">Slow moving</button>
+                            <button type="button" data-filter="special_order" class="movement-filter-button rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#105f68] hover:text-slate-900">Special order</button>
+                        </div>
+                    </div>
 
                     <div class="mt-4 overflow-hidden rounded-[10px] border border-slate-200">
                         <table class="min-w-full text-left text-sm">
@@ -63,6 +73,7 @@
                                 <tr>
                                     <th class="px-4 py-3">Select</th>
                                     <th class="px-4 py-3">Product</th>
+                                    <th class="px-4 py-3">Movement</th>
                                     <th class="px-4 py-3">Supplier</th>
                                     <th class="px-4 py-3">SKU</th>
                                     <th class="px-4 py-3">Stock</th>
@@ -73,7 +84,7 @@
                             </thead>
                             <tbody class="divide-y divide-slate-200 text-slate-700">
                                 <?php $__empty_1 = true; $__currentLoopData = $lowStockProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                    <tr class="hover:bg-white">
+                                    <tr class="hover:bg-white movement-row" data-movement="<?php echo e($product->movement_category ?? 'special_order'); ?>">
                                         <td class="px-4 py-3">
                                             <input type="checkbox" name="products[<?php echo e($loop->index); ?>][selected]" value="1" class="h-4 w-4 rounded border-slate-300 text-[#105f68] focus:ring-[#105f68]" />
                                             <input type="hidden" name="products[<?php echo e($loop->index); ?>][product_id]" value="<?php echo e($product->id); ?>" />
@@ -81,6 +92,7 @@
                                             <input type="hidden" name="products[<?php echo e($loop->index); ?>][sku]" value="<?php echo e($product->sku); ?>" />
                                         </td>
                                         <td class="px-4 py-3"><?php echo e($product->product_name ?? $product->name); ?></td>
+                                        <td class="px-4 py-3 capitalize text-slate-600"><?php echo e(str_replace('_', ' ', $product->movement_category ?? 'special_order')); ?></td>
                                         <td class="px-4 py-3"><?php echo e($product->supplier_name); ?></td>
                                         <td class="px-4 py-3"><?php echo e($product->sku); ?></td>
                                         <td class="px-4 py-3"><?php echo e($product->stock_quantity); ?></td>
@@ -94,7 +106,7 @@
                                     </tr>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                     <tr>
-                                        <td colspan="8" class="px-4 py-6 text-center text-sm text-slate-500">No low-stock products found.</td>
+                                        <td colspan="9" class="px-4 py-6 text-center text-sm text-slate-500">No low-stock products found.</td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
@@ -111,6 +123,46 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const buttons = document.querySelectorAll('.movement-filter-button');
+            const currentFilter = '<?php echo e($currentFilter ?? 'all'); ?>';
+
+            function setActiveButton(selectedButton) {
+                buttons.forEach(button => {
+                    const isActive = button === selectedButton;
+
+                    button.classList.toggle('bg-[#105f68]', isActive);
+                    button.classList.toggle('bg-white', !isActive);
+                    button.classList.toggle('text-white', isActive);
+                    button.classList.toggle('text-slate-700', !isActive);
+                    button.classList.toggle('border-slate-200', !isActive);
+                    button.classList.toggle('border-[#105f68]', isActive);
+                });
+            }
+
+            buttons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const filter = this.dataset.filter;
+                    // Reload page with filter parameter
+                    const url = new URL(window.location);
+                    url.searchParams.set('movement', filter);
+                    url.searchParams.set('page', '1'); // Reset to page 1 when filter changes
+                    window.location.href = url.toString();
+                });
+            });
+
+            // Set active button based on current filter
+            if (buttons.length) {
+                const activeButton = Array.from(buttons).find(btn => btn.dataset.filter === currentFilter);
+                if (activeButton) {
+                    setActiveButton(activeButton);
+                } else {
+                    setActiveButton(buttons[0]);
+                }
+            }
+        });
+    </script>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal5863877a5171c196453bfa0bd807e410)): ?>
