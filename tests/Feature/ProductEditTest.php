@@ -45,6 +45,6 @@ describe('product editing', function () {
         expect($product->name)->toBe('Yamaha R15');
         expect($product->sku)->toBe('SKU-001');
         expect($product->stock_quantity)->toBe(10);
-        expect($product->unit_price)->toBe(150.00);
+        expect(floatval($product->unit_price))->toBe(150.00);
     });
 });

@@ -53,6 +53,16 @@ class POSTransactionController extends Controller
         $deductRequest = new Request(['items' => $itemsForDeduction]);
         $shopInventoryController->deductFromShopInventory($deductRequest);
 
+        // Deduct from main product stock_quantity and sync alerts
+        $alertService = app(\App\Services\InventoryAlertService::class);
+        foreach ($validated['items'] as $item) {
+            $product = \App\Models\Product::find($item['id']);
+            if ($product) {
+                $product->decrement('stock_quantity', $item['quantity']);
+                $alertService->syncProductAlert($product);
+            }
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Transaction saved successfully',

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\POSTransaction;
 use App\Models\Product;
+use App\Services\InventoryAlertService;
 use App\Services\SalesCategoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -13,6 +14,10 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // Sync inventory alerts on dashboard load
+        $alertService = app(InventoryAlertService::class);
+        $alertService->syncAlerts();
+
         return view('dashboard');
     }
 
@@ -117,12 +122,18 @@ class DashboardController extends Controller
 
         $inventory = [
             'total_products' => Product::query()->where('is_archived', false)->count(),
-            'low_stock' => Product::query()->where('is_archived', false)->whereColumn('stock_quantity', '<=', 'reorder_level')->count(),
+            'low_stock' => Product::query()->where('is_archived', false)->whereColumn('stock_quantity', '<=', 'reorder_level')->where('stock_quantity', '>', 0)->count(),
             'out_of_stock' => Product::query()->where('is_archived', false)->where('stock_quantity', '<=', 0)->count(),
             'in_stock' => Product::query()->where('is_archived', false)->where('stock_quantity', '>', 0)->count(),
         ];
 
         $salesChart = $this->buildSalesTrendData();
+
+        // Sync and get inventory alerts from database
+        $alertService = app(InventoryAlertService::class);
+        $alertService->syncAlerts();
+        $dashboardAlerts = $alertService->getDashboardAlerts();
+        $unreadCount = $alertService->getUnreadCount();
 
         return response()->json([
             'metrics' => [
@@ -165,8 +176,24 @@ class DashboardController extends Controller
             })->values()->all(),
             'inventory' => $inventory,
             'range_label' => $startDate->format('M j, Y') . ' - ' . $endDate->format('M j, Y'),
+            'inventory_alerts' => $alertService->formatNotifications($dashboardAlerts),
+            'inventory_alerts_unread_count' => $unreadCount,
+            'low_stock_notifications' => collect($dashboardAlerts)->map(function ($alert) {
+                return [
+                    'product_id' => $alert->product_id,
+                    'product_name' => $alert->product?->product_name ?? $alert->product?->name,
+                    'stock_quantity' => (int) $alert->current_stock,
+                    'reorder_level' => (int) $alert->reorder_point,
+                    'sku' => $alert->sku,
+                    'is_dashboard_alert' => true,
+                    'dashboard_alert_visible' => true,
+                    'dashboard_alert_delay_ms' => 60000,
+                ];
+            })->values()->all(),
         ]);
     }
+
+
 
     protected function calculateProfit($transactions)
     {

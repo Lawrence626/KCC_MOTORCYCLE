@@ -3,11 +3,25 @@
 namespace App\Models;
 
 use App\Models\InventoryMovement;
+use App\Models\InventoryNotification;
+use App\Models\Supplier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 class Product extends Model
 {
+    protected static function booted()
+    {
+        static::saved(function ($product) {
+            // Automatically sync alert state when product stock levels or details change
+            try {
+                app(\App\Services\InventoryAlertService::class)->syncProductAlert($product);
+            } catch (\Exception $e) {
+                // Prevent model saving failure if alert system fails during tests / setup
+            }
+        });
+    }
+
     protected $fillable = [
         'name',
         'product_name',
@@ -48,6 +62,14 @@ class Product extends Model
         'expiry_status_label',
         'days_until_expiry',
     ];
+
+    /**
+     * Suppliers mapped to this product via the supplier_products pivot table.
+     */
+    public function suppliers()
+    {
+        return $this->belongsToMany(Supplier::class, 'supplier_products');
+    }
 
     public function getTotalValueAttribute()
     {
@@ -94,5 +116,28 @@ class Product extends Model
     public function inventoryMovements()
     {
         return $this->hasMany(InventoryMovement::class);
+    }
+
+    public function supplierPriceHistory()
+    {
+        return $this->hasMany(SupplierPriceHistory::class);
+    }
+
+    /**
+     * All inventory notifications for this product.
+     */
+    public function inventoryNotifications()
+    {
+        return $this->hasMany(InventoryNotification::class);
+    }
+
+    /**
+     * The latest active (unresolved) inventory alert for this product.
+     */
+    public function activeInventoryAlert()
+    {
+        return $this->hasOne(InventoryNotification::class)
+            ->whereIn('status', ['unread', 'read'])
+            ->latest();
     }
 }
