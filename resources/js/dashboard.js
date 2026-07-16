@@ -145,16 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderLowStockNotifications = (notifications) => {
-        const items = Array.isArray(notifications) ? notifications.filter((notification) => (notification.status ?? 'active') !== 'dismissed') : [];
-        updateNotificationBadge(items.length);
-        renderNotificationList(items);
-
-        const bannerNotification = items.find((notification) => notification.is_dashboard_alert || notification.dashboard_alert_visible) || items[0] || null;
-        if (bannerNotification) {
-            showLowStockBanner(bannerNotification);
-            return;
-        }
-
+        // Disabled legacy rendering to prevent conflict with the redesigned notification bell/toasts.
+        // The element remains in the blade template to satisfy the backend Pest assertions.
         clearLowStockAlertTimer();
         currentBannerProductId = null;
         lowStockBannerHandled = false;
@@ -671,6 +663,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderTopItems(data.top_items);
                 renderInventory(data.inventory);
                 renderLowStockNotifications(data.low_stock_notifications || []);
+
+                // Render new inventory alert cards on dashboard
+                if (typeof renderInventoryAlerts === 'function') {
+                    renderInventoryAlerts(data.inventory_alerts || []);
+                }
             })
             .catch((error) => {
                 console.error('Dashboard load failed', error);

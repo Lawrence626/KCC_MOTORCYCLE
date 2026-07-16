@@ -60,6 +60,79 @@
             </div>
         </div>
 
+        {{-- Estimated Delivery Date Card --}}
+        @php
+            $estDate = $purchaseOrder->estimated_delivery_date;
+            $isCompleted = in_array($purchaseOrder->status, ['completed', 'archived']);
+            $daysRemaining = $estDate ? (int) now()->startOfDay()->diffInDays($estDate->startOfDay(), false) : null;
+
+            if ($estDate === null) {
+                $estColor = 'slate';
+                $estBg = 'bg-slate-50 border-slate-200';
+                $estBadgeBg = 'bg-slate-100 text-slate-600';
+                $estLabel = 'Not yet provided';
+                $estIcon = '⏳';
+            } elseif ($isCompleted) {
+                $estColor = 'emerald';
+                $estBg = 'bg-emerald-50 border-emerald-200';
+                $estBadgeBg = 'bg-emerald-100 text-emerald-700';
+                $estLabel = 'Delivered';
+                $estIcon = '✅';
+            } elseif ($daysRemaining < 0) {
+                $estColor = 'rose';
+                $estBg = 'bg-rose-50 border-rose-200';
+                $estBadgeBg = 'bg-rose-100 text-rose-700';
+                $estLabel = abs($daysRemaining) . ' ' . Str::plural('day', abs($daysRemaining)) . ' overdue';
+                $estIcon = '🔴';
+            } elseif ($daysRemaining <= 2) {
+                $estColor = 'amber';
+                $estBg = 'bg-amber-50 border-amber-200';
+                $estBadgeBg = 'bg-amber-100 text-amber-700';
+                $estLabel = $daysRemaining === 0 ? 'Due today' : 'Arriving in ' . $daysRemaining . ' ' . Str::plural('day', $daysRemaining);
+                $estIcon = '🟡';
+            } else {
+                $estColor = 'emerald';
+                $estBg = 'bg-emerald-50 border-emerald-200';
+                $estBadgeBg = 'bg-emerald-100 text-emerald-700';
+                $estLabel = 'Arriving in ' . $daysRemaining . ' ' . Str::plural('day', $daysRemaining);
+                $estIcon = '🟢';
+            }
+        @endphp
+        <div class="rounded-[26px] border {{ $estBg }} p-6 shadow-sm">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <div class="space-y-3">
+                    <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Estimated Delivery Date</p>
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">{{ $estIcon }}</span>
+                        <div>
+                            <p class="text-xl font-semibold text-slate-900">
+                                {{ $estDate ? $estDate->format('M j, Y') : 'Not yet provided' }}
+                            </p>
+                            <span class="mt-1 inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold {{ $estBadgeBg }}">
+                                {{ $estLabel }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                @if(auth()->user() && auth()->user()->role === 'admin')
+                    <form method="POST" action="{{ route('order.update_estimated_delivery', $purchaseOrder) }}" class="flex items-end gap-2">
+                        @csrf
+                        @method('PUT')
+                        <label class="block text-sm">
+                            <span class="text-xs font-semibold text-slate-500">{{ $estDate ? 'Update date' : 'Set date' }}</span>
+                            <input type="date" name="estimated_delivery_date"
+                                   value="{{ $estDate ? $estDate->format('Y-m-d') : '' }}"
+                                   required
+                                   class="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" />
+                        </label>
+                        <button type="submit" class="rounded-2xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-emerald-500/20 hover:bg-emerald-700">
+                            {{ $estDate ? 'Update' : 'Save' }}
+                        </button>
+                    </form>
+                @endif
+            </div>
+        </div>
+
         <div class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>

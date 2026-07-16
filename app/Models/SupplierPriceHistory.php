@@ -16,6 +16,7 @@ class SupplierPriceHistory extends Model
         'recommendation',
         'reason',
         'suggested_retail_price',
+        'is_dismissed',
     ];
 
     protected $casts = [
@@ -23,6 +24,7 @@ class SupplierPriceHistory extends Model
         'supplier_cost' => 'decimal:2',
         'change_percentage' => 'decimal:2',
         'suggested_retail_price' => 'decimal:2',
+        'is_dismissed' => 'boolean',
     ];
 
     public function product()

@@ -51,7 +51,7 @@
                                 @forelse($outOfStockProducts as $product)
                                     <tr class="hover:bg-slate-50 transition">
                                         <td class="px-3 py-3 font-semibold text-slate-900">
-                                            <div class="truncate">{{ $product->name }}</div>
+                                            <div class="truncate">{{ $product->product_name ?: $product->name }}</div>
                                         </td>
                                         <td class="px-3 py-3 text-slate-600">
                                             <div class="truncate">{{ $product->category }}</div>
@@ -110,7 +110,7 @@
                                 @forelse($lowStockProducts as $product)
                                     <tr class="hover:bg-slate-50 transition">
                                         <td class="px-3 py-3 font-semibold text-slate-900">
-                                            <div class="truncate">{{ $product->name }}</div>
+                                            <div class="truncate">{{ $product->product_name ?: $product->name }}</div>
                                         </td>
                                         <td class="px-3 py-3 text-slate-900">
                                             <div class="truncate">{{ number_format($product->stock_quantity) }}</div>
@@ -150,7 +150,7 @@
     @php
         $outOfStockJs = $outOfStockProducts->map(function($product) {
             return [
-                'name' => $product->name,
+                'name' => $product->product_name ?: $product->name,
                 'category' => $product->category,
                 'sku' => $product->sku,
                 'last_restock_date' => optional($product->last_restock_date)->format('Y-m-d'),
@@ -159,7 +159,7 @@
 
         $lowStockJs = $lowStockProducts->map(function($product) {
             return [
-                'name' => $product->name,
+                'name' => $product->product_name ?: $product->name,
                 'stock_quantity' => $product->stock_quantity,
                 'reorder_level' => $product->reorder_level,
                 'need' => max(0, $product->reorder_level - $product->stock_quantity),

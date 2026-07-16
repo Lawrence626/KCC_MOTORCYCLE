@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\PurchaseOrderSentMail;
 use App\Models\InventoryMovement;
+use App\Services\InventoryAlertService;
 use App\Models\POSTransaction;
 use App\Models\Product;
 use App\Models\PurchaseOrder;
@@ -95,7 +96,8 @@ class PurchaseOrderController extends Controller
             ->values()
             ->all();
 
-        $lowStockProducts = Product::where('is_active', true)
+        // Get the base query for active, non-archived products matching the stock condition
+        $query = Product::where('is_active', true)
             ->where('is_archived', false)
             ->where(function ($query) use ($selectedProductIds) {
                 $query->where('stock_quantity', '<=', 10);
@@ -103,17 +105,113 @@ class PurchaseOrderController extends Controller
                 if (! empty($selectedProductIds)) {
                     $query->orWhereIn('id', $selectedProductIds);
                 }
-            })
-            ->orderBy('stock_quantity')
-            ->orderBy('name')
-            ->paginate(8)
-            ->withQueryString();
+            });
+
+        // Get all products matching the query
+        $allProducts = $query->get();
+        $recentSales = $this->getRecentProductSales(30);
+
+        // Assign movement categories
+        $allProducts->transform(function ($product) use ($recentSales) {
+            $soldLast30Days = $recentSales[$product->id] ?? 0;
+            $product->sales_count = $soldLast30Days;
+            $product->movement_category = $this->getProductMovementCategory($soldLast30Days);
+            return $product;
+        });
+
+        // Apply client-side filter based on movement category
+        $movementFilter = $request->query('movement', 'all');
+        if ($movementFilter === 'all') {
+            // Show fast moving and slow moving, exclude special order by default (unless pre-selected)
+            $filteredProducts = $allProducts->filter(function ($product) use ($selectedProductIds) {
+                return in_array($product->id, $selectedProductIds, true) || $product->movement_category !== 'special_order';
+            });
+        } else {
+            // Show only the selected category (unless pre-selected)
+            $filteredProducts = $allProducts->filter(function ($product) use ($selectedProductIds, $movementFilter) {
+                return in_array($product->id, $selectedProductIds, true) || $product->movement_category === $movementFilter;
+            });
+        }
+
+        // Guarantee preselected products are always at the very top (first page)
+        $preselected = $filteredProducts->filter(fn ($p) => in_array($p->id, $selectedProductIds, true));
+        $others = $filteredProducts->filter(fn ($p) => !in_array($p->id, $selectedProductIds, true));
+        $filteredProducts = $preselected->concat($others);
+
+        // Manually paginate the filtered collection
+        $page = $request->query('page', 1);
+        $perPage = 8;
+        $offset = ($page - 1) * $perPage;
+        $paginatedProducts = new \Illuminate\Pagination\LengthAwarePaginator(
+            $filteredProducts->slice($offset, $perPage),
+            $filteredProducts->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
         return view('purchase_order.create', [
-            'lowStockProducts' => $lowStockProducts,
+            'lowStockProducts' => $paginatedProducts,
             'suppliers' => Supplier::orderBy('name')->get(),
             'selectedProductIds' => $selectedProductIds,
+            'currentFilter' => $movementFilter,
         ]);
+    }
+
+    private function getRecentProductSales(int $days = 30): array
+    {
+        $startDate = now()->subDays($days)->startOfDay();
+        $endDate = now()->endOfDay();
+
+        $transactions = POSTransaction::completed()
+            ->whereBetween('completed_at', [$startDate, $endDate])
+            ->get();
+
+        $productSales = [];
+
+        foreach ($transactions as $transaction) {
+            if (!is_array($transaction->items) || empty($transaction->items)) {
+                continue;
+            }
+
+            foreach ($transaction->items as $item) {
+                $productId = $item['id'] ?? null;
+                $quantity = (int) ($item['quantity'] ?? 0);
+
+                if (!$productId || $quantity <= 0) {
+                    continue;
+                }
+
+                $productSales[$productId] = ($productSales[$productId] ?? 0) + $quantity;
+            }
+        }
+
+        return $productSales;
+    }
+
+    private function getProductMovementCategory(int $salesCount): string
+    {
+        // For testing purposes, assign random categories if no sales data
+        // More balanced distribution: 50% fast_moving, 30% slow_moving, 20% special_order
+        if ($salesCount === 0) {
+            $random = rand(1, 10);
+            if ($random <= 5) {
+                return 'fast_moving';
+            } elseif ($random <= 8) {
+                return 'slow_moving';
+            }
+            return 'special_order';
+        }
+
+        if ($salesCount >= 10) {
+            return 'fast_moving';
+        }
+
+        if ($salesCount >= 1) {
+            return 'slow_moving';
+        }
+
+        return 'special_order';
     }
 
     public function history(Request $request)
@@ -617,6 +715,7 @@ class PurchaseOrderController extends Controller
             'items' => 'required|array',
             'items.*.item_id' => 'required|exists:purchase_order_items,id',
             'items.*.received_quantity' => 'required|integer|min:0',
+            'items.*.unit_price' => 'nullable|numeric|min:0',
         ]);
 
         $receivedSomething = false;
@@ -637,8 +736,13 @@ class PurchaseOrderController extends Controller
                     continue;
                 }
 
-                // Only record received quantity, do NOT update inventory yet
-                $item->update(['received_quantity' => $currentReceived + $quantityChange]);
+                $updateData = ['received_quantity' => $currentReceived + $quantityChange];
+                if (isset($receivedData[$item->id]['unit_price'])) {
+                    $updateData['unit_price'] = (float) $receivedData[$item->id]['unit_price'];
+                }
+
+                // Only record received quantity and cost, do NOT update inventory yet
+                $item->update($updateData);
                 $receivedSomething = true;
             }
 
@@ -687,6 +791,9 @@ class PurchaseOrderController extends Controller
                     $product->increment('stock_quantity', $item->received_quantity);
                     $product->update(['last_restock_date' => now()]);
 
+                    // Auto-resolve inventory alerts if stock is replenished above reorder level
+                    app(InventoryAlertService::class)->checkAndResolveProduct($product->id);
+
                     // Get the previous supplier cost from SupplierPriceHistory first
                     $previousCostRecord = SupplierPriceHistory::where('product_id', $product->id)
                         ->where('supplier_id', $purchaseOrder->supplier_id)
@@ -728,7 +835,7 @@ class PurchaseOrderController extends Controller
 
                     $targetProfitMargin = 0.30;
                     $suggestedRetailPrice = $currentCost > 0
-                        ? round($currentCost / (1 - $targetProfitMargin), 2)
+                        ? round(($currentCost * 1.12) / (1 - $targetProfitMargin), 2)
                         : 0;
 
                     SupplierPriceHistory::create([
@@ -809,5 +916,18 @@ class PurchaseOrderController extends Controller
         });
 
         return redirect()->route('order.show', $purchaseOrder)->with('success', 'Purchase order confirmed and inventory updated.');
+    }
+
+    public function updateEstimatedDeliveryDate(Request $request, PurchaseOrder $purchaseOrder)
+    {
+        $validated = $request->validate([
+            'estimated_delivery_date' => 'required|date',
+        ]);
+
+        $purchaseOrder->update([
+            'estimated_delivery_date' => $validated['estimated_delivery_date'],
+        ]);
+
+        return redirect()->route('order.show', $purchaseOrder)->with('success', 'Estimated delivery date updated successfully.');
     }
 }

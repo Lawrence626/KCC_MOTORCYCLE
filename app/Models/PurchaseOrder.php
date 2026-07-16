@@ -14,6 +14,7 @@ class PurchaseOrder extends Model
         'status',
         'sync_status',
         'expected_delivery_date',
+        'estimated_delivery_date',
         'notes',
         'total_amount',
         'approved_at',
@@ -24,6 +25,7 @@ class PurchaseOrder extends Model
 
     protected $casts = [
         'expected_delivery_date' => 'date',
+        'estimated_delivery_date' => 'date',
         'approved_at' => 'datetime',
         'sent_to_supplier_at' => 'datetime',
         'in_transit_at' => 'datetime',
