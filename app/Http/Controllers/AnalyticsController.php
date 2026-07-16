@@ -237,9 +237,9 @@ class AnalyticsController extends Controller
     {
         $products = $this->activeProducts();
 
-        $averageUnitPrice = $products->avg('unit_price') ?: 0;
-        $mostExpensive = $products->orderByDesc('unit_price')->first();
-        $cheapest = $products->orderBy('unit_price')->first();
+        $averageUnitPrice = (clone $products)->avg('unit_price') ?: 0;
+        $mostExpensive = (clone $products)->orderByDesc('unit_price')->first();
+        $cheapest = (clone $products)->orderBy('unit_price')->first();
 
         $priceUpdates = InventoryMovement::where('type', 'price_update')
             ->where(function ($query) {

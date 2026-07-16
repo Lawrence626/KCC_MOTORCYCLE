@@ -17,12 +17,24 @@
             <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
                 <p class="text-[10px] uppercase tracking-[0.24em] text-slate-400">Most expensive SKU</p>
                 <p class="mt-2 text-xl font-semibold text-slate-900">{{ $mostExpensive?->product_name ?: ($mostExpensive?->name ?? '—') }}</p>
-                <p class="mt-1 text-xs text-slate-500">₱{{ number_format($mostExpensive?->unit_price ?? 0, 2) }}</p>
+                <p class="mt-1 text-xs text-slate-500 flex items-center gap-1.5">
+                    <span>₱{{ number_format($mostExpensive?->unit_price ?? 0, 2) }}</span>
+                    @if($mostExpensive?->sku)
+                        <span class="text-[10px]">&bull;</span>
+                        <span class="font-mono text-[11px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">{{ $mostExpensive->sku }}</span>
+                    @endif
+                </p>
             </div>
             <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
                 <p class="text-[10px] uppercase tracking-[0.24em] text-slate-400">Cheapest SKU</p>
                 <p class="mt-2 text-xl font-semibold text-slate-900">{{ $cheapest?->product_name ?: ($cheapest?->name ?? '—') }}</p>
-                <p class="mt-1 text-xs text-slate-500">₱{{ number_format($cheapest?->unit_price ?? 0, 2) }}</p>
+                <p class="mt-1 text-xs text-slate-500 flex items-center gap-1.5">
+                    <span>₱{{ number_format($cheapest?->unit_price ?? 0, 2) }}</span>
+                    @if($cheapest?->sku)
+                        <span class="text-[10px]">&bull;</span>
+                        <span class="font-mono text-[11px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">{{ $cheapest->sku }}</span>
+                    @endif
+                </p>
             </div>
         </div>
 
