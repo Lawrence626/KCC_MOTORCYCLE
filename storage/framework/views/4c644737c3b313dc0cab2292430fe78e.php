@@ -1,4 +1,13 @@
-<x-layouts.app :title="__('Warehouse Mobile Scanner')">
+<?php if (isset($component)) { $__componentOriginal5863877a5171c196453bfa0bd807e410 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal5863877a5171c196453bfa0bd807e410 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.layouts.app','data' => ['title' => __('Warehouse Mobile Scanner')]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('layouts.app'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(__('Warehouse Mobile Scanner'))]); ?>
     <div class="min-h-screen bg-slate-900 flex flex-col">
         <!-- Header -->
         <div class="bg-slate-800 px-4 py-3 flex items-center justify-between">
@@ -6,7 +15,7 @@
                 <h1 class="text-lg font-bold text-white">Warehouse Scanner</h1>
                 <p class="text-xs text-slate-400">Scan QR codes to add new stock</p>
             </div>
-            <button onclick="window.location.href='{{ route('warehouse.management') }}'" class="rounded-full bg-slate-700 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-slate-600">
+            <button onclick="window.location.href='<?php echo e(route('warehouse.management')); ?>'" class="rounded-full bg-slate-700 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-slate-600">
                 Back to Warehouse
             </button>
         </div>
@@ -270,4 +279,14 @@
             }
         });
     </script>
-</x-layouts.app>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal5863877a5171c196453bfa0bd807e410)): ?>
+<?php $attributes = $__attributesOriginal5863877a5171c196453bfa0bd807e410; ?>
+<?php unset($__attributesOriginal5863877a5171c196453bfa0bd807e410); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal5863877a5171c196453bfa0bd807e410)): ?>
+<?php $component = $__componentOriginal5863877a5171c196453bfa0bd807e410; ?>
+<?php unset($__componentOriginal5863877a5171c196453bfa0bd807e410); ?>
+<?php endif; ?>
+<?php /**PATH C:\Users\Admin\Desktop\WEQW\KCC_MOTORCYCLE\resources\views/warehouse_management/mobile-scanner.blade.php ENDPATH**/ ?>

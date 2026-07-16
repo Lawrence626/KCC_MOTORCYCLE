@@ -5,7 +5,7 @@
     $showAction = $showAction ?? true;
 @endphp
 
-<div class="mt-6 overflow-hidden rounded-[26px] border border-slate-200">
+<div class="mt-6 overflow-hidden rounded-[10px] border border-slate-200">
     <table class="min-w-full text-left text-sm">
         <thead class="bg-slate-50 text-slate-500 text-[11px] uppercase tracking-[0.18em]">
             <tr>
@@ -98,7 +98,7 @@
                     </td>
                     @if($showAction)
                         <td class="px-4 py-3">
-                            <a href="{{ route('order.show', $order) }}" class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-200">View Details</a>
+                            <a href="{{ route('order.show', $order) }}" class="inline-flex rounded-[10px] bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-200">View Details</a>
                         </td>
                     @endif
                 </tr>

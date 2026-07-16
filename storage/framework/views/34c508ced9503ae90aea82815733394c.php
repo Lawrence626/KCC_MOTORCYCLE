@@ -14,32 +14,33 @@
             </tr>
         </thead>
         <tbody class="divide-y divide-slate-200 text-slate-700">
-            @forelse($backOrders as $item)
-                @php
+            <?php $__empty_1 = true; $__currentLoopData = $backOrders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                <?php
                     $purchaseOrder = $item->purchaseOrder;
                     $receivedQuantity = $item->received_quantity ?? 0;
                     $remainingQuantity = max(0, $item->quantity - $receivedQuantity);
-                @endphp
+                ?>
                 <tr class="hover:bg-slate-50">
-                    <td class="px-4 py-3 font-semibold">{{ $purchaseOrder->order_number }}</td>
-                    <td class="px-4 py-3">{{ $purchaseOrder->supplier_name }}</td>
-                    <td class="px-4 py-3">{{ $item->product_name }}</td>
-                    <td class="px-4 py-3">{{ $item->quantity }}</td>
-                    <td class="px-4 py-3">{{ $receivedQuantity }}</td>
-                    <td class="px-4 py-3">{{ $remainingQuantity }}</td>
-                    <td class="px-4 py-3">{{ $purchaseOrder->created_at->format('M j') }}</td>
+                    <td class="px-4 py-3 font-semibold"><?php echo e($purchaseOrder->order_number); ?></td>
+                    <td class="px-4 py-3"><?php echo e($purchaseOrder->supplier_name); ?></td>
+                    <td class="px-4 py-3"><?php echo e($item->product_name); ?></td>
+                    <td class="px-4 py-3"><?php echo e($item->quantity); ?></td>
+                    <td class="px-4 py-3"><?php echo e($receivedQuantity); ?></td>
+                    <td class="px-4 py-3"><?php echo e($remainingQuantity); ?></td>
+                    <td class="px-4 py-3"><?php echo e($purchaseOrder->created_at->format('M j')); ?></td>
                     <td class="px-4 py-3">
                         <span class="inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-semibold text-amber-800">Waiting for Supplier</span>
                     </td>
                     <td class="px-4 py-3">
-                        <a href="{{ route('order.show', $purchaseOrder) }}" class="inline-flex rounded-[10px] bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-200">View Details</a>
+                        <a href="<?php echo e(route('order.show', $purchaseOrder)); ?>" class="inline-flex rounded-[10px] bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-200">View Details</a>
                     </td>
                 </tr>
-            @empty
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <tr>
                     <td colspan="9" class="px-4 py-6 text-center text-sm text-slate-500">No back ordered items found.</td>
                 </tr>
-            @endforelse
+            <?php endif; ?>
         </tbody>
     </table>
 </div>
+<?php /**PATH C:\Users\Admin\Desktop\WEQW\KCC_MOTORCYCLE\resources\views/purchase_order/partials/back-orders-table.blade.php ENDPATH**/ ?>

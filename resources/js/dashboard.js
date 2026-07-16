@@ -156,13 +156,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     const CATEGORY_DEFS = [
-        { name: 'Exhaust', color: '#06b6d4' },
-        { name: 'Helmets', color: '#a3e635' },
-        { name: 'Tires', color: '#fbbf24' },
-        { name: 'Brakes', color: '#ef4444' },
-        { name: 'Oils', color: '#fb923c' },
+        { name: 'Exhaust', color: '#00833b' },
+        { name: 'Helmets', color: '#4bbb00' },
+        { name: 'Tires', color: '#dee200' },
+        { name: 'Brakes', color: '#ff3c00' },
+        { name: 'Oils', color: '#ffa600' },
         { name: 'Batteries', color: '#3b82f6' },
-        { name: 'Accessories', color: '#10b981' },
+        { name: 'Accessories', color: '#0064d6' },
     ];
     const INACTIVE_DOT_COLOR = '#7e7e7e8c'; // muted/gray — kapag walang benta ang category sa araw na 'yon
     const EMPTY_RING_COLOR = '#7e7e7e8c'; // flat gray track kapag walang laman/sales
@@ -210,7 +210,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // ---- Neon glow plugin: kada segment na may benta ("active"), gumuhit ng
     // dagdag na glowing stroke sa ibabaw ng arc gamit ang sariling kulay nito
     // (parehong "neon glow" technique gaya ng ginamit sa Sales Overview line
-    // chart, pero ang kulay ay galing sa palette mo). ----
+    // chart, pero ang kulay ay galing sa palette mo). NOTE: hindi na ito
+    // ginagamit sa categoryChart para tumugma sa flat/segmented na reference
+    // design (see renderCategoryChart -> plugins: []). Iniwan lang dito kung
+    // sakaling gusto mo ulit i-enable balang araw. ----
     const glowActiveSegmentsPlugin = {
         id: 'glowActiveSegments',
         afterDatasetsDraw(chart) {
@@ -282,17 +285,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // Use incoming data directly from backend - support both predefined and custom categories
         const incomingLabels = chartData?.labels || [];
         const incomingValues = chartData?.data || [];
-        
+
         // Create a color map for predefined categories
         const colorMap = {};
         CATEGORY_DEFS.forEach(cat => {
             colorMap[cat.name.toLowerCase()] = cat.color;
         });
-        
+
         // Color palette for custom categories (not in predefined list)
         const customColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
         let customColorIndex = 0;
-        
+
         // Assign colors to incoming categories
         const categoryColors = incomingLabels.map((label, index) => {
             const lowerLabel = String(label).trim().toLowerCase();
@@ -315,6 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
         window.dashboardCategoryChart = new Chart(ctx, {
             type: 'doughnut',
+            // Walang glow plugin dito — flat/segmented na itsura lang, gaya ng reference image.
             plugins: [],
             data: {
                 labels: chartLabels,
@@ -325,25 +329,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     borderWidth: 0,
                     hoverBorderColor: 'transparent',
                     hoverBorderWidth: 0,
-                    borderRadius: 8,
+                    // Walang rounded ends para tuloy-tuloy/solid ang buong circle.
+                    borderRadius: 0,
                     hoverOffset: 0,
                 }],
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '55%',
-                circumference: 270,
-                rotation: -135,
+                cutout: '62%',
+                // Walang gaps sa pagitan ng segments — buong/solid na circle.
+                spacing: 0,
+                circumference: 360,
+                rotation: -90,
                 layout: { padding: 0 },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
                         enabled: !isEmpty,
                         backgroundColor: '#1a1a1a',
-                        titleColor: '#32FFFD',
+                        titleColor: '#ffffff',
                         bodyColor: '#ffffff',
-                        borderColor: '#32FFFD',
+                        borderColor: '#105f68',
                         borderWidth: 1,
                         padding: 8,
                         callbacks: {
@@ -423,8 +430,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: comparisonChart.datasets.map((dataset, index) => ({
                     label: dataset.label,
                     data: dataset.data,
-                    backgroundColor: dataset.backgroundColor || (index === 0 ? '#175000' : '#175000'),
-                    borderColor: dataset.borderColor || (index === 0 ? '#175000' : '#175000'),
+                    backgroundColor: '#105f68',
+                    borderColor: '#105f68',
                     borderWidth: 1,
                 })),
             },
@@ -435,9 +442,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     legend: { position: 'top', labels: { font: { size: 11 } } },
                     tooltip: {
                         backgroundColor: '#1a1a1a',
-                        titleColor: '#84e900',
+                        titleColor: '#ffffff',
                         bodyColor: '#ffffff',
-                        borderColor: '#84e900',
+                        borderColor: '#105f68',
                         borderWidth: 1,
                         padding: 10,
                         displayColors: false,
@@ -585,15 +592,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: [{
                     label: 'Revenue',
                     data: chartData.values,
-                    borderColor: '#059669',
+                    borderColor: '#105f68',
                     backgroundColor: 'transparent',
                     borderWidth: 2.5,
                     fill: false,
                     tension: 0.4,
                     pointRadius: 0,
                     pointHoverRadius: 5,
-                    pointBackgroundColor: '#059669',
-                    pointHoverBackgroundColor: '#059669',
+                    pointBackgroundColor: '#105f68',
+                    pointHoverBackgroundColor: '#105f68',
                     pointHoverBorderColor: '#0f0f0f',
                     pointHoverBorderWidth: 2,
                 }],
@@ -613,9 +620,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         mode: 'index',
                         intersect: false,
                         backgroundColor: '#1a1a1a',
-                        titleColor: '#059669',
+                        titleColor: '#ffffff',
                         bodyColor: '#ffffff',
-                        borderColor: '#059669',
+                        borderColor: '#105f68',
                         borderWidth: 1,
                         padding: 10,
                         displayColors: false,

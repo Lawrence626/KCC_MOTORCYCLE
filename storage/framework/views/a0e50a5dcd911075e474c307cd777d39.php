@@ -1,10 +1,10 @@
 <div class="w-full md:w-70 text-white flex flex-col h-screen shadow-2xl border-r border-slate-700 "
      style="background: linear-gradient( #000000, #2b2b2b); position: relative;">
 
-    <a href="{{ route('dashboard') }}" class="px-6 py-5 flex-shrink-0">
+    <a href="<?php echo e(route('dashboard')); ?>" class="px-6 py-5 flex-shrink-0">
         <div class="flex flex-col items-center justify-center">
             <div class="w-48">
-                <img src="{{ asset('images/Logo.png') }}" alt="KCC Logo" class="w-full h-auto object-contain" />
+                <img src="<?php echo e(asset('images/Logo.png')); ?>" alt="KCC Logo" class="w-full h-auto object-contain" />
             </div>
         </div>
     </a>
@@ -22,19 +22,19 @@
 
     <nav class="flex-1 py-4 space-y-2 overflow-y-auto overflow-x-visible sidebar-scroll">
 
-        <a href="{{ route('dashboard') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-2.5 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('dashboard'), 'text-slate-300 border-transparent' => !request()->routeIs('dashboard')])>
+        <a href="<?php echo e(route('dashboard')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-3 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('dashboard'), 'text-slate-300 border-transparent' => !request()->routeIs('dashboard')]); ?>">
             <svg class="w-5.5 h-5.5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M4 11.5 L12 4 L20 11.5 V20 H14 V14 H10 V20 H4 Z" />
             </svg>
             <span>Dashboard</span>
         </a>
 
-        @if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk'))
-        @php
+        <?php if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk')): ?>
+        <?php
             $isInventoryActive = request()->routeIs('inventory.monitoring') || request()->routeIs('allstocks') || request()->routeIs('product.categorization') || request()->routeIs('item.disposal') || request()->routeIs('reverse-logistics');
-        @endphp
-        <div class="group space-y-1 @if($isInventoryActive) open @endif">
-            <button type="button" @class(['sidebar-group-toggle w-full flex items-center justify-between gap-3 pl-6 pr-4 py-2.5 text-sm font-medium cursor-pointer text-slate-300 border-l-[3px] border-transparent'])>
+        ?>
+        <div class="group space-y-1 <?php if($isInventoryActive): ?> open <?php endif; ?>">
+            <button type="button" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-group-toggle w-full flex items-center justify-between gap-3 pl-6 pr-4 py-3 text-sm font-medium cursor-pointer text-slate-300 border-l-[3px] border-transparent']); ?>">
                 <span class="flex items-center gap-2">
                     <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                         <rect x="3" y="7" width="18" height="11" rx="1.2" />
@@ -50,30 +50,30 @@
                 </svg>
             </button>
             <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-cyan-400/40 space-y-0.5 mt-1">
-                <a href="{{ route('inventory.monitoring') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('inventory.monitoring'), 'text-slate-400' => !request()->routeIs('inventory.monitoring')])>
+                <a href="<?php echo e(route('inventory.monitoring')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('inventory.monitoring'), 'text-slate-400' => !request()->routeIs('inventory.monitoring')]); ?>">
                     <span>Inventory Monitoring</span>
                 </a>
-                <a href="{{ route('allstocks') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('allstocks'), 'text-slate-400' => !request()->routeIs('allstocks')])>
+                <a href="<?php echo e(route('allstocks')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('allstocks'), 'text-slate-400' => !request()->routeIs('allstocks')]); ?>">
                     <span>All Stocks</span>
                 </a>
-                <a href="{{ route('product.categorization') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('product.categorization'), 'text-slate-400' => !request()->routeIs('product.categorization')])>
+                <a href="<?php echo e(route('product.categorization')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('product.categorization'), 'text-slate-400' => !request()->routeIs('product.categorization')]); ?>">
                     <span>Product Categorization</span>
                 </a>
-                <a href="{{ route('item.disposal') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('item.disposal'), 'text-slate-400' => !request()->routeIs('item.disposal')])>
+                <a href="<?php echo e(route('item.disposal')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('item.disposal'), 'text-slate-400' => !request()->routeIs('item.disposal')]); ?>">
                     <span>Item Disposal List</span>
                 </a>
-                <a href="{{ route('reverse-logistics') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('reverse-logistics'), 'text-slate-400' => !request()->routeIs('reverse-logistics')])>
+                <a href="<?php echo e(route('reverse-logistics')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('reverse-logistics'), 'text-slate-400' => !request()->routeIs('reverse-logistics')]); ?>">
                     <span>Reverse Logistics</span>
                 </a>
             </div>
         </div>
 
-        @elseif(auth()->user() && (auth()->user()->role === 'cashier' || auth()->user()->role === 'warehouse_personnel'))
-        @php
+        <?php elseif(auth()->user() && (auth()->user()->role === 'cashier' || auth()->user()->role === 'warehouse_personnel')): ?>
+        <?php
             $isInventoryStaffActive = request()->routeIs('inventory.monitoring') || request()->routeIs('allstocks') || request()->routeIs('product.categorization');
-        @endphp
-        <div class="group space-y-1 @if($isInventoryStaffActive) open @endif">
-            <button type="button" @class(['sidebar-group-toggle w-full flex items-center justify-between gap-3 pl-6 pr-4 py-2.5 text-sm font-medium cursor-pointer text-slate-300 border-l-[3px] border-transparent'])>
+        ?>
+        <div class="group space-y-1 <?php if($isInventoryStaffActive): ?> open <?php endif; ?>">
+            <button type="button" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-group-toggle w-full flex items-center justify-between gap-3 pl-6 pr-4 py-3 text-sm font-medium cursor-pointer text-slate-300 border-l-[3px] border-transparent']); ?>">
                 <span class="flex items-center gap-2">
                     <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                         <rect x="2.5" y="6.5" width="19" height="12" rx="1.4" />
@@ -89,27 +89,27 @@
                 </svg>
             </button>
             <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-cyan-400/40 space-y-0.5 mt-1">
-                <a href="{{ route('inventory.monitoring') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('inventory.monitoring'), 'text-slate-400' => !request()->routeIs('inventory.monitoring')])>
+                <a href="<?php echo e(route('inventory.monitoring')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('inventory.monitoring'), 'text-slate-400' => !request()->routeIs('inventory.monitoring')]); ?>">
                     <span>Inventory Monitoring</span>
                 </a>
-                @if(auth()->user()->role === 'warehouse_personnel')
-                <a href="{{ route('allstocks') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('allstocks'), 'text-slate-400' => !request()->routeIs('allstocks')])>
+                <?php if(auth()->user()->role === 'warehouse_personnel'): ?>
+                <a href="<?php echo e(route('allstocks')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('allstocks'), 'text-slate-400' => !request()->routeIs('allstocks')]); ?>">
                     <span>All Stocks</span>
                 </a>
-                @endif
-                <a href="{{ route('product.categorization') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('product.categorization'), 'text-slate-400' => !request()->routeIs('product.categorization')])>
+                <?php endif; ?>
+                <a href="<?php echo e(route('product.categorization')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('product.categorization'), 'text-slate-400' => !request()->routeIs('product.categorization')]); ?>">
                     <span>Product Categorization</span>
                 </a>
             </div>
         </div>
-        @endif
+        <?php endif; ?>
 
-        @if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'cashier'))
-        @php
+        <?php if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'cashier')): ?>
+        <?php
             $isPosActive = request()->routeIs('pos.terminal') || request()->routeIs('replacing.items');
-        @endphp
-        <div class="group space-y-1 @if($isPosActive) open @endif">
-            <button type="button" @class(['sidebar-group-toggle w-full flex items-center justify-between gap-3 pl-6 pr-4 py-2.5 text-sm font-medium cursor-pointer text-slate-300 border-l-[3px] border-transparent'])>
+        ?>
+        <div class="group space-y-1 <?php if($isPosActive): ?> open <?php endif; ?>">
+            <button type="button" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-group-toggle w-full flex items-center justify-between gap-3 pl-6 pr-4 py-3 text-sm font-medium cursor-pointer text-slate-300 border-l-[3px] border-transparent']); ?>">
                 <span class="flex items-center gap-3">
                     <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M2.25 2.25a.75.75 0 0 0 0 1.5h1.386c.17 0 .318.114.362.278l2.558 9.592a3.752 3.752 0 0 0-2.806 3.63c0 .414.336.75.75.75h15.75a.75.75 0 0 0 0-1.5H5.378A2.25 2.25 0 0 1 7.5 15h11.218a.75.75 0 0 0 .674-.421 60.358 60.358 0 0 0 2.96-7.228.75.75 0 0 0-.525-.965A60.864 60.864 0 0 0 5.68 5.29l-.31-1.163a1.875 1.875 0 0 0-1.81-1.377H2.25ZM3.75 20.25a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM16.5 20.25a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Z" />
@@ -121,22 +121,22 @@
                 </svg>
             </button>
             <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-cyan-400/40 space-y-0.5 mt-1">
-                <a href="{{ route('pos.terminal') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('pos.terminal'), 'text-slate-400' => !request()->routeIs('pos.terminal')])>
+                <a href="<?php echo e(route('pos.terminal')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('pos.terminal'), 'text-slate-400' => !request()->routeIs('pos.terminal')]); ?>">
                     <span>POS Terminal</span>
                 </a>
-                <a href="{{ route('replacing.items') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('replacing.items'), 'text-slate-400' => !request()->routeIs('replacing.items')])>
+                <a href="<?php echo e(route('replacing.items')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('replacing.items'), 'text-slate-400' => !request()->routeIs('replacing.items')]); ?>">
                     <span>Records of Replacing Items</span>
                 </a>
             </div>
         </div>
-        @endif
+        <?php endif; ?>
 
-        @if(auth()->user() && auth()->user()->role === 'admin')
-        @php
+        <?php if(auth()->user() && auth()->user()->role === 'admin'): ?>
+        <?php
             $isPoActive = request()->routeIs('order.*') || request()->routeIs('purchase.requests') || request()->routeIs('received.orders');
-        @endphp
-        <div class="group space-y-1 @if($isPoActive) open @endif">
-            <button type="button" @class(['sidebar-group-toggle w-full flex items-center justify-between gap-3 pl-6 pr-4 py-2.5 text-sm font-medium cursor-pointer text-slate-300 border-l-[3px] border-transparent'])>
+        ?>
+        <div class="group space-y-1 <?php if($isPoActive): ?> open <?php endif; ?>">
+            <button type="button" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-group-toggle w-full flex items-center justify-between gap-3 pl-6 pr-4 py-3 text-sm font-medium cursor-pointer text-slate-300 border-l-[3px] border-transparent']); ?>">
                 <span class="flex items-center gap-3">
                     <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                         <path fill-rule="evenodd" d="M7.5 3.375c0-1.036.84-1.875 1.875-1.875h.375a3.75 3.75 0 0 1 3.75 3.75v1.875c0 1.036.84 1.875 1.875 1.875h1.875A3.75 3.75 0 0 1 21 12.75v3.375C21 17.161 20.16 18 19.125 18h-9.75A1.875 1.875 0 0 1 7.5 16.125V3.375Z" clip-rule="evenodd" />
@@ -149,22 +149,22 @@
                 </svg>
             </button>
             <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-cyan-400/40 space-y-0.5 mt-1">
-                <a href="{{ route('order.management') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('order.*'), 'text-slate-400' => !request()->routeIs('order.*')])>
+                <a href="<?php echo e(route('order.management')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('order.*'), 'text-slate-400' => !request()->routeIs('order.*')]); ?>">
                     <span>Order Management</span>
                 </a>
-                <a href="{{ route('received.orders') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('received.orders'), 'text-slate-400' => !request()->routeIs('received.orders')])>
+                <a href="<?php echo e(route('received.orders')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('received.orders'), 'text-slate-400' => !request()->routeIs('received.orders')]); ?>">
                     <span>Received Orders</span>
                 </a>
             </div>
         </div>
-        @endif
+        <?php endif; ?>
 
-        @if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk'))
-        @php
+        <?php if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk')): ?>
+        <?php
             $isAnalyticsActive = request()->routeIs('sales.analytics') || request()->routeIs('pricing.module') || request()->routeIs('overstocking.report') || request()->routeIs('out.of.stock');
-        @endphp
-        <div class="group space-y-1 @if($isAnalyticsActive) open @endif">
-            <button type="button" @class(['sidebar-group-toggle w-full flex items-center justify-between gap-3 pl-6 pr-4 py-2.5 text-sm font-medium cursor-pointer text-slate-300 border-l-[3px] border-transparent'])>
+        ?>
+        <div class="group space-y-1 <?php if($isAnalyticsActive): ?> open <?php endif; ?>">
+            <button type="button" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-group-toggle w-full flex items-center justify-between gap-3 pl-6 pr-4 py-3 text-sm font-medium cursor-pointer text-slate-300 border-l-[3px] border-transparent']); ?>">
                 <span class="flex items-center gap-3">
                     <svg class="w-4.5 h-4.5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75ZM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 0 1-1.875-1.875V8.625ZM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 0 1 3 19.875v-6.75Z" />
@@ -176,31 +176,31 @@
                 </svg>
             </button>
             <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-cyan-400/40 space-y-0.5 mt-1">
-                <a href="{{ route('sales.analytics') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('sales.analytics'), 'text-slate-400' => !request()->routeIs('sales.analytics')])>
+                <a href="<?php echo e(route('sales.analytics')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('sales.analytics'), 'text-slate-400' => !request()->routeIs('sales.analytics')]); ?>">
                     <span>Sales Analytics</span>
                 </a>
-                <a href="{{ route('pricing.module') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('pricing.module'), 'text-slate-400' => !request()->routeIs('pricing.module')])>
+                <a href="<?php echo e(route('pricing.module')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('pricing.module'), 'text-slate-400' => !request()->routeIs('pricing.module')]); ?>">
                     <span>Pricing Module</span>
                 </a>
-                <a href="{{ route('overstocking.report') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('overstocking.report'), 'text-slate-400' => !request()->routeIs('overstocking.report')])>
+                <a href="<?php echo e(route('overstocking.report')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('overstocking.report'), 'text-slate-400' => !request()->routeIs('overstocking.report')]); ?>">
                     <span>Overstocking Report</span>
                 </a>
-                <a href="{{ route('out.of.stock') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('out.of.stock'), 'text-slate-400' => !request()->routeIs('out.of.stock')])>
+                <a href="<?php echo e(route('out.of.stock')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('out.of.stock'), 'text-slate-400' => !request()->routeIs('out.of.stock')]); ?>">
                     <span>Out of Stock Report</span>
                 </a>
             </div>
         </div>
-        @elseif(auth()->user() && (auth()->user()->role === 'cashier' || auth()->user()->role === 'warehouse_personnel'))
-        <a href="{{ route('sales.analytics') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-2.5 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('sales.analytics'), 'text-slate-300 border-transparent' => !request()->routeIs('sales.analytics')])>
+        <?php elseif(auth()->user() && (auth()->user()->role === 'cashier' || auth()->user()->role === 'warehouse_personnel')): ?>
+        <a href="<?php echo e(route('sales.analytics')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-3 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('sales.analytics'), 'text-slate-300 border-transparent' => !request()->routeIs('sales.analytics')]); ?>">
             <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75ZM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 0 1-1.875-1.875V8.625ZM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 0 1 3 19.875v-6.75Z" />
                     </svg>
             <span>Sales Analytics</span>
         </a>
-        @endif
+        <?php endif; ?>
 
-        @if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'warehouse_personnel'))
-        <a href="{{ route('warehouse.management') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-2.5 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('warehouse.management'), 'text-slate-300 border-transparent' => !request()->routeIs('warehouse.management')])>
+        <?php if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'warehouse_personnel')): ?>
+        <a href="<?php echo e(route('warehouse.management')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-3 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('warehouse.management'), 'text-slate-300 border-transparent' => !request()->routeIs('warehouse.management')]); ?>">
             <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <polygon points="2.2,9 12,3.2 21.8,9" />
                 <rect x="2" y="9.2" width="20" height="1" />
@@ -218,53 +218,44 @@
             </svg>
             <span>Warehouse Management</span>
         </a>
-        @endif
+        <?php endif; ?>
 
-        @if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk'))
-        <a href="{{ route('shop.inventory') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-2.5 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('shop.inventory'), 'text-slate-300 border-transparent' => !request()->routeIs('shop.inventory')])>
+        <?php if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk')): ?>
+        <a href="<?php echo e(route('shop.inventory')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition', 'bg-cyan-500/15 text-cyan-400' => request()->routeIs('shop.inventory'), 'hover:bg-[#242b35] text-slate-300' => !request()->routeIs('shop.inventory')]); ?>">
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
             <span>Shop Inventory Items</span>
         </a>
-        @endif
+        <?php endif; ?>
 
-        @if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk'))
-        <a href="{{ route('dss.dead-stock.index') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-2.5 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('dss.dead-stock*'), 'text-slate-300 border-transparent' => !request()->routeIs('dss.dead-stock*')])>
-            <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z" />
-            </svg>
-            <span>Dead Stock Detection</span>
-        </a>
-        @endif
-
-        @if(auth()->user() && auth()->user()->role === 'admin')
-        <a href="{{ route('supplier.assessment') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-2.5 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('supplier.assessment'), 'text-slate-300 border-transparent' => !request()->routeIs('supplier.assessment')])>
+        <?php if(auth()->user() && auth()->user()->role === 'admin'): ?>
+        <a href="<?php echo e(route('supplier.assessment')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-3 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('supplier.assessment'), 'text-slate-300 border-transparent' => !request()->routeIs('supplier.assessment')]); ?>">
             <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z" />
             </svg>
             <span>Supplier Assessment</span>
         </a>
-        @endif
+        <?php endif; ?>
 
-        @if(auth()->user() && auth()->user()->role === 'admin')
-        <a href="{{ route('user.management') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-2.5 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('user.management'), 'text-slate-300 border-transparent' => !request()->routeIs('user.management')])>
+        <?php if(auth()->user() && auth()->user()->role === 'admin'): ?>
+        <a href="<?php echo e(route('user.management')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-3 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('user.management'), 'text-slate-300 border-transparent' => !request()->routeIs('user.management')]); ?>">
             <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 12c2.671 0 4.842-2.171 4.842-4.842S14.671 2.316 12 2.316 7.158 4.487 7.158 7.158 9.329 12 12 12zm0 2.526c-3.198 0-9.6 1.604-9.6 4.8v2.4h19.2v-2.4c0-3.196-6.402-4.8-9.6-4.8z" />
             </svg>
             <span>User Management</span>
         </a>
-        @endif
+        <?php endif; ?>
 
-        @if(auth()->user() && auth()->user()->role === 'admin')
-        <a href="{{ route('offline.reconciliation') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-2.5 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('offline.reconciliation'), 'hover:bg-[#242b35] text-slate-300' => !request()->routeIs('offline.reconciliation')])>
+        <?php if(auth()->user() && auth()->user()->role === 'admin'): ?>
+        <a href="<?php echo e(route('offline.reconciliation')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition', 'bg-cyan-500/15 text-cyan-400' => request()->routeIs('offline.reconciliation'), 'hover:bg-[#242b35] text-slate-300' => !request()->routeIs('offline.reconciliation')]); ?>">
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 11a1 1 0 100-2 1 1 0 000 2zm0 0a4 4 0 100 8 4 4 0 000-8zm0 0V3m0 0L9 6m3-3l3 3" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.071 4.929a10 10 0 00-14.142 0M16.243 7.757a6 6 0 00-8.486 0" />
             </svg>
             <span>Offline Reconciliation</span>
         </a>
-        @endif
+        <?php endif; ?>
 
     </nav>
 </div>
@@ -597,4 +588,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-</script>
+</script><?php /**PATH C:\Users\Admin\Desktop\WEQW\KCC_MOTORCYCLE\resources\views/sidebar.blade.php ENDPATH**/ ?>
