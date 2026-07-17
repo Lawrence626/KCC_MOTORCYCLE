@@ -5,13 +5,14 @@
     $showAction = $showAction ?? true;
 @endphp
 
-<div class="mt-6 overflow-hidden rounded-[26px] border border-slate-200">
+<div class="mt-6 overflow-hidden rounded-[10px] border border-slate-200">
     <table class="min-w-full text-left text-sm">
         <thead class="bg-slate-50 text-slate-500 text-[11px] uppercase tracking-[0.18em]">
             <tr>
                 <th class="px-4 py-3">Order</th>
                 <th class="px-4 py-3">Supplier</th>
                 <th class="px-4 py-3">{{ $dateLabel }}</th>
+                <th class="px-4 py-3">Est. Delivery</th>
                 <th class="px-4 py-3">Status</th>
                 @if($showAction)
                     <th class="px-4 py-3">Action</th>
@@ -38,11 +39,58 @@
                         'created' => optional($order->created_at)->format('M j'),
                         default => optional($order->expected_delivery_date)->format('M j') ?? 'TBD',
                     };
+
+                    // Estimated delivery date logic
+                    $estDate = $order->estimated_delivery_date;
+                    $isOrderCompleted = in_array($order->status, ['completed', 'archived']);
+                    $estDaysRemaining = $estDate ? (int) now()->startOfDay()->diffInDays($estDate->startOfDay(), false) : null;
+
+                    if ($estDate === null) {
+                        $estBadgeClass = 'bg-slate-100 text-slate-500';
+                        $estText = 'Not yet provided';
+                        $estIcon = '';
+                    } elseif ($isOrderCompleted) {
+                        $estBadgeClass = 'bg-emerald-100 text-emerald-700';
+                        $estText = $estDate->format('M j');
+                        $estIcon = '✅';
+                    } elseif ($estDaysRemaining < 0) {
+                        $estBadgeClass = 'bg-rose-100 text-rose-700';
+                        $estText = $estDate->format('M j');
+                        $estIcon = '🔴';
+                    } elseif ($estDaysRemaining <= 2) {
+                        $estBadgeClass = 'bg-amber-100 text-amber-700';
+                        $estText = $estDate->format('M j');
+                        $estIcon = '🟡';
+                    } else {
+                        $estBadgeClass = 'bg-emerald-100 text-emerald-700';
+                        $estText = $estDate->format('M j');
+                        $estIcon = '🟢';
+                    }
                 @endphp
                 <tr class="hover:bg-slate-50">
                     <td class="px-4 py-3 font-semibold">{{ $order->order_number }}</td>
                     <td class="px-4 py-3">{{ $order->supplier_name }}</td>
                     <td class="px-4 py-3">{{ $dateValue }}</td>
+                    <td class="px-4 py-3">
+                        @if($estDate)
+                            <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold {{ $estBadgeClass }}">
+                                {{ $estIcon }} {{ $estText }}
+                            </span>
+                            @if(!$isOrderCompleted && $estDaysRemaining !== null)
+                                <span class="block mt-0.5 text-[10px] {{ $estDaysRemaining < 0 ? 'text-rose-500' : ($estDaysRemaining <= 2 ? 'text-amber-500' : 'text-emerald-500') }}">
+                                    @if($estDaysRemaining < 0)
+                                        {{ abs($estDaysRemaining) }} {{ Str::plural('day', abs($estDaysRemaining)) }} overdue
+                                    @elseif($estDaysRemaining === 0)
+                                        Due today
+                                    @else
+                                        In {{ $estDaysRemaining }} {{ Str::plural('day', $estDaysRemaining) }}
+                                    @endif
+                                </span>
+                            @endif
+                        @else
+                            <span class="text-xs text-slate-400 italic">Not yet provided</span>
+                        @endif
+                    </td>
                     <td class="px-4 py-3">
                         <span class="inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold {{ $statusClass }}">
                             {{ ucwords($order->status) }}
@@ -50,13 +98,13 @@
                     </td>
                     @if($showAction)
                         <td class="px-4 py-3">
-                            <a href="{{ route('order.show', $order) }}" class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-200">View Details</a>
+                            <a href="{{ route('order.show', $order) }}" class="inline-flex rounded-[10px] bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-200">View Details</a>
                         </td>
                     @endif
                 </tr>
             @empty
                 <tr>
-                    <td colspan="{{ $showAction ? 5 : 4 }}" class="px-4 py-6 text-center text-sm text-slate-500">{{ $emptyMessage }}</td>
+                    <td colspan="{{ $showAction ? 6 : 5 }}" class="px-4 py-6 text-center text-sm text-slate-500">{{ $emptyMessage }}</td>
                 </tr>
             @endforelse
         </tbody>

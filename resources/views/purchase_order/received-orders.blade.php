@@ -1,11 +1,12 @@
 <x-layouts.app :title="__('Received Orders')">
     <div class="space-y-5">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div class="space-y-2">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div class="pl-3 lg:pl-2">
                 <h1 class="text-3xl font-bold text-slate-900">Received Orders</h1>
                 <p class="max-w-2xl text-sm text-slate-500">Track completed deliveries, confirm order receipts, and view inventory impact.</p>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex flex-wrap items-center gap-3">
+                <button class="inline-flex items-center gap-2 rounded-[10px] bg-[#105f68] px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-[#105f68]/20 hover:bg-[#0c474e]">Confirm Receipt</button>
                 <button id="ro-generate-qr" type="button" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white rounded-xl text-sm font-medium shadow-md hover:from-emerald-700 hover:to-cyan-700 transition">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
@@ -28,25 +29,25 @@
             </div>
         </div>
 
-        <div class="grid gap-3 sm:grid-cols-3">
-            <div class="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="grid gap-3 sm:grid-cols-3 items-stretch">
+            <div class="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm flex flex-col justify-between h-full">
                 <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Delivered today</p>
                 <p class="mt-3 text-3xl font-semibold text-slate-900">{{ number_format($deliveredToday) }}</p>
                 <p class="mt-2 text-sm text-slate-500">Orders received and logged today.</p>
             </div>
-            <div class="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm flex flex-col justify-between h-full">
                 <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Pending confirmation</p>
                 <p class="mt-3 text-3xl font-semibold text-slate-900">{{ number_format($pendingConfirmation) }}</p>
                 <p class="mt-2 text-sm text-slate-500">Awaiting goods inspection or paperwork.</p>
             </div>
-            <div class="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm flex flex-col justify-between h-full">
                 <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Issues found</p>
                 <p class="mt-3 text-3xl font-semibold text-slate-900">{{ number_format($issuesFound) }}</p>
                 <p class="mt-2 text-sm text-slate-500">Discrepancies requiring follow-up.</p>
             </div>
         </div>
 
-        <section class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+        <section class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm" style="min-height: calc(100vh - 220px);">
             <div class="flex items-center justify-between gap-4">
                 <div>
                     <h2 class="text-lg font-semibold text-slate-900">Latest received orders</h2>
@@ -55,35 +56,57 @@
                 <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">Verified</span>
             </div>
 
-            <form method="GET" action="{{ route('received.orders') }}" class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <form id="receivedOrdersForm" method="GET" action="{{ route('received.orders') }}" class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 <label class="block text-sm text-slate-700">
                     <span class="text-xs font-semibold text-slate-500">Search deliveries</span>
-                    <input name="search" type="search" value="{{ $search ?? '' }}" placeholder="Order ID or supplier" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none" />
+                    <input name="search" type="search" value="{{ $search ?? '' }}" placeholder="Order ID or supplier" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-[#105f68] focus:ring-2 focus:ring-[#105f68]/20 outline-none" />
                 </label>
-                <label class="block text-sm text-slate-700">
+                <label class="block text-sm text-slate-700 relative" data-dropdown-wrapper="receivedOrdersStatus">
                     <span class="text-xs font-semibold text-slate-500">Receipt status</span>
-                    <select name="status" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none">
-                        <option value="" {{ empty($status) ? 'selected' : '' }}>All statuses</option>
-                        <option value="completed" {{ $status === 'completed' ? 'selected' : '' }}>Completed</option>
-                        <option value="partially received" {{ $status === 'partially received' ? 'selected' : '' }}>Partially Received</option>
-                    </select>
+                    <input type="hidden" name="status" id="receivedOrdersStatusInput" value="{{ $status ?? '' }}" />
+                    <button type="button" id="receivedOrdersStatusButton" onclick="toggleDropdown('receivedOrdersStatusDropdown')" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-white px-4 py-3 text-left text-sm text-slate-900 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#105f68]/20">
+                        <span>{{ !empty($status) ? ucwords($status) : 'All status' }}</span>
+                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                        </svg>
+                    </button>
+                    <div id="receivedOrdersStatusDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-300 bg-white shadow-xl p-3 space-y-1">
+                        <button type="button" onclick="selectDropdown(event, 'receivedOrdersStatusInput', '', 'receivedOrdersStatusButton', 'All status', 'receivedOrdersStatusDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-center text-sm {{ empty($status) ? 'font-semibold text-[#105f68] bg-[#105f68]/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">All status</button>
+                        @foreach(['completed' => 'Completed', 'partially received' => 'Partially Received'] as $value => $label)
+                            <button type="button" onclick="selectDropdown(event, 'receivedOrdersStatusInput', '{{ $value }}', 'receivedOrdersStatusButton', '{{ $label }}', 'receivedOrdersStatusDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-center text-sm {{ ($status ?? '') === $value ? 'font-semibold text-[#105f68] bg-[#105f68]/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
+                        @endforeach
+                    </div>
                 </label>
-                <label class="block text-sm text-slate-700">
+                <label class="block text-sm text-slate-700 relative" data-dropdown-wrapper="receivedOrdersWarehouse">
                     <span class="text-xs font-semibold text-slate-500">Warehouse</span>
-                    <select name="warehouse" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none">
-                        <option value="" {{ empty($warehouse) ? 'selected' : '' }}>All warehouses</option>
-                        <option value="Shop" {{ $warehouse === 'Shop' ? 'selected' : '' }}>Shop (Main Store)</option>
-                        <option value="Warehouse A" {{ $warehouse === 'Warehouse A' ? 'selected' : '' }}>Warehouse A</option>
-                        <option value="Warehouse B" {{ $warehouse === 'Warehouse B' ? 'selected' : '' }}>Warehouse B</option>
-                        <option value="Warehouse C" {{ $warehouse === 'Warehouse C' ? 'selected' : '' }}>Warehouse C</option>
-                    </select>
+                    <input type="hidden" name="warehouse" id="receivedOrdersWarehouseInput" value="{{ $warehouse ?? '' }}" />
+                    <button type="button" id="receivedOrdersWarehouseButton" onclick="toggleDropdown('receivedOrdersWarehouseDropdown')" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-white px-4 py-3 text-left text-sm text-slate-900 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#105f68]/20">
+                        <span>
+                            @php
+                                $warehouseLabel = 'All warehouses';
+                                if (!empty($warehouse)) {
+                                    $warehouseLabel = $warehouse === 'Shop' ? 'Shop (Main Store)' : $warehouse;
+                                }
+                            @endphp
+                            {{ $warehouseLabel }}
+                        </span>
+                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                        </svg>
+                    </button>
+                    <div id="receivedOrdersWarehouseDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-300 bg-white shadow-xl p-3 space-y-1">
+                        <button type="button" onclick="selectDropdown(event, 'receivedOrdersWarehouseInput', '', 'receivedOrdersWarehouseButton', 'All warehouses', 'receivedOrdersWarehouseDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-center text-sm {{ empty($warehouse) ? 'font-semibold text-[#105f68] bg-[#105f68]/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">All warehouses</button>
+                        @foreach(['Shop' => 'Shop (Main Store)', 'Warehouse A' => 'Warehouse A', 'Warehouse B' => 'Warehouse B', 'Warehouse C' => 'Warehouse C'] as $value => $label)
+                            <button type="button" onclick="selectDropdown(event, 'receivedOrdersWarehouseInput', '{{ $value }}', 'receivedOrdersWarehouseButton', '{{ $label }}', 'receivedOrdersWarehouseDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-center text-sm {{ ($warehouse ?? '') === $value ? 'font-semibold text-[#105f68] bg-[#105f68]/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
+                        @endforeach
+                    </div>
                 </label>
                 <div class="flex items-end">
-                    <button type="submit" class="inline-flex w-full justify-center rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-sm shadow-emerald-500/20 hover:bg-emerald-700">Filter</button>
+                    <button type="submit" class="inline-flex w-full justify-center rounded-[10px] bg-[#105f68] px-4 py-3 text-sm font-semibold text-white shadow-sm shadow-[#105f68]/20 hover:bg-[#0c474e]">Filter</button>
                 </div>
             </form>
 
-            <div class="mt-6 overflow-hidden rounded-[26px] border border-slate-200">
+            <div class="mt-6 overflow-hidden rounded-[10px] border border-slate-200">
                 <table class="min-w-full text-left text-sm">
                     <thead class="bg-slate-50 text-slate-500 text-[11px] uppercase tracking-[0.18em]">
                         <tr>
@@ -131,10 +154,67 @@
         </section>
     </div>
 
+    <script>
+        function resetDropdownButtonStyles() {
+            document.querySelectorAll('[id$="Button"]').forEach(btn => {
+                btn.style.borderColor = '';
+                btn.style.borderWidth = '';
+                btn.style.boxShadow = '';
+            });
+        }
+
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
+            const allDropdowns = document.querySelectorAll('.dropdown-menu');
+            const button = document.getElementById(id.replace('Dropdown', 'Button'));
+
+            allDropdowns.forEach(d => {
+                if (d.id !== id) d.classList.add('hidden');
+            });
+
+            resetDropdownButtonStyles();
+
+            if (dropdown.classList.contains('hidden')) {
+                dropdown.classList.remove('hidden');
+                if (button) {
+                    button.style.borderColor = '#105f68';
+                    button.style.borderWidth = '2px';
+                    button.style.boxShadow = 'none';
+                }
+            } else {
+                dropdown.classList.add('hidden');
+            }
+        }
+
+        function selectDropdown(event, inputId, value, buttonId, label, dropdownId, formId) {
+            if (event && typeof event.preventDefault === 'function') {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            document.getElementById(inputId).value = value;
+            document.getElementById(buttonId).querySelector('span').textContent = label;
+            document.getElementById(dropdownId).classList.add('hidden');
+            const button = document.getElementById(buttonId);
+            if (button) {
+                button.style.borderColor = '';
+                button.style.borderWidth = '';
+                button.style.boxShadow = '';
+            }
+            document.getElementById(formId).submit();
+        }
+
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.dropdown-menu') && !event.target.closest('[onclick^="toggleDropdown"]')) {
+                document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.add('hidden'));
+                resetDropdownButtonStyles();
+            }
+        });
+    </script>
     <!-- QR Code Generation Modal -->
     <div id="ro-qr-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-            <div class="bg-gradient-to-r from-emerald-600 to-cyan-600 px-6 py-4 rounded-t-2xl">
+            <div class="bg-[#105f68] px-6 py-4 rounded-t-2xl">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="bg-white/20 rounded-lg p-2">
@@ -193,10 +273,10 @@
 
                 <!-- Action Buttons -->
                 <div class="flex gap-3 pt-4 border-t border-slate-200">
-                    <button onclick="roGenerateAllQR()" class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold hover:from-emerald-700 hover:to-emerald-800 transition shadow-md">
+                    <button onclick="roGenerateAllQR()" class="flex-1 px-4 py-3 rounded-xl bg-[#105f68] text-white font-semibold hover:bg-[#0d4f56] transition shadow-md">
                         Generate All QR Codes
                     </button>
-                    <button onclick="roPrintAllQR()" class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-slate-600 to-slate-700 text-white font-semibold hover:from-slate-700 hover:to-slate-800 transition shadow-md">
+                    <button onclick="roPrintAllQR()" class="flex-1 px-4 py-3 rounded-xl bg-[#105f68] text-white font-semibold hover:bg-[#0d4f56] transition shadow-md">
                         Print All QR Codes
                     </button>
                 </div>
@@ -207,7 +287,7 @@
     <!-- New Stock Details Modal -->
     <div id="ro-new-stock-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4">
-            <div class="bg-gradient-to-r from-emerald-600 to-cyan-600 px-6 py-4 rounded-t-2xl">
+            <div class="bg-[#105f68] px-6 py-4 rounded-t-2xl">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="bg-white/20 rounded-lg p-2">
@@ -262,7 +342,7 @@
 
                 <div class="flex gap-3 pt-4 border-t border-slate-200">
                     <button onclick="roCloseNewStockModal()" class="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200 transition">Cancel</button>
-                    <button onclick="roSaveNewStock()" class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold hover:from-emerald-700 hover:to-emerald-800 transition shadow-md">Save & Add to Warehouse</button>
+                    <button onclick="roSaveNewStock()" class="flex-1 px-4 py-3 rounded-xl bg-[#105f68] text-white font-semibold hover:bg-[#0d4f56] transition shadow-md">Save & Add to Warehouse</button>
                 </div>
             </div>
         </div>
@@ -271,7 +351,7 @@
     <!-- QR Code Scanner Modal -->
     <div id="ro-scan-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-4">
-            <div class="bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-4 rounded-t-2xl">
+            <div class="bg-[#105f68] px-6 py-4 rounded-t-2xl">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="bg-white/20 rounded-lg p-2">
@@ -316,7 +396,7 @@
                     
                     <div class="flex gap-3 mt-4">
                         <button onclick="roCloseScanner()" class="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200 transition">Cancel</button>
-                        <button onclick="roProceedToDetails()" class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold hover:from-emerald-700 hover:to-emerald-800 transition shadow-md" id="ro-proceed-btn" disabled>Proceed to Details</button>
+                        <button onclick="roProceedToDetails()" class="flex-1 px-4 py-3 rounded-xl bg-[#105f68] text-white font-semibold hover:bg-[#0d4f56] transition shadow-md" id="ro-proceed-btn" disabled>Proceed to Details</button>
                     </div>
                 </div>
             </div>

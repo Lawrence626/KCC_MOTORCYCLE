@@ -5,7 +5,7 @@
                 <h1 class="text-3xl font-bold text-slate-900">Purchase Requests</h1>
                 <p class="max-w-2xl text-sm text-slate-500">Create and review purchase requests before they become approved orders.</p>
             </div>
-            <button class="inline-flex items-center gap-2 rounded-2xl bg-cyan-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-cyan-500/20 hover:bg-cyan-700">New Request</button>
+            <button class="inline-flex items-center gap-2 rounded-[10px] bg-[#105f68] px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-[#105f68]/20 hover:bg-[#0c474e]">New Request</button>
         </div>
 
         <div class="grid gap-3 sm:grid-cols-3">
@@ -38,11 +38,11 @@
             <div class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 <label class="block text-sm text-slate-700">
                     <span class="text-xs font-semibold text-slate-500">Search requests</span>
-                    <input type="search" placeholder="Request ID or item" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 outline-none" />
+                    <input type="search" placeholder="Request ID or item" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-[#105f68] focus:ring-2 focus:ring-[#105f68]/20 outline-none" />
                 </label>
                 <label class="block text-sm text-slate-700">
                     <span class="text-xs font-semibold text-slate-500">Status</span>
-                    <select class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 outline-none">
+                    <select class="appearance-none mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-[#105f68] focus:ring-2 focus:ring-[#105f68]/20 outline-none pr-8" style="background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 20 20%27 fill=%27none%27 stroke=%27%2338445d%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M6 8l4 4 4-4%27/%3E%3C/svg%3E'); background-repeat:no-repeat; background-position:right 0.75rem center; background-size:1.2em;">
                         <option>All statuses</option>
                         <option>Open</option>
                         <option>Approved</option>
@@ -51,7 +51,7 @@
                 </label>
                 <label class="block text-sm text-slate-700">
                     <span class="text-xs font-semibold text-slate-500">Department</span>
-                    <select class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 outline-none">
+                    <select class="appearance-none mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-[#105f68] focus:ring-2 focus:ring-[#105f68]/20 outline-none pr-8" style="background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 20 20%27 fill=%27none%27 stroke=%27%2338445d%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M6 8l4 4 4-4%27/%3E%3C/svg%3E'); background-repeat:no-repeat; background-position:right 0.75rem center; background-size:1.2em;">
                         <option>All departments</option>
                         <option>Service</option>
                         <option>Sales</option>
@@ -60,7 +60,7 @@
                 </label>
             </div>
 
-            <div class="mt-6 overflow-hidden rounded-[26px] border border-slate-200">
+            <div class="mt-6 overflow-hidden rounded-[10px] border border-slate-200">
                 <table class="min-w-full text-left text-sm">
                     <thead class="bg-slate-50 text-slate-500 text-[11px] uppercase tracking-[0.18em]">
                         <tr>

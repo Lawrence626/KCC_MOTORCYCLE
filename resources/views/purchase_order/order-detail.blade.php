@@ -5,7 +5,7 @@
                 <h1 class="text-3xl font-bold text-slate-900">Purchase Order {{ $purchaseOrder->order_number }}</h1>
                 <p class="max-w-2xl text-sm text-slate-500">Review full purchase order details and manage the lifecycle.</p>
             </div>
-            <a href="{{ route('order.history') }}" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:border-emerald-500 hover:text-slate-900">Back to Purchase Order History</a>
+            <a href="{{ route('order.management') }}" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:border-emerald-500 hover:text-slate-900">Back to Orders</a>
         </div>
 
         @if(session('success'))
@@ -57,6 +57,79 @@
                         <p><span class="font-semibold">Completed:</span> {{ $purchaseOrder->completed_at->format('M j, Y H:i') }}</p>
                     @endif
                 </div>
+            </div>
+        </div>
+
+        {{-- Estimated Delivery Date Card --}}
+        @php
+            $estDate = $purchaseOrder->estimated_delivery_date;
+            $isCompleted = in_array($purchaseOrder->status, ['completed', 'archived']);
+            $daysRemaining = $estDate ? (int) now()->startOfDay()->diffInDays($estDate->startOfDay(), false) : null;
+
+            if ($estDate === null) {
+                $estColor = 'slate';
+                $estBg = 'bg-slate-50 border-slate-200';
+                $estBadgeBg = 'bg-slate-100 text-slate-600';
+                $estLabel = 'Not yet provided';
+                $estIcon = '⏳';
+            } elseif ($isCompleted) {
+                $estColor = 'emerald';
+                $estBg = 'bg-emerald-50 border-emerald-200';
+                $estBadgeBg = 'bg-emerald-100 text-emerald-700';
+                $estLabel = 'Delivered';
+                $estIcon = '✅';
+            } elseif ($daysRemaining < 0) {
+                $estColor = 'rose';
+                $estBg = 'bg-rose-50 border-rose-200';
+                $estBadgeBg = 'bg-rose-100 text-rose-700';
+                $estLabel = abs($daysRemaining) . ' ' . Str::plural('day', abs($daysRemaining)) . ' overdue';
+                $estIcon = '🔴';
+            } elseif ($daysRemaining <= 2) {
+                $estColor = 'amber';
+                $estBg = 'bg-amber-50 border-amber-200';
+                $estBadgeBg = 'bg-amber-100 text-amber-700';
+                $estLabel = $daysRemaining === 0 ? 'Due today' : 'Arriving in ' . $daysRemaining . ' ' . Str::plural('day', $daysRemaining);
+                $estIcon = '🟡';
+            } else {
+                $estColor = 'emerald';
+                $estBg = 'bg-emerald-50 border-emerald-200';
+                $estBadgeBg = 'bg-emerald-100 text-emerald-700';
+                $estLabel = 'Arriving in ' . $daysRemaining . ' ' . Str::plural('day', $daysRemaining);
+                $estIcon = '🟢';
+            }
+        @endphp
+        <div class="rounded-[26px] border {{ $estBg }} p-6 shadow-sm">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <div class="space-y-3">
+                    <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Estimated Delivery Date</p>
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">{{ $estIcon }}</span>
+                        <div>
+                            <p class="text-xl font-semibold text-slate-900">
+                                {{ $estDate ? $estDate->format('M j, Y') : 'Not yet provided' }}
+                            </p>
+                            <span class="mt-1 inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold {{ $estBadgeBg }}">
+                                {{ $estLabel }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                @if(auth()->user() && auth()->user()->role === 'admin')
+                    <form method="POST" action="{{ route('order.update_estimated_delivery', $purchaseOrder) }}" class="flex items-end gap-2">
+                        @csrf
+                        @method('PUT')
+                        <label class="block text-sm">
+                            <span class="text-xs font-semibold text-slate-500">{{ $estDate ? 'Update date' : 'Set date' }}</span>
+                            <input type="date" name="estimated_delivery_date"
+                                   value="{{ $estDate ? $estDate->format('Y-m-d') : '' }}"
+                                   required
+                                   class="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" />
+                        </label>
+                        <button type="submit" class="rounded-2xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-emerald-500/20 hover:bg-emerald-700">
+                            {{ $estDate ? 'Update' : 'Save' }}
+                        </button>
+                    </form>
+                @endif
             </div>
         </div>
 
@@ -132,6 +205,7 @@
                                         <th class="px-4 py-3">Ordered</th>
                                         <th class="px-4 py-3">Received</th>
                                         <th class="px-4 py-3">Remaining</th>
+                                        <th class="px-4 py-3">Supplier Cost/Unit</th>
                                         <th class="px-4 py-3">Receive quantity</th>
                                     </tr>
                                 </thead>
@@ -145,6 +219,9 @@
                                             <td class="px-4 py-3">{{ $item->quantity }}</td>
                                             <td class="px-4 py-3">{{ $item->received_quantity ?? 0 }}</td>
                                             <td class="px-4 py-3">{{ $remainingQuantity }}</td>
+                                            <td class="px-4 py-3">
+                                                <input name="items[{{ $item->id }}][unit_price]" type="number" step="0.01" min="0" value="{{ (float) $item->unit_price }}" class="w-28 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none" placeholder="0.00" />
+                                            </td>
                                             <td class="px-4 py-3">
                                                 <input name="items[{{ $item->id }}][item_id]" type="hidden" value="{{ $item->id }}" />
                                                 <input name="items[{{ $item->id }}][received_quantity]" type="number" min="0" max="{{ $remainingQuantity }}" value="{{ $remainingQuantity }}" class="w-24 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none" />

@@ -372,6 +372,15 @@ function attachUIEvents() {
 
     const warehouseEl = document.getElementById('warehouseFilter');
     if (warehouseEl) warehouseEl.addEventListener('change', function(e){ currentFilters.warehouse = e.target.value; performSearch(); });
+    
+    const categoryEl = document.getElementById('categoryFilter');
+    if (categoryEl) {
+        categoryEl.addEventListener('change', function(e) {
+            currentFilters.category = e.target.value;
+            renderCategoryChips();
+            performSearch();
+        });
+    }
     const productNameEl = document.getElementById('productNameFilter');
     if (productNameEl) productNameEl.addEventListener('change', function(e){ 
         updateBrandDropdown();

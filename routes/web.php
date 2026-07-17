@@ -10,6 +10,7 @@ use App\Http\Controllers\POSTransactionController;
 use App\Http\Controllers\ShopInventoryController;
 use App\Http\Controllers\ProductCatalogController;
 use App\Http\Controllers\ProductDescriptionController;
+use App\Http\Controllers\InventoryNotificationController;
 
 Route::view('/', 'login')->name('home');
 Route::view('/login', 'login')->name('login');
@@ -46,6 +47,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard - All authenticated users
     Route::get('dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     Route::get('dashboard/data', [App\Http\Controllers\DashboardController::class, 'data'])->name('dashboard.data');
+
+    // Inventory Notification API Routes
+    Route::get('api/inventory-notifications', [InventoryNotificationController::class, 'index'])->name('api.inventory-notifications.index');
+    Route::get('api/inventory-notifications/dashboard', [InventoryNotificationController::class, 'dashboardAlerts'])->name('api.inventory-notifications.dashboard');
+    Route::get('api/inventory-notifications/unread-count', [InventoryNotificationController::class, 'unreadCount'])->name('api.inventory-notifications.unread-count');
+    Route::post('api/inventory-notifications/{id}/dismiss', [InventoryNotificationController::class, 'dismiss'])->name('api.inventory-notifications.dismiss');
+    Route::post('api/inventory-notifications/{id}/read', [InventoryNotificationController::class, 'markAsRead'])->name('api.inventory-notifications.read');
+    Route::post('api/inventory-notifications/mark-all-read', [InventoryNotificationController::class, 'markAllAsRead'])->name('api.inventory-notifications.mark-all-read');
+    Route::post('api/inventory-notifications/sync', [InventoryNotificationController::class, 'sync'])->name('api.inventory-notifications.sync');
 
     // Profile update for authenticated users
     Route::match(['patch','post'], 'profile', [UserController::class, 'updateProfile'])->name('profile.update');
@@ -149,11 +159,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Data Analytics Routes - Sales analytics for Cashier and Warehouse, all for others
     Route::middleware('role:admin,cashier,inventory_clerk,warehouse_personnel')->group(function () {
         Route::get('analytics/sales', [AnalyticsController::class, 'sales'])->name('sales.analytics');
+        Route::get('api/analytics/sales-widgets', [AnalyticsController::class, 'salesFilteredWidgets'])->name('api.analytics.sales_widgets');
     });
 
     // Other analytics routes - Admin and Inventory Clerk only
     Route::middleware('role:admin,inventory_clerk')->group(function () {
         Route::get('analytics/pricing', [AnalyticsController::class, 'pricing'])->name('pricing.module');
+        Route::post('analytics/pricing/dismiss/{id}', [AnalyticsController::class, 'dismissAlert'])->name('pricing.dismiss');
         Route::get('analytics/overstocking', [AnalyticsController::class, 'overstocking'])->name('overstocking.report');
         Route::get('analytics/out-of-stock', [AnalyticsController::class, 'outOfStock'])->name('out.of.stock');
     });
@@ -216,6 +228,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('purchase-order/create', [PurchaseOrderController::class, 'create'])->name('order.create');
         Route::get('purchase-order/history', [PurchaseOrderController::class, 'history'])->name('order.history');
         Route::post('purchase-order', [PurchaseOrderController::class, 'store'])->name('order.store');
+        // Intelligent purchasing workflow APIs
+        Route::get('api/purchase-order/filtered-suppliers', [PurchaseOrderController::class, 'filteredSuppliers'])->name('api.order.filtered_suppliers');
+        Route::get('api/purchase-order/supplier-details', [PurchaseOrderController::class, 'supplierDetails'])->name('api.order.supplier_details');
+        Route::get('api/purchase-order/supplier-comparison', [PurchaseOrderController::class, 'supplierComparison'])->name('api.order.supplier_comparison');
     });
 
     Route::middleware('role:admin,inventory_clerk,warehouse_personnel')->group(function () {
@@ -230,6 +246,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('purchase-order/{purchaseOrder}/reject', [PurchaseOrderController::class, 'reject'])->name('order.reject');
         Route::post('purchase-order/{purchaseOrder}/send', [PurchaseOrderController::class, 'sendToSupplier'])->name('order.send');
         Route::post('purchase-order/{purchaseOrder}/in-transit', [PurchaseOrderController::class, 'markInTransit'])->name('order.in_transit');
+        Route::put('purchase-order/{purchaseOrder}/estimated-delivery-date', [PurchaseOrderController::class, 'updateEstimatedDeliveryDate'])->name('order.update_estimated_delivery');
     });
 
     // Offline Data Reconciliation Routes - Admin only
@@ -309,5 +326,62 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::view('settings/general', 'settings.general')->name('settings.general');
         Route::view('settings/users', 'settings.users')->name('settings.users');
+    });
+
+    // ===========================
+    // Decision Support System (DSS) Routes
+    // Dead Stock Detection & Recommendation Engine
+    // ===========================
+    
+    // Dead Stock Management - Admin and Inventory Clerk only
+    Route::middleware('role:admin,inventory_clerk')->group(function () {
+        Route::prefix('dss')->group(function () {
+            // Dead Stock Routes
+            Route::get('dead-stock', [App\Http\Controllers\DeadStockController::class, 'index'])->name('dss.dead-stock.index');
+            Route::get('dead-stock/export/excel', [App\Http\Controllers\DeadStockController::class, 'exportExcel'])->name('dss.dead-stock.export-excel');
+            Route::get('dead-stock/export/pdf', [App\Http\Controllers\DeadStockController::class, 'exportPdf'])->name('dss.dead-stock.export-pdf');
+            Route::get('dead-stock/{id}', [App\Http\Controllers\DeadStockController::class, 'show'])->name('dss.dead-stock.show');
+            Route::post('dead-stock/recalculate', [App\Http\Controllers\DeadStockController::class, 'recalculate'])->name('dss.dead-stock.recalculate');
+            Route::post('dead-stock/{id}/resolve', [App\Http\Controllers\DeadStockController::class, 'markResolved'])->name('dss.dead-stock.resolve');
+            Route::post('dead-stock/{id}/apply-discount', [App\Http\Controllers\DeadStockController::class, 'applyDiscount'])->name('dss.dead-stock.apply-discount');
+
+            // Recommendation Routes
+            Route::get('recommendations', [App\Http\Controllers\DSSRecommendationController::class, 'index'])->name('dss.recommendations.index');
+            Route::get('recommendations/{id}', [App\Http\Controllers\DSSRecommendationController::class, 'show'])->name('dss.recommendations.show');
+            Route::post('recommendations/{id}/action', [App\Http\Controllers\DSSRecommendationController::class, 'markActioned'])->name('dss.recommendations.action');
+
+            // Settings Routes
+            Route::get('settings', [App\Http\Controllers\DSSSettingsController::class, 'index'])->name('dss.settings.index');
+            Route::post('settings', [App\Http\Controllers\DSSSettingsController::class, 'update'])->name('dss.settings.update');
+        });
+    });
+
+    // DSS API Routes - Admin and Inventory Clerk
+    Route::middleware('role:admin,inventory_clerk')->group(function () {
+        Route::prefix('api/dss')->group(function () {
+            // Dead Stock API
+            Route::get('dead-stocks', [App\Http\Controllers\Api\DeadStockApiController::class, 'index'])->name('api.dss.dead-stocks.index');
+            Route::get('dead-stocks/{id}', [App\Http\Controllers\Api\DeadStockApiController::class, 'show'])->name('api.dss.dead-stocks.show');
+            Route::post('dead-stocks/recalculate', [App\Http\Controllers\Api\DeadStockApiController::class, 'recalculate'])->name('api.dss.dead-stocks.recalculate');
+            Route::post('dead-stocks/{id}/resolve', [App\Http\Controllers\Api\DeadStockApiController::class, 'markResolved'])->name('api.dss.dead-stocks.resolve');
+            Route::get('dead-stocks/priority/{priority}', [App\Http\Controllers\Api\DeadStockApiController::class, 'getByPriority'])->name('api.dss.dead-stocks.by-priority');
+            Route::get('dead-stocks/{id}/sales-history', [App\Http\Controllers\Api\DeadStockApiController::class, 'salesHistory'])->name('api.dss.dead-stocks.sales-history');
+            Route::get('dashboard-stats', [App\Http\Controllers\Api\DeadStockApiController::class, 'dashboardStats'])->name('api.dss.dashboard-stats');
+            Route::get('dead-stocks/export/csv', [App\Http\Controllers\Api\DeadStockApiController::class, 'exportCsv'])->name('api.dss.dead-stocks.export-csv');
+            Route::get('top-fast-moving', [App\Http\Controllers\Api\DeadStockApiController::class, 'getTopFastMoving'])->name('api.dss.top-fast-moving');
+
+            // Recommendation API
+            Route::get('recommendations/product/{productId}', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'getByProduct'])->name('api.dss.recommendations.by-product');
+            Route::get('recommendations/pending', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'getPending'])->name('api.dss.recommendations.pending');
+            Route::get('recommendations/type/{type}', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'getByType'])->name('api.dss.recommendations.by-type');
+            Route::post('recommendations/{id}/action', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'markActioned'])->name('api.dss.recommendations.action');
+            Route::get('recommendations/pending-count', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'pendingCount'])->name('api.dss.recommendations.pending-count');
+            Route::get('recommendations/count-by-type', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'countByType'])->name('api.dss.recommendations.count-by-type');
+        });
+    });
+
+    // DSS Settings API - Admin only
+    Route::middleware('role:admin')->group(function () {
+        Route::get('api/dss/settings', [App\Http\Controllers\DSSSettingsController::class, 'getSettings'])->name('api.dss.settings');
     });
 });

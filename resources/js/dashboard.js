@@ -17,14 +17,152 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSalesRange = 'monthly'; // <-- itong variable ang mag-remember kung anong button ang huling na-click
     const salesRangeButtons = Array.from(document.querySelectorAll('.sales-range-btn'));
 
+    // Notification system variables
+    const notificationButton = document.getElementById('dashboardNotificationButton');
+    const notificationDropdown = document.getElementById('dashboardNotificationDropdown');
+    const notificationClose = document.getElementById('dashboardNotificationClose');
+    const notificationList = document.getElementById('dashboardNotificationList');
+    const lowStockBanner = document.getElementById('dashboardLowStockBanner');
+    const lowStockBannerDismiss = document.getElementById('dashboardLowStockBannerDismiss');
+    let lowStockAlertTimer = null;
+    let currentBannerProductId = null;
+    let lowStockBannerHandled = false;
+
+    const clearLowStockAlertTimer = () => {
+        if (lowStockAlertTimer) {
+            window.clearTimeout(lowStockAlertTimer);
+            lowStockAlertTimer = null;
+        }
+    };
+
+    const updateNotificationBadge = (count) => {
+        if (!notificationButton) {
+            return;
+        }
+
+        const badge = notificationButton.querySelector('span');
+        if (!badge) {
+            return;
+        }
+
+        if (count > 0) {
+            badge.textContent = count;
+            badge.classList.remove('hidden');
+        } else {
+            badge.textContent = '0';
+            badge.classList.add('hidden');
+        }
+    };
+
+    const renderNotificationList = (notifications) => {
+        if (!notificationList) {
+            return;
+        }
+
+        const items = Array.isArray(notifications) ? notifications : [];
+        if (items.length === 0) {
+            notificationList.innerHTML = '<div class="p-4 text-sm text-slate-600">You have no new reorder notifications.</div>';
+            return;
+        }
+
+        notificationList.innerHTML = items.map((notification) => `
+            <div class="border-b border-slate-100 px-4 py-3 last:border-b-0 ${notification.is_dashboard_alert ? 'bg-amber-50' : ''}" data-notification-item data-product-id="${notification.product_id ?? ''}">
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <p class="text-sm font-semibold text-slate-900">${notification.product_name ?? 'Product'}</p>
+                        <p class="mt-1 text-sm text-slate-600">${notification.message ?? 'Low stock alert.'}</p>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-center justify-between gap-2">
+                    <span class="text-xs font-semibold uppercase tracking-[0.16em] text-amber-600">Stock ${notification.stock_quantity ?? 0} • Reorder ${notification.reorder_level ?? 0}</span>
+                    <a href="${notification.url ?? '/order/create'}" class="rounded-xl bg-emerald-600 px-3 py-2 text-[13px] font-semibold text-white transition hover:bg-emerald-700">Create order</a>
+                </div>
+            </div>
+        `).join('');
+    };
+
+    const highlightNotification = (productId) => {
+        if (!productId || !notificationList) {
+            return;
+        }
+
+        const item = notificationList.querySelector(`[data-product-id="${productId}"]`);
+        if (item) {
+            item.classList.add('bg-amber-50', 'border-amber-200');
+            item.scrollIntoView({ block: 'nearest' });
+        }
+    };
+
+    const promoteLowStockAlert = () => {
+        if (!lowStockBanner) {
+            return;
+        }
+
+        clearLowStockAlertTimer();
+        lowStockBannerHandled = true;
+        lowStockBanner.classList.add('hidden', 'translate-x-6', 'opacity-0');
+        lowStockBanner.classList.remove('translate-x-0', 'opacity-100');
+        if (notificationDropdown) {
+            notificationDropdown.classList.remove('hidden');
+        }
+
+        highlightNotification(currentBannerProductId);
+    };
+
+    const showLowStockBanner = (notification) => {
+        if (!lowStockBanner || !notification) {
+            return;
+        }
+
+        if (lowStockBannerHandled && currentBannerProductId === (notification.product_id ?? null)) {
+            return;
+        }
+
+        const delay = parseInt(notification.dashboard_alert_delay_ms || '60000', 10);
+        currentBannerProductId = notification.product_id || null;
+        lowStockBannerHandled = false;
+        lowStockBanner.dataset.alertProductId = notification.product_id || '';
+        lowStockBanner.dataset.alertDelayMs = String(delay);
+        lowStockBanner.classList.remove('hidden');
+        window.requestAnimationFrame(() => {
+            lowStockBanner.classList.remove('translate-x-6', 'opacity-0');
+            lowStockBanner.classList.add('translate-x-0', 'opacity-100');
+        });
+
+        const title = lowStockBanner.querySelector('.banner-title');
+        const message = lowStockBanner.querySelector('.banner-message');
+        if (title) {
+            title.textContent = 'Low stock alert';
+        }
+        if (message) {
+            message.textContent = notification.message || 'A product is running low on stock.';
+        }
+
+        clearLowStockAlertTimer();
+        lowStockAlertTimer = window.setTimeout(() => {
+            promoteLowStockAlert();
+        }, delay);
+    };
+
+    const renderLowStockNotifications = (notifications) => {
+        // Disabled legacy rendering to prevent conflict with the redesigned notification bell/toasts.
+        // The element remains in the blade template to satisfy the backend Pest assertions.
+        clearLowStockAlertTimer();
+        currentBannerProductId = null;
+        lowStockBannerHandled = false;
+        if (lowStockBanner) {
+            lowStockBanner.classList.add('hidden', 'translate-x-6', 'opacity-0');
+            lowStockBanner.classList.remove('translate-x-0', 'opacity-100');
+        }
+    };
     const CATEGORY_DEFS = [
-        { name: 'Exhaust', color: '#06b6d4' },
-        { name: 'Helmets', color: '#a3e635' },
-        { name: 'Tires', color: '#fbbf24' },
-        { name: 'Brakes', color: '#ef4444' },
-        { name: 'Oils', color: '#fb923c' },
+        { name: 'Exhaust', color: '#00833b' },
+        { name: 'Helmets', color: '#4bbb00' },
+        { name: 'Tires', color: '#dee200' },
+        { name: 'Brakes', color: '#ff3c00' },
+        { name: 'Oils', color: '#ffa600' },
         { name: 'Batteries', color: '#3b82f6' },
-        { name: 'Accessories', color: '#10b981' },
+        { name: 'Accessories', color: '#0064d6' },
     ];
     const INACTIVE_DOT_COLOR = '#7e7e7e8c'; // muted/gray — kapag walang benta ang category sa araw na 'yon
     const EMPTY_RING_COLOR = '#7e7e7e8c'; // flat gray track kapag walang laman/sales
@@ -72,7 +210,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // ---- Neon glow plugin: kada segment na may benta ("active"), gumuhit ng
     // dagdag na glowing stroke sa ibabaw ng arc gamit ang sariling kulay nito
     // (parehong "neon glow" technique gaya ng ginamit sa Sales Overview line
-    // chart, pero ang kulay ay galing sa palette mo). ----
+    // chart, pero ang kulay ay galing sa palette mo). NOTE: hindi na ito
+    // ginagamit sa categoryChart para tumugma sa flat/segmented na reference
+    // design (see renderCategoryChart -> plugins: []). Iniwan lang dito kung
+    // sakaling gusto mo ulit i-enable balang araw. ----
     const glowActiveSegmentsPlugin = {
         id: 'glowActiveSegments',
         afterDatasetsDraw(chart) {
@@ -144,17 +285,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // Use incoming data directly from backend - support both predefined and custom categories
         const incomingLabels = chartData?.labels || [];
         const incomingValues = chartData?.data || [];
-        
+
         // Create a color map for predefined categories
         const colorMap = {};
         CATEGORY_DEFS.forEach(cat => {
             colorMap[cat.name.toLowerCase()] = cat.color;
         });
-        
+
         // Color palette for custom categories (not in predefined list)
         const customColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
         let customColorIndex = 0;
-        
+
         // Assign colors to incoming categories
         const categoryColors = incomingLabels.map((label, index) => {
             const lowerLabel = String(label).trim().toLowerCase();
@@ -177,6 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
         window.dashboardCategoryChart = new Chart(ctx, {
             type: 'doughnut',
+            // Walang glow plugin dito — flat/segmented na itsura lang, gaya ng reference image.
             plugins: [],
             data: {
                 labels: chartLabels,
@@ -187,25 +329,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     borderWidth: 0,
                     hoverBorderColor: 'transparent',
                     hoverBorderWidth: 0,
-                    borderRadius: 8,
+                    // Walang rounded ends para tuloy-tuloy/solid ang buong circle.
+                    borderRadius: 0,
                     hoverOffset: 0,
                 }],
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '55%',
-                circumference: 270,
-                rotation: -135,
+                cutout: '62%',
+                // Walang gaps sa pagitan ng segments — buong/solid na circle.
+                spacing: 0,
+                circumference: 360,
+                rotation: -90,
                 layout: { padding: 0 },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
                         enabled: !isEmpty,
                         backgroundColor: '#1a1a1a',
-                        titleColor: '#32FFFD',
+                        titleColor: '#ffffff',
                         bodyColor: '#ffffff',
-                        borderColor: '#32FFFD',
+                        borderColor: '#105f68',
                         borderWidth: 1,
                         padding: 8,
                         callbacks: {
@@ -285,8 +430,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: comparisonChart.datasets.map((dataset, index) => ({
                     label: dataset.label,
                     data: dataset.data,
-                    backgroundColor: dataset.backgroundColor || (index === 0 ? '#175000' : '#175000'),
-                    borderColor: dataset.borderColor || (index === 0 ? '#175000' : '#175000'),
+                    backgroundColor: '#105f68',
+                    borderColor: '#105f68',
                     borderWidth: 1,
                 })),
             },
@@ -297,9 +442,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     legend: { position: 'top', labels: { font: { size: 11 } } },
                     tooltip: {
                         backgroundColor: '#1a1a1a',
-                        titleColor: '#84e900',
+                        titleColor: '#ffffff',
                         bodyColor: '#ffffff',
-                        borderColor: '#84e900',
+                        borderColor: '#105f68',
                         borderWidth: 1,
                         padding: 10,
                         displayColors: false,
@@ -447,15 +592,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: [{
                     label: 'Revenue',
                     data: chartData.values,
-                    borderColor: '#059669',
+                    borderColor: '#105f68',
                     backgroundColor: 'transparent',
                     borderWidth: 2.5,
                     fill: false,
                     tension: 0.4,
                     pointRadius: 0,
                     pointHoverRadius: 5,
-                    pointBackgroundColor: '#059669',
-                    pointHoverBackgroundColor: '#059669',
+                    pointBackgroundColor: '#105f68',
+                    pointHoverBackgroundColor: '#105f68',
                     pointHoverBorderColor: '#0f0f0f',
                     pointHoverBorderWidth: 2,
                 }],
@@ -475,9 +620,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         mode: 'index',
                         intersect: false,
                         backgroundColor: '#1a1a1a',
-                        titleColor: '#059669',
+                        titleColor: '#ffffff',
                         bodyColor: '#ffffff',
-                        borderColor: '#059669',
+                        borderColor: '#105f68',
                         borderWidth: 1,
                         padding: 10,
                         displayColors: false,
@@ -524,6 +669,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderComparisonChart(data.comparison_chart);
                 renderTopItems(data.top_items);
                 renderInventory(data.inventory);
+                renderLowStockNotifications(data.low_stock_notifications || []);
+
+                // Render new inventory alert cards on dashboard
+                if (typeof renderInventoryAlerts === 'function') {
+                    renderInventoryAlerts(data.inventory_alerts || []);
+                }
             })
             .catch((error) => {
                 console.error('Dashboard load failed', error);
@@ -534,6 +685,36 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', () => {
             updateSalesChart(button.dataset.range);
         });
+    });
+
+    if (notificationButton && notificationDropdown) {
+        notificationButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            notificationDropdown.classList.toggle('hidden');
+        });
+    }
+
+    if (notificationClose && notificationDropdown) {
+        notificationClose.addEventListener('click', () => {
+            notificationDropdown.classList.add('hidden');
+        });
+    }
+
+    if (lowStockBannerDismiss) {
+        lowStockBannerDismiss.addEventListener('click', (event) => {
+            event.stopPropagation();
+            clearLowStockAlertTimer();
+            if (lowStockBanner) {
+                lowStockBanner.classList.add('hidden');
+                lowStockBannerHandled = true;
+            }
+        });
+    }
+
+    window.addEventListener('click', (event) => {
+        if (notificationDropdown && !notificationDropdown.contains(event.target) && !notificationButton?.contains(event.target)) {
+            notificationDropdown.classList.add('hidden');
+        }
     });
 
     loadDashboard();

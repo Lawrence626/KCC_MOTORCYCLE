@@ -36,7 +36,7 @@
                 <button onclick="nextPage()" class="px-2.5 py-1 rounded-lg border border-slate-600 bg-slate-700 text-[11px] font-semibold text-white hover:bg-slate-600 disabled:opacity-50" id="next-page">Next</button>
             </div>
 
-            <button onclick="sendToWarehouse()" class="w-full mt-4 px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white text-sm font-semibold hover:from-emerald-700 hover:to-emerald-800 transition" id="send-btn" disabled>Send to Warehouse</button>
+            <button onclick="sendToWarehouse()" class="w-full mt-4 px-3 py-2 rounded-xl bg-[#105f68] text-white text-sm font-semibold hover:bg-[#0d4f56] transition" id="send-btn" disabled>Send to Warehouse</button>
         </div>
 
         <!-- Connection Status -->

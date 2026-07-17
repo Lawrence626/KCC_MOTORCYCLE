@@ -795,7 +795,7 @@ async function searchProducts(query = '', page = 1) {
                             </div>
                         </div>
                         <div class="flex justify-center">
-                            <button type="button" data-id="${product.id}" data-name="${productName}" data-sku="${product.sku || ''}" data-price="${product.unit_price || 0}" class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-emerald-600 px-4 text-sm font-semibold text-white hover:bg-emerald-700">Add to Cart</button>
+                            <button type="button" data-id="${product.id}" data-name="${productName}" data-sku="${product.sku || ''}" data-price="${product.unit_price || 0}" class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-[#105f68] px-4 text-sm font-semibold text-white hover:bg-[#0c474e]">Add to Cart</button>
                         </div>
                     </div>
                 </div>
@@ -1116,6 +1116,199 @@ function populateReceipt() {
     if (invoicePaymentMethod) invoicePaymentMethod.textContent = receiptData.paymentMethod === 'qr' ? 'QR PH' : 'Cash';
 }
 
+
+/* =========================================================================
+   PRINT RECEIPT
+   Clean, well-designed receipt card layout (inspired by Receiptify-style
+   receipts): centered store header, boxed invoice/date, numbered item
+   rows, dashed dividers, totals block, payment info, thank-you line, and
+   a barcode strip with a small torn-edge accent at the top of the paper.
+   Data is read straight from posState.lastReceipt (the snapshot saved at
+   the moment payment was confirmed) so the printed receipt always shows
+   the correct items/total even after the cart has been cleared.
+   Only this visual template changed — all payment/process logic above
+   (confirmPayment, populateReceipt, totals math, etc.) is untouched.
+   ========================================================================= */
+function printReceipt() {
+    const printStyles = `
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body {
+                background: #eceef1;
+                font-family: 'Courier New', Courier, monospace;
+                color: #1a1a1a;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 30px 0;
+            }
+            .receipt-wrapper { width: 100mm; max-width: 100mm; margin: 0 auto; padding: 10px 8px 20px; }
+
+            .receipt-paper {
+                position: relative;
+                background: #ffffff;
+                padding: 26px 20px 22px;
+                border-radius: 4px;
+                box-shadow: 0 10px 28px rgba(15,23,42,0.16), 0 2px 6px rgba(15,23,42,0.08);
+                clip-path: polygon(
+                    0% 0%, 4% 1.4%, 8% 0%, 12% 1.4%, 16% 0%, 20% 1.4%, 24% 0%, 28% 1.4%,
+                    32% 0%, 36% 1.4%, 40% 0%, 44% 1.4%, 48% 0%, 52% 1.4%, 56% 0%, 60% 1.4%,
+                    64% 0%, 68% 1.4%, 72% 0%, 76% 1.4%, 80% 0%, 84% 1.4%, 88% 0%, 92% 1.4%,
+                    96% 0%, 100% 1.4%, 100% 100%, 0% 100%
+                );
+            }
+
+            .receipt-header { text-align: center; margin-bottom: 4px; }
+            .receipt-header h1 { font-size: 21px; letter-spacing: 0.34em; font-weight: 700; }
+            .receipt-header .receipt-subtitle { font-size: 9px; letter-spacing: 0.26em; color: #8a8f98; margin-top: 6px; text-transform: uppercase; }
+
+            .receipt-order-box { text-align: center; margin: 16px 0 2px; }
+            .receipt-order-box .order-line { font-size: 11.5px; font-weight: 700; letter-spacing: 0.03em; }
+            .receipt-order-box .order-sub { font-size: 9.5px; color: #8a8f98; margin-top: 3px; letter-spacing: 0.04em; }
+
+            .receipt-divider { border-top: 1.5px dashed #c7cad0; margin: 14px 0; }
+
+            .receipt-meta-line { display: flex; justify-content: space-between; font-size: 10.5px; color: #374151; padding: 2px 0; }
+            .receipt-meta-line .label { color: #8a8f98; }
+
+            .receipt-items table { width: 100%; border-collapse: collapse; font-size: 10.5px; }
+            .receipt-items thead th { text-align: left; font-size: 9px; letter-spacing: 0.08em; color: #8a8f98; padding-bottom: 8px; text-transform: uppercase; }
+            .receipt-items thead th.qty { width: 26px; }
+            .receipt-items thead th.amt { text-align: right; }
+            .receipt-items tbody td { padding: 5px 0; vertical-align: top; color: #1a1a1a; line-height: 1.4; }
+            .receipt-items tbody td.idx { color: #b0b4bb; width: 20px; }
+            .receipt-items tbody td.item-name { padding-right: 8px; }
+            .receipt-items tbody td.item-name .qty-tag { color: #8a8f98; font-size: 9.5px; }
+            .receipt-items tbody td.amt { text-align: right; white-space: nowrap; font-weight: 600; }
+
+            .receipt-summary { font-size: 10.5px; margin-top: 4px; }
+            .receipt-summary .row { display: flex; justify-content: space-between; padding: 3px 0; color: #374151; }
+            .receipt-summary .row.grand { font-weight: 700; font-size: 13.5px; color: #111827; border-top: 1.5px dashed #c7cad0; margin-top: 8px; padding-top: 10px; }
+
+            .receipt-payment { font-size: 10.5px; color: #374151; margin-top: 12px; }
+            .receipt-payment .row { display: flex; justify-content: space-between; padding: 2px 0; }
+            .receipt-payment .label { color: #8a8f98; }
+
+            .receipt-thankyou { text-align: center; font-weight: 700; letter-spacing: 0.2em; font-size: 11px; margin: 20px 0 16px; text-transform: uppercase; }
+
+            @page { size: 100mm auto; margin: 5mm; }
+            @media print {
+                body { background: #fff; display: block; padding: 0; }
+                .receipt-wrapper { width: 100mm; margin: 0 auto; padding: 0; }
+                .receipt-paper { box-shadow: none; border-radius: 0; }
+            }
+        </style>
+    `;
+
+    // Pull the exact snapshot recorded at the moment payment was confirmed —
+    // this is the single source of truth, so it stays correct even after
+    // the cart/inputs are reset for the next sale.
+    const receiptData = posState.lastReceipt;
+
+    const invoiceNum = receiptData?.invoiceNumber || document.getElementById('receiptInvoice')?.textContent || 'INV-000000';
+    const receiptDateText = receiptData?.date
+        ? new Date(receiptData.date).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+        : (document.getElementById('receiptDate')?.textContent || new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }));
+
+    const items = (receiptData?.items || []).map(item => ({
+        name: item.name,
+        qty: item.qty,
+        total: formatCurrency(item.price * item.qty),
+    }));
+
+    const itemCount = items.reduce((sum, item) => sum + item.qty, 0);
+
+    const subtotal = formatCurrency(receiptData?.subtotal || 0);
+    const services = formatCurrency(receiptData?.servicesTotal || 0);
+    const extra = formatCurrency(receiptData?.extra || 0);
+    const discount = formatCurrency(receiptData?.discount || 0);
+    const tax = formatCurrency(receiptData?.tax || 0);
+    const total = formatCurrency(receiptData?.total || 0);
+    const paid = formatCurrency(receiptData?.amountReceived ?? receiptData?.total ?? 0);
+    const paymentMethod = receiptData?.paymentMethod === 'qr' ? 'QR PH' : 'Cash';
+
+    const itemsHTML = items.map((item, index) => `
+        <tr>
+            <td class="idx">${String(index + 1).padStart(2, '0')}</td>
+            <td class="item-name">${item.name} <span class="qty-tag">x${item.qty}</span></td>
+            <td class="amt">${item.total}</td>
+        </tr>
+    `).join('');
+
+    const receiptHTML = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Receipt ${invoiceNum}</title>
+            ${printStyles}
+        </head>
+        <body>
+            <div class="receipt-wrapper">
+                <div class="receipt-paper">
+
+                    <div class="receipt-header">
+                        <h1>KCC</h1>
+                        <p class="receipt-subtitle">Motorcycle Parts &amp; Accessories</p>
+                    </div>
+
+                    <div class="receipt-order-box">
+                        <div class="order-line">INVOICE #${invoiceNum}</div>
+                        <div class="order-sub">${receiptDateText}</div>
+                    </div>
+
+                    <div class="receipt-divider"></div>
+
+                    <div class="receipt-meta-line"><span class="label">Cashier</span><span>Administrator</span></div>
+
+                    <div class="receipt-divider"></div>
+
+                    <div class="receipt-items">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="qty">#</th>
+                                    <th>Item</th>
+                                    <th class="amt">Amt</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${itemsHTML || '<tr><td colspan="3" style="color:#9ca3af;padding:8px 0;">No items</td></tr>'}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="receipt-divider"></div>
+
+                    <div class="receipt-summary">
+                        <div class="row"><span>Item Count</span><span>${itemCount}</span></div>
+                        <div class="row"><span>Subtotal</span><span>${subtotal}</span></div>
+                        <div class="row"><span>Services</span><span>${services}</span></div>
+                        <div class="row"><span>Extra Charges</span><span>${extra}</span></div>
+                        <div class="row"><span>Discount</span><span>-${discount}</span></div>
+                        <div class="row"><span>Included VAT (12%)</span><span>${tax}</span></div>
+                        <div class="row grand"><span>TOTAL</span><span>${total}</span></div>
+                    </div>
+
+                    <div class="receipt-divider"></div>
+
+                    <div class="receipt-payment">
+                        <div class="row"><span class="label">Amount Paid</span><span>${paid}</span></div>
+                        <div class="row"><span class="label">Payment Method</span><span>${paymentMethod}</span></div>
+                    </div>
+
+                    <div class="receipt-thankyou">Thank You!</div>
+
+                </div>
+            </div>
+        </body>
+        </html>
+    `;
+
+    openPrintWindow(receiptHTML);
+}
+
 function buildInvoiceHTML(receiptData, cashierName) {
     const invoiceNum   = receiptData.invoiceNumber || 'INV-000000';
     const dateStr      = new Date(receiptData.date).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
@@ -1285,7 +1478,7 @@ function buildInvoiceHTML(receiptData, cashierName) {
 </html>`;
 }
 
-function printReceipt() {
+function printInvoice() {
     const receiptData = posState.lastReceipt;
     if (!receiptData) return;
     const cashierName = document.getElementById('receiptCashierName')?.textContent

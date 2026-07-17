@@ -193,6 +193,25 @@
                 </div>
 
                 <div>
+                    <label class="text-xs text-slate-500 font-medium mb-1 block">Category</label>
+                    <select id="categoryFilter" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                        <option value="">All Categories</option>
+                        <option value="Tires & Wheels">Tires & Wheels</option>
+                        <option value="Brakes">Brakes</option>
+                        <option value="Engine & Transmission">Engine & Transmission</option>
+                        <option value="Suspension">Suspension</option>
+                        <option value="Electrical">Electrical</option>
+                        <option value="Exhaust">Exhaust</option>
+                        <option value="Cooling System">Cooling System</option>
+                        <option value="Body Parts">Body Parts</option>
+                        <option value="Controls (Levers, Clutch, etc.)">Controls (Levers, Clutch, etc.)</option>
+                        <option value="Accessories">Accessories</option>
+                        <option value="Helmets & Safety Gear">Helmets & Safety Gear</option>
+                        <option value="Oils & Lubricants">Oils & Lubricants</option>
+                    </select>
+                </div>
+
+                <div>
                     <label class="text-xs text-slate-500 font-medium mb-1 block">Product Description</label>
                     <div class="flex gap-2">
                         <select id="productNameFilter" class="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
@@ -681,7 +700,7 @@
     <div id="qrCodeModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
             <!-- Header -->
-            <div class="bg-gradient-to-r from-emerald-600 to-cyan-600 px-6 py-4 rounded-t-2xl">
+            <div class="bg-[#105f68] px-6 py-4 rounded-t-2xl">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="bg-white/20 rounded-lg p-2">
@@ -728,13 +747,13 @@
 
                 <!-- Action Buttons -->
                 <div class="flex gap-3 pt-4 border-t border-slate-200">
-                    <button onclick="printQRCodes()" class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold hover:from-emerald-700 hover:to-emerald-800 transition shadow-md flex items-center justify-center gap-2">
+                    <button onclick="printQRCodes()" class="flex-1 px-4 py-3 rounded-xl bg-[#105f68] text-white font-semibold hover:bg-[#0d4f56] transition shadow-md flex items-center justify-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                         </svg>
                         Print QR Codes
                     </button>
-                    <button onclick="downloadQRCodes()" class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-slate-600 to-slate-700 text-white font-semibold hover:from-slate-700 hover:to-slate-800 transition shadow-md flex items-center justify-center gap-2">
+                    <button onclick="downloadQRCodes()" class="flex-1 px-4 py-3 rounded-xl bg-[#105f68] text-white font-semibold hover:bg-[#0d4f56] transition shadow-md flex items-center justify-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                         </svg>

@@ -824,8 +824,22 @@ class StockImportController extends Controller
                 ], 200);
             }
 
+            $previousPrice = $product->unit_price;
             $product->fill($payload);
             $product->save();
+
+            if (array_key_exists('unit_price', $payload) && $previousPrice !== $product->unit_price) {
+                InventoryMovement::create([
+                    'product_id' => $product->id,
+                    'type' => 'price_update',
+                    'quantity_change' => 0,
+                    'unit_price' => $product->unit_price,
+                    'notes' => "Price updated from ₱{$previousPrice} to ₱{$product->unit_price}",
+                    'metadata' => [
+                        'old_price' => $previousPrice,
+                    ],
+                ]);
+            }
 
             return response()->json([
                 'success' => true,

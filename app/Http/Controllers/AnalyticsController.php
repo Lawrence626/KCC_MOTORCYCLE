@@ -6,9 +6,12 @@ use App\Models\InventoryMovement;
 use App\Models\Product;
 use App\Models\POSTransaction;
 use App\Models\PurchaseOrder;
+use App\Models\PurchaseOrderItem;
+use App\Models\SupplierPriceHistory;
 use App\Services\VatCalculationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class AnalyticsController extends Controller
 {
@@ -162,6 +165,8 @@ class AnalyticsController extends Controller
             return '₱' . number_format((float) ($item['value'] ?? 0), 2);
         })->values()->toArray();
 
+        $movementData = $this->getProductMovementFromTransactions($monthStart->toDateString(), $endOfMonth->toDateString());
+
         return view('data_analytics.sales-analytics', [
             'quickStats' => [
                 'total_inventory_value' => $totalInventoryValue,
@@ -181,7 +186,116 @@ class AnalyticsController extends Controller
                 'shares' => $categoryBreakdown->pluck('share')->toArray(),
             ],
             'topProducts' => $topProducts,
+            'fastMoving'  => $movementData['fast'],
+            'slowMoving'  => $movementData['slow'],
         ]);
+    }
+
+    /**
+     * API endpoint: return the four date-filterable widget datasets as JSON.
+     * Used by the global date-range calendar on the Sales Analytics page.
+     */
+    public function salesFilteredWidgets(Request $request)
+    {
+        $startDate = $request->get('start_date', now()->startOfMonth()->toDateString());
+        $endDate   = $request->get('end_date', now()->endOfMonth()->toDateString());
+
+        // --- Category Distribution ---
+        $categoryBreakdown = $this->getCategoryBreakdownFromTransactions($startDate, $endDate);
+
+        $categoryData = [
+            'labels'    => $categoryBreakdown->pluck('label')->toArray(),
+            'values'    => $categoryBreakdown->pluck('value')->toArray(),
+            'formatted' => $categoryBreakdown->map(fn($item) => '₱' . number_format($item['value'], 2))->values()->toArray(),
+            'shares'    => $categoryBreakdown->pluck('share')->toArray(),
+        ];
+
+        // --- Top Selling Products (by revenue) ---
+        $topProducts = $this->getTopSellingProductsFromTransactions(5, $startDate, $endDate);
+
+        // --- Fast & Slow moving (by quantity) — reuse the same transaction scan ---
+        $movementData = $this->getProductMovementFromTransactions($startDate, $endDate);
+
+        return response()->json([
+            'categoryBreakdown' => $categoryData,
+            'topProducts'       => $topProducts->values()->toArray(),
+            'fastMoving'        => $movementData['fast'],
+            'slowMoving'        => $movementData['slow'],
+        ]);
+    }
+
+    /**
+     * Aggregate product sales from POS transactions for fast/slow movement tables.
+     */
+    private function getProductMovementFromTransactions($startDate, $endDate)
+    {
+        $transactions = POSTransaction::completed()
+            ->dateRange($startDate, $endDate)
+            ->get();
+
+        $productSales = [];
+        $productIds   = [];
+
+        foreach ($transactions as $transaction) {
+            if (!is_array($transaction->items)) {
+                continue;
+            }
+
+            foreach ($transaction->items as $item) {
+                $productId = $item['id'] ?? null;
+                $quantity  = (int) ($item['quantity'] ?? $item['qty'] ?? 0);
+                $unitPrice = (float) ($item['unit_price'] ?? $item['price'] ?? 0);
+
+                if (!$productId || $quantity <= 0) {
+                    continue;
+                }
+
+                $productIds[$productId] = $productId;
+
+                if (!isset($productSales[$productId])) {
+                    $productSales[$productId] = ['qty' => 0, 'revenue' => 0];
+                }
+
+                $productSales[$productId]['qty']     += $quantity;
+                $productSales[$productId]['revenue'] += $quantity * $unitPrice;
+            }
+        }
+
+        if (empty($productSales)) {
+            return ['fast' => [], 'slow' => []];
+        }
+
+        $products = Product::whereIn('id', array_keys($productIds))
+            ->get(['id', 'name', 'product_name', 'sku'])
+            ->keyBy('id');
+
+        $all = collect($productSales)
+            ->map(function ($sales, $productId) use ($products) {
+                $product = $products->get($productId);
+                return [
+                    'name'    => $product?->product_name ?: ($product?->name ?? 'Unknown Product'),
+                    'sku'     => $product?->sku ?? 'N/A',
+                    'qty'     => $sales['qty'],
+                    'revenue' => $sales['revenue'],
+                ];
+            })
+            ->filter(fn($p) => $p['qty'] > 0)
+            ->values();
+
+        $fast = $all->filter(fn($p) => $p['qty'] >= 10)->sortByDesc('qty')->take(5)->values()->map(fn($p) => [
+            'name'    => $p['name'],
+            'sku'     => $p['sku'],
+            'qty'     => $p['qty'],
+            'revenue' => '₱' . number_format($p['revenue'], 2),
+        ])->toArray();
+
+        $slow = $all->filter(fn($p) => $p['qty'] < 10)->sortBy('qty')->take(5)->values()->map(fn($p) => [
+            'name' => $p['name'],
+            'sku'  => $p['sku'],
+            'qty'  => $p['qty'],
+        ])->toArray();
+
+        return ['fast' => $fast, 'slow' => $slow];
     }
 
     protected function buildSalesTrendData()
@@ -234,25 +348,18 @@ class AnalyticsController extends Controller
     {
         $products = $this->activeProducts();
 
-        $averageUnitPrice = $products->avg('unit_price') ?: 0;
-        $mostExpensive = $products->orderByDesc('unit_price')->first();
-        $cheapest = $products->orderBy('unit_price')->first();
+        $averageUnitPrice = (clone $products)->avg('unit_price') ?: 0;
+        $mostExpensive = (clone $products)->orderByDesc('unit_price')->first();
+        $cheapest = (clone $products)->orderBy('unit_price')->first();
 
         $priceUpdates = InventoryMovement::where('type', 'price_update')
+            ->where(function ($query) {
+                $query->whereRaw("JSON_EXTRACT(metadata, '$.old_price') IS NOT NULL")
+                    ->whereRaw("JSON_EXTRACT(metadata, '$.old_price') != unit_price");
+            })
             ->latest()
-            ->limit(10)
             ->with('product')
-            ->get()
-            ->map(function ($movement) {
-                return [
-                    'product' => $movement->product->name ?? 'Unknown',
-                    'sku' => $movement->product->sku ?? 'N/A',
-                    'old_price' => data_get($movement, 'metadata.old_price') ?? null,
-                    'new_price' => $movement->unit_price,
-                    'notes' => $movement->notes,
-                    'updated_at' => $movement->created_at->format('M d, Y'),
-                ];
-            });
+            ->paginate(5, ['*'], 'price_page');
 
         $pricingByCategory = $products
             ->select('category', DB::raw('AVG(unit_price) as avg_price'), DB::raw('SUM(stock_quantity) as total_qty'))
@@ -260,12 +367,148 @@ class AnalyticsController extends Controller
             ->orderByDesc('total_qty')
             ->get();
 
+        // ── Supplier Cost Analysis ──────────────────────────────────────────
+        // Strategy: fetch ALL eligible products, build the full analysis
+        // collection, apply both filters (search + cost_change) across the
+        // entire dataset, then manually paginate the filtered results.
+        // This guarantees filters always operate on the whole dataset, not
+        // just the current page.
+
+        $search          = request('search');
+        $costChangeFilter = request('cost_change'); // '', 'none', 'up', 'down'
+
+        // 1. Get all product IDs that have at least one received PO item
+        $productIdsWithPOs = PurchaseOrderItem::where('received_quantity', '>', 0)
+            ->whereHas('purchaseOrder')
+            ->select('product_id')
+            ->distinct()
+            ->pluck('product_id');
+
+        // 2. Fetch ALL matching products (no pagination yet), applying name/SKU search at DB level
+        $allProducts = Product::whereIn('id', $productIdsWithPOs)
+            ->when($search, fn($q) => $q->where(fn($query) => $query->where('product_name', 'like', "%{$search}%")->orWhere('sku', 'like', "%{$search}%")->orWhere('name', 'like', "%{$search}%")))
+            ->get();
+
+        // 3. Fetch ALL received PO items for these products in one query
+        $allProductIds = $allProducts->pluck('id');
+        $poItems = PurchaseOrderItem::whereIn('product_id', $allProductIds)
+            ->where('received_quantity', '>', 0)
+            ->whereHas('purchaseOrder')
+            ->with('purchaseOrder')
+            ->get()
+            ->groupBy('product_id');
+
+        // 4. Build the full analysis collection for every fetched product
+        $analysisCollection = $allProducts->map(function ($product) use ($poItems) {
+            $items = collect($poItems->get($product->id, collect()))
+                ->sortByDesc(fn($item) => $item->purchaseOrder?->id)
+                ->values();
+
+            $currentCost  = $items->count() > 0  ? (float) $items[0]->unit_price : 0;
+            $previousCost = $items->count() >= 2 ? (float) $items[1]->unit_price : null;
+
+            $changePercentage = $previousCost && $previousCost > 0
+                ? round((($currentCost - $previousCost) / $previousCost) * 100, 2)
+                : 0;
+
+            $recommendation = match (true) {
+                $previousCost !== null && $currentCost > $previousCost => 'Increase the retail price to maintain a 30% profit margin.',
+                $previousCost !== null && $currentCost < $previousCost => 'Maintain the current retail price to increase profit margin.',
+                default => 'Maintain current retail price.',
+            };
+
+            // Calculate the latest receipt date based on completed purchase orders
+            $latestReceiptDate = null;
+            if ($items->count() > 0) {
+                $completedPo = $items->filter(fn($item) => $item->purchaseOrder?->status === 'completed' && $item->purchaseOrder?->completed_at)
+                    ->sortByDesc(fn($item) => $item->purchaseOrder->completed_at)
+                    ->first();
+
+                if ($completedPo) {
+                    $latestReceiptDate = $completedPo->purchaseOrder->completed_at;
+                } else {
+                    $latestReceiptDate = $items->sortByDesc(fn($item) => $item->purchaseOrder?->id)
+                        ->first()?->purchaseOrder?->created_at;
+                }
+            }
+
+            return (object) [
+                'product'              => $product,
+                'product_id'          => $product->id,
+                'supplier_cost'       => $currentCost,
+                'previous_cost'       => $previousCost,
+                'change_percentage'   => $changePercentage,
+                'recommendation'      => $recommendation,
+                'suggested_retail_price' => $currentCost > 0 ? round(($currentCost * 1.12) / 0.70, 2) : 0,
+                'supplier'            => null,
+                'latest_receipt_date' => $latestReceiptDate,
+            ];
+        });
+
+        // Calculate pricing overview metrics before applying the cost change filter
+        $pricingOverview = [
+            'increased' => $analysisCollection->filter(fn($entry) => (float) $entry->change_percentage > 0)->count(),
+            'decreased' => $analysisCollection->filter(fn($entry) => (float) $entry->change_percentage < 0)->count(),
+            'no_change' => $analysisCollection->filter(fn($entry) => (float) $entry->change_percentage == 0)->count(),
+            'total'     => $analysisCollection->count(),
+        ];
+
+        // 5. Apply cost_change filter across the FULL collection
+        if ($costChangeFilter !== null && $costChangeFilter !== '') {
+            $analysisCollection = $analysisCollection->filter(function ($entry) use ($costChangeFilter) {
+                $change = (float) $entry->change_percentage;
+                return match ($costChangeFilter) {
+                    'up'   => $change > 0,
+                    'down' => $change < 0,
+                    'none' => $change == 0,
+                    default => true,
+                };
+            })->values();
+        }
+
+        // Sort the collection by latest receipt date descending
+        $analysisCollection = $analysisCollection->sortByDesc(function ($entry) {
+            if ($entry->latest_receipt_date) {
+                return $entry->latest_receipt_date instanceof \Illuminate\Support\Carbon
+                    ? $entry->latest_receipt_date->timestamp
+                    : strtotime((string) $entry->latest_receipt_date);
+            }
+            return 0;
+        })->values();
+
+        // 6. Manually paginate the fully-filtered collection.
+        //    When a filter changes, page resets to 1 (the form submit has no page param).
+        $perPage     = 8;
+        $currentPage = (int) request('page', 1);
+        $pageItems   = $analysisCollection->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
+        $supplierCostAnalysis = new LengthAwarePaginator(
+            $pageItems,
+            $analysisCollection->count(),
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        $supplierCostAlerts = \App\Models\SupplierPriceHistory::where('change_percentage', '>', 0)
+            ->where('is_dismissed', false)
+            ->with('product')
+            ->orderByDesc('created_at')
+            ->get();
+
+        $supplierCostHighlight = null;
+
+
         return view('data_analytics.pricing-module', [
             'averageUnitPrice' => $averageUnitPrice,
             'mostExpensive' => $mostExpensive,
             'cheapest' => $cheapest,
             'priceUpdates' => $priceUpdates,
             'pricingByCategory' => $pricingByCategory,
+            'supplierCostAnalysis' => $supplierCostAnalysis,
+            'supplierCostAlerts' => $supplierCostAlerts,
+            'supplierCostHighlight' => $supplierCostHighlight,
+            'pricingOverview' => $pricingOverview,
         ]);
     }
 
@@ -276,7 +519,7 @@ class AnalyticsController extends Controller
         $overstocked = $products
             ->whereColumn('stock_quantity', '>', 'reorder_level')
             ->orderByDesc(DB::raw('stock_quantity - reorder_level'))
-            ->get(['id', 'name', 'sku', 'category', 'stock_quantity', 'reorder_level', 'unit_price']);
+            ->get(['id', 'name', 'product_name', 'sku', 'category', 'stock_quantity', 'reorder_level', 'unit_price']);
 
         $totalExcessUnits = $overstocked->sum(function ($product) {
             return max(0, $product->stock_quantity - $product->reorder_level);
@@ -311,14 +554,14 @@ class AnalyticsController extends Controller
         $outOfStock = (clone $products)
             ->where('stock_quantity', '<=', 0)
             ->orderBy('name')
-            ->get(['id', 'name', 'sku', 'category', 'stock_quantity', 'reorder_level', 'unit_price', 'last_restock_date']);
+            ->get(['id', 'name', 'product_name', 'sku', 'category', 'stock_quantity', 'reorder_level', 'unit_price', 'last_restock_date']);
 
         $lowStock = (clone $products)
             ->whereColumn('stock_quantity', '<=', 'reorder_level')
             ->where('stock_quantity', '>', 0)
             ->whereNotNull('reorder_level')
             ->orderBy('stock_quantity')
-            ->get(['id', 'name', 'sku', 'category', 'stock_quantity', 'reorder_level', 'unit_price', 'last_restock_date']);
+            ->get(['id', 'name', 'product_name', 'sku', 'category', 'stock_quantity', 'reorder_level', 'unit_price', 'last_restock_date']);
 
         $outOfStockCount = $outOfStock->count();
         $lowStockCount = $lowStock->count();
@@ -342,9 +585,8 @@ class AnalyticsController extends Controller
         }
 
         try {
-            $transactions = POSTransaction::where('status', 'completed')
-                ->whereNotNull('completed_at')
-                ->whereBetween('completed_at', [$startDate, $endDate])
+            $transactions = POSTransaction::completed()
+                ->dateRange($startDate, $endDate)
                 ->get();
         } catch (\Exception $e) {
             return collect();
@@ -390,35 +632,27 @@ class AnalyticsController extends Controller
         }
 
         $products = Product::whereIn('id', array_keys($productIds))
-            ->get(['id', 'name', 'category'])
+            ->get(['id', 'name', 'product_name', 'category', 'sku'])
             ->keyBy('id');
 
         $topProducts = collect($productSales)
             ->map(function ($sales, $productId) use ($products) {
                 $product = $products->get($productId);
+                $cat = $product?->category;
+                if (!$cat || strtolower(trim($cat)) === 'uncategorized') {
+                    $cat = $product?->product_name ?: ($product?->name ?? 'Uncategorized');
+                }
+                
                 return [
                     'id' => $productId,
-                    'name' => $product?->name ?? 'Unknown Product',
-                    'category' => $this->normalizeCategory($product?->category ?? 'Uncategorized'),
+                    'name' => $product?->product_name ?: ($product?->name ?? 'Unknown Product'),
+                    'sku' => $product?->sku ?? 'N/A',
+                    'category' => $this->normalizeCategory($cat),
                     'qty' => $sales['qty'],
                     'revenue' => $sales['revenue'],
                 ];
             })
             ->filter(fn ($product) => $product['qty'] > 0)
-            ->values()
-            ->groupBy(function ($product) {
-                return strtolower(trim($product['name'])) . '|' . strtolower(trim($product['category']));
-            })
-            ->map(function ($groupedProducts) {
-                $first = $groupedProducts->first();
-                return [
-                    'id' => $first['id'],
-                    'name' => $first['name'],
-                    'category' => $first['category'],
-                    'qty' => $groupedProducts->sum('qty'),
-                    'revenue' => $groupedProducts->sum('revenue'),
-                ];
-            })
             ->sortByDesc('qty')
             ->values()
             ->slice(0, $limit);
@@ -427,6 +661,7 @@ class AnalyticsController extends Controller
             return [
                 'rank' => $index + 1,
                 'name' => $product['name'],
+                'sku' => $product['sku'],
                 'category' => $product['category'],
                 'qty' => $product['qty'],
                 'revenue' => '₱' . number_format($product['revenue'], 2),
@@ -441,9 +676,8 @@ class AnalyticsController extends Controller
             $endDate = now()->endOfMonth();
         }
 
-        $transactions = POSTransaction::where('status', 'completed')
-            ->whereNotNull('completed_at')
-            ->whereBetween('completed_at', [$startDate, $endDate])
+        $transactions = POSTransaction::completed()
+            ->dateRange($startDate, $endDate)
             ->get();
 
         $categoryRevenue = [];
@@ -462,9 +696,17 @@ class AnalyticsController extends Controller
             }
         }
 
-        $productCategories = Product::whereIn('id', array_keys($productIds))
-            ->pluck('category', 'id')
-            ->all();
+        $productsForCat = Product::whereIn('id', array_keys($productIds))
+            ->get(['id', 'category', 'product_name', 'name']);
+            
+        $productCategories = [];
+        foreach ($productsForCat as $prod) {
+            $cat = $prod->category;
+            if (!$cat || strtolower(trim($cat)) === 'uncategorized') {
+                $cat = $prod->product_name ?: ($prod->name ?? 'Uncategorized');
+            }
+            $productCategories[$prod->id] = $cat;
+        }
 
         foreach ($transactions as $transaction) {
             if (!is_array($transaction->items)) {
@@ -516,72 +758,58 @@ class AnalyticsController extends Controller
 
     protected function normalizeCategory($value)
     {
-        $allowed = [
-            'engine_oil' => 'Engine Oil',
-            'engine oil' => 'Engine Oil',
-            'oil' => 'Engine Oil',
-            'battery' => 'Battery',
-            'batteries' => 'Battery',
-            'spark_plug' => 'Spark Plug',
-            'spark plug' => 'Spark Plug',
-            'sparkplug' => 'Spark Plug',
-            'brake_pads' => 'Brake Pads',
-            'brake pads' => 'Brake Pads',
-            'brakes' => 'Brake Pads',
-            'tires' => 'Tires',
-            'tire' => 'Tires',
-            'filters' => 'Filters',
-            'filter' => 'Filters',
-            'lubricants' => 'Lubricants',
-            'lubricant' => 'Lubricants',
-            'accessories' => 'Accessories',
-            'accessory' => 'Accessories',
-        ];
-
         if (empty($value)) {
             return 'Uncategorized';
         }
 
-        $normalized = strtolower(trim($value));
+        $normalized = strtolower(trim((string) $value));
         $normalized = str_replace(['-', '_'], ' ', $normalized);
         $normalized = preg_replace('/\s+/', ' ', $normalized);
 
-        if (strpos($normalized, 'engine oil') !== false || (strpos($normalized, 'engine') !== false && strpos($normalized, 'oil') !== false)) {
-            return 'Engine Oil';
+        // Brakes
+        if (str_contains($normalized, 'brake') || str_contains($normalized, 'caliper') || str_contains($normalized, 'disc') || str_contains($normalized, 'lever')) {
+            return 'Brakes';
         }
 
-        if (strpos($normalized, 'battery') !== false) {
-            return 'Battery';
+        // Exhaust
+        if (str_contains($normalized, 'pipe') || str_contains($normalized, 'exhaust')) {
+            return 'Exhaust';
         }
 
-        if (strpos($normalized, 'spark') !== false) {
-            return 'Spark Plug';
-        }
-
-        if (strpos($normalized, 'brake') !== false) {
-            return 'Brake Pads';
-        }
-
-        if (strpos($normalized, 'tire') !== false || strpos($normalized, 'tyre') !== false) {
+        // Tires
+        if (str_contains($normalized, 'tire') || str_contains($normalized, 'tyre')) {
             return 'Tires';
         }
 
-        if (strpos($normalized, 'filter') !== false) {
-            return 'Filters';
+        // Oils
+        if (str_contains($normalized, 'oil') || str_contains($normalized, 'lubricant')) {
+            return 'Oils';
         }
 
-        if (strpos($normalized, 'lubricant') !== false || strpos($normalized, 'oil') !== false) {
-            return 'Lubricants';
+        // Batteries
+        if (str_contains($normalized, 'battery') || str_contains($normalized, 'batteries')) {
+            return 'Batteries';
         }
 
-        if (strpos($normalized, 'accessory') !== false) {
-            return 'Accessories';
+        // Helmets
+        if (str_contains($normalized, 'helmet')) {
+            return 'Helmets';
         }
 
-        if (in_array($normalized, ['uncategorized', 'unknown', 'n/a'], true)) {
+        // Catch-all for uncategorized
+        if (in_array($normalized, ['uncategorized', 'unknown', 'n/a', ''], true)) {
             return 'Uncategorized';
         }
 
-        return $allowed[$normalized] ?? 'Uncategorized';
+        // Everything else defaults to Accessories (Mags, Seats, Shocks, Mirrors, etc.)
+        return 'Accessories';
+    }
+
+    public function dismissAlert($id)
+    {
+        $history = \App\Models\SupplierPriceHistory::findOrFail($id);
+        $history->update(['is_dismissed' => true]);
+
+        return response()->json(['success' => true]);
     }
 }

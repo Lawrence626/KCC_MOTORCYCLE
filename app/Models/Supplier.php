@@ -22,9 +22,20 @@ class Supplier extends Model
         'status' => 'string',
     ];
 
+    /**
+     * Products directly linked via the supplier_name string column (legacy).
+     */
     public function products()
     {
         return $this->hasMany(Product::class, 'supplier_name', 'name');
+    }
+
+    /**
+     * Products mapped to this supplier via the supplier_products pivot table.
+     */
+    public function suppliedProducts()
+    {
+        return $this->belongsToMany(Product::class, 'supplier_products');
     }
 
     public function getTotalValueAttribute()
