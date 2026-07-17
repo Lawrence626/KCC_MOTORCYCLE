@@ -19,6 +19,9 @@ const posState = {
     productPageSize: 9,
     productTotalCount: 0,
     productSearchQuery: '',
+    selectedCategory: 'All',
+    selectedBrand: 'All',
+    categories: ['All', 'Exhaust', 'Tires', 'Brakes', 'Oils', 'Accessories'],
 };
 
 function loadTransactionHistory() {
@@ -29,6 +32,83 @@ function loadTransactionHistory() {
         console.error('Failed to load transaction history', error);
         return [];
     }
+}
+
+async function loadPOSCategories() {
+    try {
+        const response = await fetch('/product-descriptions');
+        const descriptions = await response.json();
+        
+        // Use all product descriptions as categories
+        posState.categories = ['All', ...descriptions.map(desc => desc.name)];
+        
+        // Store descriptions for filtering
+        posState.productDescriptions = descriptions;
+        
+        // Render category dropdown
+        renderCategoryDropdown();
+        // Initialize brand dropdown
+        updateBrandDropdown();
+    } catch (error) {
+        console.error('Failed to load POS categories:', error);
+        // Use default categories if API fails
+        posState.categories = ['All'];
+        renderCategoryDropdown();
+        updateBrandDropdown();
+    }
+}
+
+function renderCategoryDropdown() {
+    const select = document.getElementById('posCategorySelect');
+    if (!select) return;
+    
+    select.innerHTML = posState.categories.map(category => {
+        const isSelected = category === posState.selectedCategory;
+        return `<option value="${category}" ${isSelected ? 'selected' : ''}>${category}</option>`;
+    }).join('');
+    
+    // Add event listener
+    select.addEventListener('change', () => {
+        posState.selectedCategory = select.value;
+        posState.selectedBrand = 'All'; // Reset brand when category changes
+        updateBrandDropdown();
+        searchProducts(posState.productSearchQuery, 1);
+    });
+}
+
+function updateBrandDropdown() {
+    const select = document.getElementById('posBrandSelect');
+    if (!select) return;
+    
+    let brands = ['All'];
+    
+    if (posState.selectedCategory !== 'All' && posState.productDescriptions) {
+        // Show brands for selected product description
+        const selectedDesc = posState.productDescriptions.find(desc => desc.name === posState.selectedCategory);
+        if (selectedDesc && selectedDesc.brands) {
+            brands = ['All', ...selectedDesc.brands];
+        }
+    } else if (posState.productDescriptions) {
+        // Show all unique brands from all product descriptions when "All" is selected
+        const allBrands = new Set();
+        posState.productDescriptions.forEach(desc => {
+            if (desc.brands) {
+                desc.brands.forEach(brand => allBrands.add(brand));
+            }
+        });
+        brands = ['All', ...Array.from(allBrands).sort()];
+    }
+    
+    select.innerHTML = brands.map(brand => {
+        const isSelected = brand === posState.selectedBrand;
+        return `<option value="${brand}" ${isSelected ? 'selected' : ''}>${brand}</option>`;
+    }).join('');
+    
+    // Add event listener
+    select.addEventListener('change', () => {
+        posState.selectedBrand = select.value;
+        searchProducts(posState.productSearchQuery, 1);
+    });
 }
 
 function saveTransactionHistory() {
@@ -59,6 +139,8 @@ function recordTransaction(invoice, date, total, paymentMethod, items) {
             id: item.id,
             name: item.name,
             sku: cartItem?.sku || '',
+            product_description: cartItem?.product_description || '',
+            brand: cartItem?.brand || '',
             compatibility: cartItem?.compatibility || '',
             quantity: item.qty,
             price: item.price,
@@ -535,8 +617,14 @@ function renderCart() {
         const row = document.createElement('tr');
         row.className = 'border-b border-slate-200';
         row.innerHTML = `
-            <td class="px-3 py-3 text-slate-700 text-xs font-medium">${item.name}</td>
-            <td class="px-3 py-3 text-slate-600 text-xs">${item.sku || '-'}</td>
+            <td class="px-3 py-3 text-slate-700 text-xs font-medium">
+                <div>${item.name}</div>
+                ${item.product_description ? `<div class="text-[9px] text-slate-500 mt-0.5"><span class="font-medium">PRODUCT DESCRIPTION:</span> ${item.product_description}</div>` : ''}
+                ${item.brand ? `<div class="text-[9px] text-slate-500 mt-0.5"><span class="font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">BRAND:</span> ${item.brand}</div>` : ''}
+                ${item.compatibility ? `<div class="text-[9px] text-slate-500 mt-0.5"><span class="font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">COMPATIBLE:</span> ${item.compatibility}</div>` : ''}
+                ${item.sku ? `<div class="text-[9px] text-slate-500 mt-0.5"><span class="font-medium text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">SKU:</span> ${item.sku}</div>` : ''}
+                ${item.stock_quantity !== undefined ? `<div class="text-[9px] text-slate-500 mt-0.5"><span class="font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">STOCK:</span> ${item.stock_quantity} pcs</div>` : ''}
+            </td>
             <td class="px-3 py-3 text-right text-slate-700 text-xs">${formatCurrency(item.unit_price)}</td>
             <td class="px-3 py-3 text-center text-slate-700 text-xs">
                 <div class="inline-flex items-center rounded-lg border border-slate-200 overflow-hidden">
@@ -573,7 +661,11 @@ function addProductToCart(product) {
             id: product.id,
             name: product.name || product.product_name || 'Unnamed Product',
             sku: product.sku,
+            product_description: (product.product_description || product.category) ?? 'Uncategorized',
+            brand: product.brand || '',
+            compatibility: product.compatibility || '',
             category: product.category ?? 'Uncategorized',
+            stock_quantity: product.stock_quantity || 0,
             unit_price: Number(product.unit_price || 0),
             quantity: 1,
         });
@@ -613,6 +705,16 @@ async function searchProducts(query = '', page = 1) {
         url.searchParams.set('per_page', posState.productPageSize);
         url.searchParams.set('page', page);
         if (query) url.searchParams.set('search', query);
+        
+        // Add product_description filter if not "All"
+        if (posState.selectedCategory && posState.selectedCategory !== 'All') {
+            url.searchParams.set('product_name', posState.selectedCategory);
+        }
+        
+        // Add brand filter if not "All"
+        if (posState.selectedBrand && posState.selectedBrand !== 'All') {
+            url.searchParams.set('brand', posState.selectedBrand);
+        }
 
         const response = await fetch(url.toString());
         if (!response.ok) throw new Error(`API error: ${response.status}`);
@@ -647,9 +749,10 @@ async function searchProducts(query = '', page = 1) {
                     <div class="mt-2 flex items-center justify-between">
                         <div class="flex-1 pr-2">
                             <h3 class="text-sm font-semibold text-slate-900 line-clamp-2 mb-0">${productName}</h3>
-                            ${brand ? `<p class="text-[10px] text-slate-600">${brand}</p>` : ''}
-                            ${product.sku ? `<p class="text-[9px] text-slate-500">SKU: ${product.sku}</p>` : ''}
-                            ${compatibility ? `<p class="text-[9px] text-slate-500 line-clamp-1">${compatibility}</p>` : ''}
+                            ${product.product_description ? `<p class="text-[9px] text-slate-500"><span class="font-medium">PRODUCT DESCRIPTION:</span> ${product.product_description}</p>` : ''}
+                            ${brand ? `<p class="text-[9px] text-slate-500"><span class="font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">BRAND:</span> ${brand}</p>` : ''}
+                            ${compatibility ? `<p class="text-[9px] text-slate-500"><span class="font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">COMPATIBLE:</span> ${compatibility}</p>` : ''}
+                            ${product.sku ? `<p class="text-[9px] text-slate-500"><span class="font-medium text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">SKU:</span> ${product.sku}</p>` : ''}
                         </div>
                         <div class="ml-2 flex-shrink-0">
                             <button type="button" aria-label="Upload image" title="Upload image" class="pos-image-upload-trigger inline-flex h-9 w-9 items-center justify-center rounded-[10px] border border-slate-200 bg-white text-slate-700 hover:bg-slate-100">
@@ -662,7 +765,7 @@ async function searchProducts(query = '', page = 1) {
                 </div>
                 <div class="space-y-2 flex flex-col justify-between flex-1">
                     <div class="space-y-1">
-                        <p class="text-[11px] text-slate-500 mt-0">Stock: ${stockQty} pcs</p>
+                        <p class="text-[11px] text-slate-500 mt-0"><span class="font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">STOCK:</span> ${stockQty} pcs</p>
                     </div>
                     <div class="space-y-2">
                         <div class="flex items-center justify-between">
@@ -1277,6 +1380,27 @@ function viewInvoice() {
 }
 
 function setupPosEvents() {
+    // Category filter buttons
+    const categoryButtons = document.querySelectorAll('.pos-category-button');
+    categoryButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const category = this.textContent.trim();
+            posState.selectedCategory = category;
+            posState.productPage = 1; // Reset to first page
+            
+            // Update button styling
+            categoryButtons.forEach(btn => {
+                btn.classList.remove('bg-emerald-600', 'text-white', 'shadow-sm');
+                btn.classList.add('border', 'border-slate-200', 'bg-white', 'text-slate-700', 'hover:border-emerald-500');
+            });
+            this.classList.remove('border', 'border-slate-200', 'bg-white', 'text-slate-700', 'hover:border-emerald-500');
+            this.classList.add('bg-emerald-600', 'text-white', 'shadow-sm');
+            
+            // Trigger search with category filter
+            searchProducts(posState.productSearchQuery, 1);
+        });
+    });
+
     const scanButton = document.getElementById('posScanButton');
     if (scanButton) scanButton.addEventListener('click', scanProduct);
 
@@ -1620,6 +1744,7 @@ function initializePos() {
     loadProductImagePreviews();
     setupPosEvents();
     renderCart();
+    loadPOSCategories(); // Load categories dynamically
     searchProducts('');
     applyProductImagePreviews();
     updateInvestmentLabels();

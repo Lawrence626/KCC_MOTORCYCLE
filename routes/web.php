@@ -8,6 +8,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\POSTransactionController;
 use App\Http\Controllers\ShopInventoryController;
+use App\Http\Controllers\ProductCatalogController;
+use App\Http\Controllers\ProductDescriptionController;
 
 Route::view('/', 'login')->name('home');
 Route::view('/login', 'login')->name('login');
@@ -68,13 +70,33 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Inventory Monitoring & Product Categorization - All roles except Admin
     Route::middleware('role:admin,inventory_clerk,cashier,warehouse_personnel')->group(function () {
         Route::view('inventory/monitoring', 'inventory.monitoring')->name('inventory.monitoring');
-        Route::view('product/categorization', 'inventory.product-categorization')->name('product.categorization');
+        Route::get('product/categorization', [ProductCatalogController::class, 'index'])->name('product.categorization');
+    });
+
+    // Product Catalog Resource Routes - Admin and Inventory Clerk only
+    Route::middleware('role:admin,inventory_clerk')->group(function () {
+        Route::resource('product-catalog', ProductCatalogController::class);
+        Route::get('product-catalog/{product_catalog}/download-qr', [ProductCatalogController::class, 'downloadQR'])->name('product-catalog.download-qr');
+        Route::get('product-catalog/{product_catalog}/print-qr', [ProductCatalogController::class, 'printQR'])->name('product-catalog.print-qr');
+        Route::post('product-catalog/{product_catalog}/regenerate-qr', [ProductCatalogController::class, 'regenerateQR'])->name('product-catalog.regenerate-qr');
+        Route::get('api/product-catalog/generate-sku', [ProductCatalogController::class, 'generateSKU'])->name('product-catalog.generate-sku');
+        Route::delete('product-catalog/bulk-delete', [ProductCatalogController::class, 'bulkDelete'])->name('product-catalog.bulk-delete');
+        // Trash / Restore routes
+        Route::get('api/product-catalog/trash', [ProductCatalogController::class, 'trash'])->name('product-catalog.trash');
+        Route::post('product-catalog/{id}/restore', [ProductCatalogController::class, 'restore'])->name('product-catalog.restore');
+        Route::post('product-catalog/bulk-restore', [ProductCatalogController::class, 'bulkRestore'])->name('product-catalog.bulk-restore');
+        Route::delete('product-catalog/force-delete', [ProductCatalogController::class, 'forceDelete'])->name('product-catalog.force-delete');
+        // Product Description routes
+        Route::get('product-descriptions', [ProductDescriptionController::class, 'index'])->name('product-descriptions.index');
+        Route::post('product-descriptions', [ProductDescriptionController::class, 'store'])->name('product-descriptions.store');
     });
 
     // Shared inventory APIs for monitoring and stock overview
     Route::get('api/products', [App\Http\Controllers\StockImportController::class, 'getProducts'])->name('api.products');
+    Route::get('api/product-descriptions', [App\Http\Controllers\StockImportController::class, 'getProductDescriptions'])->name('api.product-descriptions');
     Route::get('api/products/archived', [App\Http\Controllers\StockImportController::class, 'getArchivedProducts'])->name('api.products.archived');
     Route::get('api/products/{id}', [App\Http\Controllers\StockImportController::class, 'getProduct'])->name('api.product.show');
+    Route::get('api/inventory/location-quantities/{product_id}', [App\Http\Controllers\StockImportController::class, 'getLocationQuantities'])->name('api.inventory.location-quantities');
     Route::get('api/stats', [App\Http\Controllers\StockImportController::class, 'getStats'])->name('api.stats');
     Route::get('api/movements', [App\Http\Controllers\StockImportController::class, 'getMovements'])->name('api.movements');
 
@@ -176,6 +198,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('api/shop-inventory/warehouse-products', [ShopInventoryController::class, 'getWarehouseProducts'])->name('api.shop.inventory.warehouse_products');
     Route::get('api/shop-inventory/shop-sections', [ShopInventoryController::class, 'getShopSections'])->name('api.shop.inventory.shop_sections');
     Route::get('api/shop-inventory/shop-products', [ShopInventoryController::class, 'getShopProducts'])->name('api.shop.inventory.shop_products');
+    Route::get('api/shop-inventory/brands', [ShopInventoryController::class, 'getBrands'])->name('api.shop.inventory.brands');
     Route::post('api/shop-inventory/transfer-from-warehouse', [ShopInventoryController::class, 'transferFromWarehouse'])->name('api.shop.inventory.transfer_from_warehouse');
     Route::post('api/shop-inventory/transfer-between-shelves', [ShopInventoryController::class, 'transferBetweenShelves'])->name('api.shop.inventory.transfer_between_shelves');
     Route::post('api/shop-inventory/return-to-warehouse', [ShopInventoryController::class, 'returnToWarehouse'])->name('api.shop.inventory.return_to_warehouse');

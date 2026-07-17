@@ -90,8 +90,8 @@
                             <div class="flex items-center gap-3">
                                 <input type="checkbox" id="product-{{ $productIndex }}" class="transfer-checkbox h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 focus:ring-offset-0" data-product-id="{{ $product['product_id'] }}" />
                                 <div class="flex-1">
-                                    <p class="text-sm font-semibold text-slate-900">{{ $product['name'] }}</p>
-                                    <p class="text-xs text-slate-500">{{ $product['sku'] }}</p>
+                                    <p class="text-sm font-semibold text-slate-900">Product Description: {{ $product['description'] ?? $product['name'] }}</p>
+                                    <p class="text-xs text-slate-500">SKU: {{ $product['sku'] }}</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-3">

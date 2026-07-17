@@ -10,6 +10,8 @@ class InventoryMovement extends Model
         'product_id',
         'type',
         'sync_status',
+        'from_location',
+        'to_location',
         'quantity_change',
         'unit_price',
         'supplier_name',

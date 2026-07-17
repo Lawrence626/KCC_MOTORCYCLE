@@ -83,7 +83,9 @@
                             <th class="px-6 py-4 text-left font-semibold text-slate-900">Item Name</th>
                             <th class="px-6 py-4 text-left font-semibold text-slate-900">SKU</th>
                             <th class="px-6 py-4 text-left font-semibold text-slate-900">Category</th>
-                            <th class="px-6 py-4 text-left font-semibold text-slate-900">Current Stock</th>
+                            <th class="px-6 py-4 text-left font-semibold text-slate-900">Total Stock</th>
+                            <th class="px-6 py-4 text-left font-semibold text-slate-900">Shop Qty</th>
+                            <th class="px-6 py-4 text-left font-semibold text-slate-900">Wh Qty</th>
                             <th class="px-6 py-4 text-left font-semibold text-slate-900">Expiration Date</th>
                             <th class="px-6 py-4 text-left font-semibold text-slate-900">Days Expired</th>
                             <th class="px-6 py-4 text-left font-semibold text-slate-900">Reason</th>
@@ -95,6 +97,19 @@
                     <tbody class="divide-y divide-slate-200">
                         <?php if($products->count() > 0): ?>
                             <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <?php
+                                    $shopQty = 0;
+                                    $whQty = 0;
+                                    if(isset($product->warehouseStocks)) {
+                                        foreach($product->warehouseStocks as $stock) {
+                                            if ($stock->warehouse === 'SHOP') {
+                                                $shopQty += $stock->quantity;
+                                            } else {
+                                                $whQty += $stock->quantity;
+                                            }
+                                        }
+                                    }
+                                ?>
                                 <tr class="hover:bg-slate-50">
                                     <td class="px-6 py-4">
                                         <div class="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center">
@@ -106,7 +121,9 @@
                                     <td class="px-6 py-4 font-medium text-slate-900"><?php echo e($product->name); ?></td>
                                     <td class="px-6 py-4 text-slate-600"><?php echo e($product->sku ?? '-'); ?></td>
                                     <td class="px-6 py-4 text-slate-600"><?php echo e($product->category ?? '-'); ?></td>
-                                    <td class="px-6 py-4 text-slate-600"><?php echo e($product->stock_quantity); ?></td>
+                                    <td class="px-6 py-4 font-bold text-slate-800"><?php echo e($product->stock_quantity); ?></td>
+                                    <td class="px-6 py-4 font-semibold text-blue-600"><?php echo e($shopQty); ?></td>
+                                    <td class="px-6 py-4 font-semibold text-orange-600"><?php echo e($whQty); ?></td>
                                     <td class="px-6 py-4 text-slate-600"><?php echo e($product->expiry_date?->format('M d, Y') ?? '-'); ?></td>
                                     <td class="px-6 py-4 text-slate-600">
                                         <?php if($product->expiry_date && $product->expiry_date->isPast()): ?>

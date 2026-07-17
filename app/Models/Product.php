@@ -16,6 +16,7 @@ class Product extends Model
         'barcode',
         'category',
         'brand',
+        'warehouse',
         'size',
         'color',
         'unit_price',
@@ -24,6 +25,9 @@ class Product extends Model
         'supplier_name',
         'last_restock_date',
         'expiry_date',
+        'batch_lot_number',
+        'manufacturing_date',
+        'product_catalog_id',
         'is_active',
         'is_archived',
         'disposal_status',
@@ -37,6 +41,7 @@ class Product extends Model
         'unit_price' => 'decimal:2',
         'last_restock_date' => 'date',
         'expiry_date' => 'date',
+        'manufacturing_date' => 'date',
         'is_active' => 'boolean',
         'is_archived' => 'boolean',
         'disposal_date_identified' => 'date',
@@ -94,5 +99,15 @@ class Product extends Model
     public function inventoryMovements()
     {
         return $this->hasMany(InventoryMovement::class);
+    }
+
+    public function productCatalog()
+    {
+        return $this->belongsTo(ProductCatalog::class, 'product_catalog_id');
+    }
+
+    public function warehouseStocks()
+    {
+        return $this->hasMany(ProductWarehouseStock::class);
     }
 }

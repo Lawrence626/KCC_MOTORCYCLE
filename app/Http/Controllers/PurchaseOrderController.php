@@ -512,14 +512,14 @@ class PurchaseOrderController extends Controller
         }
 
         $validated = $request->validate([
-            'warehouse_index' => 'required|integer|min:0|max:2',
+            'warehouse' => 'required|in:Shop,Warehouse A,Warehouse B,Warehouse C',
             'shelf_id' => 'nullable|integer|exists:warehouse_shelves,id',
         ]);
 
-        $warehouseIndex = $validated['warehouse_index'];
+        $warehouse = $validated['warehouse'];
         $shelfId = $validated['shelf_id'] ?? null;
 
-        DB::transaction(function () use ($purchaseOrder, $warehouseIndex, $shelfId) {
+        DB::transaction(function () use ($purchaseOrder, $warehouse, $shelfId) {
             $purchaseOrder->loadMissing('items');
 
             foreach ($purchaseOrder->items as $item) {
@@ -529,35 +529,50 @@ class PurchaseOrderController extends Controller
 
                 $product = $item->product;
                 if ($product) {
-                    // Update product stock quantity
-                    $product->increment('stock_quantity', $item->received_quantity);
-                    $product->update(['last_restock_date' => now()]);
+                    // Check if product already exists in the selected warehouse
+                    $warehouseProduct = Product::where('sku', $product->sku)
+                        ->where('warehouse', $warehouse)
+                        ->first();
+
+                    if ($warehouseProduct) {
+                        // Update existing warehouse product
+                        $warehouseProduct->increment('stock_quantity', $item->received_quantity);
+                        $warehouseProduct->update(['last_restock_date' => now()]);
+                    } else {
+                        // Create new warehouse record
+                        $newProduct = $product->replicate();
+                        $newProduct->warehouse = $warehouse;
+                        $newProduct->stock_quantity = $item->received_quantity;
+                        $newProduct->last_restock_date = now();
+                        $newProduct->save();
+                        $warehouseProduct = $newProduct;
+                    }
 
                     // Create stock arrival notice for warehouse assignment
                     StockArrivalNotice::create([
-                        'product_id'             => $product->id,
-                        'product_name'           => $product->name,
-                        'sku'                    => $product->sku,
+                        'product_id'             => $warehouseProduct->id,
+                        'product_name'           => $warehouseProduct->name,
+                        'sku'                    => $warehouseProduct->sku,
                         'quantity'               => $item->received_quantity,
                         'purchase_order_id'      => $purchaseOrder->id,
                         'purchase_order_number'  => $purchaseOrder->order_number,
                         'supplier_name'          => $purchaseOrder->supplier_name,
                         'arrived_at'             => now(),
-                        'is_assigned'            => false,
+                        'is_assigned'            => true,
                     ]);
 
                     // Create inventory movement record
                     InventoryMovement::create([
-                        'product_id' => $product->id,
+                        'product_id' => $warehouseProduct->id,
                         'type' => 'restock',
                         'quantity_change' => $item->received_quantity,
                         'unit_price' => $item->unit_price,
                         'supplier_name' => $purchaseOrder->supplier_name,
-                        'notes' => 'Received from purchase order ' . $purchaseOrder->order_number,
+                        'notes' => 'Received from purchase order ' . $purchaseOrder->order_number . ' to ' . $warehouse,
                         'metadata' => [
                             'purchase_order_id' => $purchaseOrder->id,
                             'purchase_order_item_id' => $item->id,
-                            'warehouse_index' => $warehouseIndex,
+                            'warehouse' => $warehouse,
                             'shelf_id' => $shelfId,
                         ],
                     ]);

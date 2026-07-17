@@ -21,11 +21,16 @@
         .si-badge { background: linear-gradient(90deg,var(--brand),var(--brand-dark)); color: #fff; box-shadow: 0 10px 30px rgba(15,118,110,0.08); }
         .si-card { border: 1px solid var(--border); background: var(--card-bg); box-shadow: 0 12px 30px rgba(15,23,42,0.06); }
         .si-location { background: #f8fafc; border: 1px dashed rgba(15,118,110,0.16); }
-        .product-chip { background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.12); color: var(--brand-dark); font-size: 0.78rem; padding: 0.35rem 0.6rem; border-radius: 0.8rem; display:flex; align-items:center; justify-content:space-between; gap:0.5rem; }
-        .product-chip .left { display:flex; flex-direction:column; gap:0.08rem; }
-        .product-chip .name { font-weight:600; font-size:0.84rem; color:#0f172a; }
-        .product-chip .meta { font-size:0.62rem; color:#475569; }
-        .product-chip .qty { font-weight:700; font-size:0.84rem; color:#0f172a; margin-left:0.4rem; min-width:44px; text-align:right; }
+        .product-chip { background: #fff; border: 1px solid rgba(16,185,129,0.18); border-radius: 1rem; overflow: hidden; display: flex; flex-direction: column; }
+        .chip-header { background: linear-gradient(90deg, #0f766e, #134e4a); padding: 0.5rem 0.75rem; }
+        .chip-desc { color: #fff; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.02em; }
+        .chip-body { padding: 0.5rem 0.75rem; display: flex; flex-direction: column; gap: 0.18rem; }
+        .chip-row { display: flex; align-items: baseline; gap: 0.35rem; }
+        .chip-label { font-size: 0.72rem; color: #64748b; font-weight: 500; min-width: 72px; flex-shrink: 0; }
+        .chip-value { font-size: 0.78rem; color: #0f172a; font-weight: 500; }
+        .chip-value.sku { font-family: monospace; color: #0d9488; font-size: 0.72rem; }
+        .chip-value.price { color: #166534; font-weight: 700; }
+        .chip-value.qty { color: #1d4ed8; font-weight: 700; }
         .shop-shelves { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
         .map-unit { min-height: 220px; background: #ffffff; border: 1px solid rgba(148,163,184,0.2); border-radius: 0.5rem; padding: 1rem; }
         .modal-panel { width: min(100%, 960px); border-radius: 1.5rem; background: #ffffff; box-shadow: 0 28px 80px rgba(15,23,42,0.18); }
@@ -37,12 +42,19 @@
         .product-row-card { background: #f8fafc; border: 1px solid rgba(148,163,184,0.2); border-radius: 1rem; padding: 0.85rem; }
         .product-row-card .row-grid { gap: 0.75rem; }
         .product-row-card .product-sku,
+        .product-row-card .product-desc,
+        .product-row-card .product-brand,
+        .product-row-card .product-compatible,
         .product-row-card .product-qty,
         .product-row-card .product-price,
         .product-row-card .product-select { background: #ffffff; border: 1px solid rgba(148,163,184,0.25); border-radius: 0.85rem; }
         .product-row-card .product-sku { background: #f1f5f9; }
+        .product-row-card .product-name { background: #ffffff; border: 1px solid rgba(148,163,184,0.25); border-radius: 0.85rem; padding: 0.75rem; }
         .product-row-card .product-select,
         .product-row-card .product-sku,
+        .product-row-card .product-desc,
+        .product-row-card .product-brand,
+        .product-row-card .product-compatible,
         .product-row-card .product-qty,
         .product-row-card .product-price { padding: 0.75rem; }
         .remove-product-row { color: #ef4444; transition: color 0.2s ease; }
@@ -53,7 +65,7 @@
         .modal-footer-button.secondary { background: #f8fafc; color: #334155; border: 1px solid rgba(148,163,184,0.35); }
         .product-row-card label { font-size: 0.72rem; }
         .product-row-card .remove-product-row { font-size: 0.85rem; }
-        .modal-panel { max-height: 95vh; }
+        .modal-panel { max-height: 95vh; overflow-y: auto; }
         .modal-field { position: relative; }
         #modal-product-rows { max-height: 440px; }
         .toast-container { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 60; display: flex; flex-direction: column; gap: 0.85rem; pointer-events: none; width: max-content; min-width: 280px; }
@@ -118,6 +130,36 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                 </div>
+            </div>
+            <div class="flex items-center gap-2 w-full md:w-auto">
+                <label class="text-sm font-medium text-slate-700 whitespace-nowrap">Product Description:</label>
+                <select id="product-description-filter" class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white">
+                    <option value="">All Descriptions</option>
+                    <?php
+                        $descriptions = \App\Models\ProductDescription::where('is_active', true)->orderBy('name')->get();
+                        foreach($descriptions as $desc):
+                    ?>
+                        <option value="<?php echo e($desc->name); ?>"><?php echo e($desc->name); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="flex items-center gap-2 w-full md:w-auto">
+                <label class="text-sm font-medium text-slate-700 whitespace-nowrap">Brand:</label>
+                <select id="brand-filter" class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white">
+                    <option value="">All Brands</option>
+                    <?php
+                        $brands = \App\Models\Product::where('is_archived', false)
+                            ->whereNotNull('brand')
+                            ->where('brand', '!=', '')
+                            ->distinct()
+                            ->orderBy('brand')
+                            ->pluck('brand')
+                            ->toArray();
+                        foreach($brands as $brand):
+                    ?>
+                        <option value="<?php echo e($brand); ?>"><?php echo e($brand); ?></option>
+                    <?php endforeach; ?>
+                </select>
             </div>
             <div class="flex items-center gap-2 w-full md:w-auto">
                 <label class="text-sm font-medium text-slate-700 whitespace-nowrap">Filter by Section:</label>
@@ -189,13 +231,32 @@
                                             ?>
                                             <div class="grid grid-cols-2 gap-2">
                                                 <?php $__currentLoopData = $productsToShow; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <div class="product-chip">
-                                                    <div class="left">
-                                                        <span class="name"><?php echo e($item->product->name ?? 'Unknown Product'); ?></span>
-                                                        <span class="meta">SKU: <?php echo e($item->product->sku ?? ''); ?> • Price: ₱<?php echo e(number_format($item->product->unit_price ?? 0, 2)); ?></span>
+                                                    <?php
+                                                        $p   = $item->product;
+                                                        $cat = $p?->productCatalog;
+                                                        $desc       = $cat?->product_description ?? $p?->description ?? $p?->name ?? 'Unknown';
+                                                        $brand      = $cat?->brand               ?? $p?->brand       ?? '—';
+                                                        $compatible = $cat?->product_name        ?? $p?->compatibility ?? '—';
+                                                        $sku        = $cat?->sku                 ?? $p?->sku          ?? '—';
+                                                        $price      = $p?->unit_price ?? 0;
+                                                        $qty        = $item->quantity;
+                                                        $priceFormatted = '₱' . number_format($price, 2);
+                                                        $expiry     = $p?->expiry_date ? \Carbon\Carbon::parse($p->expiry_date)->format('M d, Y') : 'N/A';
+                                                        $expiryColor = $p?->expiry_status === 'expired' ? 'text-red-600' : ($p?->expiry_status === 'expiring' ? 'text-yellow-600' : 'text-slate-700');
+                                                    ?>
+                                                    <div class="product-chip">
+                                                        <div class="chip-header">
+                                                            <div class="chip-desc"><?php echo e($desc); ?></div>
+                                                        </div>
+                                                        <div class="chip-body">
+                                                            <div class="chip-row"><span class="chip-label">Brand:</span><span class="chip-value"><?php echo e($brand); ?></span></div>
+                                                            <div class="chip-row"><span class="chip-label">Compatible:</span><span class="chip-value"><?php echo e($compatible); ?></span></div>
+                                                            <div class="chip-row"><span class="chip-label">SKU:</span><span class="chip-value sku"><?php echo e($sku); ?></span></div>
+                                                            <div class="chip-row"><span class="chip-label">Price:</span><span class="chip-value price"><?php echo e($priceFormatted); ?></span></div>
+                                                            <div class="chip-row"><span class="chip-label">Qty:</span><span class="chip-value qty"><?php echo e($qty); ?></span></div>
+                                                            <div class="chip-row"><span class="chip-label">Expiry:</span><span class="chip-value <?php echo e($expiryColor); ?>"><?php echo e($expiry); ?></span></div>
+                                                        </div>
                                                     </div>
-                                                    <span class="qty">Qty: <?php echo e($item->quantity); ?></span>
-                                                </div>
                                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </div>
                                             <?php if($remainingProducts > 0): ?>
@@ -433,6 +494,9 @@
                 document.getElementById('edit-shelf-id').value = shelfId;
                 document.getElementById('edit-shelf-name').value = shelfData.name || '';
                 document.getElementById('edit-shelf-location').value = shelfData.location || '';
+                // Pre-fill shelf capacity
+                const editCapInput = document.getElementById('edit-shelf-capacity');
+                if (editCapInput) editCapInput.value = shelfData.capacity || 10;
 
                 // Load existing products
                 const productRows = document.getElementById('edit-product-rows');
@@ -440,12 +504,16 @@
 
                 if (shelfData.shop_inventory && shelfData.shop_inventory.length > 0) {
                     shelfData.shop_inventory.forEach(item => {
+                        const p   = item.product || {};
+                        const cat = p.product_catalog || {};
                         addEditProductRow({
-                            product_id: item.product_id,
-                            name: item.product ? item.product.name : '',
-                            sku: item.product ? item.product.sku : '',
-                            qty: item.quantity,
-                            price: item.product ? item.product.unit_price : 0
+                            product_id:      item.product_id,
+                            description:     cat.product_description || p.description || p.name || '',
+                            brand:           cat.brand               || p.brand       || '',
+                            compatible_model:cat.product_name        || p.compatibility || '',
+                            sku:             cat.sku                 || p.sku         || '',
+                            qty:             item.quantity,
+                            price:           p.unit_price ?? 0,
                         });
                     });
                 }
@@ -459,55 +527,53 @@
 
         function addEditProductRow(product = {}) {
             const container = document.getElementById('edit-product-rows');
-            // Limit to 10 products per shelf
-            if (container.children.length >= 10) {
-                showToast('Maximum 10 products allowed per shelf', 'error');
+            // Read capacity from the edit modal capacity input
+            const capacityInput = document.getElementById('edit-shelf-capacity');
+            const maxCapacity = capacityInput ? parseInt(capacityInput.value) || 999 : 999;
+            if (container.children.length >= maxCapacity) {
+                showToast(`Shelf is full (capacity: ${maxCapacity}). Increase the shelf capacity to add more.`, 'error');
                 return;
             }
             const row = document.createElement('div');
             row.className = 'product-row-card';
+            row.dataset.productId = product.product_id || '';
             row.innerHTML = `
-                <div class="row-grid grid gap-4 md:grid-cols-[1.8fr_1fr_0.9fr_0.9fr_0.35fr] items-end">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-700">Product</label>
-                        <input type="text" class="product-name mt-1 block w-full px-4 py-3 text-sm" value="${product.name || ''}" placeholder="Product name" />
+                <div class="space-y-2">
+                    <div class="grid gap-3 md:grid-cols-3">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-700">Product Description</label>
+                            <input type="text" class="product-desc mt-1 block w-full px-4 py-3 text-sm" value="${product.description || ''}" placeholder="e.g. CALIPER" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-700">Brand</label>
+                            <input type="text" class="product-brand mt-1 block w-full px-4 py-3 text-sm" value="${product.brand || ''}" placeholder="e.g. RCB S26" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-700">Compatible</label>
+                            <input type="text" class="product-compatible mt-1 block w-full px-4 py-3 text-sm" value="${product.compatible_model || ''}" placeholder="e.g. SNIPER 150/155" />
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-700">SKU</label>
-                        <input type="text" class="product-sku mt-1 block w-full px-4 py-3 text-sm" value="${product.sku || ''}" placeholder="SKU" readonly />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-700">Qty</label>
-                        <input type="number" min="0" class="product-qty mt-1 block w-full px-4 py-3 text-sm" value="${product.qty || ''}" placeholder="Qty" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-700">Price</label>
-                        <input type="number" step="0.01" min="0" class="product-price mt-1 block w-full px-4 py-3 text-sm" value="${product.price || ''}" placeholder="Price" />
-                    </div>
-                    <div class="flex items-center justify-end">
-                        <button type="button" class="remove-product-row text-sm font-semibold">Remove</button>
+                    <div class="grid gap-3 md:grid-cols-[1.5fr_1fr_0.7fr_0.7fr_auto]">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-700">SKU</label>
+                            <input type="text" class="product-sku mt-1 block w-full px-4 py-3 text-sm" value="${product.sku || ''}" placeholder="SKU" />
+                        </div>
+                        <div></div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-700">Qty</label>
+                            <input type="number" min="0" class="product-qty mt-1 block w-full px-4 py-3 text-sm" value="${product.qty || ''}" placeholder="Qty" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-700">Price</label>
+                            <input type="number" step="0.01" min="0" class="product-price mt-1 block w-full px-4 py-3 text-sm" value="${product.price || ''}" placeholder="Price" />
+                        </div>
+                        <div class="flex items-end pb-1">
+                            <button type="button" class="remove-product-row text-sm font-semibold text-red-500 hover:text-red-700">Remove</button>
+                        </div>
                     </div>
                 </div>
             `;
             container.appendChild(row);
-
-            // Auto-generate SKU as user types product name
-            const nameInput = row.querySelector('.product-name');
-            const skuInput = row.querySelector('.product-sku');
-
-            nameInput.addEventListener('input', function() {
-                const productName = this.value;
-                if (productName && !skuInput.dataset.manualEdit) {
-                    const generatedSKU = generateSKU(productName);
-                    skuInput.value = generatedSKU;
-                }
-            });
-
-            // Allow manual SKU editing
-            skuInput.addEventListener('focus', function() {
-                this.removeAttribute('readonly');
-                this.dataset.manualEdit = 'true';
-            });
 
             row.querySelector('.remove-product-row').addEventListener('click', function() {
                 row.remove();
@@ -523,12 +589,14 @@
 
         function getEditProductRows() {
             return Array.from(document.querySelectorAll('#edit-product-rows .product-row-card')).map(row => {
-                const name = row.querySelector('.product-name').value.trim();
-                const sku = row.querySelector('.product-sku').value.trim();
-                const qty = parseInt(row.querySelector('.product-qty').value, 10) || 0;
-                const price = parseFloat(row.querySelector('.product-price').value) || 0;
-                return { sku, name, qty, price };
-            }).filter(p => p.name);
+                const description     = row.querySelector('.product-desc')?.value.trim()       || '';
+                const brand           = row.querySelector('.product-brand')?.value.trim()      || '';
+                const compatible_model= row.querySelector('.product-compatible')?.value.trim() || '';
+                const sku             = row.querySelector('.product-sku')?.value.trim()        || '';
+                const qty             = parseInt(row.querySelector('.product-qty')?.value, 10)  || 0;
+                const price           = parseFloat(row.querySelector('.product-price')?.value)  || 0;
+                return { name: description || sku, description, brand, compatible_model, sku, qty, price };
+            }).filter(p => p.description || p.sku);
         }
 
         function closeEditModal() {
@@ -978,10 +1046,12 @@
             const container = document.getElementById('add-shelf-product-rows');
             if (!container) return;
 
-            // Check if already at max 10 products
+            // Read capacity from the add modal capacity input
+            const capacityInput = document.getElementById('add-shelf-capacity');
+            const maxCapacity = capacityInput ? parseInt(capacityInput.value) || 999 : 999;
             const currentRows = container.children.length;
-            if (currentRows >= 10) {
-                showToast('Maximum 10 products allowed per shelf', 'error');
+            if (currentRows >= maxCapacity) {
+                showToast(`Shelf is full (capacity: ${maxCapacity}). Increase the shelf capacity to add more.`, 'error');
                 return;
             }
 
@@ -1628,6 +1698,8 @@
         }
     </script>
 
+    <script src="/js/shop_inventory.js"></script>
+
     <!-- Add Shelf Modal -->
     <div id="add-shelf-modal-backdrop" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center z-[100000002] px-4 py-8">
         <div class="modal-panel p-6 max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -1652,9 +1724,17 @@
                     </div>
 
                     <div class="modal-field p-4">
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">Shelf Capacity</label>
+                        <input id="add-shelf-capacity" type="number" min="1" value="10"
+                               class="block w-full px-4 py-3 text-sm text-slate-900 rounded-md border border-slate-300 focus:ring-emerald-500 focus:border-emerald-500"
+                               placeholder="e.g. 10" />
+                        <p class="text-xs text-slate-400 mt-1">💡 You can increase this to allow more products per shelf. Default is 10.</p>
+                    </div>
+
+                    <div class="modal-field p-4">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                             <div>
-                                <p class="text-sm font-semibold text-slate-800">Products (Max 10)</p>
+                                <p class="text-sm font-semibold text-slate-800">Products</p>
                                 <p class="text-xs text-slate-500 mt-1">Enter product name, quantity, and price. SKU will auto-generate.</p>
                             </div>
                             <button type="button" id="add-shelf-product-row" class="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">+ Add product</button>
@@ -1673,7 +1753,7 @@
 
     <!-- Edit Shelf Modal -->
     <div id="edit-modal-backdrop" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center z-50 px-4 py-8">
-        <div class="modal-panel p-6 max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div class="modal-panel p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between mb-4">
                 <h2 id="edit-modal-title" class="text-2xl font-semibold text-slate-900">Edit Shelf</h2>
                 <button id="edit-modal-close" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 transition hover:bg-slate-200">✕</button>
@@ -1695,9 +1775,17 @@
                     </div>
 
                     <div class="modal-field p-4">
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">Shelf Capacity</label>
+                        <input id="edit-shelf-capacity" type="number" min="1" value="10"
+                               class="block w-full px-4 py-3 text-sm text-slate-900 rounded-md border border-slate-300 focus:ring-emerald-500 focus:border-emerald-500"
+                               placeholder="e.g. 10" />
+                        <p class="text-xs text-slate-400 mt-1">💡 You can increase this to allow more products per shelf.</p>
+                    </div>
+
+                    <div class="modal-field p-4">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                             <div>
-                                <p class="text-sm font-semibold text-slate-800">Products (Max 10)</p>
+                                <p class="text-sm font-semibold text-slate-800">Products</p>
                                 <p class="text-xs text-slate-500 mt-1">Choose existing inventory items, quantity, and price before saving.</p>
                             </div>
                             <button type="button" id="edit-add-product-row" class="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">+ Add product</button>

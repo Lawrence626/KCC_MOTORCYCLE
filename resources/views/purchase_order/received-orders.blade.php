@@ -72,8 +72,10 @@
                     <span class="text-xs font-semibold text-slate-500">Warehouse</span>
                     <select name="warehouse" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none">
                         <option value="" {{ empty($warehouse) ? 'selected' : '' }}>All warehouses</option>
-                        <option value="main" {{ $warehouse === 'main' ? 'selected' : '' }}>Main stock</option>
-                        <option value="service" {{ $warehouse === 'service' ? 'selected' : '' }}>Service bay</option>
+                        <option value="Shop" {{ $warehouse === 'Shop' ? 'selected' : '' }}>Shop (Main Store)</option>
+                        <option value="Warehouse A" {{ $warehouse === 'Warehouse A' ? 'selected' : '' }}>Warehouse A</option>
+                        <option value="Warehouse B" {{ $warehouse === 'Warehouse B' ? 'selected' : '' }}>Warehouse B</option>
+                        <option value="Warehouse C" {{ $warehouse === 'Warehouse C' ? 'selected' : '' }}>Warehouse C</option>
                     </select>
                 </label>
                 <div class="flex items-end">

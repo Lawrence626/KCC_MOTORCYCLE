@@ -172,10 +172,11 @@
                         <div class="mt-4 grid gap-4 sm:grid-cols-2">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-2">Warehouse</label>
-                                <select name="warehouse_index" required class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none">
-                                    <option value="0">Warehouse A</option>
-                                    <option value="1">Warehouse B</option>
-                                    <option value="2">Warehouse C</option>
+                                <select name="warehouse" required class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none">
+                                    <option value="Shop">Shop (Main Store)</option>
+                                    <option value="Warehouse A">Warehouse A</option>
+                                    <option value="Warehouse B">Warehouse B</option>
+                                    <option value="Warehouse C">Warehouse C</option>
                                 </select>
                             </div>
                             <div>
@@ -183,8 +184,8 @@
                                 <select name="shelf_id" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none">
                                     <option value="">No specific shelf</option>
                                     @php
-                                        $warehouseIndex = 0; // Default to Warehouse A for shelf options
-                                        $shelves = \App\Models\WarehouseShelf::where('warehouse_index', $warehouseIndex)->where('archived', false)->get();
+                                        $warehouse = 'Warehouse A'; // Default to Warehouse A for shelf options
+                                        $shelves = \App\Models\WarehouseShelf::where('warehouse', $warehouse)->where('archived', false)->get();
                                     @endphp
                                     @foreach($shelves as $shelf)
                                         <option value="{{ $shelf->id }}">{{ $shelf->name }}</option>

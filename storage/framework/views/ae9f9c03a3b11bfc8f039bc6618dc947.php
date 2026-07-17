@@ -49,7 +49,7 @@
 
     <div class="space-y-6">
         <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
-        
+
         <div class="flex items-start justify-between">
             <div>
                 <h1 class="text-3xl font-extrabold text-slate-900">Transfer Products</h1>
@@ -112,8 +112,8 @@
                         <?php $__currentLoopData = $shelfProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="product-chip">
                                 <div class="left">
-                                    <span class="name"><?php echo e($product['name']); ?></span>
-                                    <span class="meta"><?php echo e($product['sku']); ?></span>
+                                    <span class="name">Product Description: <?php echo e($product['description'] ?? $product['name']); ?></span>
+                                    <span class="meta">SKU: <?php echo e($product['sku']); ?></span>
                                 </div>
                                 <div class="flex items-center gap-3">
                                     <span class="qty-badge">Qty: <?php echo e($product['qty']); ?></span>
@@ -140,7 +140,7 @@
                         <p class="text-xs text-slate-500">Select a shelf with available space</p>
                     </div>
                 </div>
-                
+
                 <?php if(empty($availableShelves)): ?>
                     <div class="text-center py-8">
                         <svg class="w-12 h-12 mx-auto text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -234,7 +234,7 @@
             function updateConfirmButton() {
                 const availableShelves = <?php echo json_encode($availableShelves, 15, 512) ?>;
                 const destShelf = selectedDestination ? availableShelves.find(s => s.slot_index == selectedDestination) : null;
-                
+
                 // Shelf capacity is based on number of products, not quantity
                 const numberOfProductsToTransfer = selectedProducts.length;
                 const availableAfterTransfer = destShelf ? destShelf.available_space - numberOfProductsToTransfer : 0;
@@ -259,7 +259,7 @@
 
                 console.log('Selected product indices:', selectedProducts);
                 console.log('shelfProducts array:', shelfProducts);
-                
+
                 const transferData = {
                     warehouse_id: formDestinationSlot.closest('form').querySelector('input[name="warehouse_id"]').value,
                     source_slot_index: formDestinationSlot.closest('form').querySelector('input[name="source_slot_index"]').value,

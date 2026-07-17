@@ -99,8 +99,8 @@
                             <div class="flex items-center gap-3">
                                 <input type="checkbox" id="product-<?php echo e($productIndex); ?>" class="transfer-checkbox h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 focus:ring-offset-0" data-product-id="<?php echo e($product['product_id']); ?>" />
                                 <div class="flex-1">
-                                    <p class="text-sm font-semibold text-slate-900"><?php echo e($product['name']); ?></p>
-                                    <p class="text-xs text-slate-500"><?php echo e($product['sku']); ?></p>
+                                    <p class="text-sm font-semibold text-slate-900">Product Description: <?php echo e($product['description'] ?? $product['name']); ?></p>
+                                    <p class="text-xs text-slate-500">SKU: <?php echo e($product['sku']); ?></p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-3">
