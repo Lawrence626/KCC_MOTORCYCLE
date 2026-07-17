@@ -29,29 +29,34 @@
                             {{-- Notification Dropdown Panel --}}
                             <div
                                 id="notification-panel"
-                                class="hidden absolute right-0 top-full mt-2 w-96 rounded-2xl bg-white border border-slate-200 shadow-xl z-50 overflow-hidden"
-                                style="min-width:380px;"
+                                class="hidden absolute right-0 top-full mt-2 w-[400px] rounded-xl bg-white border border-slate-200 shadow-lg z-50 flex flex-col"
+                                style="max-height: 80vh;"
                             >
-                                <div class="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+                                <div class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-white border-b border-slate-100 rounded-t-xl">
                                     <div class="flex items-center gap-2">
-                                        <span class="text-sm font-semibold text-slate-800">Notification Center</span>
-                                        <span id="notif-center-unread-badge" class="hidden inline-flex items-center rounded-full px-1.5 py-0.5 text-[9px] font-bold text-white" style="background-color: #ef4444;">0</span>
+                                        <span class="text-sm font-semibold text-slate-800">Notifications</span>
+                                        <span id="notif-center-unread-badge" class="hidden inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium text-white" style="background-color: #ef4444;">0</span>
                                     </div>
-                                    <button
-                                        type="button"
-                                        onclick="markAllNotificationsRead()"
-                                        class="text-xs text-slate-400 hover:text-emerald-600 transition"
-                                    >Mark all read</button>
+                                    <div class="flex items-center gap-3">
+                                        <button
+                                            type="button"
+                                            onclick="markAllNotificationsRead()"
+                                            class="text-xs font-medium text-slate-500 hover:text-slate-800 transition-colors"
+                                        >Mark all as read</button>
+                                    </div>
                                 </div>
-                                <div id="notification-list" class="divide-y divide-slate-100 max-h-96 overflow-y-auto">
+                                <div id="notification-list" class="flex-1 overflow-y-auto">
                                     {{-- Notifications rendered by JS --}}
                                 </div>
-                                <div id="notification-empty" class="hidden px-4 py-8 text-center">
-                                    <svg class="w-8 h-8 mx-auto text-slate-300 mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
-                                    <p class="text-xs text-slate-400">No inventory notifications</p>
+                                <div id="notification-empty" class="hidden px-4 py-12 text-center">
+                                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-50 mb-3">
+                                        <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
+                                    </div>
+                                    <p class="text-sm font-medium text-slate-600">All caught up</p>
+                                    <p class="text-xs text-slate-400 mt-1">No new inventory alerts.</p>
                                 </div>
-                                <div class="px-4 py-2.5 bg-slate-50 border-t border-slate-100 text-center">
-                                    <button type="button" onclick="openAllNotificationsModal()" class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition">View All Notifications</button>
+                                <div class="sticky bottom-0 z-10 px-4 py-3 bg-slate-50 border-t border-slate-100 text-center rounded-b-xl">
+                                    <button type="button" onclick="openAllNotificationsModal()" class="text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors">View All Notifications</button>
                                 </div>
                             </div>
                         </div>
@@ -117,7 +122,7 @@
 
         <!-- Stats Grid -->
         <div class="mb-3">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
                 <!-- Total Sales -->
                 <div class="border border-gray-200 p-4" style="border-radius: 20px; background-color: #ffffff;">
                     <div class="flex items-start justify-between">
@@ -189,6 +194,22 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Dead Stock Alert Card -->
+                <a href="{{ route('dss.dead-stock.index') }}" class="block border border-gray-200 p-4 hover:shadow-md transition cursor-pointer group" style="border-radius: 20px; background-color: #ffffff;">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-black text-xs font-semibold">Dead Stock</p>
+                            <div class="mt-1">
+                                <p id="deadStockCardItems" class="text-2xl font-bold text-black">0 Items</p>
+                                <p id="deadStockCardValue" class="text-gray-500 text-xs mt-1 font-medium">Value at Risk: ₱0</p>
+                            </div>
+                        </div>
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #ef4444;">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        </div>
+                    </div>
+                </a>
             </div>
         </div>
 
@@ -236,6 +257,12 @@
                         }
                         prioritiesEl.innerHTML = html;
                     }
+                    
+                    // Update small card
+                    const dsItems = document.getElementById('deadStockCardItems');
+                    if (dsItems) dsItems.textContent = (data.total || 0) + ' Items';
+                    const dsValue = document.getElementById('deadStockCardValue');
+                    if (dsValue) dsValue.textContent = 'Value at Risk: ₱' + Number(data.totalValue || 0).toLocaleString('en-PH', {minimumFractionDigits:2});
                 })
                 .catch(() => {});
         })();
@@ -622,98 +649,102 @@
         }
 
         /* ── Toast Notifications ──────────────────────────── */
+        #inventory-toast-container {
+            max-width: 360px;
+        }
         .inv-toast {
             pointer-events: auto;
             background: #ffffff;
-            border-radius: 16px;
-            border: 1px solid #e2e8f0;
-            padding: 16px 18px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            padding: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
             transform: translateX(120%);
             opacity: 0;
-            transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
             position: relative;
             overflow: hidden;
             width: 100%;
+        }
+        .inv-toast:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
         }
         .inv-toast.show {
             transform: translateX(0);
             opacity: 1;
         }
+        .inv-toast.show:hover {
+            transform: translateY(-2px);
+        }
         .inv-toast.hide {
-            transform: translateX(120%);
+            transform: translateX(10%);
             opacity: 0;
             margin-top: -10px;
         }
-        .inv-toast::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            border-radius: 16px 0 0 16px;
-        }
-        .inv-toast.toast-warning::before { background: #f97316; }
-        .inv-toast.toast-critical::before { background: #ef4444; }
         .inv-toast .toast-progress {
             position: absolute;
             bottom: 0;
             left: 0;
-            height: 3px;
-            border-radius: 0 0 16px 16px;
+            height: 2px;
             transition: width linear;
         }
-        .inv-toast.toast-warning .toast-progress { background: rgba(249,115,22,0.3); }
-        .inv-toast.toast-critical .toast-progress { background: rgba(239,68,68,0.3); }
+        .inv-toast.toast-warning .toast-progress { background: #f59e0b; }
+        .inv-toast.toast-critical .toast-progress { background: #ef4444; }
         .inv-toast-icon {
-            width: 36px; height: 36px; border-radius: 10px;
+            width: 32px; height: 32px; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0; font-size: 18px;
+            flex-shrink: 0; font-size: 16px;
         }
-        .inv-toast.toast-warning .inv-toast-icon { background: #fff7ed; }
-        .inv-toast.toast-critical .inv-toast-icon { background: #fef2f2; }
+        .inv-toast.toast-warning .inv-toast-icon { background: #fef3c7; color: #d97706; }
+        .inv-toast.toast-critical .inv-toast-icon { background: #fee2e2; color: #dc2626; }
         .inv-toast-btn {
-            display: inline-flex; align-items: center; gap: 4px;
-            padding: 5px 12px; border-radius: 8px;
-            font-size: 11px; font-weight: 600;
-            border: none; cursor: pointer; transition: all 0.15s ease;
+            display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+            padding: 6px 12px; border-radius: 6px;
+            font-size: 12px; font-weight: 500;
+            border: 1px solid transparent; cursor: pointer; transition: all 0.15s ease;
             text-decoration: none;
+            line-height: 1;
         }
         .inv-toast-btn-order {
-            background: #059669; color: #fff;
+            background: #111827; color: #fff;
         }
-        .inv-toast-btn-order:hover { background: #047857; }
+        .inv-toast-btn-order:hover { background: #374151; }
         .inv-toast-btn-dismiss {
-            background: #f1f5f9; color: #64748b;
+            background: #f9fafb; color: #4b5563; border-color: #e5e7eb;
         }
-        .inv-toast-btn-dismiss:hover { background: #e2e8f0; color: #475569; }
+        .inv-toast-btn-dismiss:hover { background: #f3f4f6; color: #111827; }
 
         /* ── Notification Center Dropdown ──────────────── */
         .notif-item {
             transition: background-color 0.15s ease;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .notif-item:last-child {
+            border-bottom: none;
         }
         .notif-item:hover { background-color: #f8fafc; }
         .notif-item-unread {
-            background-color: rgba(59,130,246,0.04);
-            border-left: 3px solid #3b82f6;
+            background-color: #fefce8;
         }
-        .notif-item-unread:hover { background-color: rgba(59,130,246,0.07); }
-        .notif-item-read {
-            background-color: transparent;
-            border-left: 3px solid transparent;
-        }
-        .notif-item-resolved {
-            background-color: transparent;
-            border-left: 3px solid #22c55e;
-            opacity: 0.7;
-        }
+        .notif-item-unread:hover { background-color: #fef9c3; }
+        
         .notif-status-dot {
-            width: 8px; height: 8px; border-radius: 9999px; flex-shrink: 0;
+            width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
         }
-        .notif-status-dot.unread  { background-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
-        .notif-status-dot.read    { background-color: #cbd5e1; }
-        .notif-status-dot.resolved { background-color: #22c55e; box-shadow: 0 0 0 2px rgba(34,197,94,0.2); }
+        .notif-status-dot.unread  { background-color: #3b82f6; }
+        .notif-status-dot.read    { background-color: transparent; }
+        .notif-status-dot.resolved { background-color: #22c55e; }
+        
+        .notif-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 4px 10px; border-radius: 6px;
+            font-size: 11px; font-weight: 500;
+            background: #ffffff; color: #374151; border: 1px solid #d1d5db;
+            transition: all 0.15s ease;
+            text-decoration: none;
+        }
+        .notif-btn:hover { background: #f3f4f6; border-color: #9ca3af; color: #111827; }
     </style>
 
 @push('scripts')
@@ -1175,26 +1206,32 @@
         function createToast(container, alert) {
             var isCritical = alert.notification_type === 'out_of_stock';
             var toastClass = isCritical ? 'toast-critical' : 'toast-warning';
-            var icon = isCritical ? '❌' : '⚠️';
-            var title = isCritical ? 'Inventory Alert' : 'Inventory Alert';
-            var stockMsg = isCritical
-                ? escHtml(alert.product_name) + ' (SKU: ' + escHtml(alert.sku) + ') is <strong style="color:#ef4444;">Out of Stock</strong>.'
-                : escHtml(alert.product_name) + ' (SKU: ' + escHtml(alert.sku) + ') is <strong style="color:#f97316;">Low Stock</strong>. Only <strong>' + alert.current_stock + '</strong> items remaining.';
-
+            var iconSVG = isCritical 
+                ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
+                : '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+            var title = isCritical ? 'Out of Stock' : 'Low Stock';
+            
             var toast = document.createElement('div');
             toast.className = 'inv-toast ' + toastClass;
             toast.setAttribute('data-toast-alert-id', alert.id);
             toast.innerHTML =
                 '<div class="flex items-start gap-3">' +
                     '<div class="inv-toast-icon">' +
-                        '<span>' + icon + '</span>' +
+                        iconSVG +
                     '</div>' +
-                    '<div class="flex-1 min-w-0">' +
-                        '<p class="text-[13px] font-bold text-slate-900 mb-1">' + title + '</p>' +
-                        '<p class="text-[12px] text-slate-600 leading-relaxed">' + stockMsg + '</p>' +
-                        '<div class="flex items-center gap-2 mt-3">' +
+                    '<div class="flex-1 min-w-0 pt-0.5">' +
+                        '<div class="flex items-center justify-between mb-0.5">' +
+                            '<p class="text-[10px] font-bold ' + (isCritical ? 'text-red-600' : 'text-amber-600') + ' uppercase tracking-wider">' + title + '</p>' +
+                            '<span class="text-[10px] text-slate-400">Just now</span>' +
+                        '</div>' +
+                        '<p class="text-sm font-semibold text-slate-900 truncate leading-tight mb-1">' + escHtml(alert.product_name) + '</p>' +
+                        '<div class="flex items-center gap-2 text-xs text-slate-500 mb-3">' +
+                            '<span>SKU: ' + escHtml(alert.sku) + '</span>' +
+                            '<span>&middot;</span>' +
+                            '<span class="font-medium ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + (isCritical ? '0 left' : alert.current_stock + ' remaining') + '</span>' +
+                        '</div>' +
+                        '<div class="flex items-center gap-2">' +
                             '<a href="' + escHtml(alert.order_url || '/purchase-order/create') + '" class="inv-toast-btn inv-toast-btn-order">' +
-                                '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>' +
                                 'Order Now' +
                             '</a>' +
                             '<button type="button" class="inv-toast-btn inv-toast-btn-dismiss" data-toast-dismiss="' + alert.id + '">' +
@@ -1202,7 +1239,7 @@
                             '</button>' +
                         '</div>' +
                     '</div>' +
-                    '<button type="button" class="flex-shrink-0 mt-0.5 text-slate-300 hover:text-slate-500 transition" data-toast-close="' + alert.id + '" aria-label="Close">' +
+                    '<button type="button" class="flex-shrink-0 text-slate-400 hover:text-slate-600 transition-colors" data-toast-close="' + alert.id + '" aria-label="Close">' +
                         '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>' +
                     '</button>' +
                 '</div>' +
@@ -1336,36 +1373,41 @@
 
             notifications.forEach(function(n) {
                 var isCritical = n.notification_type === 'out_of_stock';
-                var emoji = isCritical ? '🔴' : '🟠';
+                var iconSVG = isCritical 
+                    ? '<svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
+                    : '<svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
                 var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
                 var statusClass = 'notif-item notif-item-' + n.status;
                 var ago = timeAgo(n.created_at);
-                var stockText = isCritical ? '0 remaining' : n.current_stock + ' remaining';
+                var stockText = isCritical ? '0 left' : n.current_stock + ' remaining';
 
                 var item = document.createElement('div');
-                item.className = statusClass + ' px-4 py-3 cursor-pointer transition';
+                item.className = statusClass + ' px-4 py-3 cursor-pointer';
                 item.setAttribute('data-notif-id', n.id);
 
                 item.innerHTML =
                     '<div class="flex items-start gap-3">' +
-                        '<div class="mt-0.5 flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center" style="background:' + (isCritical ? '#fef2f2' : '#fff7ed') + ';">' +
-                            '<span style="font-size:16px;">' + emoji + '</span>' +
+                        '<div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ' + (isCritical ? 'bg-red-50' : 'bg-amber-50') + '">' +
+                            iconSVG +
                         '</div>' +
                         '<div class="flex-1 min-w-0">' +
-                            '<div class="flex items-center justify-between gap-2">' +
-                                '<span class="text-[10px] font-bold uppercase tracking-wider ' + (isCritical ? 'text-red-500' : 'text-orange-500') + '">' + typeLabel + '</span>' +
+                            '<div class="flex items-center justify-between mb-0.5">' +
                                 '<div class="flex items-center gap-1.5">' +
-                                    '<span class="notif-status-dot ' + n.status + '"></span>' +
+                                    '<span class="text-[10px] font-bold uppercase tracking-wider ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + typeLabel + '</span>' +
+                                    (n.status === 'unread' ? '<span class="notif-status-dot unread"></span>' : '') +
                                 '</div>' +
-                            '</div>' +
-                            '<p class="text-[13px] font-semibold text-slate-800 mt-0.5 truncate">' + escHtml(n.product_name) + '</p>' +
-                            '<p class="text-[11px] text-slate-500 mt-0.5">SKU: ' + escHtml(n.sku) + '</p>' +
-                            '<p class="text-[11px] text-slate-500 mt-0.5">' + stockText + '</p>' +
-                            '<div class="flex items-center justify-between mt-2">' +
                                 '<span class="text-[10px] text-slate-400">' + escHtml(ago) + '</span>' +
+                            '</div>' +
+                            '<p class="text-[13px] font-semibold text-slate-900 truncate mb-1">' + escHtml(n.product_name) + '</p>' +
+                            '<div class="flex items-center justify-between">' +
+                                '<div class="flex items-center gap-1.5 text-[11px] text-slate-500">' +
+                                    '<span>' + escHtml(n.sku) + '</span>' +
+                                    '<span>&middot;</span>' +
+                                    '<span class="font-medium ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + stockText + '</span>' +
+                                '</div>' +
                                 (n.status !== 'resolved'
-                                    ? '<a href="' + escHtml(n.order_url || '/purchase-order/create') + '" class="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-2.5 py-1 text-[10px] font-semibold text-white transition hover:bg-emerald-700" onclick="event.stopPropagation();">Order Now</a>'
-                                    : '<span class="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Resolved</span>'
+                                    ? '<a href="' + escHtml(n.order_url || '/purchase-order/create') + '" class="notif-btn" onclick="event.stopPropagation();">Order</a>'
+                                    : '<span class="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Resolved</span>'
                                 ) +
                             '</div>' +
                         '</div>' +
@@ -1464,30 +1506,36 @@
 
                 list.innerHTML = notifications.map(function(n) {
                     var isCritical = n.notification_type === 'out_of_stock';
-                    var emoji = isCritical ? '🔴' : '🟠';
+                    var iconSVG = isCritical 
+                        ? '<svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
+                        : '<svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
                     var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
                     var ago = timeAgo(n.created_at);
-                    var stockText = isCritical ? '0 remaining' : n.current_stock + ' remaining';
+                    var stockText = isCritical ? '0 left' : n.current_stock + ' remaining';
                     var statusClass = 'notif-item notif-item-' + n.status;
 
-                    return '<div class="' + statusClass + ' p-4 rounded-2xl border border-slate-100 flex items-start justify-between gap-4 transition">' +
-                        '<div class="flex items-start gap-3">' +
-                            '<div class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center bg-slate-50">' +
-                                '<span style="font-size:16px;">' + emoji + '</span>' +
+                    return '<div class="' + statusClass + ' p-4 rounded-xl border border-slate-100 flex items-start justify-between gap-4 transition-colors">' +
+                        '<div class="flex items-start gap-4">' +
+                            '<div class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ' + (isCritical ? 'bg-red-50' : 'bg-amber-50') + '">' +
+                                iconSVG +
                             '</div>' +
                             '<div>' +
-                                '<div class="flex items-center gap-2">' +
-                                    '<span class="text-[10px] font-bold uppercase tracking-wider ' + (isCritical ? 'text-red-500' : 'text-orange-500') + '">' + typeLabel + '</span>' +
-                                    '<span class="notif-status-dot ' + n.status + '"></span>' +
+                                '<div class="flex items-center gap-2 mb-0.5">' +
+                                    '<span class="text-[10px] font-bold uppercase tracking-wider ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + typeLabel + '</span>' +
+                                    (n.status === 'unread' ? '<span class="notif-status-dot unread"></span>' : '') +
                                 '</div>' +
-                                '<p class="text-[13px] font-bold text-slate-800 mt-1">' + escHtml(n.product_name) + '</p>' +
-                                '<p class="text-[11px] text-slate-500 mt-0.5">SKU: ' + escHtml(n.sku) + ' · ' + stockText + '</p>' +
-                                '<p class="text-[10px] text-slate-400 mt-1">' + escHtml(ago) + '</p>' +
+                                '<p class="text-[14px] font-semibold text-slate-900 mt-1">' + escHtml(n.product_name) + '</p>' +
+                                '<div class="flex items-center gap-2 mt-1">' +
+                                    '<span class="text-xs text-slate-500">SKU: ' + escHtml(n.sku) + '</span>' +
+                                    '<span class="text-slate-400">&middot;</span>' +
+                                    '<span class="text-xs font-medium ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + stockText + '</span>' +
+                                '</div>' +
+                                '<p class="text-[11px] text-slate-400 mt-1.5">' + escHtml(ago) + '</p>' +
                             '</div>' +
                         '</div>' +
                         (n.status !== 'resolved'
-                            ? '<a href="' + escHtml(n.order_url || '/purchase-order/create') + '" class="rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-700">Order Now</a>'
-                            : '<span class="inline-flex items-center gap-1 text-xs font-medium text-emerald-600"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Resolved</span>'
+                            ? '<a href="' + escHtml(n.order_url || '/purchase-order/create') + '" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-slate-900 text-white text-xs font-medium hover:bg-slate-800 transition-colors">Order Now</a>'
+                            : '<span class="inline-flex items-center gap-1 text-xs font-medium text-emerald-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Resolved</span>'
                         ) +
                     '</div>';
                 }).join('');

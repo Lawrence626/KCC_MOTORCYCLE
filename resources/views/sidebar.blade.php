@@ -161,7 +161,7 @@
 
         @if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk'))
         @php
-            $isAnalyticsActive = request()->routeIs('sales.analytics') || request()->routeIs('pricing.module') || request()->routeIs('overstocking.report') || request()->routeIs('out.of.stock');
+            $isAnalyticsActive = request()->routeIs('sales.analytics') || request()->routeIs('pricing.module') || request()->routeIs('overstocking.report') || request()->routeIs('out.of.stock') || request()->routeIs('dss.dead-stock*');
         @endphp
         <div class="group space-y-1 @if($isAnalyticsActive) open @endif">
             <button type="button" @class(['sidebar-group-toggle w-full flex items-center justify-between gap-3 pl-6 pr-4 py-2.5 text-sm font-medium cursor-pointer text-slate-300 border-l-[3px] border-transparent'])>
@@ -187,6 +187,9 @@
                 </a>
                 <a href="{{ route('out.of.stock') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('out.of.stock'), 'text-slate-400' => !request()->routeIs('out.of.stock')])>
                     <span>Out of Stock Report</span>
+                </a>
+                <a href="{{ route('dss.dead-stock.index') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('dss.dead-stock*'), 'text-slate-400' => !request()->routeIs('dss.dead-stock*')])>
+                    <span>Dead Stock Analysis</span>
                 </a>
             </div>
         </div>
@@ -229,14 +232,7 @@
         </a>
         @endif
 
-        @if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk'))
-        <a href="{{ route('dss.dead-stock.index') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-2.5 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('dss.dead-stock*'), 'text-slate-300 border-transparent' => !request()->routeIs('dss.dead-stock*')])>
-            <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z" />
-            </svg>
-            <span>Dead Stock Detection</span>
-        </a>
-        @endif
+
 
         @if(auth()->user() && auth()->user()->role === 'admin')
         <a href="{{ route('supplier.assessment') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-2.5 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('supplier.assessment'), 'text-slate-300 border-transparent' => !request()->routeIs('supplier.assessment')])>

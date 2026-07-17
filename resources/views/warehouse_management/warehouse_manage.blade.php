@@ -1512,7 +1512,8 @@
                             const product = (locView ? (locView.products[productSlot] || null) : null);
                             if (product) {
                                 const priceText = (product.price || product.price === 0) ? Number(product.price).toFixed(2) : '-';
-                                const displaySku = `KCC_${(product.sku || product.name || '').replace(/[^A-Za-z0-9\-\+]/g, '')}`;
+                                let rawSku = (product.sku || product.name || '').replace(/[^A-Za-z0-9\-\+]/g, '');
+                                const displaySku = rawSku.toUpperCase().startsWith('KCC_') ? rawSku : `KCC_${rawSku}`;
                                 productsHtml += `<div class="product-chip rounded-xl bg-emerald-50 border border-emerald-100">
                                     <div class="left">
                                         <div class="name">${product.name}</div>

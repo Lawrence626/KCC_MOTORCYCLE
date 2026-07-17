@@ -77,11 +77,19 @@ class DashboardController extends Controller
             return collect($transaction->items ?? [])->pluck('id');
         })->filter()->unique()->all();
 
-        $productCategories = Product::query()
+        $productsForCat = Product::query()
             ->whereIn('id', array_merge($productIds, $todayProductIds))
             ->where('is_archived', false)
-            ->pluck('category', 'id')
-            ->all();
+            ->get(['id', 'category', 'product_name', 'name']);
+            
+        $productCategories = [];
+        foreach ($productsForCat as $prod) {
+            $cat = $prod->category;
+            if (!$cat || strtolower(trim($cat)) === 'uncategorized') {
+                $cat = $prod->product_name ?: ($prod->name ?? 'Uncategorized');
+            }
+            $productCategories[$prod->id] = $cat;
+        }
 
         // Use TODAY's transactions for category breakdown (daily reset)
         $categoryService = new SalesCategoryService();
@@ -91,7 +99,7 @@ class DashboardController extends Controller
             return collect($transaction->items ?? [])->map(function ($item) use ($productCategories) {
                 $quantity = (int) ($item['quantity'] ?? $item['qty'] ?? 0);
                 $unitPrice = (float) ($item['unit_price'] ?? $item['price'] ?? 0);
-            $productId = $item['id'] ?? null;
+                $productId = $item['id'] ?? null;
                 $categoryValue = null;
 
                 if ($productId && isset($productCategories[$productId])) {
@@ -110,7 +118,7 @@ class DashboardController extends Controller
                     'revenue' => $quantity * $unitPrice,
                 ];
             });
-        })->groupBy('name')->map(function ($items) {
+        })->groupBy('product_id')->map(function ($items) {
             return [
                 'product_id' => $items->first()['product_id'] ?? null,
                 'name' => $items->first()['name'],
@@ -291,54 +299,42 @@ class DashboardController extends Controller
         $normalized = str_replace(['-', '_'], ' ', $normalized);
         $normalized = preg_replace('/\s+/', ' ', $normalized);
 
-        $categoryMap = [
-            'pipe' => 'Exhaust',
-            'exhaust' => 'Exhaust',
-            'muffler' => 'Exhaust',
-            'silencer' => 'Exhaust',
-            'helmet' => 'Helmets',
-            'helmets' => 'Helmets',
-            'tire' => 'Tires',
-            'tires' => 'Tires',
-            'wheel' => 'Tires',
-            'rim' => 'Tires',
-            'mags' => 'Tires',
-            'brake' => 'Brakes',
-            'brakes' => 'Brakes',
-            'brake master' => 'Brakes',
-            'brake shoe' => 'Brakes',
-            'caliper' => 'Brakes',
-            'disc' => 'Brakes',
-            'oil' => 'Oils',
-            'oils' => 'Oils',
-            'engine oil' => 'Oils',
-            'engine_oil' => 'Oils',
-            'battery' => 'Batteries',
-            'batteries' => 'Batteries',
-            'shock' => 'Accessories',
-            'spring' => 'Accessories',
-            'suspension' => 'Accessories',
-            'seat' => 'Accessories',
-            'mirror' => 'Accessories',
-            'lever' => 'Accessories',
-            'clutch' => 'Accessories',
-            'perch' => 'Accessories',
-            'stand' => 'Accessories',
-            'support' => 'Accessories',
-            'cover' => 'Accessories',
-            'frame' => 'Accessories',
-        ];
-
-        if (isset($categoryMap[$normalized])) {
-            return $categoryMap[$normalized];
+        // Brakes
+        if (str_contains($normalized, 'brake') || str_contains($normalized, 'caliper') || str_contains($normalized, 'disc') || str_contains($normalized, 'lever')) {
+            return 'Brakes';
         }
 
-        foreach ($categoryMap as $key => $mappedCategory) {
-            if (str_contains($normalized, $key)) {
-                return $mappedCategory;
-            }
+        // Exhaust
+        if (str_contains($normalized, 'pipe') || str_contains($normalized, 'exhaust')) {
+            return 'Exhaust';
         }
 
-        return !empty(trim((string) $value)) ? trim((string) $value) : 'Uncategorized';
+        // Tires
+        if (str_contains($normalized, 'tire') || str_contains($normalized, 'tyre')) {
+            return 'Tires';
+        }
+
+        // Oils
+        if (str_contains($normalized, 'oil') || str_contains($normalized, 'lubricant')) {
+            return 'Oils';
+        }
+
+        // Batteries
+        if (str_contains($normalized, 'battery') || str_contains($normalized, 'batteries')) {
+            return 'Batteries';
+        }
+
+        // Helmets
+        if (str_contains($normalized, 'helmet')) {
+            return 'Helmets';
+        }
+
+        // Catch-all for uncategorized
+        if (in_array($normalized, ['uncategorized', 'unknown', 'n/a', ''], true)) {
+            return 'Uncategorized';
+        }
+
+        // Everything else defaults to Accessories (Mags, Seats, Shocks, Mirrors, etc.)
+        return 'Accessories';
     }
 }

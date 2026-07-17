@@ -1,4 +1,4 @@
-<x-layouts.app :title="__('Dead Stock Detection & Management')" :stretch="true">
+<x-layouts.app :title="__('Dead Stock Analysis')" :stretch="true">
 <div id="dead-stock-root"
      data-recalculate-url="{{ route('dss.dead-stock.recalculate') }}"
      data-export-excel-url="{{ route('dss.dead-stock.export-excel') }}"
@@ -14,7 +14,7 @@
         {{-- ═══ HEADER ═══ --}}
         <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
             <div>
-                <h1 class="text-[22px] font-semibold text-slate-900 tracking-tight">Dead Stock Detection</h1>
+                <h1 class="text-[22px] font-semibold text-slate-900 tracking-tight">Dead Stock Analysis</h1>
                 <p class="text-sm text-slate-500 mt-1 font-medium">
                     Inventory items without sales for <span class="text-slate-700 font-semibold">{{ $thresholdDays }} days</span> or more.
                 </p>

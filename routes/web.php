@@ -137,6 +137,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Data Analytics Routes - Sales analytics for Cashier and Warehouse, all for others
     Route::middleware('role:admin,cashier,inventory_clerk,warehouse_personnel')->group(function () {
         Route::get('analytics/sales', [AnalyticsController::class, 'sales'])->name('sales.analytics');
+        Route::get('api/analytics/sales-widgets', [AnalyticsController::class, 'salesFilteredWidgets'])->name('api.analytics.sales_widgets');
     });
 
     // Other analytics routes - Admin and Inventory Clerk only
