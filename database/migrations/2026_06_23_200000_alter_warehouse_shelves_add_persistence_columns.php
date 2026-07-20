@@ -24,13 +24,26 @@ return new class extends Migration
             }
         });
 
-        DB::table('warehouse_shelves')
-            ->update([
-                'warehouse_index' => DB::raw("CASE warehouse_code WHEN 'WH-A' THEN 0 WHEN 'WH-B' THEN 1 WHEN 'WH-C' THEN 2 ELSE 0 END"),
-                'slot_index' => DB::raw('sort_order'),
-                'archived' => DB::raw('is_archived'),
-                'products' => DB::raw('JSON_ARRAY()'),
-            ]);
+        $updateData = [
+            'warehouse_index' => DB::raw('0'),
+            'slot_index' => DB::raw('0'),
+            'archived' => DB::raw('0'),
+            'products' => DB::raw('JSON_ARRAY()'),
+        ];
+
+        if (Schema::hasColumn('warehouse_shelves', 'warehouse_code')) {
+            $updateData['warehouse_index'] = DB::raw("CASE warehouse_code WHEN 'WH-A' THEN 0 WHEN 'WH-B' THEN 1 WHEN 'WH-C' THEN 2 ELSE 0 END");
+        }
+
+        if (Schema::hasColumn('warehouse_shelves', 'sort_order')) {
+            $updateData['slot_index'] = DB::raw('sort_order');
+        }
+
+        if (Schema::hasColumn('warehouse_shelves', 'is_archived')) {
+            $updateData['archived'] = DB::raw('is_archived');
+        }
+
+        DB::table('warehouse_shelves')->update($updateData);
     }
 
     public function down()

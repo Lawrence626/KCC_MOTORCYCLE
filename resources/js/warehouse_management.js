@@ -6,9 +6,61 @@ document.addEventListener('DOMContentLoaded', function() {
     const SHELVES_PER_PAGE = 4;
     const warehousePage = warehouses.map(() => 0);
     let warehouseSearchQuery = '';
+    let productDescriptionFilter = '';
+    let brandFilter = '';
+    
+    // Load filter options
+    loadProductDescriptions();
+    loadBrands();
+    
+    // Add filter event listeners
+    const productDescFilter = document.getElementById('wm-product-description-filter');
+    const brandFilterEl = document.getElementById('wm-brand-filter');
+    const clearFiltersBtn = document.getElementById('wm-clear-filters');
+    
+    if (productDescFilter) {
+        productDescFilter.addEventListener('change', function() {
+            console.log('Product description filter changed:', this.value);
+            productDescriptionFilter = this.value;
+            const currentWarehouse = getCurrentWarehouseIndex();
+            if (!Number.isNaN(currentWarehouse) && warehouses[currentWarehouse]) {
+                warehousePage[currentWarehouse] = 0;
+                renderWarehousePage(currentWarehouse, 0);
+            }
+        });
+    }
+    
+    if (brandFilterEl) {
+        brandFilterEl.addEventListener('change', function() {
+            console.log('Brand filter changed:', this.value);
+            brandFilter = this.value;
+            const currentWarehouse = getCurrentWarehouseIndex();
+            if (!Number.isNaN(currentWarehouse) && warehouses[currentWarehouse]) {
+                warehousePage[currentWarehouse] = 0;
+                renderWarehousePage(currentWarehouse, 0);
+            }
+        });
+    }
+    
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener('click', function() {
+            console.log('Clear filters clicked');
+            productDescriptionFilter = '';
+            brandFilter = '';
+            if (productDescFilter) productDescFilter.value = '';
+            if (brandFilterEl) brandFilterEl.value = '';
+            const currentWarehouse = getCurrentWarehouseIndex();
+            if (!Number.isNaN(currentWarehouse) && warehouses[currentWarehouse]) {
+                warehousePage[currentWarehouse] = 0;
+                renderWarehousePage(currentWarehouse, 0);
+            }
+        });
+    }
+    
     const searchInput = document.getElementById('wm-search');
     if (searchInput) {
         searchInput.addEventListener('input', function() {
+            console.log('Search input changed:', this.value);
             warehouseSearchQuery = this.value.trim().toLowerCase();
             const currentWarehouse = getCurrentWarehouseIndex();
             if (!Number.isNaN(currentWarehouse) && warehouses[currentWarehouse]) {
@@ -49,8 +101,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const toastContainer = document.getElementById('toast-container');
 
     if (warehouses.length) {
-        warehouseSelector.value = '0';
-        showWarehouse(0);
+        warehouseSelector.value = warehouses[0].id.toString();
+        showWarehouse(warehouses[0].id);
     }
 
     function showToast(message, type = 'success', options = {}) {
@@ -95,13 +147,26 @@ document.addEventListener('DOMContentLoaded', function() {
         const timeout = setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, options.ttl || 4500);
     }
 
-    function showWarehouse(index) {
-        document.querySelectorAll('.wh-card').forEach(el => el.style.display = 'none');
-        const el = document.querySelector(`.wh-card[data-index="${index}"]`);
+    function showWarehouse(warehouseId) {
+        console.log('showWarehouse called with warehouseId:', warehouseId);
+        
+        document.querySelectorAll('.wh-card').forEach(el => {
+            el.style.display = 'none';
+        });
+        
+        const el = document.querySelector(`.wh-card[data-id="${warehouseId}"]`);
+        console.log('Found element:', el);
+        
         if (el) {
             el.style.display = 'block';
-            renderWarehousePage(index, warehousePage[index] || 0);
-            updateWarehouseStats(index);
+            // Find the warehouse index in the array
+            const warehouseIndex = warehouses.findIndex(wh => wh.id == warehouseId);
+            if (warehouseIndex !== -1) {
+                renderWarehousePage(warehouseIndex, warehousePage[warehouseIndex] || 0);
+                updateWarehouseStats(warehouseIndex);
+            }
+        } else {
+            console.error('Warehouse card not found for warehouseId:', warehouseId);
         }
     }
 
@@ -992,24 +1057,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.querySelectorAll('.prev-page').forEach(button => {
         button.addEventListener('click', function() {
-            const warehouseIndex = parseInt(this.dataset.index, 10);
-            warehousePage[warehouseIndex] = Math.max(0, warehousePage[warehouseIndex] - 1);
-            renderWarehousePage(warehouseIndex, warehousePage[warehouseIndex]);
+            const warehouseId = parseInt(this.dataset.id, 10);
+            const warehouseIndex = warehouses.findIndex(wh => wh.id == warehouseId);
+            if (warehouseIndex !== -1) {
+                warehousePage[warehouseIndex] = Math.max(0, warehousePage[warehouseIndex] - 1);
+                renderWarehousePage(warehouseIndex, warehousePage[warehouseIndex]);
+            }
         });
     });
 
     document.querySelectorAll('.next-page').forEach(button => {
         button.addEventListener('click', function() {
-            const warehouseIndex = parseInt(this.dataset.index, 10);
-            const warehouse = warehouses[warehouseIndex];
-            const totalPages = Math.max(1, Math.ceil(warehouse.locations.length / SHELVES_PER_PAGE));
-            warehousePage[warehouseIndex] = Math.min(totalPages - 1, warehousePage[warehouseIndex] + 1);
-            renderWarehousePage(warehouseIndex, warehousePage[warehouseIndex]);
+            const warehouseId = parseInt(this.dataset.id, 10);
+            const warehouseIndex = warehouses.findIndex(wh => wh.id == warehouseId);
+            if (warehouseIndex !== -1) {
+                const warehouse = warehouses[warehouseIndex];
+                const totalPages = Math.max(1, Math.ceil(warehouse.locations.length / SHELVES_PER_PAGE));
+                warehousePage[warehouseIndex] = Math.min(totalPages - 1, warehousePage[warehouseIndex] + 1);
+                renderWarehousePage(warehouseIndex, warehousePage[warehouseIndex]);
+            }
         });
     });
 
-    function shelfMatchesQuery(loc, query) {
-        if (!query) {
+    function shelfMatchesQuery(loc, query, productDesc = '', brand = '') {
+        console.log('shelfMatchesQuery called with:', { query, productDesc, brand });
+        
+        if (!query && !productDesc && !brand) {
             return true;
         }
         if (!loc || loc.archived) {
@@ -1022,17 +1095,84 @@ document.addEventListener('DOMContentLoaded', function() {
         return Array.isArray(loc.products) && loc.products.some(product => {
             const name = (product.name || '').toLowerCase();
             const skuValue = (product.sku || `KCC_${(product.name || '').replace(/[^A-Za-z0-9\-\+]/g, '')}`).toLowerCase();
-            return name.includes(normalized) || skuValue.includes(normalized);
+            const description = (product.description || '').toLowerCase();
+            const productBrand = (product.brand || '').toLowerCase();
+            
+            console.log('Product:', { name, description, productBrand });
+            
+            const matchesSearch = !query || name.includes(normalized) || skuValue.includes(normalized) || description.includes(normalized);
+            const matchesProductDesc = !productDesc || description === productDesc.toLowerCase();
+            const matchesBrand = !brand || productBrand === brand.toLowerCase();
+            
+            console.log('Matches:', { matchesSearch, matchesProductDesc, matchesBrand });
+            
+            return matchesSearch && matchesProductDesc && matchesBrand;
         });
+    }
+
+    function loadProductDescriptions() {
+        console.log('Loading product descriptions...');
+        fetch('/api/product-descriptions')
+            .then(response => {
+                console.log('Product descriptions response:', response);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Product descriptions data:', data);
+                const select = document.getElementById('wm-product-description-filter');
+                if (select) {
+                    select.innerHTML = '<option value="">All Descriptions</option>';
+                    data.forEach(desc => {
+                        const option = document.createElement('option');
+                        option.value = desc.name;
+                        option.textContent = desc.name;
+                        select.appendChild(option);
+                    });
+                    console.log('Product descriptions loaded successfully');
+                } else {
+                    console.error('Product description filter element not found');
+                }
+            })
+            .catch(error => console.error('Error loading product descriptions:', error));
+    }
+
+    function loadBrands() {
+        console.log('Loading brands...');
+        fetch('/api/shop-inventory/brands')
+            .then(response => {
+                console.log('Brands response:', response);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Brands data:', data);
+                const select = document.getElementById('wm-brand-filter');
+                if (select) {
+                    select.innerHTML = '<option value="">All Brands</option>';
+                    data.forEach(brand => {
+                        const option = document.createElement('option');
+                        option.value = brand;
+                        option.textContent = brand;
+                        select.appendChild(option);
+                    });
+                    console.log('Brands loaded successfully');
+                } else {
+                    console.error('Brand filter element not found');
+                }
+            })
+            .catch(error => console.error('Error loading brands:', error));
     }
 
     function getFilteredShelfSlots(warehouse) {
         const query = warehouseSearchQuery.trim().toLowerCase();
+        const productDesc = productDescriptionFilter.trim().toLowerCase();
+        const brand = brandFilter.trim().toLowerCase();
         const allSlots = warehouse.locations.map((loc) => ({ loc, slotIndex: loc?.slot_index ?? null }));
-        if (!query) {
+        
+        if (!query && !productDesc && !brand) {
             return allSlots;
         }
-        return allSlots.filter(item => shelfMatchesQuery(item.loc, query));
+        
+        return allSlots.filter(item => shelfMatchesQuery(item.loc, query, productDesc, brand));
     }
 
     function renderWarehousePage(warehouseIndex, pageIndex = 0) {
@@ -1042,11 +1182,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const shelfSlots = getFilteredShelfSlots(warehouse);
         const totalPages = Math.max(1, Math.ceil(shelfSlots.length / SHELVES_PER_PAGE));
         const start = pageIndex * SHELVES_PER_PAGE;
-        const shelvesContainer = document.querySelector(`.warehouse-shelves[data-index="${warehouseIndex}"]`);
-        const pageInfo = document.querySelector(`.page-info[data-index="${warehouseIndex}"]`);
-        const prevButton = document.querySelector(`.prev-page[data-index="${warehouseIndex}"]`);
-        const nextButton = document.querySelector(`.next-page[data-index="${warehouseIndex}"]`);
+        const shelvesContainer = document.querySelector(`.warehouse-shelves[data-id="${warehouseIndex}"]`);
+        const pageInfo = document.querySelector(`.page-info[data-id="${warehouseIndex}"]`);
+        const prevButton = document.querySelector(`.prev-page[data-id="${warehouseIndex}"]`);
+        const nextButton = document.querySelector(`.next-page[data-id="${warehouseIndex}"]`);
         warehousePage[warehouseIndex] = Math.min(Math.max(0, pageIndex), totalPages - 1);
+
+        if (!shelvesContainer) {
+            console.error('Shelves container not found data-id:', warehouseIndex);
+            return;
+        }
 
         shelvesContainer.classList.add('grid', 'grid-cols-2', 'gap-4');
 

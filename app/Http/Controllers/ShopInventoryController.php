@@ -6,6 +6,7 @@ use App\Models\ShopShelf;
 use App\Models\ShopInventory;
 use App\Models\ShopInventoryHistory;
 use App\Models\Product;
+use App\Models\ProductWarehouseStock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +18,8 @@ class ShopInventoryController extends Controller
      */
     public function index()
     {
-        $shelves = ShopShelf::with('shopInventory.product')
+        // Show all products in shop inventory (not filtered by SHOP stock)
+        $shelves = ShopShelf::with(['shopInventory.product.productCatalog'])
             ->where('is_active', true)
             ->get()
             ->map(function ($shelf) {
@@ -28,7 +30,7 @@ class ShopInventoryController extends Controller
                 return $shelf;
             });
 
-        // Calculate totals - count distinct products, not quantities
+        // Calculate totals - count distinct products
         $totalProducts = ShopInventory::whereHas('shopShelf', function($q) {
             $q->where('is_active', true);
         })->count();
@@ -78,11 +80,28 @@ class ShopInventoryController extends Controller
         if (!empty($validated['products'])) {
             foreach ($validated['products'] as $productData) {
                 try {
+                    // Generate SKU if not provided
+                    if (empty($productData['sku'])) {
+                        $category = $productData['category'] ?? 'UNCATEGORIZED';
+                        $brand = $productData['brand'] ?? $productData['name'];
+                        
+                        // Find existing products with same category and brand to determine unique identifier
+                        $existingCount = Product::where('category', $category)
+                            ->where('name', $brand)
+                            ->count();
+                        $nextId = $existingCount + 1;
+                        $uniqueId = str_pad($nextId, 3, '0', STR_PAD_LEFT);
+                        
+                        $productData['sku'] = 'KCC_' . str_replace(' ', '_', $category) . '_' . $brand . '_' . $uniqueId;
+                    }
+                    
                     // Find or create product by SKU
                     $product = Product::firstOrCreate(
                         ['sku' => $productData['sku']],
                         [
                             'name' => $productData['name'],
+                            'category' => $productData['category'] ?? 'Uncategorized',
+                            'brand' => $productData['brand'] ?? null,
                             'unit_price' => $productData['price'],
                         ]
                     );
@@ -209,28 +228,57 @@ class ShopInventoryController extends Controller
                                 }
 
                                 $product = Product::create([
-                                    'name' => $productData['name'],
-                                    'sku' => $sku,
+                                    'name'       => $productData['name'],
+                                    'sku'        => $sku,
                                     'unit_price' => $productData['price'] ?? 0,
-                                    'category' => 'General',
-                                    'status' => 'active',
+                                    'category'   => 'General',
+                                    'status'     => 'active',
                                 ]);
+                            } else {
+                                // Update price if provided
+                                if (isset($productData['price'])) {
+                                    $product->unit_price = $productData['price'];
+                                }
+                                if (isset($productData['qty'])) {
+                                    $product->stock_quantity = $productData['qty'];
+                                }
+                                $product->save();
+
+                                // Update ProductCatalog fields if relationship exists
+                                if ($product->productCatalog) {
+                                    $catalogUpdates = [];
+                                    if (!empty($productData['description'])) {
+                                        $catalogUpdates['product_description'] = $productData['description'];
+                                    }
+                                    if (!empty($productData['brand'])) {
+                                        $catalogUpdates['brand'] = $productData['brand'];
+                                    }
+                                    if (!empty($productData['compatible_model'])) {
+                                        $catalogUpdates['product_name'] = $productData['compatible_model'];
+                                    }
+                                    if (!empty($productData['sku'])) {
+                                        $catalogUpdates['sku'] = $productData['sku'];
+                                    }
+                                    if (!empty($catalogUpdates)) {
+                                        $product->productCatalog->update($catalogUpdates);
+                                    }
+                                }
                             }
 
                             ShopInventory::create([
                                 'shop_shelf_id' => $shelf->id,
-                                'product_id' => $product->id,
-                                'quantity' => $productData['qty'],
+                                'product_id'    => $product->id,
+                                'quantity'      => $productData['qty'],
                             ]);
 
                             // Log history
                             ShopInventoryHistory::create([
-                                'shop_shelf_id' => $shelf->id,
-                                'product_id' => $product->id,
-                                'action_type' => 'updated',
+                                'shop_shelf_id'   => $shelf->id,
+                                'product_id'      => $product->id,
+                                'action_type'     => 'updated',
                                 'quantity_change' => $productData['qty'],
-                                'user_id' => auth()->id(),
-                                'notes' => "Updated in shelf {$shelf->name}",
+                                'user_id'         => auth()->id(),
+                                'notes'           => "Updated in shelf {$shelf->name}",
                             ]);
                         }
                     }
@@ -265,7 +313,7 @@ class ShopInventoryController extends Controller
      */
     public function getShelfData($id)
     {
-        $shelf = ShopShelf::with('shopInventory.product')->findOrFail($id);
+        $shelf = ShopShelf::with('shopInventory.product.productCatalog')->findOrFail($id);
         return response()->json($shelf);
     }
 
@@ -561,9 +609,11 @@ class ShopInventoryController extends Controller
      */
     public function getShelves()
     {
-        $shelves = ShopShelf::where('is_active', true)
+        $shelves = ShopShelf::with(['shopInventory.product.productCatalog'])
+            ->where('is_active', true)
             ->get()
             ->map(function ($shelf) {
+                $shelf->shop_inventory = $shelf->shopInventory;
                 $shelf->occupied = $shelf->shopInventory->count();
                 $shelf->available = max(0, $shelf->capacity - $shelf->occupied);
                 return $shelf;
@@ -608,6 +658,22 @@ class ShopInventoryController extends Controller
         $warehousesGrouped = array_values($warehousesGrouped);
 
         return response()->json(['data' => $warehousesGrouped]);
+    }
+
+    /**
+     * Get all unique brands from products
+     */
+    public function getBrands()
+    {
+        $brands = Product::where('is_archived', false)
+            ->whereNotNull('brand')
+            ->where('brand', '!=', '')
+            ->distinct()
+            ->orderBy('brand')
+            ->pluck('brand')
+            ->toArray();
+
+        return response()->json($brands);
     }
 
     /**
@@ -705,6 +771,27 @@ class ShopInventoryController extends Controller
                     ]
                 );
 
+                // Sync ProductWarehouseStock: Deduct from Warehouse
+                $warehouseName = DB::table('warehouses')->where('id', $warehouseShelf->warehouse_id)->value('name');
+                if ($warehouseName) {
+                    $whStock = \App\Models\ProductWarehouseStock::where('product_id', $product->id)
+                        ->where('warehouse', $warehouseName)
+                        ->first();
+                    if ($whStock) {
+                        $whStock->quantity -= $quantity;
+                        if ($whStock->quantity < 0) $whStock->quantity = 0;
+                        $whStock->save();
+                    }
+                }
+
+                // Sync ProductWarehouseStock: Add to SHOP
+                $shopStock = \App\Models\ProductWarehouseStock::firstOrCreate(
+                    ['product_id' => $product->id, 'warehouse' => 'SHOP'],
+                    ['quantity' => 0]
+                );
+                $shopStock->quantity += $quantity;
+                $shopStock->save();
+
                 // Log history
                 ShopInventoryHistory::create([
                     'shop_shelf_id' => $shopShelf->id,
@@ -717,6 +804,16 @@ class ShopInventoryController extends Controller
                     'destination_id' => $shopShelf->id,
                     'user_id' => Auth::id(),
                     'notes' => "Transferred from warehouse shelf: {$warehouseShelf->name}",
+                ]);
+
+                // Log Inventory Movement
+                \App\Models\InventoryMovement::create([
+                    'product_id' => $product->id,
+                    'type' => 'transfer',
+                    'quantity_change' => 0, // It's a transfer between locations, so overall stock change is 0
+                    'from_location' => $warehouseName ?? 'Warehouse',
+                    'to_location' => 'SHOP',
+                    'notes' => "Transferred {$quantity} units from warehouse shelf to shop shelf.",
                 ]);
             }
 
@@ -931,6 +1028,27 @@ class ShopInventoryController extends Controller
                     $shopInventory->save();
                 }
 
+                // Sync ProductWarehouseStock: Deduct from SHOP
+                $shopStock = \App\Models\ProductWarehouseStock::where('product_id', $returnData['product_id'])
+                    ->where('warehouse', 'SHOP')
+                    ->first();
+                if ($shopStock) {
+                    $shopStock->quantity -= $returnData['quantity'];
+                    if ($shopStock->quantity < 0) $shopStock->quantity = 0;
+                    $shopStock->save();
+                }
+
+                // Sync ProductWarehouseStock: Add to Warehouse
+                $warehouseName = DB::table('warehouses')->where('id', $warehouseShelf->warehouse_id)->value('name');
+                if ($warehouseName) {
+                    $whStock = \App\Models\ProductWarehouseStock::firstOrCreate(
+                        ['product_id' => $returnData['product_id'], 'warehouse' => $warehouseName],
+                        ['quantity' => 0]
+                    );
+                    $whStock->quantity += $returnData['quantity'];
+                    $whStock->save();
+                }
+
                 // Log history
                 ShopInventoryHistory::create([
                     'shop_shelf_id' => $shelf->id,
@@ -939,6 +1057,16 @@ class ShopInventoryController extends Controller
                     'quantity_change' => -$returnData['quantity'],
                     'user_id' => Auth::id(),
                     'notes' => "Returned to warehouse from shelf: {$shelf->name}",
+                ]);
+
+                // Log Inventory Movement
+                \App\Models\InventoryMovement::create([
+                    'product_id' => $returnData['product_id'],
+                    'type' => 'transfer',
+                    'quantity_change' => 0, // Transfer between locations
+                    'from_location' => 'SHOP',
+                    'to_location' => $warehouseName ?? 'Warehouse',
+                    'notes' => "Returned {$returnData['quantity']} units from shop shelf to warehouse.",
                 ]);
             }
 
@@ -996,7 +1124,7 @@ class ShopInventoryController extends Controller
      */
     public function getProductsForPOS(Request $request)
     {
-        $query = ShopInventory::with('product')
+        $query = ShopInventory::with('product.productCatalog')
             ->where('quantity', '>', 0)
             ->whereHas('shopShelf', function ($q) {
                 $q->where('is_active', true);
@@ -1015,6 +1143,17 @@ class ShopInventoryController extends Controller
             });
         }
 
+        // Apply category filter
+        if ($request->has('category') && !empty($request->input('category')) && $request->input('category') !== 'All') {
+            $category = $request->input('category');
+            $query->whereHas('product', function ($q) use ($category) {
+                $q->where('category', $category)
+                  ->orWhereHas('productCatalog', function ($catalogQ) use ($category) {
+                      $catalogQ->where('product_description', $category);
+                  });
+            });
+        }
+
         // Pagination
         $perPage = $request->input('per_page', 10);
         $page = $request->input('page', 1);
@@ -1024,14 +1163,25 @@ class ShopInventoryController extends Controller
         // Map to product format for POS
         $products = $inventory->map(function ($item) {
             $product = $item->product;
+            $productDescription = $product->description ?? $product->product_name ?? $product->name;
+            $category = $product->category ?? 'Uncategorized';
+            
+            // Use product catalog data if available
+            if ($product->productCatalog) {
+                $productDescription = $product->productCatalog->product_description ?? $productDescription;
+                $category = $product->productCatalog->product_description ?? $category;
+            }
+            
             return [
                 'id' => $product->id,
                 'name' => $product->name,
                 'product_name' => $product->product_name,
                 'sku' => $product->sku,
                 'barcode' => $product->barcode,
-                'category' => $product->category,
+                'category' => $category,
+                'product_description' => $productDescription,
                 'brand' => $product->brand,
+                'compatibility' => $product->compatibility ?? '',
                 'size' => $product->size,
                 'color' => $product->color,
                 'unit_price' => $product->unit_price,
@@ -1086,6 +1236,16 @@ class ShopInventoryController extends Controller
                     $shopInventory->save();
                 }
 
+                // Deduct from ProductWarehouseStock for SHOP
+                $shopStock = \App\Models\ProductWarehouseStock::where('product_id', $productId)
+                    ->where('warehouse', 'SHOP')
+                    ->first();
+                if ($shopStock) {
+                    $shopStock->quantity -= $quantity;
+                    if ($shopStock->quantity < 0) $shopStock->quantity = 0;
+                    $shopStock->save();
+                }
+
                 // Log history
                 ShopInventoryHistory::create([
                     'shop_shelf_id' => $shopInventory->shop_shelf_id,
@@ -1096,6 +1256,16 @@ class ShopInventoryController extends Controller
                     'source_id' => $shopInventory->shop_shelf_id,
                     'user_id' => Auth::id(),
                     'notes' => 'POS sale deduction',
+                ]);
+
+                // Log Inventory Movement
+                \App\Models\InventoryMovement::create([
+                    'product_id' => $productId,
+                    'type' => 'pos_sale',
+                    'quantity_change' => -$quantity,
+                    'from_location' => 'SHOP',
+                    'to_location' => 'Customer',
+                    'notes' => 'POS sale deduction from shop shelf: ' . ($shopInventory->shopShelf->name ?? ''),
                 ]);
             }
 

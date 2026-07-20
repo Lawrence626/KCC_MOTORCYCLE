@@ -52,7 +52,12 @@
                 <p class="text-sm text-slate-500 mt-1">Track revenue performance, product demand, and market momentum in a compact analytics workspace.</p>
             </div>
             <div class="flex flex-col gap-2 sm:flex-row">
-                <button class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition">📅 Apr 1, 2026 - Apr 30, 2026</button>
+                <div class="relative">
+                    <input type="text" id="globalDateRange" readonly
+                           class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition cursor-pointer w-[260px]"
+                           placeholder="Select date range">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-base">📅</span>
+                </div>
                 <button class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 transition">Export report</button>
             </div>
         </div>
@@ -108,7 +113,10 @@
                 </div>
             </div>
 
-            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm relative" id="categoryDistributionSection">
+                <div id="categoryLoadingOverlay" class="hidden absolute inset-0 bg-white/80 rounded-3xl z-10 flex items-center justify-center">
+                    <div class="flex flex-col items-center gap-2"><svg class="animate-spin h-6 w-6 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg><span class="text-xs text-slate-400">Loading…</span></div>
+                </div>
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 class="text-base font-semibold text-slate-900">Category distribution</h2>
@@ -120,7 +128,7 @@
                     <div class="h-52 w-full">
                         <canvas id="categoryChart" class="h-full w-full"></canvas>
                     </div>
-                    <div class="max-h-52 overflow-y-auto pr-1 space-y-2 text-sm">
+                    <div id="categoryLegend" class="max-h-52 overflow-y-auto pr-1 space-y-2 text-sm">
                         @php
                             $legendColors = ['bg-teal-500','bg-emerald-500','bg-amber-500','bg-sky-500','bg-rose-500','bg-violet-500','bg-cyan-500','bg-lime-500','bg-fuchsia-500','bg-orange-500'];
                         @endphp
@@ -141,7 +149,10 @@
         </div>
 
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-            <div class="xl:col-span-2 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="xl:col-span-2 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm relative" id="topProductsSection">
+                <div id="topProductsLoadingOverlay" class="hidden absolute inset-0 bg-white/80 rounded-3xl z-10 flex items-center justify-center">
+                    <div class="flex flex-col items-center gap-2"><svg class="animate-spin h-6 w-6 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg><span class="text-xs text-slate-400">Loading…</span></div>
+                </div>
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 class="text-base font-semibold text-slate-900">Top selling products</h2>
@@ -166,6 +177,7 @@
                                     <td class="px-3 py-3 font-semibold text-slate-900">{{ $product['rank'] }}</td>
                                     <td class="px-3 py-3">
                                         <div class="font-medium text-slate-900">{{ $product['name'] }}</div>
+                                        <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">{{ $product['sku'] ?? 'N/A' }}</div>
                                     </td>
                                     <td class="px-3 py-3 text-slate-600">{{ $product['category'] }}</td>
                                     <td class="px-3 py-3 text-slate-900">{{ $product['qty'] }}</td>
@@ -184,7 +196,10 @@
         </div>
 
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
-            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm relative" id="fastMovingSection">
+                <div id="fastMovingLoadingOverlay" class="hidden absolute inset-0 bg-white/80 rounded-3xl z-10 flex items-center justify-center">
+                    <div class="flex flex-col items-center gap-2"><svg class="animate-spin h-6 w-6 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg><span class="text-xs text-slate-400">Loading…</span></div>
+                </div>
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 class="text-base font-semibold text-slate-900">Fast-moving products</h2>
@@ -201,15 +216,29 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 bg-white" id="fastMovingProductsBody">
-                            <tr>
-                                <td colspan="3" class="px-3 py-3 text-center text-slate-500">No sales data available</td>
-                            </tr>
+                            @forelse($fastMoving as $product)
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="px-3 py-3">
+                                        <div class="font-medium text-slate-900">{{ $product['name'] }}</div>
+                                        <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">{{ $product['sku'] ?? 'N/A' }}</div>
+                                    </td>
+                                    <td class="px-3 py-3 text-right text-slate-900">{{ $product['qty'] }}</td>
+                                    <td class="px-3 py-3 text-right font-semibold text-slate-900">{{ $product['revenue'] }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" class="px-3 py-3 text-center text-slate-500">No sales data available</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm relative" id="slowMovingSection">
+                <div id="slowMovingLoadingOverlay" class="hidden absolute inset-0 bg-white/80 rounded-3xl z-10 flex items-center justify-center">
+                    <div class="flex flex-col items-center gap-2"><svg class="animate-spin h-6 w-6 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg><span class="text-xs text-slate-400">Loading…</span></div>
+                </div>
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 class="text-base font-semibold text-slate-900">Slow-moving products</h2>
@@ -225,9 +254,19 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 bg-white" id="slowMovingProductsBody">
-                            <tr>
-                                <td colspan="2" class="px-3 py-3 text-center text-slate-500">No sales data available</td>
-                            </tr>
+                            @forelse($slowMoving as $product)
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="px-3 py-3">
+                                        <div class="font-medium text-slate-900">{{ $product['name'] }}</div>
+                                        <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">{{ $product['sku'] ?? 'N/A' }}</div>
+                                    </td>
+                                    <td class="px-3 py-3 text-right text-slate-900">{{ $product['qty'] }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="2" class="px-3 py-3 text-center text-slate-500">No sales data available</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -264,7 +303,17 @@
     </div>
 
     @push('scripts')
+        {{-- Flatpickr CDN --}}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/airbnb.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <style>
+            #globalDateRange { padding-left: 2rem; }
+        </style>
         <script>
+            // ═══════════════════════════════════════════
+            // SALES TREND (independent — NOT date-filtered)
+            // ═══════════════════════════════════════════
             const salesTrendRangeButtons = document.querySelectorAll('.sales-trend-range-btn');
             const salesTrendCtx = document.getElementById('salesTrendChart');
             const posSalesStorageKey = 'posTransactionHistory';
@@ -454,17 +503,29 @@
 
             setActiveSalesTrendButton('monthly');
 
-            const categoryCtx = document.getElementById('categoryChart');
-            if (categoryCtx) {
-                const chartColors = ['#0f766e', '#16a34a', '#f59e0b', '#0ea5e9', '#ef4444', '#8b5cf6', '#06b6d4', '#84cc16', '#ec4899', '#f97316'];
-                const categories = @json($categoryBreakdown['labels']);
-                const values = @json($categoryBreakdown['values']);
-                const backgroundColors = categories.map((_, index) => chartColors[index % chartColors.length]);
+            // ═══════════════════════════════════════════
+            // CATEGORY CHART (initial render from server)
+            // ═══════════════════════════════════════════
+            const chartColors = ['#0f766e', '#16a34a', '#f59e0b', '#0ea5e9', '#ef4444', '#8b5cf6', '#06b6d4', '#84cc16', '#ec4899', '#f97316'];
+            const legendColorClasses = ['bg-teal-500','bg-emerald-500','bg-amber-500','bg-sky-500','bg-rose-500','bg-violet-500','bg-cyan-500','bg-lime-500','bg-fuchsia-500','bg-orange-500'];
+            let categoryChartInstance = null;
 
-                new Chart(categoryCtx, {
+            const initCategoryChart = (labels, values) => {
+                const categoryCtx = document.getElementById('categoryChart');
+                if (!categoryCtx) return;
+
+                if (categoryChartInstance) {
+                    categoryChartInstance.destroy();
+                    categoryChartInstance = null;
+                }
+
+                if (!labels.length) return;
+
+                const backgroundColors = labels.map((_, index) => chartColors[index % chartColors.length]);
+                categoryChartInstance = new Chart(categoryCtx, {
                     type: 'doughnut',
                     data: {
-                        labels: categories,
+                        labels: labels,
                         datasets: [{
                             data: values,
                             backgroundColor: backgroundColors,
@@ -491,148 +552,191 @@
                         cutout: '65%'
                     }
                 });
-            }
-
-            // Fast-Moving and Slow-Moving Products Logic
-            const aggregateProductsFromTransactions = () => {
-                const transactions = parseLocalTransactionHistory();
-                const productMap = new Map();
-
-                transactions.forEach(transaction => {
-                    if (!Array.isArray(transaction.items)) return;
-
-                    transaction.items.forEach(item => {
-                        const key = item.name || 'Unknown';
-                        if (!productMap.has(key)) {
-                            productMap.set(key, {
-                                name: key,
-                                quantity: 0,
-                                revenue: 0,
-                            });
-                        }
-                        const product = productMap.get(key);
-                        product.quantity += (item.qty || 1);
-                        product.revenue += (item.price * (item.qty || 1)) || 0;
-                    });
-                });
-
-                return Array.from(productMap.values());
             };
 
-            const renderFastMovingProducts = () => {
-                const products = aggregateProductsFromTransactions();
-                const fastMoving = products
-                    .sort((a, b) => b.quantity - a.quantity)
-                    .slice(0, 5);
+            // Initial category chart from server data
+            initCategoryChart(@json($categoryBreakdown['labels']), @json($categoryBreakdown['values']));
 
+            // ═══════════════════════════════════════════
+            // GLOBAL DATE RANGE CALENDAR + WIDGET REFRESH
+            // ═══════════════════════════════════════════
+            const loadingOverlayIds = [
+                'categoryLoadingOverlay',
+                'topProductsLoadingOverlay',
+                'fastMovingLoadingOverlay',
+                'slowMovingLoadingOverlay',
+            ];
+
+            const showLoadingOverlays = () => {
+                loadingOverlayIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) { el.classList.remove('hidden'); el.classList.add('flex'); }
+                });
+            };
+
+            const hideLoadingOverlays = () => {
+                loadingOverlayIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) { el.classList.add('hidden'); el.classList.remove('flex'); }
+                });
+            };
+
+            const emptyStateRow = (colspan, message) =>
+                `<tr><td colspan="${colspan}" class="px-3 py-6 text-center text-slate-400 text-sm">${message}</td></tr>`;
+
+            const renderCategoryLegend = (labels, formatted, shares) => {
+                const legend = document.getElementById('categoryLegend');
+                if (!legend) return;
+
+                if (!labels.length) {
+                    legend.innerHTML = '<p class="text-sm text-slate-400 text-center py-4">No sales data available for the selected date range.</p>';
+                    return;
+                }
+
+                legend.innerHTML = labels.map((label, index) => {
+                    const colorClass = legendColorClasses[index % legendColorClasses.length];
+                    return `
+                        <div class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                            <span class="h-2.5 w-2.5 rounded-full ${colorClass}"></span>
+                            <div>
+                                <p class="font-semibold text-slate-900">${label}</p>
+                                <p class="text-slate-500">${formatted[index] || '—'} • ${shares[index] || 0}%</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            };
+
+            const renderTopProducts = (products) => {
+                const tbody = document.getElementById('topProductsBody');
+                if (!tbody) return;
+
+                if (!products.length) {
+                    tbody.innerHTML = emptyStateRow(5, 'No sales data available for the selected date range.');
+                    return;
+                }
+
+                tbody.innerHTML = products.map(p => `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="px-3 py-3 font-semibold text-slate-900">${p.rank}</td>
+                        <td class="px-3 py-3">
+                            <div class="font-medium text-slate-900">${p.name}</div>
+                            <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">${p.sku || 'N/A'}</div>
+                        </td>
+                        <td class="px-3 py-3 text-slate-600">${p.category}</td>
+                        <td class="px-3 py-3 text-slate-900">${p.qty}</td>
+                        <td class="px-3 py-3 font-semibold text-slate-900">${p.revenue}</td>
+                    </tr>
+                `).join('');
+            };
+
+            const renderFastMoving = (products) => {
                 const tbody = document.getElementById('fastMovingProductsBody');
                 if (!tbody) return;
 
-                if (fastMoving.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" class="px-3 py-3 text-center text-slate-500">No sales data available</td></tr>';
+                if (!products.length) {
+                    tbody.innerHTML = emptyStateRow(3, 'No sales data available for the selected date range.');
                     return;
                 }
 
-                tbody.innerHTML = fastMoving.map((product) => {
-                    const formattedRevenue = '₱' + Number(product.revenue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    return `
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="px-3 py-3 font-medium text-slate-900">${product.name}</td>
-                            <td class="px-3 py-3 text-right text-slate-900">${product.quantity}</td>
-                            <td class="px-3 py-3 text-right font-semibold text-slate-900">${formattedRevenue}</td>
-                        </tr>
-                    `;
-                }).join('');
+                tbody.innerHTML = products.map(p => `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="px-3 py-3">
+                            <div class="font-medium text-slate-900">${p.name}</div>
+                            <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">${p.sku || 'N/A'}</div>
+                        </td>
+                        <td class="px-3 py-3 text-right text-slate-900">${p.qty}</td>
+                        <td class="px-3 py-3 text-right font-semibold text-slate-900">${p.revenue}</td>
+                    </tr>
+                `).join('');
             };
 
-            const renderSlowMovingProducts = () => {
-                const products = aggregateProductsFromTransactions();
-                const slowMoving = products
-                    .filter(p => p.quantity > 0)
-                    .sort((a, b) => a.quantity - b.quantity)
-                    .slice(0, 5);
-
+            const renderSlowMoving = (products) => {
                 const tbody = document.getElementById('slowMovingProductsBody');
                 if (!tbody) return;
 
-                if (slowMoving.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="2" class="px-3 py-3 text-center text-slate-500">No sales data available</td></tr>';
+                if (!products.length) {
+                    tbody.innerHTML = emptyStateRow(2, 'No sales data available for the selected date range.');
                     return;
                 }
 
-                tbody.innerHTML = slowMoving.map((product) => {
-                    return `
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="px-3 py-3 font-medium text-slate-900">${product.name}</td>
-                            <td class="px-3 py-3 text-right text-slate-900">${product.quantity}</td>
-                        </tr>
-                    `;
-                }).join('');
+                tbody.innerHTML = products.map(p => `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="px-3 py-3">
+                            <div class="font-medium text-slate-900">${p.name}</div>
+                            <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">${p.sku || 'N/A'}</div>
+                        </td>
+                        <td class="px-3 py-3 text-right text-slate-900">${p.qty}</td>
+                    </tr>
+                `).join('');
             };
 
-            const updateProductTables = () => {
-                renderFastMovingProducts();
-                renderSlowMovingProducts();
-            };
+            const fetchFilteredWidgets = async (startDate, endDate) => {
+                showLoadingOverlays();
 
-            // Initial render and update on range change
-            updateProductTables();
-            salesTrendRangeButtons.forEach((button) => {
-                button.addEventListener('click', updateProductTables);
-            });
-
-            // ===== TOP PRODUCTS AUTO-UPDATE FUNCTIONALITY =====
-            const topProductsBody = document.getElementById('topProductsBody');
-            const autoUpdateInterval = 30000; // 30 seconds
-
-            const fetchAndUpdateTopProducts = async () => {
                 try {
-                    const response = await fetch('/api/pos/transactions/top-selling?limit=5');
-                    if (!response.ok) {
-                        console.error('Failed to fetch top selling products');
-                        return;
-                    }
+                    const response = await fetch(`/api/analytics/sales-widgets?start_date=${startDate}&end_date=${endDate}`, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                    });
+
+                    if (!response.ok) throw new Error('Request failed');
 
                     const data = await response.json();
-                    const topProducts = data.data || [];
 
-                    if (!topProducts.length) {
-                        if (topProductsBody) {
-                            topProductsBody.innerHTML = '<tr><td colspan="5" class="px-3 py-3 text-center text-slate-500">No sales data available</td></tr>';
-                        }
-                        return;
-                    }
+                    // Category Distribution
+                    const cb = data.categoryBreakdown || { labels: [], values: [], formatted: [], shares: [] };
+                    initCategoryChart(cb.labels, cb.values);
+                    renderCategoryLegend(cb.labels, cb.formatted, cb.shares);
 
-                    if (!topProductsBody) return;
+                    // Top Selling Products
+                    renderTopProducts(data.topProducts || []);
 
-                    topProductsBody.innerHTML = topProducts.map((product) => {
-                        return `
-                            <tr class="hover:bg-slate-50 transition">
-                                <td class="px-3 py-3 font-semibold text-slate-900">${product.rank}</td>
-                                <td class="px-3 py-3">
-                                    <div class="font-medium text-slate-900">${product.name}</div>
-                                </td>
-                                <td class="px-3 py-3 text-slate-600">${product.category}</td>
-                                <td class="px-3 py-3 text-slate-900">${product.qty}</td>
-                                <td class="px-3 py-3 font-semibold text-slate-900">${product.revenue}</td>
-                            </tr>
-                        `;
-                    }).join('');
+                    // Fast-Moving Products
+                    renderFastMoving(data.fastMoving || []);
+
+                    // Slow-Moving Products
+                    renderSlowMoving(data.slowMoving || []);
+
                 } catch (error) {
-                    console.error('Error fetching top products:', error);
+                    console.error('Error fetching filtered widgets:', error);
+                    // Show empty states on error
+                    initCategoryChart([], []);
+                    renderCategoryLegend([], [], []);
+                    renderTopProducts([]);
+                    renderFastMoving([]);
+                    renderSlowMoving([]);
+                } finally {
+                    hideLoadingOverlays();
                 }
             };
 
-            // Fetch and update top products on page load and then every 30 seconds
-            fetchAndUpdateTopProducts();
-            setInterval(fetchAndUpdateTopProducts, autoUpdateInterval);
+            // Flatpickr initialization
+            const dateInput = document.getElementById('globalDateRange');
+            if (dateInput) {
+                const now = new Date();
+                const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-            // "View all" button - could navigate to a full products list
+                flatpickr(dateInput, {
+                    mode: 'range',
+                    dateFormat: 'M j, Y',
+                    defaultDate: [startOfMonth, endOfMonth],
+                    maxDate: 'today',
+                    onChange: (selectedDates) => {
+                        if (selectedDates.length === 2) {
+                            const start = selectedDates[0].toISOString().split('T')[0];
+                            const end = selectedDates[1].toISOString().split('T')[0];
+                            fetchFilteredWidgets(start, end);
+                        }
+                    }
+                });
+            }
+
+            // "View all" button
             const viewAllBtn = document.getElementById('viewAllTopProductsBtn');
             if (viewAllBtn) {
                 viewAllBtn.addEventListener('click', () => {
                     console.log('View all top products');
-                    // You can implement pagination or full list view here
                 });
             }
         </script>

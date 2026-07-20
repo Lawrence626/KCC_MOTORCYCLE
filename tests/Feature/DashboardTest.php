@@ -21,9 +21,24 @@ beforeEach(function () {
         $table->id();
         $table->string('name');
         $table->string('category')->nullable();
+        $table->string('sku')->nullable();
         $table->integer('stock_quantity')->default(0);
         $table->integer('reorder_level')->default(0);
+        $table->boolean('is_active')->default(true);
         $table->boolean('is_archived')->default(false);
+        $table->timestamps();
+    });
+
+    Schema::create('inventory_notifications', function ($table) {
+        $table->id();
+        $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+        $table->string('sku');
+        $table->string('notification_type');
+        $table->integer('current_stock')->default(0);
+        $table->integer('reorder_point')->default(0);
+        $table->string('status')->default('unread');
+        $table->timestamp('dismissed_at')->nullable();
+        $table->timestamp('resolved_at')->nullable();
         $table->timestamps();
     });
 
@@ -46,6 +61,7 @@ beforeEach(function () {
 });
 
 afterEach(function () {
+    Schema::dropIfExists('inventory_notifications');
     Schema::dropIfExists('pos_transactions');
     Schema::dropIfExists('products');
     Schema::dropIfExists('users');

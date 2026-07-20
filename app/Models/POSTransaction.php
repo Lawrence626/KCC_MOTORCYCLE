@@ -73,6 +73,8 @@ class POSTransaction extends Model
      */
     public function scopeDateRange($query, $startDate, $endDate)
     {
-        return $query->whereBetween('completed_at', [$startDate, $endDate]);
+        $start = \Carbon\Carbon::parse($startDate)->startOfDay();
+        $end = \Carbon\Carbon::parse($endDate)->endOfDay();
+        return $query->whereBetween('completed_at', [$start, $end]);
     }
 }

@@ -42,9 +42,9 @@
                             <thead class="bg-slate-50 text-xs uppercase tracking-[0.24em] text-slate-500">
                                 <tr class="sticky top-0 z-10 bg-slate-50">
                                     <th class="w-[35%] px-3 py-3">Product</th>
-                                    <th class="w-[15%] px-3 py-3">Stock</th>
-                                    <th class="w-[15%] px-3 py-3">Reorder</th>
-                                    <th class="w-[15%] px-3 py-3">Excess</th>
+                                    <th class="w-[15%] px--5 py-3">Current Stock</th>
+                                    <th class="w-[15%] px--5 py-3">Maximum Stock</th>
+                                    <th class="w-[15%] px--5 py-3">Excess Stock</th>
                                     <th class="w-[20%] px-3 py-3">Value</th>
                                 </tr>
                             </thead>
@@ -52,7 +52,7 @@
                                 @forelse($overstockedProducts as $product)
                                     <tr class="hover:bg-slate-50 transition">
                                         <td class="px-3 py-3 font-semibold text-slate-900">
-                                            <div class="truncate">{{ $product->name }}</div>
+                                            <div class="truncate">{{ $product->product_name ?: $product->name }}</div>
                                             <div class="text-xs text-slate-500 truncate">{{ $product->sku }}</div>
                                         </td>
                                         <td class="px-3 py-3 text-slate-900"><div class="truncate">{{ number_format($product->stock_quantity) }}</div></td>
@@ -83,12 +83,12 @@
                 </div>
             </div>
 
-            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col h-full">
                 <div>
                     <h2 class="text-base font-semibold text-slate-900">Category exposure</h2>
                     <p class="text-xs text-slate-500 mt-1">Overstock exposure by product category.</p>
                 </div>
-                <div class="mt-4 space-y-2">
+                <div class="mt-4 space-y-2 flex-1 overflow-y-auto max-h-[340px] pr-1 sidebar-scroll">
                     @forelse($categoryBreakdown as $category => $value)
                         <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4">
                             <div class="flex items-center justify-between gap-3">
@@ -110,7 +110,7 @@
     @php
         $overstockJs = $overstockedProducts->map(function($product) {
             return [
-                'name' => $product->name,
+                'name' => $product->product_name ?: $product->name,
                 'sku' => $product->sku,
                 'stock_quantity' => $product->stock_quantity,
                 'reorder_level' => $product->reorder_level,

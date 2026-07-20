@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\InventoryMovement;
 use App\Models\Product;
+use App\Models\ProductCatalog;
+use App\Models\ProductWarehouseStock;
 use App\Models\StockArrivalNotice;
 use App\Models\Warehouse;
 use App\Models\WarehouseShelf;
@@ -15,12 +17,18 @@ class WarehouseManagementController extends Controller
 {
     public function index()
     {
+        // Load all products (not filtered by warehouse stock)
         $products = Product::where('is_archived', false)
-            ->orderBy('category')
-            ->orderBy('name')
+            ->with('productCatalog')
+            ->with('warehouseStocks')
+            ->orderBy('description')
+            ->orderBy('brand')
             ->get();
 
-        $warehouses = Warehouse::active()->orderBy('name')->get();
+        $warehouses = Warehouse::active()
+            ->where('name', '!=', 'SHOP')
+            ->orderBy('name')
+            ->get();
         $totalWarehouses = $warehouses->count();
 
         if ($totalWarehouses === 0) {
@@ -49,37 +57,151 @@ class WarehouseManagementController extends Controller
                 return $group->keyBy('slot_index');
             });
 
-        // Distribute product quantities across warehouses by splitting each product's stock
+        // Use actual warehouse stock data from product_warehouse_stock table
         $warehouseAssignments = [];
         for ($i = 0; $i < $totalWarehouses; $i++) {
             $warehouseAssignments[] = collect();
         }
 
+        // Map warehouse names to indices
+        $warehouseNameToIndex = [];
+        foreach ($warehouses as $index => $warehouse) {
+            $warehouseNameToIndex[$warehouse->name] = $index;
+        }
+
         foreach ($products as $product) {
-            $qty = (int) $product->stock_quantity;
-            if ($qty <= 0) {
-                // still include product as zero in first warehouse to keep listing consistent
-                $warehouseAssignments[0]->push($product);
-                continue;
+            // Always prioritize ProductCatalog data for correct product information
+            if ($product->productCatalog) {
+                $productDescription = $product->productCatalog->product_description;
+                $brand = $product->productCatalog->brand;
+                $sku = $product->productCatalog->sku;
+                // Use product_name from catalog as compatible model (it contains the motorcycle model)
+                $compatibility = $product->productCatalog->product_name;
+            } else {
+                // Fallback to Product data if no catalog relationship
+                $productDescription = $product->description ?? $product->product_name ?? $product->name;
+                $brand = $product->brand;
+                $sku = $product->sku;
+                $compatibility = $product->compatibility;
             }
-            $base = intdiv($qty, $totalWarehouses);
-            $rem = $qty % $totalWarehouses;
-            for ($i = 0; $i < $totalWarehouses; $i++) {
-                $assignQty = $base + ($i < $rem ? 1 : 0);
-                if ($assignQty > 0) {
-                    $warehouseAssignments[$i]->push((object) [
+            
+            // Get warehouse stocks for this product
+            $warehouseStocks = $product->warehouseStocks ?? [];
+            
+            // Distribute based on actual warehouse stocks
+            foreach ($warehouseStocks as $stock) {
+                if ($stock->warehouse === 'SHOP') {
+                    continue; // Skip SHOP products
+                }
+                
+                $warehouseName = $stock->warehouse;
+                $warehouseIndex = $warehouseNameToIndex[$warehouseName] ?? -1;
+                
+                if ($warehouseIndex >= 0 && $stock->quantity > 0) {
+                    $warehouseAssignments[$warehouseIndex]->push((object) [
                         'id' => $product->id,
-                        'sku' => $product->sku,
-                        'name' => $product->name,
-                        'stock_quantity' => $assignQty,
-                        'unit_price' => $product->unit_price,
-                        'category' => $product->category,
+                        'sku' => $sku,
+                        'name' => $productDescription,
+                        'description' => $productDescription,
+                        'brand' => $brand,
+                        'compatible_model' => $compatibility,
+                        'stock_quantity' => $stock->quantity,
+                        'unit_price' => $product->unit_price ?? 0,
+                        'category' => $productDescription,
                     ]);
                 }
             }
         }
 
-        $warehousesData = $warehouses->map(function ($warehouse, $warehouseIndex) use ($warehouseAssignments, $savedShelvesByWarehouse) {
+        // Build a catalog lookup map for server-side shelf product enrichment.
+        // Keyed by: lowercase SKU, lowercase product_description, lowercase product_name (compatible model).
+        $catalogBySku         = [];  // sku_lower => catalog data
+        $catalogByDescription = [];  // description_lower => catalog data (for name-based fallback)
+        $catalogByCompatible  = [];  // compatible_model_lower => catalog data (for name-based fallback)
+
+        foreach ($products as $p) {
+            if ($p->productCatalog) {
+                $cat = $p->productCatalog;
+                $entry = [
+                    'description'      => $cat->product_description,
+                    'brand'            => $cat->brand,
+                    'compatible_model' => $cat->product_name,
+                    'sku'              => $cat->sku,
+                    'price'            => $p->unit_price ?? 0,
+                ];
+                if ($cat->sku) {
+                    $catalogBySku[strtolower(trim($cat->sku))] = $entry;
+                }
+                if ($cat->product_description) {
+                    $catalogByDescription[strtolower(trim($cat->product_description))] = $entry;
+                }
+                if ($cat->product_name) {
+                    $catalogByCompatible[strtolower(trim($cat->product_name))] = $entry;
+                }
+            } else {
+                $sku  = $p->sku;
+                $desc = $p->description ?? $p->product_name ?? $p->name;
+                $entry = [
+                    'description'      => $desc,
+                    'brand'            => $p->brand,
+                    'compatible_model' => $p->compatibility,
+                    'sku'              => $sku,
+                    'price'            => $p->unit_price ?? 0,
+                ];
+                if ($sku) {
+                    $catalogBySku[strtolower(trim($sku))] = $entry;
+                }
+            }
+        }
+
+        /**
+         * Enrich a single stored shelf-product array with full catalog data.
+         * Priority: exact SKU match → partial SKU match → name matches compatible_model → name matches description.
+         */
+        $enrichProduct = function (array $storedProduct) use ($catalogBySku, $catalogByDescription, $catalogByCompatible): array {
+            $storedSku  = strtolower(trim($storedProduct['sku'] ?? ''));
+            $storedName = strtolower(trim($storedProduct['name'] ?? $storedProduct['description'] ?? ''));
+
+            $cat = null;
+
+            // 1. Exact SKU match
+            if ($storedSku && isset($catalogBySku[$storedSku])) {
+                $cat = $catalogBySku[$storedSku];
+            }
+
+            // 2. Partial SKU match (catalog SKU contains stored SKU or vice-versa)
+            if (!$cat && $storedSku && strlen($storedSku) > 3) {
+                foreach ($catalogBySku as $catSku => $entry) {
+                    if (str_contains($catSku, $storedSku) || str_contains($storedSku, $catSku)) {
+                        $cat = $entry;
+                        break;
+                    }
+                }
+            }
+
+            // 3. Stored name matches a product's compatible_model (e.g. "SNIPER 150/155")
+            if (!$cat && $storedName && isset($catalogByCompatible[$storedName])) {
+                $cat = $catalogByCompatible[$storedName];
+            }
+
+            // 4. Stored name matches a product's description (e.g. "CALIPER")
+            if (!$cat && $storedName && isset($catalogByDescription[$storedName])) {
+                $cat = $catalogByDescription[$storedName];
+            }
+
+            if ($cat) {
+                return array_merge($storedProduct, [
+                    'description'      => $cat['description'],
+                    'brand'            => $cat['brand'],
+                    'compatible_model' => $cat['compatible_model'],
+                    'sku'              => $cat['sku'] ?: ($storedProduct['sku'] ?? ''),
+                ]);
+            }
+
+            return $storedProduct;
+        };
+
+        $warehousesData = $warehouses->map(function ($warehouse, $warehouseIndex) use ($warehouseAssignments, $savedShelvesByWarehouse, $enrichProduct) {
             $warehouseProducts = $warehouseAssignments[$warehouseIndex]->values();
             $chunkedProducts = $warehouseProducts->chunk(10);
             $warehouseSavedShelves = $savedShelvesByWarehouse->get($warehouse->id, collect());
@@ -89,32 +211,48 @@ class WarehouseManagementController extends Controller
 
             // Only include saved (non-archived) shelves as locations.
             // Do not show default/empty shelves — user will add shelves manually.
-            $locations = $visibleSavedShelves->map(function ($shelf) {
+            $locations = $visibleSavedShelves->map(function ($shelf) use ($enrichProduct) {
+                $products = $shelf->products ?? [];
+                if (is_string($products)) {
+                    $products = json_decode($products, true);
+                }
+                if (!is_array($products)) {
+                    $products = [];
+                }
+                $enrichedProducts = array_map($enrichProduct, array_values($products));
                 return [
-                    'name' => $shelf->name,
-                    'products' => array_values($shelf->products ?? []),
-                    'archived' => $shelf->archived,
+                    'name'       => $shelf->name,
+                    'products'   => $enrichedProducts,
+                    'archived'   => $shelf->archived,
                     'slot_index' => $shelf->slot_index,
                 ];
             })->values()->toArray();
 
             $archivedShelves = $warehouseSavedShelves->filter(function ($shelf) {
                 return $shelf->archived;
-            })->sortBy('slot_index')->map(function ($shelf) {
+            })->sortBy('slot_index')->map(function ($shelf) use ($enrichProduct) {
+                $products = $shelf->products ?? [];
+                if (is_string($products)) {
+                    $products = json_decode($products, true);
+                }
+                if (!is_array($products)) {
+                    $products = [];
+                }
+                $enrichedProducts = array_map($enrichProduct, array_values($products));
                 return [
-                    'name' => $shelf->name,
-                    'products' => array_values($shelf->products ?? []),
-                    'archived' => true,
+                    'name'       => $shelf->name,
+                    'products'   => $enrichedProducts,
+                    'archived'   => true,
                     'slot_index' => $shelf->slot_index,
                 ];
             })->values()->toArray();
 
             return [
-                'id' => $warehouse->id,
-                'name' => $warehouse->name,
-                'code' => $warehouse->code,
-                'locations' => $locations,
-                'archivedShelves' => $archivedShelves,
+                'id'             => $warehouse->id,
+                'name'           => $warehouse->name,
+                'code'           => $warehouse->code,
+                'locations'      => $locations,
+                'archivedShelves'=> $archivedShelves,
             ];
         })->toArray();
 
@@ -138,13 +276,31 @@ class WarehouseManagementController extends Controller
             'warehouses' => $warehousesData,
             'pendingArrivals' => $pendingArrivals,
             'products' => $products->map(function ($product) {
+                // Always prioritize ProductCatalog data for correct product information
+                if ($product->productCatalog) {
+                    $productDescription = $product->productCatalog->product_description;
+                    $brand = $product->productCatalog->brand;
+                    $sku = $product->productCatalog->sku;
+                    // Use product_name from catalog as compatible model (it contains the motorcycle model)
+                    $compatibility = $product->productCatalog->product_name;
+                } else {
+                    // Fallback to Product data if no catalog relationship
+                    $productDescription = $product->description ?? $product->product_name ?? $product->name;
+                    $brand = $product->brand;
+                    $sku = $product->sku;
+                    $compatibility = $product->compatibility;
+                }
+                
                 return [
                     'id' => $product->id,
-                    'sku' => $product->sku,
-                    'name' => $product->name,
-                    'qty' => $product->stock_quantity,
-                    'price' => (float) $product->unit_price,
-                    'category' => $product->category,
+                    'sku' => $sku,
+                    'name' => $productDescription,
+                    'description' => $productDescription,
+                    'brand' => $brand,
+                    'compatible_model' => $compatibility,
+                    'qty' => $product->stock_quantity ?? 1,
+                    'price' => $product->unit_price ?? 0,
+                    'category' => $productDescription,
                 ];
             }),
         ]);
@@ -157,10 +313,13 @@ class WarehouseManagementController extends Controller
                 'warehouse_id' => 'required|integer|exists:warehouses,id',
                 'slot_index' => 'required|integer|min:0',
                 'name' => 'required|string|max:255',
+                'capacity' => 'nullable|integer|min:1|max:100',
                 'products' => 'nullable|array',
-                    'products.*.product_id' => 'nullable|integer|exists:products,id',
+                    'products.*.id' => 'nullable|integer|exists:products,id',
                     'products.*.sku' => 'nullable|string|max:255',
-                    'products.*.name' => 'nullable|string|max:255',
+                    'products.*.description' => 'nullable|string|max:255',
+                    'products.*.brand' => 'nullable|string|max:255',
+                    'products.*.compatible_model' => 'nullable|string|max:255',
                     'products.*.qty' => 'nullable|integer|min:0',
                     'products.*.price' => 'nullable|numeric|min:0',
                 'archived' => 'nullable|boolean',
@@ -171,6 +330,7 @@ class WarehouseManagementController extends Controller
 
             $shelfName = $request->input('name');
             $slotIndex = $request->input('slot_index');
+            $capacity = $request->input('capacity', 10);
             $duplicateShelf = WarehouseShelf::where('warehouse_id', $warehouseId)
                 ->where('name', $shelfName)
                 ->where('slot_index', '<>', $slotIndex)
@@ -183,6 +343,52 @@ class WarehouseManagementController extends Controller
                 ], 422);
             }
 
+            // Enrich product data with full product information, and write back edits
+            $products = $request->input('products', []);
+            foreach ($products as $index => $shelfProduct) {
+                if (isset($shelfProduct['id'])) {
+                    $product = Product::with('productCatalog')->find($shelfProduct['id']);
+                    if ($product) {
+                        // Always prioritize ProductCatalog data for correct product information
+                        if ($product->productCatalog) {
+                            // Use user-edited values if provided, otherwise fall back to catalog
+                            $productDescription = !empty($shelfProduct['description']) ? $shelfProduct['description'] : $product->productCatalog->product_description;
+                            $brand              = !empty($shelfProduct['brand'])        ? $shelfProduct['brand']        : $product->productCatalog->brand;
+                            $sku                = !empty($shelfProduct['sku'])          ? $shelfProduct['sku']          : $product->productCatalog->sku;
+                            $compatibility      = !empty($shelfProduct['compatible_model']) ? $shelfProduct['compatible_model'] : $product->productCatalog->product_name;
+
+                            // Write back any user edits to the ProductCatalog
+                            $catalogUpdates = [];
+                            if (!empty($shelfProduct['description']))       $catalogUpdates['product_description'] = $shelfProduct['description'];
+                            if (!empty($shelfProduct['brand']))             $catalogUpdates['brand']               = $shelfProduct['brand'];
+                            if (!empty($shelfProduct['compatible_model']))  $catalogUpdates['product_name']        = $shelfProduct['compatible_model'];
+                            if (!empty($shelfProduct['sku']))               $catalogUpdates['sku']                 = $shelfProduct['sku'];
+                            if (!empty($catalogUpdates)) {
+                                $product->productCatalog->update($catalogUpdates);
+                            }
+                        } else {
+                            // Fallback to Product data if no catalog relationship
+                            $productDescription = !empty($shelfProduct['description']) ? $shelfProduct['description'] : ($product->description ?? $product->product_name ?? $product->name);
+                            $brand              = !empty($shelfProduct['brand'])        ? $shelfProduct['brand']        : $product->brand;
+                            $sku                = !empty($shelfProduct['sku'])          ? $shelfProduct['sku']          : $product->sku;
+                            $compatibility      = !empty($shelfProduct['compatible_model']) ? $shelfProduct['compatible_model'] : $product->compatibility;
+                        }
+
+                        // Update Product price and qty if provided
+                        $productDirty = false;
+                        if (isset($shelfProduct['price']))  { $product->unit_price      = $shelfProduct['price'];  $productDirty = true; }
+                        if (isset($shelfProduct['qty']))    { $product->stock_quantity   = $shelfProduct['qty'];   $productDirty = true; }
+                        if ($productDirty) $product->save();
+
+                        $products[$index]['description']      = $productDescription;
+                        $products[$index]['brand']            = $brand;
+                        $products[$index]['compatible_model'] = $compatibility;
+                        $products[$index]['sku']              = $sku;
+                        $products[$index]['price']            = $product->unit_price ?? 0;
+                    }
+                }
+            }
+
             $shelf = WarehouseShelf::updateOrCreate(
                 [
                     'warehouse_id' => $warehouseId,
@@ -193,7 +399,8 @@ class WarehouseManagementController extends Controller
                     'warehouse_index' => 0, // Legacy field, kept for compatibility
                     'sort_order' => $slotIndex,
                     'name' => $shelfName,
-                    'products' => array_values($request->input('products', [])),
+                    'capacity' => $capacity,
+                    'products' => array_values($products),
                     'archived' => $request->boolean('archived', false),
                 ]
             );
@@ -215,43 +422,28 @@ class WarehouseManagementController extends Controller
     {
         try {
             $request->validate([
-                'product_id' => 'required|exists:products,id',
+                'product_id' => 'required|exists:product_catalogs,id',
                 'quantity' => 'required|integer|min:1',
                 'unit_price' => 'nullable|numeric|min:0',
                 'notes' => 'nullable|string',
                 'shelf_name' => 'nullable|string|max:255',
             ]);
 
-            $product = Product::findOrFail($request->input('product_id'));
+            $product = ProductCatalog::findOrFail($request->input('product_id'));
             $quantity = (int) $request->input('quantity');
             $unitPrice = $request->input('unit_price');
 
-            $product->stock_quantity += $quantity;
-            if ($unitPrice !== null && $unitPrice !== '') {
-                $product->unit_price = (float) $unitPrice;
-            }
-            $product->save();
-
-            InventoryMovement::create([
-                'product_id' => $product->id,
-                'type' => 'restock',
-                'quantity_change' => $quantity,
-                'unit_price' => $product->unit_price,
-                'supplier_name' => $request->input('shelf_name') ?: 'Warehouse Management',
-                'notes' => $request->input('notes') ?: 'Added via warehouse management',
-                'metadata' => [
-                    'source' => 'warehouse_management',
-                ],
-            ]);
+            // ProductCatalog doesn't have stock_quantity, so we just return success
+            // The warehouse management will track quantities in shelves
 
             return response()->json([
                 'success' => true,
                 'product' => [
                     'id' => $product->id,
                     'sku' => $product->sku,
-                    'name' => $product->name,
-                    'qty' => $product->stock_quantity,
-                    'price' => (float) $product->unit_price,
+                    'name' => $product->product_description,
+                    'qty' => $quantity,
+                    'price' => 0, // ProductCatalog doesn't have unit_price
                 ],
             ]);
         } catch (Throwable $e) {
@@ -485,7 +677,7 @@ class WarehouseManagementController extends Controller
             // Create inventory movement records
             foreach ($transfers as $transfer) {
                 // Try to find the actual product by SKU to get real product_id
-                $product = \App\Models\Product::where('sku', $transfer['sku'])->first();
+                $product = \App\Models\ProductCatalog::where('sku', $transfer['sku'])->first();
                 $actualProductId = $product ? $product->id : null;
 
                 // Only create inventory movement if we have a valid product_id

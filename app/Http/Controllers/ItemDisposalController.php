@@ -10,7 +10,8 @@ class ItemDisposalController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::where('expiry_date', '<=', now())
+        $query = Product::with('warehouseStocks')
+            ->where('expiry_date', '<=', now())
             ->where('disposal_status', '!=', 'Disposed')
             ->where('stock_quantity', '>', 0);
 
@@ -68,13 +69,52 @@ class ItemDisposalController extends Controller
     public function markAsDisposed(Request $request, $id)
     {
         $product = Product::findOrFail($id);
+        
+        // Remove from ProductWarehouseStock
+        \App\Models\ProductWarehouseStock::where('product_id', $product->id)->update(['quantity' => 0]);
+        
+        // Remove from ShopInventory
+        \App\Models\ShopInventory::where('product_id', $product->id)->delete();
+        
+        // Remove from Warehouse Shelves (JSON arrays)
+        $shelves = \Illuminate\Support\Facades\DB::table('warehouse_shelves')->get();
+        foreach ($shelves as $shelf) {
+            $products = json_decode($shelf->products ?? '[]', true);
+            if (!empty($products)) {
+                $newProducts = [];
+                $changed = false;
+                foreach ($products as $p) {
+                    if (isset($p['sku']) && $p['sku'] === $product->sku) {
+                        $changed = true;
+                        continue; // Remove product by skipping
+                    }
+                    $newProducts[] = $p;
+                }
+                if ($changed) {
+                    \Illuminate\Support\Facades\DB::table('warehouse_shelves')
+                        ->where('id', $shelf->id)
+                        ->update(['products' => json_encode($newProducts)]);
+                }
+            }
+        }
+
+        // Add inventory movement log for disposal
+        \App\Models\InventoryMovement::create([
+            'product_id' => $product->id,
+            'type' => 'adjustment',
+            'quantity_change' => -$product->stock_quantity,
+            'from_location' => 'System',
+            'to_location' => 'Disposal',
+            'notes' => "Item disposed. Removed physical stock from all locations.",
+        ]);
+
         $product->update([
             'disposal_status' => 'Disposed',
             'disposal_date_disposed' => now(),
             'stock_quantity' => 0,
         ]);
 
-        return back()->with('success', 'Item marked as disposed.');
+        return back()->with('success', 'Item marked as disposed and physical inventory cleared.');
     }
 
     public function createFromReverseLogistics(Request $request, $reverseLogisticsId)

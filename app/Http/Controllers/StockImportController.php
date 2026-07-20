@@ -350,7 +350,7 @@ class StockImportController extends Controller
      */
     public function getProducts(Request $request)
     {
-        $query = Product::query();
+        $query = Product::with('warehouseStocks');
 
         // Filter by status
         $query->where('is_archived', false);
@@ -365,7 +365,8 @@ class StockImportController extends Controller
                   ->orWhere('product_name', 'like', "%{$search}%")
                   ->orWhere('description', 'like', "%{$search}%")
                   ->orWhere('brand', 'like', "%{$search}%")
-                  ->orWhere('size', 'like', "%{$search}%");
+                  ->orWhere('size', 'like', "%{$search}%")
+                  ->orWhere('compatibility', 'like', "%{$search}%");
             });
         }
 
@@ -375,16 +376,28 @@ class StockImportController extends Controller
             $query->where('category', $category);
         }
 
-        // Apply product name filter
+        // Apply warehouse filter
+        if ($request->has('warehouse') && !empty($request->input('warehouse'))) {
+            $warehouse = $request->input('warehouse');
+            $query->whereHas('warehouseStocks', function($q) use ($warehouse) {
+                $q->where('warehouse', $warehouse)
+                  ->where('quantity', '>', 0);
+            });
+        }
+
+        // Apply product name filter (actually filters by description/category)
         if ($request->has('product_name') && !empty($request->input('product_name'))) {
             $productName = $request->input('product_name');
-            $query->where('product_name', $productName);
+            $query->where(function($q) use ($productName) {
+                $q->where('description', 'like', "%{$productName}%")
+                  ->orWhere('category', 'like', "%{$productName}%");
+            });
         }
 
         // Apply brand filter
         if ($request->has('brand') && !empty($request->input('brand'))) {
             $brand = $request->input('brand');
-            $query->where('brand', $brand);
+            $query->where('brand', 'like', "%{$brand}%");
         }
 
         // Apply size filter
@@ -412,6 +425,11 @@ class StockImportController extends Controller
             $query->whereDate('last_restock_date', $request->input('restock_date'));
         }
 
+        // Apply date_of_stock filter (alias for restock_date)
+        if ($request->has('date_of_stock') && !empty($request->input('date_of_stock'))) {
+            $query->whereDate('last_restock_date', $request->input('date_of_stock'));
+        }
+
         // Apply expiry status filter
         if ($request->has('expiry_status') && !empty($request->input('expiry_status'))) {
             $expiryStatus = $request->input('expiry_status');
@@ -431,8 +449,28 @@ class StockImportController extends Controller
 
         $products = $query->paginate($perPage, ['*'], 'page', $page);
 
+        $formattedProducts = collect($products->items())->map(function ($product) {
+            $productArray = $product->toArray();
+            
+            // Map location quantities from warehouseStocks
+            $productArray['shop_qty'] = 0;
+            $productArray['warehouse_a_qty'] = 0;
+            $productArray['warehouse_b_qty'] = 0;
+            $productArray['warehouse_c_qty'] = 0;
+            
+            if (isset($product->warehouseStocks)) {
+                foreach ($product->warehouseStocks as $stock) {
+                    if ($stock->warehouse === 'SHOP') $productArray['shop_qty'] = $stock->quantity;
+                    elseif ($stock->warehouse === 'Warehouse A') $productArray['warehouse_a_qty'] = $stock->quantity;
+                    elseif ($stock->warehouse === 'Warehouse B') $productArray['warehouse_b_qty'] = $stock->quantity;
+                    elseif ($stock->warehouse === 'Warehouse C') $productArray['warehouse_c_qty'] = $stock->quantity;
+                }
+            }
+            return $productArray;
+        });
+
         return response()->json([
-            'data' => $products->items(),
+            'data' => $formattedProducts,
             'pagination' => [
                 'total' => $products->total(),
                 'per_page' => $products->perPage(),
@@ -440,6 +478,24 @@ class StockImportController extends Controller
                 'last_page' => $products->lastPage(),
             ]
         ]);
+    }
+
+    /**
+     * Get product descriptions from Product Categorization module
+     */
+    public function getProductDescriptions()
+    {
+        $productDescriptions = \App\Models\ProductDescription::active()->get();
+        
+        $descriptions = $productDescriptions->map(function($description) {
+            return [
+                'id' => $description->id,
+                'name' => $description->name,
+                'brands' => $description->brands ?? []
+            ];
+        });
+
+        return response()->json($descriptions);
     }
 
     /**
@@ -597,6 +653,35 @@ class StockImportController extends Controller
             ->whereNull('expiry_date')
             ->count();
 
+        // Warehouse breakdown stats
+        $shopCount = \App\Models\ProductWarehouseStock::where('warehouse', 'SHOP')
+            ->where('quantity', '>', 0)
+            ->whereHas('product', function($q) {
+                $q->where('is_archived', false);
+            })
+            ->sum('quantity');
+
+        $warehouseACount = \App\Models\ProductWarehouseStock::where('warehouse', 'Warehouse A')
+            ->where('quantity', '>', 0)
+            ->whereHas('product', function($q) {
+                $q->where('is_archived', false);
+            })
+            ->sum('quantity');
+
+        $warehouseBCount = \App\Models\ProductWarehouseStock::where('warehouse', 'Warehouse B')
+            ->where('quantity', '>', 0)
+            ->whereHas('product', function($q) {
+                $q->where('is_archived', false);
+            })
+            ->sum('quantity');
+
+        $warehouseCCount = \App\Models\ProductWarehouseStock::where('warehouse', 'Warehouse C')
+            ->where('quantity', '>', 0)
+            ->whereHas('product', function($q) {
+                $q->where('is_archived', false);
+            })
+            ->sum('quantity');
+
         return response()->json([
             'total_items' => $totalItems,
             'total_value' => $totalValue,
@@ -608,6 +693,10 @@ class StockImportController extends Controller
             'expired_count' => $expiredCount,
             'expiring_soon_count' => $expiringSoonCount,
             'non_expiring_count' => $nonExpiringCount,
+            'shop_count' => $shopCount,
+            'warehouse_a_count' => $warehouseACount,
+            'warehouse_b_count' => $warehouseBCount,
+            'warehouse_c_count' => $warehouseCCount,
         ]);
     }
 
@@ -735,8 +824,22 @@ class StockImportController extends Controller
                 ], 200);
             }
 
+            $previousPrice = $product->unit_price;
             $product->fill($payload);
             $product->save();
+
+            if (array_key_exists('unit_price', $payload) && $previousPrice !== $product->unit_price) {
+                InventoryMovement::create([
+                    'product_id' => $product->id,
+                    'type' => 'price_update',
+                    'quantity_change' => 0,
+                    'unit_price' => $product->unit_price,
+                    'notes' => "Price updated from ₱{$previousPrice} to ₱{$product->unit_price}",
+                    'metadata' => [
+                        'old_price' => $previousPrice,
+                    ],
+                ]);
+            }
 
             return response()->json([
                 'success' => true,
@@ -951,6 +1054,41 @@ class StockImportController extends Controller
                 'success' => false,
                 'message' => 'Failed to delete product: ' . $e->getMessage(),
             ], 500);
+        }
+    }
+
+    /**
+     * Get location quantities for a specific product
+     */
+    public function getLocationQuantities($productId)
+    {
+        try {
+            $product = Product::findOrFail($productId);
+            $locationStocks = \App\Models\ProductWarehouseStock::where('product_id', $productId)->get();
+            
+            $quantities = [
+                'SHOP' => 0,
+                'Warehouse A' => 0,
+                'Warehouse B' => 0,
+                'Warehouse C' => 0,
+            ];
+            
+            foreach ($locationStocks as $stock) {
+                if (isset($quantities[$stock->warehouse])) {
+                    $quantities[$stock->warehouse] = $stock->quantity;
+                }
+            }
+            
+            return response()->json([
+                'success' => true,
+                'data' => $quantities,
+                'total' => $product->stock_quantity,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch location quantities: ' . $e->getMessage(),
+            ], 404);
         }
     }
 }

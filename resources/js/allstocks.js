@@ -5,16 +5,47 @@
 let allProducts = [];
 let currentFilters = {
     search: '',
-    category: '',
+    warehouse: '',
     product_name: '',
     brand: '',
     size: '',
     status: '',
     expiry_status: '',
-    restock_date: ''
+    date_of_stock: ''
 };
 let searchTimeout;
 let currentEditProduct = null;
+
+// Get warehouse badge with color
+function getWarehouseBadge(warehouse) {
+    const badges = {
+        'Shop': '<span class="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">Shop</span>',
+        'Warehouse A': '<span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">Warehouse A</span>',
+        'Warehouse B': '<span class="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">Warehouse B</span>',
+        'Warehouse C': '<span class="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">Warehouse C</span>',
+    };
+    return badges[warehouse] || `<span class="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">${warehouse}</span>`;
+}
+
+// Get location summary from warehouse stocks
+function getLocationSummary(product) {
+    if (!product.warehouse_stocks || product.warehouse_stocks.length === 0) {
+        return '<span class="text-red-500">No Location</span>';
+    }
+
+    const locations = product.warehouse_stocks
+        .filter(stock => stock.quantity > 0)
+        .map(stock => {
+            const badge = getWarehouseBadge(stock.warehouse);
+            return `${badge} (${stock.quantity})`;
+        });
+
+    if (locations.length === 0) {
+        return '<span class="text-red-500">No Stock</span>';
+    }
+
+    return locations.join('<br>');
+}
 
 function setEditFieldError(fieldId, message) {
     const field = document.getElementById(fieldId);
@@ -189,28 +220,49 @@ async function loadProductsForSelect() {
 // Load filter options (Product Name, Brand, Size)
 async function loadFilterOptions() {
     try {
-        const response = await fetch(window.AllStocks.routes.apiProducts + '?per_page=1000');
-        const result = await response.json();
+        // Load product descriptions from Product Categorization module
+        const descriptionsResponse = await fetch(window.AllStocks.routes.apiProductDescriptions);
+        const descriptionsResult = await descriptionsResponse.json();
+        
+        // Load products for brands and sizes
+        const productsResponse = await fetch(window.AllStocks.routes.apiProducts + '?per_page=1000');
+        const productsResult = await productsResponse.json();
 
-        let productNames = new Set();
         let brands = new Set();
         let sizes = new Set();
+        
+        // Store product name to brands mapping from Product Categorization
+        window.productNameToBrands = {};
 
-        if (result.data && result.data.length > 0) {
-            result.data.forEach(product => {
-                if (product.product_name) productNames.add(product.product_name);
-                if (product.brand) brands.add(product.brand);
+        let productNames = new Set();
+        
+        if (descriptionsResult && descriptionsResult.length > 0) {
+            descriptionsResult.forEach(description => {
+                window.productNameToBrands[description.name] = new Set(description.brands || []);
+                description.brands.forEach(brand => brands.add(brand));
+                productNames.add(description.name);
+            });
+        }
+
+        if (productsResult.data && productsResult.data.length > 0) {
+            productsResult.data.forEach(product => {
                 if (product.size) sizes.add(product.size);
+                if (product.brand) brands.add(product.brand);
+                const name = product.product_name || product.name;
+                if (name) productNames.add(name);
             });
         }
 
         // Populate Product Name dropdown
         const productNameSelect = document.getElementById('productNameFilter');
         if (productNameSelect) {
-            productNames.forEach(name => {
+            Array.from(productNames).sort().forEach(name => {
                 const option = document.createElement('option');
                 option.value = name;
                 option.textContent = name;
+                if (window.productNameToBrands && window.productNameToBrands[name]) {
+                    option.dataset.brands = JSON.stringify(Array.from(window.productNameToBrands[name]));
+                }
                 productNameSelect.appendChild(option);
             });
         }
@@ -218,6 +270,8 @@ async function loadFilterOptions() {
         // Populate Brand dropdown
         const brandSelect = document.getElementById('brandFilter');
         if (brandSelect) {
+            // Store original brand options for restoring
+            window.originalBrandOptions = Array.from(brands).sort();
             Array.from(brands).sort().forEach(brand => {
                 const option = document.createElement('option');
                 option.value = brand;
@@ -241,6 +295,55 @@ async function loadFilterOptions() {
     }
 }
 
+// Update brand dropdown based on selected product description
+function updateBrandDropdown() {
+    const productNameFilter = document.getElementById('productNameFilter');
+    const brandFilter = document.getElementById('brandFilter');
+    
+    if (!productNameFilter || !brandFilter) return;
+
+    const selectedOption = productNameFilter.options[productNameFilter.selectedIndex];
+    let brands = [];
+
+    if (selectedOption.dataset.brands) {
+        try {
+            brands = JSON.parse(selectedOption.dataset.brands);
+        } catch (e) {
+            console.error('Error parsing brands:', e);
+            brands = [];
+        }
+    }
+
+    // Clear brand dropdown
+    brandFilter.innerHTML = '';
+
+    // Always add "All Brands" option
+    const allBrandsOption = document.createElement('option');
+    allBrandsOption.value = '';
+    allBrandsOption.textContent = 'All Brands';
+    brandFilter.appendChild(allBrandsOption);
+
+    if (productNameFilter.value !== '' && brands.length > 0) {
+        // Add only brands that belong to the selected product description
+        brands.forEach(brand => {
+            const option = document.createElement('option');
+            option.value = brand;
+            option.textContent = brand;
+            brandFilter.appendChild(option);
+        });
+    } else {
+        // If no product description selected, show all brands
+        if (window.originalBrandOptions) {
+            window.originalBrandOptions.forEach(brand => {
+                const option = document.createElement('option');
+                option.value = brand;
+                option.textContent = brand;
+                brandFilter.appendChild(option);
+            });
+        }
+    }
+}
+
 // Auto-filter with debounce
 function performSearch() {
     currentPage = 1;
@@ -250,11 +353,11 @@ function performSearch() {
 function resetFilters() {
     const searchInput = document.getElementById('searchInput');
     if (searchInput) searchInput.value = '';
-    ['categoryFilter','productNameFilter','brandFilter','sizeFilter','statusFilter','expiryStatusFilter','restockDateFilter'].forEach(id => {
+    ['warehouseFilter','productNameFilter','brandFilter','sizeFilter','statusFilter','expiryStatusFilter','dateOfStockFilter'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
-    currentFilters = { search: '', category: '', product_name: '', brand: '', size: '', status: '', expiry_status: '', restock_date: '' };
+    currentFilters = { search: '', warehouse: '', product_name: '', brand: '', size: '', status: '', expiry_status: '', date_of_stock: '' };
     currentPage = 1;
     loadProducts(1);
 }
@@ -272,10 +375,25 @@ function attachUIEvents() {
         });
     }
 
+    const warehouseEl = document.getElementById('warehouseFilter');
+    if (warehouseEl) warehouseEl.addEventListener('change', function(e){ currentFilters.warehouse = e.target.value; performSearch(); });
+    
     const categoryEl = document.getElementById('categoryFilter');
-    if (categoryEl) categoryEl.addEventListener('change', function(e){ currentFilters.category = e.target.value; performSearch(); });
+    if (categoryEl) {
+        categoryEl.addEventListener('change', function(e) {
+            currentFilters.category = e.target.value;
+            renderCategoryChips();
+            performSearch();
+        });
+    }
     const productNameEl = document.getElementById('productNameFilter');
-    if (productNameEl) productNameEl.addEventListener('change', function(e){ currentFilters.product_name = e.target.value; performSearch(); });
+    if (productNameEl) productNameEl.addEventListener('change', function(e){ 
+        updateBrandDropdown();
+        currentFilters.product_name = e.target.value;
+        currentFilters.brand = ''; // Reset brand when product name changes
+        document.getElementById('brandFilter').value = '';
+        performSearch(); 
+    });
     const brandEl = document.getElementById('brandFilter');
     if (brandEl) brandEl.addEventListener('change', function(e){ currentFilters.brand = e.target.value; performSearch(); });
     const sizeEl = document.getElementById('sizeFilter');
@@ -284,8 +402,8 @@ function attachUIEvents() {
     if (statusEl) statusEl.addEventListener('change', function(e){ currentFilters.status = e.target.value; performSearch(); });
     const expiryStatusEl = document.getElementById('expiryStatusFilter');
     if (expiryStatusEl) expiryStatusEl.addEventListener('change', function(e){ currentFilters.expiry_status = e.target.value; performSearch(); });
-    const restockDateEl = document.getElementById('restockDateFilter');
-    if (restockDateEl) restockDateEl.addEventListener('change', function(e){ currentFilters.restock_date = e.target.value; performSearch(); });
+    const dateOfStockEl = document.getElementById('dateOfStockFilter');
+    if (dateOfStockEl) dateOfStockEl.addEventListener('change', function(e){ currentFilters.date_of_stock = e.target.value; performSearch(); });
 
     const addStockBtn = document.getElementById('addStockBtn');
     if (addStockBtn) addStockBtn.addEventListener('click', openAddStockModal);
@@ -529,18 +647,22 @@ async function loadStats() {
         const totalProductsEl = document.getElementById('stat-total-products');
         const totalValueEl = document.getElementById('stat-total-value');
         const lowStockEl = document.getElementById('stat-low-stock');
-        const activeItemsEl = document.getElementById('stat-active-items');
-        const outOfStockEl = document.getElementById('stat-out-of-stock');
         const expiringSoonEl = document.getElementById('stat-expiring-soon');
-        const expiredEl = document.getElementById('stat-expired');
+        const shopEl = document.getElementById('stat-shop');
+        const warehouseAEl = document.getElementById('stat-warehouse-a');
+        const warehouseBEl = document.getElementById('stat-warehouse-b');
+        const warehouseCEl = document.getElementById('stat-warehouse-c');
 
         if (totalProductsEl) totalProductsEl.textContent = Number(stats.total_items || 0).toLocaleString();
-        if (totalValueEl) totalValueEl.textContent = '₱' + (Number(stats.total_value || 0) >= 1000000 ? (Number(stats.total_value) / 1000000).toFixed(1) + 'M' : (Number(stats.total_value) / 1000).toFixed(1) + 'K');
+        if (totalValueEl) totalValueEl.textContent = '₱' + Number(stats.total_value || 0).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2});
         if (lowStockEl) lowStockEl.textContent = Number(stats.low_stock_count || 0).toLocaleString();
-        if (activeItemsEl) activeItemsEl.textContent = Number(stats.active_items || 0).toLocaleString();
-        if (outOfStockEl) outOfStockEl.textContent = Number(stats.out_of_stock_count || 0).toLocaleString();
         if (expiringSoonEl) expiringSoonEl.textContent = Number(stats.expiring_soon_count || 0).toLocaleString();
-        if (expiredEl) expiredEl.textContent = Number(stats.expired_count || 0).toLocaleString();
+        
+        // Warehouse breakdown stats
+        if (shopEl) shopEl.textContent = Number(stats.shop_count || 0).toLocaleString();
+        if (warehouseAEl) warehouseAEl.textContent = Number(stats.warehouse_a_count || 0).toLocaleString();
+        if (warehouseBEl) warehouseBEl.textContent = Number(stats.warehouse_b_count || 0).toLocaleString();
+        if (warehouseCEl) warehouseCEl.textContent = Number(stats.warehouse_c_count || 0).toLocaleString();
     } catch (error) {
         console.error('Error loading stats:', error);
     }
@@ -559,7 +681,7 @@ async function loadMovements() {
 
         const response = await fetch(window.AllStocks.routes.apiMovements);
         const result = await response.json();
-        
+
         movementsData = result.data || [];
         renderMovements();
     } catch (error) {
@@ -572,7 +694,7 @@ function renderMovements() {
     const paginationInfo = document.getElementById('movementPaginationInfo');
     const prevBtn = document.querySelector('.movement-prev');
     const nextBtn = document.querySelector('.movement-next');
-    
+
     if (!tbody) return;
 
     // Filter by date range
@@ -583,18 +705,18 @@ function renderMovements() {
         const yesterday = new Date(now);
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayStr = yesterday.toISOString().split('T')[0];
-        
+
         const last7Days = new Date(now);
         last7Days.setDate(last7Days.getDate() - 7);
         const last7DaysStr = last7Days.toISOString().split('T')[0];
-        
+
         const last30Days = new Date(now);
         last30Days.setDate(last30Days.getDate() - 30);
         const last30DaysStr = last30Days.toISOString().split('T')[0];
 
         filteredMovements = movementsData.filter(entry => {
             const entryDate = new Date(entry.created_at).toISOString().split('T')[0];
-            
+
             switch(movementsDateFilter) {
                 case 'today':
                     return entryDate === today;
@@ -613,7 +735,7 @@ function renderMovements() {
     // Pagination
     const totalPages = Math.max(1, Math.ceil(filteredMovements.length / movementsPerPage));
     movementsPage = Math.min(Math.max(1, movementsPage), totalPages);
-    
+
     const startIndex = (movementsPage - 1) * movementsPerPage;
     const endIndex = startIndex + movementsPerPage;
     const paginatedMovements = filteredMovements.slice(startIndex, endIndex);
@@ -654,60 +776,250 @@ async function loadProducts(page = 1) {
         let url = window.AllStocks.routes.apiProducts + `?page=${page}&per_page=${perPage}`;
 
         if (currentFilters.search) url += `&search=${encodeURIComponent(currentFilters.search)}`;
-        if (currentFilters.category) url += `&category=${encodeURIComponent(currentFilters.category)}`;
+        if (currentFilters.warehouse) url += `&warehouse=${encodeURIComponent(currentFilters.warehouse)}`;
         if (currentFilters.product_name) url += `&product_name=${encodeURIComponent(currentFilters.product_name)}`;
         if (currentFilters.brand) url += `&brand=${encodeURIComponent(currentFilters.brand)}`;
         if (currentFilters.size) url += `&size=${encodeURIComponent(currentFilters.size)}`;
         if (currentFilters.status) url += `&status=${encodeURIComponent(currentFilters.status)}`;
         if (currentFilters.expiry_status) url += `&expiry_status=${encodeURIComponent(currentFilters.expiry_status)}`;
-        if (currentFilters.restock_date) url += `&restock_date=${encodeURIComponent(currentFilters.restock_date)}`;
+        if (currentFilters.date_of_stock) url += `&date_of_stock=${encodeURIComponent(currentFilters.date_of_stock)}`;
 
         const response = await fetch(url);
         const result = await response.json();
 
-        const tbody = document.querySelector('table tbody');
+        const tbody = document.getElementById('productsTableBody');
         if (!tbody) return;
         tbody.innerHTML = '';
 
         if (result.data && result.data.length > 0) {
             result.data.forEach(product => {
                 const row = document.createElement('tr');
+                row.className = 'table-row-hover transition cursor-pointer';
+                row.onclick = () => toggleRow(product.id);
+                
+                const stockLevel = product.stock_quantity || 0;
+                const reorderLevel = product.reorder_level || 10;
+                const isLowStock = stockLevel <= reorderLevel && stockLevel > 0;
+                const isOutOfStock = stockLevel <= 0;
+                
+                // Calculate VAT breakdown (assuming 12% VAT)
+                const unitPrice = parseFloat(product.unit_price || 0);
+                const vatAmount = unitPrice * 0.12;
+                const priceWithoutVat = unitPrice - vatAmount;
+                
+                // Status badge
+                let statusBadge = '';
+                if (product.is_archived) {
+                    statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-800">Archived</span>';
+                } else if (!product.is_active) {
+                    statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">Inactive</span>';
+                } else if (isOutOfStock) {
+                    statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">No Stock</span>';
+                } else if (isLowStock) {
+                    statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">Low Stock</span>';
+                } else {
+                    statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-800">Available</span>';
+                }
+
                 row.innerHTML = `
-                    <td class="px-3 py-2 w-6">
-                        <input type="checkbox" class="product-checkbox rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 cursor-pointer" data-product-id="${product.id}" />
+                    <td class="px-4 py-3 sticky-first-col bg-white" onclick="event.stopPropagation()">
+                        <input type="checkbox" class="product-checkbox rounded border-slate-300 text-cyan-600 focus:ring-cyan-500" data-product-id="${product.id}" />
                     </td>
-                    <td class="px-3 py-2 text-slate-900 font-medium">${product.name}</td>
-                    <td class="px-3 py-2 text-slate-600">${product.product_name || 'Uncategorized'}</td>
-                    <td class="px-3 py-2 text-slate-600">${`KCC_${(product.sku || product.name || '').replace(/[^A-Za-z0-9\-\+]/g, '')}`}</td>
-                    <td class="px-3 py-2 text-slate-600">${product.brand || '-'}</td>
-                    <td class="px-3 py-2 text-slate-600">${product.size || '-'}</td>
-                    <td class="px-3 py-2 text-slate-600">${product.color || '-'}</td>
-                    <td class="px-3 py-2 text-center font-semibold ${product.stock_quantity === 0 ? 'text-red-600' : 'text-slate-900'}">${product.stock_quantity}</td>
-                    <td class="px-3 py-2 text-right text-slate-900">
-                        <div class="inline-flex items-center justify-end gap-2">
-                            <span class="unit-price-text">₱${parseFloat(product.unit_price).toFixed(2)}</span>
-                            <input data-product-id="${product.id}" class="unit-price-input hidden w-28 px-2 py-1 rounded border border-slate-200 text-right text-sm" value="${parseFloat(product.unit_price).toFixed(2)}" />
+                    <td class="px-4 py-3">
+                        <div class="flex items-center gap-3">
+                            <div class="inline-qr-code shrink-0" data-sku="${product.sku || ''}" style="width: 32px; height: 32px;"></div>
+                            <div>
+                                <div class="font-semibold text-slate-900">${product.product_name || product.name || 'N/A'}</div>
+                                <div class="text-xs text-slate-500 flex items-center gap-1">
+                                    <span class="font-mono text-slate-600 font-medium">${product.sku || 'N/A'}</span>
+                                    <span>&bull;</span>
+                                    <span>${product.brand || '-'}</span>
+                                </div>
+                            </div>
                         </div>
                     </td>
-                    <td class="px-3 py-2 text-slate-600">${product.supplier_name || '-'}</td>
-                    <td class="px-3 py-2 text-slate-600">${product.last_restock_date || '-'}</td>
-                    <td class="px-3 py-2 text-slate-600">${product.expiry_date ? `${product.expiry_date} • ${product.expiry_status_label || 'Status'}` : 'Non-expiring'}</td>
-                    <td class="px-3 py-2 text-center">
-                        <a href="javascript:void(0)" onclick="event.preventDefault(); openEditModal(${product.id});" class="text-cyan-600 hover:text-cyan-700 text-xs font-medium cursor-pointer z-50 relative">Edit</a>
+                    <td class="px-4 py-3 text-sm text-slate-700">${product.category || '-'}</td>
+                    <td class="px-4 py-3">
+                        <div class="flex flex-col gap-1 text-sm font-medium text-slate-900">
+                            ${getLocationSummary(product)}
+                        </div>
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="text-sm font-medium text-slate-900">${stockLevel} / ${reorderLevel}</div>
+                        <div class="w-24 bg-slate-100 rounded-full h-1.5 mt-1 overflow-hidden">
+                            <div class="${isLowStock || isOutOfStock ? 'bg-orange-500' : 'bg-emerald-500'} h-full rounded-full" style="width: ${Math.min(100, (stockLevel / Math.max(1, reorderLevel)) * 100)}%"></div>
+                        </div>
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="text-sm font-semibold text-slate-900">₱${unitPrice.toFixed(2)}</div>
+                    </td>
+                    <td class="px-4 py-3 text-center">${statusBadge}</td>
+                    <td class="px-4 py-3 text-right" onclick="event.stopPropagation()">
+                        <div class="action-dropdown inline-block relative">
+                            <button onclick="toggleDropdown(${product.id})" class="p-1.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg>
+                            </button>
+                            <div id="dropdown-${product.id}" class="dropdown-menu hidden absolute right-0 mt-1 w-32 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50 text-left">
+                                <a href="javascript:void(0)" onclick="event.preventDefault(); openEditModal(${product.id});" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Edit</a>
+                                <button onclick="event.preventDefault(); archiveProduct(${product.id});" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Archive</button>
+                            </div>
+                        </div>
                     </td>
                 `;
+                row.onclick = () => {
+                    const stringifiedProduct = JSON.stringify(product).replace(/'/g, "\\'");
+                    openViewDetailsModal(JSON.parse(stringifiedProduct));
+                };
                 tbody.appendChild(row);
             });
         } else {
-            tbody.innerHTML = '<tr><td colspan="13" class="px-3 py-8 text-center text-slate-500">No products found</td></tr>';
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="px-6 py-12 text-center">
+                        <div class="flex flex-col items-center gap-4">
+                            <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center">
+                                <svg class="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
+                                </svg>
+                            </div>
+                            <p class="text-slate-500 text-lg">No inventory records found.</p>
+                            <button onclick="openAddStockModal()" class="px-6 py-2.5 rounded-lg bg-cyan-600 text-white font-semibold hover:bg-cyan-700 transition">
+                                Add First Stock
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
         }
+
+        document.querySelectorAll('.inline-qr-code:not(.rendered)').forEach(container => {
+            const sku = container.dataset.sku;
+            if (sku && typeof QRCode !== 'undefined') {
+                new QRCode(container, {
+                    text: sku,
+                    width: 36,
+                    height: 36,
+                    colorDark : "#0f172a",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.L
+                });
+            }
+            container.classList.add('rendered');
+        });
 
         currentPage = page;
         updatePagination(result.pagination);
-        attachPriceEditing();
+        updatePaginationDisplay(result.pagination);
+        attachCheckboxListeners();
+        attachDropdownListeners();
     } catch (error) {
         console.error('Error loading products:', error);
     }
+}
+
+// Update pagination display
+function updatePaginationDisplay(pagination) {
+    const showingFrom = document.getElementById('showingFrom');
+    const showingTo = document.getElementById('showingTo');
+    const totalItems = document.getElementById('totalItems');
+    
+    if (showingFrom) showingFrom.textContent = pagination.from || 0;
+    if (showingTo) showingTo.textContent = pagination.to || 0;
+    if (totalItems) totalItems.textContent = pagination.total?.toLocaleString() || 0;
+}
+
+// Attach checkbox listeners for bulk selection
+function attachCheckboxListeners() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.product-checkbox');
+    
+    if (selectAll) {
+        selectAll.addEventListener('change', function() {
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            updateBulkActions();
+        });
+    }
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateBulkActions);
+    });
+}
+
+// Attach dropdown listeners
+function attachDropdownListeners() {
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.action-dropdown')) {
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        }
+    });
+}
+
+// Update bulk actions toolbar
+function updateBulkActions() {
+    const checkboxes = document.querySelectorAll('.product-checkbox:checked');
+    const toolbar = document.getElementById('bulkActionsToolbar');
+    const selectedCount = document.getElementById('selectedCount');
+    
+    if (checkboxes.length > 0) {
+        toolbar.classList.remove('hidden');
+        selectedCount.textContent = checkboxes.length;
+    } else {
+        toolbar.classList.add('hidden');
+        selectedCount.textContent = '0';
+    }
+}
+
+// Clear selection
+function clearSelection() {
+    const checkboxes = document.querySelectorAll('.product-checkbox');
+    const selectAll = document.getElementById('selectAll');
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    
+    if (selectAll) selectAll.checked = false;
+    updateBulkActions();
+}
+
+// Toggle dropdown menu
+function toggleDropdown(id) {
+    const dropdown = document.getElementById('dropdown-' + id);
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        if (menu.id !== 'dropdown-' + id) {
+            menu.classList.remove('show');
+        }
+    });
+    dropdown.classList.toggle('show');
+}
+
+// Toggle row expansion
+function toggleRow(id) {
+    const expandedRow = document.getElementById('expanded-row-' + id);
+    if (expandedRow) {
+        expandedRow.classList.toggle('hidden');
+    }
+}
+
+// Format date to MM/DD/YY with time
+function formatDateWithTime(dateString) {
+    if (!dateString) return '-';
+    
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '-';
+    
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = String(date.getFullYear()).slice(-2);
+    
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    
+    return `${month}/${day}/${year} <span class="text-slate-400">${hours}:${minutes}</span>`;
 }
 
 // Update pagination controls
@@ -717,12 +1029,12 @@ function updatePagination(pagination) {
         console.log('Pagination container not found');
         return;
     }
-    
+
     if (!pagination || !pagination.last_page) {
         console.log('Pagination data not available', pagination);
         return;
     }
-    
+
     let html = `<button onclick="loadProducts(${Math.max(1, currentPage - 1)})" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">← Prev</button>`;
 
     let startPage = Math.max(1, currentPage - 2);
@@ -834,7 +1146,7 @@ function initializeAllStocksPage() {
     // Wire movement pagination buttons
     const movementPrevBtn = document.querySelector('.movement-prev');
     const movementNextBtn = document.querySelector('.movement-next');
-    
+
     if (movementPrevBtn) {
         movementPrevBtn.addEventListener('click', function() {
             if (movementsPage > 1) {
@@ -843,7 +1155,7 @@ function initializeAllStocksPage() {
             }
         });
     }
-    
+
     if (movementNextBtn) {
         movementNextBtn.addEventListener('click', function() {
             const totalPages = Math.ceil(movementsData.length / movementsPerPage);
@@ -899,6 +1211,9 @@ window.generateQRCodes = generateQRCodes;
 window.printQRCodes = printQRCodes;
 window.downloadQRCodes = downloadQRCodes;
 window.updateRestockDates = updateRestockDates;
+window.clearSelection = clearSelection;
+window.toggleDropdown = toggleDropdown;
+window.toggleRow = toggleRow;
 
 // Store current selected products for restock date updates
 let currentSelectedProducts = [];
@@ -906,17 +1221,17 @@ let currentSelectedProducts = [];
 // QR Code Generation Functions
 async function openQRCodeModal() {
     const selectedCheckboxes = document.querySelectorAll('.product-checkbox:checked');
-    
+
     if (selectedCheckboxes.length === 0) {
         alert('Please select at least one product to generate QR codes.');
         return;
     }
-    
+
     // Load all products for QR generation
     try {
         const response = await fetch(window.AllStocks.routes.apiProducts + '?per_page=1000');
         const result = await response.json();
-        
+
         if (result.data && result.data.length > 0) {
             allProducts = result.data;
         }
@@ -925,7 +1240,7 @@ async function openQRCodeModal() {
         alert('Error loading products. Please try again.');
         return;
     }
-    
+
     const selectedProducts = Array.from(selectedCheckboxes).map(cb => {
         const productId = cb.dataset.productId;
         const product = allProducts.find(p => p.id === parseInt(productId));
@@ -937,12 +1252,12 @@ async function openQRCodeModal() {
         return;
     }
 
-    document.getElementById('selectedCount').textContent = selectedProducts.length;
+    document.getElementById('qrSelectedCount').textContent = selectedProducts.length;
     const modal = document.getElementById('qrCodeModal');
-    
+
     // Store selected products for restock date updates
     currentSelectedProducts = selectedProducts;
-    
+
     modal.style.display = 'flex';
     modal.style.visibility = 'visible';
     modal.style.opacity = '1';
@@ -955,25 +1270,25 @@ async function openQRCodeModal() {
     modal.style.zIndex = '99999';
     modal.style.alignItems = 'center';
     modal.style.justifyContent = 'center';
-    
+
     const modalContent = modal.querySelector('div');
     if (modalContent) {
         modalContent.style.display = 'block';
         modalContent.style.visibility = 'visible';
     }
-    
+
     generateQRCodes(selectedProducts);
 }
 
 function generateQRCodes(products) {
     const previewContainer = document.getElementById('qrCodePreview');
     const loadingIndicator = document.getElementById('qrLoading');
-    
+
     if (!previewContainer) {
         console.error('Preview container not found');
         return;
     }
-    
+
     // Show loading indicator
     previewContainer.innerHTML = '';
     if (loadingIndicator) {
@@ -984,7 +1299,7 @@ function generateQRCodes(products) {
     // Generate QR codes with a small delay to allow UI to update
     setTimeout(() => {
         if (loadingIndicator) loadingIndicator.classList.add('hidden');
-        
+
         products.forEach((product) => {
             // Create QR code data with SKU and restock date
             const qrData = JSON.stringify({
@@ -997,11 +1312,11 @@ function generateQRCodes(products) {
             qrCard.className = 'border border-slate-200 rounded-lg p-4 bg-white';
             qrCard.innerHTML = `
                 <div class="flex items-start gap-4">
-                    <div id="qr-${product.id}" class="w-24 h-24 flex items-center justify-center bg-white"></div>
-                    <div class="flex-1">
-                        <h3 class="font-semibold text-slate-900 text-sm">${product.name}</h3>
-                        <p class="text-xs text-slate-600">SKU: ${product.sku}</p>
-                        <p class="text-xs text-slate-600">Restock: ${product.last_restock || 'N/A'}</p>
+                    <div id="qr-${product.id}" class="w-24 h-24 shrink-0 flex-none flex items-center justify-center bg-white overflow-hidden rounded-md"></div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="font-semibold text-slate-900 text-sm truncate" title="${product.product_name || product.name || 'N/A'}">${product.product_name || product.name || 'N/A'}</h3>
+                        <p class="text-xs text-slate-600 truncate" title="${product.sku}">SKU: ${product.sku}</p>
+                        <p class="text-xs text-slate-600">Restock: ${product.last_restock_date ? window.formatDateWithTime ? window.formatDateWithTime(product.last_restock_date) : product.last_restock_date : 'N/A'}</p>
                         <p class="text-xs text-slate-500 mt-1">Scan to add to cart</p>
                     </div>
                 </div>
@@ -1013,10 +1328,10 @@ function generateQRCodes(products) {
             try {
                 const qrElement = document.getElementById(`qr-${product.id}`);
                 if (!qrElement) return;
-                
+
                 // Clear any existing content
                 qrElement.innerHTML = '';
-                
+
                 new QRCode(qrElement, {
                     text: qrData,
                     width: 96,
@@ -1025,14 +1340,20 @@ function generateQRCodes(products) {
                     colorLight: "#ffffff",
                     correctLevel: QRCode.CorrectLevel.M
                 });
-                
-                // Force canvas to be visible
+
+                // Force canvas and image to be visible
                 setTimeout(() => {
                     const canvas = qrElement.querySelector('canvas');
                     if (canvas) {
                         canvas.style.display = 'block';
                         canvas.style.width = '96px';
                         canvas.style.height = '96px';
+                    }
+                    const img = qrElement.querySelector('img');
+                    if (img) {
+                        img.style.display = 'block';
+                        img.style.width = '96px';
+                        img.style.height = '96px';
                     }
                 }, 50);
             } catch (error) {
@@ -1045,29 +1366,29 @@ function generateQRCodes(products) {
 function updateRestockDates() {
     const restockDateInput = document.getElementById('restockDateInput');
     const newRestockDate = restockDateInput.value;
-    
+
     if (!newRestockDate) {
         showToast('Please select a restock date.', 'error');
         return;
     }
-    
+
     // Update all selected products with the new restock date
     currentSelectedProducts.forEach(product => {
         product.last_restock = newRestockDate;
     });
-    
+
     // Regenerate QR codes with updated restock date
     generateQRCodes(currentSelectedProducts);
-    
+
     showToast('Restock date updated for all QR codes!', 'success');
 }
 
 function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
     const toastMessage = document.getElementById('toastMessage');
-    
+
     toastMessage.textContent = message;
-    
+
     // Update toast styling based on type
     const toastInner = toast.querySelector('div');
     if (type === 'error') {
@@ -1081,10 +1402,10 @@ function showToast(message, type = 'success') {
         toastInner.querySelector('svg').classList.remove('text-red-500');
         toastInner.querySelector('svg').classList.add('text-emerald-500');
     }
-    
+
     // Show toast
     toast.classList.remove('translate-x-full');
-    
+
     // Hide after 3 seconds
     setTimeout(() => {
         toast.classList.add('translate-x-full');
@@ -1093,16 +1414,16 @@ function showToast(message, type = 'success') {
 
 function downloadQRCodes() {
     const previewContainer = document.getElementById('qrCodePreview');
-    
+
     if (!previewContainer || previewContainer.children.length === 0) {
         alert('No QR codes to download.');
         return;
     }
-    
+
     // Create a canvas to combine all QR codes
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    
+
     // Calculate canvas size
     const qrCards = previewContainer.querySelectorAll('.border');
     const cardWidth = 300;
@@ -1110,60 +1431,60 @@ function downloadQRCodes() {
     const padding = 20;
     const cols = 2;
     const rows = Math.ceil(qrCards.length / cols);
-    
+
     canvas.width = (cardWidth * cols) + (padding * (cols + 1));
     canvas.height = (cardHeight * rows) + (padding * (rows + 1)) + 50; // +50 for title
-    
+
     // White background
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
+
     // Title
     ctx.fillStyle = '#000000';
     ctx.font = 'bold 20px Arial';
     ctx.fillText('Product QR Codes', padding, 30);
-    
+
     let loadedImages = 0;
     const totalImages = qrCards.length;
-    
+
     qrCards.forEach((card, index) => {
         const canvasElement = card.querySelector('canvas');
         if (!canvasElement) return;
-        
+
         const col = index % cols;
         const row = Math.floor(index / cols);
         const x = padding + (col * (cardWidth + padding));
         const y = 50 + padding + (row * (cardHeight + padding));
-        
+
         // Draw card border
         ctx.strokeStyle = '#cccccc';
         ctx.strokeRect(x, y, cardWidth, cardHeight);
-        
+
         // Draw QR code canvas
         ctx.drawImage(canvasElement, x + 10, y + 10, 80, 80);
-        
+
         // Draw text
         const name = card.querySelector('h3').textContent;
         const sku = card.querySelector('p:nth-child(2)').textContent;
         const restock = card.querySelector('p:nth-child(3)').textContent;
-        
+
         ctx.fillStyle = '#000000';
         ctx.font = 'bold 12px Arial';
         ctx.fillText(name.substring(0, 25), x + 100, y + 25);
-        
+
         ctx.font = '10px Arial';
         ctx.fillStyle = '#666666';
         ctx.fillText(sku, x + 100, y + 45);
         ctx.fillText(restock, x + 100, y + 60);
-        
+
         loadedImages++;
     });
-    
+
     if (totalImages === 0) {
         alert('No QR code images found.');
         return;
     }
-    
+
     // Download the combined canvas
     const link = document.createElement('a');
     link.download = 'qr-codes.png';
@@ -1174,20 +1495,20 @@ function downloadQRCodes() {
 
 function printQRCodes() {
     const previewContainer = document.getElementById('qrCodePreview');
-    
+
     if (!previewContainer || previewContainer.children.length === 0) {
         alert('No QR codes to print.');
         return;
     }
-    
+
     try {
         const printWindow = window.open('', '_blank');
-        
+
         if (!printWindow) {
             alert('Popup blocked. Please allow popups for this site and try again.');
             return;
         }
-        
+
         printWindow.document.write(`
             <!DOCTYPE html>
             <html>
@@ -1231,16 +1552,158 @@ function printQRCodes() {
 
         const printContent = printWindow.document.getElementById('print-content');
         printContent.innerHTML = previewContainer.innerHTML;
-        
+
         printWindow.document.close();
-        
+
         // Wait for content to load before printing
         setTimeout(() => {
             printWindow.print();
         }, 500);
-        
+
     } catch (error) {
         console.error('Error printing:', error);
         alert('Error opening print dialog. Please try again.');
     }
 }
+
+// Add New Product Description Modal functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const addNewProductDescBtn = document.getElementById('addNewProductDescBtn');
+    const addProductDescModal = document.getElementById('addProductDescModal');
+    const closeProductDescModal = document.getElementById('closeProductDescModal');
+    const cancelProductDesc = document.getElementById('cancelProductDesc');
+    const addProductDescForm = document.getElementById('addProductDescForm');
+    const newProductDescName = document.getElementById('newProductDescName');
+    const newProductDescBrand = document.getElementById('newProductDescBrand');
+    const productNameFilter = document.getElementById('productNameFilter');
+
+    if (addNewProductDescBtn && addProductDescModal) {
+        // Open modal
+        addNewProductDescBtn.addEventListener('click', function() {
+            addProductDescModal.classList.remove('hidden');
+            newProductDescName.focus();
+        });
+
+        // Close modal
+        closeProductDescModal.addEventListener('click', function() {
+            addProductDescModal.classList.add('hidden');
+            addProductDescForm.reset();
+        });
+
+        cancelProductDesc.addEventListener('click', function() {
+            addProductDescModal.classList.add('hidden');
+            addProductDescForm.reset();
+        });
+
+        // Handle form submission
+        addProductDescForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = newProductDescName.value.trim();
+            const brand = newProductDescBrand.value.trim();
+            
+            if (!name || !brand) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('_token', window.AllStocks.csrfToken);
+                formData.append('name', name);
+                formData.append('brand', brand);
+
+                const response = await fetch('/product-descriptions', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Add new option to product description filter
+                    const option = document.createElement('option');
+                    option.value = data.product_description.name;
+                    option.textContent = data.product_description.name;
+                    productNameFilter.appendChild(option);
+                    
+                    // Select the new option
+                    productNameFilter.value = data.product_description.name;
+                    
+                    // Trigger filter change to refresh the table
+                    productNameFilter.dispatchEvent(new Event('change'));
+                    
+                    // Close modal and reset form
+                    addProductDescModal.classList.add('hidden');
+                    addProductDescForm.reset();
+                    
+                    alert('Product description added successfully!');
+                } else {
+                    alert(data.error || 'Failed to add product description');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to add product description. Please try again.');
+            }
+        });
+    }
+});
+
+// Modal Logic for View Details
+window.openViewDetailsModal = function(product) {
+    document.getElementById('vdProductTitle').textContent = product.product_name || product.name || 'Product Details';
+    document.getElementById('vdSku').textContent = product.sku || 'N/A';
+    
+    const barcodeVal = product.barcode;
+    const vdBarcodeSvg = document.getElementById('vdBarcode');
+    const vdBarcodeText = document.getElementById('vdBarcodeText');
+    if (barcodeVal && barcodeVal !== 'N/A') {
+        vdBarcodeText.classList.add('hidden');
+        vdBarcodeSvg.classList.remove('hidden');
+        try {
+            JsBarcode(vdBarcodeSvg, barcodeVal, {
+                format: "CODE128",
+                width: 1.5,
+                height: 40,
+                displayValue: true,
+                margin: 0,
+                fontSize: 12
+            });
+        } catch(e) {
+            vdBarcodeSvg.classList.add('hidden');
+            vdBarcodeText.classList.remove('hidden');
+            vdBarcodeText.textContent = barcodeVal;
+        }
+    } else {
+        vdBarcodeSvg.classList.add('hidden');
+        vdBarcodeText.classList.remove('hidden');
+        vdBarcodeText.textContent = 'N/A';
+    }
+    document.getElementById('vdBrand').textContent = product.brand || 'N/A';
+    document.getElementById('vdSupplier').textContent = product.supplier_name || 'N/A';
+    document.getElementById('vdSize').textContent = product.size || 'N/A';
+    document.getElementById('vdColor').textContent = product.color || 'N/A';
+    
+    let models = product.compatible_models || product.compatibility || product.name || 'N/A';
+    if (Array.isArray(models)) {
+        models = models.join(', ');
+    } else if (typeof models === 'string') {
+        try {
+            const parsed = JSON.parse(models);
+            if (Array.isArray(parsed)) models = parsed.join(', ');
+        } catch(e) {}
+    }
+    document.getElementById('vdCompatibleModels').textContent = models;
+    
+    document.getElementById('vdReorderLevel').textContent = product.reorder_level || 'N/A';
+    
+    const unitPrice = parseFloat(product.unit_price || 0);
+    const vatAmount = unitPrice * 0.12;
+    const priceWithoutVat = unitPrice - vatAmount;
+    document.getElementById('vdVat').textContent = `₱${unitPrice.toFixed(2)} (VAT: ₱${vatAmount.toFixed(2)} | Net: ₱${priceWithoutVat.toFixed(2)})`;
+    
+    document.getElementById('vdDateOfStock').innerHTML = product.last_restock_date ? formatDateWithTime(product.last_restock_date) : '-';
+    document.getElementById('vdExpirationDate').innerHTML = product.expiry_date ? formatDateWithTime(product.expiry_date) : '-';
+    
+    document.getElementById('viewDetailsModal').classList.remove('hidden');
+};

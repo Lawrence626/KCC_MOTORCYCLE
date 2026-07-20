@@ -31,15 +31,16 @@
                 <div class="rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm">
                     <div class="flex flex-col gap-4">
                         <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                            <div class="flex flex-wrap gap-2">
-                                <button class="rounded-[10px] bg-[#105f68] px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-[#0c474e]">All</button>
-                                <button class="rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-[#105f68]">Exhaust</button>
-                                <button class="rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-[#105f68]">Helmets</button>
-                                <button class="rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-[#105f68]">Tires</button>
-                                <button class="rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-[#105f68]">Brakes</button>
-                                <button class="rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-[#105f68]">Oils</button>
-                                <button class="rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-[#105f68]">Batteries</button>
-                                <button class="rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:border-[#105f68]">Accessories</button>
+                            <div class="flex flex-wrap gap-2 items-center">
+                                <label class="text-xs font-medium text-slate-700">Filter by:</label>
+                                <select id="posCategorySelect" class="rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                    <option value="All">All Product Description</option>
+                                    <!-- Categories will be loaded dynamically from product descriptions -->
+                                </select>
+                                <select id="posBrandSelect" class="rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                    <option value="All">All Brands</option>
+                                    <!-- Brands will be loaded dynamically based on selected product description -->
+                                </select>
                             </div>
                         </div>
                         <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -80,7 +81,6 @@
                             <thead>
                                 <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wide text-[10px]">
                                     <th class="px-3 py-2">Item</th>
-                                    <th class="px-3 py-2">SKU</th>
                                     <th class="px-6 py-2 text-right">Price</th>
                                     <th class="px-3 py-2 text-center">Qty</th>
                                     <th class="px-6 py-2 text-right">Total</th>

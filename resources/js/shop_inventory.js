@@ -1,9 +1,26 @@
-console.log('Shop Inventory JS loaded');
+console.log('Shop Inventory JS loaded - TEST');
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM Content Loaded');
+    console.log('DOM Content Loaded - TEST');
     // Load shelves on page load
     loadShelves();
+    
+    // Load filter options
+    console.log('About to load filter options');
+    loadProductDescriptions();
+    loadBrands();
+    loadSections();
+    console.log('Filter options loading initiated');
+    
+    // Add filter event listeners
+    document.getElementById('product-description-filter').addEventListener('change', function() {
+        updateBrandFilter(this.value);
+        filterShelves();
+    });
+    document.getElementById('brand-filter').addEventListener('change', filterShelves);
+    document.getElementById('section-filter').addEventListener('change', filterShelves);
+    document.getElementById('search-input').addEventListener('input', filterShelves);
+    document.getElementById('clear-search').addEventListener('click', clearFilters);
 
     // Add shelf button
     document.getElementById('add-shelf-button').addEventListener('click', function() {
@@ -493,6 +510,180 @@ function renderHistory(history) {
             </div>
         `;
         container.appendChild(div);
+    });
+}
+
+function loadProductDescriptions() {
+    console.log('Loading product descriptions...');
+    fetch('/api/product-descriptions')
+        .then(response => {
+            console.log('Product descriptions response:', response);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Product descriptions data:', data);
+            const select = document.getElementById('product-description-filter');
+            if (select) {
+                select.innerHTML = '<option value="">All Descriptions</option>';
+                data.forEach(desc => {
+                    const option = document.createElement('option');
+                    option.value = desc.name;
+                    option.textContent = desc.name;
+                    select.appendChild(option);
+                });
+                console.log('Product descriptions loaded successfully');
+            } else {
+                console.error('Product description filter element not found');
+            }
+        })
+        .catch(error => console.error('Error loading product descriptions:', error));
+}
+
+function loadBrands() {
+    console.log('Loading brands...');
+    fetch('/api/shop-inventory/brands')
+        .then(response => {
+            console.log('Brands response:', response);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Brands data:', data);
+            const select = document.getElementById('brand-filter');
+            if (select) {
+                select.innerHTML = '<option value="">All Brands</option>';
+                data.forEach(brand => {
+                    const option = document.createElement('option');
+                    option.value = brand;
+                    option.textContent = brand;
+                    select.appendChild(option);
+                });
+                console.log('Brands loaded successfully');
+            } else {
+                console.error('Brand filter element not found');
+            }
+        })
+        .catch(error => console.error('Error loading brands:', error));
+}
+
+function loadSections() {
+    fetch('/api/shop-sections')
+        .then(response => response.json())
+        .then(data => {
+            const select = document.getElementById('section-filter');
+            select.innerHTML = '<option value="">All Sections</option>';
+            data.sections.forEach(section => {
+                const option = document.createElement('option');
+                option.value = section.name;
+                option.textContent = `${section.name} (${section.available} slots)`;
+                select.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error loading sections:', error));
+}
+
+function updateBrandFilter(productDescription) {
+    const brandSelect = document.getElementById('brand-filter');
+    
+    if (!productDescription) {
+        // Reset to all brands
+        brandSelect.innerHTML = '<option value="">All Brands</option>';
+        loadBrands();
+        return;
+    }
+    
+    // Get all product chips and find unique brands for this description
+    const productChips = document.querySelectorAll('.product-chip');
+    const brands = new Set();
+    
+    productChips.forEach(chip => {
+        const desc = chip.querySelector('.chip-desc')?.textContent.trim() || '';
+        const brand = chip.querySelector('.chip-row:nth-child(1) .chip-value')?.textContent.trim() || '';
+        
+        if (desc === productDescription && brand) {
+            brands.add(brand);
+        }
+    });
+    
+    // Update brand dropdown
+    brandSelect.innerHTML = '<option value="">All Brands</option>';
+    brands.forEach(brand => {
+        const option = document.createElement('option');
+        option.value = brand;
+        option.textContent = brand;
+        brandSelect.appendChild(option);
+    });
+}
+
+function filterShelves() {
+    console.log('filterShelves called');
+    const searchQuery = document.getElementById('search-input').value.toLowerCase();
+    const productDescriptionFilter = document.getElementById('product-description-filter').value;
+    const brandFilter = document.getElementById('brand-filter').value;
+    const sectionFilter = document.getElementById('section-filter').value;
+
+    console.log('Filters:', { searchQuery, productDescriptionFilter, brandFilter, sectionFilter });
+
+    const shelfCards = document.querySelectorAll('.si-card');
+    console.log('Found shelf cards:', shelfCards.length);
+    shelfCards.forEach(card => {
+        const shelfName = card.querySelector('.shelf-name')?.textContent.toLowerCase() || '';
+        const shelfSection = card.querySelector('.shelf-section')?.textContent.toLowerCase() || '';
+        
+        // Check if shelf matches section filter
+        const matchesSection = !sectionFilter || shelfSection === sectionFilter.toLowerCase();
+        
+        // Filter products within the shelf
+        const productChips = card.querySelectorAll('.product-chip');
+        let hasMatchingProduct = false;
+        
+        productChips.forEach(chip => {
+            const productDesc = chip.querySelector('.chip-desc')?.textContent.toLowerCase() || '';
+            const productBrand = chip.querySelector('.chip-row:nth-child(1) .chip-value')?.textContent.toLowerCase() || '';
+            const productSku = chip.querySelector('.chip-value.sku')?.textContent.toLowerCase() || '';
+            
+            console.log('Product:', { productDesc, productBrand, productSku });
+            
+            const matchesSearch = !searchQuery || 
+                productDesc.includes(searchQuery) || 
+                productBrand.includes(searchQuery) || 
+                productSku.includes(searchQuery);
+            
+            const matchesProductDescription = !productDescriptionFilter || productDesc === productDescriptionFilter.toLowerCase();
+            const matchesBrand = !brandFilter || productBrand === brandFilter.toLowerCase();
+            
+            console.log('Matches:', { matchesSearch, matchesProductDescription, matchesBrand });
+            
+            if (matchesSearch && matchesProductDescription && matchesBrand) {
+                chip.style.display = 'flex';
+                hasMatchingProduct = true;
+            } else {
+                chip.style.display = 'none';
+            }
+        });
+        
+        // Show/hide shelf based on section filter and matching products
+        if (matchesSection && hasMatchingProduct) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+function clearFilters() {
+    document.getElementById('search-input').value = '';
+    document.getElementById('product-description-filter').value = '';
+    document.getElementById('brand-filter').value = '';
+    document.getElementById('section-filter').value = '';
+    
+    // Reset all displays
+    const shelfCards = document.querySelectorAll('.si-card');
+    shelfCards.forEach(card => {
+        card.style.display = 'block';
+        const productChips = card.querySelectorAll('.product-chip');
+        productChips.forEach(chip => {
+            chip.style.display = 'flex';
+        });
     });
 }
 

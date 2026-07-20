@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\POSTransaction;
 use App\Models\Product;
+use App\Services\InventoryAlertService;
 use App\Services\SalesCategoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -13,6 +14,10 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // Sync inventory alerts on dashboard load
+        $alertService = app(InventoryAlertService::class);
+        $alertService->syncAlerts();
+
         return view('dashboard');
     }
 
@@ -72,11 +77,19 @@ class DashboardController extends Controller
             return collect($transaction->items ?? [])->pluck('id');
         })->filter()->unique()->all();
 
-        $productCategories = Product::query()
+        $productsForCat = Product::query()
             ->whereIn('id', array_merge($productIds, $todayProductIds))
             ->where('is_archived', false)
-            ->pluck('category', 'id')
-            ->all();
+            ->get(['id', 'category', 'product_name', 'name']);
+            
+        $productCategories = [];
+        foreach ($productsForCat as $prod) {
+            $cat = $prod->category;
+            if (!$cat || strtolower(trim($cat)) === 'uncategorized') {
+                $cat = $prod->product_name ?: ($prod->name ?? 'Uncategorized');
+            }
+            $productCategories[$prod->id] = $cat;
+        }
 
         // Use TODAY's transactions for category breakdown (daily reset)
         $categoryService = new SalesCategoryService();
@@ -86,7 +99,7 @@ class DashboardController extends Controller
             return collect($transaction->items ?? [])->map(function ($item) use ($productCategories) {
                 $quantity = (int) ($item['quantity'] ?? $item['qty'] ?? 0);
                 $unitPrice = (float) ($item['unit_price'] ?? $item['price'] ?? 0);
-            $productId = $item['id'] ?? null;
+                $productId = $item['id'] ?? null;
                 $categoryValue = null;
 
                 if ($productId && isset($productCategories[$productId])) {
@@ -105,7 +118,7 @@ class DashboardController extends Controller
                     'revenue' => $quantity * $unitPrice,
                 ];
             });
-        })->groupBy('name')->map(function ($items) {
+        })->groupBy('product_id')->map(function ($items) {
             return [
                 'product_id' => $items->first()['product_id'] ?? null,
                 'name' => $items->first()['name'],
@@ -117,12 +130,18 @@ class DashboardController extends Controller
 
         $inventory = [
             'total_products' => Product::query()->where('is_archived', false)->count(),
-            'low_stock' => Product::query()->where('is_archived', false)->whereColumn('stock_quantity', '<=', 'reorder_level')->count(),
+            'low_stock' => Product::query()->where('is_archived', false)->whereColumn('stock_quantity', '<=', 'reorder_level')->where('stock_quantity', '>', 0)->count(),
             'out_of_stock' => Product::query()->where('is_archived', false)->where('stock_quantity', '<=', 0)->count(),
             'in_stock' => Product::query()->where('is_archived', false)->where('stock_quantity', '>', 0)->count(),
         ];
 
         $salesChart = $this->buildSalesTrendData();
+
+        // Sync and get inventory alerts from database
+        $alertService = app(InventoryAlertService::class);
+        $alertService->syncAlerts();
+        $dashboardAlerts = $alertService->getDashboardAlerts();
+        $unreadCount = $alertService->getUnreadCount();
 
         return response()->json([
             'metrics' => [
@@ -165,8 +184,24 @@ class DashboardController extends Controller
             })->values()->all(),
             'inventory' => $inventory,
             'range_label' => $startDate->format('M j, Y') . ' - ' . $endDate->format('M j, Y'),
+            'inventory_alerts' => $alertService->formatNotifications($dashboardAlerts),
+            'inventory_alerts_unread_count' => $unreadCount,
+            'low_stock_notifications' => collect($dashboardAlerts)->map(function ($alert) {
+                return [
+                    'product_id' => $alert->product_id,
+                    'product_name' => $alert->product?->product_name ?? $alert->product?->name,
+                    'stock_quantity' => (int) $alert->current_stock,
+                    'reorder_level' => (int) $alert->reorder_point,
+                    'sku' => $alert->sku,
+                    'is_dashboard_alert' => true,
+                    'dashboard_alert_visible' => true,
+                    'dashboard_alert_delay_ms' => 60000,
+                ];
+            })->values()->all(),
         ]);
     }
+
+
 
     protected function calculateProfit($transactions)
     {
@@ -264,54 +299,42 @@ class DashboardController extends Controller
         $normalized = str_replace(['-', '_'], ' ', $normalized);
         $normalized = preg_replace('/\s+/', ' ', $normalized);
 
-        $categoryMap = [
-            'pipe' => 'Exhaust',
-            'exhaust' => 'Exhaust',
-            'muffler' => 'Exhaust',
-            'silencer' => 'Exhaust',
-            'helmet' => 'Helmets',
-            'helmets' => 'Helmets',
-            'tire' => 'Tires',
-            'tires' => 'Tires',
-            'wheel' => 'Tires',
-            'rim' => 'Tires',
-            'mags' => 'Tires',
-            'brake' => 'Brakes',
-            'brakes' => 'Brakes',
-            'brake master' => 'Brakes',
-            'brake shoe' => 'Brakes',
-            'caliper' => 'Brakes',
-            'disc' => 'Brakes',
-            'oil' => 'Oils',
-            'oils' => 'Oils',
-            'engine oil' => 'Oils',
-            'engine_oil' => 'Oils',
-            'battery' => 'Batteries',
-            'batteries' => 'Batteries',
-            'shock' => 'Accessories',
-            'spring' => 'Accessories',
-            'suspension' => 'Accessories',
-            'seat' => 'Accessories',
-            'mirror' => 'Accessories',
-            'lever' => 'Accessories',
-            'clutch' => 'Accessories',
-            'perch' => 'Accessories',
-            'stand' => 'Accessories',
-            'support' => 'Accessories',
-            'cover' => 'Accessories',
-            'frame' => 'Accessories',
-        ];
-
-        if (isset($categoryMap[$normalized])) {
-            return $categoryMap[$normalized];
+        // Brakes
+        if (str_contains($normalized, 'brake') || str_contains($normalized, 'caliper') || str_contains($normalized, 'disc') || str_contains($normalized, 'lever')) {
+            return 'Brakes';
         }
 
-        foreach ($categoryMap as $key => $mappedCategory) {
-            if (str_contains($normalized, $key)) {
-                return $mappedCategory;
-            }
+        // Exhaust
+        if (str_contains($normalized, 'pipe') || str_contains($normalized, 'exhaust')) {
+            return 'Exhaust';
         }
 
-        return !empty(trim((string) $value)) ? trim((string) $value) : 'Uncategorized';
+        // Tires
+        if (str_contains($normalized, 'tire') || str_contains($normalized, 'tyre')) {
+            return 'Tires';
+        }
+
+        // Oils
+        if (str_contains($normalized, 'oil') || str_contains($normalized, 'lubricant')) {
+            return 'Oils';
+        }
+
+        // Batteries
+        if (str_contains($normalized, 'battery') || str_contains($normalized, 'batteries')) {
+            return 'Batteries';
+        }
+
+        // Helmets
+        if (str_contains($normalized, 'helmet')) {
+            return 'Helmets';
+        }
+
+        // Catch-all for uncategorized
+        if (in_array($normalized, ['uncategorized', 'unknown', 'n/a', ''], true)) {
+            return 'Uncategorized';
+        }
+
+        // Everything else defaults to Accessories (Mags, Seats, Shocks, Mirrors, etc.)
+        return 'Accessories';
     }
 }
