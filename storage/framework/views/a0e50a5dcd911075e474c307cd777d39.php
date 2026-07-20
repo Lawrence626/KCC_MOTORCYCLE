@@ -23,8 +23,11 @@
     <nav class="flex-1 py-4 space-y-2 overflow-y-auto overflow-x-visible sidebar-scroll">
 
         <a href="<?php echo e(route('dashboard')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-3 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('dashboard'), 'text-slate-300 border-transparent' => !request()->routeIs('dashboard')]); ?>">
-            <svg class="w-5.5 h-5.5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M4 11.5 L12 4 L20 11.5 V20 H14 V14 H10 V20 H4 Z" />
+            <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <rect width="8" height="8" x="3" y="3" rx="1.5" />
+                <rect width="8" height="8" x="13" y="3" rx="1.5" />
+                <rect width="8" height="8" x="3" y="13" rx="1.5" />
+                <rect width="8" height="8" x="13" y="13" rx="1.5" />
             </svg>
             <span>Dashboard</span>
         </a>
@@ -221,9 +224,9 @@
         <?php endif; ?>
 
         <?php if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk')): ?>
-        <a href="<?php echo e(route('shop.inventory')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition', 'bg-cyan-500/15 text-cyan-400' => request()->routeIs('shop.inventory'), 'hover:bg-[#242b35] text-slate-300' => !request()->routeIs('shop.inventory')]); ?>">
-            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        <a href="<?php echo e(route('shop.inventory')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-3 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('shop.inventory'), 'text-slate-300 border-transparent' => !request()->routeIs('shop.inventory')]); ?>">
+            <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M4 11.5 L12 4 L20 11.5 V20 H14 V14 H10 V20 H4 Z" />
             </svg>
             <span>Shop Inventory Items</span>
         </a>
@@ -248,7 +251,7 @@
         <?php endif; ?>
 
         <?php if(auth()->user() && auth()->user()->role === 'admin'): ?>
-        <a href="<?php echo e(route('offline.reconciliation')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition', 'bg-cyan-500/15 text-cyan-400' => request()->routeIs('offline.reconciliation'), 'hover:bg-[#242b35] text-slate-300' => !request()->routeIs('offline.reconciliation')]); ?>">
+        <a href="<?php echo e(route('offline.reconciliation')); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-3 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('offline.reconciliation'), 'text-slate-300 border-transparent' => !request()->routeIs('offline.reconciliation')]); ?>">
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 11a1 1 0 100-2 1 1 0 000 2zm0 0a4 4 0 100 8 4 4 0 000-8zm0 0V3m0 0L9 6m3-3l3 3" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.071 4.929a10 10 0 00-14.142 0M16.243 7.757a6 6 0 00-8.486 0" />
