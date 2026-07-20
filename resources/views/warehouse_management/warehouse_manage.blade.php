@@ -9,10 +9,21 @@
             --muted: #6b7280;
             --border: rgba(148,163,184,0.2);
         }
+        .warehouse-action-select, .action-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23253858%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 10px auto;
+            padding-right: 2rem !important;
+        }
         .wm-badge { background: linear-gradient(90deg,var(--brand),var(--brand-dark)); color: #fff; box-shadow: 0 10px 30px rgba(15,118,110,0.08); }
         .wm-card { border: 1px solid var(--border); background: var(--card-bg); box-shadow: 0 12px 30px rgba(15,23,42,0.06); }
         .wm-location { background: #f8fafc; border: 1px dashed rgba(15,118,110,0.16); }
         .product-chip { background: #ffffff; border: 1px solid rgba(16,185,129,0.18); color: var(--brand-dark); border-radius: 0.9rem; display:flex; flex-direction:column; gap:0; overflow:hidden; box-shadow: 0 2px 8px rgba(15,118,110,0.06); }
+        .product-chip summary { list-style: none; outline: none; }
+        .product-chip summary::-webkit-details-marker { display: none; }
+        .product-chip[open] .details-arrow { transform: rotate(180deg); }
         .product-chip .chip-header { background: linear-gradient(90deg, #ecfdf5, #d1fae5); padding: 0.45rem 0.75rem; border-bottom: 1px solid rgba(16,185,129,0.14); }
         .product-chip .chip-body { padding: 0.5rem 0.75rem; display:flex; flex-direction:column; gap:0.18rem; }
         .product-chip .chip-row { display:flex; align-items:baseline; gap:0.3rem; font-size:0.72rem; }
@@ -73,68 +84,143 @@
 
     <div class="space-y-6">
         <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
-        <div class="flex items-start justify-between">
-            <div>
-                <h1 class="text-3xl font-extrabold text-slate-900">Warehouse Management</h1>
-                <p class="mt-2 text-sm text-gray-500">Track and manage storage locations and products across your warehouses.</p>
-            </div>
-                <div class="flex items-center space-x-3">
-                <input id="wm-search" type="search" placeholder="Search product or SKU..." class="px-5 py-3 text-base border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-300" />
-                <button id="view-archived-shelves" type="button" class="px-3 py-2 border rounded-xl text-sm">Archived Shelves</button>
-                <button id="view-archived-warehouses" type="button" class="px-3 py-2 border rounded-xl text-sm">Archived Warehouses</button>
-                <button id="add-warehouse-button" type="button" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl text-sm font-medium shadow-md hover:from-blue-700 hover:to-blue-800 transition">Add Warehouse</button>
-                <button id="add-shelf-button" type="button" class="inline-flex items-center px-3 py-2 wm-badge rounded-xl text-sm font-medium">Add Shelf</button>
-            </div>
-        </div>
-
-        <div class="mt-4 flex items-center gap-4">
-            <label class="text-sm font-medium text-slate-700">Select a warehouse:</label>
-            <select id="warehouse-selector" class="px-4 py-3 border rounded-xl bg-white text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-green-300">
-                @foreach($warehouses as $wh)
-                    <option value="{{ $wh['id'] }}">{{ $wh['name'] }}</option>
-                @endforeach
-            </select>
-            <div class="flex items-center gap-2">
-                <label class="text-sm font-medium text-slate-700">Product Description:</label>
-                <select id="wm-product-description-filter" class="px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
-                    <option value="">All Descriptions</option>
-                    @php
-                        $descriptions = \App\Models\ProductDescription::where('is_active', true)->orderBy('name')->get();
-                        foreach($descriptions as $desc):
-                    @endphp
-                        <option value="{{ $desc->name }}">{{ $desc->name }}</option>
-                    @php endforeach; @endphp
-                </select>
-            </div>
-            <div class="flex items-center gap-2">
-                <label class="text-sm font-medium text-slate-700">Brand:</label>
-                <select id="wm-brand-filter" class="px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
-                    <option value="">All Brands</option>
-                    @php
-                        $brands = \App\Models\Product::where('is_archived', false)
-                            ->whereNotNull('brand')
-                            ->where('brand', '!=', '')
-                            ->distinct()
-                            ->orderBy('brand')
-                            ->pluck('brand')
-                            ->toArray();
-                        foreach($brands as $brand):
-                    @endphp
-                        <option value="{{ $brand }}">{{ $brand }}</option>
-                    @php endforeach; @endphp
-                </select>
-            </div>
-            <button id="wm-clear-filters" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition">
-                Clear Filters
-            </button>
-            <div class="flex items-center gap-3">
-                <div class="rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
-                    <p class="uppercase tracking-[0.18em] text-xs text-slate-400">Products</p>
-                    <p id="selectedWarehouseProducts" class="mt-1 text-lg font-semibold text-slate-900">0</p>
+        <!-- Header Section (Two-row layout) -->
+        <div class="flex flex-col gap-8">
+            
+            <!-- First Row -->
+            <div class="flex flex-col xl:flex-row xl:items-start justify-between gap-6">
+                <!-- Left: Title & Description -->
+                <div>
+                    <h1 class="text-[32px] font-bold text-slate-900 leading-tight tracking-tight">Warehouse Management</h1>
+                    <p class="mt-2 text-[15px] font-medium text-slate-500">Track and manage storage locations and products across your warehouses.</p>
                 </div>
-                <div class="rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
-                    <p class="uppercase tracking-[0.18em] text-xs text-slate-400">Empty Slots</p>
-                    <p id="selectedWarehouseEmptySlots" class="mt-1 text-lg font-semibold text-slate-900">0</p>
+                
+                <!-- Right: Search & Actions -->
+                <div class="flex items-center gap-3">
+                    <!-- Search Bar -->
+                    <div class="relative w-[220px] md:w-[260px] lg:w-[300px]">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <input id="wm-search" type="search" placeholder="Search products, SKU..." 
+                            class="w-full h-11 pl-10 pr-4 bg-white border border-slate-200 rounded-xl text-[14px] text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all" />
+                    </div>
+                    
+                    <!-- Primary Button: Add Warehouse -->
+                    <button id="add-warehouse-button" type="button" 
+                        class="shrink-0 inline-flex items-center justify-center gap-1.5 h-11 px-4 bg-blue-600 text-white rounded-xl text-[14px] font-semibold hover:bg-blue-700 transition-colors shadow-sm whitespace-nowrap">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Add Warehouse
+                    </button>
+                    
+                    <!-- Secondary Button: Add Shelf -->
+                    <button id="add-shelf-button" type="button" 
+                        class="shrink-0 inline-flex items-center justify-center gap-1.5 h-11 px-4 bg-white border border-emerald-600 text-emerald-600 rounded-xl text-[14px] font-semibold hover:bg-emerald-600 hover:text-white transition-colors shadow-sm whitespace-nowrap">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Add Shelf
+                    </button>
+                    
+                    <!-- Overflow Menu (Dropdown) -->
+                    <div class="relative shrink-0">
+                        <button type="button" onclick="document.getElementById('wm-overflow-menu').classList.toggle('hidden'); document.getElementById('wm-overflow-menu-overlay').classList.toggle('hidden');"
+                            class="inline-flex items-center justify-center w-11 h-11 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors shadow-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+                        </button>
+                        
+                        <!-- Click away listener overlay -->
+                        <div id="wm-overflow-menu-overlay" onclick="document.getElementById('wm-overflow-menu').classList.add('hidden'); this.classList.add('hidden');" class="fixed inset-0 z-40 hidden"></div>
+
+                        <div id="wm-overflow-menu" class="hidden absolute right-0 mt-2 w-52 bg-white border border-slate-200 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] z-50 overflow-hidden py-1">
+                            <button id="view-archived-warehouses" type="button" onclick="document.getElementById('wm-overflow-menu').classList.add('hidden'); document.getElementById('wm-overflow-menu-overlay').classList.add('hidden');" class="w-full text-left px-4 py-2.5 text-[14px] font-medium text-slate-700 hover:bg-slate-50 transition-colors">Archived Warehouses</button>
+                            <button id="view-archived-shelves" type="button" onclick="document.getElementById('wm-overflow-menu').classList.add('hidden'); document.getElementById('wm-overflow-menu-overlay').classList.add('hidden');" class="w-full text-left px-4 py-2.5 text-[14px] font-medium text-slate-700 hover:bg-slate-50 transition-colors">Archived Shelves</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second Row -->
+            <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+                <!-- Filters Bar -->
+                <div class="flex items-center flex-wrap gap-4">
+                    
+                    <!-- Warehouse Filter -->
+                    <div class="relative w-[200px]">
+                        <select id="warehouse-selector" class="w-full appearance-none pl-4 pr-10 h-10 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:bg-slate-50 transition-colors shadow-sm cursor-pointer">
+                            @foreach($warehouses as $wh)
+                                <option value="{{ $wh['id'] }}">{{ $wh['name'] }}</option>
+                            @endforeach
+                        </select>
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+                    
+                    <!-- Product Description Filter -->
+                    <div class="relative w-[180px]">
+                        <select id="wm-product-description-filter" class="w-full appearance-none pl-4 pr-10 h-10 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:bg-slate-50 transition-colors shadow-sm cursor-pointer">
+                            <option value="">All Descriptions</option>
+                            @php
+                                $descriptions = \App\Models\ProductDescription::where('is_active', true)->orderBy('name')->get();
+                                foreach($descriptions as $desc):
+                            @endphp
+                                <option value="{{ $desc->name }}">{{ $desc->name }}</option>
+                            @php endforeach; @endphp
+                        </select>
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+
+                    <!-- Brand Filter -->
+                    <div class="relative w-[160px]">
+                        <select id="wm-brand-filter" class="w-full appearance-none pl-4 pr-10 h-10 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:bg-slate-50 transition-colors shadow-sm cursor-pointer">
+                            <option value="">All Brands</option>
+                            @php
+                                $brands = \App\Models\Product::where('is_archived', false)
+                                    ->whereNotNull('brand')
+                                    ->where('brand', '!=', '')
+                                    ->distinct()
+                                    ->orderBy('brand')
+                                    ->pluck('brand')
+                                    ->toArray();
+                                foreach($brands as $brand):
+                            @endphp
+                                <option value="{{ $brand }}">{{ $brand }}</option>
+                            @php endforeach; @endphp
+                        </select>
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+
+                    <!-- Clear Filters -->
+                    <button id="wm-clear-filters" class="inline-flex items-center gap-1.5 px-3 h-10 text-[14px] font-medium text-slate-500 hover:text-slate-800 transition-colors rounded-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        Clear Filters
+                    </button>
+                </div>
+
+                <!-- Analytics Cards -->
+                <div class="flex items-center gap-4">
+                    <!-- Products Card -->
+                    <div class="min-w-[130px] px-4 py-2 bg-[#f4f8fd] border border-[#e2e8f0] rounded-xl flex flex-col justify-center shadow-[0_2px_8px_rgb(0,0,0,0.02)]">
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                            <p class="text-[13px] font-medium text-slate-500 uppercase tracking-wide">Products</p>
+                        </div>
+                        <p id="selectedWarehouseProducts" class="mt-1 text-[28px] font-bold text-slate-800 leading-none">0</p>
+                    </div>
+                    
+                    <!-- Empty Slots Card -->
+                    <div class="min-w-[130px] px-4 py-2 bg-slate-50/80 border border-slate-200 rounded-xl flex flex-col justify-center shadow-[0_2px_8px_rgb(0,0,0,0.02)]">
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
+                            <p class="text-[13px] font-medium text-slate-500 uppercase tracking-wide">Empty Slots</p>
+                        </div>
+                        <p id="selectedWarehouseEmptySlots" class="mt-1 text-[28px] font-bold text-slate-800 leading-none">0</p>
+                    </div>
                 </div>
             </div>
         </div>

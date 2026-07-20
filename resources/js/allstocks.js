@@ -153,12 +153,12 @@ function handleEditClick(productId, event) {
 }
 
 // Make function globally accessible
-window.openEditModal = function(productId) {
+window.openEditModal = function (productId) {
     openEditProductModal(productId);
 };
 
 // Direct edit modal function
-window.openEditModalDirect = function(productId) {
+window.openEditModalDirect = function (productId) {
     openEditProductModal(productId);
 };
 
@@ -223,19 +223,19 @@ async function loadFilterOptions() {
         // Load product descriptions from Product Categorization module
         const descriptionsResponse = await fetch(window.AllStocks.routes.apiProductDescriptions);
         const descriptionsResult = await descriptionsResponse.json();
-        
+
         // Load products for brands and sizes
         const productsResponse = await fetch(window.AllStocks.routes.apiProducts + '?per_page=1000');
         const productsResult = await productsResponse.json();
 
         let brands = new Set();
         let sizes = new Set();
-        
+
         // Store product name to brands mapping from Product Categorization
         window.productNameToBrands = {};
 
         let productNames = new Set();
-        
+
         if (descriptionsResult && descriptionsResult.length > 0) {
             descriptionsResult.forEach(description => {
                 window.productNameToBrands[description.name] = new Set(description.brands || []);
@@ -299,7 +299,7 @@ async function loadFilterOptions() {
 function updateBrandDropdown() {
     const productNameFilter = document.getElementById('productNameFilter');
     const brandFilter = document.getElementById('brandFilter');
-    
+
     if (!productNameFilter || !brandFilter) return;
 
     const selectedOption = productNameFilter.options[productNameFilter.selectedIndex];
@@ -353,7 +353,7 @@ function performSearch() {
 function resetFilters() {
     const searchInput = document.getElementById('searchInput');
     if (searchInput) searchInput.value = '';
-    ['warehouseFilter','productNameFilter','brandFilter','sizeFilter','statusFilter','expiryStatusFilter','dateOfStockFilter'].forEach(id => {
+    ['warehouseFilter', 'productNameFilter', 'brandFilter', 'sizeFilter', 'statusFilter', 'expiryStatusFilter', 'dateOfStockFilter'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
@@ -366,7 +366,7 @@ function resetFilters() {
 function attachUIEvents() {
     const searchEl = document.getElementById('searchInput');
     if (searchEl) {
-        searchEl.addEventListener('input', function(e) {
+        searchEl.addEventListener('input', function (e) {
             currentFilters.search = e.target.value;
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
@@ -376,34 +376,34 @@ function attachUIEvents() {
     }
 
     const warehouseEl = document.getElementById('warehouseFilter');
-    if (warehouseEl) warehouseEl.addEventListener('change', function(e){ currentFilters.warehouse = e.target.value; performSearch(); });
-    
+    if (warehouseEl) warehouseEl.addEventListener('change', function (e) { currentFilters.warehouse = e.target.value; performSearch(); });
+
     const categoryEl = document.getElementById('categoryFilter');
     if (categoryEl) {
-        categoryEl.addEventListener('change', function(e) {
+        categoryEl.addEventListener('change', function (e) {
             currentFilters.category = e.target.value;
             renderCategoryChips();
             performSearch();
         });
     }
     const productNameEl = document.getElementById('productNameFilter');
-    if (productNameEl) productNameEl.addEventListener('change', function(e){ 
+    if (productNameEl) productNameEl.addEventListener('change', function (e) {
         updateBrandDropdown();
         currentFilters.product_name = e.target.value;
         currentFilters.brand = ''; // Reset brand when product name changes
         document.getElementById('brandFilter').value = '';
-        performSearch(); 
+        performSearch();
     });
     const brandEl = document.getElementById('brandFilter');
-    if (brandEl) brandEl.addEventListener('change', function(e){ currentFilters.brand = e.target.value; performSearch(); });
+    if (brandEl) brandEl.addEventListener('change', function (e) { currentFilters.brand = e.target.value; performSearch(); });
     const sizeEl = document.getElementById('sizeFilter');
-    if (sizeEl) sizeEl.addEventListener('change', function(e){ currentFilters.size = e.target.value; performSearch(); });
+    if (sizeEl) sizeEl.addEventListener('change', function (e) { currentFilters.size = e.target.value; performSearch(); });
     const statusEl = document.getElementById('statusFilter');
-    if (statusEl) statusEl.addEventListener('change', function(e){ currentFilters.status = e.target.value; performSearch(); });
+    if (statusEl) statusEl.addEventListener('change', function (e) { currentFilters.status = e.target.value; performSearch(); });
     const expiryStatusEl = document.getElementById('expiryStatusFilter');
-    if (expiryStatusEl) expiryStatusEl.addEventListener('change', function(e){ currentFilters.expiry_status = e.target.value; performSearch(); });
+    if (expiryStatusEl) expiryStatusEl.addEventListener('change', function (e) { currentFilters.expiry_status = e.target.value; performSearch(); });
     const dateOfStockEl = document.getElementById('dateOfStockFilter');
-    if (dateOfStockEl) dateOfStockEl.addEventListener('change', function(e){ currentFilters.date_of_stock = e.target.value; performSearch(); });
+    if (dateOfStockEl) dateOfStockEl.addEventListener('change', function (e) { currentFilters.date_of_stock = e.target.value; performSearch(); });
 
     const addStockBtn = document.getElementById('addStockBtn');
     if (addStockBtn) addStockBtn.addEventListener('click', openAddStockModal);
@@ -413,7 +413,7 @@ function attachUIEvents() {
     if (cancelAdd) cancelAdd.addEventListener('click', closeAddStockModal);
 
     const addStockModal = document.getElementById('addStockModal');
-    if (addStockModal) addStockModal.addEventListener('click', function(e) { if (e.target === this) closeAddStockModal(); });
+    if (addStockModal) addStockModal.addEventListener('click', function (e) { if (e.target === this) closeAddStockModal(); });
 
     // Edit product modal events
     const closeEdit = document.getElementById('closeEditProductModal');
@@ -422,11 +422,11 @@ function attachUIEvents() {
     if (cancelEdit) cancelEdit.addEventListener('click', closeEditProductModal);
 
     const editProductModal = document.getElementById('editProductModal');
-    if (editProductModal) editProductModal.addEventListener('click', function(e) { if (e.target === this) closeEditProductModal(); });
+    if (editProductModal) editProductModal.addEventListener('click', function (e) { if (e.target === this) closeEditProductModal(); });
 
     const addStockForm = document.getElementById('addStockForm');
     if (addStockForm) {
-        addStockForm.addEventListener('submit', async function(e) {
+        addStockForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const productId = document.getElementById('productSelect')?.value;
@@ -478,7 +478,7 @@ function attachUIEvents() {
     // Edit product form submission
     const editProductForm = document.getElementById('editProductForm');
     if (editProductForm) {
-        editProductForm.addEventListener('submit', async function(e) {
+        editProductForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const productId = document.getElementById('editProductId')?.value;
@@ -575,7 +575,7 @@ function attachUIEvents() {
 
     const importFile = document.getElementById('importFile');
     if (importFile) {
-        importFile.addEventListener('change', async function(e) {
+        importFile.addEventListener('change', async function (e) {
             const file = e.target.files[0];
             if (!file) return;
 
@@ -600,14 +600,14 @@ function attachUIEvents() {
                 if (contentType.includes('application/json')) result = await response.json();
                 else {
                     const text = await response.text();
-                    throw new Error('Server returned non-JSON response:\n' + text.substring(0,200));
+                    throw new Error('Server returned non-JSON response:\n' + text.substring(0, 200));
                 }
 
                 if (result.success) {
                     let message = `✅ ${result.message}`;
                     if (result.debug_total_rows_processed) message += `\nRows processed: ${result.debug_total_rows_processed}`;
                     if (result.errors && result.errors.length > 0) {
-                        message += `\n\n⚠️ Errors (${result.errors.length} total):\n${result.errors.slice(0,5).join('\n')}`;
+                        message += `\n\n⚠️ Errors (${result.errors.length} total):\n${result.errors.slice(0, 5).join('\n')}`;
                         if (result.errors.length > 5) message += `\n... and ${result.errors.length - 5} more`;
                     }
                     alert(message);
@@ -654,10 +654,10 @@ async function loadStats() {
         const warehouseCEl = document.getElementById('stat-warehouse-c');
 
         if (totalProductsEl) totalProductsEl.textContent = Number(stats.total_items || 0).toLocaleString();
-        if (totalValueEl) totalValueEl.textContent = '₱' + Number(stats.total_value || 0).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        if (totalValueEl) totalValueEl.textContent = '₱' + Number(stats.total_value || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         if (lowStockEl) lowStockEl.textContent = Number(stats.low_stock_count || 0).toLocaleString();
         if (expiringSoonEl) expiringSoonEl.textContent = Number(stats.expiring_soon_count || 0).toLocaleString();
-        
+
         // Warehouse breakdown stats
         if (shopEl) shopEl.textContent = Number(stats.shop_count || 0).toLocaleString();
         if (warehouseAEl) warehouseAEl.textContent = Number(stats.warehouse_a_count || 0).toLocaleString();
@@ -717,7 +717,7 @@ function renderMovements() {
         filteredMovements = movementsData.filter(entry => {
             const entryDate = new Date(entry.created_at).toISOString().split('T')[0];
 
-            switch(movementsDateFilter) {
+            switch (movementsDateFilter) {
                 case 'today':
                     return entryDate === today;
                 case 'yesterday':
@@ -796,17 +796,17 @@ async function loadProducts(page = 1) {
                 const row = document.createElement('tr');
                 row.className = 'table-row-hover transition cursor-pointer';
                 row.onclick = () => toggleRow(product.id);
-                
+
                 const stockLevel = product.stock_quantity || 0;
                 const reorderLevel = product.reorder_level || 10;
                 const isLowStock = stockLevel <= reorderLevel && stockLevel > 0;
                 const isOutOfStock = stockLevel <= 0;
-                
+
                 // Calculate VAT breakdown (assuming 12% VAT)
                 const unitPrice = parseFloat(product.unit_price || 0);
                 const vatAmount = unitPrice * 0.12;
                 const priceWithoutVat = unitPrice - vatAmount;
-                
+
                 // Status badge
                 let statusBadge = '';
                 if (product.is_archived) {
@@ -899,9 +899,9 @@ async function loadProducts(page = 1) {
                     text: sku,
                     width: 36,
                     height: 36,
-                    colorDark : "#0f172a",
-                    colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.L
+                    colorDark: "#0f172a",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.L
                 });
             }
             container.classList.add('rendered');
@@ -922,7 +922,7 @@ function updatePaginationDisplay(pagination) {
     const showingFrom = document.getElementById('showingFrom');
     const showingTo = document.getElementById('showingTo');
     const totalItems = document.getElementById('totalItems');
-    
+
     if (showingFrom) showingFrom.textContent = pagination.from || 0;
     if (showingTo) showingTo.textContent = pagination.to || 0;
     if (totalItems) totalItems.textContent = pagination.total?.toLocaleString() || 0;
@@ -932,16 +932,16 @@ function updatePaginationDisplay(pagination) {
 function attachCheckboxListeners() {
     const selectAll = document.getElementById('selectAll');
     const checkboxes = document.querySelectorAll('.product-checkbox');
-    
+
     if (selectAll) {
-        selectAll.addEventListener('change', function() {
+        selectAll.addEventListener('change', function () {
             checkboxes.forEach(checkbox => {
                 checkbox.checked = this.checked;
             });
             updateBulkActions();
         });
     }
-    
+
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', updateBulkActions);
     });
@@ -949,7 +949,7 @@ function attachCheckboxListeners() {
 
 // Attach dropdown listeners
 function attachDropdownListeners() {
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.action-dropdown')) {
             document.querySelectorAll('.dropdown-menu').forEach(menu => {
                 menu.classList.remove('show');
@@ -963,7 +963,7 @@ function updateBulkActions() {
     const checkboxes = document.querySelectorAll('.product-checkbox:checked');
     const toolbar = document.getElementById('bulkActionsToolbar');
     const selectedCount = document.getElementById('selectedCount');
-    
+
     if (checkboxes.length > 0) {
         toolbar.classList.remove('hidden');
         selectedCount.textContent = checkboxes.length;
@@ -977,11 +977,11 @@ function updateBulkActions() {
 function clearSelection() {
     const checkboxes = document.querySelectorAll('.product-checkbox');
     const selectAll = document.getElementById('selectAll');
-    
+
     checkboxes.forEach(checkbox => {
         checkbox.checked = false;
     });
-    
+
     if (selectAll) selectAll.checked = false;
     updateBulkActions();
 }
@@ -1008,17 +1008,17 @@ function toggleRow(id) {
 // Format date to MM/DD/YY with time
 function formatDateWithTime(dateString) {
     if (!dateString) return '-';
-    
+
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return '-';
-    
+
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const year = String(date.getFullYear()).slice(-2);
-    
+
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    
+
     return `${month}/${day}/${year} <span class="text-slate-400">${hours}:${minutes}</span>`;
 }
 
@@ -1074,7 +1074,7 @@ function attachPriceEditing() {
     const tbody = document.querySelector('table tbody');
     if (!tbody) return;
 
-    tbody.addEventListener('click', async function(e) {
+    tbody.addEventListener('click', async function (e) {
         const editProductBtn = e.target.closest('.edit-product-trigger');
 
         // Handle full product edit
@@ -1091,7 +1091,7 @@ function attachPriceEditing() {
 }
 
 // Also attach directly to document as backup
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     const editProductBtn = e.target.closest('.edit-product-trigger');
     if (editProductBtn) {
         e.preventDefault();
@@ -1136,7 +1136,7 @@ function initializeAllStocksPage() {
     // Wire movement date filter
     const movementDateFilter = document.getElementById('movementDateFilter');
     if (movementDateFilter) {
-        movementDateFilter.addEventListener('change', function() {
+        movementDateFilter.addEventListener('change', function () {
             movementsDateFilter = this.value;
             movementsPage = 1;
             renderMovements();
@@ -1148,7 +1148,7 @@ function initializeAllStocksPage() {
     const movementNextBtn = document.querySelector('.movement-next');
 
     if (movementPrevBtn) {
-        movementPrevBtn.addEventListener('click', function() {
+        movementPrevBtn.addEventListener('click', function () {
             if (movementsPage > 1) {
                 movementsPage--;
                 renderMovements();
@@ -1157,7 +1157,7 @@ function initializeAllStocksPage() {
     }
 
     if (movementNextBtn) {
-        movementNextBtn.addEventListener('click', function() {
+        movementNextBtn.addEventListener('click', function () {
             const totalPages = Math.ceil(movementsData.length / movementsPerPage);
             if (movementsPage < totalPages) {
                 movementsPage++;
@@ -1169,7 +1169,7 @@ function initializeAllStocksPage() {
     // Wire select all checkbox
     const selectAllCheckbox = document.getElementById('selectAllCheckbox');
     if (selectAllCheckbox) {
-        selectAllCheckbox.addEventListener('change', function() {
+        selectAllCheckbox.addEventListener('change', function () {
             const productCheckboxes = document.querySelectorAll('.product-checkbox');
             productCheckboxes.forEach(checkbox => {
                 checkbox.checked = this.checked;
@@ -1567,7 +1567,7 @@ function printQRCodes() {
 }
 
 // Add New Product Description Modal functionality
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const addNewProductDescBtn = document.getElementById('addNewProductDescBtn');
     const addProductDescModal = document.getElementById('addProductDescModal');
     const closeProductDescModal = document.getElementById('closeProductDescModal');
@@ -1579,29 +1579,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (addNewProductDescBtn && addProductDescModal) {
         // Open modal
-        addNewProductDescBtn.addEventListener('click', function() {
+        addNewProductDescBtn.addEventListener('click', function () {
             addProductDescModal.classList.remove('hidden');
             newProductDescName.focus();
         });
 
         // Close modal
-        closeProductDescModal.addEventListener('click', function() {
+        closeProductDescModal.addEventListener('click', function () {
             addProductDescModal.classList.add('hidden');
             addProductDescForm.reset();
         });
 
-        cancelProductDesc.addEventListener('click', function() {
+        cancelProductDesc.addEventListener('click', function () {
             addProductDescModal.classList.add('hidden');
             addProductDescForm.reset();
         });
 
         // Handle form submission
-        addProductDescForm.addEventListener('submit', async function(e) {
+        addProductDescForm.addEventListener('submit', async function (e) {
             e.preventDefault();
-            
+
             const name = newProductDescName.value.trim();
             const brand = newProductDescBrand.value.trim();
-            
+
             if (!name || !brand) {
                 alert('Please fill in all fields');
                 return;
@@ -1619,24 +1619,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 const data = await response.json();
-                
+
                 if (data.success) {
                     // Add new option to product description filter
                     const option = document.createElement('option');
                     option.value = data.product_description.name;
                     option.textContent = data.product_description.name;
                     productNameFilter.appendChild(option);
-                    
+
                     // Select the new option
                     productNameFilter.value = data.product_description.name;
-                    
+
                     // Trigger filter change to refresh the table
                     productNameFilter.dispatchEvent(new Event('change'));
-                    
+
                     // Close modal and reset form
                     addProductDescModal.classList.add('hidden');
                     addProductDescForm.reset();
-                    
+
                     alert('Product description added successfully!');
                 } else {
                     alert(data.error || 'Failed to add product description');
@@ -1650,10 +1650,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Modal Logic for View Details
-window.openViewDetailsModal = function(product) {
+window.openViewDetailsModal = function (product) {
     document.getElementById('vdProductTitle').textContent = product.product_name || product.name || 'Product Details';
     document.getElementById('vdSku').textContent = product.sku || 'N/A';
-    
+
     const barcodeVal = product.barcode;
     const vdBarcodeSvg = document.getElementById('vdBarcode');
     const vdBarcodeText = document.getElementById('vdBarcodeText');
@@ -1669,7 +1669,7 @@ window.openViewDetailsModal = function(product) {
                 margin: 0,
                 fontSize: 12
             });
-        } catch(e) {
+        } catch (e) {
             vdBarcodeSvg.classList.add('hidden');
             vdBarcodeText.classList.remove('hidden');
             vdBarcodeText.textContent = barcodeVal;
@@ -1683,7 +1683,7 @@ window.openViewDetailsModal = function(product) {
     document.getElementById('vdSupplier').textContent = product.supplier_name || 'N/A';
     document.getElementById('vdSize').textContent = product.size || 'N/A';
     document.getElementById('vdColor').textContent = product.color || 'N/A';
-    
+
     let models = product.compatible_models || product.compatibility || product.name || 'N/A';
     if (Array.isArray(models)) {
         models = models.join(', ');
@@ -1691,19 +1691,19 @@ window.openViewDetailsModal = function(product) {
         try {
             const parsed = JSON.parse(models);
             if (Array.isArray(parsed)) models = parsed.join(', ');
-        } catch(e) {}
+        } catch (e) { }
     }
     document.getElementById('vdCompatibleModels').textContent = models;
-    
+
     document.getElementById('vdReorderLevel').textContent = product.reorder_level || 'N/A';
-    
+
     const unitPrice = parseFloat(product.unit_price || 0);
     const vatAmount = unitPrice * 0.12;
     const priceWithoutVat = unitPrice - vatAmount;
     document.getElementById('vdVat').textContent = `₱${unitPrice.toFixed(2)} (VAT: ₱${vatAmount.toFixed(2)} | Net: ₱${priceWithoutVat.toFixed(2)})`;
-    
+
     document.getElementById('vdDateOfStock').innerHTML = product.last_restock_date ? formatDateWithTime(product.last_restock_date) : '-';
     document.getElementById('vdExpirationDate').innerHTML = product.expiry_date ? formatDateWithTime(product.expiry_date) : '-';
-    
+
     document.getElementById('viewDetailsModal').classList.remove('hidden');
 };
