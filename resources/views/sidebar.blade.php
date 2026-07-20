@@ -38,7 +38,7 @@
         @endphp
         <div class="group space-y-1 @if($isInventoryActive) open @endif">
             <button type="button" @class(['sidebar-group-toggle w-full flex items-center justify-between gap-3 pl-6 pr-4 py-2.5 text-sm font-medium cursor-pointer text-slate-300 border-l-[3px] border-transparent'])>
-                <span class="flex items-center gap-2">
+                <span class="flex items-center gap-3">
                     <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                         <rect x="3" y="7" width="18" height="11" rx="1.2" />
                         <rect x="8" y="3.8" width="8" height="2" rx="0.6" />
@@ -77,7 +77,7 @@
         @endphp
         <div class="group space-y-1 @if($isInventoryStaffActive) open @endif">
             <button type="button" @class(['sidebar-group-toggle w-full flex items-center justify-between gap-3 pl-6 pr-4 py-2.5 text-sm font-medium cursor-pointer text-slate-300 border-l-[3px] border-transparent'])>
-                <span class="flex items-center gap-2">
+                <span class="flex items-center gap-3">
                     <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                         <rect x="2.5" y="6.5" width="19" height="12" rx="1.4" />
                         <rect x="8.2" y="3.5" width="7.6" height="2.6" rx="0.6" />
@@ -471,16 +471,6 @@
         }
     }
 
-/* ===========================
-   ARROW ALIGNMENT FIX
-   =========================== */
-.sidebar-group-toggle{
-    padding-right:20px !important;
-}
-.sidebar-group-toggle .sidebar-arrow{
-    margin-right:8px !important;
-    flex-shrink:0;
-}
 
 </style>
 

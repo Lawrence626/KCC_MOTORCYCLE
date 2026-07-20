@@ -1,5 +1,5 @@
 <x-layouts.app :title="__('Dashboard')">
-    <div id="dashboard-root" data-dashboard-url="{{ route('dashboard.data') }}" data-refresh-interval="15000" class="space-y-3">
+    <div id="dashboard-root" data-dashboard-url="{{ route('dashboard.data') }}" data-refresh-interval="15000" class="space-y-6">
        
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div class="pl-3 lg:pl-2">
@@ -60,7 +60,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="inline-flex items-center gap-1.5 rounded-[20px] px-3 py-2 text-left">
+                        <div class="relative inline-flex items-center gap-1.5 rounded-[20px] px-3 py-2 text-left">
                         <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-black grid place-items-center text-lg font-semibold overflow-hidden">
                             {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
                         </span>
@@ -72,40 +72,40 @@
                             <svg id="dashboardProfileArrow" class="w-5 h-5 text-current transition-colors duration-200" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5H7z"/></svg>
                         </button>
 
-                        <div id="dashboardProfileDropdown" class="absolute right-0 top-full mt-2 w-65 min-h-[100px] rounded-[15px] bg-[#0f0f0f] shadow-2xl shadow-black/20 z-50 hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right" style="color: #ffffff;">
-                            <div class="px-4 py-4 border-b border-slate-700/60">
+                        <div id="dashboardProfileDropdown" class="absolute right-0 top-full mt-2 w-65 min-h-[100px] rounded-[15px] bg-white border border-slate-200 shadow-[0_15px_50px_-15px_rgba(0,0,0,0.15)] z-50 hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right" style="color: #0f0f0f;">
+                            <div class="px-4 py-4 border-b border-slate-100">
                                 <div class="flex items-center gap-3">
-                                    <span class="w-12 h-12 rounded-full bg-gray-200 text-black grid place-items-center overflow-hidden text-lg font-semibold">
+                                    <span class="w-12 h-12 rounded-full bg-slate-200 text-slate-800 grid place-items-center overflow-hidden text-lg font-semibold">
                                         {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
                                     </span>
                                     <div>
-                                        <div class="text-[13px] font-semibold text-white">{{ auth()->user()->name ?? 'Admin' }}</div>
-                                        <div class="text-[12px] text-gray-400">{{ auth()->user()->email ?? '' }}</div>
+                                        <div class="text-[13px] font-semibold text-slate-900">{{ auth()->user()->name ?? 'Admin' }}</div>
+                                        <div class="text-[12px] text-slate-500">{{ auth()->user()->email ?? '' }}</div>
                                     </div>
                                 </div>
                                 <div class="mt-3">
-                                    <span class="inline-flex items-center rounded-full border border-gray-600/30 bg-gray-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style="color: #32FFFD;">
+                                    <span class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#36ADA3]">
                                         {{ ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'user')) }}
                                     </span>
                                 </div>
                             </div>
                             <div class="flex flex-col gap-1 px-2 py-2">
-                                <a href="{{ route('profile.show') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/60 transition">
-                                    <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-700 text-white">
+                                <a href="{{ route('profile.show') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 transition">
+                                    <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-100 text-slate-500">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9 9 0 1118.879 6.196 9 9 0 015.12 17.804z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                     </span>
                                     <span>View Profile</span>
                                 </a>
-                                <a href="{{ route('settings.general') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/60 transition">
-                                    <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-700 text-white">
+                                <a href="{{ route('settings.general') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 transition">
+                                    <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-100 text-slate-500">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                     </span>
                                     <span>Settings</span>
                                 </a>
                                 <form action="{{ route('logout') }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="flex w-full items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/60 transition">
-                                        <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-700 text-white">
+                                    <button type="submit" class="flex w-full items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 transition">
+                                        <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-100 text-slate-500">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                                         </span>
                                         <span>Logout</span>
@@ -121,10 +121,10 @@
 
 
         <!-- Stats Grid -->
-        <div class="mb-3">
+        <div class="w-full">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
                 <!-- Total Sales -->
-                <div class="border border-gray-200 p-4" style="border-radius: 20px; background-color: #ffffff;">
+                 <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #cdfcfd15 50%);">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <p class="text-black text-xs font-semibold">Total Sales</p>
@@ -133,8 +133,8 @@
                                 <p id="salesComparison" class="text-gray-500 text-xs mt-1 font-medium">Loading…</p>
                             </div>
                         </div>
-                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #2ea300;">
-                            <svg class="w-5 h-5" style="color: #ffffff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                            <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                 <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
                             </svg>
                         </div>
@@ -142,7 +142,7 @@
                 </div>
 
                 <!-- Total Transaction -->
-                <div class="border border-gray-200 p-4" style="border-radius: 20px; background-color: #ffffff;">
+               <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #ffffff15 50%);">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <p class="text-black text-xs font-semibold" style="color: #000000;">Total Transaction</p>
@@ -151,8 +151,8 @@
                                 <p id="transactionsComparison" class="text-gray-500 text-xs mt-1 font-medium;">Loading…</p>
                             </div>
                         </div>
-                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #ebd300;">
-                            <svg class="w-5 h-5" style="color: #ffffff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                            <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                 <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/>
                             </svg>
                         </div>
@@ -160,7 +160,7 @@
                 </div>
 
                 <!-- Total Profit -->
-                <div class="border border-gray-200 p-4" style="border-radius: 20px; background-color: #ffffff;">
+                <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #ffffff15 50%);">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <p class="text-black text-xs font-semibold" style="color: #000000;">Total Profit</p>
@@ -169,8 +169,8 @@
                                 <p id="profitComparison" class="text-gray-500 text-xs mt-1 font-medium;">Loading…</p>
                             </div>
                         </div>
-                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #ff9900;">
-                            <svg class="w-5 h-5" style="color: #ffffff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                            <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                 <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
                             </svg>
                         </div>
@@ -178,7 +178,7 @@
                 </div>
 
                 <!-- Total Item Sold -->
-                <div class="border border-gray-200 p-4" style="border-radius: 20px; background-color: #ffffff;">
+                 <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #ffffff15 50%);">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <p class="text-black text-xs font-semibold" style="color: #000000;">Total Item Sold</p>
@@ -187,8 +187,8 @@
                                 <p id="itemsSoldComparison" class="text-gray-500 text-xs mt-1 font-medium;">Loading…</p>
                             </div>
                         </div>
-                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #ff6600;">
-                            <svg class="w-5 h-5" style="color: #ffffff;" fill="currentColor" viewBox="0 0 24 24">
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                            <svg class="w-4 h-4" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                 <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                             </svg>
                         </div>
@@ -196,7 +196,7 @@
                 </div>
 
                 <!-- Dead Stock Alert Card -->
-                <a href="{{ route('dss.dead-stock.index') }}" class="block border border-gray-200 p-4 hover:shadow-md transition cursor-pointer group" style="border-radius: 20px; background-color: #ffffff;">
+                <a href="{{ route('dss.dead-stock.index') }}" class="block border border-gray-200 p-4 hover:shadow-md transition cursor-pointer group" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #ffffff15 50%);">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <p class="text-black text-xs font-semibold">Dead Stock</p>
@@ -205,8 +205,8 @@
                                 <p id="deadStockCardValue" class="text-gray-500 text-xs mt-1 font-medium">Value at Risk: ₱0</p>
                             </div>
                         </div>
-                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #ef4444;">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                            <svg class="w-5 h-5 text-black" fill="currentColor" viewBox="0 0 24 24" style="transform: translateY(-1px);"><path d="M4.47 21h15.06c1.54 0 2.5-1.67 1.73-3L13.73 4.99c-.77-1.33-2.69-1.33-3.46 0L2.74 18c-.77 1.33.19 3 1.73 3zM13 18h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
                         </div>
                     </div>
                 </a>
@@ -215,7 +215,7 @@
 
         {{-- ═══ DEAD STOCK ALERT WIDGET ═══ --}}
         @if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk'))
-        <div id="deadStockAlertWidget" class="hidden mt-3">
+        <div id="deadStockAlertWidget" class="hidden">
             <div class="border border-rose-200 bg-gradient-to-r from-rose-50 via-white to-rose-50 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3" style="border-radius: 20px;">
                 <div class="flex items-start gap-3">
                     <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 rounded-full bg-rose-100">
@@ -270,7 +270,7 @@
         @endif
 
         <!-- Charts Row -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 pt-1">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-8">
             <!-- Sales Overview Chart -->
             <div id="salesOverviewCard" class="lg:col-span-2 border border-gray-200 p-4 relative overflow-hidden" style="border-radius: 20px; background-color: #ffffff; min-height: 240px; box-sizing: border-box;">
 
@@ -319,7 +319,7 @@
         </div>
 
         <!-- Tables Row -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 pt-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-8">
 
             <!-- Inventory Levels (compact card, stacked/overlapping rows, no popup) -->
          <div id="inventoryCardWrap" class="relative">
@@ -333,8 +333,8 @@
  
                         <!-- Total Products (top of the stack) -->
                         <div class="inv-row flex items-center gap-2 px-3 py-3" style="border-radius: 18px; background-color: #ffffff; position: relative; z-index: 40;">
-                            <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-full" style="background-color: #00c000;">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #105f68;">
+                                <svg class="absolute inset-0 m-auto" style="width: 14px; height: 14px; transform: translate(-0.5px, 0.5px);" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <path d="M21 8l-9-5-9 5 9 5 9-5z"></path>
                                     <path d="M3 8v8l9 5 9-5V8"></path>
                                 </svg>
@@ -345,8 +345,8 @@
  
                         <!-- Low Stock Items -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 18px; background-color: #ffffff; position: relative; z-index: 30; margin-top: -12px; padding-top: 20px; padding-bottom: 12px; border-top: 1px solid rgba(0,0,0,0.06);">
-                            <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-full" style="background-color: #ff3300;">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #105f68;">
+                                <svg class="absolute inset-0 m-auto" style="width: 14px; height: 14px; transform: translate(-0.5px, 0.5px);" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <path d="M12 9v4"></path>
                                     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
                                     <path d="M12 17h.01"></path>
@@ -358,8 +358,8 @@
  
                         <!-- Out of Stock Items -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 18px; background-color: #ffffff; position: relative; z-index: 20; margin-top: -12px; padding-top: 20px; padding-bottom: 12px; border-top: 1px solid rgba(0,0,0,0.06);">
-                            <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-full" style="background-color: #1ea19b;">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #105f68;">
+                                <svg class="absolute inset-0 m-auto" style="width: 14px; height: 14px; transform: translate(-0.5px, 0.5px);" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <circle cx="12" cy="12" r="9"></circle>
                                     <line x1="9" y1="9" x2="15" y2="15"></line>
                                     <line x1="15" y1="9" x2="9" y2="15"></line>
@@ -371,8 +371,8 @@
  
                         <!-- In Stock Items (bottom of the stack) -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 18px; background-color: #ffffff; position: relative; z-index: 10; margin-top: -12px; padding-top: 20px; padding-bottom: 12px; border-top: 1px solid rgba(0,0,0,0.06);">
-                            <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-full" style="background-color: #ff9900;">    
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #105f68;">
+                                <svg class="absolute inset-0 m-auto" style="width: 14px; height: 14px; transform: translate(-0.5px, 0.5px);" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <circle cx="12" cy="12" r="9"></circle>
                                     <polyline points="8 12 11 15 16 9"></polyline>
                                 </svg>
@@ -387,7 +387,7 @@
             <!-- Top Selling Item (slideshow widget) -->
             <div id="topSellingWidget" class="lg:col-span-1 bg-[#ffffff] border border-gray-200 p-3" style="border-radius: 20px;">
                 <div class="flex items-center justify-between mb-2">
-                    <h2 class="text-sm font-bold text-gray-900" style="font-family: 'Poppins', sans-serif;">Top Selling Item</h2>
+                    <h2 class="text-sm font-bold text-gray-900" style="font-family: 'Poppins', sans-serif;">Top Selling Items</h2>
                         <button id="topSellingOpenBtn" type="button" aria-label="Open top selling" class="inline-flex items-center justify-center rounded-full" style="width:32px; height:32px;">
                             <svg class="w-4 h-4 top-selling-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l10-10"/><path d="M7 7h10v10"/></svg>
                         </button>
@@ -408,10 +408,10 @@
             </div>
 
             <!-- Monthly Sales Comparison -->
-            <div class="lg:col-span-1 border border-gray-200 p-3" style="border-radius: 20px; background-color: #ffffff;">
+            <div id="comparisonCard" class="lg:col-span-1 border border-gray-200 p-3 flex flex-col" style="border-radius: 20px; background-color: #ffffff;">
                 <h2 class="text-sm font-bold text-black mb-2" style="font-family: 'Poppins', sans-serif;">Monthly Sales Comparison</h2>
-                <div class="w-full overflow-hidden" style="max-width: 100%;">
-                    <canvas id="barChart" class="w-full" height="180" style="max-width: 100%; display: block;"></canvas>
+                <div class="w-full flex-1 overflow-hidden" style="max-width: 100%; min-height: 0;">
+                    <canvas id="barChart" class="w-full h-full" style="max-width: 100%; display: block;"></canvas>
                 </div>
             </div>
         <!-- ═══ Toast Notification Container (top-right, stacking) ═══ -->
@@ -481,6 +481,14 @@
             transform: translateY(-2px);
         }
 
+        /* ---- Card Heights Sync ---- */
+        #inventoryCard, #topSellingWidget, #comparisonCard {
+            height: 270px !important;
+            max-height: 270px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
         /* ---- Sales by Category (full-circle ring + legend) ---- */
         #categoryLegend .cat-legend-row {
             display: flex;
@@ -539,7 +547,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background-color: #0596682a;
+            background-color: rgba(54, 173, 163, 0.15);
             color: #105f68;
             border: none;   
             box-shadow: none;
@@ -547,7 +555,7 @@
             
         }
         #topSellingOpenBtn:hover {
-            background-color: #04785749;
+            background-color: rgba(54, 173, 163, 0.3);
             color: #105f68;
         }
     
@@ -569,47 +577,82 @@
         }
 
         /* ---- Top Selling Items modal (light theme) ---- */
-        #topItemsModal .modal-panel {
-            background-color: #f1f1f1;
-            color: #6d6d6d;
-            opacity: 0;
-            transform: translateX(140px) scale(0.96) translateY(6px);
-            transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        #topItemsModal.is-open .modal-panel {
-            opacity: 1;
-            transform: translateX(110px) scale(1) translateY(0);
-        }
-        #topItemsModal .modal-overlay-bg {
-            background: rgba(0,0,0,0.6);
-            opacity: 0;
-            transition: opacity 0.28s ease;
-        }
-        #topItemsModal.is-open .modal-overlay-bg {
-            opacity: 1;
-        }
-        #topItemsModal table thead th {
-            color: #464545;
-            font-weight: 600;
-            border-bottom: 1px solid rgba(0,0,0,0.20);
-        }
-        #topItemsModal table tbody td {
-            color: #6b7280;
-            border-bottom: 1px solid rgba(107,114,128,0.20);
-        }
-        #topItemsModal #closeTopItemsModal {
-            background-color: #0596682a !important;
-            color: #105f68 !important;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.18s ease, color 0.18s ease;
-        }
-        #topItemsModal #closeTopItemsModal:hover {
-            background-color: #04785749 !important;
-            color: #105f68 !important;
-        }
-        /* Range buttons: unselected = light teal tint, selected (clicked) = solid #105f68 */
+       #topItemsModal .modal-panel {
+    background-color: #ffffff;
+    color: #6d6d6d;
+    opacity: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 16px;
+    transform: scale(0.96) translateY(6px);
+    transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+#topItemsModal.is-open .modal-panel {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+#topItemsModal .modal-overlay-bg {
+    background: rgba(0,0,0,0.6);
+    opacity: 0;
+    transition: opacity 0.28s ease;
+}
+#topItemsModal.is-open .modal-overlay-bg {
+    opacity: 1;
+}
+#topItemsModal .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 18px 22px;
+    background-color: #105f68;
+    border-radius: 16px 16px 0 0;
+    flex-shrink: 0;
+}
+#topItemsModal .modal-header h3 {
+    margin: 0;
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+}
+#topItemsModal .modal-header p {
+    margin: 2px 0 0;
+    color: rgba(255,255,255,0.75);
+    font-size: 0.8rem;
+}
+#topItemsModal .modal-body {
+    padding: 20px;
+    overflow: auto;
+}
+#topItemsModal table thead th {
+    color: #464545;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(0,0,0,0.20);
+}
+#topItemsModal table tbody td {
+    color: #6b7280;
+    border-bottom: 1px solid rgba(107,114,128,0.20);
+}
+#topItemsModal #closeTopItemsModal {
+    background-color: transparent !important;
+    color: #ffffff !important;
+    border: none;
+    border-radius: 8px;
+    width: 28px;
+    height: 28px;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color 0.18s ease;
+}
+#topItemsModal #closeTopItemsModal:hover {
+    background-color: rgba(255,255,255,0.15) !important;
+    color: #ffffff !important;
+}
+        
+        /* Range buttons: unselected = original light teal tint background with teal text, selected (clicked) = solid #36ADA3 with same color teal text */
         .sales-range-btn {
             background-color: #e3edee;
             color: #105f68;
@@ -628,14 +671,16 @@
         }
 
         .sales-range-btn.active {
-            background-color: #105f68;
-            color: #ffffff;
+            background-color: #105f68 !important;
+            color: #ffffff !important;
+            font-weight: 600 !important;
         }
 
         .sales-range-btn.active:hover {
-            background-color: #0c4a51;
-            color: #ffffff;
+            background-color: #105f68 !important;
+            color: #ffffff !important;
         }
+        
 
         /* Dashboard cards shadow — mimic POS terminal containers */
         .border.border-gray-200 {
@@ -863,60 +908,62 @@
                 renderSlides(); startRotate();
             }).catch(()=>{ placeholder.textContent = 'Failed to load'; });
 
-            function openTopItemsModal(list){
-                let modal = document.getElementById('topItemsModal');
-                if (!modal) {
-                    modal = document.createElement('div'); modal.id = 'topItemsModal';
-                    // Fixed + centered on the whole dashboard screen (not off to the side)
-                    modal.style.position = 'fixed';
-                    modal.style.inset = '0';
-                    modal.style.display = 'flex';
-                    modal.style.alignItems = 'center';
-                    modal.style.justifyContent = 'center';
-                    modal.style.zIndex = '1200';
-                    modal.innerHTML = `
-                        <div class="modal-overlay-bg" style="position:absolute;inset:0;"></div>
-                        <div class="modal-panel" style="position:relative;border-radius:16px;padding:18px;max-width:900px;width:95%;max-height:80%;overflow:auto;margin:auto;">
-                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                                <h3 style="margin:0;color:#000000;font-family:'Poppins',sans-serif;font-weight:700;font-size:1.15rem;">Top Selling Items</h3>
-                                <button id="closeTopItemsModal" style="border:none;background:#059669;color:#ffffff;border-radius:10px;width:30px;height:30px;cursor:pointer">×</button>
-                            </div>
-                            <div>
-                                <table style="width:100%;border-collapse:collapse">
-                                    <thead>
-                                        <tr style="text-align:left">
-                                            <th style="padding:8px">Rank</th>
-                                            <th style="padding:8px">Item</th>
-                                            <th style="padding:8px">Category</th>
-                                            <th style="padding:8px">Qty</th>
-                                            <th style="padding:8px">Revenue</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="topItemsModalBody"></tbody>
-                                </table>
-                            </div>
-                        </div>`;
-                    document.body.appendChild(modal);
+         function openTopItemsModal(list){
+    let modal = document.getElementById('topItemsModal');
+    if (!modal) {
+        modal = document.createElement('div'); modal.id = 'topItemsModal';
+        // Fixed + centered on the whole dashboard screen (not off to the side)
+        modal.style.position = 'fixed';
+        modal.style.inset = '0';
+        modal.style.display = 'flex';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
+        modal.style.zIndex = '1200';
+        modal.innerHTML = `
+            <div class="modal-overlay-bg" style="position:absolute;inset:0;"></div>
+            <div class="modal-panel" style="position:relative;max-width:900px;width:95%;max-height:80%;margin:auto;">
+                <div class="modal-header">
+                    <div>
+                        <h3>Top Selling Items</h3>
+                        <p>Ranking of best performing products by revenue and quantity.</p>
+                    </div>
+                    <button id="closeTopItemsModal">×</button>
+                </div>
+                <div class="modal-body">
+                    <table style="width:100%;border-collapse:collapse">
+                        <thead>
+                            <tr style="text-align:left">
+                                <th style="padding:8px">Rank</th>
+                                <th style="padding:8px">Item</th>
+                                <th style="padding:8px">Category</th>
+                                <th style="padding:8px">Qty</th>
+                                <th style="padding:8px">Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topItemsModalBody"></tbody>
+                    </table>
+                </div>
+            </div>`;
+        document.body.appendChild(modal);
 
-                    const doClose = () => closeTopItemsModal(modal);
-                    modal.querySelector('#closeTopItemsModal').addEventListener('click', doClose);
-                    modal.querySelector('.modal-panel').addEventListener('click', (e)=>{ e.stopPropagation(); });
-                    modal.addEventListener('click', doClose);
-                }
+        const doClose = () => closeTopItemsModal(modal);
+        modal.querySelector('#closeTopItemsModal').addEventListener('click', doClose);
+        modal.querySelector('.modal-panel').addEventListener('click', (e)=>{ e.stopPropagation(); });
+        modal.addEventListener('click', doClose);
+    }
 
-                const body = modal.querySelector('#topItemsModalBody'); body.innerHTML = '';
-                (list||[]).forEach((it, i)=>{
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td style="padding:8px">${i+1}</td><td style="padding:8px">${escapeHtml(it.name)}</td><td style="padding:8px">${escapeHtml(it.category||'')}</td><td style="padding:8px">${it.qty ?? it.quantity ?? ''}</td><td style="padding:8px">${it.revenue ? (new Intl.NumberFormat('en-PH',{style:'currency',currency:'PHP'}).format(it.revenue)):''}</td>`;
-                    body.appendChild(tr);
-                });
+    const body = modal.querySelector('#topItemsModalBody'); body.innerHTML = '';
+    (list||[]).forEach((it, i)=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td style="padding:8px">${i+1}</td><td style="padding:8px">${escapeHtml(it.name)}</td><td style="padding:8px">${escapeHtml(it.category||'')}</td><td style="padding:8px">${it.qty ?? it.quantity ?? ''}</td><td style="padding:8px">${it.revenue ? (new Intl.NumberFormat('en-PH',{style:'currency',currency:'PHP'}).format(it.revenue)):''}</td>`;
+        body.appendChild(tr);
+    });
 
-                // trigger the open (fade-in + scale) transition
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => modal.classList.add('is-open'));
-                });
-            }
-
+    // trigger the open (fade-in + scale) transition
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => modal.classList.add('is-open'));
+    });
+}
             // Nice close effect: fade + scale out, then remove from DOM
             function closeTopItemsModal(modal){
                 modal.classList.remove('is-open');
