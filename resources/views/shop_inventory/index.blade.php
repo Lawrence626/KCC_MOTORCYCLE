@@ -6,273 +6,309 @@
             --brand-dark: #134e4a;
             --card-bg: #ffffff;
             --surface: #f8fafc;
-            --muted: #6b7280;
-            --border: rgba(148,163,184,0.2);
+            --muted: #64748b;
+            --border: rgba(226, 232, 240, 0.8);
         }
-        .si-badge { background: linear-gradient(90deg,var(--brand),var(--brand-dark)); color: #fff; box-shadow: 0 10px 30px rgba(15,118,110,0.08); }
-        .si-card { border: 1px solid var(--border); background: var(--card-bg); box-shadow: 0 12px 30px rgba(15,23,42,0.06); }
-        .si-location { background: #f8fafc; border: 1px dashed rgba(15,118,110,0.16); }
-        .product-chip { background: #fff; border: 1px solid rgba(16,185,129,0.18); border-radius: 1rem; overflow: hidden; display: flex; flex-direction: column; }
-        .chip-header { background: linear-gradient(90deg, #0f766e, #134e4a); padding: 0.5rem 0.75rem; }
-        .chip-desc { color: #fff; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.02em; }
-        .chip-body { padding: 0.5rem 0.75rem; display: flex; flex-direction: column; gap: 0.18rem; }
-        .chip-row { display: flex; align-items: baseline; gap: 0.35rem; }
-        .chip-label { font-size: 0.72rem; color: #64748b; font-weight: 500; min-width: 72px; flex-shrink: 0; }
-        .chip-value { font-size: 0.78rem; color: #0f172a; font-weight: 500; }
-        .chip-value.sku { font-family: monospace; color: #0d9488; font-size: 0.72rem; }
-        .chip-value.price { color: #166534; font-weight: 700; }
-        .chip-value.qty { color: #1d4ed8; font-weight: 700; }
+        .si-card-glow { transition: all 0.3s ease; }
+        .si-card-glow:hover { transform: translateY(-3px); box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04); }
+        .product-chip { 
+            background: #ffffff; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 0.85rem; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            transition: all 0.2s ease;
+        }
+        .product-chip:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+        }
+        .chip-header { 
+            background: linear-gradient(135deg, #0f766e, #115e59); 
+            padding: 0.5rem 0.75rem; 
+        }
+        .chip-desc { color: #ffffff; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.01em; }
+        .chip-body { padding: 0.6rem 0.75rem; display: flex; flex-direction: column; gap: 0.22rem; }
+        .chip-row { display: flex; align-items: center; justify-content: space-between; gap: 0.35rem; }
+        .chip-label { font-size: 0.72rem; color: #64748b; font-weight: 500; }
+        .chip-value { font-size: 0.76rem; color: #0f172a; font-weight: 600; }
+        .chip-value.sku { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; color: #0f766e; font-size: 0.72rem; background: #ccfbf1; padding: 0.1rem 0.35rem; border-radius: 0.35rem; }
+        .chip-value.price { color: #047857; font-weight: 700; }
+        .chip-value.qty { color: #0284c7; font-weight: 700; }
         .shop-shelves { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
-        .map-unit { min-height: 220px; background: #ffffff; border: 1px solid rgba(148,163,184,0.2); border-radius: 0.5rem; padding: 1rem; }
+        .map-unit { min-height: 220px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1.25rem; }
         .modal-panel { width: min(100%, 960px); border-radius: 1.5rem; background: #ffffff; box-shadow: 0 28px 80px rgba(15,23,42,0.18); }
         .modal-field { border: 1px solid rgba(148,163,184,0.35); background: #f8fafc; border-radius: 0.85rem; }
         .modal-field input { border: none; background: transparent; outline: none; }
         .modal-field select { border: 1px solid rgba(148,163,184,0.35); background: #ffffff; outline: none; border-radius: 0.5rem; }
         .modal-field label { color: #334155; }
         select option { background: #ffffff; color: #334155; padding: 8px 12px; }
-        .product-row-card { background: #f8fafc; border: 1px solid rgba(148,163,184,0.2); border-radius: 1rem; padding: 0.85rem; }
-        .product-row-card .row-grid { gap: 0.75rem; }
-        .product-row-card .product-sku,
-        .product-row-card .product-desc,
-        .product-row-card .product-brand,
-        .product-row-card .product-compatible,
-        .product-row-card .product-qty,
-        .product-row-card .product-price,
-        .product-row-card .product-select { background: #ffffff; border: 1px solid rgba(148,163,184,0.25); border-radius: 0.85rem; }
-        .product-row-card .product-sku { background: #f1f5f9; }
-        .product-row-card .product-name { background: #ffffff; border: 1px solid rgba(148,163,184,0.25); border-radius: 0.85rem; padding: 0.75rem; }
-        .product-row-card .product-select,
-        .product-row-card .product-sku,
-        .product-row-card .product-desc,
-        .product-row-card .product-brand,
-        .product-row-card .product-compatible,
-        .product-row-card .product-qty,
-        .product-row-card .product-price { padding: 0.75rem; }
-        .remove-product-row { color: #ef4444; transition: color 0.2s ease; }
-        .remove-product-row:hover { color: #b91c1c; }
-        .modal-actions { border-top: 1px solid rgba(148,163,184,0.25); padding-top: 0.85rem; }
-        .modal-footer-button { border-radius: 0.85rem; padding: 0.75rem 1.2rem; font-weight: 600; }
-        .modal-footer-button.primary { background: var(--brand); color: #fff; }
-        .modal-footer-button.secondary { background: #f8fafc; color: #334155; border: 1px solid rgba(148,163,184,0.35); }
-        .product-row-card label { font-size: 0.72rem; }
-        .product-row-card .remove-product-row { font-size: 0.85rem; }
-        .modal-panel { max-height: 95vh; overflow-y: auto; }
-        .modal-field { position: relative; }
-        #modal-product-rows { max-height: 440px; }
         .toast-container { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 60; display: flex; flex-direction: column; gap: 0.85rem; pointer-events: none; width: max-content; min-width: 280px; }
         .toast { pointer-events: auto; display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; background: #0f766e; color: #fff; border-radius: 1rem; box-shadow: 0 18px 50px rgba(15,23,42,0.18); padding: 0.85rem 1rem; font-size: 0.95rem; animation: toast-in 0.22s ease forwards; }
         .toast.success { background: #0f766e; }
         .toast.error { background: #ef4444; }
         .toast button { background: transparent; border: none; color: rgba(255,255,255,0.95); cursor: pointer; font-size: 1rem; line-height: 1; padding: 0; }
         @keyframes toast-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .btn-primary { background: linear-gradient(90deg, var(--brand), var(--brand-dark)); color: #fff; box-shadow: 0 4px 15px rgba(15,118,110,0.25); transition: all 0.2s ease; }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(15,118,110,0.35); }
-        .btn-secondary { background: #f8fafc; color: #334155; border: 1px solid rgba(148,163,184,0.35); transition: all 0.2s ease; }
-        .btn-secondary:hover { background: #f1f5f9; border-color: rgba(148,163,184,0.5); }
         @media (max-width: 1024px) { .shop-shelves { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
         @media (max-width: 770px) {
             .shop-shelves { grid-template-columns: 1fr; }
-            .product-row-card { padding: 0.85rem; }
             .map-unit { min-height: 200px; }
         }
     </style>
 
-    <div class="space-y-6">
+    <div class="space-y-6 max-w-screen-2xl mx-auto w-full">
         <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
-        <div class="flex items-start justify-between">
+
+        <!-- Header Block -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-                <h1 class="text-3xl font-extrabold text-slate-900">Shop Inventory Items</h1>
-                <p class="mt-2 text-sm text-gray-500">Track and manage products across shop shelves for POS sales.</p>
+                <div class="flex items-center gap-3">
+                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Shop Inventory Items</h1>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-100 text-cyan-800 border border-cyan-200">POS Retail</span>
+                </div>
+                <p class="mt-1 text-sm text-slate-500">Track and manage products across shop shelves for active point-of-sale transactions.</p>
             </div>
-            <div class="flex items-center space-x-3 relative z-[100000001]">
-                <button id="add-shelf-button" type="button" class="inline-flex items-center px-3 py-2 si-badge rounded-xl text-sm font-medium shadow-md hover:from-emerald-700 hover:to-cyan-700 transition" onclick="openAddShelfModal()">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
+            <div class="flex flex-wrap items-center gap-2.5 relative z-[100000001]">
+                <button id="add-shelf-button" type="button" class="px-4 py-2.5 rounded-xl bg-cyan-600 text-white text-sm font-semibold hover:bg-cyan-700 transition shadow-sm flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98]" onclick="openAddShelfModal()">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                     Add Shelf
                 </button>
-                <button id="transfer-from-warehouse" type="button" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white rounded-xl text-sm font-medium shadow-md hover:from-emerald-700 hover:to-cyan-700 transition">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
-                    </svg>
+                <button id="transfer-from-warehouse" type="button" class="px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition shadow-sm flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98]">
+                    <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                     Transfer from Warehouse
                 </button>
-                <button id="view-history" type="button" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl text-sm font-medium shadow-md hover:from-purple-700 hover:to-purple-800 transition">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+                <button id="view-history" type="button" class="px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition shadow-sm flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98]">
+                    <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     History Logs
                 </button>
-                <a href="{{ route('shop.inventory.archived') }}" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-xl text-sm font-medium shadow-md hover:from-orange-700 hover:to-orange-800 transition">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
-                    </svg>
+                <a href="{{ route('shop.inventory.archived') }}" class="px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition shadow-sm flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98]">
+                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
                     Archive List
                 </a>
             </div>
         </div>
 
-        <!-- Search and Filter Bar -->
-        <div class="flex flex-col md:flex-row gap-4 items-center bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-            <div class="flex-1 w-full">
-                <div class="relative">
-                    <input type="text" id="search-input" class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Search products, shelves, or sections...">
-                    <svg class="absolute left-3 top-2.5 h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
+        <!-- KPI Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between si-card-glow">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Total Products</span>
+                    <div class="w-8 h-8 rounded-lg bg-cyan-50 flex items-center justify-center text-cyan-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/></svg>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <p id="total-products" class="text-2xl font-extrabold text-slate-900 leading-none">{{ $totalProducts ?? 0 }}</p>
+                    <p class="text-xs text-slate-400 mt-1">Total items across shop shelves</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2 w-full md:w-auto">
-                <label class="text-sm font-medium text-slate-700 whitespace-nowrap">Product Description:</label>
-                <select id="product-description-filter" class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white">
-                    <option value="">All Descriptions</option>
-                    @php
-                        $descriptions = \App\Models\ProductDescription::where('is_active', true)->orderBy('name')->get();
-                        foreach($descriptions as $desc):
-                    @endphp
-                        <option value="{{ $desc->name }}">{{ $desc->name }}</option>
-                    @php endforeach; @endphp
-                </select>
-            </div>
-            <div class="flex items-center gap-2 w-full md:w-auto">
-                <label class="text-sm font-medium text-slate-700 whitespace-nowrap">Brand:</label>
-                <select id="brand-filter" class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white">
-                    <option value="">All Brands</option>
-                    @php
-                        $brands = \App\Models\Product::where('is_archived', false)
-                            ->whereNotNull('brand')
-                            ->where('brand', '!=', '')
-                            ->distinct()
-                            ->orderBy('brand')
-                            ->pluck('brand')
-                            ->toArray();
-                        foreach($brands as $brand):
-                    @endphp
-                        <option value="{{ $brand }}">{{ $brand }}</option>
-                    @php endforeach; @endphp
-                </select>
-            </div>
-            <div class="flex items-center gap-2 w-full md:w-auto">
-                <label class="text-sm font-medium text-slate-700 whitespace-nowrap">Filter by Section:</label>
-                <select id="section-filter" class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white">
-                    <option value="">All Sections</option>
-                </select>
-            </div>
-            <button id="clear-search" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition">
-                Clear
-            </button>
-        </div>
 
-        <div class="mt-4 flex items-center gap-4">
-            <div class="rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
-                <p class="uppercase tracking-[0.18em] text-xs text-slate-400">Total Products</p>
-                <p id="total-products" class="mt-1 text-lg font-semibold text-slate-900">{{ $totalProducts ?? 0 }}</p>
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between si-card-glow">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Total Shelves</span>
+                    <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <p id="total-shelves" class="text-2xl font-extrabold text-slate-900 leading-none">{{ $totalShelves ?? 0 }}</p>
+                    <p class="text-xs text-slate-400 mt-1">Configured POS retail shelves</p>
+                </div>
             </div>
-            <div class="rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
-                <p class="uppercase tracking-[0.18em] text-xs text-slate-400">Total Shelf</p>
-                <p id="total-shelves" class="mt-1 text-lg font-semibold text-slate-900">{{ $totalShelves ?? 0 }}</p>
+
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between si-card-glow">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-500 font-semibold uppercase tracking-wider">POS Readiness</span>
+                    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <p class="text-2xl font-extrabold text-emerald-600 leading-none">Active</p>
+                    <p class="text-xs text-slate-400 mt-1">Live barcode & POS scanner sync</p>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between si-card-glow">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Quick Transfer</span>
+                    <div class="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <p class="text-2xl font-extrabold text-slate-900 leading-none">Warehouse</p>
+                    <p class="text-xs text-slate-400 mt-1">Direct stock restock channel</p>
+                </div>
             </div>
         </div>
 
-        <div class="grid gap-6 mt-4">
+        <!-- Unified Search & Filter Toolbar -->
+        <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-3">
+            <div class="flex flex-col md:flex-row items-center gap-3">
+                <div class="relative flex-1 w-full">
+                    <svg class="absolute left-3 top.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <input type="text" id="search-input" class="w-full pl-9 pr-4 py-2 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 transition" placeholder="Search products, shelves, or sections...">
+                </div>
+
+                <div class="flex flex-wrap md:flex-nowrap items-center gap-2.5 w-full md:w-auto">
+                    <select id="product-description-filter" class="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-cyan-500 bg-white text-slate-700">
+                        <option value="">All Descriptions</option>
+                        @php
+                            $descriptions = \App\Models\ProductDescription::where('is_active', true)->orderBy('name')->get();
+                            foreach($descriptions as $desc):
+                        @endphp
+                            <option value="{{ $desc->name }}">{{ $desc->name }}</option>
+                        @php endforeach; @endphp
+                    </select>
+
+                    <select id="brand-filter" class="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-cyan-500 bg-white text-slate-700">
+                        <option value="">All Brands</option>
+                        @php
+                            $brands = \App\Models\Product::where('is_archived', false)
+                                ->whereNotNull('brand')
+                                ->where('brand', '!=', '')
+                                ->distinct()
+                                ->orderBy('brand')
+                                ->pluck('brand')
+                                ->toArray();
+                            foreach($brands as $brand):
+                        @endphp
+                            <option value="{{ $brand }}">{{ $brand }}</option>
+                        @php endforeach; @endphp
+                    </select>
+
+                    <select id="section-filter" class="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-cyan-500 bg-white text-slate-700">
+                        <option value="">All Sections</option>
+                    </select>
+
+                    <button id="clear-search" class="px-3.5 py-2 text-sm font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition whitespace-nowrap flex items-center gap-1.5" title="Clear Filters">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shop Shelves Grid / Empty State -->
+        <div class="mt-2">
             @if($shelves->count() > 0)
-                <div class="si-card rounded-lg p-4 shadow-sm">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <div class="flex items-center space-x-3">
-                                <div class="w-12 h-12 rounded-md flex items-center justify-center text-white font-semibold si-badge">S</div>
-                                <div>
-                                    <div class="text-lg font-semibold text-slate-900">Shop Inventory</div>
-                                    <div class="text-xs text-gray-500">All Shop Shelves</div>
-                                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold bg-gradient-to-r from-teal-600 to-cyan-600 shadow-sm text-base">S</div>
+                            <div>
+                                <h2 class="text-base font-bold text-slate-900">Shop Retail Layout</h2>
+                                <p class="text-xs text-slate-500">Active shop shelves configured for retail POS transactions</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-4">
-                        <div class="map-container border rounded-md p-3 bg-gray-50">
-                            <div class="shop-shelves grid gap-6" id="shop-shelves-grid">
-                                @foreach($shelves as $shelf)
-                                <div class="map-unit shelf-card">
-                                    <div class="flex items-start justify-between mb-4">
-                                        <div>
-                                            <div class="flex items-center space-x-3">
-                                                <div class="w-10 h-10 rounded-md flex items-center justify-center text-white font-semibold si-badge text-sm">{{ strtoupper(substr($shelf->name, -1)) }}</div>
-                                                <div>
-                                                    <div class="text-base font-semibold text-slate-900 shelf-name">{{ $shelf->name }}</div>
-                                                    <div class="text-xs text-gray-500 shelf-location">{{ $shelf->location ?? 'No location' }}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="relative">
-                                            <select class="action-select text-sm text-slate-700 px-4 py-2 border border-gray-200 rounded-full bg-white hover:bg-gray-50 cursor-pointer appearance-none pr-8" onchange="handleShelfAction(this, {{ $shelf->id }})">
-                                                <option value="">Actions</option>
-                                                <option value="edit-shelf">Edit Shelf</option>
-                                                <option value="transfer-products">Transfer Products</option>
-                                                <option value="return-to-warehouse">Return to Warehouse</option>
-                                                <option value="archive-shelf">Archive Shelf</option>
-                                            </select>
-                                        </div>
+                    <div class="shop-shelves grid gap-6" id="shop-shelves-grid">
+                        @foreach($shelves as $shelf)
+                        <div class="map-unit shelf-card bg-slate-50/50 border border-slate-200 rounded-2xl p-4 transition hover:border-cyan-200 hover:shadow-md">
+                            <div class="flex items-start justify-between mb-4 pb-3 border-b border-slate-100">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold bg-gradient-to-br from-cyan-600 to-teal-700 shadow-sm text-sm">
+                                        {{ strtoupper(substr($shelf->name, -1)) }}
                                     </div>
-                                    <div class="space-y-2">
-                                        @if($shelf->shop_inventory && $shelf->shop_inventory->count() > 0)
-                                            @php
-                                                $productsToShow = $shelf->shop_inventory->take(10);
-                                                $remainingProducts = $shelf->shop_inventory->count() - 10;
-                                            @endphp
-                                            <div class="grid grid-cols-2 gap-2">
-                                                @foreach($productsToShow as $item)
-                                                    @php
-                                                        $p   = $item->product;
-                                                        $cat = $p?->productCatalog;
-                                                        $desc       = $cat?->product_description ?? $p?->description ?? $p?->name ?? 'Unknown';
-                                                        $brand      = $cat?->brand               ?? $p?->brand       ?? '—';
-                                                        $compatible = $cat?->product_name        ?? $p?->compatibility ?? '—';
-                                                        $sku        = $cat?->sku                 ?? $p?->sku          ?? '—';
-                                                        $price      = $p?->unit_price ?? 0;
-                                                        $qty        = $item->quantity;
-                                                        $priceFormatted = '₱' . number_format($price, 2);
-                                                        $expiry     = $p?->expiry_date ? \Carbon\Carbon::parse($p->expiry_date)->format('M d, Y') : 'N/A';
-                                                        $expiryColor = $p?->expiry_status === 'expired' ? 'text-red-600' : ($p?->expiry_status === 'expiring' ? 'text-yellow-600' : 'text-slate-700');
-                                                    @endphp
-                                                    <div class="product-chip">
-                                                        <div class="chip-header">
-                                                            <div class="chip-desc">{{ $desc }}</div>
-                                                        </div>
-                                                        <div class="chip-body">
-                                                            <div class="chip-row"><span class="chip-label">Brand:</span><span class="chip-value">{{ $brand }}</span></div>
-                                                            <div class="chip-row"><span class="chip-label">Compatible:</span><span class="chip-value">{{ $compatible }}</span></div>
-                                                            <div class="chip-row"><span class="chip-label">SKU:</span><span class="chip-value sku">{{ $sku }}</span></div>
-                                                            <div class="chip-row"><span class="chip-label">Price:</span><span class="chip-value price">{{ $priceFormatted }}</span></div>
-                                                            <div class="chip-row"><span class="chip-label">Qty:</span><span class="chip-value qty">{{ $qty }}</span></div>
-                                                            <div class="chip-row"><span class="chip-label">Expiry:</span><span class="chip-value {{ $expiryColor }}">{{ $expiry }}</span></div>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                            @if($remainingProducts > 0)
-                                            <p class="text-xs text-gray-400 mt-2">+{{ $remainingProducts }} more</p>
-                                            @endif
-                                        @else
-                                            <p class="text-sm text-gray-400">No products on this shelf</p>
-                                        @endif
+                                    <div>
+                                        <div class="text-base font-bold text-slate-900 shelf-name">{{ $shelf->name }}</div>
+                                        <div class="text-xs text-slate-500 flex items-center gap-1.5 mt-0.5">
+                                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                            <span class="shelf-location font-medium text-slate-600">{{ $shelf->location ?? 'Shop Floor' }}</span>
+                                        </div>
                                     </div>
                                 </div>
-                                @endforeach
+                                <div class="relative">
+                                    <select class="action-select text-xs font-semibold text-slate-700 px-3.5 py-1.5 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 cursor-pointer shadow-xs focus:ring-2 focus:ring-cyan-500 transition" onchange="handleShelfAction(this, {{ $shelf->id }})">
+                                        <option value="">Actions ▾</option>
+                                        <option value="edit-shelf">Edit Shelf</option>
+                                        <option value="transfer-products">Transfer Products</option>
+                                        <option value="return-to-warehouse">Return to Warehouse</option>
+                                        <option value="archive-shelf">Archive Shelf</option>
+                                    </select>
+                                </div>
                             </div>
-                            <!-- Pagination Controls -->
-                            <div id="pagination-controls" class="pagination mt-4 flex items-center justify-between text-sm text-gray-600 hidden">
-                                <button type="button" id="prev-page" class="px-3 py-2 border rounded-md bg-white hover:bg-gray-50 transition" disabled>Previous</button>
-                                <div>Page <span id="current-page">1</span> of <span id="total-pages">1</span></div>
-                                <button type="button" id="next-page" class="px-3 py-2 border rounded-md bg-white hover:bg-gray-50 transition">Next</button>
+
+                            <div class="space-y-2">
+                                @if($shelf->shop_inventory && $shelf->shop_inventory->count() > 0)
+                                    @php
+                                        $productsToShow = $shelf->shop_inventory->take(10);
+                                        $remainingProducts = $shelf->shop_inventory->count() - 10;
+                                    @endphp
+                                    <div class="grid grid-cols-2 gap-2.5">
+                                        @foreach($productsToShow as $item)
+                                            @php
+                                                $p   = $item->product;
+                                                $cat = $p?->productCatalog;
+                                                $desc       = $cat?->product_description ?? $p?->description ?? $p?->name ?? 'Unknown';
+                                                $brand      = $cat?->brand               ?? $p?->brand       ?? '—';
+                                                $compatible = $cat?->product_name        ?? $p?->compatibility ?? '—';
+                                                $sku        = $cat?->sku                 ?? $p?->sku          ?? '—';
+                                                $price      = $p?->unit_price ?? 0;
+                                                $qty        = $item->quantity;
+                                                $priceFormatted = '₱' . number_format($price, 2);
+                                                $expiry     = $p?->expiry_date ? \Carbon\Carbon::parse($p->expiry_date)->format('M d, Y') : 'N/A';
+                                                $expiryColor = $p?->expiry_status === 'expired' ? 'text-red-600' : ($p?->expiry_status === 'expiring' ? 'text-amber-600' : 'text-slate-600');
+                                            @endphp
+                                            <div class="product-chip">
+                                                <div class="chip-header">
+                                                    <div class="chip-desc truncate" title="{{ $desc }}">{{ $desc }}</div>
+                                                </div>
+                                                <div class="chip-body">
+                                                    <div class="chip-row"><span class="chip-label">Brand:</span><span class="chip-value truncate">{{ $brand }}</span></div>
+                                                    <div class="chip-row"><span class="chip-label">Compatible:</span><span class="chip-value truncate">{{ $compatible }}</span></div>
+                                                    <div class="chip-row"><span class="chip-label">SKU:</span><span class="chip-value sku truncate">{{ $sku }}</span></div>
+                                                    <div class="chip-row"><span class="chip-label">Price:</span><span class="chip-value price">{{ $priceFormatted }}</span></div>
+                                                    <div class="chip-row"><span class="chip-label">Qty:</span><span class="chip-value qty">{{ $qty }}</span></div>
+                                                    <div class="chip-row"><span class="chip-label">Expiry:</span><span class="chip-value {{ $expiryColor }}">{{ $expiry }}</span></div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    @if($remainingProducts > 0)
+                                    <p class="text-xs font-medium text-slate-400 mt-2.5">+{{ $remainingProducts }} more products on shelf</p>
+                                    @endif
+                                @else
+                                    <div class="py-8 text-center bg-white rounded-xl border border-dashed border-slate-200">
+                                        <p class="text-xs font-medium text-slate-400">No products assigned to this shelf</p>
+                                    </div>
+                                @endif
                             </div>
                         </div>
+                        @endforeach
+                    </div>
+
+                    <!-- Pagination Controls -->
+                    <div id="pagination-controls" class="pagination mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-sm text-slate-600 hidden">
+                        <button type="button" id="prev-page" class="px-3.5 py-1.5 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 transition text-xs font-semibold" disabled>Previous</button>
+                        <div class="text-xs font-medium">Page <span id="current-page">1</span> of <span id="total-pages">1</span></div>
+                        <button type="button" id="next-page" class="px-3.5 py-1.5 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 transition text-xs font-semibold">Next</button>
                     </div>
                 </div>
             @else
-                <div id="no-shelves-message" class="text-center py-12">
-                    <div class="text-gray-400 text-lg mb-2">No shop shelves found</div>
-                    <div class="text-gray-500 text-sm">Transfer products from warehouse to create shelves</div>
+                <!-- Redesigned Empty State -->
+                <div id="no-shelves-message" class="bg-white border border-slate-200 rounded-2xl p-12 text-center shadow-sm">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-50 to-emerald-50 border border-cyan-100 flex items-center justify-center mx-auto mb-4 text-cyan-600">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-1">No Shop Shelves Configured</h3>
+                    <p class="text-sm text-slate-500 max-w-md mx-auto mb-6">You haven't set up any shop shelves yet. Create your first shelf or transfer products from the warehouse to start managing POS retail inventory.</p>
+                    
+                    <div class="flex items-center justify-center gap-3">
+                        <button type="button" class="px-4 py-2.5 rounded-xl bg-cyan-600 text-white text-sm font-semibold hover:bg-cyan-700 transition shadow-sm flex items-center gap-2" onclick="openAddShelfModal()">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            Add First Shelf
+                        </button>
+                        <button type="button" class="px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition shadow-sm flex items-center gap-2" onclick="document.getElementById('transfer-from-warehouse').click()">
+                            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                            Transfer from Warehouse
+                        </button>
+                    </div>
                 </div>
             @endif
         </div>

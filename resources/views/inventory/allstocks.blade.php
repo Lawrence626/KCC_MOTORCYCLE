@@ -255,7 +255,7 @@
                             </th>
                             <th class="px-4 py-3 font-semibold">Product</th>
                             <th class="px-4 py-3 font-semibold">Category</th>
-                            <th class="px-4 py-3 font-semibold">Location (Qty)</th>
+                            <th class="px-4 py-3 font-semibold">Location</th>
                             <th class="px-4 py-3 font-semibold">Stock</th>
                             <th class="px-4 py-3 font-semibold">Price</th>
                             <th class="px-4 py-3 font-semibold text-center">Status</th>

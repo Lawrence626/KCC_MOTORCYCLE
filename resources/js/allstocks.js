@@ -16,35 +16,25 @@ let currentFilters = {
 let searchTimeout;
 let currentEditProduct = null;
 
-// Get warehouse badge with color
+// Get warehouse location display string as plain text
 function getWarehouseBadge(warehouse) {
-    const badges = {
-        'Shop': '<span class="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">Shop</span>',
-        'Warehouse A': '<span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">Warehouse A</span>',
-        'Warehouse B': '<span class="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">Warehouse B</span>',
-        'Warehouse C': '<span class="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">Warehouse C</span>',
-    };
-    return badges[warehouse] || `<span class="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">${warehouse}</span>`;
+    return `<span class="text-slate-900 font-medium">${warehouse}</span>`;
 }
 
 // Get location summary from warehouse stocks
 function getLocationSummary(product) {
-    if (!product.warehouse_stocks || product.warehouse_stocks.length === 0) {
-        return '<span class="text-red-500">No Location</span>';
-    }
+    let locations = [];
 
-    const locations = product.warehouse_stocks
-        .filter(stock => stock.quantity > 0)
-        .map(stock => {
-            const badge = getWarehouseBadge(stock.warehouse);
-            return `${badge} (${stock.quantity})`;
-        });
+    if (product.warehouse_locations && Array.isArray(product.warehouse_locations) && product.warehouse_locations.length > 0) {
+        locations = product.warehouse_locations;
+    }
 
     if (locations.length === 0) {
-        return '<span class="text-red-500">No Stock</span>';
+        return '<span class="text-red-500 font-medium">No Location</span>';
     }
 
-    return locations.join('<br>');
+    const uniqueLocations = [...new Set(locations)];
+    return uniqueLocations.map(wh => getWarehouseBadge(wh)).join(', ');
 }
 
 function setEditFieldError(fieldId, message) {

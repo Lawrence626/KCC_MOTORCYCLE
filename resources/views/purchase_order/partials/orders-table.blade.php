@@ -37,7 +37,7 @@
                     $dateValue = match($dateType) {
                         'received' => optional($order->completed_at)->format('M j') ?? optional($order->updated_at)->format('M j'),
                         'created' => optional($order->created_at)->format('M j'),
-                        default => optional($order->expected_delivery_date)->format('M j') ?? 'TBD',
+                        default => optional($order->estimated_delivery_date ?? $order->expected_delivery_date)->format('M j') ?? 'TBD',
                     };
 
                     // Estimated delivery date logic

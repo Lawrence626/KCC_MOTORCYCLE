@@ -1277,15 +1277,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 const brand = brandFilter.trim();
                 const isFiltering = query || productDesc || brand;
 
+                const whLetter = String.fromCharCode(65 + (warehouseIndex % 26));
+
                 for (let productSlot = 0; productSlot < PRODUCTS_PER_SHELF; productSlot += 1) {
+                    const binCode = `${whLetter}${productSlot + 1}`;
                     const product = (locView ? (locView.products[productSlot] || null) : null);
                     if (product) {
                         const matches = productMatchesFilters(product, query, productDesc, brand);
                         const displayStyle = (isFiltering && !matches) ? 'display: none;' : '';
                         
                         const productName = product.product_name || product.name || '—';
-                        const oldBinCode = product.old_bin_code || 'E-3';
-                        const finalTitle = `${productName} - ${oldBinCode}`;
+                        const finalTitle = `${binCode} - ${productName}`;
                         
                         const finalBrand      = product.brand                                      || '—';
                         const finalCompatible = product.compatible_model  || product.compatibility  || '—';
@@ -1313,10 +1315,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         </details>`;
                     } else {
                         const displayStyle = isFiltering ? 'display: none;' : '';
-                        productsHtml += `<div class="product-chip opacity-50 rounded-xl px-3 py-2 text-sm text-gray-500 border border-dashed border-gray-200" style="${displayStyle}">Empty slot</div>`;
+                        productsHtml += `<div class="product-chip opacity-50 rounded-xl px-3 py-2 text-sm text-gray-500 border border-dashed border-gray-200" style="${displayStyle}">${binCode} - Empty slot</div>`;
                     }
                 }
-                const shelfTitle = locView?.name || 'Empty shelf';
+                const rawShelfName = locView?.name || 'Empty shelf';
+                const shelfNumber = slotIndex + 1;
+                const shelfTitle = rawShelfName.toLowerCase().startsWith('shelf') ? rawShelfName : `Shelf ${shelfNumber} - ${rawShelfName}`;
                 const shelfCountText = locView ? `${slotCount}/${PRODUCTS_PER_SHELF} products` : `0/${PRODUCTS_PER_SHELF} products`;
                 const addProductOption = (locView && Array.isArray(locView.products) && locView.products.length < PRODUCTS_PER_SHELF) ? '<option value="add-product">Add Product</option>' : '';
                 html += `

@@ -37,7 +37,7 @@
                 <div class="mt-3 space-y-2 text-sm text-slate-700">
                     <p><span class="font-semibold">Status:</span> {{ ucwords($purchaseOrder->status) }}</p>
                     <p><span class="font-semibold">Created:</span> {{ $purchaseOrder->created_at->format('M j, Y') }}</p>
-                    <p><span class="font-semibold">ETA:</span> {{ optional($purchaseOrder->expected_delivery_date)->format('M j, Y') ?? 'TBD' }}</p>
+                    <p><span class="font-semibold">ETA:</span> {{ optional($purchaseOrder->estimated_delivery_date ?? $purchaseOrder->expected_delivery_date)->format('M j, Y') ?? 'TBD' }}</p>
                     <p><span class="font-semibold">Order total:</span> ₱{{ number_format($purchaseOrder->total_amount, 2) }}</p>
                 </div>
             </div>
