@@ -841,7 +841,7 @@ function renderProductPagination(pagination) {
         const pageButton = document.createElement('button');
         pageButton.type = 'button';
         if (page === currentPage) {
-            pageButton.className = 'inline-flex items-center justify-center rounded-[10px] bg-slate-400 text-white w-8 h-8 text-sm font-semibold';
+            pageButton.className = 'inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-sm font-semibold';
         } else {
             pageButton.className = 'inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-sm font-semibold hover:bg-slate-50';
         }

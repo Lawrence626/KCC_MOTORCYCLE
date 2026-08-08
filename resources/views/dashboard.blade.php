@@ -22,41 +22,41 @@
                                 </svg>
                                 <span
                                     id="notification-badge"
-                                    class="absolute -top-0.5 -right-0.5 hidden min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white leading-none"
+                                    class="absolute -top-0.5 -right-0.5 hidden min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-[10px] bg-red-500 text-[10px] font-bold text-white leading-none"
                                 ></span>
                             </button>
 
                             {{-- Notification Dropdown Panel --}}
                             <div
                                 id="notification-panel"
-                                class="hidden absolute right-0 top-full mt-2 w-[400px] rounded-xl bg-white border border-slate-200 shadow-lg z-50 flex flex-col"
-                                style="max-height: 80vh;"
+                                class="hidden absolute right-0 top-full mt-2 w-[320px] rounded-xl bg-white border border-slate-200 shadow-lg z-50 flex flex-col"
+                                style="max-height: 350px;"
                             >
-                                <div class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-white border-b border-slate-100 rounded-t-xl">
+                                <div class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b border-slate-100 rounded-t-xl" style="background: linear-gradient(50deg, #29d5d81e 0%);">
                                     <div class="flex items-center gap-2">
-                                        <span class="text-sm font-semibold text-slate-800">Notifications</span>
-                                        <span id="notif-center-unread-badge" class="hidden inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium text-white" style="background-color: #ef4444;">0</span>
+                                        <span class="text-sm font-semibold text-slate-900">Notifications</span>
+                                        <span id="notif-center-unread-badge" class="hidden inline-flex items-center rounded-[10px] px-2 py-0.5 text-[10px] font-medium text-white" style="background-color: #ef4444;">0</span>
                                     </div>
                                     <div class="flex items-center gap-3">
                                         <button
                                             type="button"
                                             onclick="markAllNotificationsRead()"
-                                            class="text-xs font-medium text-slate-500 hover:text-slate-800 transition-colors"
+                                            class="text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
                                         >Mark all as read</button>
                                     </div>
                                 </div>
                                 <div id="notification-list" class="flex-1 overflow-y-auto">
                                     {{-- Notifications rendered by JS --}}
                                 </div>
-                                <div id="notification-empty" class="hidden px-4 py-12 text-center">
-                                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-50 mb-3">
-                                        <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
+                                <div id="notification-empty" class="hidden px-4 py-8 text-center">
+                                    <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#ccfbf1] mb-2">
+                                        <svg class="w-5 h-5 text-[#0f766e]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
                                     </div>
-                                    <p class="text-sm font-medium text-slate-600">All caught up</p>
-                                    <p class="text-xs text-slate-400 mt-1">No new inventory alerts.</p>
+                                    <p class="text-sm font-semibold text-slate-800">All caught up</p>
+                                    <p class="text-xs text-slate-500 mt-1">No new inventory alerts.</p>
                                 </div>
                                 <div class="sticky bottom-0 z-10 px-4 py-3 bg-slate-50 border-t border-slate-100 text-center rounded-b-xl">
-                                    <button type="button" onclick="openAllNotificationsModal()" class="text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors">View All Notifications</button>
+                                    <button type="button" onclick="openAllNotificationsModal()" class="text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors">View All Notifications</button>
                                 </div>
                             </div>
                         </div>
@@ -415,24 +415,26 @@
                 </div>
             </div>
         <!-- ═══ Toast Notification Container (top-right, stacking) ═══ -->
-        <div id="inventory-toast-container" class="fixed top-20 right-5 z-[200] flex flex-col gap-3 pointer-events-none" style="max-width: 400px; width: 100%;"></div>
+        <div id="inventory-toast-container" class="fixed top-20 right-16 z-[200] flex flex-col gap-3 pointer-events-none" style="max-width: 360px; width: 100%;"></div>
 
         <!-- ═══ View All Notifications Modal ═══ -->
         <div id="all-notifications-modal" class="hidden fixed inset-0 z-[250] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
             <div class="bg-white rounded-[28px] border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]">
-                <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                     <div>
-                        <h3 class="text-sm font-bold text-slate-900">All Inventory Notifications</h3>
-                        <p class="text-xs text-slate-500">History of low stock and out of stock alerts.</p>
+                        <h3 class="text-xl font-bold text-black">All Inventory Notifications</h3>
+                        <p class="text-sm text-slate-800 font-medium">History of low stock and out of stock alerts.</p>
                     </div>
-                    <button type="button" onclick="closeAllNotificationsModal()" class="text-slate-400 hover:text-slate-600 transition text-2xl leading-none">&times;</button>
+                    <button type="button" onclick="closeAllNotificationsModal()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
                 </div>
                 <div id="modal-notification-list" class="divide-y divide-slate-100 overflow-y-auto p-6 space-y-3">
                     <!-- Loaded dynamically -->
                 </div>
                 <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
                     <span id="modal-notif-count" class="text-xs text-slate-500">0 notifications</span>
-                    <button type="button" onclick="closeAllNotificationsModal()" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:border-slate-300">Close</button>
+                    <button type="button" onclick="closeAllNotificationsModal()" class="rounded-[10px] bg-black/10 px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-black/20">Close</button>
                 </div>
             </div>
         </div>
@@ -606,20 +608,20 @@
     justify-content: space-between;
     align-items: flex-start;
     padding: 18px 22px;
-    background-color: #105f68;
+    background-color: #00fff2;
     border-radius: 16px 16px 0 0;
     flex-shrink: 0;
 }
 #topItemsModal .modal-header h3 {
     margin: 0;
-    color: #ffffff;
+    color: #000000;
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
     font-size: 1.15rem;
 }
 #topItemsModal .modal-header p {
     margin: 2px 0 0;
-    color: rgba(255,255,255,0.75);
+    color: #000000;
     font-size: 0.8rem;
 }
 #topItemsModal .modal-body {
@@ -637,9 +639,9 @@
 }
 #topItemsModal #closeTopItemsModal {
     background-color: transparent !important;
-    color: #ffffff !important;
+    color: #000000 !important;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     width: 28px;
     height: 28px;
     font-size: 20px;
@@ -648,8 +650,8 @@
     transition: background-color 0.18s ease;
 }
 #topItemsModal #closeTopItemsModal:hover {
-    background-color: rgba(255,255,255,0.15) !important;
-    color: #ffffff !important;
+    background-color: rgba(0,0,0,0.1) !important;
+    color: #000000 !important;
 }
         
         /* Range buttons: unselected = original light teal tint background with teal text, selected (clicked) = solid #36ADA3 with same color teal text */
@@ -734,8 +736,8 @@
             height: 2px;
             transition: width linear;
         }
-        .inv-toast.toast-warning .toast-progress { background: #f59e0b; }
-        .inv-toast.toast-critical .toast-progress { background: #ef4444; }
+        .inv-toast.toast-warning .toast-progress { background: #00fff2; }
+        .inv-toast.toast-critical .toast-progress { background: #0aada5; }
         .inv-toast-icon {
             width: 32px; height: 32px; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
@@ -752,9 +754,9 @@
             line-height: 1;
         }
         .inv-toast-btn-order {
-            background: #111827; color: #fff;
+            background: #00fff2; color: #000;
         }
-        .inv-toast-btn-order:hover { background: #374151; }
+        .inv-toast-btn-order:hover { background: #00e6da; }
         .inv-toast-btn-dismiss {
             background: #f9fafb; color: #4b5563; border-color: #e5e7eb;
         }
@@ -785,11 +787,11 @@
             display: inline-flex; align-items: center; justify-content: center;
             padding: 4px 10px; border-radius: 6px;
             font-size: 11px; font-weight: 500;
-            background: #ffffff; color: #374151; border: 1px solid #d1d5db;
+            background: #00fff2; color: #000; border: 1px solid #00fff2;
             transition: all 0.15s ease;
             text-decoration: none;
         }
-        .notif-btn:hover { background: #f3f4f6; border-color: #9ca3af; color: #111827; }
+        .notif-btn:hover { background: #00e6da; border-color: #00e6da; color: #000; }
     </style>
 
 @push('scripts')
@@ -1278,12 +1280,12 @@
                             '<span class="font-medium ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + (isCritical ? '0 left' : alert.current_stock + ' remaining') + '</span>' +
                         '</div>' +
                         '<div class="flex items-center gap-2">' +
-                            '<a href="' + escHtml(alert.order_url || '/purchase-order/create') + '" class="inv-toast-btn inv-toast-btn-order">' +
-                                'Order Now' +
-                            '</a>' +
                             '<button type="button" class="inv-toast-btn inv-toast-btn-dismiss" data-toast-dismiss="' + alert.id + '">' +
                                 'Dismiss' +
                             '</button>' +
+                            '<a href="' + escHtml(alert.order_url || '/purchase-order/create') + '" class="inv-toast-btn inv-toast-btn-order">' +
+                                'Order Now' +
+                            '</a>' +
                         '</div>' +
                     '</div>' +
                     '<button type="button" class="flex-shrink-0 text-slate-400 hover:text-slate-600 transition-colors" data-toast-close="' + alert.id + '" aria-label="Close">' +
@@ -1427,6 +1429,7 @@
                 var statusClass = 'notif-item notif-item-' + n.status;
                 var ago = timeAgo(n.created_at);
                 var stockText = isCritical ? '0 left' : n.current_stock + ' remaining';
+                var shortSku = n.sku.length > 15 ? n.sku.substring(0, 15) + '...' : n.sku;
 
                 var item = document.createElement('div');
                 item.className = statusClass + ' px-4 py-3 cursor-pointer';
@@ -1447,14 +1450,14 @@
                             '</div>' +
                             '<p class="text-[13px] font-semibold text-slate-900 truncate mb-1">' + escHtml(n.product_name) + '</p>' +
                             '<div class="flex items-center justify-between">' +
-                                '<div class="flex items-center gap-1.5 text-[11px] text-slate-500">' +
-                                    '<span>' + escHtml(n.sku) + '</span>' +
+                                '<div class="flex items-center gap-1.5 text-[11px] text-slate-500 whitespace-nowrap">' +
+                                    '<span class="truncate max-w-[80px]">' + escHtml(shortSku) + '</span>' +
                                     '<span>&middot;</span>' +
-                                    '<span class="font-medium ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + stockText + '</span>' +
+                                    '<span class="font-medium whitespace-nowrap ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + stockText + '</span>' +
                                 '</div>' +
                                 (n.status !== 'resolved'
-                                    ? '<a href="' + escHtml(n.order_url || '/purchase-order/create') + '" class="notif-btn" onclick="event.stopPropagation();">Order</a>'
-                                    : '<span class="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Resolved</span>'
+                                    ? '<a href="' + escHtml(n.order_url || '/purchase-order/create') + '" class="notif-btn flex-shrink-0" onclick="event.stopPropagation();">Order</a>'
+                                    : '<span class="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600 flex-shrink-0"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Resolved</span>'
                                 ) +
                             '</div>' +
                         '</div>' +
@@ -1520,6 +1523,20 @@
             e.stopPropagation();
             var panel = document.getElementById('notification-panel');
             if (!panel) return;
+
+            // Close profile dropdown first
+            var profileDropdown = document.getElementById('dashboardProfileDropdown');
+            if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
+                profileDropdown.classList.add('hidden');
+                profileDropdown.classList.add('opacity-0', 'scale-95');
+            }
+
+            // Dismiss all toast notifications
+            var toastContainer = document.getElementById('inventory-toast-container');
+            if (toastContainer) {
+                toastContainer.innerHTML = '';
+            }
+
             var isHidden = panel.classList.contains('hidden');
             panel.classList.toggle('hidden');
             if (isHidden) loadNotificationCenter();
@@ -1581,7 +1598,7 @@
                             '</div>' +
                         '</div>' +
                         (n.status !== 'resolved'
-                            ? '<a href="' + escHtml(n.order_url || '/purchase-order/create') + '" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-slate-900 text-white text-xs font-medium hover:bg-slate-800 transition-colors">Order Now</a>'
+                            ? '<a href="' + escHtml(n.order_url || '/purchase-order/create') + '" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[#00fff2] text-black text-xs font-medium hover:bg-[#00e6da] transition-colors">Order Now</a>'
                             : '<span class="inline-flex items-center gap-1 text-xs font-medium text-emerald-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Resolved</span>'
                         ) +
                     '</div>';
@@ -1603,6 +1620,14 @@
             var panel   = document.getElementById('notification-panel');
             if (panel && wrapper && !wrapper.contains(e.target)) {
                 panel.classList.add('hidden');
+            }
+        });
+
+        // Close notification panel when profile button is clicked
+        document.getElementById('dashboardProfileButton')?.addEventListener('click', function() {
+            var notifPanel = document.getElementById('notification-panel');
+            if (notifPanel && !notifPanel.classList.contains('hidden')) {
+                notifPanel.classList.add('hidden');
             }
         });
 

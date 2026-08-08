@@ -6,7 +6,7 @@
                 <h1 class="text-lg font-bold text-white">Warehouse Scanner</h1>
                 <p class="text-xs text-slate-400">Scan QR codes to add new stock</p>
             </div>
-            <button onclick="window.location.href='{{ route('warehouse.management') }}'" class="rounded-full bg-slate-700 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-slate-600">
+            <button onclick="window.location.href='{{ route('warehouse.management') }}'" class="rounded-full bg-[#00FFF2] px-2.5 py-1 text-[11px] font-bold text-slate-900 border-2 border-slate-200 hover:bg-[#00D9CC] ring-1 ring-black/10 transition">
                 Back to Warehouse
             </button>
         </div>
@@ -36,7 +36,7 @@
                 <button onclick="nextPage()" class="px-2.5 py-1 rounded-lg border border-slate-600 bg-slate-700 text-[11px] font-semibold text-white hover:bg-slate-600 disabled:opacity-50" id="next-page">Next</button>
             </div>
 
-            <button onclick="sendToWarehouse()" class="w-full mt-4 px-3 py-2 rounded-xl bg-[#105f68] text-white text-sm font-semibold hover:bg-[#0d4f56] transition" id="send-btn" disabled>Send to Warehouse</button>
+            <button onclick="sendToWarehouse()" class="w-full mt-4 px-3 py-2 rounded-xl bg-[#00FFF2] text-slate-900 text-sm font-bold border-2 border-slate-200 hover:bg-[#00D9CC] ring-1 ring-black/10 transition" id="send-btn" disabled>Send to Warehouse</button>
         </div>
 
         <!-- Connection Status -->

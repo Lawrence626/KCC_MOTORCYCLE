@@ -9,10 +9,21 @@
             --muted: #6b7280;
             --border: rgba(148,163,184,0.2);
         }
+        .warehouse-action-select, .action-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23253858%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 10px auto;
+            padding-right: 2rem !important;
+        }
         .wm-badge { background: linear-gradient(90deg,var(--brand),var(--brand-dark)); color: #fff; box-shadow: 0 10px 30px rgba(15,118,110,0.08); }
         .wm-card { border: 1px solid var(--border); background: var(--card-bg); box-shadow: 0 12px 30px rgba(15,23,42,0.06); }
         .wm-location { background: #f8fafc; border: 1px dashed rgba(15,118,110,0.16); }
         .product-chip { background: #ffffff; border: 1px solid rgba(16,185,129,0.18); color: var(--brand-dark); border-radius: 0.9rem; display:flex; flex-direction:column; gap:0; overflow:hidden; box-shadow: 0 2px 8px rgba(15,118,110,0.06); }
+        .product-chip summary { list-style: none; outline: none; }
+        .product-chip summary::-webkit-details-marker { display: none; }
+        .product-chip[open] .details-arrow { transform: rotate(180deg); }
         .product-chip .chip-header { background: linear-gradient(90deg, #ecfdf5, #d1fae5); padding: 0.45rem 0.75rem; border-bottom: 1px solid rgba(16,185,129,0.14); }
         .product-chip .chip-body { padding: 0.5rem 0.75rem; display:flex; flex-direction:column; gap:0.18rem; }
         .product-chip .chip-row { display:flex; align-items:baseline; gap:0.3rem; font-size:0.72rem; }

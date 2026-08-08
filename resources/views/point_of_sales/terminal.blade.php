@@ -1,7 +1,7 @@
 <x-layouts.app :title="__('POS Terminal')">
     <div class="space-y-3 max-w-[1480px] mx-auto px-3">
          <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div class="pl-3 lg:pl-2">
+                <div class="pl-3 lg:pl-1">
                 <h1 class="text-3xl font-bold text-slate-900">Point of Sale (POS)</h1>
                 <p class="text-gray-600 text-sm mt-1">Process sales, service billing, and payments from one compact page.</p>
             </div>
@@ -52,11 +52,26 @@
                                 <div class="relative flex-1">
                                     <label for="posProductSearchInput" class="sr-only">Search products</label>
                                     <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/></svg>
-                                    <input id="posProductSearchInput" type="text" placeholder="Search products..." class="w-full rounded-[10px] border border-slate-200 bg-white px-10 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#105f68]" />
+                                    <input id="posProductSearchInput" type="text" placeholder="Search products..." class="w-full rounded-[10px] border border-slate-200 bg-white px-10 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35" />
                                 </div>
-                                <button id="posFilterToggleButton" type="button" aria-label="Open filter" class="inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-white text-slate-700 border border-slate-200 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#105f68]">
+                                <button id="posFilterToggleButton" type="button" aria-label="Open filter" class="inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-white text-slate-700 border border-slate-200 transition hover:bg-slate-50 focus:outline-none focus:ring-1 focus:ring-black/35" style="height: 42px; width: 42px;">
                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L15 13.414V18a1 1 0 01-1.447.894l-4-2A1 1 0 019 16v-2.586L3.293 6.707A1 1 0 013 6V4z"/></svg>
                                 </button>
+                            </div>
+                            <div class="flex flex-wrap gap-2 items-center">
+                                <label class="text-xs font-medium text-slate-700">Filter by:</label>
+                                <div class="relative">
+                                    <select id="posCategorySelect" class="hidden">
+                                        <option value="All">All Product Description</option>
+                                        <!-- Categories will be loaded dynamically from product descriptions -->
+                                    </select>
+                                </div>
+                                <div class="relative">
+                                    <select id="posBrandSelect" class="hidden">
+                                        <option value="All">All Brands</option>
+                                        <!-- Brands will be loaded dynamically based on selected product description -->
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -99,11 +114,11 @@
                         <div class="grid gap-3">
                             <label class="block text-sm text-slate-700">
                                 <span class="font-semibold">Extra Charges</span>
-                                <input id="posExtraChargeInput" type="number" min="0" step="0.01" value="0" placeholder="0.00" class="mt-2 w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#105f68]" />
+                                <input id="posExtraChargeInput" type="number" min="0" step="0.01" value="0" placeholder="0.00" class="mt-2 w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35" />
                             </label>
                             <label class="block text-sm text-slate-700">
                                 <span class="font-semibold">Discount</span>
-                                <input id="posDiscountInput" type="number" min="0" step="0.01" value="0" placeholder="0.00" class="mt-2 w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#105f68]" />
+                                <input id="posDiscountInput" type="number" min="0" step="0.01" value="0" placeholder="0.00" class="mt-2 w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35" />
                             </label>
                         </div>
                     </div>
