@@ -4,6 +4,7 @@ use App\Models\POSTransaction;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Session;
 
 beforeEach(function () {
     Schema::create('users', function ($table) {
@@ -138,4 +139,31 @@ it('returns dashboard analytics for completed pos transactions', function () {
         ->assertJsonPath('metrics.sales.value', 3472)
         ->assertJsonPath('comparison_chart.labels.0', 'Current Period')
         ->assertJsonPath('top_items.0.category', 'Exhaust');
+});
+
+it('allows otp login to reach the dashboard when the user is not yet email verified', function () {
+    $user = User::create([
+        'name' => 'OTP User',
+        'email' => 'otp@example.com',
+        'password' => Hash::make('password123'),
+        'role' => 'admin',
+        'email_verified_at' => null,
+    ]);
+
+    Session::put('login.otp', [
+        'user_id' => $user->id,
+        'email' => $user->email,
+        'code' => '123456',
+        'expires_at' => now()->addMinutes(10)->timestamp,
+        'remember' => false,
+    ]);
+
+    $verifyResponse = $this->postJson(route('login.otp.verify'), ['code' => '123456']);
+
+    $verifyResponse->assertOk()
+        ->assertJsonPath('redirectUrl', route('dashboard'));
+
+    $dashboardResponse = $this->get(route('dashboard'));
+
+    $dashboardResponse->assertOk();
 });

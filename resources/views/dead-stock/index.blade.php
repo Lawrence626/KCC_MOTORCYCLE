@@ -12,139 +12,159 @@
     <div class="flex-1 overflow-y-auto px-6 py-6 space-y-6">
 
         {{-- ═══ HEADER ═══ --}}
-        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-            <div>
-                <h1 class="text-[22px] font-semibold text-slate-900 tracking-tight">Dead Stock Analysis</h1>
-                <p class="text-sm text-slate-500 mt-1 font-medium">
-                    Inventory items without sales for <span class="text-slate-700 font-semibold">{{ $thresholdDays }} days</span> or more.
-                </p>
-            </div>
-            <div class="flex flex-wrap items-center gap-3">
-                <a href="{{ route('dss.dead-stock.export-excel') }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}"
-                   class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 shadow-sm transition-all duration-200">
-                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    Export CSV
-                </a>
-                <a href="{{ route('dss.dead-stock.export-pdf') }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}" target="_blank"
-                   class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 shadow-sm transition-all duration-200">
-                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                    Export PDF
-                </a>
-                <form action="{{ route('dss.dead-stock.recalculate') }}" method="POST" class="inline">
-                    @csrf
-                    <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-teal-600 text-white hover:bg-teal-700 shadow-sm transition-all duration-200 focus:ring-2 focus:ring-teal-500/20 focus:outline-none" onclick="this.innerHTML='<svg class=\'w-4 h-4 animate-spin\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15\'/></svg> Analyzing...'; this.disabled=true; this.closest('form').submit();">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                        Recalculate Analysis
-                    </button>
-                </form>
+        <div class="rounded-[22px] border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
+            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Dead Stock Analysis</h1>
+                    <p class="text-xs text-slate-500 mt-1">
+                        Inventory items without sales for <span class="text-slate-900 font-semibold">{{ $thresholdDays }} days</span> or more.
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <a href="{{ route('dss.dead-stock.export-excel') }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}"
+                       class="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-[12px] bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 shadow-sm transition">
+                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        Export CSV
+                    </a>
+                    <a href="{{ route('dss.dead-stock.export-pdf') }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}" target="_blank"
+                       class="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-[12px] bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 shadow-sm transition">
+                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                        Export PDF
+                    </a>
+                    <form action="{{ route('dss.dead-stock.recalculate') }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-[12px] border border-[#00fff2]/40 bg-[#00fff2] text-black hover:bg-[#00e6da] shadow-sm transition focus:ring-2 focus:ring-[#00fff2] focus:outline-none" onclick="this.innerHTML='<svg class=\'w-4 h-4 animate-spin\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15\'/></svg> Analyzing...'; this.disabled=true; this.closest('form').submit();">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            Recalculate Analysis
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
 
         {{-- ═══ SUCCESS ALERTS ═══ --}}
         @if(session('success'))
-        <div class="rounded-lg border border-teal-200 bg-teal-50 px-4 py-3 text-sm font-medium text-teal-800 flex items-center gap-3">
+        <div class="rounded-[14px] border border-teal-200 bg-teal-50 px-4 py-3 text-xs font-semibold text-teal-900 flex items-center gap-3">
             <svg class="w-5 h-5 text-teal-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             {{ session('success') }}
         </div>
         @endif
 
         {{-- ═══ KPI CARDS ═══ --}}
-        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
             {{-- Total (Primary KPI) --}}
-            <div class="rounded-xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-all duration-200 px-5 py-4 flex flex-col justify-between">
-                <div class="flex items-start justify-between mb-2">
-                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Total Items</p>
-                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                </div>
-                <div>
-                    <p class="text-[28px] leading-tight font-semibold text-slate-900">{{ $totalDeadStocks }}</p>
+            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
+                <div class="flex items-center justify-between gap-2">
+                    <div>
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Total Items</p>
+                        <p class="text-xl font-semibold text-slate-900">{{ $totalDeadStocks }}</p>
+                        <p class="text-xs text-[#105f68] mt-0.5">Identified items</p>
+                    </div>
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                    </div>
                 </div>
             </div>
             
             {{-- Value --}}
-            <div class="rounded-xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-all duration-200 px-5 py-4 flex flex-col justify-between">
-                <div class="flex items-start justify-between mb-2">
-                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Value at Risk</p>
-                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                </div>
-                <div>
-                    <p class="text-[20px] leading-tight font-semibold text-slate-900">₱{{ number_format($totalValue, 0) }}</p>
+            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
+                <div class="flex items-center justify-between gap-2">
+                    <div>
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Value at Risk</p>
+                        <p class="text-xl font-semibold text-slate-900">₱{{ number_format($totalValue, 0) }}</p>
+                        <p class="text-xs text-[#105f68] mt-0.5">Total capital locked</p>
+                    </div>
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
                 </div>
             </div>
 
             {{-- Critical --}}
-            <div class="rounded-xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-all duration-200 px-5 py-4 flex flex-col justify-between group">
-                <div class="flex items-start justify-between mb-2">
-                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide group-hover:text-red-500 transition-colors">Critical</p>
-                    <div class="w-2 h-2 rounded-full bg-red-500 mt-1"></div>
-                </div>
-                <div>
-                    <p class="text-xl font-semibold text-slate-900">{{ $countByPriority['Critical'] ?? 0 }}</p>
+            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
+                <div class="flex items-center justify-between gap-2">
+                    <div>
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Critical</p>
+                        <p class="text-xl font-semibold text-slate-900">{{ $countByPriority['Critical'] ?? 0 }}</p>
+                        <p class="text-xs text-rose-600 mt-0.5">Urgent resolution</p>
+                    </div>
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
+                        <span class="w-3 h-3 rounded-full bg-red-600"></span>
+                    </div>
                 </div>
             </div>
 
             {{-- High --}}
-            <div class="rounded-xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-all duration-200 px-5 py-4 flex flex-col justify-between group">
-                <div class="flex items-start justify-between mb-2">
-                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide group-hover:text-orange-500 transition-colors">High</p>
-                    <div class="w-2 h-2 rounded-full bg-orange-500 mt-1"></div>
-                </div>
-                <div>
-                    <p class="text-xl font-semibold text-slate-900">{{ $countByPriority['High'] ?? 0 }}</p>
+            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
+                <div class="flex items-center justify-between gap-2">
+                    <div>
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">High</p>
+                        <p class="text-xl font-semibold text-slate-900">{{ $countByPriority['High'] ?? 0 }}</p>
+                        <p class="text-xs text-amber-600 mt-0.5">High concern</p>
+                    </div>
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
+                        <span class="w-3 h-3 rounded-full bg-orange-500"></span>
+                    </div>
                 </div>
             </div>
 
             {{-- Medium --}}
-            <div class="rounded-xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-all duration-200 px-5 py-4 flex flex-col justify-between group">
-                <div class="flex items-start justify-between mb-2">
-                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide group-hover:text-amber-500 transition-colors">Medium</p>
-                    <div class="w-2 h-2 rounded-full bg-amber-500 mt-1"></div>
-                </div>
-                <div>
-                    <p class="text-xl font-semibold text-slate-900">{{ $countByPriority['Medium'] ?? 0 }}</p>
+            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
+                <div class="flex items-center justify-between gap-2">
+                    <div>
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Medium</p>
+                        <p class="text-xl font-semibold text-slate-900">{{ $countByPriority['Medium'] ?? 0 }}</p>
+                        <p class="text-xs text-[#105f68] mt-0.5">Moderate concern</p>
+                    </div>
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
+                        <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                    </div>
                 </div>
             </div>
 
             {{-- Low --}}
-            <div class="rounded-xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-all duration-200 px-5 py-4 flex flex-col justify-between group">
-                <div class="flex items-start justify-between mb-2">
-                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide group-hover:text-blue-500 transition-colors">Low</p>
-                    <div class="w-2 h-2 rounded-full bg-blue-500 mt-1"></div>
-                </div>
-                <div>
-                    <p class="text-xl font-semibold text-slate-900">{{ $countByPriority['Low'] ?? 0 }}</p>
+            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
+                <div class="flex items-center justify-between gap-2">
+                    <div>
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Low</p>
+                        <p class="text-xl font-semibold text-slate-900">{{ $countByPriority['Low'] ?? 0 }}</p>
+                        <p class="text-xs text-[#105f68] mt-0.5">Low concern</p>
+                    </div>
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
+                        <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                    </div>
                 </div>
             </div>
         </div>
 
         {{-- ═══ AT-RISK PRODUCTS ═══ --}}
         @if($atRiskProducts->isNotEmpty())
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-2">
-            <div class="px-5 py-3 bg-amber-50/50 border-b border-slate-100 flex items-center gap-2">
-                <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                <h3 class="text-sm font-medium text-slate-700">Approaching Dead Stock Threshold ({{ $atRiskProducts->count() }})</h3>
+        <div class="bg-white rounded-[20px] border border-slate-200 shadow-sm overflow-hidden mb-2">
+            <div class="px-4 py-3 bg-[#0f172a] border-b border-slate-200 flex items-center gap-2 text-white">
+                <svg class="w-4 h-4 text-[#00fff2]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <h3 class="text-xs font-semibold text-white">Approaching Dead Stock Threshold ({{ $atRiskProducts->count() }})</h3>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr class="bg-slate-50/50 border-b border-slate-100">
-                            <th class="px-5 py-2.5 text-left text-xs font-medium text-slate-500">Product</th>
-                            <th class="px-4 py-2.5 text-left text-xs font-medium text-slate-500">SKU</th>
-                            <th class="px-4 py-2.5 text-right text-xs font-medium text-slate-500">Days Unsold</th>
-                            <th class="px-4 py-2.5 text-right text-xs font-medium text-slate-500">Current Stock</th>
-                            <th class="px-5 py-2.5 text-right text-xs font-medium text-slate-500">Last Sold</th>
+                <table class="w-full text-xs">
+                    <thead class="border-b border-slate-200 bg-[#0f172a]">
+                        <tr>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</th>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">SKU</th>
+                            <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Days Unsold</th>
+                            <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Current Stock</th>
+                            <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Last Sold</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">
+                    <tbody class="divide-y divide-slate-200 bg-white">
                         @foreach($atRiskProducts as $atRisk)
-                        <tr class="hover:bg-slate-50/80 transition-colors">
-                            <td class="px-5 py-2.5 font-medium text-slate-700">{{ $atRisk['product']->name ?? '' }}</td>
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="px-4 py-2.5 font-medium text-slate-900">{{ $atRisk['product']->name ?? '' }}</td>
                             <td class="px-4 py-2.5 text-xs text-slate-500 font-mono">{{ $atRisk['product']->sku ?? '' }}</td>
                             <td class="px-4 py-2.5 text-right">
-                                <span class="inline-flex items-center text-xs font-medium text-slate-700">{{ $atRisk['days_without_sale'] }} days</span>
+                                <span class="inline-flex items-center text-xs font-semibold text-slate-700">{{ $atRisk['days_without_sale'] }} days</span>
                             </td>
-                            <td class="px-4 py-2.5 text-right text-slate-600">{{ $atRisk['product']->stock_quantity }}</td>
-                            <td class="px-5 py-2.5 text-right text-xs text-slate-500">
+                            <td class="px-4 py-2.5 text-right text-slate-700">{{ $atRisk['product']->stock_quantity }}</td>
+                            <td class="px-4 py-2.5 text-right text-xs text-slate-500">
                                 {{ $atRisk['last_sold_date'] ? $atRisk['last_sold_date']->format('M d, Y') : 'Never' }}
                             </td>
                         </tr>
@@ -156,53 +176,53 @@
         @endif
 
         {{-- ═══ MAIN DATA TABLE ═══ --}}
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col">
+        <div class="bg-white rounded-[20px] border border-slate-200 shadow-sm flex flex-col overflow-hidden">
             {{-- Toolbar --}}
-            <div class="px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <form method="GET" action="{{ route('dss.dead-stock.index') }}" class="w-full flex flex-col sm:flex-row items-center gap-3">
+            <div class="px-4 py-3 border-b border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between gap-3">
+                <form method="GET" action="{{ route('dss.dead-stock.index') }}" class="w-full flex flex-col sm:flex-row items-center gap-2">
                     <div class="relative flex-1 min-w-[240px]">
                         <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Search inventory..."
-                               class="w-full pl-9 pr-3 py-1.5 text-sm rounded-lg border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-200 transition outline-none">
+                               class="w-full pl-9 pr-3 py-2 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition">
                     </div>
-                    <select name="priority" class="px-3 py-1.5 text-sm rounded-lg border border-slate-200 focus:border-teal-500 outline-none bg-white min-w-[130px]">
+                    <select name="priority" class="px-3 py-2 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent cursor-pointer min-w-[130px]">
                         <option value="">All Priorities</option>
                         <option value="Critical" {{ request('priority') === 'Critical' ? 'selected' : '' }}>Critical</option>
                         <option value="High" {{ request('priority') === 'High' ? 'selected' : '' }}>High</option>
                         <option value="Medium" {{ request('priority') === 'Medium' ? 'selected' : '' }}>Medium</option>
                         <option value="Low" {{ request('priority') === 'Low' ? 'selected' : '' }}>Low</option>
                     </select>
-                    <select name="sort_by" class="px-3 py-1.5 text-sm rounded-lg border border-slate-200 focus:border-teal-500 outline-none bg-white min-w-[150px]">
+                    <select name="sort_by" class="px-3 py-2 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent cursor-pointer min-w-[150px]">
                         <option value="days_without_sale" {{ request('sort_by', 'days_without_sale') === 'days_without_sale' ? 'selected' : '' }}>Longest Unsold</option>
                         <option value="stock_value" {{ request('sort_by') === 'stock_value' ? 'selected' : '' }}>Highest Value</option>
                         <option value="current_stock" {{ request('sort_by') === 'current_stock' ? 'selected' : '' }}>Highest Stock</option>
                         <option value="last_sold_date" {{ request('sort_by') === 'last_sold_date' ? 'selected' : '' }}>Last Sold</option>
                     </select>
                     <input type="hidden" name="sort_order" value="{{ request('sort_order', 'desc') }}">
-                    <button type="submit" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors" title="Apply Filters">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                    <button type="submit" class="p-2 text-slate-600 hover:text-slate-900 rounded-[12px] hover:bg-slate-100 transition" title="Apply Filters">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
                     </button>
                     @if(request('search') || request('priority') || request('sort_by'))
-                    <a href="{{ route('dss.dead-stock.index') }}" class="text-sm font-medium text-slate-500 hover:text-slate-700 transition">Clear</a>
+                    <a href="{{ route('dss.dead-stock.index') }}" class="text-xs font-semibold text-slate-500 hover:text-slate-700 transition">Clear</a>
                     @endif
                 </form>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left">
-                    <thead>
-                        <tr class="bg-slate-50 border-b border-slate-200">
-                            <th class="px-5 py-3 text-xs font-medium text-slate-500">Product</th>
-                            <th class="px-4 py-3 text-xs font-medium text-slate-500">SKU</th>
-                            <th class="px-4 py-3 text-right text-xs font-medium text-slate-500">Stock</th>
-                            <th class="px-4 py-3 text-right text-xs font-medium text-slate-500">Value</th>
-                            <th class="px-4 py-3 text-right text-xs font-medium text-slate-500">Days Unsold</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500">Status</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500">Action</th>
-                            <th class="px-4 py-3 text-right text-xs font-medium text-slate-500"></th>
+                <table class="w-full text-xs text-left">
+                    <thead class="border-b border-slate-200 bg-[#0f172a]">
+                        <tr>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</th>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">SKU</th>
+                            <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Stock</th>
+                            <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Value</th>
+                            <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Days Unsold</th>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Status</th>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Action</th>
+                            <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white"></th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">
+                    <tbody class="divide-y divide-slate-200 bg-white">
                         @forelse($deadStocks as $ds)
                         @php
                             $product = $ds->product;

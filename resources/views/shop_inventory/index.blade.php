@@ -1,282 +1,284 @@
 <x-layouts.app :title="__('Shop Inventory Management')">
     <style>
         :root {
-            --brand: #0f766e;
-            --brand-soft: #d1fae5;
-            --brand-dark: #134e4a;
+            --brand: #0f172a;
+            --brand-soft: #e2e8f0;
+            --brand-dark: #020617;
+            --accent-cyan: #00fff2;
+            --accent-cyan-hover: #00e6da;
             --card-bg: #ffffff;
             --surface: #f8fafc;
-            --muted: #6b7280;
-            --border: rgba(148,163,184,0.2);
+            --muted: #64748b;
+            --border: rgba(226, 232, 240, 0.8);
         }
-        .si-badge { background: linear-gradient(90deg,var(--brand),var(--brand-dark)); color: #fff; box-shadow: 0 10px 30px rgba(15,118,110,0.08); }
-        .si-card { border: 1px solid var(--border); background: var(--card-bg); box-shadow: 0 12px 30px rgba(15,23,42,0.06); }
-        .si-location { background: #f8fafc; border: 1px dashed rgba(15,118,110,0.16); }
-        .product-chip { background: #fff; border: 1px solid rgba(16,185,129,0.18); border-radius: 1rem; overflow: hidden; display: flex; flex-direction: column; }
-        .chip-header { background: linear-gradient(90deg, #0f766e, #134e4a); padding: 0.5rem 0.75rem; }
-        .chip-desc { color: #fff; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.02em; }
-        .chip-body { padding: 0.5rem 0.75rem; display: flex; flex-direction: column; gap: 0.18rem; }
-        .chip-row { display: flex; align-items: baseline; gap: 0.35rem; }
-        .chip-label { font-size: 0.72rem; color: #64748b; font-weight: 500; min-width: 72px; flex-shrink: 0; }
-        .chip-value { font-size: 0.78rem; color: #0f172a; font-weight: 500; }
-        .chip-value.sku { font-family: monospace; color: #0d9488; font-size: 0.72rem; }
-        .chip-value.price { color: #166534; font-weight: 700; }
+        .si-badge { background: #0f172a; color: #fff; }
+        .si-card { border: 1px solid border-slate-200; background: #ffffff; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1); }
+        .product-chip { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+        .chip-header { background: #0f172a; padding: 0.35rem 0.6rem; border-bottom: 1px solid #1e293b; }
+        .chip-desc { color: #ffffff; font-weight: 600; font-size: 0.75rem; line-height: 1rem; }
+        .chip-body { padding: 0.4rem 0.6rem; display: flex; flex-direction: column; gap: 0.15rem; }
+        .chip-row { display: flex; align-items: baseline; justify-content: space-between; gap: 0.25rem; font-size: 0.7rem; }
+        .chip-label { color: #64748b; font-weight: 500; }
+        .chip-value { color: #0f172a; font-weight: 600; }
+        .chip-value.sku { font-family: monospace; color: #0891b2; font-weight: 700; font-size: 0.68rem; }
+        .chip-value.price { color: #047857; font-weight: 700; }
         .chip-value.qty { color: #1d4ed8; font-weight: 700; }
-        .shop-shelves { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
-        .map-unit { min-height: 220px; background: #ffffff; border: 1px solid rgba(148,163,184,0.2); border-radius: 0.5rem; padding: 1rem; }
-        .modal-panel { width: min(100%, 960px); border-radius: 1.5rem; background: #ffffff; box-shadow: 0 28px 80px rgba(15,23,42,0.18); }
-        .modal-field { border: 1px solid rgba(148,163,184,0.35); background: #f8fafc; border-radius: 0.85rem; }
+        .shop-shelves { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+        .map-unit { min-height: 180px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 0.85rem; }
+        .modal-panel { width: min(100%, 920px); border-radius: 20px; background: #ffffff; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+        .modal-field { border: 1px solid #e2e8f0; background: #f8fafc; border-radius: 12px; }
         .modal-field input { border: none; background: transparent; outline: none; }
-        .modal-field select { border: 1px solid rgba(148,163,184,0.35); background: #ffffff; outline: none; border-radius: 0.5rem; }
+        .modal-field select { border: 1px solid #cbd5e1; background: #ffffff; outline: none; border-radius: 10px; }
         .modal-field label { color: #334155; }
-        select option { background: #ffffff; color: #334155; padding: 8px 12px; }
-        .product-row-card { background: #f8fafc; border: 1px solid rgba(148,163,184,0.2); border-radius: 1rem; padding: 0.85rem; }
-        .product-row-card .row-grid { gap: 0.75rem; }
+        select option { background: #ffffff; color: #334155; padding: 6px 10px; }
+        .product-row-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 0.75rem; }
+        .product-row-card .row-grid { gap: 0.5rem; }
         .product-row-card .product-sku,
         .product-row-card .product-desc,
         .product-row-card .product-brand,
         .product-row-card .product-compatible,
         .product-row-card .product-qty,
         .product-row-card .product-price,
-        .product-row-card .product-select { background: #ffffff; border: 1px solid rgba(148,163,184,0.25); border-radius: 0.85rem; }
+        .product-row-card .product-select { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 0.5rem 0.75rem; font-size: 0.75rem; }
         .product-row-card .product-sku { background: #f1f5f9; }
-        .product-row-card .product-name { background: #ffffff; border: 1px solid rgba(148,163,184,0.25); border-radius: 0.85rem; padding: 0.75rem; }
-        .product-row-card .product-select,
-        .product-row-card .product-sku,
-        .product-row-card .product-desc,
-        .product-row-card .product-brand,
-        .product-row-card .product-compatible,
-        .product-row-card .product-qty,
-        .product-row-card .product-price { padding: 0.75rem; }
-        .remove-product-row { color: #ef4444; transition: color 0.2s ease; }
+        .remove-product-row { color: #ef4444; transition: color 0.2s ease; font-size: 0.75rem; }
         .remove-product-row:hover { color: #b91c1c; }
-        .modal-actions { border-top: 1px solid rgba(148,163,184,0.25); padding-top: 0.85rem; }
-        .modal-footer-button { border-radius: 0.85rem; padding: 0.75rem 1.2rem; font-weight: 600; }
-        .modal-footer-button.primary { background: var(--brand); color: #fff; }
-        .modal-footer-button.secondary { background: #f8fafc; color: #334155; border: 1px solid rgba(148,163,184,0.35); }
-        .product-row-card label { font-size: 0.72rem; }
-        .product-row-card .remove-product-row { font-size: 0.85rem; }
-        .modal-panel { max-height: 95vh; overflow-y: auto; }
-        .modal-field { position: relative; }
-        #modal-product-rows { max-height: 440px; }
-        .toast-container { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 60; display: flex; flex-direction: column; gap: 0.85rem; pointer-events: none; width: max-content; min-width: 280px; }
-        .toast { pointer-events: auto; display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; background: #0f766e; color: #fff; border-radius: 1rem; box-shadow: 0 18px 50px rgba(15,23,42,0.18); padding: 0.85rem 1rem; font-size: 0.95rem; animation: toast-in 0.22s ease forwards; }
-        .toast.success { background: #0f766e; }
+        .modal-actions { border-top: 1px solid #e2e8f0; padding-top: 0.75rem; }
+        .modal-footer-button { border-radius: 10px; padding: 0.4rem 0.9rem; font-size: 0.75rem; font-weight: 600; transition: all 0.15s ease; }
+        .modal-footer-button.primary { background: #00fff2; color: #000; border: 1px solid rgba(0, 255, 242, 0.4); }
+        .modal-footer-button.primary:hover { background: #00e6da; }
+        .modal-footer-button.secondary { background: #ffffff; color: #334155; border: 1px solid #cbd5e1; }
+        .modal-footer-button.secondary:hover { background: #f8fafc; }
+        .toast-container { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 60; display: flex; flex-direction: column; gap: 0.75rem; pointer-events: none; width: max-content; min-width: 280px; }
+        .toast { pointer-events: auto; display: flex; align-items: center; justify-between; gap: 0.8rem; background: #0f172a; color: #fff; border-radius: 12px; box-shadow: 0 10px 25px rgba(15,23,42,0.18); padding: 0.6rem 0.85rem; font-size: 0.8rem; animation: toast-in 0.22s ease forwards; }
+        .toast.success { background: #0f172a; border-left: 4px solid #00fff2; }
         .toast.error { background: #ef4444; }
-        .toast button { background: transparent; border: none; color: rgba(255,255,255,0.95); cursor: pointer; font-size: 1rem; line-height: 1; padding: 0; }
+        .toast button { background: transparent; border: none; color: rgba(255,255,255,0.95); cursor: pointer; font-size: 0.9rem; line-height: 1; padding: 0; }
         @keyframes toast-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .btn-primary { background: linear-gradient(90deg, var(--brand), var(--brand-dark)); color: #fff; box-shadow: 0 4px 15px rgba(15,118,110,0.25); transition: all 0.2s ease; }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(15,118,110,0.35); }
-        .btn-secondary { background: #f8fafc; color: #334155; border: 1px solid rgba(148,163,184,0.35); transition: all 0.2s ease; }
-        .btn-secondary:hover { background: #f1f5f9; border-color: rgba(148,163,184,0.5); }
         @media (max-width: 1024px) { .shop-shelves { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
         @media (max-width: 770px) {
             .shop-shelves { grid-template-columns: 1fr; }
-            .product-row-card { padding: 0.85rem; }
-            .map-unit { min-height: 200px; }
+            .product-row-card { padding: 0.65rem; }
+            .map-unit { min-height: 180px; }
         }
     </style>
 
-    <div class="space-y-6">
+    <div class="space-y-4">
         <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
-        <div class="flex items-start justify-between">
-            <div>
-                <h1 class="text-3xl font-extrabold text-slate-900">Shop Inventory Items</h1>
-                <p class="mt-2 text-sm text-gray-500">Track and manage products across shop shelves for POS sales.</p>
+        
+        <!-- Header -->
+        <div class="rounded-[22px] border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Shop Inventory Items</h1>
+                    <p class="mt-1 text-xs text-slate-500">Track and manage products across shop shelves for POS sales</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 relative z-[100000001]">
+                    <button id="add-shelf-button" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[12px] border border-[#00fff2]/40 bg-[#00fff2] text-black hover:bg-[#00e6da] shadow-sm transition cursor-pointer" onclick="openAddShelfModal()">
+                        + Add Shelf
+                    </button>
+                    <button id="transfer-from-warehouse" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[12px] bg-[#0f172a] text-white hover:bg-slate-800 shadow-sm transition cursor-pointer">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                        </svg>
+                        Transfer from Warehouse
+                    </button>
+                    <button id="view-history" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[12px] bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 shadow-sm transition cursor-pointer">
+                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        History Logs
+                    </button>
+                    <a href="{{ route('shop.inventory.archived') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[12px] bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 shadow-sm transition">
+                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                        </svg>
+                        Archive List
+                    </a>
+                </div>
             </div>
-            <div class="flex items-center space-x-3 relative z-[100000001]">
-                <button id="add-shelf-button" type="button" class="inline-flex items-center px-3 py-2 si-badge rounded-xl text-sm font-medium shadow-md hover:from-emerald-700 hover:to-cyan-700 transition" onclick="openAddShelfModal()">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Add Shelf
-                </button>
-                <button id="transfer-from-warehouse" type="button" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white rounded-xl text-sm font-medium shadow-md hover:from-emerald-700 hover:to-cyan-700 transition">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
-                    </svg>
-                    Transfer from Warehouse
-                </button>
-                <button id="view-history" type="button" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl text-sm font-medium shadow-md hover:from-purple-700 hover:to-purple-800 transition">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    History Logs
-                </button>
-                <a href="{{ route('shop.inventory.archived') }}" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-xl text-sm font-medium shadow-md hover:from-orange-700 hover:to-orange-800 transition">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
-                    </svg>
-                    Archive List
-                </a>
+        </div>
+
+        <!-- Metrics Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
+                <div class="flex items-center justify-between gap-2">
+                    <div>
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-0.5">Total Shop Products</p>
+                        <p id="total-products" class="text-xl font-semibold text-slate-900">{{ $totalProducts ?? 0 }}</p>
+                        <p class="text-xs text-[#105f68] mt-0.5">Items allocated in shop</p>
+                    </div>
+                    <div class="flex h-9 w-9 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm shrink-0">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 7l9-4 9 4-9 4-9-4z" />
+                            <path d="M3 12l9 4 9-4" />
+                            <path d="M3 17l9 4 9-4" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
+                <div class="flex items-center justify-between gap-2">
+                    <div>
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-0.5">Total Shop Shelves</p>
+                        <p id="total-shelves" class="text-xl font-semibold text-slate-900">{{ $totalShelves ?? 0 }}</p>
+                        <p class="text-xs text-[#105f68] mt-0.5">Active shop display units</p>
+                    </div>
+                    <div class="flex h-9 w-9 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm shrink-0">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 22h16V8.5L12 3 4 8.5V22z" />
+                            <path d="M9 22V12h6v10" />
+                        </svg>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Search and Filter Bar -->
-        <div class="flex flex-col md:flex-row gap-4 items-center bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-            <div class="flex-1 w-full">
-                <div class="relative">
-                    <input type="text" id="search-input" class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Search products, shelves, or sections...">
-                    <svg class="absolute left-3 top-2.5 h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
+            <div class="flex flex-col lg:flex-row items-center gap-2">
+                <div class="relative flex-1 w-full">
+                    <input type="search" id="search-input" class="w-full pl-9 pr-3 py-1.5 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition" placeholder="Search product name, SKU, shelf...">
+                    <svg class="absolute left-2.5 top-2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                 </div>
-            </div>
-            <div class="flex items-center gap-2 w-full md:w-auto">
-                <label class="text-sm font-medium text-slate-700 whitespace-nowrap">Product Description:</label>
-                <select id="product-description-filter" class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white">
-                    <option value="">All Descriptions</option>
-                    @php
-                        $descriptions = \App\Models\ProductDescription::where('is_active', true)->orderBy('name')->get();
-                        foreach($descriptions as $desc):
-                    @endphp
-                        <option value="{{ $desc->name }}">{{ $desc->name }}</option>
-                    @php endforeach; @endphp
-                </select>
-            </div>
-            <div class="flex items-center gap-2 w-full md:w-auto">
-                <label class="text-sm font-medium text-slate-700 whitespace-nowrap">Brand:</label>
-                <select id="brand-filter" class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white">
-                    <option value="">All Brands</option>
-                    @php
-                        $brands = \App\Models\Product::where('is_archived', false)
-                            ->whereNotNull('brand')
-                            ->where('brand', '!=', '')
-                            ->distinct()
-                            ->orderBy('brand')
-                            ->pluck('brand')
-                            ->toArray();
-                        foreach($brands as $brand):
-                    @endphp
-                        <option value="{{ $brand }}">{{ $brand }}</option>
-                    @php endforeach; @endphp
-                </select>
-            </div>
-            <div class="flex items-center gap-2 w-full md:w-auto">
-                <label class="text-sm font-medium text-slate-700 whitespace-nowrap">Filter by Section:</label>
-                <select id="section-filter" class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white">
-                    <option value="">All Sections</option>
-                </select>
-            </div>
-            <button id="clear-search" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition">
-                Clear
-            </button>
-        </div>
-
-        <div class="mt-4 flex items-center gap-4">
-            <div class="rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
-                <p class="uppercase tracking-[0.18em] text-xs text-slate-400">Total Products</p>
-                <p id="total-products" class="mt-1 text-lg font-semibold text-slate-900">{{ $totalProducts ?? 0 }}</p>
-            </div>
-            <div class="rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
-                <p class="uppercase tracking-[0.18em] text-xs text-slate-400">Total Shelf</p>
-                <p id="total-shelves" class="mt-1 text-lg font-semibold text-slate-900">{{ $totalShelves ?? 0 }}</p>
+                <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+                    <select id="product-description-filter" class="px-3 py-1.5 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent cursor-pointer">
+                        <option value="">All Descriptions</option>
+                        @php
+                            $descriptions = \App\Models\ProductDescription::where('is_active', true)->orderBy('name')->get();
+                            foreach($descriptions as $desc):
+                        @endphp
+                            <option value="{{ $desc->name }}">{{ $desc->name }}</option>
+                        @php endforeach; @endphp
+                    </select>
+                    <select id="brand-filter" class="px-3 py-1.5 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent cursor-pointer">
+                        <option value="">All Brands</option>
+                        @php
+                            $brands = \App\Models\Product::where('is_archived', false)
+                                ->whereNotNull('brand')
+                                ->where('brand', '!=', '')
+                                ->distinct()
+                                ->orderBy('brand')
+                                ->pluck('brand')
+                                ->toArray();
+                            foreach($brands as $brand):
+                        @endphp
+                            <option value="{{ $brand }}">{{ $brand }}</option>
+                        @php endforeach; @endphp
+                    </select>
+                    <select id="section-filter" class="px-3 py-1.5 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent cursor-pointer">
+                        <option value="">All Sections</option>
+                    </select>
+                    <button id="clear-search" class="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-[12px] transition">
+                        Clear
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div class="grid gap-6 mt-4">
+        <div class="grid gap-4 mt-2">
             @if($shelves->count() > 0)
-                <div class="si-card rounded-lg p-4 shadow-sm">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <div class="flex items-center space-x-3">
-                                <div class="w-12 h-12 rounded-md flex items-center justify-center text-white font-semibold si-badge">S</div>
-                                <div>
-                                    <div class="text-lg font-semibold text-slate-900">Shop Inventory</div>
-                                    <div class="text-xs text-gray-500">All Shop Shelves</div>
-                                </div>
+                <div class="rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm">
+                    <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#0f172a] text-white text-xs font-bold shadow-sm">S</div>
+                            <div>
+                                <h2 class="text-sm font-bold text-slate-900">Shop Inventory Display</h2>
+                                <p class="text-[11px] text-slate-500">Active retail shelves & POS items</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-4">
-                        <div class="map-container border rounded-md p-3 bg-gray-50">
-                            <div class="shop-shelves grid gap-6" id="shop-shelves-grid">
-                                @foreach($shelves as $shelf)
-                                <div class="map-unit shelf-card">
-                                    <div class="flex items-start justify-between mb-4">
+                    <div class="map-container border border-slate-200 rounded-[14px] p-3 bg-slate-50">
+                        <div class="shop-shelves grid gap-4" id="shop-shelves-grid">
+                            @foreach($shelves as $shelf)
+                            <div class="map-unit shelf-card">
+                                <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-200/60">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="flex h-7 w-7 items-center justify-center rounded-[8px] bg-[#00fff2] text-black text-xs font-bold shadow-sm">{{ strtoupper(substr($shelf->name, -1)) }}</div>
                                         <div>
-                                            <div class="flex items-center space-x-3">
-                                                <div class="w-10 h-10 rounded-md flex items-center justify-center text-white font-semibold si-badge text-sm">{{ strtoupper(substr($shelf->name, -1)) }}</div>
-                                                <div>
-                                                    <div class="text-base font-semibold text-slate-900 shelf-name">{{ $shelf->name }}</div>
-                                                    <div class="text-xs text-gray-500 shelf-location">{{ $shelf->location ?? 'No location' }}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="relative">
-                                            <select class="action-select text-sm text-slate-700 px-4 py-2 border border-gray-200 rounded-full bg-white hover:bg-gray-50 cursor-pointer appearance-none pr-8" onchange="handleShelfAction(this, {{ $shelf->id }})">
-                                                <option value="">Actions</option>
-                                                <option value="edit-shelf">Edit Shelf</option>
-                                                <option value="transfer-products">Transfer Products</option>
-                                                <option value="return-to-warehouse">Return to Warehouse</option>
-                                                <option value="archive-shelf">Archive Shelf</option>
-                                            </select>
+                                            <div class="text-xs font-bold text-slate-900 shelf-name">{{ $shelf->name }}</div>
+                                            <div class="text-[10px] text-slate-500 shelf-location">{{ $shelf->location ?? 'No location' }}</div>
                                         </div>
                                     </div>
-                                    <div class="space-y-2">
-                                        @if($shelf->shop_inventory && $shelf->shop_inventory->count() > 0)
-                                            @php
-                                                $productsToShow = $shelf->shop_inventory->take(10);
-                                                $remainingProducts = $shelf->shop_inventory->count() - 10;
-                                            @endphp
-                                            <div class="grid grid-cols-2 gap-2">
-                                                @foreach($productsToShow as $item)
-                                                    @php
-                                                        $p   = $item->product;
-                                                        $cat = $p?->productCatalog;
-                                                        $desc       = $cat?->product_description ?? $p?->description ?? $p?->name ?? 'Unknown';
-                                                        $brand      = $cat?->brand               ?? $p?->brand       ?? '—';
-                                                        $compatible = $cat?->product_name        ?? $p?->compatibility ?? '—';
-                                                        $sku        = $cat?->sku                 ?? $p?->sku          ?? '—';
-                                                        $price      = $p?->unit_price ?? 0;
-                                                        $qty        = $item->quantity;
-                                                        $priceFormatted = '₱' . number_format($price, 2);
-                                                        $expiry     = $p?->expiry_date ? \Carbon\Carbon::parse($p->expiry_date)->format('M d, Y') : 'N/A';
-                                                        $expiryColor = $p?->expiry_status === 'expired' ? 'text-red-600' : ($p?->expiry_status === 'expiring' ? 'text-yellow-600' : 'text-slate-700');
-                                                    @endphp
-                                                    <div class="product-chip">
-                                                        <div class="chip-header">
-                                                            <div class="chip-desc">{{ $desc }}</div>
-                                                        </div>
-                                                        <div class="chip-body">
-                                                            <div class="chip-row"><span class="chip-label">Brand:</span><span class="chip-value">{{ $brand }}</span></div>
-                                                            <div class="chip-row"><span class="chip-label">Compatible:</span><span class="chip-value">{{ $compatible }}</span></div>
-                                                            <div class="chip-row"><span class="chip-label">SKU:</span><span class="chip-value sku">{{ $sku }}</span></div>
-                                                            <div class="chip-row"><span class="chip-label">Price:</span><span class="chip-value price">{{ $priceFormatted }}</span></div>
-                                                            <div class="chip-row"><span class="chip-label">Qty:</span><span class="chip-value qty">{{ $qty }}</span></div>
-                                                            <div class="chip-row"><span class="chip-label">Expiry:</span><span class="chip-value {{ $expiryColor }}">{{ $expiry }}</span></div>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                            @if($remainingProducts > 0)
-                                            <p class="text-xs text-gray-400 mt-2">+{{ $remainingProducts }} more</p>
-                                            @endif
-                                        @else
-                                            <p class="text-sm text-gray-400">No products on this shelf</p>
-                                        @endif
+                                    <div>
+                                        <select class="action-select text-xs text-slate-700 px-2.5 py-1 border border-slate-300 rounded-[10px] bg-white hover:bg-slate-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#00fff2]" onchange="handleShelfAction(this, {{ $shelf->id }})">
+                                            <option value="">Actions</option>
+                                            <option value="edit-shelf">Edit Shelf</option>
+                                            <option value="transfer-products">Transfer Products</option>
+                                            <option value="return-to-warehouse">Return to Warehouse</option>
+                                            <option value="archive-shelf">Archive Shelf</option>
+                                        </select>
                                     </div>
                                 </div>
-                                @endforeach
+                                <div class="space-y-2">
+                                    @if($shelf->shop_inventory && $shelf->shop_inventory->count() > 0)
+                                        @php
+                                            $productsToShow = $shelf->shop_inventory->take(10);
+                                            $remainingProducts = $shelf->shop_inventory->count() - 10;
+                                        @endphp
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                            @foreach($productsToShow as $item)
+                                                @php
+                                                    $p   = $item->product;
+                                                    $cat = $p?->productCatalog;
+                                                    $desc       = $cat?->product_description ?? $p?->description ?? $p?->name ?? 'Unknown';
+                                                    $brand      = $cat?->brand               ?? $p?->brand       ?? '—';
+                                                    $compatible = $cat?->product_name        ?? $p?->compatibility ?? '—';
+                                                    $sku        = $cat?->sku                 ?? $p?->sku          ?? '—';
+                                                    $price      = $p?->unit_price ?? 0;
+                                                    $qty        = $item->quantity;
+                                                    $priceFormatted = '₱' . number_format($price, 2);
+                                                    $expiry     = $p?->expiry_date ? \Carbon\Carbon::parse($p->expiry_date)->format('M d, Y') : 'N/A';
+                                                    $expiryColor = $p?->expiry_status === 'expired' ? 'text-red-600 font-bold' : ($p?->expiry_status === 'expiring' ? 'text-amber-600 font-semibold' : 'text-slate-700');
+                                                @endphp
+                                                <div class="product-chip">
+                                                    <div class="chip-header">
+                                                        <div class="chip-desc truncate" title="{{ $desc }}">{{ $desc }}</div>
+                                                    </div>
+                                                    <div class="chip-body">
+                                                        <div class="chip-row"><span class="chip-label">Brand:</span><span class="chip-value truncate">{{ $brand }}</span></div>
+                                                        <div class="chip-row"><span class="chip-label">Compat:</span><span class="chip-value truncate">{{ $compatible }}</span></div>
+                                                        <div class="chip-row"><span class="chip-label">SKU:</span><span class="chip-value sku">{{ $sku }}</span></div>
+                                                        <div class="chip-row"><span class="chip-label">Price:</span><span class="chip-value price">{{ $priceFormatted }}</span></div>
+                                                        <div class="chip-row"><span class="chip-label">Qty:</span><span class="chip-value qty">{{ $qty }}</span></div>
+                                                        <div class="chip-row"><span class="chip-label">Expiry:</span><span class="chip-value {{ $expiryColor }}">{{ $expiry }}</span></div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                        @if($remainingProducts > 0)
+                                        <p class="text-[11px] text-slate-500 font-medium mt-1.5 text-right">+{{ $remainingProducts }} more products</p>
+                                        @endif
+                                    @else
+                                        <div class="py-6 text-center text-xs text-slate-400 bg-white/50 rounded-xl border border-dashed border-slate-200">No products on this shelf</div>
+                                    @endif
+                                </div>
                             </div>
-                            <!-- Pagination Controls -->
-                            <div id="pagination-controls" class="pagination mt-4 flex items-center justify-between text-sm text-gray-600 hidden">
-                                <button type="button" id="prev-page" class="px-3 py-2 border rounded-md bg-white hover:bg-gray-50 transition" disabled>Previous</button>
-                                <div>Page <span id="current-page">1</span> of <span id="total-pages">1</span></div>
-                                <button type="button" id="next-page" class="px-3 py-2 border rounded-md bg-white hover:bg-gray-50 transition">Next</button>
+                            @endforeach
+                        </div>
+
+                        <!-- Pagination Controls -->
+                        <div id="pagination-controls" class="flex items-center justify-between border-t border-slate-200 bg-white px-3 py-2 text-xs rounded-xl mt-3 hidden">
+                            <p class="text-slate-600">Page <span id="current-page" class="font-semibold text-slate-900">1</span> of <span id="total-pages" class="font-semibold text-slate-900">1</span></p>
+                            <div class="flex gap-1">
+                                <button type="button" id="prev-page" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">← Prev</button>
+                                <button type="button" id="next-page" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">Next →</button>
                             </div>
                         </div>
                     </div>
                 </div>
             @else
-                <div id="no-shelves-message" class="text-center py-12">
-                    <div class="text-gray-400 text-lg mb-2">No shop shelves found</div>
-                    <div class="text-gray-500 text-sm">Transfer products from warehouse to create shelves</div>
+                <div id="no-shelves-message" class="rounded-[20px] border border-slate-200 bg-white py-12 text-center shadow-sm">
+                    <div class="text-slate-400 text-sm font-semibold mb-1">No shop shelves found</div>
+                    <div class="text-slate-500 text-xs">Transfer products from warehouse to create shelves</div>
                 </div>
             @endif
         </div>
-    </div>
+    </div>  </div>
 
     <!-- Transfer from Warehouse Modal -->
     <div id="transfer-warehouse-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center">

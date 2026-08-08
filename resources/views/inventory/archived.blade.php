@@ -7,10 +7,7 @@
                 <p class="text-2XL text-slate-500 mt-0.5">Archived inventory items. Restore or permanently delete</p>
             </div>
             <div class="flex gap-2 items-center">
-                <a href="{{ route('pos.terminal') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200">
-                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                    </svg>
+                <a href="{{ route('pos.terminal') }}" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-black/10 transition">
                     BACK TO POS
                 </a>
             </div>
@@ -24,7 +21,7 @@
                     <p id="archivedCount" class="text-2xl font-bold text-slate-900">0</p>
                     <p class="text-sm text-slate-500 mt-1">Total archived</p>
                 </div>
-                <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40 border border-gray-200">
+                <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40">
                     <!-- Cube Icon (represents inventory items) -->
                     <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
                         <path fill-rule="evenodd" d="M12.378 1.602a.75.75 0 00-.756 0L3 6.632l9 5.25 9-5.25-8.622-5.03zM21.75 7.93l-9 5.25v9.344l8.628-5.032a.75.75 0 00.372-.648V7.93zM11.25 22.523v-9.344l-9-5.25v8.914c0 .267.141.514.372.648l8.628 5.032z" clip-rule="evenodd" />
@@ -37,7 +34,7 @@
                     <p id="archiveValue" class="text-2xl font-bold text-slate-900">₱0</p>
                     <p class="text-sm text-slate-500 mt-1">Total value</p>
                 </div>
-                <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40 border border-gray-200">
+                <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40">
                     <!-- Credit Card Icon (represents monetary value) -->
                     <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M4.5 3.75a3 3 0 00-3 3v.75h21v-.75a3 3 0 00-3-3h-15z" />
@@ -51,7 +48,7 @@
                     <p id="avgPrice" class="text-2xl font-bold text-slate-900">₱0</p>
                     <p class="text-sm text-slate-500 mt-1">Per item</p>
                 </div>
-                <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40 border border-gray-200">
+                <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40">
                     <!-- Bar Chart Icon (represents average / stats) -->
                     <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
                         <path fill-rule="evenodd" d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z" clip-rule="evenodd" />
@@ -62,13 +59,13 @@
 
         <!-- Search & Filters -->
         <div class="bg-white rounded-lg border border-slate-200 p-4 space-y-4">
-            <input id="searchInput" type="search" placeholder="Search by product name, SKU, or barcode..." class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-white text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent" />
+            <input id="searchInput" type="search" placeholder="Search by product name, SKU, or barcode..." class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-white text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent" />
 
             <div class="flex gap-3 items-end">
                 <div class="flex-1 relative">
                     <label class="block text-slate-600 font-medium mb-1.5 text-sm">Category</label>
                     <input type="hidden" id="categoryFilter" value="" />
-                    <button type="button" id="categoryDropdownBtn" onclick="toggleCategoryDropdown()" class="w-full px-4 py-3 rounded-[10px] border border-slate-200 bg-white text-sm text-left text-slate-700 shadow-sm focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent hover:border-slate-400 flex items-center justify-between transition">
+                    <button type="button" id="categoryDropdownBtn" onclick="toggleCategoryDropdown()" class="w-full px-4 py-3 rounded-[10px] border border-slate-200 bg-white text-sm text-left text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent hover:border-slate-400 flex items-center justify-between transition">
                         <span id="categoryLabel">All Categories</span>
                         <svg class="w-3.5 h-3.5 text-slate-400 flex-shrink-0" id="categoryChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>

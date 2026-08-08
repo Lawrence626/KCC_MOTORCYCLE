@@ -25,12 +25,12 @@
                         <input
                             id="searchInput"
                             type="text" placeholder="Search receipt no. / product"
-                                class="w-full pl-10 pr-10 py-2.5 rounded-[10px] border border-slate-200 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35"
+                                class="w-full pl-10 pr-10 py-2.5 rounded-[10px] border border-[#105f68]/20 ring-1 ring-black/10 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent"
                         />
                 </div>
                 <!-- Custom Dropdown -->
                 <div class="relative">
-                    <button type="button" onclick="toggleStatusDropdown()" class="appearance-none pl-4 pr-10 py-2.5 rounded-[10px] border border-slate-200 bg-white text-sm font-medium text-slate-900 text-left hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 flex items-center gap-2 whitespace-nowrap w-40"
+                    <button type="button" onclick="toggleStatusDropdown()" class="appearance-none pl-4 pr-10 py-2.5 rounded-[10px] border border-[#105f68]/20 ring-1 ring-black/10 bg-white text-sm font-medium text-slate-900 text-left hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 flex items-center gap-2 whitespace-nowrap w-40"
                         style="background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 20 20\' fill=\'none\' stroke=\'%2338445d\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M6 8l4 4 4-4\'/%3E%3C/svg%3E'); background-repeat:no-repeat; background-position:right 0.85rem center; background-size:1.2em; line-height:1.25rem;">
                         <span id="statusLabel">All Status</span>
                     </button>
@@ -43,7 +43,7 @@
                 </div>
                 <!-- Date Filter -->
                 <div class="relative">
-                    <button type="button" onclick="toggleDateDropdown()" class="appearance-none pl-4 pr-10 py-2.5 rounded-[10px] border border-slate-200 bg-white text-sm font-medium text-slate-900 text-left hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 flex items-center gap-2 whitespace-nowrap w-40"
+                    <button type="button" onclick="toggleDateDropdown()" class="appearance-none pl-4 pr-10 py-2.5 rounded-[10px] border border-[#105f68]/20 ring-1 ring-black/10 bg-white text-sm font-medium text-slate-900 text-left hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 flex items-center gap-2 whitespace-nowrap w-40"
                         style="background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 20 20\' fill=\'none\' stroke=\'%2338445d\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M6 8l4 4 4-4\'/%3E%3C/svg%3E'); background-repeat:no-repeat; background-position:right 0.85rem center; background-size:1.2em; line-height:1.25rem;">
                         <span id="dateFilterLabel">Today</span>
                     </button>
@@ -190,14 +190,14 @@
                 <!-- Receipt Number -->
                 <div>
                     <label class="block text-sm font-semibold text-slate-900 mb-3">Receipt No.</label>
-                    <input id="newReceiptNo" type="text" placeholder="Enter receipt number" class="w-full px-5 py-3 rounded-[10px] border border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm" />
+                    <input id="newReceiptNo" type="text" placeholder="Enter receipt number" class="w-full px-5 py-3 rounded-[10px] border border-[#105f68]/20 bg-white text-slate-900 placeholder:text-slate-400 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent ring-1 ring-black/10 shadow-sm" />
                 </div>
 
                 <!-- Returned Item -->
                 <div class="relative">
                     <label class="block text-sm font-semibold text-slate-900 mb-3">Returned Item</label>
                     <input id="newReturnedItem" type="hidden" value="" />
-                    <button type="button" id="returnedItemButton" onclick="toggleDropdown('returnedItemDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-slate-200 bg-white text-left text-slate-900 text-sm font-semibold flex items-center justify-between focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm">
+                    <button type="button" id="returnedItemButton" onclick="toggleDropdown('returnedItemDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-[#105f68]/20 bg-white text-left text-slate-900 text-sm font-semibold flex items-center justify-between focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent ring-1 ring-black/10 shadow-sm">
                         <span id="returnedItemLabel">Select returned item...</span>
                         <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
@@ -214,7 +214,7 @@
                 <div class="relative">
                     <label class="block text-sm font-semibold text-slate-900 mb-3">Reason</label>
                     <input id="newReason" type="hidden" value="Defective Item" />
-                    <button type="button" id="newReasonButton" onclick="toggleDropdown('reasonDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-slate-200 bg-white text-left text-slate-900 text-sm font-semibold flex items-center justify-between focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm">
+                    <button type="button" id="newReasonButton" onclick="toggleDropdown('reasonDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-[#105f68]/20 bg-white text-left text-slate-900 text-sm font-semibold flex items-center justify-between focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent ring-1 ring-black/10 shadow-sm">
                         <span id="newReasonLabel">Defective Item</span>
                         <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
@@ -233,7 +233,7 @@
                     <div class="col-span-3 relative">
                         <label class="block text-sm font-semibold text-slate-900 mb-3">Replacement Product</label>
                         <input id="newReplacementProduct" type="hidden" value="" />
-                        <button type="button" id="replacementProductButton" onclick="toggleDropdown('replacementProductDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-slate-200 bg-white text-left text-slate-900 text-sm font-semibold flex items-center justify-between focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm">
+                        <button type="button" id="replacementProductButton" onclick="toggleDropdown('replacementProductDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-[#105f68]/20 bg-white text-left text-slate-900 text-sm font-semibold flex items-center justify-between focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent ring-1 ring-black/10 shadow-sm">
                             <span id="newReplacementProductLabel">Select product...</span>
                             <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />

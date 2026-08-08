@@ -6,19 +6,19 @@
                 <p class="text-gray-600 text-sm mt-1">Process sales, service billing, and payments from one compact page.</p>
             </div>
             <div class="flex flex-wrap gap-2">
-         <button id="posOpenDesktopScannerButton" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 font-semibold shadow-sm hover:bg-black/10 transition-all duration-200">
+         <button id="posOpenDesktopScannerButton" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-slate-800 font-semibold shadow-sm hover:bg-black/10 transition-all duration-200">
                     <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     Scan QR
                 </button>
-                <button id="posOpenScannerButton" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 font-semibold shadow-sm hover:bg-black/10 transition-all duration-200">
+                <button id="posOpenScannerButton" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-slate-800 font-semibold shadow-sm hover:bg-black/10 transition-all duration-200">
                     <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
                     Mobile Scanner
                 </button>
-                <button id="posOpenTransactionHistoryButton" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 font-semibold shadow-sm hover:bg-black/10 transition-all duration-200">
+                <button id="posOpenTransactionHistoryButton" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-slate-800 font-semibold shadow-sm hover:bg-black/10 transition-all duration-200">
                     <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/></svg>
                     Transaction History
                 </button>
-                <a href="{{ route('archived') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 font-semibold shadow-sm hover:bg-black/10 transition-all duration-200">
+                <a href="{{ route('archived') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-slate-800 font-semibold shadow-sm hover:bg-black/10 transition-all duration-200">
                     <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
                     Archived Items
                 </a>
@@ -31,8 +31,25 @@
                 <div class="rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm">
                     <div class="flex flex-col gap-4">
                         <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                            <div class="flex items-center gap-2">
+                            <div class="flex flex-wrap gap-2 items-center">
+                                <label class="text-xs font-medium text-slate-700">Filter by:</label>
                                 <div class="relative">
+                                    <select id="posCategorySelect" class="hidden">
+                                        <option value="All">All Product Description</option>
+                                        <!-- Categories will be loaded dynamically from product descriptions -->
+                                    </select>
+                                </div>
+                                <div class="relative">
+                                    <select id="posBrandSelect" class="hidden">
+                                        <option value="All">All Brands</option>
+                                        <!-- Brands will be loaded dynamically based on selected product description -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                            <div class="flex w-full max-w-[420px] items-center gap-2">
+                                <div class="relative flex-1">
                                     <label for="posProductSearchInput" class="sr-only">Search products</label>
                                     <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/></svg>
                                     <input id="posProductSearchInput" type="text" placeholder="Search products..." class="w-full rounded-[10px] border border-slate-200 bg-white px-10 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35" />
@@ -124,21 +141,21 @@
                     </div>
                     <div class="grid gap-2 text-sm">
                         <label class="flex items-center gap-2 rounded-[10px] border border-slate-200 px-3 py-2 cursor-pointer hover:border-slate-400">
-                            <input type="checkbox" value="installation" class="pos-service-checkbox h-4 w-4 rounded border-slate-300 text-[#105f68] focus:ring-black/35" />
+                            <input type="checkbox" value="installation" class="pos-service-checkbox h-4 w-4 rounded border-slate-300 text-[#105f68] focus:ring-[#105f68]" />
                             <div class="space-y-0.5">
                                 <p class="font-medium text-slate-900">Installation</p>
                                 <p class="text-slate-500 text-[11px]">₱120</p>
                             </div>
                         </label>
                         <label class="flex items-center gap-2 rounded-[10px] border border-slate-200 px-3 py-2 cursor-pointer hover:border-slate-400">
-                            <input type="checkbox" value="tuneup" class="pos-service-checkbox h-4 w-4 rounded border-slate-300 text-[#105f68] focus:ring-black/35" />
+                            <input type="checkbox" value="tuneup" class="pos-service-checkbox h-4 w-4 rounded border-slate-300 text-[#105f68] focus:ring-[#105f68]" />
                             <div class="space-y-0.5">
                                 <p class="font-medium text-slate-900">Tune-up</p>
                                 <p class="text-slate-500 text-[11px]">₱250</p>
                             </div>
                         </label>
                         <label class="flex items-center gap-2 rounded-[10px] border border-slate-200 px-3 py-2 cursor-pointer hover:border-slate-400">
-                            <input type="checkbox" value="brake_adjust" class="pos-service-checkbox h-4 w-4 rounded border-slate-300 text-[#105f68] focus:ring-black/35" />
+                            <input type="checkbox" value="brake_adjust" class="pos-service-checkbox h-4 w-4 rounded border-slate-300 text-[#105f68] focus:ring-[#105f68]" />
                             <div class="space-y-0.5">
                                 <p class="font-medium text-slate-900">Brake Adjust</p>
                                 <p class="text-slate-500 text-[11px]">₱180</p>
@@ -154,11 +171,11 @@
                     </div>
                     <div class="grid gap-3">
                         <label class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 px-3 py-2 text-sm cursor-pointer hover:border-slate-400">
-                            <input type="radio" name="posPaymentMethod" value="cash" class="pos-payment-method h-4 w-4 rounded border-slate-300 text-[#00fff2] focus:ring-black/35" checked />
+                            <input type="radio" name="posPaymentMethod" value="cash" class="pos-payment-method h-4 w-4 rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]" checked />
                             <span>Cash</span>
                         </label>
                         <label class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 px-3 py-2 text-sm cursor-pointer hover:border-slate-400">
-                            <input type="radio" name="posPaymentMethod" value="qr" class="pos-payment-method h-4 w-4 rounded border-slate-300 text-[#00fff2] focus:ring-black/35" />
+                            <input type="radio" name="posPaymentMethod" value="qr" class="pos-payment-method h-4 w-4 rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]" />
                             <span>QR PH</span>
                         </label>
                         <button id="posProceedPaymentButton" class="w-full rounded-[10px] bg-[#00fff2] px-3 py-2 text-sm font-bold text-black hover:bg-[#00e6da] transition-all duration-200 shadow-sm">Proceed to Payment</button>
@@ -227,11 +244,11 @@
                         <h3 class="text-base font-semibold text-slate-900 mb-3">Payment Method</h3>
                         <div class="grid gap-3">
                             <label class="inline-flex items-center gap-3 rounded-[10px] border border-slate-200 px-4 py-3 cursor-pointer hover:border-slate-400">
-                                <input type="radio" name="posPaymentModalMethod" value="cash" class="h-4 w-4 text-[#105f68] rounded-[10px] focus:ring-black/35" checked />
+                                <input type="radio" name="posPaymentModalMethod" value="cash" class="h-4 w-4 text-[#105f68] rounded-[10px] focus:ring-[#105f68]" checked />
                                 <span class="font-medium text-slate-900">Cash</span>
                             </label>
                             <div class="flex items-center gap-3 rounded-[10px] border border-slate-200 px-4 py-3 hover:border-slate-400">
-                                <input type="radio" name="posPaymentModalMethod" value="qr" class="h-4 w-4 text-[#105f68] rounded-[10px] focus:ring-black/35" />
+                                <input type="radio" name="posPaymentModalMethod" value="qr" class="h-4 w-4 text-[#105f68] rounded-[10px] focus:ring-[#105f68]" />
                                 <span class="font-medium text-slate-900">QR PH</span>
                             </div>
                         </div>
@@ -871,7 +888,7 @@
                 const button = document.createElement('button');
                 button.type = 'button';
                 button.id = selectId + 'Button';
-                button.className = 'custom-select-button inline-flex min-w-[130px] items-center justify-between gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 shadow-sm transition hover:border-slate-400 focus:outline-none focus:ring-1 focus:ring-black/35';
+                button.className = 'custom-select-button inline-flex min-w-[130px] items-center justify-between gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 shadow-sm transition hover:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-300';
                 button.innerHTML = `
                     <span class="custom-select-label truncate"></span>
                     <svg class="h-3.5 w-3.5 flex-shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
