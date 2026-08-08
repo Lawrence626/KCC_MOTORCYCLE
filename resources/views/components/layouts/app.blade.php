@@ -57,7 +57,7 @@
                                 </div>
                             </div>
                             <div class="relative inline-flex items-center z-50">
-                                <button id="headerProfileButton" type="button" class="inline-flex h-9 items-center gap-2 border border-slate-700 px-3 text-white transition focus:outline-none invisible" style="border-radius: 20px; background-color: #0f0f0f;">
+                                <button id="headerProfileButton" type="button" class="inline-flex h-9 items-center gap-2 border border-slate-700 px-3 text-white transition focus:outline-none" style="border-radius: 20px; background-color: #0f0f0f;">
                                     <span class="w-5.5 h-5.5 rounded-full bg-cyan-500 text-white grid place-items-center overflow-hidden text-sm font-semibold">
                                         @if(auth()->user()->avatar)
                                             <img src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover" />

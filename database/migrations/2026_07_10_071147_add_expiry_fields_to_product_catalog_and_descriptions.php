@@ -11,26 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Add is_expirable flag to product_descriptions
-        Schema::table('product_descriptions', function (Blueprint $table) {
-            $table->boolean('is_expirable')->default(false)->after('is_active');
-        });
-
-        // Add expiry tracking fields to product_catalog
-        Schema::table('product_catalog', function (Blueprint $table) {
-            $table->date('manufacturing_date')->nullable()->after('warehouse');
-            $table->string('batch_lot_number')->nullable()->after('manufacturing_date');
-            $table->date('expiry_date')->nullable()->after('batch_lot_number');
-        });
+        // Redundant: fields added in 2026_07_10_073520 and 2026_07_10_073713
     }
 
     public function down(): void
     {
-        Schema::table('product_descriptions', function (Blueprint $table) {
-            $table->dropColumn('is_expirable');
-        });
-        Schema::table('product_catalog', function (Blueprint $table) {
-            $table->dropColumn(['manufacturing_date', 'batch_lot_number', 'expiry_date']);
-        });
+        // Redundant
     }
 };

@@ -10,7 +10,12 @@ return new class extends Migration
     {
         // ── 1. Temporarily drop the unique index on products.sku ─────────────
         Schema::table('products', function ($table) {
-            $table->dropUnique(['sku']);
+            if (Schema::hasIndex('products', 'products_sku_unique')) {
+                $table->dropUnique('products_sku_unique');
+            }
+            if (Schema::hasIndex('products', 'products_sku_warehouse_unique')) {
+                $table->dropUnique('products_sku_warehouse_unique');
+            }
         });
 
         // ── 2. Build the catalog map: (desc||brand) → [new_sku_001, 002, …] ──
@@ -76,10 +81,7 @@ return new class extends Migration
                 ->update(['sku' => $newSku]);
         }
 
-        // ── 4. Restore the unique index ───────────────────────────────────────
-        Schema::table('products', function ($table) {
-            $table->unique('sku');
-        });
+        // ── 4. Removed restoring unique index since variants can share SKUs ────
     }
 
     public function down(): void
