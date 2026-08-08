@@ -36,15 +36,15 @@
                     <span class="text-xs uppercase tracking-[0.2em] text-slate-400">Critical</span>
                 </div>
 
-                <div class="mt-4 flex-1 overflow-hidden">
-                    <div class="h-[340px] overflow-y-auto overflow-x-hidden rounded-2xl border border-slate-100">
+                <div class="mt-4 flex-1">
+                    <div class="overflow-hidden rounded-2xl border border-slate-100">
                         <table class="w-full min-w-full table-fixed text-left text-sm text-slate-700">
                             <thead class="bg-slate-50 text-xs uppercase tracking-[0.24em] text-slate-500">
                                 <tr class="sticky top-0 z-10 bg-slate-50">
                                     <th class="w-[40%] px-3 py-3">Product</th>
-                                    <th class="w-[20%] px-3 py-3">Category</th>
-                                    <th class="w-[20%] px-3 py-3">SKU</th>
-                                    <th class="w-[20%] px-3 py-3">Last restock</th>
+                                    <th class="w-[20%] px-3 py-3">Stock</th>
+                                    <th class="w-[20%] px-3 py-3">Reorder</th>
+                                    <th class="w-[20%] px-3 py-3">Need</th>
                                 </tr>
                             </thead>
                             <tbody id="outOfStockTableBody" class="divide-y divide-slate-200 bg-white">
@@ -52,15 +52,16 @@
                                     <tr class="hover:bg-slate-50 transition">
                                         <td class="px-3 py-3 font-semibold text-slate-900">
                                             <div class="truncate">{{ $product->product_name ?: $product->name }}</div>
-                                        </td>
-                                        <td class="px-3 py-3 text-slate-600">
-                                            <div class="truncate">{{ $product->category }}</div>
+                                            <div class="truncate text-[10px] text-slate-400 font-normal tracking-wide mt-0.5">{{ $product->sku }}</div>
                                         </td>
                                         <td class="px-3 py-3 text-slate-900">
-                                            <div class="truncate">{{ $product->sku }}</div>
+                                            <div class="truncate">{{ number_format($product->stock_quantity ?? 0) }}</div>
                                         </td>
-                                        <td class="px-3 py-3 text-slate-500">
-                                            <div class="truncate">{{ optional($product->last_restock_date)->format('M d, Y') ?? 'N/A' }}</div>
+                                        <td class="px-3 py-3 text-slate-600">
+                                            <div class="truncate">{{ number_format($product->reorder_level ?? 0) }}</div>
+                                        </td>
+                                        <td class="px-3 py-3 text-slate-900">
+                                            <div class="truncate">{{ number_format(max(0, 100 - ($product->stock_quantity ?? 0))) }}</div>
                                         </td>
                                     </tr>
                                 @empty
@@ -73,15 +74,20 @@
                     </div>
                 </div>
 
-                <div class="mt-4 border-t border-slate-200 pt-4">
-                    <div class="flex flex-wrap items-center gap-3">
-                        <div class="flex gap-3">
-                            <button id="outOfStockPrev" type="button" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed">← Previous</button>
-                            <button id="outOfStockNext" type="button" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed">Next →</button>
-                        </div>
-                        <div class="flex-1 text-center min-w-[140px]">
-                            <p id="outOfStockPageInfo" class="text-sm text-slate-600">Page 1 of 1</p>
-                        </div>
+                <div class="mt-4 border-t border-slate-200 pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-2">
+                        <label for="outOfStockPageSize" class="text-sm text-slate-600">Rows per page:</label>
+                        <select id="outOfStockPageSize" class="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm font-medium text-slate-700 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 cursor-pointer">
+                            <option value="5" selected>5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button id="outOfStockPrev" type="button" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed">← Prev</button>
+                        <div id="outOfStockPageNumbers" class="flex items-center gap-1.5"></div>
+                        <button id="outOfStockNext" type="button" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed">Next →</button>
                     </div>
                 </div>
             </div>
@@ -89,14 +95,14 @@
             <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col h-full">
                 <div class="flex items-center justify-between gap-3">
                     <div>
-                        <h2 class="text-base font-semibold text-slate-900">Low stock alerts</h2>
+                        <h2 class="text-base font-semibold text-slate-900">Low stock products</h2>
                         <p class="text-xs text-slate-500 mt-1">Products at or below reorder levels.</p>
                     </div>
                     <span class="text-xs uppercase tracking-[0.2em] text-slate-400">Review</span>
                 </div>
 
-                <div class="mt-4 flex-1 overflow-hidden">
-                    <div class="h-[340px] overflow-y-auto overflow-x-hidden rounded-2xl border border-slate-100">
+                <div class="mt-4 flex-1">
+                    <div class="overflow-hidden rounded-2xl border border-slate-100">
                         <table class="w-full min-w-full table-fixed text-left text-sm text-slate-700">
                             <thead class="bg-slate-50 text-xs uppercase tracking-[0.24em] text-slate-500">
                                 <tr class="sticky top-0 z-10 bg-slate-50">
@@ -111,6 +117,7 @@
                                     <tr class="hover:bg-slate-50 transition">
                                         <td class="px-3 py-3 font-semibold text-slate-900">
                                             <div class="truncate">{{ $product->product_name ?: $product->name }}</div>
+                                            <div class="truncate text-[10px] text-slate-400 font-normal tracking-wide mt-0.5">{{ $product->sku }}</div>
                                         </td>
                                         <td class="px-3 py-3 text-slate-900">
                                             <div class="truncate">{{ number_format($product->stock_quantity) }}</div>
@@ -119,7 +126,7 @@
                                             <div class="truncate">{{ number_format($product->reorder_level) }}</div>
                                         </td>
                                         <td class="px-3 py-3 text-slate-900">
-                                            <div class="truncate">{{ number_format(max(0, $product->reorder_level - $product->stock_quantity)) }}</div>
+                                            <div class="truncate">{{ number_format(max(0, 100 - $product->stock_quantity)) }}</div>
                                         </td>
                                     </tr>
                                 @empty
@@ -132,15 +139,20 @@
                     </div>
                 </div>
 
-                <div class="mt-4 border-t border-slate-200 pt-4">
-                    <div class="flex flex-wrap items-center gap-3">
-                        <div class="flex gap-3">
-                            <button id="lowStockPrev" type="button" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed">← Previous</button>
-                            <button id="lowStockNext" type="button" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed">Next →</button>
-                        </div>
-                        <div class="flex-1 text-center min-w-[140px]">
-                            <p id="lowStockPageInfo" class="text-sm text-slate-600">Page 1 of 1</p>
-                        </div>
+                <div class="mt-4 border-t border-slate-200 pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-2">
+                        <label for="lowStockPageSize" class="text-sm text-slate-600">Rows per page:</label>
+                        <select id="lowStockPageSize" class="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm font-medium text-slate-700 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 cursor-pointer">
+                            <option value="5" selected>5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button id="lowStockPrev" type="button" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed">← Prev</button>
+                        <div id="lowStockPageNumbers" class="flex items-center gap-1.5"></div>
+                        <button id="lowStockNext" type="button" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed">Next →</button>
                     </div>
                 </div>
             </div>
@@ -151,57 +163,55 @@
         $outOfStockJs = $outOfStockProducts->map(function($product) {
             return [
                 'name' => $product->product_name ?: $product->name,
-                'category' => $product->category,
                 'sku' => $product->sku,
-                'last_restock_date' => optional($product->last_restock_date)->format('Y-m-d'),
+                'stock_quantity' => $product->stock_quantity ?? 0,
+                'reorder_level' => $product->reorder_level ?? 0,
+                'need' => max(0, 100 - ($product->stock_quantity ?? 0)),
             ];
         })->toArray();
 
         $lowStockJs = $lowStockProducts->map(function($product) {
             return [
                 'name' => $product->product_name ?: $product->name,
+                'sku' => $product->sku,
                 'stock_quantity' => $product->stock_quantity,
                 'reorder_level' => $product->reorder_level,
-                'need' => max(0, $product->reorder_level - $product->stock_quantity),
+                'need' => max(0, 100 - $product->stock_quantity),
             ];
         })->toArray();
     @endphp
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const pageSize = 5;
-
             const outOfStockData = @json($outOfStockJs);
             const lowStockData = @json($lowStockJs);
 
             const state = {
                 outOfStockPage: 1,
+                outOfStockPageSize: 5,
                 lowStockPage: 1,
+                lowStockPageSize: 5,
             };
 
-            function formatDate(value) {
-                if (!value) {
-                    return 'N/A';
-                }
-                const date = new Date(value);
-                if (Number.isNaN(date.getTime())) {
-                    return value;
-                }
-                return new Intl.DateTimeFormat('en', { month: 'short', day: '2-digit', year: 'numeric' }).format(date);
-            }
+            window.goToPage = function(stateKey, page) {
+                state[stateKey] = page;
+                if (stateKey === 'outOfStockPage') window.updateOutOfStock();
+                if (stateKey === 'lowStockPage') window.updateLowStock();
+            };
 
-            function renderTable({ data, page, bodyId, infoId, prevId, nextId, renderRow, emptyMessage }) {
+            function renderTable({ data, stateKey, bodyId, numbersId, prevId, nextId, renderRow, emptyMessage }) {
                 const body = document.getElementById(bodyId);
-                const pageInfo = document.getElementById(infoId);
+                const numbersContainer = document.getElementById(numbersId);
                 const prevButton = document.getElementById(prevId);
                 const nextButton = document.getElementById(nextId);
 
-                if (!body || !pageInfo || !prevButton || !nextButton) {
-                    return;
-                }
+                if (!body || !numbersContainer || !prevButton || !nextButton) return;
 
+                const pageSize = state[stateKey + 'Size'];
+                const page = state[stateKey];
                 const totalPages = Math.max(1, Math.ceil(data.length / pageSize));
                 const currentPage = Math.min(Math.max(page, 1), totalPages);
+                
                 const start = (currentPage - 1) * pageSize;
                 const pageItems = data.slice(start, start + pageSize);
 
@@ -211,25 +221,41 @@
                     body.innerHTML = pageItems.map(renderRow).join('');
                 }
 
-                pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
                 prevButton.disabled = currentPage <= 1;
                 nextButton.disabled = currentPage >= totalPages;
                 prevButton.setAttribute('aria-disabled', String(prevButton.disabled));
                 nextButton.setAttribute('aria-disabled', String(nextButton.disabled));
 
+                let html = '';
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, startPage + 4);
+                if (endPage - startPage < 4) {
+                    startPage = Math.max(1, endPage - 4);
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    if (i === currentPage) {
+                        html += `<button type="button" class="w-8 h-8 flex items-center justify-center rounded-lg bg-cyan-600 text-white text-sm font-medium shadow-sm transition">${i}</button>`;
+                    } else {
+                        html += `<button type="button" onclick="window.goToPage('${stateKey}', ${i})" class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 text-sm font-medium transition hover:bg-slate-50">${i}</button>`;
+                    }
+                }
+                numbersContainer.innerHTML = html;
+
                 return currentPage;
             }
 
-            function setupPagination({ data, stateKey, bodyId, infoId, prevId, nextId, renderRow, emptyMessage }) {
+            function setupPagination({ data, stateKey, bodyId, numbersId, prevId, nextId, selectId, renderRow, emptyMessage }) {
                 const prevButton = document.getElementById(prevId);
                 const nextButton = document.getElementById(nextId);
+                const selectSize = document.getElementById(selectId);
 
                 const update = () => {
                     state[stateKey] = renderTable({
                         data,
-                        page: state[stateKey],
+                        stateKey,
                         bodyId,
-                        infoId,
+                        numbersId,
                         prevId,
                         nextId,
                         renderRow,
@@ -248,6 +274,7 @@
 
                 if (nextButton) {
                     nextButton.addEventListener('click', function() {
+                        const pageSize = state[stateKey + 'Size'];
                         const totalPages = Math.max(1, Math.ceil(data.length / pageSize));
                         if (state[stateKey] < totalPages) {
                             state[stateKey] += 1;
@@ -256,40 +283,56 @@
                     });
                 }
 
-                update();
+                if (selectSize) {
+                    selectSize.addEventListener('change', function() {
+                        state[stateKey + 'Size'] = parseInt(this.value, 10);
+                        state[stateKey] = 1;
+                        update();
+                    });
+                }
+
+                return update;
             }
 
-            setupPagination({
+            window.updateOutOfStock = setupPagination({
                 data: outOfStockData,
                 stateKey: 'outOfStockPage',
                 bodyId: 'outOfStockTableBody',
-                infoId: 'outOfStockPageInfo',
+                numbersId: 'outOfStockPageNumbers',
                 prevId: 'outOfStockPrev',
                 nextId: 'outOfStockNext',
+                selectId: 'outOfStockPageSize',
                 renderRow: function(product) {
                     return `
                         <tr class="hover:bg-slate-50 transition">
-                            <td class="px-3 py-3 font-semibold text-slate-900"><div class="truncate">${product.name}</div></td>
-                            <td class="px-3 py-3 text-slate-600"><div class="truncate">${product.category}</div></td>
-                            <td class="px-3 py-3 text-slate-900"><div class="truncate">${product.sku}</div></td>
-                            <td class="px-3 py-3 text-slate-500"><div class="truncate">${formatDate(product.last_restock_date)}</div></td>
+                            <td class="px-3 py-3 font-semibold text-slate-900">
+                                <div class="truncate">${product.name}</div>
+                                <div class="truncate text-[10px] text-slate-400 font-normal tracking-wide mt-0.5">${product.sku || 'N/A'}</div>
+                            </td>
+                            <td class="px-3 py-3 text-slate-900"><div class="truncate">${product.stock_quantity}</div></td>
+                            <td class="px-3 py-3 text-slate-600"><div class="truncate">${product.reorder_level}</div></td>
+                            <td class="px-3 py-3 text-slate-900"><div class="truncate">${product.need}</div></td>
                         </tr>
                     `.trim();
                 },
                 emptyMessage: 'No out of stock items currently.',
             });
 
-            setupPagination({
+            window.updateLowStock = setupPagination({
                 data: lowStockData,
                 stateKey: 'lowStockPage',
                 bodyId: 'lowStockTableBody',
-                infoId: 'lowStockPageInfo',
+                numbersId: 'lowStockPageNumbers',
                 prevId: 'lowStockPrev',
                 nextId: 'lowStockNext',
+                selectId: 'lowStockPageSize',
                 renderRow: function(product) {
                     return `
                         <tr class="hover:bg-slate-50 transition">
-                            <td class="px-3 py-3 font-semibold text-slate-900"><div class="truncate">${product.name}</div></td>
+                            <td class="px-3 py-3 font-semibold text-slate-900">
+                                <div class="truncate">${product.name}</div>
+                                <div class="truncate text-[10px] text-slate-400 font-normal tracking-wide mt-0.5">${product.sku || 'N/A'}</div>
+                            </td>
                             <td class="px-3 py-3 text-slate-900"><div class="truncate">${product.stock_quantity}</div></td>
                             <td class="px-3 py-3 text-slate-600"><div class="truncate">${product.reorder_level}</div></td>
                             <td class="px-3 py-3 text-slate-900"><div class="truncate">${product.need}</div></td>
@@ -298,6 +341,9 @@
                 },
                 emptyMessage: 'No low stock products detected.',
             });
+
+            window.updateOutOfStock();
+            window.updateLowStock();
         });
     </script>
 </x-layouts.app>
