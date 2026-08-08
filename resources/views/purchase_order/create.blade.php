@@ -36,11 +36,11 @@
              STEP 1 – SELECT PRODUCTS
         ════════════════════════════════════════════════════════════ --}}
         <div class="rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-100 px-6 py-4 flex items-center gap-3" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+            <div class="border-b border-black px-6 py-4 flex items-center gap-3 bg-black" style="background-color: #000000;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">1</span>
                 <div>
-                    <h2 class="text-sm font-semibold text-slate-800">Select Products to Reorder</h2>
-                    <p class="text-xs text-slate-500">Choose from low-stock products. The supplier list will update automatically.</p>
+                    <h2 class="text-sm font-semibold text-white">Select Products to Reorder</h2>
+                    <p class="text-xs text-slate-300">Choose from low-stock products. The supplier list will update automatically.</p>
                 </div>
             </div>
 
@@ -95,7 +95,7 @@
 
                 <div class="overflow-hidden rounded-3xl border border-slate-200">
                     <table class="min-w-full text-left text-sm">
-                        <thead class="bg-slate-100 text-slate-500 text-[11px] uppercase tracking-[0.18em]" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+                        <thead class="bg-black text-white text-[11px] uppercase tracking-[0.18em]" style="background-color: #000000ff;">
                             <tr>
                                 <th class="px-4 py-3">
                                     <input type="checkbox" id="select-all-products"
@@ -205,11 +205,11 @@
              STEP 2 – SELECT SUPPLIER
         ════════════════════════════════════════════════════════════ --}}
         <div class="rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-100 px-6 py-4 flex items-center gap-3" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+            <div class="border-b border-black px-6 py-4 flex items-center gap-3 bg-black" style="background-color: #000000;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">2</span>
                 <div>
-                    <h2 class="text-sm font-semibold text-slate-800">Select Supplier</h2>
-                    <p class="text-xs text-slate-500">Only suppliers that can fulfill every selected product are shown.</p>
+                    <h2 class="text-sm font-semibold text-white">Select Supplier</h2>
+                    <p class="text-xs text-slate-300">Only suppliers that can fulfill every selected product are shown.</p>
                 </div>
             </div>
 
@@ -245,9 +245,9 @@
              STEP 3 – SUPPLIER INFORMATION
         ════════════════════════════════════════════════════════════ --}}
         <div id="supplier-info-panel" class="hidden rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-100 px-6 py-4 flex items-center gap-3" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+            <div class="border-b border-black px-6 py-4 flex items-center gap-3 bg-black" style="background-color: #000000;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">3</span>
-                <h2 class="text-sm font-semibold text-slate-800">Supplier Information</h2>
+                <h2 class="text-sm font-semibold text-white">Supplier Information</h2>
             </div>
             <div class="p-6">
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -275,11 +275,11 @@
              STEP 4+5+6 – PRICE HISTORY / SUMMARY / RECOMMENDATIONS
         ════════════════════════════════════════════════════════════ --}}
         <div id="price-analysis-panel" class="hidden rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-100 px-6 py-4 flex items-center gap-3" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+            <div class="border-b border-black px-6 py-4 flex items-center gap-3 bg-black" style="background-color: #000000;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">4</span>
                 <div>
-                    <h2 class="text-sm font-semibold text-slate-800">Supplier Price Analysis</h2>
-                    <p class="text-xs text-slate-500">Historical costs, trends, and purchasing recommendations per product.</p>
+                    <h2 class="text-sm font-semibold text-white">Supplier Price Analysis</h2>
+                    <p class="text-xs text-slate-300">Historical costs, trends, and purchasing recommendations per product.</p>
                 </div>
             </div>
             <div id="price-analysis-content" class="p-6 space-y-8">
@@ -291,18 +291,18 @@
              BONUS – SUPPLIER COMPARISON TABLE
         ════════════════════════════════════════════════════════════ --}}
         <div id="comparison-panel" class="hidden rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-100 px-6 py-4 flex items-center gap-3" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+            <div class="border-b border-black px-6 py-4 flex items-center gap-3 bg-black" style="background-color: #000000;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">★</span>
                 <div>
-                    <h2 class="text-sm font-semibold text-slate-800">Supplier Comparison</h2>
-                    <p class="text-xs text-slate-500">All qualified suppliers ranked by cost. Click Select to choose one.</p>
+                    <h2 class="text-sm font-semibold text-white">Supplier Comparison</h2>
+                    <p class="text-xs text-slate-300">All qualified suppliers ranked by cost. Click Select to choose one.</p>
                 </div>
             </div>
             <div class="p-6 space-y-4">
                 <div id="recommended-supplier-badge" class="hidden rounded-[10px] bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800"></div>
                 <div class="overflow-hidden rounded-3xl border border-slate-200">
                     <table class="min-w-full text-left text-sm">
-                        <thead class="bg-slate-100 text-slate-500 text-[11px] uppercase tracking-[0.18em]">
+                        <thead class="bg-black text-white text-[11px] uppercase tracking-[0.18em]" style="background-color: #000000;">
                             <tr>
                                 <th class="px-4 py-3">Supplier</th>
                                 <th class="px-4 py-3">Total Cost (₱)</th>
@@ -322,9 +322,9 @@
              ORDER DETAILS
         ════════════════════════════════════════════════════════════ --}}
        <div class="rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden min-h-[510px]">
-            <div class="border-b border-slate-100 px-6 py-4 flex items-center gap-3" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+            <div class="border-b border-black px-6 py-4 flex items-center gap-3 bg-black" style="background-color: #000000;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">5</span>
-                <h2 class="text-sm font-semibold text-slate-800">Order Details</h2>
+                <h2 class="text-sm font-semibold text-white">Order Details</h2>
             </div>
             <div class="p-6 grid gap-4 relative">
                 <label class="block text-sm text-slate-700 w-72">
@@ -727,7 +727,7 @@
                 tableWrap.className = 'overflow-hidden rounded-3xl border border-slate-200';
                 tableWrap.innerHTML = `
                     <table class="min-w-full text-left text-sm">
-                        <thead class="bg-slate-100 text-slate-500 text-[11px] uppercase tracking-[0.18em]">
+                        <thead class="bg-black text-white text-[11px] uppercase tracking-[0.18em]" style="background-color: #000000;">
                             <tr>
                                 <th class="px-4 py-3">Purchase Date</th>
                                 <th class="px-4 py-3">Purchase Order</th>

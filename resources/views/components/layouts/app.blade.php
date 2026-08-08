@@ -42,13 +42,13 @@
                                     <span id="headerNotificationBadge" class="absolute -top-1 -right-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-rose-600 px-1.5 text-[10px] font-semibold text-white hidden">0</span>
                                 </button>
                                 <div id="headerNotificationDropdown" class="absolute right-0 top-full z-[99999] mt-2 w-[24rem] overflow-hidden rounded-[15px] border border-slate-700/60 bg-gradient-to-b from-[#0b0c10] to-[#20232a] shadow-2xl shadow-black/40 hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right">
-                                    <div class="px-4 py-4 border-b border-slate-800/60">
+                                    <div class="px-4 py-4 border-b border-slate-700/60 bg-[#00fff2]" style="background-color: #00fff2;">
                                         <div class="flex items-center justify-between gap-3">
                                             <div>
-                                                <p class="text-sm font-semibold text-white">Inventory Notifications</p>
-                                                <p class="text-xs text-slate-400">Recent stock alerts and reminders.</p>
+                                                <p class="text-sm font-semibold text-slate-900">Inventory Notifications</p>
+                                                <p class="text-xs text-slate-700">Recent stock alerts and reminders.</p>
                                             </div>
-                                            <button id="headerNotificationClose" type="button" class="text-slate-400 transition hover:text-slate-200" aria-label="Close notifications">×</button>
+                                            <button id="headerNotificationClose" type="button" class="text-slate-700 transition hover:text-slate-900 font-bold text-lg" aria-label="Close notifications">×</button>
                                         </div>
                                     </div>
                                     <div id="headerNotificationList" class="max-h-80 overflow-y-auto">

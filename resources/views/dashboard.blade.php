@@ -32,7 +32,7 @@
                                 class="hidden absolute right-0 top-full mt-2 w-[320px] rounded-xl bg-white border border-slate-200 shadow-lg z-50 flex flex-col"
                                 style="max-height: 350px;"
                             >
-                                <div class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b border-slate-100 rounded-t-xl" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+                                <div class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b border-slate-200 rounded-t-xl bg-[#00fff2]" style="background-color: #00fff2;">
                                     <div class="flex items-center gap-2">
                                         <span class="text-sm font-semibold text-slate-900">Notifications</span>
                                         <span id="notif-center-unread-badge" class="hidden inline-flex items-center rounded-[10px] px-2 py-0.5 text-[10px] font-medium text-white" style="background-color: #ef4444;">0</span>
@@ -41,7 +41,7 @@
                                         <button
                                             type="button"
                                             onclick="markAllNotificationsRead()"
-                                            class="text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+                                            class="text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors"
                                         >Mark all as read</button>
                                     </div>
                                 </div>

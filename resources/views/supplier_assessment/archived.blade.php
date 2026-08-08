@@ -44,7 +44,7 @@
             @else
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-left text-sm text-slate-700">
-                        <thead class="text-xs font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-200" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+                        <thead class="text-xs font-semibold uppercase tracking-wider text-white border-b border-black bg-black" style="background-color: #000000;">
                             <tr>
                                 <th class="px-4 py-3">Supplier Name</th>
                                 <th class="px-4 py-3">Contact Person</th>
