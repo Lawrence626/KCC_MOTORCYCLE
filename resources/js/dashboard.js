@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Color palette for custom categories (not in predefined list)
-        const customColors = ['#EF476F', '#118AB2', '#FFD166', '#06D6A0', '#8338EC', '#FB5607', '#3A86FF', '#FF006E'];
+        const customColors = ['#00f700ff', '#da0e0eff', '#f1a204ff', '#5541ecff', '#0948beff', '#e93071ff', '#45AAF2'];
         let customColorIndex = 0;
 
         // Assign colors to incoming categories
@@ -434,8 +434,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: comparisonChart.datasets.map((dataset, index) => ({
                     label: dataset.label,
                     data: dataset.data,
-                    backgroundColor: '#105f68',
-                    borderColor: '#105f68',
+                    backgroundColor: '#0dd3c9ff',
+                    borderColor: '#0dd3c9ff',
                     borderWidth: 1,
                     borderRadius: 6,
                 })),

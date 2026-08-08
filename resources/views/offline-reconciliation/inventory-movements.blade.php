@@ -1,18 +1,24 @@
 <x-layouts.app :title="__('Inventory Movements')">
-    <div class="space-y-3">
+    <div class="space-y-4">
         <!-- Header -->
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-slate-900">Inventory Movements</h1>
-                <p class="text-xs text-slate-500 mt-0.5">Manage inventory movements created during offline operations</p>
+        <div class="rounded-[22px] border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Inventory Movements</h1>
+                    <p class="mt-1 text-xs text-slate-500">Manage inventory movements created during offline operations</p>
+                </div>
+                <div>
+                    <a href="{{ Route::has('offline.reconciliation') ? route('offline.reconciliation') : url('/offline-reconciliation') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[12px] bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 shadow-sm transition">
+                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        Back to Offline Home
+                    </a>
+                </div>
             </div>
-            <a href="{{ route('offline.reconciliation') }}" class="px-4 py-2 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                </svg>
-                Back to Offline Home
-            </a>
         </div>
+
+        @include('partials.offline-submenu')
 
         <!-- Quick Stats -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-2">

@@ -38,13 +38,13 @@ async function loadPOSCategories() {
     try {
         const response = await fetch('/product-descriptions');
         const descriptions = await response.json();
-        
+
         // Use all product descriptions as categories
         posState.categories = ['All', ...descriptions.map(desc => desc.name)];
-        
+
         // Store descriptions for filtering
         posState.productDescriptions = descriptions;
-        
+
         // Render category dropdown
         renderCategoryDropdown();
         // Initialize brand dropdown
@@ -61,12 +61,12 @@ async function loadPOSCategories() {
 function renderCategoryDropdown() {
     const select = document.getElementById('posCategorySelect');
     if (!select) return;
-    
+
     select.innerHTML = posState.categories.map(category => {
         const isSelected = category === posState.selectedCategory;
         return `<option value="${category}" ${isSelected ? 'selected' : ''}>${category}</option>`;
     }).join('');
-    
+
     // Add event listener
     select.addEventListener('change', () => {
         posState.selectedCategory = select.value;
@@ -79,9 +79,9 @@ function renderCategoryDropdown() {
 function updateBrandDropdown() {
     const select = document.getElementById('posBrandSelect');
     if (!select) return;
-    
+
     let brands = ['All'];
-    
+
     if (posState.selectedCategory !== 'All' && posState.productDescriptions) {
         // Show brands for selected product description
         const selectedDesc = posState.productDescriptions.find(desc => desc.name === posState.selectedCategory);
@@ -98,12 +98,12 @@ function updateBrandDropdown() {
         });
         brands = ['All', ...Array.from(allBrands).sort()];
     }
-    
+
     select.innerHTML = brands.map(brand => {
         const isSelected = brand === posState.selectedBrand;
         return `<option value="${brand}" ${isSelected ? 'selected' : ''}>${brand}</option>`;
     }).join('');
-    
+
     // Add event listener
     select.addEventListener('change', () => {
         posState.selectedBrand = select.value;
@@ -220,19 +220,19 @@ function saveTransactionToDatabase(invoice, total, paymentMethod, items) {
         },
         body: JSON.stringify(payload),
     })
-    .then(response => {
-        if (!response.ok) {
-            console.error('Failed to save transaction to database', response.status);
-            return;
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Transaction saved to database:', data);
-    })
-    .catch(error => {
-        console.error('Error saving transaction to database:', error);
-    });
+        .then(response => {
+            if (!response.ok) {
+                console.error('Failed to save transaction to database', response.status);
+                return;
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Transaction saved to database:', data);
+        })
+        .catch(error => {
+            console.error('Error saving transaction to database:', error);
+        });
 }
 
 function formatCurrency(value) {
@@ -618,12 +618,12 @@ function renderCart() {
         row.className = 'border-b border-slate-200';
         row.innerHTML = `
             <td class="px-3 py-3 text-slate-700 text-xs font-medium">
-                <div>${item.name}</div>
-                ${item.product_description ? `<div class="text-[9px] text-slate-500 mt-0.5"><span class="font-medium">PRODUCT DESCRIPTION:</span> ${item.product_description}</div>` : ''}
-                ${item.brand ? `<div class="text-[9px] text-slate-500 mt-0.5"><span class="font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">BRAND:</span> ${item.brand}</div>` : ''}
-                ${item.compatibility ? `<div class="text-[9px] text-slate-500 mt-0.5"><span class="font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">COMPATIBLE:</span> ${item.compatibility}</div>` : ''}
-                ${item.sku ? `<div class="text-[9px] text-slate-500 mt-0.5"><span class="font-medium text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">SKU:</span> ${item.sku}</div>` : ''}
-                ${item.stock_quantity !== undefined ? `<div class="text-[9px] text-slate-500 mt-0.5"><span class="font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">STOCK:</span> ${item.stock_quantity} pcs</div>` : ''}
+                <div class="text-sm font-semibold text-slate-900 mb-0.5">${item.name}</div>
+                ${item.product_description ? `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">PRODUCT DESCRIPTION:</span> ${item.product_description}</div>` : ''}
+                ${item.brand ? `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">BRAND:</span> ${item.brand}</div>` : ''}
+                ${item.compatibility ? `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">COMPATIBLE:</span> ${item.compatibility}</div>` : ''}
+                ${item.sku ? `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">SKU:</span> ${item.sku}</div>` : ''}
+                ${item.stock_quantity !== undefined ? `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">STOCK:</span> ${item.stock_quantity} pcs</div>` : ''}
             </td>
             <td class="px-3 py-3 text-right text-slate-700 text-xs">${formatCurrency(item.unit_price)}</td>
             <td class="px-3 py-3 text-center text-slate-700 text-xs">
@@ -705,12 +705,12 @@ async function searchProducts(query = '', page = 1) {
         url.searchParams.set('per_page', posState.productPageSize);
         url.searchParams.set('page', page);
         if (query) url.searchParams.set('search', query);
-        
+
         // Add product_description filter if not "All"
         if (posState.selectedCategory && posState.selectedCategory !== 'All') {
             url.searchParams.set('product_name', posState.selectedCategory);
         }
-        
+
         // Add brand filter if not "All"
         if (posState.selectedBrand && posState.selectedBrand !== 'All') {
             url.searchParams.set('brand', posState.selectedBrand);
@@ -743,60 +743,54 @@ async function searchProducts(query = '', page = 1) {
             const vatableSales = sellingPrice - includedVat;
 
             card.innerHTML = `
-                <div class="mb-1">
+                <div class="flex-shrink-0">
                     <div class="pos-image-preview h-24 w-full overflow-hidden rounded-[10px] bg-slate-200 bg-cover bg-center" style="background-image: url('${product.image || ''}')"></div>
                     <input type="file" accept="image/*" class="pos-image-uploader hidden" data-id="${product.id}" />
                     <div class="mt-2 flex items-center justify-between">
-                        <div class="flex-1 pr-2">
-                            <h3 class="text-sm font-semibold text-slate-900 line-clamp-2 mb-0">${productName}</h3>
-                            ${product.product_description ? `<p class="text-[9px] text-slate-500"><span class="font-medium">PRODUCT DESCRIPTION:</span> ${product.product_description}</p>` : ''}
-                            ${brand ? `<p class="text-[9px] text-slate-500"><span class="font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">BRAND:</span> ${brand}</p>` : ''}
-                            ${compatibility ? `<p class="text-[9px] text-slate-500"><span class="font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">COMPATIBLE:</span> ${compatibility}</p>` : ''}
-                            ${product.sku ? `<p class="text-[9px] text-slate-500"><span class="font-medium text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">SKU:</span> ${product.sku}</p>` : ''}
-                        </div>
-                        <div class="ml-2 flex-shrink-0">
-                            <button type="button" aria-label="Upload image" title="Upload image" class="pos-image-upload-trigger inline-flex h-9 w-9 items-center justify-center rounded-[10px] border border-slate-200 bg-white text-slate-700 hover:bg-slate-100">
-                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                            </button>
-                        </div>
+                        <h3 class="text-sm font-semibold text-slate-900 line-clamp-2">${productName}</h3>
+                        <button type="button" aria-label="Upload image" title="Upload image" class="pos-image-upload-trigger ml-2 flex-shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-[10px] border border-slate-200 bg-white text-slate-700 hover:bg-slate-100">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
-                <div class="space-y-2 flex flex-col justify-between flex-1">
-                    <div class="space-y-1">
-                        <p class="text-[11px] text-slate-500 mt-0"><span class="font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">STOCK:</span> ${stockQty} pcs</p>
-                    </div>
-                    <div class="space-y-2">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <span class="text-sm font-semibold text-slate-900">${formatCurrency(sellingPrice)}</span>
-                                <button type="button" class="pos-price-breakdown-toggle group relative inline-flex items-center gap-1 text-[10px] text-slate-500 hover:text-slate-1000 transition" data-product-id="${product.id}" data-vatable="${vatableSales}" data-included-vat="${includedVat}" title="Price Breakdown">
-                                    <svg class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                    </svg>
-                                </button>
-                            </div>
-                            <button type="button" onclick="posArchiveProduct(${product.id})" class="text-red-600 hover:text-red-700 text-[10px] font-medium flex items-center gap-1" title="Archive Product">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                <div class="flex-1 flex flex-col justify-start pt-1 pb-2 space-y-0.5">
+                    ${product.product_description ? `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">PRODUCT DESCRIPTION:</span> ${product.product_description}</p>` : ''}
+                    ${brand ? `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">BRAND:</span> ${brand}</p>` : ''}
+                    ${compatibility ? `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">COMPATIBLE:</span> ${compatibility}</p>` : ''}
+                    ${product.sku ? `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">SKU:</span> ${product.sku}</p>` : ''}
+                    <p class="text-[9px] text-slate-700"><span class="font-semibold text-black">STOCK:</span> ${stockQty} pcs</p>
+                </div>
+                <div class="flex-shrink-0 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-semibold text-slate-900">${formatCurrency(sellingPrice)}</span>
+                            <button type="button" class="pos-price-breakdown-toggle group relative inline-flex items-center gap-1 text-[10px] text-slate-500 hover:text-slate-1000 transition" data-product-id="${product.id}" data-vatable="${vatableSales}" data-included-vat="${includedVat}" title="Price Breakdown">
+                                <svg class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
-                                Archive
                             </button>
                         </div>
-                        <div class="pos-price-breakdown hidden mt-2 p-2 bg-slate-100 rounded-lg text-[10px] space-y-1 overflow-hidden transition-all duration-200" data-product-id="${product.id}">
-                            <div class="flex justify-between">
-                                <span class="text-slate-600">VATable Sales</span>
-                                <span class="font-medium text-slate-900">${formatCurrency(vatableSales)}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-slate-600">Included VAT (12%)</span>
-                                <span class="font-medium text-slate-900">${formatCurrency(includedVat)}</span>
-                            </div>
+                        <button type="button" onclick="posArchiveProduct(${product.id})" class="text-red-600 hover:text-red-700 text-[10px] font-medium flex items-center gap-1" title="Archive Product">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                            </svg>
+                            Archive
+                        </button>
+                    </div>
+                    <div class="pos-price-breakdown hidden mt-2 p-2 bg-slate-100 rounded-lg text-[10px] space-y-1 overflow-hidden transition-all duration-200" data-product-id="${product.id}">
+                        <div class="flex justify-between">
+                            <span class="text-slate-600">VATable Sales</span>
+                            <span class="font-medium text-slate-900">${formatCurrency(vatableSales)}</span>
                         </div>
-                        <div class="flex justify-center">
-                            <button type="button" data-id="${product.id}" data-name="${productName}" data-sku="${product.sku || ''}" data-price="${product.unit_price || 0}" class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-[#105f68] px-4 text-sm font-semibold text-white hover:bg-[#0c474e]">Add to Cart</button>
+                        <div class="flex justify-between">
+                            <span class="text-slate-600">Included VAT (12%)</span>
+                            <span class="font-medium text-slate-900">${formatCurrency(includedVat)}</span>
                         </div>
+                    </div>
+                    <div class="flex justify-center">
+                        <button type="button" data-id="${product.id}" data-name="${productName}" data-sku="${product.sku || ''}" data-price="${product.unit_price || 0}" class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-[#00fff2] px-4 text-xs font-bold text-black shadow-sm hover:bg-[#00e6da] transition-all duration-200 tracking-wide">Add to Cart</button>
                     </div>
                 </div>
             `;
@@ -991,7 +985,7 @@ function openPaymentModal() {
     const includedVat = total * (12 / 112);
 
     const now = new Date();
-    invoiceLabel.textContent = `INV-${now.getFullYear()}${String(now.getMonth()+1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${now.getHours()}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`;
+    invoiceLabel.textContent = `INV-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${now.getHours()}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
     dateLabel.textContent = now.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
     subtotalLabel.textContent = formatCurrency(subtotal);
@@ -1310,27 +1304,32 @@ function printReceipt() {
 }
 
 function buildInvoiceHTML(receiptData, cashierName) {
-    const invoiceNum   = receiptData.invoiceNumber || 'INV-000000';
-    const dateStr      = new Date(receiptData.date).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-    const subtotal     = receiptData.subtotal    || 0;
-    const discount     = receiptData.discount    || 0;
-    const tax          = receiptData.tax         || 0;
-    const total        = receiptData.total       || 0;
-    const amtReceived  = receiptData.amountReceived != null ? receiptData.amountReceived : total;
-    const change       = Math.max(0, amtReceived - total);
+    const invoiceNum = receiptData.invoiceNumber || receiptData.invoice_number || 'INV-000000';
+    const rawDate = receiptData.date || receiptData.created_at || new Date();
+    const dateStr = new Date(rawDate).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const subtotal = receiptData.subtotal != null ? parseFloat(receiptData.subtotal) : 0;
+    const discount = receiptData.discount != null ? parseFloat(receiptData.discount) : 0;
+    const tax = receiptData.tax != null ? parseFloat(receiptData.tax) : 0;
+    const total = receiptData.total != null ? parseFloat(receiptData.total) : 0;
+    const amtReceived = receiptData.amountReceived != null ? parseFloat(receiptData.amountReceived) : (receiptData.amount_paid != null ? parseFloat(receiptData.amount_paid) : total);
+    const change = Math.max(0, amtReceived - total);
     const vatableSales = total - tax;
-    const payMethod    = receiptData.paymentMethod === 'qr' ? 'QR PH / GCash' : (receiptData.paymentMethod || 'Cash');
+    const payMethod = (receiptData.paymentMethod === 'qr' || receiptData.payment_method === 'qr') ? 'QR PH / GCash' : (receiptData.paymentMethod || receiptData.payment_method || 'Cash');
 
-    const rowsHTML = (receiptData.items || []).map(item => {
+    const items = receiptData.items || receiptData.details || [];
+    const rowsHTML = items.map(item => {
+        const qty = item.qty != null ? item.qty : (item.quantity != null ? item.quantity : 1);
+        const price = item.price != null ? parseFloat(item.price) : (item.unit_price != null ? parseFloat(item.unit_price) : 0);
+        const lineTotal = item.subtotal != null ? parseFloat(item.subtotal) : (price * qty);
         const skuDisplay = item.sku ? item.sku : '—';
-        const lineTotal  = item.price * item.qty;
+        const itemName = item.name || item.product_name || 'Item';
         return `
             <tr>
-                <td class="item-name">${item.name}</td>
+                <td class="item-name">${itemName}</td>
                 <td class="item-sku">${skuDisplay}</td>
-                <td class="text-center">${item.qty}</td>
-                <td class="text-right">${formatCurrency(item.price)}</td>
-                <td class="text-right">${formatCurrency(lineTotal)}</td>
+                <td class="text-center">${qty}</td>
+                <td class="text-right">${formatCurrency(price)}</td>
+                <td class="text-right font-bold">${formatCurrency(lineTotal)}</td>
             </tr>`;
     }).join('');
 
@@ -1341,137 +1340,158 @@ function buildInvoiceHTML(receiptData, cashierName) {
 <title>Invoice ${invoiceNum}</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  @page { size: A4 portrait; margin: 18mm 16mm; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; color: #1a1a1a; background: #fff; }
+  @page { size: A4 portrait; margin: 12mm 12mm; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 11px;
+    color: #0f172a;
+    background: #f1f5f9;
+    padding: 32px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+
+  .invoice-card {
+    width: 100%;
+    max-width: 680px;
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    padding: 36px 40px;
+    box-shadow: 0 16px 40px -10px rgba(15, 23, 42, 0.08);
+  }
 
   /* ── Header ── */
-  .inv-header { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 14px; border-bottom: 2.5px solid #1a1a1a; margin-bottom: 20px; }
-  .brand-block { display: flex; gap: 14px; align-items: flex-start; }
-  .brand-logo { width: 52px; height: 52px; border-radius: 8px; background: #d1fae5; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #065f46; letter-spacing: 0.04em; flex-shrink: 0; }
-  .brand-name { font-size: 14px; font-weight: 800; text-transform: uppercase; line-height: 1.25; color: #0f172a; margin-bottom: 5px; }
-  .brand-address { font-size: 10px; color: #475569; line-height: 1.6; }
+  .inv-header { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 18px; border-bottom: 1.5px solid #cbd5e1; margin-bottom: 24px; }
+  .brand-block { display: flex; gap: 14px; align-items: center; }
+  .brand-logo { width: 48px; height: 48px; border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; color: #0f172a; letter-spacing: 0.04em; flex-shrink: 0; }
+  .brand-name { font-size: 14px; font-weight: 800; text-transform: uppercase; line-height: 1.25; color: #0f172a; margin-bottom: 3px; }
+  .brand-address { font-size: 10.5px; color: #64748b; line-height: 1.5; }
   .inv-meta { text-align: right; }
   .inv-meta .inv-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; }
   .inv-meta .inv-value { font-size: 12px; font-weight: 700; color: #0f172a; }
-  .inv-meta .inv-badge { display: inline-block; background: #0f172a; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 4px; letter-spacing: 0.04em; margin-bottom: 8px; }
-
-  /* ── Official Receipt label ── */
-  .doc-title { text-align: center; margin-bottom: 18px; }
-  .doc-title h1 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #0f172a; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; display: inline-block; padding: 4px 24px; }
+  .inv-meta .inv-badge { font-size: 13px; font-weight: 800; color: #0f172a; letter-spacing: 0.08em; margin-bottom: 8px; }
 
   /* ── Items table ── */
-  .items-table { width: 100%; border-collapse: collapse; margin-bottom: 22px; }
-  .items-table thead tr { background: #0f172a; color: #fff; }
-  .items-table thead th { padding: 8px 10px; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
-  .items-table tbody tr { border-bottom: 1px solid #e2e8f0; }
+  .items-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 24px; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+  .items-table thead tr { background: #0f172a; color: #ffffff; }
+  .items-table thead th { padding: 10px 14px; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #ffffff; }
+  .items-table tbody tr { border-bottom: 1px solid #f1f5f9; }
+  .items-table tbody tr:last-child { border-bottom: none; }
   .items-table tbody tr:nth-child(even) { background: #f8fafc; }
-  .items-table tbody td { padding: 9px 10px; font-size: 11px; vertical-align: top; }
-  .item-name { font-weight: 600; color: #0f172a; }
-  .item-sku  { font-family: 'Courier New', monospace; font-size: 10px; color: #64748b; }
-  .items-table .text-right  { text-align: right; }
+  .items-table tbody td { padding: 11px 14px; font-size: 11px; vertical-align: middle; }
+  .item-name { font-weight: 700; color: #0f172a; }
+  .item-sku { font-family: 'Courier New', monospace; font-size: 10px; color: #64748b; }
+  .font-bold { font-weight: 700; }
+  .items-table .text-right { text-align: right; }
   .items-table .text-center { text-align: center; }
 
   /* ── Summary ── */
-  .summary-wrap { display: flex; justify-content: flex-end; margin-bottom: 28px; }
-  .summary-box { width: 300px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; }
-  .summary-box .s-row { display: flex; justify-content: space-between; padding: 6px 14px; font-size: 11px; border-bottom: 1px solid #f1f5f9; }
+  .summary-wrap { display: flex; justify-content: flex-end; margin-bottom: 24px; }
+  .summary-box { width: 310px; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; background: #ffffff; }
+  .summary-box .s-row { display: flex; justify-content: space-between; padding: 8px 16px; font-size: 11px; border-bottom: 1px solid #f1f5f9; }
   .summary-box .s-row:last-child { border-bottom: none; }
-  .summary-box .s-label { color: #475569; }
-  .summary-box .s-value { font-weight: 600; color: #0f172a; }
-  .summary-box .s-total { background: #0f172a; color: #fff; }
-  .summary-box .s-total .s-label { color: #94a3b8; font-weight: 700; font-size: 12px; }
-  .summary-box .s-total .s-value { color: #34d399; font-weight: 800; font-size: 13px; }
+  .summary-box .s-label { color: #64748b; font-weight: 500; }
+  .summary-box .s-value { font-weight: 700; color: #0f172a; }
+  .summary-box .s-total { background: #ffffff; border-t: 1.5px solid #cbd5e1; color: #0f172a; padding: 10px 16px; }
+  .summary-box .s-total .s-label { color: #0f172a; font-weight: 800; font-size: 12px; }
+  .summary-box .s-total .s-value { color: #0f172a; font-weight: 900; font-size: 15px; }
 
   /* ── Payment info ── */
-  .payment-section { display: flex; gap: 16px; margin-bottom: 28px; }
-  .pay-box { flex: 1; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 14px; }
-  .pay-box .pay-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.07em; color: #94a3b8; margin-bottom: 3px; }
-  .pay-box .pay-value { font-size: 13px; font-weight: 700; color: #0f172a; }
+  .payment-section { display: flex; gap: 14px; margin-bottom: 28px; }
+  .pay-box { flex: 1; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; background: #f8fafc; }
+  .pay-box .pay-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.07em; color: #64748b; margin-bottom: 4px; font-weight: 600; }
+  .pay-box .pay-value { font-size: 14px; font-weight: 800; color: #0f172a; }
   .pay-box .pay-value.change { color: #059669; }
 
   /* ── Footer ── */
-  .inv-footer { text-align: center; margin-top: 20px; padding-top: 14px; border-top: 1px dashed #cbd5e1; }
-  .inv-footer p { font-size: 10px; color: #64748b; line-height: 1.7; }
-  .inv-footer .thank-you { font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+  .inv-footer { text-align: center; padding-top: 18px; border-top: 1px dashed #cbd5e1; }
+  .inv-footer p { font-size: 10px; color: #64748b; line-height: 1.6; }
+  .inv-footer .thank-you { font-size: 13px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
 
   @media print {
-    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { background: #ffffff !important; padding: 0 !important; display: block !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .invoice-card { max-width: 100% !important; border: none !important; box-shadow: none !important; padding: 0 !important; border-radius: 0 !important; }
   }
 </style>
 </head>
 <body>
 
-  <!-- Header -->
-  <div class="inv-header">
-    <div class="brand-block">
-      <div class="brand-logo">KCC</div>
-      <div>
-        <div class="brand-name">KCC Motorcycle Parts<br>&amp; Accessories</div>
-        <div class="brand-address">
-          129 Motorcycle St., Barangay 123, City, Philippines<br>
-          Tel: (02) 1234-56578
+  <div class="invoice-card">
+    <!-- Header -->
+    <div class="inv-header">
+      <div class="brand-block">
+        <div class="brand-logo">KCC</div>
+        <div>
+          <div class="brand-name">KCC Motorcycle Parts<br>&amp; Accessories</div>
+          <div class="brand-address">
+            129 Motorcycle St., Barangay 123, City, Philippines<br>
+            Tel: (02) 1234-56578
+          </div>
         </div>
       </div>
+      <div class="inv-meta">
+        <div class="inv-badge">OFFICIAL RECEIPT</div><br>
+        <span class="inv-label">Invoice #</span><br>
+        <span class="inv-value">${invoiceNum}</span><br><br>
+        <span class="inv-label">Date</span><br>
+        <span class="inv-value" style="font-size:11px;">${dateStr}</span><br><br>
+        <span class="inv-label">Cashier</span><br>
+        <span class="inv-value" style="font-size:11px;">${cashierName}</span>
+      </div>
     </div>
-    <div class="inv-meta">
-      <div class="inv-badge">OFFICIAL RECEIPT</div><br>
-      <span class="inv-label">Invoice #</span><br>
-      <span class="inv-value">${invoiceNum}</span><br><br>
-      <span class="inv-label">Date</span><br>
-      <span class="inv-value" style="font-size:11px;">${dateStr}</span><br><br>
-      <span class="inv-label">Cashier</span><br>
-      <span class="inv-value" style="font-size:11px;">${cashierName}</span>
-    </div>
-  </div>
 
-  <!-- Items Table -->
-  <table class="items-table">
-    <thead>
-      <tr>
-        <th style="text-align:left; width:38%">Item / Description</th>
-        <th style="text-align:left; width:22%">SKU</th>
-        <th style="text-align:center; width:8%">Qty</th>
-        <th style="text-align:right; width:16%">Unit Price</th>
-        <th style="text-align:right; width:16%">Amount</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${rowsHTML || '<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:16px;">No items</td></tr>'}
-    </tbody>
-  </table>
+    <!-- Items Table -->
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th style="text-align:left; width:36%">Item / Description</th>
+          <th style="text-align:left; width:24%">SKU</th>
+          <th style="text-align:center; width:10%">Qty</th>
+          <th style="text-align:right; width:15%">Unit Price</th>
+          <th style="text-align:right; width:15%">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rowsHTML || '<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:16px;">No items</td></tr>'}
+      </tbody>
+    </table>
 
-  <!-- Summary -->
-  <div class="summary-wrap">
-    <div class="summary-box">
-      <div class="s-row"><span class="s-label">Subtotal</span><span class="s-value">${formatCurrency(subtotal)}</span></div>
-      <div class="s-row"><span class="s-label">Discount</span><span class="s-value">−${formatCurrency(discount)}</span></div>
-      <div class="s-row"><span class="s-label">VATable Sales</span><span class="s-value">${formatCurrency(vatableSales)}</span></div>
-      <div class="s-row"><span class="s-label">Included VAT (12%)</span><span class="s-value">${formatCurrency(tax)}</span></div>
-      <div class="s-row s-total"><span class="s-label">TOTAL</span><span class="s-value">${formatCurrency(total)}</span></div>
+    <!-- Summary -->
+    <div class="summary-wrap">
+      <div class="summary-box">
+        <div class="s-row"><span class="s-label">Subtotal</span><span class="s-value">${formatCurrency(subtotal)}</span></div>
+        <div class="s-row"><span class="s-label">Discount</span><span class="s-value">−${formatCurrency(discount)}</span></div>
+        <div class="s-row"><span class="s-label">VATable Sales</span><span class="s-value">${formatCurrency(vatableSales)}</span></div>
+        <div class="s-row"><span class="s-label">Included VAT (12%)</span><span class="s-value">${formatCurrency(tax)}</span></div>
+        <div class="s-row s-total"><span class="s-label">TOTAL</span><span class="s-value">${formatCurrency(total)}</span></div>
+      </div>
     </div>
-  </div>
 
-  <!-- Payment -->
-  <div class="payment-section">
-    <div class="pay-box">
-      <div class="pay-label">Payment Method</div>
-      <div class="pay-value">${payMethod}</div>
+    <!-- Payment -->
+    <div class="payment-section">
+      <div class="pay-box">
+        <div class="pay-label">Payment Method</div>
+        <div class="pay-value">${payMethod}</div>
+      </div>
+      <div class="pay-box">
+        <div class="pay-label">Amount Received</div>
+        <div class="pay-value">${formatCurrency(amtReceived)}</div>
+      </div>
+      <div class="pay-box">
+        <div class="pay-label">Change</div>
+        <div class="pay-value change">${formatCurrency(change)}</div>
+      </div>
     </div>
-    <div class="pay-box">
-      <div class="pay-label">Amount Received</div>
-      <div class="pay-value">${formatCurrency(amtReceived)}</div>
-    </div>
-    <div class="pay-box">
-      <div class="pay-label">Change</div>
-      <div class="pay-value change">${formatCurrency(change)}</div>
-    </div>
-  </div>
 
-  <!-- Footer -->
-  <div class="inv-footer">
-    <div class="thank-you">Thank you for your purchase!</div>
-    <p>This serves as your official receipt. Please keep this for your records.</p>
-    <p>For concerns, please contact us at Tel: (02) 1234-56578</p>
+    <!-- Footer -->
+    <div class="inv-footer">
+      <div class="thank-you">Thank you for your purchase!</div>
+      <p>This serves as your official receipt. Please keep this for your records.</p>
+      <p>For concerns, please contact us at Tel: (02) 1234-56578</p>
+    </div>
   </div>
 
 </body>
@@ -1576,11 +1596,11 @@ function setupPosEvents() {
     // Category filter buttons
     const categoryButtons = document.querySelectorAll('.pos-category-button');
     categoryButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const category = this.textContent.trim();
             posState.selectedCategory = category;
             posState.productPage = 1; // Reset to first page
-            
+
             // Update button styling
             categoryButtons.forEach(btn => {
                 btn.classList.remove('bg-emerald-600', 'text-white', 'shadow-sm');
@@ -1588,7 +1608,7 @@ function setupPosEvents() {
             });
             this.classList.remove('border', 'border-slate-200', 'bg-white', 'text-slate-700', 'hover:border-emerald-500');
             this.classList.add('bg-emerald-600', 'text-white', 'shadow-sm');
-            
+
             // Trigger search with category filter
             searchProducts(posState.productSearchQuery, 1);
         });
@@ -2293,9 +2313,8 @@ function playScanNotification() {
 
 function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 px-4 py-2 rounded-lg text-sm font-medium z-50 ${
-        type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-    }`;
+    notification.className = `fixed top-4 right-4 px-4 py-2 rounded-lg text-sm font-medium z-50 ${type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+        }`;
     notification.textContent = message;
     document.body.appendChild(notification);
 

@@ -71,93 +71,111 @@
         }
     </style>
 
-    <div class="space-y-6">
+    <div class="space-y-4">
         <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
-        <div class="flex items-start justify-between">
-            <div>
-                <h1 class="text-3xl font-extrabold text-slate-900">Warehouse Management</h1>
-                <p class="mt-2 text-sm text-gray-500">Track and manage storage locations and products across your warehouses.</p>
-            </div>
-                <div class="flex items-center space-x-3">
-                <input id="wm-search" type="search" placeholder="Search product or SKU..." class="px-5 py-3 text-base border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-300" />
-                <button id="view-archived-shelves" type="button" class="px-3 py-2 border rounded-xl text-sm">Archived Shelves</button>
-                <button id="view-archived-warehouses" type="button" class="px-3 py-2 border rounded-xl text-sm">Archived Warehouses</button>
-                <button id="add-warehouse-button" type="button" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl text-sm font-medium shadow-md hover:from-blue-700 hover:to-blue-800 transition">Add Warehouse</button>
-                <button id="add-shelf-button" type="button" class="inline-flex items-center px-3 py-2 wm-badge rounded-xl text-sm font-medium">Add Shelf</button>
-            </div>
-        </div>
 
-        <div class="mt-4 flex items-center gap-4">
-            <label class="text-sm font-medium text-slate-700">Select a warehouse:</label>
-            <select id="warehouse-selector" class="px-4 py-3 border rounded-xl bg-white text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-green-300">
-                @foreach($warehouses as $wh)
-                    <option value="{{ $wh['id'] }}">{{ $wh['name'] }}</option>
-                @endforeach
-            </select>
-            <div class="flex items-center gap-2">
-                <label class="text-sm font-medium text-slate-700">Product Description:</label>
-                <select id="wm-product-description-filter" class="px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
-                    <option value="">All Descriptions</option>
-                    @php
-                        $descriptions = \App\Models\ProductDescription::where('is_active', true)->orderBy('name')->get();
-                        foreach($descriptions as $desc):
-                    @endphp
-                        <option value="{{ $desc->name }}">{{ $desc->name }}</option>
-                    @php endforeach; @endphp
-                </select>
-            </div>
-            <div class="flex items-center gap-2">
-                <label class="text-sm font-medium text-slate-700">Brand:</label>
-                <select id="wm-brand-filter" class="px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
-                    <option value="">All Brands</option>
-                    @php
-                        $brands = \App\Models\Product::where('is_archived', false)
-                            ->whereNotNull('brand')
-                            ->where('brand', '!=', '')
-                            ->distinct()
-                            ->orderBy('brand')
-                            ->pluck('brand')
-                            ->toArray();
-                        foreach($brands as $brand):
-                    @endphp
-                        <option value="{{ $brand }}">{{ $brand }}</option>
-                    @php endforeach; @endphp
-                </select>
-            </div>
-            <button id="wm-clear-filters" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition">
-                Clear Filters
-            </button>
-            <div class="flex items-center gap-3">
-                <div class="rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
-                    <p class="uppercase tracking-[0.18em] text-xs text-slate-400">Products</p>
-                    <p id="selectedWarehouseProducts" class="mt-1 text-lg font-semibold text-slate-900">0</p>
+        {{-- ═══ HEADER ═══ --}}
+        <div class="rounded-[22px] border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Warehouse Management</h1>
+                    <p class="text-xs text-slate-500 mt-1">Track and manage storage locations and products across your warehouses</p>
                 </div>
-                <div class="rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
-                    <p class="uppercase tracking-[0.18em] text-xs text-slate-400">Empty Slots</p>
-                    <p id="selectedWarehouseEmptySlots" class="mt-1 text-lg font-semibold text-slate-900">0</p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <input id="wm-search" type="search" placeholder="Search product or SKU..."
+                           class="px-3 py-1.5 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent w-48 transition" />
+                    <button id="view-archived-shelves" type="button"
+                            class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-[12px] bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 shadow-sm transition cursor-pointer">
+                        Archived Shelves
+                    </button>
+                    <button id="view-archived-warehouses" type="button"
+                            class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-[12px] bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 shadow-sm transition cursor-pointer">
+                        Archived Warehouses
+                    </button>
+                    <button id="add-warehouse-button" type="button"
+                            class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-[12px] bg-[#0f172a] text-white hover:bg-slate-800 shadow-sm transition cursor-pointer">
+                        + Add Warehouse
+                    </button>
+                    <button id="add-shelf-button" type="button"
+                            class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-[12px] border border-[#00fff2]/40 bg-[#00fff2] text-black hover:bg-[#00e6da] shadow-sm transition cursor-pointer">
+                        + Add Shelf
+                    </button>
                 </div>
             </div>
         </div>
 
+        {{-- ═══ FILTERS & STATS ═══ --}}
+        <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
+            <div class="flex flex-col lg:flex-row lg:items-center gap-2">
+                <div class="flex flex-wrap items-center gap-2 flex-1">
+                    <select id="warehouse-selector"
+                            class="px-3 py-1.5 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent cursor-pointer">
+                        @foreach($warehouses as $wh)
+                            <option value="{{ $wh['id'] }}">{{ $wh['name'] }}</option>
+                        @endforeach
+                    </select>
+                    <select id="wm-product-description-filter"
+                            class="px-3 py-1.5 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent cursor-pointer">
+                        <option value="">All Descriptions</option>
+                        @php
+                            $descriptions = \App\Models\ProductDescription::where('is_active', true)->orderBy('name')->get();
+                            foreach($descriptions as $desc):
+                        @endphp
+                            <option value="{{ $desc->name }}">{{ $desc->name }}</option>
+                        @php endforeach; @endphp
+                    </select>
+                    <select id="wm-brand-filter"
+                            class="px-3 py-1.5 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent cursor-pointer">
+                        <option value="">All Brands</option>
+                        @php
+                            $brands = \App\Models\Product::where('is_archived', false)
+                                ->whereNotNull('brand')
+                                ->where('brand', '!=', '')
+                                ->distinct()
+                                ->orderBy('brand')
+                                ->pluck('brand')
+                                ->toArray();
+                            foreach($brands as $brand):
+                        @endphp
+                            <option value="{{ $brand }}">{{ $brand }}</option>
+                        @php endforeach; @endphp
+                    </select>
+                    <button id="wm-clear-filters" class="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-[12px] transition cursor-pointer">
+                        Clear
+                    </button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="rounded-[14px] border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
+                        <p class="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">Products</p>
+                        <p id="selectedWarehouseProducts" class="text-sm font-bold text-slate-900">0</p>
+                    </div>
+                    <div class="rounded-[14px] border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
+                        <p class="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">Empty Slots</p>
+                        <p id="selectedWarehouseEmptySlots" class="text-sm font-bold text-slate-900">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <div class="grid gap-6 mt-4">
+
+        <div class="grid gap-4 mt-0">
 
         {{-- â”€â”€ Pending Warehouse Assignment panel (collapsible) â”€â”€ --}}
-        <div id="pending-arrivals-panel" class="wm-card rounded-xl border-l-4 border-amber-400 bg-amber-50 overflow-hidden">
+        <div id="pending-arrivals-panel" class="rounded-[20px] border border-slate-200 border-l-4 border-l-amber-400 bg-amber-50 shadow-sm overflow-hidden">
             {{-- Header / toggle bar --}}
             <button
                 type="button"
                 id="pending-arrivals-toggle"
-                class="w-full flex items-center justify-between px-5 py-3 hover:bg-amber-100/60 transition"
+                class="w-full flex items-center justify-between px-4 py-3 hover:bg-amber-100/60 transition"
                 aria-expanded="{{ count($pendingArrivals) > 0 ? 'true' : 'false' }}"
             >
                 <div class="flex items-center gap-3">
-                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-[10px] bg-amber-100 text-amber-600">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
                         </svg>
                     </div>
-                    <span class="text-sm font-bold text-amber-900">New Stock: Pending Warehouse Assignment</span>
+                    <span class="text-xs font-bold text-amber-900">New Stock: Pending Warehouse Assignment</span>
                     <span id="pending-arrivals-count" class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold {{ count($pendingArrivals) > 0 ? 'bg-amber-300 text-amber-900' : 'bg-slate-100 text-slate-500' }}">
                         {{ count($pendingArrivals) }} pending
                     </span>
@@ -172,20 +190,20 @@
                 <p class="text-xs text-amber-700 mb-3">Items that arrived from confirmed purchase orders are listed here. Assign each one to a warehouse before shelving.</p>
 
                 @if(count($pendingArrivals) > 0)
-                <div class="overflow-x-auto rounded-lg border border-amber-200 bg-white">
-                    <table class="min-w-full divide-y divide-slate-100 text-sm" id="pending-arrivals-table">
-                        <thead class="bg-slate-50">
+                <div class="overflow-x-auto rounded-[14px] border border-amber-200 bg-white">
+                    <table class="min-w-full divide-y divide-slate-200 text-xs" id="pending-arrivals-table">
+                        <thead class="bg-[#0f172a] border-b border-slate-200">
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Product</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">SKU</th>
-                                <th class="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">Qty</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">PO #</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Supplier</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Arrived</th>
-                                <th class="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">Action</th>
+                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</th>
+                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">SKU</th>
+                                <th class="px-4 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Qty</th>
+                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">PO #</th>
+                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Supplier</th>
+                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Arrived</th>
+                                <th class="px-4 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Action</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100" id="pending-arrivals-tbody">
+                        <tbody class="divide-y divide-slate-200 bg-white" id="pending-arrivals-tbody">
                             @foreach($pendingArrivals as $arrival)
                             <tr id="arrival-row-{{ $arrival['id'] }}" class="hover:bg-slate-50 transition">
                                 <td class="px-4 py-3 font-medium text-slate-900">{{ $arrival['product_name'] }}</td>
@@ -197,7 +215,7 @@
                                 <td class="px-4 py-3 text-center">
                                     <button
                                         type="button"
-                                        class="assign-arrival-btn inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-teal-700 transition shadow-sm"
+                                        class="assign-arrival-btn inline-flex items-center gap-1.5 rounded-[10px] bg-[#00fff2] px-3 py-1.5 text-xs font-semibold text-black hover:bg-[#00e6da] transition shadow-sm"
                                         data-id="{{ $arrival['id'] }}"
                                         data-name="{{ $arrival['product_name'] }}"
                                         data-qty="{{ $arrival['quantity'] }}"
@@ -227,32 +245,28 @@
         {{-- â”€â”€ end Pending Warehouse Assignment panel â”€â”€ --}}
 
             @foreach($warehouses as $wh)
-                <div class="wm-card rounded-lg p-4 shadow-sm wh-card" data-id="{{ $wh['id'] }}" style="display:none;">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <div class="flex items-center space-x-3">
-                                <div class="w-12 h-12 rounded-md flex items-center justify-center text-white font-semibold wm-badge">{{ strtoupper(substr($wh['code'], -1)) }}</div>
-                                <div>
-                                    <div class="text-lg font-semibold text-slate-900">{{ $wh['name'] }}</div>
-                                    <div class="text-xs text-gray-500">Code: {{ $wh['code'] }}</div>
-                                </div>
+                <div class="rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm wh-card" data-id="{{ $wh['id'] }}" style="display:none;">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm font-bold text-sm">{{ strtoupper(substr($wh['code'], -1)) }}</div>
+                            <div>
+                                <div class="text-sm font-bold text-slate-900">{{ $wh['name'] }}</div>
+                                <div class="text-[11px] text-slate-500">Code: {{ $wh['code'] }}</div>
                             </div>
                         </div>
-                        <div class="relative">
-                            <select class="warehouse-action-select text-sm text-slate-700 px-4 py-2 border border-gray-200 rounded-full bg-white hover:bg-gray-50 cursor-pointer appearance-none pr-8" data-id="{{ $wh['id'] }}">
-                                <option value="">Actions</option>
-                                <option value="archive-warehouse">Archive Warehouse</option>
-                            </select>
-                        </div>
+                        <select class="warehouse-action-select text-xs text-slate-700 px-3 py-2 border border-slate-300 rounded-[12px] bg-white hover:bg-slate-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent" data-id="{{ $wh['id'] }}">
+                            <option value="">Actions</option>
+                            <option value="archive-warehouse">Archive Warehouse</option>
+                        </select>
                     </div>
 
-                    <div class="mt-4">
-                        <div class="map-container border rounded-md p-3 bg-gray-50">
-                            <div class="warehouse-shelves grid gap-6" data-id="{{ $wh['id'] }}"></div>
-                            <div class="pagination mt-4 flex items-center justify-between text-sm text-gray-600">
-                                <button type="button" class="prev-page px-3 py-2 border rounded-md bg-white" data-id="{{ $wh['id'] }}">Previous</button>
-                                <div class="page-info" data-id="{{ $wh['id'] }}">Page 1 of 1</div>
-                                <button type="button" class="next-page px-3 py-2 border rounded-md bg-white" data-id="{{ $wh['id'] }}">Next</button>
+                    <div class="mt-3">
+                        <div class="map-container border border-slate-200 rounded-[14px] p-3 bg-slate-50">
+                            <div class="warehouse-shelves grid gap-4" data-id="{{ $wh['id'] }}"></div>
+                            <div class="pagination mt-3 flex items-center justify-between text-xs text-slate-600">
+                                <button type="button" class="prev-page px-3 py-1.5 border border-slate-300 rounded-[10px] bg-white text-xs font-semibold hover:bg-slate-50 transition" data-id="{{ $wh['id'] }}">Previous</button>
+                                <div class="page-info text-xs text-slate-500" data-id="{{ $wh['id'] }}">Page 1 of 1</div>
+                                <button type="button" class="next-page px-3 py-1.5 border border-slate-300 rounded-[10px] bg-white text-xs font-semibold hover:bg-slate-50 transition" data-id="{{ $wh['id'] }}">Next</button>
                             </div>
                         </div>
                     </div>

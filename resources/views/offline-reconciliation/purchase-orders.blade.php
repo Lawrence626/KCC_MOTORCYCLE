@@ -1,25 +1,27 @@
-﻿<x-layouts.app :title="__('Offline Purchase Orders')">
-    <div class="space-y-3">
+<x-layouts.app :title="__('Offline Purchase Orders')">
+    <div class="space-y-4">
         <!-- Header -->
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-slate-900">Offline Purchase Orders</h1>
-                <p class="text-xs text-slate-500 mt-0.5">Generate orders locally during internet outages</p>
-            </div>
-            <div class="flex items-center gap-2">
-                <a href="{{ route('offline.reconciliation') }}" class="px-4 py-2 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                    </svg>
-                    Back to Offline Home
-                </a>
-                <div id="offline-indicator" class="hidden"></div>
-                <button onclick="toggleArchiveList()" class="px-3 py-2 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
-                    </svg>
-                    Archive (<span id="archive-count">0</span>)
-                </button>
+        <div class="rounded-[22px] border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Offline Purchase Orders</h1>
+                    <p class="mt-1 text-xs text-slate-500">Generate orders locally during internet outages</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <a href="{{ Route::has('offline.reconciliation') ? route('offline.reconciliation') : url('/offline-reconciliation') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[12px] bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 shadow-sm transition">
+                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        Back to Offline Home
+                    </a>
+                    <div id="offline-indicator" class="hidden"></div>
+                    <button onclick="toggleArchiveList()" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[12px] bg-[#0f172a] text-white hover:bg-slate-800 shadow-sm transition cursor-pointer">
+                        <svg class="w-3.5 h-3.5 text-[#00fff2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                        </svg>
+                        Archive (<span id="archive-count">0</span>)
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -91,8 +93,8 @@
                     <textarea name="notes" id="notes" rows="3" class="w-full px-3 py-2 rounded-lg border border-slate-300 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"></textarea>
                 </div>
                 <div class="mt-4 flex gap-2">
-                    <button type="submit" class="px-4 py-2 rounded-lg bg-cyan-600 text-white text-sm font-medium hover:bg-cyan-700 transition">
-                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[12px] border border-[#00fff2]/40 bg-[#00fff2] text-black hover:bg-[#00e6da] shadow-sm transition cursor-pointer">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
                         Save Order Locally
@@ -308,7 +310,7 @@
             } finally {
                 submitButton.disabled = false;
                 submitButton.innerHTML = `
-                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
                     Save Order Locally

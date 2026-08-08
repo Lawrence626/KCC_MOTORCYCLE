@@ -1035,18 +1035,18 @@ function updatePagination(pagination) {
         return;
     }
 
-    let html = `<button onclick="loadProducts(${Math.max(1, currentPage - 1)})" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">← Prev</button>`;
+    let html = `<button onclick="loadProducts(${Math.max(1, currentPage - 1)})" class="px-2 py-1 rounded-[10px] border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">← Prev</button>`;
 
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(pagination.last_page, startPage + 4);
     if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
 
     for (let i = startPage; i <= endPage; i++) {
-        const btnClass = i === currentPage ? 'bg-cyan-600 text-white' : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50';
-        html += `<button onclick="loadProducts(${i})" class="px-2 py-1 rounded-lg text-xs font-medium ${btnClass}">${i}</button>`;
+        const btnClass = i === currentPage ? 'bg-slate-400 text-slate-900' : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50';
+        html += `<button onclick="loadProducts(${i})" class="px-2 py-1 rounded-[10px] text-xs font-medium ${btnClass}">${i}</button>`;
     }
 
-    html += `<button onclick="loadProducts(${Math.min(pagination.last_page, currentPage + 1)})" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">Next →</button>`;
+    html += `<button onclick="loadProducts(${Math.min(pagination.last_page, currentPage + 1)})" class="px-2 py-1 rounded-[10px] border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">Next →</button>`;
 
     paginationContainer.innerHTML = html;
 

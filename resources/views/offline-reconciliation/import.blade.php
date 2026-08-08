@@ -1,40 +1,44 @@
-﻿<x-layouts.app :title="__('Import Data')">
-    <div class="space-y-3">
+<x-layouts.app :title="__('Import Data')">
+    <div class="space-y-4">
         <!-- Header -->
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-slate-900">Import Data</h1>
-                <p class="text-xs text-slate-500 mt-0.5">Import offline transactions from CSV or Excel files</p>
+        <div class="rounded-[22px] border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Import Data</h1>
+                    <p class="mt-1 text-xs text-slate-500">Import offline transactions from CSV or Excel files</p>
+                </div>
+                <div>
+                    <a href="{{ Route::has('offline.reconciliation') ? route('offline.reconciliation') : url('/offline-reconciliation') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[12px] bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 shadow-sm transition">
+                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        Back to Offline Home
+                    </a>
+                </div>
             </div>
-            <a href="{{ route('offline.reconciliation') }}" class="px-4 py-2 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                </svg>
-                Back to Offline Home
-            </a>
         </div>
 
         @include('partials.offline-submenu')
 
         <!-- Import Form -->
-        <div class="bg-white rounded-lg border border-slate-200 p-4 shadow-sm">
-            <h2 class="text-sm font-semibold text-slate-900 mb-3">Upload File</h2>
+        <div class="rounded-[18px] border border-slate-200 bg-white p-4 shadow-sm">
+            <h2 class="text-xs font-bold text-slate-900 uppercase tracking-[0.16em] mb-3">Upload File</h2>
             <form action="{{ route('offline.import.store') }}" method="POST" enctype="multipart/form-data" id="importForm">
                 @csrf
                 <div class="mb-4">
-                    <label class="block text-xs font-medium text-slate-700 mb-1">Select File</label>
-                    <input type="file" name="file" accept=".csv,.xlsx,.xls" class="w-full px-3 py-2 rounded-lg border border-slate-300 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent" required>
-                    <p class="text-xs text-slate-500 mt-1">Supported formats: CSV, Excel (.xlsx, .xls)</p>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Select File</label>
+                    <input type="file" name="file" accept=".csv,.xlsx,.xls" class="w-full px-3 py-2 text-xs rounded-[12px] border border-slate-300 bg-slate-50 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition" required>
+                    <p class="text-[11px] text-slate-500 mt-1">Supported formats: CSV, Excel (.xlsx, .xls)</p>
                 </div>
-                <div class="flex gap-2">
-                    <button type="submit" class="px-4 py-2 rounded-lg bg-cyan-600 text-white text-sm font-medium hover:bg-cyan-700 transition">
-                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex items-center gap-2">
+                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[12px] border border-[#00fff2]/40 bg-[#00fff2] text-black hover:bg-[#00e6da] shadow-sm transition cursor-pointer">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                         </svg>
                         Import Data
                     </button>
-                    <button type="button" onclick="validateFile()" class="px-4 py-2 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
-                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button type="button" onclick="validateFile()" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[12px] bg-[#0f172a] text-white hover:bg-slate-800 shadow-sm transition cursor-pointer">
+                        <svg class="w-3.5 h-3.5 text-[#00fff2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                         Validate First

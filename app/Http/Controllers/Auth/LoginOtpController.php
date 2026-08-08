@@ -86,6 +86,12 @@ class LoginOtpController extends Controller
             return response()->json(['message' => 'Unable to verify login. Please try again.'], 422);
         }
 
+        if (! $user->email_verified_at) {
+            $user->forceFill([
+                'email_verified_at' => now(),
+            ])->save();
+        }
+
         Auth::loginUsingId($user->id, $otpData['remember'] ?? false);
         Session::forget('login.otp');
 
