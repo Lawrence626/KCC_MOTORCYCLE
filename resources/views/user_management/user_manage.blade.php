@@ -319,17 +319,17 @@
 
             <div class="overflow-x-auto">
                 <table class="w-full divide-y divide-slate-200 table-auto">
-                    <thead class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-200" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+                    <thead class="border-b border-slate-200 bg-[#0f172a]">
                         <tr>
-                            <th class="px-3 py-3 text-left">Name</th>
-                            <th class="px-3 py-3 text-left">Role</th>
-                            <th class="px-3 py-3 text-left">Email</th>
-                            <th class="px-3 py-3 text-left">Contact</th>
-                            <th class="px-3 py-3 text-left">Full Address</th>
-                            <th class="px-3 py-3 text-left">Age</th>
-                            <th class="px-3 py-3 text-left">Gender</th>
-                            <th class="px-3 py-3 text-left">Status</th>
-                            <th class="px-3 py-3 text-center">Actions</th>
+                            <th class="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Name</th>
+                            <th class="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Role</th>
+                            <th class="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Email</th>
+                            <th class="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Contact</th>
+                            <th class="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Full Address</th>
+                            <th class="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Age</th>
+                            <th class="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Gender</th>
+                            <th class="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Status</th>
+                            <th class="px-3 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-slate-200 text-xs">

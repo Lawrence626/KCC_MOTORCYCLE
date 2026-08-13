@@ -9,16 +9,6 @@
         </div>
     </a>
 
-    <div class="px-4 pt-2 pb-3 flex-shrink-0">
-        <div class="relative w-[93%]">
-            <svg class="w-4.5 h-4.5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="7" />
-                <path d="M21 21l-4.35-4.35" />
-            </svg>
-            <input type="text" placeholder="Search" class="w-full bg-[#1a1a1a] text-white placeholder-slate-400 text-sm pl-11 pr-4 py-2 rounded-[10px] border border-white/10 focus:outline-none focus:border-cyan-400/50" />
-        </div>
-    </div>
-
 
     <nav class="flex-1 py-4 space-y-2 overflow-y-auto overflow-x-visible sidebar-scroll">
 
@@ -269,6 +259,29 @@
 </div>
 
 <style>
+    /* Force sidebar scrollbar to always be visible on the right side */
+    .sidebar-scroll {
+        overflow-y: scroll !important;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(148, 163, 184, 0.7) rgba(30, 41, 59, 0.5);
+        margin-right: 10px;
+    }
+    .sidebar-scroll::-webkit-scrollbar {
+        width: 6px !important;
+        display: block !important;
+    }
+    .sidebar-scroll::-webkit-scrollbar-track {
+        background: rgba(30, 41, 59, 0.5) !important;
+        border-radius: 3px;
+    }
+    .sidebar-scroll::-webkit-scrollbar-thumb {
+        background: rgba(148, 163, 184, 0.7) !important;
+        border-radius: 3px;
+    }
+    .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+        background: rgba(148, 163, 184, 0.9) !important;
+    }
+
     .dropdown-active {
         visibility: visible !important;
         opacity: 1 !important;
