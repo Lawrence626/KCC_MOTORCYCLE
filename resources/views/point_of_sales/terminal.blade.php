@@ -28,118 +28,108 @@
 
         <div class="grid grid-cols-1 xl:grid-cols-[1.65fr_1fr] gap-4 mt-6">
             <div class="space-y-3">
-                <div class="rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm">
-                    <div class="flex flex-col gap-4">
-                        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                            <div class="flex flex-wrap gap-2 items-center">
-                                <label class="text-xs font-medium text-slate-700">Filter by:</label>
-                                <div class="relative">
-                                    <select id="posCategorySelect" class="hidden">
-                                        <option value="All">All Product Description</option>
-                                        <!-- Categories will be loaded dynamically from product descriptions -->
-                                    </select>
-                                </div>
-                                <div class="relative">
-                                    <select id="posBrandSelect" class="hidden">
-                                        <option value="All">All Brands</option>
-                                        <!-- Brands will be loaded dynamically based on selected product description -->
-                                    </select>
-                                </div>
+                <div class="rounded-[28px] border border-slate-200 bg-white overflow-hidden shadow-sm">
+                    <!-- Section Header Bar (matching All Stocks design) -->
+                    <div class="bg-[#0f172a] px-6 py-4 border-b border-slate-800 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                        <!-- Left Side: Search Input + Filter Icon Button -->
+                        <div class="flex items-center gap-2 flex-1 max-w-[420px]">
+                            <div class="relative flex-1">
+                                <label for="posProductSearchInput" class="sr-only">Search products</label>
+                                <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/></svg>
+                                <input id="posProductSearchInput" type="text" placeholder="Search products..." class="w-full rounded-[10px] border border-slate-700 bg-slate-800/90 text-white placeholder-slate-400 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#00fff2]" style="height: 42px;" />
                             </div>
+                            <button id="posFilterToggleButton" type="button" aria-label="Open filter" class="inline-flex h-[42px] w-[42px] items-center justify-center rounded-[10px] bg-slate-800 text-white border border-slate-700 transition hover:bg-slate-700 focus:outline-none focus:ring-1 focus:ring-[#00fff2] flex-shrink-0">
+                                <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L15 13.414V18a1 1 0 01-1.447.894l-4-2A1 1 0 019 16v-2.586L3.293 6.707A1 1 0 013 6V4z"/></svg>
+                            </button>
                         </div>
-                        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-                            <div class="flex w-full max-w-[420px] items-center gap-2">
-                                <div class="relative flex-1">
-                                    <label for="posProductSearchInput" class="sr-only">Search products</label>
-                                    <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/></svg>
-                                    <input id="posProductSearchInput" type="text" placeholder="Search products..." class="w-full rounded-[10px] border border-slate-200 bg-white px-10 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35" />
-                                </div>
-                                <button id="posFilterToggleButton" type="button" aria-label="Open filter" class="inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-white text-slate-700 border border-slate-200 transition hover:bg-slate-50 focus:outline-none focus:ring-1 focus:ring-black/35" style="height: 42px; width: 42px;">
-                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L15 13.414V18a1 1 0 01-1.447.894l-4-2A1 1 0 019 16v-2.586L3.293 6.707A1 1 0 013 6V4z"/></svg>
-                                </button>
+
+                        <!-- Right Side: Filter by + Two Dropdowns -->
+                        <div class="flex flex-wrap items-center gap-2">
+                            <label class="text-xs font-semibold text-slate-300 whitespace-nowrap">Filter by:</label>
+                            <div class="relative">
+                                <select id="posCategorySelect" class="hidden">
+                                    <option value="All">All Product Description</option>
+                                    <!-- Categories will be loaded dynamically from product descriptions -->
+                                </select>
                             </div>
-                            <div class="flex flex-wrap gap-2 items-center">
-                                <label class="text-xs font-medium text-slate-700">Filter by:</label>
-                                <div class="relative">
-                                    <select id="posCategorySelect" class="hidden">
-                                        <option value="All">All Product Description</option>
-                                        <!-- Categories will be loaded dynamically from product descriptions -->
-                                    </select>
-                                </div>
-                                <div class="relative">
-                                    <select id="posBrandSelect" class="hidden">
-                                        <option value="All">All Brands</option>
-                                        <!-- Brands will be loaded dynamically based on selected product description -->
-                                    </select>
-                                </div>
+                            <div class="relative">
+                                <select id="posBrandSelect" class="hidden">
+                                    <option value="All">All Brands</option>
+                                    <!-- Brands will be loaded dynamically based on selected product description -->
+                                </select>
                             </div>
                         </div>
                     </div>
-                    <div id="posProductGrid" class="grid gap-3 grid-cols-3 mt-4">
-                        <div class="col-span-full rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-slate-500">
-                            Search for products or scan a barcode to load items from All Stocks.
+
+                    <div class="p-4">
+                        <div id="posProductGrid" class="grid gap-3 grid-cols-3">
+                            <div class="col-span-full rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-slate-500">
+                                Search for products or scan a barcode to load items from All Stocks.
+                            </div>
                         </div>
-                    </div>
-                    <div id="posProductPagination" class="hidden mt-4 flex items-center justify-center gap-3 border-t border-slate-200 pt-3">
+                        <div id="posProductPagination" class="hidden mt-4 flex items-center justify-center gap-3 border-t border-slate-200 pt-3">
+                        </div>
                     </div>
                 </div>
 
             </div>
 
             <aside class="space-y-5 xl:sticky xl:top-4">
-                <div class="rounded-[28px] border border-slate-200 bg-white p-5 space-y-4">
-                    <div class="flex items-center justify-between mb-3 gap-3">
+                <div class="rounded-[28px] border border-slate-200 bg-white overflow-hidden shadow-sm">
+                    <div class="bg-[#0f172a] px-6 py-4 flex items-center justify-between gap-3 border-b border-slate-800">
                         <div>
-                            <h2 class="text-sm font-semibold text-slate-900">Cart</h2>
-                            <p class="text-xs text-slate-500">Selected items show here.</p>
+                            <h2 class="text-sm font-bold text-white">Cart</h2>
+                            <p class="text-xs text-slate-300">Selected items show here.</p>
                         </div>
-                        <button id="posEmptyCartButton" class="rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-bold text-slate-900 shadow-sm hover:bg-black/10 transition-all duration-200">Empty</button>
+                        <button id="posEmptyCartButton" class="rounded-[10px] bg-[#00FFF2] px-3 py-1.5 text-[11px] font-bold text-slate-900 shadow-sm hover:bg-[#00D9CC] transition-all duration-200">Empty</button>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table id="posCartTable" class="min-w-full text-left text-[11px]">
-                            <thead>
-                                <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wide text-[10px]">
-                                    <th class="px-3 py-2">Item</th>
-                                    <th class="px-6 py-2 text-right">Price</th>
-                                    <th class="px-3 py-2 text-center">Qty</th>
-                                    <th class="px-6 py-2 text-right">Total</th>
-                                    <th class="px-3 py-2 text-center">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="posCartBody"></tbody>
-                        </table>
-                        <div id="posEmptyCartMessage" class="mt-6 rounded-[10px] border border-dashed border-slate-300 bg-slate-50 px-3 py-6 text-center text-slate-500 text-sm">Cart empty.</div>
-                    </div>
-                    <div class="rounded-[10px] border border-slate-200 bg-slate-50 p-4 shadow-sm">
-                        <div class="grid gap-3">
-                            <label class="block text-sm text-slate-700">
-                                <span class="font-semibold">Extra Charges</span>
-                                <input id="posExtraChargeInput" type="number" min="0" step="0.01" value="0" placeholder="0.00" class="mt-2 w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35" />
-                            </label>
-                            <label class="block text-sm text-slate-700">
-                                <span class="font-semibold">Discount</span>
-                                <input id="posDiscountInput" type="number" min="0" step="0.01" value="0" placeholder="0.00" class="mt-2 w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35" />
-                            </label>
+                    <div class="p-5 space-y-4">
+                        <div class="overflow-x-auto">
+                            <table id="posCartTable" class="min-w-full text-left text-[11px]">
+                                <thead>
+                                    <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wide text-[10px]">
+                                        <th class="px-3 py-2">Item</th>
+                                        <th class="px-6 py-2 text-right">Price</th>
+                                        <th class="px-3 py-2 text-center">Qty</th>
+                                        <th class="px-6 py-2 text-right">Total</th>
+                                        <th class="px-3 py-2 text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="posCartBody"></tbody>
+                            </table>
+                            <div id="posEmptyCartMessage" class="mt-6 rounded-[10px] border border-dashed border-slate-300 bg-slate-50 px-3 py-6 text-center text-slate-500 text-sm">Cart empty.</div>
                         </div>
-                    </div>
-                    <div id="posCartFooter" class="space-y-2 hidden text-sm text-slate-600">
-                        <div class="grid gap-2">
-                            <div class="flex items-center justify-between"><span>Subtotal</span><span id="posSubtotal">₱0.00</span></div>
-                            <div class="flex items-center justify-between"><span>Services</span><span id="posServicesTotal">₱0.00</span></div>
-                            <div class="flex items-center justify-between"><span>Extra</span><span id="posExtraCharge">₱0.00</span></div>
-                            <div class="flex items-center justify-between"><span>Discount</span><span id="posDiscount">₱0.00</span></div>
-                            <div class="flex items-center justify-between"><span>Included VAT (12%)</span><span id="posTax">₱0.00</span></div>
-                            <div class="flex items-center justify-between text-base font-semibold text-slate-900"><span>Total</span><span id="posTotal">₱0.00</span></div>
+                        <div class="rounded-[10px] border border-slate-200 bg-slate-50 p-4 shadow-sm">
+                            <div class="grid gap-3">
+                                <label class="block text-sm text-slate-700">
+                                    <span class="font-semibold">Extra Charges</span>
+                                    <input id="posExtraChargeInput" type="number" min="0" step="0.01" value="0" placeholder="0.00" class="mt-2 w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35" />
+                                </label>
+                                <label class="block text-sm text-slate-700">
+                                    <span class="font-semibold">Discount</span>
+                                    <input id="posDiscountInput" type="number" min="0" step="0.01" value="0" placeholder="0.00" class="mt-2 w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35" />
+                                </label>
+                            </div>
+                        </div>
+                        <div id="posCartFooter" class="space-y-2 hidden text-sm text-slate-600">
+                            <div class="grid gap-2">
+                                <div class="flex items-center justify-between"><span>Subtotal</span><span id="posSubtotal">₱0.00</span></div>
+                                <div class="flex items-center justify-between"><span>Services</span><span id="posServicesTotal">₱0.00</span></div>
+                                <div class="flex items-center justify-between"><span>Extra</span><span id="posExtraCharge">₱0.00</span></div>
+                                <div class="flex items-center justify-between"><span>Discount</span><span id="posDiscount">₱0.00</span></div>
+                                <div class="flex items-center justify-between"><span>Included VAT (12%)</span><span id="posTax">₱0.00</span></div>
+                                <div class="flex items-center justify-between text-base font-semibold text-slate-900"><span>Total</span><span id="posTotal">₱0.00</span></div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm">
-                    <div class="flex items-center justify-between mb-3">
-                        <h2 class="text-sm font-semibold text-slate-900">Services</h2>
-                        <span class="text-xs text-slate-500">Add labor services</span>
+                <div class="rounded-[28px] border border-slate-200 bg-white overflow-hidden shadow-sm">
+                    <div class="bg-[#0f172a] px-6 py-4 flex items-center justify-between gap-3 border-b border-slate-800">
+                        <h2 class="text-sm font-bold text-white">Services</h2>
+                        <span class="text-xs text-slate-300">Add labor services</span>
                     </div>
-                    <div class="grid gap-2 text-sm">
+                    <div class="p-4 grid gap-2 text-sm">
                         <label class="flex items-center gap-2 rounded-[10px] border border-slate-200 px-3 py-2 cursor-pointer hover:border-slate-400">
                             <input type="checkbox" value="installation" class="pos-service-checkbox h-4 w-4 rounded border-slate-300 text-[#105f68] focus:ring-[#105f68]" />
                             <div class="space-y-0.5">
@@ -164,12 +154,12 @@
                     </div>
                 </div>
 
-                <div class="rounded-[28px] border border-slate-200 bg-white p-7 shadow-sm">
-                    <div class="flex items-center justify-between mb-3">
-                        <h2 class="text-sm font-semibold text-slate-900">Payment Method</h2>
-                        <span class="text-xs text-slate-500">Quick select</span>
+                <div class="rounded-[28px] border border-slate-200 bg-white overflow-hidden shadow-sm">
+                    <div class="bg-[#0f172a] px-6 py-4 flex items-center justify-between gap-3 border-b border-slate-800">
+                        <h2 class="text-sm font-bold text-white">Payment Method</h2>
+                        <span class="text-xs text-slate-300">Quick select</span>
                     </div>
-                    <div class="grid gap-3">
+                    <div class="p-6 grid gap-3">
                         <label class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 px-3 py-2 text-sm cursor-pointer hover:border-slate-400">
                             <input type="radio" name="posPaymentMethod" value="cash" class="pos-payment-method h-4 w-4 rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]" checked />
                             <span>Cash</span>
@@ -888,10 +878,10 @@
                 const button = document.createElement('button');
                 button.type = 'button';
                 button.id = selectId + 'Button';
-                button.className = 'custom-select-button inline-flex min-w-[130px] items-center justify-between gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 shadow-sm transition hover:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-300';
+                button.className = 'custom-select-button inline-flex min-w-[130px] items-center justify-between gap-2 rounded-[10px] border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-700 focus:outline-none focus:ring-1 focus:ring-[#00fff2]';
                 button.innerHTML = `
                     <span class="custom-select-label truncate"></span>
-                    <svg class="h-3.5 w-3.5 flex-shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="h-3.5 w-3.5 flex-shrink-0 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
                 `;

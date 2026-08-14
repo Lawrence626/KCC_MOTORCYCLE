@@ -89,29 +89,32 @@
             </div>
         </div>
 
-        <section class="rounded-[28px] border border-slate-200 bg-white p-5 space-y-4 shadow-sm">
-            <div class="flex flex-col gap-3">
+        <section class="rounded-[28px] border border-slate-200 bg-white overflow-hidden shadow-sm">
+            <!-- Section Header Bar (matching All Stocks design) -->
+            <div class="bg-[#0f172a] px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-slate-800">
                 <div>
-                    <h2 class="text-lg font-bold text-slate-900">Select a Supplier</h2>
-                    <p class="text-xs text-slate-500">Search and pick a supplier partner to inspect details below</p>
+                    <h2 class="text-lg font-bold text-white">Select a Supplier</h2>
+                    <p class="text-xs text-slate-300">Search and pick a supplier partner to inspect details below</p>
                 </div>
                 <div class="flex items-center gap-3">
                     <div class="relative w-72 md:w-80">
                         <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/>
                         </svg>
-                        <input id="supplierSearch" type="search" placeholder="Search supplier, contact, email..." class="w-full rounded-[10px] border border-slate-200 bg-slate-50 pl-10 pr-4 py-2 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
+                        <input id="supplierSearch" type="search" placeholder="Search supplier, contact, email..." class="w-full rounded-[10px] border border-slate-700 bg-slate-800/90 pl-10 pr-4 py-2 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#00fff2]" />
                     </div>
-                    <span id="supplierListCount" class="rounded-[10px] bg-[#00FFF2] px-3 py-2 text-xs font-bold text-slate-900 border border-slate-200 whitespace-nowrap">{{ number_format($supplierSummaries->count()) }} shown</span>
+                    <span id="supplierListCount" class="rounded-[10px] bg-[#00FFF2] px-3 py-2 text-xs font-bold text-slate-900 shadow-sm whitespace-nowrap">{{ number_format($supplierSummaries->count()) }} shown</span>
                 </div>
             </div>
 
-            <div id="supplierList" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
-            <div id="supplierPagination" class="mt-4 flex flex-col items-center gap-2 sm:flex-row sm:justify-between border-t border-slate-100 pt-3"></div>
+            <div class="p-5 space-y-4">
+                <div id="supplierList" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
+                <div id="supplierPagination" class="mt-4 flex flex-col items-center gap-2 sm:flex-row sm:justify-between border-t border-slate-100 pt-3"></div>
+            </div>
         </section>
 
-        <main id="supplierDetailsContainer" class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm min-h-[350px]">
-            <div id="supplierDetailPlaceholder" class="py-16 text-center text-slate-500">
+        <main id="supplierDetailsContainer" class="rounded-[28px] border border-slate-200 bg-white shadow-sm min-h-[350px] overflow-hidden">
+            <div id="supplierDetailPlaceholder" class="p-6 py-16 text-center text-slate-500">
                 <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0v-4m0 4h4m-4-4l4 4"/>
                 </svg>
@@ -120,34 +123,37 @@
             </div>
 
             <section id="supplierDetailPanel" class="hidden space-y-6">
-                <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <!-- Section Header Bar (matching All Stocks design) -->
+                <div class="bg-[#0f172a] px-6 py-5 border-b border-slate-800 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div>
-                        <p class="text-sm font-semibold text-slate-700">Supplier overview</p>
-                        <h2 id="detailSupplierName" class="mt-1 text-2xl md:text-3xl font-bold text-slate-900"></h2>
-                        <p id="detailSupplierNotes" class="mt-1 text-sm text-slate-900"></p>
-                        <p id="detailSupplierAddress" class="mt-2 text-sm text-slate-900"></p>
+                        <p class="text-xs uppercase tracking-wider font-semibold text-[#00fff2]">Supplier overview</p>
+                        <h2 id="detailSupplierName" class="mt-0.5 text-2xl md:text-3xl font-bold text-white"></h2>
+                        <p id="detailSupplierNotes" class="mt-1 text-xs text-slate-300"></p>
+                        <p id="detailSupplierAddress" class="mt-1 text-xs text-slate-400"></p>
                     </div>
                     <div class="flex flex-wrap items-center gap-3">
-                        <div class="rounded-[10px] bg-slate-50 px-3.5 py-2 text-sm text-slate-700 border border-slate-200">
-                            <p class="text-[10px] uppercase tracking-[0.2em] text-slate-900 font-medium">Role</p>
-                            <p id="detailSupplierPosition" class="mt-0.5 font-semibold text-slate-900 text-xs"></p>
+                        <div class="rounded-[10px] bg-slate-800/90 px-3.5 py-2 text-sm text-slate-300 border border-slate-700">
+                            <p class="text-[10px] uppercase tracking-[0.2em] text-[#00fff2] font-semibold">Role</p>
+                            <p id="detailSupplierPosition" class="mt-0.5 font-semibold text-white text-xs"></p>
                         </div>
-                        <div class="rounded-[10px] bg-slate-50 px-3.5 py-2 text-sm text-slate-700 border border-slate-200">
-                            <p class="text-[10px] uppercase tracking-[0.2em] text-slate-900 font-medium">Primary Contact</p>
-                            <p id="detailSupplierContact" class="mt-0.5 font-medium text-slate-900 text-xs"></p>
+                        <div class="rounded-[10px] bg-slate-800/90 px-3.5 py-2 text-sm text-slate-300 border border-slate-700">
+                            <p class="text-[10px] uppercase tracking-[0.2em] text-[#00fff2] font-semibold">Primary Contact</p>
+                            <p id="detailSupplierContact" class="mt-0.5 font-medium text-white text-xs"></p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button id="detailEditSupplierButton" type="button" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#00FFF2] px-4 py-2 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#00D9CC] transition-all duration-200">
+                            <button id="detailEditSupplierButton" type="button" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#00FFF2] px-4 py-2 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#00D9CC] transition-all duration-200">
                                 <svg class="h-4 w-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                 Edit
                             </button>
-                            <button id="detailArchiveSupplierButton" type="button" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200">
-                                <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                            <button id="detailArchiveSupplierButton" type="button" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-slate-700 transition-all duration-200">
+                                <svg class="h-4 w-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
                                 Archive
                             </button>
                         </div>
                     </div>
                 </div>
+
+                <div class="p-6 pt-0 space-y-6">
 
                 <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     <div class="rounded-[18px] border border-slate-200/80 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
@@ -268,6 +274,7 @@
                         </table>
                     </div>
                     <div id="productPagination" class="mt-4 flex flex-col items-center gap-2 sm:flex-row sm:justify-between"></div>
+                </div>
                 </div>
             </section>
         </main>

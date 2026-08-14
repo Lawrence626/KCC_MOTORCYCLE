@@ -54,8 +54,8 @@ function populateEditProductForm(product) {
     document.getElementById('editUnitPrice').value = product.unit_price ?? 0;
     document.getElementById('editSupplier').value = product.supplier_name || '';
     document.getElementById('editCategory').value = product.category || '';
-    document.getElementById('editLastRestock').value = product.last_restock_date || '';
-    document.getElementById('editExpiryDate').value = product.expiry_date || '';
+    document.getElementById('editLastRestock').value = product.last_restock_date ? String(product.last_restock_date).split('T')[0] : '';
+    document.getElementById('editExpiryDate').value = product.expiry_date ? String(product.expiry_date).split('T')[0] : '';
 
     // Sync custom category dropdown button text
     const categoryMap = {
@@ -145,6 +145,35 @@ function closeEditProductModal() {
 window.openEditModal = function (productId) {
     openEditProductModal(productId);
 };
+
+async function archiveProduct(productId) {
+    if (!confirm('Are you sure you want to archive this product? It will be hidden from the main inventory.')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/product/${productId}/archive`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': window.AllStocks.csrfToken,
+                'Content-Type': 'application/json'
+            }
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Product archived successfully');
+            loadStats();
+            loadProducts(currentPage);
+        } else {
+            alert('Failed to archive product: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error archiving product:', error);
+        alert('Error archiving product');
+    }
+}
+window.archiveProduct = archiveProduct;
 
 // Auto-filter with debounce
 function performSearch() {
@@ -509,8 +538,15 @@ async function loadProducts(page = 1) {
                     <td class="px-2 py-2 text-slate-600 whitespace-nowrap">${product.supplier_name || '-'}</td>
                     <td class="px-2 py-2 text-slate-600 whitespace-nowrap">${formatDate(product.last_restock_date)}</td>
                     <td class="px-2 py-2 text-slate-600 whitespace-nowrap">${product.expiry_date ? `${formatDate(product.expiry_date)} • ${product.expiry_status_label || 'Status'}` : 'Non-expiring'}</td>
-                    <td class="px-2 py-2 text-center whitespace-nowrap">
-                        <a href="javascript:void(0)" onclick="event.preventDefault(); openEditModal(${product.id});" class="text-cyan-600 hover:text-cyan-700 text-xs font-medium cursor-pointer z-50 relative">Edit</a>
+                    <td class="px-2 py-2 text-center align-middle whitespace-nowrap text-[10px] font-medium" onclick="event.stopPropagation()">
+                        <div class="inline-flex items-center gap-1.5 justify-center">
+                            <button type="button" onclick="event.stopPropagation(); openEditModal(${product.id});" class="text-black hover:text-slate-900 inline-flex items-center p-1" title="Edit">
+                                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </button>
+                            <button type="button" onclick="event.stopPropagation(); archiveProduct(${product.id});" class="rounded-[8px] border border-slate-200 px-2 py-1 text-[10px] font-semibold transition-all bg-white text-slate-700 hover:bg-black/10">Archive</button>
+                        </div>
                     </td>
                 `;
                 tbody.appendChild(row);

@@ -90,21 +90,24 @@
     </div>
 </div>
 
-        <div class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-            <div id="orderTabs" class="flex items-center justify-between gap-3 border-b border-slate-200 pb-4">
-                <div class="flex flex-wrap items-center gap-3">
-                    <button class="tab-btn rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition-all" data-tab="orders">Purchase Orders</button>
-                    <button class="tab-btn rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition-all" data-tab="back_orders">Back Orders</button>
-                    <button class="tab-btn rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition-all" data-tab="received">Received Orders</button>
-                    <button class="tab-btn rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition-all" data-tab="cancelled">Cancelled Orders</button>
+        <div class="rounded-[28px] border border-slate-200 bg-white overflow-hidden shadow-sm">
+            <!-- Section Header Bar (matching All Stocks design) -->
+            <div id="orderTabs" class="bg-[#0f172a] px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-slate-800">
+                <div class="flex flex-wrap items-center gap-2">
+                    <button class="tab-btn rounded-[10px] bg-[#00FFF2] px-4 py-2 text-xs font-bold text-slate-900 shadow-sm transition-all" data-tab="orders">Purchase Orders</button>
+                    <button class="tab-btn rounded-[10px] border border-slate-700 bg-slate-800/80 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-all" data-tab="back_orders">Back Orders</button>
+                    <button class="tab-btn rounded-[10px] border border-slate-700 bg-slate-800/80 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-all" data-tab="received">Received Orders</button>
+                    <button class="tab-btn rounded-[10px] border border-slate-700 bg-slate-800/80 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-all" data-tab="cancelled">Cancelled Orders</button>
                 </div>
-                <a href="{{ route('order.create') }}" class="inline-flex items-center gap-2 rounded-[10px] bg-[#00FFF2] px-4 py-2 text-sm font-bold text-slate-900 border-2 border-slate-200 shadow-sm hover:bg-[#00D9CC] transition-all">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="{{ route('order.create') }}" class="inline-flex items-center gap-2 rounded-[10px] bg-[#00FFF2] px-4 py-2 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#00D9CC] transition-all flex-shrink-0">
+                    <svg class="w-4 h-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
                     Create Purchase Order
                 </a>
             </div>
+
+            <div class="p-5">
 
             <div id="orders-tab" class="tab-content min-h-[360px]">
                 <form id="ordersForm" method="GET" action="{{ route('order.management') }}" class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -328,17 +331,21 @@
 
         function showOrderTab(tabName) {
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-[#00FFF2]', 'text-slate-900', 'shadow-sm');
-                btn.classList.add('bg-white', 'text-slate-700');
+                btn.classList.remove('bg-[#00FFF2]', 'text-slate-900', 'shadow-sm', 'font-bold');
+                btn.classList.add('border', 'border-slate-700', 'bg-slate-800/80', 'text-slate-300', 'hover:bg-slate-700', 'hover:text-white', 'font-semibold');
             });
             document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
 
             const button = document.querySelector(`.tab-btn[data-tab="${tabName}"]`) || document.querySelector('.tab-btn[data-tab="orders"]');
             const content = document.getElementById((button.dataset.tab || 'orders') + '-tab');
 
-            button.classList.remove('bg-white', 'text-slate-700');
-            button.classList.add('bg-[#00FFF2]', 'text-slate-900', 'shadow-sm');
-            content.classList.remove('hidden');
+            if (button) {
+                button.classList.remove('border', 'border-slate-700', 'bg-slate-800/80', 'text-slate-300', 'hover:bg-slate-700', 'hover:text-white', 'font-semibold');
+                button.classList.add('bg-[#00FFF2]', 'text-slate-900', 'shadow-sm', 'font-bold');
+            }
+            if (content) {
+                content.classList.remove('hidden');
+            }
         }
 
         function resetDropdownButtonStyles() {

@@ -32,16 +32,16 @@
                                 class="hidden absolute right-0 top-full mt-2 w-[320px] rounded-xl bg-white border border-slate-200 shadow-lg z-50 flex flex-col"
                                 style="max-height: 350px;"
                             >
-                                <div class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b border-slate-200 rounded-t-xl bg-[#00fff2]" style="background-color: #00fff2;">
+                                <div class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b border-slate-800 rounded-t-xl bg-[#0f172a]" style="background-color: #0f172a;">
                                     <div class="flex items-center gap-2">
-                                        <span class="text-sm font-semibold text-slate-900">Notifications</span>
+                                        <span class="text-sm font-bold text-white">Notifications</span>
                                         <span id="notif-center-unread-badge" class="hidden inline-flex items-center rounded-[10px] px-2 py-0.5 text-[10px] font-medium text-white" style="background-color: #ef4444;">0</span>
                                     </div>
                                     <div class="flex items-center gap-3">
                                         <button
                                             type="button"
                                             onclick="markAllNotificationsRead()"
-                                            class="text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors"
+                                            class="text-xs font-semibold text-slate-300 hover:text-white transition-colors"
                                         >Mark all as read</button>
                                     </div>
                                 </div>
@@ -196,7 +196,7 @@
                 </div>
 
                 <!-- Dead Stock Alert Card -->
-                <a href="{{ route('dss.dead-stock.index') }}" class="block border border-gray-200 p-4 hover:shadow-md transition cursor-pointer group" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <a href="{{ route('dss.dead-stock.index') }}" class="block border border-gray-200 p-4 hover:border-[#00fff2] hover:shadow-md transition cursor-pointer group" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <p class="text-black text-xs font-semibold">Dead Stock</p>
@@ -272,12 +272,12 @@
         <!-- Charts Row -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-8">
             <!-- Sales Overview Chart -->
-            <div id="salesOverviewCard" class="lg:col-span-2 border border-gray-200 p-4 relative overflow-hidden" style="border-radius: 20px; background-color: #ffffff; min-height: 240px; box-sizing: border-box;">
+            <div id="salesOverviewCard" class="lg:col-span-2 border border-slate-200 relative overflow-hidden rounded-[28px] bg-white shadow-sm" style="min-height: 240px; box-sizing: border-box;">
 
                 <!-- Header (title + range buttons) -->
-                <div id="salesOverviewHeader" class="flex items-center justify-between mb-3 relative">
+                <div id="salesOverviewHeader" class="bg-[#0f172a] px-6 py-4 flex items-center justify-between border-b border-slate-800">
                     <div class="flex items-center gap-2">
-                       <h2 id="salesOverviewTitle" class="font-semibold tracking-wide text-black" style="font-size: 20px; font-family: 'Poppins', sans-serif;">Sales Overview</h2>
+                       <h2 id="salesOverviewTitle" class="font-bold tracking-wide text-white text-lg">Sales Overview</h2>
                     </div>
                     <div class="flex gap-2">
                         <button type="button" data-range="daily" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Day</button>
@@ -287,7 +287,7 @@
                 </div>
 
                 <!-- Body (chart) -->
-                <div id="salesOverviewBody" class="relative w-full" style="height:360px;">
+                <div id="salesOverviewBody" class="relative w-full p-4" style="height:360px;">
                     <canvas id="salesChart"></canvas>
                 </div>
             </div>
@@ -656,9 +656,9 @@
         
         /* Range buttons: unselected = original light teal tint background with teal text, selected (clicked) = solid #36ADA3 with same color teal text */
         .sales-range-btn {
-            background-color: #e3edee;
-            color: #000000ff;
-            border: 1px solid rgba(0,0,0,0.02);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.15);
             box-shadow: none;
             padding-top: 0.35rem;
             padding-bottom: 0.35rem;
@@ -668,18 +668,19 @@
         }
 
         .sales-range-btn:hover {
-            background-color: #cfe0e1;
-            color: #000000ff;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
         }
 
         .sales-range-btn.active {
             background-color: #00fff2ff !important;
             color: #000000ff !important;
-            font-weight: 600 !important;
+            font-weight: 700 !important;
+            border-color: transparent !important;
         }
 
         .sales-range-btn.active:hover {
-            background-color: #00fff2ff !important;
+            background-color: #00e6da !important;
             color: #000000ff !important;
         }
         

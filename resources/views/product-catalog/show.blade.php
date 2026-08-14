@@ -1,8 +1,8 @@
 <x-layouts.app :title="__('Product Details')">
     <div class="max-w-4xl mx-auto space-y-4">
         <div class="mb-2">
-            <a href="{{ route('product-catalog.index') }}" class="inline-flex items-center gap-1.5 text-[#105f68] hover:underline text-xs font-semibold">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            <a href="{{ route('product-catalog.index') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-50 transition-all">
+                <svg class="w-4 h-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                 Back to Products
             </a>
         </div>

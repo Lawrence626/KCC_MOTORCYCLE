@@ -10,7 +10,7 @@
 
         <!-- Controls Section -->
         <div class="flex items-center gap-3 w-full">
-            <button onclick="openNewReplacementModal()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-[#00FFF2] text-slate-900 rounded-[10px] font-bold text-sm border-2 border-slate-200 hover:bg-[#00D9CC] transition-all">
+            <button onclick="openNewReplacementModal()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-[#00FFF2] text-slate-900 rounded-[10px] font-bold text-sm shadow-sm hover:bg-[#00D9CC] transition-all">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
@@ -60,18 +60,18 @@
         </div>
 
         <!-- Table Section -->
-        <div class="bg-white rounded-lg border border-slate-200 overflow-hidden flex flex-col" style="min-height: calc(100vh - 220px);">
+        <div class="bg-white rounded-[28px] border border-slate-200 overflow-hidden shadow-sm flex flex-col" style="min-height: calc(100vh - 220px);">
             <div class="overflow-x-auto flex-1">
                 <table class="w-full">
                     <thead>
-                        <tr class="border-b border-slate-200 bg-slate-50">
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-900">Receipt No.</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-900">Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-900">Returned Item</th>
-                            <th class="px-6 py-3 text-center text-xs font-semibold text-slate-900">Qty</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-900">Replacement Item</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-900">Status</th>
-                            <th class="px-6 py-3 text-center text-xs font-semibold text-slate-900">Action</th>
+                        <tr class="border-b border-slate-800 bg-[#0f172a]">
+                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Receipt No.</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Returned Item</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider">Qty</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Replacement Item</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider">Action</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200">

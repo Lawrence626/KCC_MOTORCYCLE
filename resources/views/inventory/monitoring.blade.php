@@ -302,7 +302,7 @@
     <!-- Edit Product Modal -->
     <div id="editProductModal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center px-4 py-4">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="const modal=document.getElementById('editProductModal'); if(modal){ modal.classList.add('hidden'); modal.style.display='none'; }"></div>
-        <div class="relative w-full max-w-3xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
+        <div class="relative w-full max-w-3xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[95vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Edit Product</h2>
@@ -312,7 +312,7 @@
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
-            <div class="p-4 sm:p-5 overflow-y-auto max-h-[calc(90vh-100px)]">
+            <div class="p-4 sm:p-5 overflow-y-auto max-h-[calc(95vh-100px)]">
                 <form id="editProductForm" autocomplete="off">
                     <input type="hidden" id="editProductId" />
                     <div class="grid gap-3 sm:grid-cols-2">
@@ -520,8 +520,12 @@
             }
 
             const card = document.createElement('div');
-            card.className = 'custom-calendar-card hidden absolute top-full left-0 mt-1 z-[999999] w-full rounded-[14px] bg-white p-2 shadow-[0_16px_40px_rgba(0,0,0,0.12)] border border-slate-100 transition-all duration-200';
+            card.className = 'custom-calendar-card hidden absolute top-full left-0 mt-1 z-[999999] w-full rounded-[14px] bg-white p-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.12)] border border-slate-200 transition-all duration-200';
             wrapper.appendChild(card);
+
+            if (input.value && input.value.includes('T')) {
+                input.value = input.value.split('T')[0];
+            }
 
             let currentDate = new Date();
             let selectedDate = input.value ? new Date(input.value) : null;
@@ -545,16 +549,16 @@
                 const daysInPrevMonth = new Date(year, month, 0).getDate();
 
                 let html = `
-                    <div class="flex items-center justify-between mb-1.5 px-0.5">
-                        <button type="button" class="toggle-view-btn text-xs font-bold text-slate-900 hover:text-slate-700 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md hover:bg-slate-100 transition">
+                    <div class="flex items-center justify-between mb-1 px-0.5">
+                        <button type="button" class="toggle-view-btn text-xs font-bold text-slate-900 hover:text-slate-700 inline-flex items-center gap-1 px-1 py-0.5 rounded-md hover:bg-slate-100 transition">
                             <span>${monthNames[month]} ${year}</span>
-                            <svg class="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                         <div class="flex items-center gap-0.5">
-                            <button type="button" class="prev-month-btn p-1 rounded-full text-slate-600 hover:bg-slate-100 transition" title="Previous Month">
+                            <button type="button" class="prev-month-btn p-0.5 rounded-full text-slate-600 hover:bg-slate-100 transition" title="Previous Month">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
                             </button>
-                            <button type="button" class="next-month-btn p-1 rounded-full text-slate-600 hover:bg-slate-100 transition" title="Next Month">
+                            <button type="button" class="next-month-btn p-0.5 rounded-full text-slate-600 hover:bg-slate-100 transition" title="Next Month">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                             </button>
                         </div>
@@ -566,7 +570,7 @@
                 `;
 
                 for (let i = firstDay - 1; i >= 0; i--) {
-                    html += `<span class="h-6 flex items-center justify-center text-slate-300">${daysInPrevMonth - i}</span>`;
+                    html += `<span class="h-5.5 flex items-center justify-center text-slate-300 text-[11px]">${daysInPrevMonth - i}</span>`;
                 }
 
                 const today = new Date();
@@ -574,7 +578,7 @@
                     const isSelected = selectedDate && selectedDate.getFullYear() === year && selectedDate.getMonth() === month && selectedDate.getDate() === day;
                     const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
 
-                    let dayClasses = "h-6 w-6 mx-auto flex items-center justify-center rounded-md font-medium cursor-pointer transition-all duration-150 ";
+                    let dayClasses = "h-5.5 w-5.5 mx-auto flex items-center justify-center rounded-md font-medium cursor-pointer transition-all duration-150 text-[11px] ";
                     if (isToday) {
                         dayClasses += "bg-[#00fff2] text-black font-bold shadow-sm";
                     } else if (isSelected) {
@@ -589,12 +593,12 @@
                 const totalSlots = firstDay + daysInMonth;
                 const nextDays = (7 - (totalSlots % 7)) % 7;
                 for (let i = 1; i <= nextDays; i++) {
-                    html += `<span class="h-6 flex items-center justify-center text-slate-300">${i}</span>`;
+                    html += `<span class="h-5.5 flex items-center justify-center text-slate-300 text-[11px]">${i}</span>`;
                 }
 
                 html += `
                     </div>
-                    <div class="flex items-center justify-between mt-1.5 pt-1.5 border-t border-slate-100 text-[11px] font-semibold px-0.5">
+                    <div class="flex items-center justify-between mt-1 pt-1 border-t border-slate-100 text-[11px] font-semibold px-0.5">
                         <button type="button" class="clear-btn text-slate-500 hover:text-red-600 transition">Clear</button>
                         <button type="button" class="today-btn text-slate-900 font-bold hover:underline transition">Today</button>
                     </div>

@@ -7,8 +7,11 @@
                 <p class="text-2XL text-slate-500 mt-0.5">Archived inventory items. Restore or permanently delete</p>
             </div>
             <div class="flex gap-2 items-center">
-                <a href="{{ route('pos.terminal') }}" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-black/10 transition">
-                    BACK TO POS
+                <a href="{{ route('pos.terminal') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200 flex-shrink-0">
+                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    <span>BACK TO POS</span>
                 </a>
             </div>
         </div>

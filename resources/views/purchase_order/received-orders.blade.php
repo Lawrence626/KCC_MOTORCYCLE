@@ -68,14 +68,17 @@
             </div>
         </div>
 
-        <section class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm" style="min-height: calc(100vh - 220px);">
-            <div class="flex items-center justify-between gap-4">
+        <section class="rounded-[28px] border border-slate-200 bg-white overflow-hidden shadow-sm" style="min-height: calc(100vh - 220px);">
+            <!-- Section Header Bar (matching All Stocks design) -->
+            <div class="bg-[#0f172a] px-6 py-4 flex items-center justify-between gap-4 border-b border-slate-800">
                 <div>
-                    <h2 class="text-lg font-semibold text-slate-900">Latest received orders</h2>
-                    <p class="text-sm text-slate-500">Recent receipts in a concise table.</p>
+                    <h2 class="text-lg font-bold text-white">Latest received orders</h2>
+                    <p class="text-xs text-slate-300">Recent receipts in a concise table.</p>
                 </div>
-                <span class="rounded-full bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-800">Verified</span>
+                <span class="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 text-xs font-semibold text-emerald-400">Verified</span>
             </div>
+
+            <div class="p-5">
 
             <form id="receivedOrdersForm" method="GET" action="{{ route('received.orders') }}" class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 <label class="block text-sm text-slate-700">
@@ -173,6 +176,7 @@
             </div>
             <div class="mt-4 px-4">
                 {{ $orders->links() }}
+            </div>
             </div>
         </section>
     </div>
