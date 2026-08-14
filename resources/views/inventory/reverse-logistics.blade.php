@@ -1,76 +1,86 @@
 <x-layouts.app :title="__('Reverse Logistics')">
     <div class="space-y-4">
         <!-- Header -->
-        <div class="rounded-[22px] border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-900">Reverse Logistics</h1>
-                    <p class="mt-1 text-xs text-slate-500 max-w-2xl">Manage returned products through inspection, repair, restocking, or disposal.</p>
-                </div>
-                <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-                    <button id="openAddReturn" class="rounded-full border border-[#00fff2]/40 bg-[#00fff2] px-4 py-2 text-xs font-semibold text-black hover:bg-[#00e6da] transition shadow-sm">+ Receive Returned Item</button>
-                </div>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 px-2 py-1">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900">Reverse Logistics</h1>
+                <p class="text-sm text-slate-500 mt-1">Manage returned products through inspection, repair, restocking, or disposal.</p>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap">
+                <button id="openAddReturn" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#00fff2] text-slate-900 text-sm font-semibold hover:bg-[#00e6da] transition shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                    <span>Receive Returned Item</span>
+                </button>
             </div>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-3">
-            <div class="rounded-[18px] border border-slate-200 bg-white p-4 shadow-sm">
-                <div class="flex items-center justify-between gap-2">
-                    <div>
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Returned Items</p>
-                        <p id="statTotalReturns" class="text-2xl font-semibold text-slate-900">0</p>
-                        <p class="text-xs text-[#105f68] mt-0.5">Total received</p>
+        <!-- Stats summary cards -->
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Returned Items</p>
+                        <div class="mt-1">
+                            <p id="statTotalReturns" class="text-2xl font-bold text-black">0</p>
+                            <p class="text-gray-500 text-xs mt-1 font-medium">Total received</p>
+                        </div>
                     </div>
-                    <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm shrink-0">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z" />
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <polyline points="9 14 4 9 9 4"></polyline>
+                            <path d="M20 20v-7a4 4 0 0 0-4-4H4"></path>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="rounded-[18px] border border-slate-200 bg-white p-4 shadow-sm">
-                <div class="flex items-center justify-between gap-2">
-                    <div>
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Under Inspection</p>
-                        <p id="statUnderReview" class="text-2xl font-semibold text-slate-900">0</p>
-                        <p class="text-xs text-amber-600 mt-0.5">Awaiting check</p>
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Under Inspection</p>
+                        <div class="mt-1">
+                            <p id="statUnderReview" class="text-2xl font-bold text-black">0</p>
+                            <p class="text-gray-500 text-xs mt-1 font-medium">Awaiting check</p>
+                        </div>
                     </div>
-                    <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm shrink-0">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="rounded-[18px] border border-slate-200 bg-white p-4 shadow-sm">
-                <div class="flex items-center justify-between gap-2">
-                    <div>
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Ready for Restock</p>
-                        <p id="statRestock" class="text-2xl font-semibold text-slate-900">0</p>
-                        <p class="text-xs text-[#105f68] mt-0.5">Approved items</p>
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Ready for Restock</p>
+                        <div class="mt-1">
+                            <p id="statRestock" class="text-2xl font-bold text-black">0</p>
+                            <p class="text-gray-500 text-xs mt-1 font-medium">Approved items</p>
+                        </div>
                     </div>
-                    <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm shrink-0">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="rounded-[18px] border border-slate-200 bg-white p-4 shadow-sm">
-                <div class="flex items-center justify-between gap-2">
-                    <div>
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Under Repair</p>
-                        <p id="statRepairQueue" class="text-2xl font-semibold text-slate-900">0</p>
-                        <p class="text-xs text-blue-600 mt-0.5">Being repaired</p>
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Under Repair</p>
+                        <div class="mt-1">
+                            <p id="statRepairQueue" class="text-2xl font-bold text-black">0</p>
+                            <p class="text-gray-500 text-xs mt-1 font-medium">Being repaired</p>
+                        </div>
                     </div>
-                    <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm shrink-0">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.4-2.4c.4-.4.4-1 0-1.3z"/>
                         </svg>
                     </div>
                 </div>
@@ -83,38 +93,64 @@
                 <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4 flex-1">
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1">Search returned item</label>
-                        <input id="searchInput" type="search" placeholder="Product, SKU, reason, warehouse" class="w-full rounded-[12px] border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent" />
+                        <input id="searchInput" type="search" placeholder="Product, SKU, reason, warehouse" class="w-full rounded-[12px] border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm" />
                     </div>
-                    <div>
+                    <!-- Custom Dropdown Card: Status Filter -->
+                    <div class="relative" data-dropdown-wrapper="statusFilter">
                         <label class="block text-xs font-semibold text-slate-600 mb-1">Status</label>
-                        <select id="statusFilter" class="w-full rounded-[12px] border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent">
-                            <option value="">All statuses</option>
-                            <option value="Under Review">Under Review</option>
-                            <option value="Pending Repair">Pending Repair</option>
-                            <option value="Ready for Restock">Ready for Restock</option>
-                            <option value="Disposed">Disposed</option>
-                        </select>
+                        <input type="hidden" id="statusFilter" value="" />
+                        <button type="button" id="statusFilterButton" onclick="toggleCustomDropdown('statusFilterDropdown', event)" class="w-full rounded-[12px] border border-slate-300 bg-white px-3 py-2 text-left text-xs text-slate-900 flex items-center justify-between hover:border-slate-400 focus:outline-none focus:ring-1 focus:ring-black/35 transition shadow-sm">
+                            <span id="statusFilterDisplay">All status</span>
+                            <svg class="w-4 h-4 text-slate-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                            </svg>
+                        </button>
+                        <div id="statusFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-1 w-full max-h-52 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
+                            <button type="button" onclick="selectCustomOption('statusFilter', '', 'All status', 'statusFilterDisplay', 'statusFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">All status</button>
+                            <button type="button" onclick="selectCustomOption('statusFilter', 'Under Review', 'Under Review', 'statusFilterDisplay', 'statusFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Under Review</button>
+                            <button type="button" onclick="selectCustomOption('statusFilter', 'Pending Repair', 'Pending Repair', 'statusFilterDisplay', 'statusFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Pending Repair</button>
+                            <button type="button" onclick="selectCustomOption('statusFilter', 'Ready for Restock', 'Ready for Restock', 'statusFilterDisplay', 'statusFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Ready for Restock</button>
+                            <button type="button" onclick="selectCustomOption('statusFilter', 'Disposed', 'Disposed', 'statusFilterDisplay', 'statusFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Disposed</button>
+                        </div>
                     </div>
-                    <div>
+
+                    <!-- Custom Dropdown Card: Return Reason Filter -->
+                    <div class="relative" data-dropdown-wrapper="reasonFilter">
                         <label class="block text-xs font-semibold text-slate-600 mb-1">Return reason</label>
-                        <select id="reasonFilter" class="w-full rounded-[12px] border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent">
-                            <option value="">All reasons</option>
-                            <option value="Defective">Defective</option>
-                            <option value="Customer Return">Customer Return</option>
-                            <option value="Wrong Item">Wrong Item Delivered</option>
-                            <option value="Quality Issue">Quality Issue</option>
-                            <option value="Damaged In Transit">Damaged In Transit</option>
-                        </select>
+                        <input type="hidden" id="reasonFilter" value="" />
+                        <button type="button" id="reasonFilterButton" onclick="toggleCustomDropdown('reasonFilterDropdown', event)" class="w-full rounded-[12px] border border-slate-300 bg-white px-3 py-2 text-left text-xs text-slate-900 flex items-center justify-between hover:border-slate-400 focus:outline-none focus:ring-1 focus:ring-black/35 transition shadow-sm">
+                            <span id="reasonFilterDisplay">All reasons</span>
+                            <svg class="w-4 h-4 text-slate-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                            </svg>
+                        </button>
+                        <div id="reasonFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-1 w-full max-h-52 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
+                            <button type="button" onclick="selectCustomOption('reasonFilter', '', 'All reasons', 'reasonFilterDisplay', 'reasonFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">All reasons</button>
+                            <button type="button" onclick="selectCustomOption('reasonFilter', 'Defective', 'Defective', 'reasonFilterDisplay', 'reasonFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Defective</button>
+                            <button type="button" onclick="selectCustomOption('reasonFilter', 'Customer Return', 'Customer Return', 'reasonFilterDisplay', 'reasonFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Customer Return</button>
+                            <button type="button" onclick="selectCustomOption('reasonFilter', 'Wrong Item', 'Wrong Item Delivered', 'reasonFilterDisplay', 'reasonFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Wrong Item Delivered</button>
+                            <button type="button" onclick="selectCustomOption('reasonFilter', 'Quality Issue', 'Quality Issue', 'reasonFilterDisplay', 'reasonFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Quality Issue</button>
+                            <button type="button" onclick="selectCustomOption('reasonFilter', 'Damaged In Transit', 'Damaged In Transit', 'reasonFilterDisplay', 'reasonFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Damaged In Transit</button>
+                        </div>
                     </div>
-                    <div>
+
+                    <!-- Custom Dropdown Card: Item Condition Filter -->
+                    <div class="relative" data-dropdown-wrapper="conditionFilter">
                         <label class="block text-xs font-semibold text-slate-600 mb-1">Item condition</label>
-                        <select id="conditionFilter" class="w-full rounded-[12px] border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent">
-                            <option value="">All conditions</option>
-                            <option value="Good">Good</option>
-                            <option value="Damaged">Damaged</option>
-                            <option value="Needs Repair">Needs Repair</option>
-                            <option value="Opened">Opened</option>
-                        </select>
+                        <input type="hidden" id="conditionFilter" value="" />
+                        <button type="button" id="conditionFilterButton" onclick="toggleCustomDropdown('conditionFilterDropdown', event)" class="w-full rounded-[12px] border border-slate-300 bg-white px-3 py-2 text-left text-xs text-slate-900 flex items-center justify-between hover:border-slate-400 focus:outline-none focus:ring-1 focus:ring-black/35 transition shadow-sm">
+                            <span id="conditionFilterDisplay">All conditions</span>
+                            <svg class="w-4 h-4 text-slate-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                            </svg>
+                        </button>
+                        <div id="conditionFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-1 w-full max-h-52 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
+                            <button type="button" onclick="selectCustomOption('conditionFilter', '', 'All conditions', 'conditionFilterDisplay', 'conditionFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">All conditions</button>
+                            <button type="button" onclick="selectCustomOption('conditionFilter', 'Good', 'Good', 'conditionFilterDisplay', 'conditionFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Good</button>
+                            <button type="button" onclick="selectCustomOption('conditionFilter', 'Damaged', 'Damaged', 'conditionFilterDisplay', 'conditionFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Damaged</button>
+                            <button type="button" onclick="selectCustomOption('conditionFilter', 'Needs Repair', 'Needs Repair', 'conditionFilterDisplay', 'conditionFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Needs Repair</button>
+                            <button type="button" onclick="selectCustomOption('conditionFilter', 'Opened', 'Opened', 'conditionFilterDisplay', 'conditionFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Opened</button>
+                        </div>
                     </div>
                 </div>
                 <button id="clearFiltersBtn" class="px-3.5 py-2 rounded-[12px] border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shrink-0">Clear Filters</button>
@@ -150,38 +186,42 @@
 
     <!-- Log/Edit Return Modal -->
     <div id="returnModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div id="modalOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
-        <div class="relative w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-2xl border border-slate-200 z-10 max-h-[85vh]">
-            <div class="px-6 py-5 bg-[#0f172a] relative flex items-start justify-between">
+        <div id="modalOverlay" class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl"></div>
+        <div class="relative w-full max-w-3xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] z-10 flex flex-col">
+            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5 shrink-0">
                 <div>
-                    <h2 id="modalTitle" class="text-lg font-bold text-white mb-0.5">Log a Returned Item</h2>
-                    <p class="text-xs text-slate-300">Capture return details, repair notes, and restock decisions in one place.</p>
+                    <h2 id="modalTitle" class="text-xl font-bold text-black">Log a Returned Item</h2>
+                    <p class="text-sm text-slate-800 font-medium">Capture return details, repair notes, and restock decisions in one place.</p>
                 </div>
-                <button id="closeModalBtn" class="text-slate-400 hover:text-white transition p-1 hover:bg-slate-700/50 rounded-lg cursor-pointer">✕</button>
+                <button id="closeModalBtn" type="button" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
 
-            <form id="returnForm" class="space-y-4 p-6 overflow-y-auto max-h-[calc(85vh-80px)] text-xs">
+            <form id="returnForm" class="p-4 sm:p-5 pb-32 overflow-y-auto max-h-[calc(90vh-100px)] space-y-4 text-xs">
                 <input type="hidden" id="recordId" />
-                <div class="grid gap-4 xl:grid-cols-2">
+                <div class="grid gap-3 sm:grid-cols-2">
                     <div class="space-y-1">
-                        <label class="block text-xs font-semibold text-slate-700">Product Name</label>
-                        <input id="productName" type="text" class="w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" placeholder="Example: Premium Brake Pad" required />
+                        <label class="block text-xs font-medium text-slate-700">Product Name <span class="text-red-500">*</span></label>
+                        <input id="productName" type="text" class="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 shadow-sm hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" placeholder="Example: Premium Brake Pad" required />
                     </div>
                     <div class="space-y-1">
-                        <label class="block text-xs font-semibold text-slate-700">SKU</label>
-                        <input id="sku" type="text" class="w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" placeholder="Example: BRK-PLD-09" required />
+                        <label class="block text-xs font-medium text-slate-700">SKU <span class="text-red-500">*</span></label>
+                        <input id="sku" type="text" class="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 shadow-sm hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" placeholder="Example: BRK-PLD-09" required />
                     </div>
                     <div class="space-y-1">
-                        <label class="block text-xs font-semibold text-slate-700">Quantity</label>
-                        <input id="quantity" type="number" min="1" value="1" class="w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" required />
+                        <label class="block text-xs font-medium text-slate-700">Quantity <span class="text-red-500">*</span></label>
+                        <input id="quantity" type="number" min="1" value="1" class="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 shadow-sm hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" required />
                     </div>
                     <div class="space-y-1">
-                        <label class="block text-xs font-semibold text-slate-700">Warehouse</label>
-                        <input id="warehouse" type="text" class="w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" placeholder="Main Store / Service Bay" required />
+                        <label class="block text-xs font-medium text-slate-700">Warehouse <span class="text-red-500">*</span></label>
+                        <input id="warehouse" type="text" class="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 shadow-sm hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" placeholder="Main Store / Service Bay" required />
                     </div>
-                    <div class="space-y-1">
-                        <label class="block text-xs font-semibold text-slate-700">Return Reason</label>
-                        <select id="returnReason" class="w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" required>
+
+                    <!-- Custom Dropdown Card: Return Reason -->
+                    <div class="space-y-1 relative" data-dropdown-wrapper="returnReason">
+                        <label class="block text-xs font-medium text-slate-700">Return Reason <span class="text-red-500">*</span></label>
+                        <select id="returnReason" class="hidden" required>
                             <option value="">Select reason</option>
                             <option value="Defective">Defective</option>
                             <option value="Customer Return">Customer Return</option>
@@ -189,53 +229,113 @@
                             <option value="Quality Issue">Quality Issue</option>
                             <option value="Damaged In Transit">Damaged In Transit</option>
                         </select>
+                        <button type="button" id="returnReasonButton" onclick="toggleCustomDropdown('returnReasonDropdown', event)" class="mt-1 w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-left text-xs text-slate-900 flex items-center justify-between hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm">
+                            <span id="returnReasonDisplay">Select reason</span>
+                            <svg class="w-4 h-4 text-slate-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                            </svg>
+                        </button>
+                        <div id="returnReasonDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[999] mt-1 w-full max-h-52 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
+                            <button type="button" onclick="selectCustomOption('returnReason', '', 'Select reason', 'returnReasonDisplay', 'returnReasonDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Select reason</button>
+                            <button type="button" onclick="selectCustomOption('returnReason', 'Defective', 'Defective', 'returnReasonDisplay', 'returnReasonDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Defective</button>
+                            <button type="button" onclick="selectCustomOption('returnReason', 'Customer Return', 'Customer Return', 'returnReasonDisplay', 'returnReasonDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Customer Return</button>
+                            <button type="button" onclick="selectCustomOption('returnReason', 'Wrong Item Delivered', 'Wrong Item Delivered', 'returnReasonDisplay', 'returnReasonDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Wrong Item Delivered</button>
+                            <button type="button" onclick="selectCustomOption('returnReason', 'Quality Issue', 'Quality Issue', 'returnReasonDisplay', 'returnReasonDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Quality Issue</button>
+                            <button type="button" onclick="selectCustomOption('returnReason', 'Damaged In Transit', 'Damaged In Transit', 'returnReasonDisplay', 'returnReasonDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Damaged In Transit</button>
+                        </div>
                     </div>
-                    <div class="space-y-1">
-                        <label class="block text-xs font-semibold text-slate-700">Condition</label>
-                        <select id="condition" class="w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" required>
+
+                    <!-- Custom Dropdown Card: Condition -->
+                    <div class="space-y-1 relative" data-dropdown-wrapper="condition">
+                        <label class="block text-xs font-medium text-slate-700">Condition <span class="text-red-500">*</span></label>
+                        <select id="condition" class="hidden" required>
                             <option value="">Select condition</option>
                             <option value="Good">Good</option>
                             <option value="Opened">Opened</option>
                             <option value="Damaged">Damaged</option>
                             <option value="Needs Repair">Needs Repair</option>
                         </select>
+                        <button type="button" id="conditionButton" onclick="toggleCustomDropdown('conditionDropdown', event)" class="mt-1 w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-left text-xs text-slate-900 flex items-center justify-between hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm">
+                            <span id="conditionDisplay">Select condition</span>
+                            <svg class="w-4 h-4 text-slate-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                            </svg>
+                        </button>
+                        <div id="conditionDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[999] mt-1 w-full max-h-52 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
+                            <button type="button" onclick="selectCustomOption('condition', '', 'Select condition', 'conditionDisplay', 'conditionDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Select condition</button>
+                            <button type="button" onclick="selectCustomOption('condition', 'Good', 'Good', 'conditionDisplay', 'conditionDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Good</button>
+                            <button type="button" onclick="selectCustomOption('condition', 'Opened', 'Opened', 'conditionDisplay', 'conditionDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Opened</button>
+                            <button type="button" onclick="selectCustomOption('condition', 'Damaged', 'Damaged', 'conditionDisplay', 'conditionDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Damaged</button>
+                            <button type="button" onclick="selectCustomOption('condition', 'Needs Repair', 'Needs Repair', 'conditionDisplay', 'conditionDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Needs Repair</button>
+                        </div>
                     </div>
-                    <div class="space-y-1">
-                        <label class="block text-xs font-semibold text-slate-700">Source</label>
-                        <select id="source" class="w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" required>
+
+                    <!-- Custom Dropdown Card: Source -->
+                    <div class="space-y-1 relative" data-dropdown-wrapper="source">
+                        <label class="block text-xs font-medium text-slate-700">Source <span class="text-red-500">*</span></label>
+                        <select id="source" class="hidden" required>
                             <option value="">Select source</option>
                             <option value="Customer Return">Customer Return</option>
                             <option value="Supplier Return">Supplier Return</option>
                             <option value="Quality Inspection">Quality Inspection</option>
                             <option value="Service Center">Service Center</option>
                         </select>
+                        <button type="button" id="sourceButton" onclick="toggleCustomDropdown('sourceDropdown', event)" class="mt-1 w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-left text-xs text-slate-900 flex items-center justify-between hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm">
+                            <span id="sourceDisplay">Select source</span>
+                            <svg class="w-4 h-4 text-slate-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                            </svg>
+                        </button>
+                        <div id="sourceDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[999] mt-1 w-full max-h-52 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
+                            <button type="button" onclick="selectCustomOption('source', '', 'Select source', 'sourceDisplay', 'sourceDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Select source</button>
+                            <button type="button" onclick="selectCustomOption('source', 'Customer Return', 'Customer Return', 'sourceDisplay', 'sourceDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Customer Return</button>
+                            <button type="button" onclick="selectCustomOption('source', 'Supplier Return', 'Supplier Return', 'sourceDisplay', 'sourceDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Supplier Return</button>
+                            <button type="button" onclick="selectCustomOption('source', 'Quality Inspection', 'Quality Inspection', 'sourceDisplay', 'sourceDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Quality Inspection</button>
+                            <button type="button" onclick="selectCustomOption('source', 'Service Center', 'Service Center', 'sourceDisplay', 'sourceDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Service Center</button>
+                        </div>
                     </div>
+
                     <div class="space-y-1">
-                        <label class="block text-xs font-semibold text-slate-700">Status</label>
-                        <select id="status" class="w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" required>
+                        <label class="block text-xs font-medium text-slate-700">Reported Date <span class="text-red-500">*</span></label>
+                        <input id="reportedDate" type="date" class="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 shadow-sm hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" required />
+                    </div>
+
+                    <!-- Custom Dropdown Card: Status -->
+                    <div class="space-y-1 relative" data-dropdown-wrapper="status">
+                        <label class="block text-xs font-medium text-slate-700">Status <span class="text-red-500">*</span></label>
+                        <select id="status" class="hidden" required>
                             <option value="Under Review">Under Review</option>
                             <option value="Pending Repair">Pending Repair</option>
                             <option value="Ready for Restock">Ready for Restock</option>
                             <option value="Disposed">Disposed</option>
                         </select>
-                    </div>
-                    <div class="space-y-1">
-                        <label class="block text-xs font-semibold text-slate-700">Reported Date</label>
-                        <input id="reportedDate" type="date" class="w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" required />
+                        <button type="button" id="statusButton" onclick="toggleCustomDropdown('statusDropdown', event)" class="mt-1 w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-left text-xs text-slate-900 flex items-center justify-between hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm">
+                            <span id="statusDisplay">Under Review</span>
+                            <svg class="w-4 h-4 text-slate-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                            </svg>
+                        </button>
+                        <div id="statusDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[999] mt-1 w-full max-h-52 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
+                            <button type="button" onclick="selectCustomOption('status', 'Under Review', 'Under Review', 'statusDisplay', 'statusDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Under Review</button>
+                            <button type="button" onclick="selectCustomOption('status', 'Pending Repair', 'Pending Repair', 'statusDisplay', 'statusDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Pending Repair</button>
+                            <button type="button" onclick="selectCustomOption('status', 'Ready for Restock', 'Ready for Restock', 'statusDisplay', 'statusDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Ready for Restock</button>
+                            <button type="button" onclick="selectCustomOption('status', 'Disposed', 'Disposed', 'statusDisplay', 'statusDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Disposed</button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="space-y-1">
-                    <label class="block text-xs font-semibold text-slate-700">Notes</label>
-                    <textarea id="notes" rows="3" class="w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" placeholder="Add additional context, inspection notes, or follow-up actions"></textarea>
+                    <label class="block text-xs font-medium text-slate-700">Notes</label>
+                    <textarea id="notes" rows="2" class="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 shadow-sm hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 resize-none" placeholder="Add additional context, inspection notes, or follow-up actions"></textarea>
                 </div>
 
-                <div class="flex flex-col gap-3 sm:flex-row sm:justify-between pt-2">
-                    <button type="button" id="cancelModalBtn" class="w-full rounded-lg border-2 border-slate-200 bg-white px-5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition sm:w-auto">Cancel</button>
-                    <div class="flex flex-1 items-center justify-end gap-3 sm:flex-none">
-                        <button type="button" id="deleteRecordBtn" class="hidden rounded-lg border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition">Delete</button>
-                        <button type="submit" class="rounded-lg bg-[#00fff2] px-5 py-2 text-xs font-semibold text-black hover:bg-[#00e6da] transition shadow-sm">Save record</button>
-                    </div>
+                <!-- Action Buttons -->
+                <div class="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
+                    <button type="button" id="cancelModalBtn" class="inline-flex items-center justify-center rounded-[10px] border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm hover:bg-black/10 transition-all duration-200">Cancel</button>
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#00FFF2] px-4 py-2.5 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#00D9CC] transition-all duration-200">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                        Save record
+                    </button>
                 </div>
             </form>
         </div>
@@ -481,13 +581,55 @@
             renderTable();
         }
 
+        function toggleCustomDropdown(id, event) {
+            if (event) event.stopPropagation();
+            const menu = document.getElementById(id);
+            if (!menu) return;
+            const isHidden = menu.classList.contains('hidden');
+            
+            document.querySelectorAll('.custom-calendar-card').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('.dropdown-menu').forEach(m => {
+                m.classList.add('hidden');
+                const bId = m.id.replace('Dropdown', 'Button');
+                const btn = document.getElementById(bId);
+                if (btn) btn.classList.remove('ring-1', 'ring-black/35', 'border-transparent');
+            });
+            
+            if (isHidden) {
+                menu.classList.remove('hidden');
+                const bId = id.replace('Dropdown', 'Button');
+                const btn = document.getElementById(bId);
+                if (btn) btn.classList.add('ring-1', 'ring-black/35', 'border-transparent');
+            }
+        }
+
+        function selectCustomOption(selectId, value, displayText, displayId, dropdownId) {
+            const selectElem = document.getElementById(selectId);
+            const displayElem = document.getElementById(displayId);
+            if (selectElem) {
+                selectElem.value = value;
+                selectElem.dispatchEvent(new Event('change'));
+            }
+            if (displayElem) displayElem.textContent = displayText || value || 'Select...';
+            const menu = document.getElementById(dropdownId);
+            if (menu) menu.classList.add('hidden');
+        }
+
+        window.toggleCustomDropdown = toggleCustomDropdown;
+        window.selectCustomOption = selectCustomOption;
+
         function resetForm() {
             recordIdInput.value = '';
             editingId = null;
             modalTitle.textContent = 'Log a Returned Item';
-            deleteRecordBtn.classList.add('hidden');
+            deleteRecordBtn?.classList.add('hidden');
             returnForm.reset();
             inputs.reportedDate.value = new Date().toISOString().split('T')[0];
+
+            if (document.getElementById('returnReasonDisplay')) document.getElementById('returnReasonDisplay').textContent = 'Select reason';
+            if (document.getElementById('conditionDisplay')) document.getElementById('conditionDisplay').textContent = 'Select condition';
+            if (document.getElementById('sourceDisplay')) document.getElementById('sourceDisplay').textContent = 'Select source';
+            if (document.getElementById('statusDisplay')) document.getElementById('statusDisplay').textContent = 'Under Review';
         }
 
         function openModal() {
@@ -508,7 +650,7 @@
             editingId = id;
             recordIdInput.value = id;
             modalTitle.textContent = 'Update Returned Item';
-            deleteRecordBtn.classList.remove('hidden');
+            deleteRecordBtn?.classList.remove('hidden');
 
             inputs.productName.value = record.product_name;
             inputs.sku.value = record.sku;
@@ -520,6 +662,11 @@
             inputs.status.value = record.status;
             inputs.reportedDate.value = record.reported_date;
             inputs.notes.value = record.notes || '';
+
+            if (document.getElementById('returnReasonDisplay')) document.getElementById('returnReasonDisplay').textContent = record.return_reason || 'Select reason';
+            if (document.getElementById('conditionDisplay')) document.getElementById('conditionDisplay').textContent = record.condition || 'Select condition';
+            if (document.getElementById('sourceDisplay')) document.getElementById('sourceDisplay').textContent = record.source || 'Select source';
+            if (document.getElementById('statusDisplay')) document.getElementById('statusDisplay').textContent = record.status || 'Under Review';
 
             returnModal.classList.remove('hidden');
             document.body.classList.add('overflow-hidden');
@@ -650,12 +797,17 @@
         closeModalBtn.addEventListener('click', closeModal);
         cancelModalBtn.addEventListener('click', closeModal);
         modalOverlay.addEventListener('click', closeModal);
-        deleteRecordBtn.addEventListener('click', deleteCurrentRecord);
+        deleteRecordBtn?.addEventListener('click', deleteCurrentRecord);
         clearFiltersBtn.addEventListener('click', () => {
             searchInput.value = '';
             statusFilter.value = '';
             reasonFilter.value = '';
             conditionFilter.value = '';
+
+            if (document.getElementById('statusFilterDisplay')) document.getElementById('statusFilterDisplay').textContent = 'All status';
+            if (document.getElementById('reasonFilterDisplay')) document.getElementById('reasonFilterDisplay').textContent = 'All reasons';
+            if (document.getElementById('conditionFilterDisplay')) document.getElementById('conditionFilterDisplay').textContent = 'All conditions';
+
             applyFilters();
         });
 
@@ -664,11 +816,19 @@
             element.addEventListener('change', applyFilters);
         });
 
-        // Close action menus when clicking outside
+        // Close action menus & custom dropdown cards when clicking outside
         document.addEventListener('click', function(e) {
             if (!e.target.closest('[onclick^="toggleActionMenu"]') && !e.target.closest('[id^="action-menu-"]')) {
                 document.querySelectorAll('[id^="action-menu-"]').forEach(m => {
                     m.classList.add('hidden');
+                });
+            }
+            if (!e.target.closest('[data-dropdown-wrapper]') && !e.target.closest('.dropdown-menu') && !e.target.closest('[onclick^="toggleCustomDropdown"]')) {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.classList.add('hidden');
+                    const bId = menu.id.replace('Dropdown', 'Button');
+                    const btn = document.getElementById(bId);
+                    if (btn) btn.classList.remove('ring-1', 'ring-black/35', 'border-transparent');
                 });
             }
         });
@@ -679,7 +839,255 @@
             }
         });
 
-        window.openEditRecord = openEditRecord;
+        // Custom Date Picker Setup matching Inventory Monitoring UI
+        function setupCustomDatePicker(inputId) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+
+            input.type = 'text';
+            input.readOnly = true;
+            input.placeholder = 'YYYY-MM-DD';
+            input.className = 'w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2 pr-10 text-xs text-slate-900 placeholder:text-slate-400 shadow-sm hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 cursor-pointer';
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'relative w-full mt-0 z-[10]';
+            input.parentNode.insertBefore(wrapper, input);
+            wrapper.appendChild(input);
+
+            // Add calendar icon inside input
+            const icon = document.createElement('div');
+            icon.className = 'absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 transition-colors duration-150';
+            icon.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`;
+            wrapper.appendChild(icon);
+
+            function setIconActive(isActive) {
+                if (isActive) {
+                    icon.classList.remove('text-slate-400');
+                    icon.classList.add('text-slate-600');
+                } else {
+                    icon.classList.remove('text-slate-600');
+                    icon.classList.add('text-slate-400');
+                }
+            }
+
+            const card = document.createElement('div');
+            card.className = 'custom-calendar-card hidden absolute top-full left-0 mt-1 z-[999999] w-full rounded-[12px] bg-white p-1.5 shadow-[0_12px_32px_rgba(0,0,0,0.12)] border border-slate-200 transition-all duration-200';
+            wrapper.appendChild(card);
+
+            let currentDate = new Date();
+            let selectedDate = input.value ? new Date(input.value) : null;
+            let viewMode = 'days';
+
+            function render() {
+                if (input.value) {
+                    const parsed = new Date(input.value);
+                    if (!isNaN(parsed.getTime())) {
+                        selectedDate = parsed;
+                    }
+                } else {
+                    selectedDate = null;
+                }
+
+                if (viewMode === 'days') {
+                    renderDaysView();
+                } else {
+                    renderMonthsView();
+                }
+            }
+
+            function renderDaysView() {
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+                const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+                let html = `
+                    <div class="flex items-center justify-between mb-0.5 px-0.5">
+                        <button type="button" class="toggle-view-btn text-xs font-bold text-slate-900 hover:text-slate-700 inline-flex items-center gap-1 px-1 py-0.5 rounded-md hover:bg-slate-100 transition">
+                            <span>${monthNames[month]} ${year}</span>
+                            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div class="flex items-center gap-0.5">
+                            <button type="button" class="prev-month-btn p-0.5 rounded-full text-slate-600 hover:bg-slate-100 transition" title="Previous Month">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                            </button>
+                            <button type="button" class="next-month-btn p-0.5 rounded-full text-slate-600 hover:bg-slate-100 transition" title="Next Month">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-0.5 text-center mb-0.5 text-[10px] font-semibold text-slate-400">
+                        <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+                    </div>
+                    <div class="grid grid-cols-7 gap-0.5 text-center text-[11px]">
+                `;
+
+                for (let i = firstDay - 1; i >= 0; i--) {
+                    html += `<span class="h-5 flex items-center justify-center text-slate-300 text-[11px]">${daysInPrevMonth - i}</span>`;
+                }
+
+                const today = new Date();
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const isSelected = selectedDate && selectedDate.getFullYear() === year && selectedDate.getMonth() === month && selectedDate.getDate() === day;
+                    const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
+
+                    let dayClasses = "h-5 w-5 mx-auto flex items-center justify-center rounded font-medium cursor-pointer transition-all duration-150 text-[11px] ";
+                    if (isToday) {
+                        dayClasses += "bg-[#00fff2] text-black font-bold shadow-sm";
+                    } else if (isSelected) {
+                        dayClasses += "bg-black/10 text-slate-900 font-bold shadow-sm";
+                    } else {
+                        dayClasses += "text-slate-700 hover:bg-slate-100";
+                    }
+
+                    html += `<button type="button" data-day="${day}" class="day-btn ${dayClasses}">${day}</button>`;
+                }
+
+                const totalSlots = firstDay + daysInMonth;
+                const nextDays = (7 - (totalSlots % 7)) % 7;
+                for (let i = 1; i <= nextDays; i++) {
+                    html += `<span class="h-5 flex items-center justify-center text-slate-300 text-[11px]">${i}</span>`;
+                }
+
+                html += `
+                    </div>
+                    <div class="flex items-center justify-between mt-0.5 pt-0.5 border-t border-slate-100 text-[11px] font-semibold px-0.5">
+                        <button type="button" class="clear-btn text-slate-500 hover:text-red-600 transition">Clear</button>
+                        <button type="button" class="today-btn text-slate-900 font-bold hover:underline transition">Today</button>
+                    </div>
+                `;
+
+                card.innerHTML = html;
+
+                card.querySelector('.toggle-view-btn')?.addEventListener('click', (e) => { e.stopPropagation(); viewMode = 'months'; render(); });
+                card.querySelector('.prev-month-btn')?.addEventListener('click', (e) => { e.stopPropagation(); currentDate.setMonth(currentDate.getMonth() - 1); render(); });
+                card.querySelector('.next-month-btn')?.addEventListener('click', (e) => { e.stopPropagation(); currentDate.setMonth(currentDate.getMonth() + 1); render(); });
+                card.querySelector('.clear-btn')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    selectedDate = null;
+                    input.value = '';
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                    card.classList.add('hidden');
+                    setIconActive(false);
+                });
+                card.querySelector('.today-btn')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    selectedDate = new Date();
+                    currentDate = new Date();
+                    const yyyy = selectedDate.getFullYear();
+                    const mm = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                    const dd = String(selectedDate.getDate()).padStart(2, '0');
+                    input.value = `${yyyy}-${mm}-${dd}`;
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                    card.classList.add('hidden');
+                    setIconActive(false);
+                });
+
+                card.querySelectorAll('.day-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const day = parseInt(btn.dataset.day);
+                        selectedDate = new Date(year, month, day);
+                        const yyyy = year;
+                        const mm = String(month + 1).padStart(2, '0');
+                        const dd = String(day).padStart(2, '0');
+                        input.value = `${yyyy}-${mm}-${dd}`;
+                        input.dispatchEvent(new Event('change', { bubbles: true }));
+                        card.classList.add('hidden');
+                        setIconActive(false);
+                    });
+                });
+            }
+
+            function renderMonthsView() {
+                const year = currentDate.getFullYear();
+                const shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+                let html = `
+                    <div class="flex items-center justify-between mb-1.5 pb-1.5 border-b border-slate-100 px-0.5">
+                        <button type="button" class="prev-year-btn p-1 rounded-full text-slate-600 hover:bg-slate-100 transition">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <span class="text-xs font-bold text-slate-900">${year}</span>
+                        <button type="button" class="next-year-btn p-1 rounded-full text-slate-600 hover:bg-slate-100 transition">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1 text-[11px]">
+                `;
+
+                shortMonths.forEach((m, idx) => {
+                    const isSel = selectedDate && selectedDate.getFullYear() === year && selectedDate.getMonth() === idx;
+                    let mClasses = "py-1.5 rounded-lg text-center font-semibold cursor-pointer transition-all duration-150 ";
+                    if (isSel) {
+                        mClasses += "bg-[#00fff2] text-black font-bold shadow-md";
+                    } else {
+                        mClasses += "text-slate-700 hover:bg-slate-100";
+                    }
+                    html += `<button type="button" data-month="${idx}" class="month-btn ${mClasses}">${m}</button>`;
+                });
+
+                html += `
+                    </div>
+                    <div class="mt-1.5 text-right">
+                        <button type="button" class="back-days-btn text-xs font-bold text-black hover:underline">Back to Days</button>
+                    </div>
+                `;
+
+                card.innerHTML = html;
+
+                card.querySelector('.prev-year-btn')?.addEventListener('click', (e) => { e.stopPropagation(); currentDate.setFullYear(year - 1); render(); });
+                card.querySelector('.next-year-btn')?.addEventListener('click', (e) => { e.stopPropagation(); currentDate.setFullYear(year + 1); render(); });
+                card.querySelector('.back-days-btn')?.addEventListener('click', (e) => { e.stopPropagation(); viewMode = 'days'; render(); });
+
+                card.querySelectorAll('.month-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const mIdx = parseInt(btn.dataset.month);
+                        currentDate.setMonth(mIdx);
+                        viewMode = 'days';
+                        render();
+                    });
+                });
+            }
+
+            input.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.classList.add('hidden');
+                    const bId = menu.id.replace('Dropdown', 'Button');
+                    const btn = document.getElementById(bId);
+                    if (btn) btn.classList.remove('ring-1', 'ring-black/35', 'border-transparent');
+                });
+                document.querySelectorAll('.custom-calendar-card').forEach(c => {
+                    if (c !== card) c.classList.add('hidden');
+                });
+                card.classList.toggle('hidden');
+                const isOpen = !card.classList.contains('hidden');
+                if (isOpen) {
+                    if (input.value) {
+                        const parts = input.value.split('-');
+                        if (parts.length === 3) {
+                            currentDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                        }
+                    }
+                    render();
+                }
+                setIconActive(isOpen);
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!wrapper.contains(e.target)) {
+                    card.classList.add('hidden');
+                    setIconActive(false);
+                }
+            });
+        }
+
+        setupCustomDatePicker('reportedDate');
 
         // Load initial data
         loadRecords();

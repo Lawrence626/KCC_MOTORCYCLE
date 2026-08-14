@@ -108,6 +108,8 @@ function populateEditProductForm(product) {
 
 // Modal functions
 function openAddStockModal() {
+    document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.add('hidden'));
+    document.querySelectorAll('[data-dropdown-wrapper]').forEach(w => w.style.zIndex = '');
     document.getElementById('addStockModal').classList.remove('hidden');
     loadProductsForSelect();
 }
@@ -123,6 +125,8 @@ function closeAddStockModal() {
 }
 
 function openEditProductModal(productId) {
+    document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.add('hidden'));
+    document.querySelectorAll('[data-dropdown-wrapper]').forEach(w => w.style.zIndex = '');
     const modal = document.getElementById('editProductModal');
     if (!modal) {
         alert('Edit modal not found');

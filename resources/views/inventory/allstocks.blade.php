@@ -355,7 +355,7 @@
     </div>
 
     <!-- Add Stock Modal -->
-    <div id="addStockModal" class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 py-4">
+    <div id="addStockModal" class="fixed inset-0 z-[100000] hidden flex items-center justify-center px-4 py-4">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" id="closeAddStockModalBackdrop"></div>
         <div class="relative w-full max-w-2xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
@@ -428,7 +428,7 @@
 </div>
 
     <!-- Edit Product Modal -->
-    <div id="editProductModal" class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 py-4">
+    <div id="editProductModal" class="fixed inset-0 z-[100000] hidden flex items-center justify-center px-4 py-4">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('editProductModal').classList.add('hidden')"></div>
         <div class="relative w-full max-w-3xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[95vh] overflow-y-auto z-10">
             <!-- Header -->
@@ -698,7 +698,7 @@
     </div>
 
     <!-- View Details Modal -->
-    <div id="viewDetailsModal" class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 py-4">
+    <div id="viewDetailsModal" class="fixed inset-0 z-[100000] hidden flex items-center justify-center px-4 py-4">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('viewDetailsModal').classList.add('hidden')"></div>
         <div class="relative w-full max-w-2xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto z-10">
             <!-- Header -->

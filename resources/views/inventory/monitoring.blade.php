@@ -422,6 +422,9 @@
             const dropdown = document.getElementById(id);
             if (!dropdown) return;
             
+            // Close all custom calendar cards
+            document.querySelectorAll('.custom-calendar-card').forEach(card => card.classList.add('hidden'));
+
             // Close other dropdowns
             document.querySelectorAll('.dropdown-menu').forEach(menu => {
                 if (menu.id !== id) {
@@ -703,6 +706,15 @@
 
             input.addEventListener('click', (e) => {
                 e.stopPropagation();
+                // Close all dropdown menus
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.classList.add('hidden');
+                    const btnId = menu.id.replace('Dropdown', 'Button');
+                    const btn = document.getElementById(btnId);
+                    if (btn) {
+                        btn.classList.remove('ring-1', 'ring-black/35', 'border-transparent');
+                    }
+                });
                 document.querySelectorAll('.custom-calendar-card').forEach(c => {
                     if (c !== card) c.classList.add('hidden');
                 });
