@@ -29,7 +29,7 @@
                             {{-- Notification Dropdown Panel --}}
                             <div
                                 id="notification-panel"
-                                class="hidden absolute right-0 top-full mt-2 w-[320px] rounded-xl bg-white border border-slate-200 shadow-lg z-50 flex flex-col"
+                                class="hidden absolute right-0 top-full mt-2 w-[320px] rounded-xl bg-white border border-slate-200 shadow-2xl z-[9999] flex flex-col"
                                 style="max-height: 350px;"
                             >
                                 <div class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b border-slate-800 rounded-t-xl bg-[#0f172a]" style="background-color: #0f172a;">
@@ -414,11 +414,12 @@
                     <canvas id="barChart" class="w-full h-full" style="max-width: 100%; display: block;"></canvas>
                 </div>
             </div>
-        <!-- ═══ Toast Notification Container (top-right, stacking) ═══ -->
-        <div id="inventory-toast-container" class="fixed top-20 right-16 z-[200] flex flex-col gap-3 pointer-events-none" style="max-width: 360px; width: 100%;"></div>
+
+        <!-- ═══ Toast Notifications Container ═══ -->
+        <div id="inventory-toast-container" class="fixed top-20 right-6 z-[40] flex flex-col gap-3 pointer-events-none" style="max-width: 360px; width: 100%;"></div>
 
         <!-- ═══ View All Notifications Modal ═══ -->
-        <div id="all-notifications-modal" class="hidden fixed inset-0 z-[250] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div id="all-notifications-modal" class="hidden fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
             <div class="bg-white rounded-[28px] border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]">
                 <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                     <div>
@@ -1237,6 +1238,11 @@
         function showInventoryToasts(alerts) {
             var container = document.getElementById('inventory-toast-container');
             if (!container) return;
+
+            var panel = document.getElementById('notification-panel');
+            if (panel && !panel.classList.contains('hidden')) {
+                return; // Do not spawn toast popups while Notification Panel is open
+            }
 
             var newAlerts = (Array.isArray(alerts) ? alerts : []).filter(function(a) {
                 var toastKey = a.id + '_' + a.notification_type;

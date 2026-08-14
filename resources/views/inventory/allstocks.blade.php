@@ -140,7 +140,7 @@
         </div>
 
         <!-- Unified Filter Toolbar -->
-        <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm flex flex-col space-y-2 relative z-[30]">
+        <div class="rounded-[10px] border border-slate-200 bg-white p-3 shadow-sm flex flex-col space-y-2 relative z-[30]">
             <!-- Primary Row -->
             <div class="flex flex-col lg:flex-row gap-2 relative z-[20]">
                 <!-- Search -->
@@ -321,12 +321,12 @@
         </div>
 
         <!-- Products Table -->
-        <div class="bg-white border border-slate-200 rounded-[20px] shadow-sm overflow-hidden w-full max-w-full">
-            <div class="overflow-x-auto table-responsive w-full">
+        <div class="bg-white border border-slate-200 rounded-[10px] shadow-sm overflow-hidden w-full max-w-full">
+            <div class="overflow-x-auto table-responsive w-full rounded-[10px]">
                 <table class="w-full text-sm text-left whitespace-nowrap min-w-max">
-                    <thead class="bg-[#0f172a] border-b border-slate-200 sticky-header text-xs uppercase tracking-wider">
+                    <thead class="bg-[#0f172a] border-b border-slate-200 sticky-header text-xs uppercase tracking-wider rounded-t-[10px]">
                         <tr>
-                            <th class="px-4 py-3 font-semibold sticky-first-col bg-[#0f172a] w-10 text-white">
+                            <th class="px-4 py-3 font-semibold sticky-first-col bg-[#0f172a] w-10 text-white rounded-tl-[10px]">
                                 <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2] cursor-pointer">
                             </th>
                             <th class="px-4 py-3 font-semibold text-white">Product</th>
@@ -335,7 +335,7 @@
                             <th class="px-4 py-3 font-semibold text-center text-white">Stock</th>
                             <th class="px-4 py-3 font-semibold text-right text-white">Price</th>
                             <th class="px-4 py-3 font-semibold text-center text-white">Status</th>
-                            <th class="px-4 py-3 font-semibold text-center text-white">Actions</th>
+                            <th class="px-4 py-3 font-semibold text-center text-white rounded-tr-[10px]">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 bg-white" id="productsTableBody">

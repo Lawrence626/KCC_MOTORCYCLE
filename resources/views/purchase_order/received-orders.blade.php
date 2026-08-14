@@ -68,9 +68,9 @@
             </div>
         </div>
 
-        <section class="rounded-[28px] border border-slate-200 bg-white overflow-hidden shadow-sm" style="min-height: calc(100vh - 220px);">
+        <section class="rounded-[10px] border border-slate-200 bg-white overflow-hidden shadow-sm" style="min-height: calc(100vh - 220px);">
             <!-- Section Header Bar (matching All Stocks design) -->
-            <div class="bg-[#0f172a] px-6 py-4 flex items-center justify-between gap-4 border-b border-slate-800">
+            <div class="bg-[#0f172a] px-6 py-4 flex items-center justify-between gap-4 border-b border-slate-800 rounded-t-[10px]">
                 <div>
                     <h2 class="text-lg font-bold text-white">Latest received orders</h2>
                     <p class="text-xs text-slate-300">Recent receipts in a concise table.</p>

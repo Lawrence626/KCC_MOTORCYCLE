@@ -60,18 +60,18 @@
         </div>
 
         <!-- Table Section -->
-        <div class="bg-white rounded-[28px] border border-slate-200 overflow-hidden shadow-sm flex flex-col" style="min-height: calc(100vh - 220px);">
-            <div class="overflow-x-auto flex-1">
+        <div class="bg-white rounded-[10px] border border-slate-200 overflow-hidden shadow-sm flex flex-col" style="min-height: calc(100vh - 220px);">
+            <div class="overflow-x-auto flex-1 rounded-[10px]">
                 <table class="w-full">
-                    <thead>
-                        <tr class="border-b border-slate-800 bg-[#0f172a]">
-                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Receipt No.</th>
+                    <thead class="rounded-t-[10px]">
+                        <tr class="border-b border-slate-800 bg-[#0f172a] rounded-t-[10px]">
+                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider rounded-tl-[10px]">Receipt No.</th>
                             <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Date</th>
                             <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Returned Item</th>
                             <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider">Qty</th>
                             <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Replacement Item</th>
                             <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider">Action</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider rounded-tr-[10px]">Action</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200">

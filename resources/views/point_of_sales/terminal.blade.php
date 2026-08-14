@@ -28,7 +28,7 @@
 
         <div class="grid grid-cols-1 xl:grid-cols-[1.65fr_1fr] gap-4 mt-6">
             <div class="space-y-3">
-                <div class="rounded-[28px] border border-slate-200 bg-white overflow-hidden shadow-sm">
+                <div class="rounded-[20px] border border-slate-200 bg-white overflow-hidden shadow-sm">
                     <!-- Section Header Bar (matching All Stocks design) -->
                     <div class="bg-[#0f172a] px-6 py-4 border-b border-slate-800 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                         <!-- Left Side: Search Input + Filter Icon Button -->
@@ -75,7 +75,7 @@
             </div>
 
             <aside class="space-y-5 xl:sticky xl:top-4">
-                <div class="rounded-[28px] border border-slate-200 bg-white overflow-hidden shadow-sm">
+                <div class="rounded-[20px] border border-slate-200 bg-white overflow-hidden shadow-sm">
                     <div class="bg-[#0f172a] px-6 py-4 flex items-center justify-between gap-3 border-b border-slate-800">
                         <div>
                             <h2 class="text-sm font-bold text-white">Cart</h2>
@@ -124,7 +124,7 @@
                     </div>
                 </div>
 
-                <div class="rounded-[28px] border border-slate-200 bg-white overflow-hidden shadow-sm">
+                <div class="rounded-[20px] border border-slate-200 bg-white overflow-hidden shadow-sm">
                     <div class="bg-[#0f172a] px-6 py-4 flex items-center justify-between gap-3 border-b border-slate-800">
                         <h2 class="text-sm font-bold text-white">Services</h2>
                         <span class="text-xs text-slate-300">Add labor services</span>
@@ -154,7 +154,7 @@
                     </div>
                 </div>
 
-                <div class="rounded-[28px] border border-slate-200 bg-white overflow-hidden shadow-sm">
+                <div class="rounded-[20px] border border-slate-200 bg-white overflow-hidden shadow-sm">
                     <div class="bg-[#0f172a] px-6 py-4 flex items-center justify-between gap-3 border-b border-slate-800">
                         <h2 class="text-sm font-bold text-white">Payment Method</h2>
                         <span class="text-xs text-slate-300">Quick select</span>

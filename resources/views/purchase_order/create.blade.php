@@ -35,8 +35,8 @@
         {{-- ══════════════════════════════════════════════════════════
              STEP 1 – SELECT PRODUCTS
         ════════════════════════════════════════════════════════════ --}}
-        <div class="rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a]" style="background-color: #0f172a;">
+        <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">1</span>
                 <div>
                     <h2 class="text-sm font-semibold text-white">Select Products to Reorder</h2>
@@ -93,11 +93,11 @@
                     </div>
                 </div>
 
-                <div class="overflow-hidden rounded-3xl border border-slate-200">
+                <div class="overflow-hidden rounded-[10px] border border-slate-200">
                     <table class="min-w-full text-left text-sm">
-                        <thead class="bg-[#0f172a] text-white text-[11px] uppercase tracking-[0.18em]" style="background-color: #0f172a;">
+                        <thead class="bg-[#0f172a] text-white text-[11px] uppercase tracking-[0.18em] rounded-t-[10px]" style="background-color: #0f172a;">
                             <tr>
-                                <th class="px-4 py-3">
+                                <th class="px-4 py-3 rounded-tl-[10px]">
                                     <input type="checkbox" id="select-all-products"
                                            class="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 "
                                            title="Select all" />
@@ -122,7 +122,7 @@
                                          </div>
                                      </div>
                                  </th>
-                                <th class="px-4 py-3">Unit Price (₱)</th>
+                                <th class="px-4 py-3 rounded-tr-[10px]">Unit Price (₱)</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 text-slate-700">
@@ -204,8 +204,8 @@
         {{-- ══════════════════════════════════════════════════════════
              STEP 2 – SELECT SUPPLIER
         ════════════════════════════════════════════════════════════ --}}
-        <div class="rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a]" style="background-color: #0f172a;">
+        <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">2</span>
                 <div>
                     <h2 class="text-sm font-semibold text-white">Select Supplier</h2>
@@ -244,8 +244,8 @@
         {{-- ══════════════════════════════════════════════════════════
              STEP 3 – SUPPLIER INFORMATION
         ════════════════════════════════════════════════════════════ --}}
-        <div id="supplier-info-panel" class="hidden rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a]" style="background-color: #0f172a;">
+        <div id="supplier-info-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">3</span>
                 <h2 class="text-sm font-semibold text-white">Supplier Information</h2>
             </div>
@@ -274,8 +274,8 @@
         {{-- ══════════════════════════════════════════════════════════
              STEP 4+5+6 – PRICE HISTORY / SUMMARY / RECOMMENDATIONS
         ════════════════════════════════════════════════════════════ --}}
-        <div id="price-analysis-panel" class="hidden rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a]" style="background-color: #0f172a;">
+        <div id="price-analysis-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">4</span>
                 <div>
                     <h2 class="text-sm font-semibold text-white">Supplier Price Analysis</h2>
@@ -290,8 +290,8 @@
         {{-- ══════════════════════════════════════════════════════════
              BONUS – SUPPLIER COMPARISON TABLE
         ════════════════════════════════════════════════════════════ --}}
-        <div id="comparison-panel" class="hidden rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a]" style="background-color: #0f172a;">
+        <div id="comparison-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">★</span>
                 <div>
                     <h2 class="text-sm font-semibold text-white">Supplier Comparison</h2>
@@ -321,8 +321,8 @@
         {{-- ══════════════════════════════════════════════════════════
              ORDER DETAILS
         ════════════════════════════════════════════════════════════ --}}
-       <div class="rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden min-h-[510px]">
-            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a]" style="background-color: #0f172a;">
+       <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden min-h-[510px]">
+            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">5</span>
                 <h2 class="text-sm font-semibold text-white">Order Details</h2>
             </div>

@@ -32,7 +32,7 @@
         </div>
 
         <!-- Filter Section -->
-        <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
+        <div class="rounded-[10px] border border-slate-200 bg-white p-3 shadow-sm">
             <div class="flex items-center gap-3">
                 <div class="flex-1">
                     <input type="text" id="searchInput" placeholder="Search by brand, product description, or SKU..." class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent">
@@ -44,12 +44,12 @@
         </div>
 
         <!-- Products Table -->
-        <div class="overflow-hidden rounded-[20px] border border-slate-200 bg-white shadow-sm">
-            <div class="overflow-x-auto">
+        <div class="overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-sm">
+            <div class="overflow-x-auto rounded-[10px]">
                 <table class="w-full text-xs">
-                    <thead class="bg-[#0f172a] border-b border-slate-200">
+                    <thead class="bg-[#0f172a] border-b border-slate-200 rounded-t-[10px]">
                         <tr>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white w-10">
+                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white w-10 rounded-tl-[10px]">
                                 <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2] cursor-pointer">
                             </th>
                             <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Brand</th>
@@ -58,7 +58,7 @@
                             <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Location</th>
                             <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Compatible Models</th>
                             <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Reorder Level</th>
-                            <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Actions</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white rounded-tr-[10px]">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="productsTableBody" class="divide-y divide-slate-200 text-xs">

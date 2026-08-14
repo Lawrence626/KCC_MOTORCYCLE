@@ -70,7 +70,7 @@
         </div>
 
         <!-- Search & Filters -->
-        <div class="bg-white rounded-lg border border-slate-200 p-4 space-y-4">
+        <div class="bg-white rounded-[10px] border border-slate-200 p-4 space-y-4 shadow-sm">
             <input id="searchInput" type="search" placeholder="Search by product name, SKU, or barcode..." class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-white text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent" />
 
             <div class="flex gap-3 items-end">
@@ -99,19 +99,19 @@
         </div>
 
         <!-- Archived Table -->
-        <div class="bg-white rounded-lg border border-slate-200 shadow-sm flex-1 flex flex-col">
-            <div class="overflow-x-auto overflow-y-visible">
+        <div class="bg-white rounded-[10px] border border-slate-200 shadow-sm flex-1 flex flex-col overflow-hidden">
+            <div class="overflow-x-auto overflow-y-visible rounded-[10px]">
                 <table class="w-full divide-y divide-slate-200 text-xs">
-                    <thead class="border-b border-slate-200 bg-[#0f172a]">
+                    <thead class="border-b border-slate-200 bg-[#0f172a] rounded-t-[10px]">
                         <tr>
-                            <th class="px-3 py-2 text-left text-xs font-semibold text-white uppercase tracking-wide">Product</th>
+                            <th class="px-3 py-2 text-left text-xs font-semibold text-white uppercase tracking-wide rounded-tl-[10px]">Product</th>
                             <th class="px-3 py-2 text-left text-xs font-semibold text-white uppercase tracking-wide">SKU</th>
                             <th class="px-3 py-2 text-left text-xs font-semibold text-white uppercase tracking-wide">Category</th>
                             <th class="px-3 py-2 text-center text-xs font-semibold text-white uppercase tracking-wide">Stock</th>
                             <th class="px-3 py-2 text-right text-xs font-semibold text-white uppercase tracking-wide">Unit Price</th>
                             <th class="px-3 py-2 text-right text-xs font-semibold text-white uppercase tracking-wide">Total Value</th>
                             <th class="px-3 py-2 text-left text-xs font-semibold text-white uppercase tracking-wide">Archived Date</th>
-                            <th class="px-3 py-2 text-center text-xs font-semibold text-white uppercase tracking-wide">Actions</th>
+                            <th class="px-3 py-2 text-center text-xs font-semibold text-white uppercase tracking-wide rounded-tr-[10px]">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="archivedTableBody" class="divide-y divide-slate-200">

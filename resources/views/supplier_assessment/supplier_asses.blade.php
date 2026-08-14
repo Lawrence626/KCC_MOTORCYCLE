@@ -89,9 +89,9 @@
             </div>
         </div>
 
-        <section class="rounded-[28px] border border-slate-200 bg-white overflow-hidden shadow-sm">
+        <section class="rounded-[10px] border border-slate-200 bg-white overflow-hidden shadow-sm">
             <!-- Section Header Bar (matching All Stocks design) -->
-            <div class="bg-[#0f172a] px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-slate-800">
+            <div class="bg-[#0f172a] px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-slate-800 rounded-t-[10px]">
                 <div>
                     <h2 class="text-lg font-bold text-white">Select a Supplier</h2>
                     <p class="text-xs text-slate-300">Search and pick a supplier partner to inspect details below</p>
@@ -113,7 +113,7 @@
             </div>
         </section>
 
-        <main id="supplierDetailsContainer" class="rounded-[28px] border border-slate-200 bg-white shadow-sm min-h-[350px] overflow-hidden">
+        <main id="supplierDetailsContainer" class="rounded-[10px] border border-slate-200 bg-white shadow-sm min-h-[350px] overflow-hidden">
             <div id="supplierDetailPlaceholder" class="p-6 py-16 text-center text-slate-500">
                 <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0v-4m0 4h4m-4-4l4 4"/>
@@ -124,7 +124,7 @@
 
             <section id="supplierDetailPanel" class="hidden space-y-6">
                 <!-- Section Header Bar (matching All Stocks design) -->
-                <div class="bg-[#0f172a] px-6 py-5 border-b border-slate-800 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div class="bg-[#0f172a] px-6 py-5 border-b border-slate-800 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between rounded-t-[10px]">
                     <div>
                         <p class="text-xs uppercase tracking-wider font-semibold text-[#00fff2]">Supplier overview</p>
                         <h2 id="detailSupplierName" class="mt-0.5 text-2xl md:text-3xl font-bold text-white"></h2>

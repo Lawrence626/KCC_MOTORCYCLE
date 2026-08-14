@@ -88,7 +88,7 @@
         </div>
 
         <!-- Filter Section -->
-        <div class="rounded-[18px] border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="rounded-[10px] border border-slate-200 bg-white p-4 shadow-sm">
             <div class="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
                 <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4 flex-1">
                     <div>
@@ -158,12 +158,12 @@
         </div>
 
         <!-- Table -->
-        <div class="overflow-hidden rounded-[20px] border border-slate-200 bg-white shadow-sm">
-            <div class="overflow-x-auto">
+        <div class="overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-sm">
+            <div class="overflow-x-auto rounded-[10px]">
                 <table class="w-full min-w-[900px] text-xs text-left">
-                    <thead class="bg-[#0f172a] border-b border-slate-200">
+                    <thead class="bg-[#0f172a] border-b border-slate-200 rounded-t-[10px]">
                         <tr>
-                            <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</th>
+                            <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white rounded-tl-[10px]">Product</th>
                             <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">SKU</th>
                             <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Return Reason</th>
                             <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Condition</th>
@@ -171,7 +171,7 @@
                             <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Warehouse</th>
                             <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Date Received</th>
                             <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Status</th>
-                            <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white text-center">Actions</th>
+                            <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white text-center rounded-tr-[10px]">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="recordsTableBody" class="divide-y divide-slate-200 text-xs bg-white">
