@@ -67,9 +67,29 @@ function populateEditProductForm(product) {
     document.getElementById('editStockQuantity').value = product.stock_quantity ?? 0;
     document.getElementById('editUnitPrice').value = product.unit_price ?? 0;
     document.getElementById('editSupplier').value = product.supplier_name || '';
-    document.getElementById('editCategory').value = product.category || '';
-    document.getElementById('editLastRestock').value = product.last_restock_date || '';
-    document.getElementById('editExpiryDate').value = product.expiry_date || '';
+
+    const categoryVal = product.category || '';
+    document.getElementById('editCategory').value = categoryVal;
+    const categoryBtn = document.getElementById('editCategoryButton');
+    if (categoryBtn) {
+        const categoryLabels = {
+            'engine_oil': 'Engine Oil',
+            'battery': 'Battery',
+            'spark_plug': 'Spark Plug',
+            'brake_pads': 'Brake Pads',
+            'tires': 'Tires',
+            'filters': 'Filters',
+            'lubricants': 'Lubricants',
+            'accessories': 'Accessories'
+        };
+        const span = categoryBtn.querySelector('span');
+        if (span) {
+            span.textContent = categoryLabels[categoryVal] || categoryVal || 'Select category';
+        }
+    }
+
+    document.getElementById('editLastRestock').value = product.last_restock_date ? String(product.last_restock_date).split('T')[0] : '';
+    document.getElementById('editExpiryDate').value = product.expiry_date ? String(product.expiry_date).split('T')[0] : '';
     document.getElementById('editReorderLevel').value = product.reorder_level ?? 0;
     document.getElementById('editBarcode').value = product.barcode || '';
     document.getElementById('editDescription').value = product.description || '';
@@ -86,6 +106,10 @@ function closeAddStockModal() {
     document.getElementById('addStockModal').classList.add('hidden');
     const form = document.getElementById('addStockForm');
     if (form) form.reset();
+    const display = document.getElementById('addStockProductDisplay');
+    if (display) display.textContent = 'Select a product...';
+    const dropdown = document.getElementById('addStockProductDropdown');
+    if (dropdown) dropdown.classList.add('hidden');
 }
 
 function openEditProductModal(productId) {
@@ -184,6 +208,26 @@ async function archiveProduct(productId) {
 // Make archiveProduct globally accessible
 window.archiveProduct = archiveProduct;
 
+window.selectDropdownOption = function (inputId, value, text, dropdownId, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    const input = document.getElementById(inputId);
+    if (input) {
+        input.value = value;
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    const display = document.getElementById('addStockProductDisplay');
+    if (display) {
+        display.textContent = text;
+    }
+    const dropdown = document.getElementById(dropdownId);
+    if (dropdown) {
+        dropdown.classList.add('hidden');
+    }
+};
+
 // Load products for select dropdown
 async function loadProductsForSelect() {
     try {
@@ -191,16 +235,37 @@ async function loadProductsForSelect() {
         const result = await response.json();
 
         const select = document.getElementById('productSelect');
-        if (!select) return;
-        select.innerHTML = '<option value="">Select a product...</option>';
+        const dropdown = document.getElementById('addStockProductDropdown');
 
-        if (result.data && result.data.length > 0) {
-            result.data.forEach(product => {
-                const option = document.createElement('option');
-                option.value = product.id;
-                option.textContent = `${product.name} (${product.sku})`;
-                select.appendChild(option);
-            });
+        if (select) {
+            select.innerHTML = '<option value="">Select a product...</option>';
+        }
+
+        if (dropdown) {
+            dropdown.innerHTML = '';
+
+            if (result.data && result.data.length > 0) {
+                result.data.forEach(product => {
+                    const prodName = product.product_name || product.name || 'Unnamed Product';
+                    const label = `${prodName} (${product.sku || 'No SKU'})`;
+
+                    if (select) {
+                        const option = document.createElement('option');
+                        option.value = product.id;
+                        option.textContent = label;
+                        select.appendChild(option);
+                    }
+
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'w-full px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] transition';
+                    btn.textContent = label;
+                    btn.onclick = (e) => selectDropdownOption('productSelect', product.id, label, 'addStockProductDropdown', e);
+                    dropdown.appendChild(btn);
+                });
+            } else {
+                dropdown.innerHTML = '<div class="p-3 text-left text-xs text-slate-500">No products available</div>';
+            }
         }
     } catch (error) {
         console.error('Error loading products:', error);
@@ -245,39 +310,65 @@ async function loadFilterOptions() {
 
         // Populate Product Name dropdown
         const productNameSelect = document.getElementById('productNameFilter');
-        if (productNameSelect) {
+        const productNameDropdown = document.getElementById('productNameFilterDropdown');
+        if (productNameDropdown) {
+            productNameDropdown.innerHTML = '';
+            const defaultBtn = document.createElement('button');
+            defaultBtn.type = 'button';
+            defaultBtn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition';
+            defaultBtn.textContent = 'All Products';
+            defaultBtn.onclick = (e) => selectDropdownOption('productNameFilter', '', 'All Products', 'productNameFilterDropdown', e);
+            productNameDropdown.appendChild(defaultBtn);
+
             Array.from(productNames).sort().forEach(name => {
-                const option = document.createElement('option');
-                option.value = name;
-                option.textContent = name;
-                if (window.productNameToBrands && window.productNameToBrands[name]) {
-                    option.dataset.brands = JSON.stringify(Array.from(window.productNameToBrands[name]));
-                }
-                productNameSelect.appendChild(option);
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition';
+                btn.textContent = name;
+                btn.onclick = (e) => selectDropdownOption('productNameFilter', name, name, 'productNameFilterDropdown', e);
+                productNameDropdown.appendChild(btn);
             });
         }
 
         // Populate Brand dropdown
-        const brandSelect = document.getElementById('brandFilter');
-        if (brandSelect) {
-            // Store original brand options for restoring
-            window.originalBrandOptions = Array.from(brands).sort();
+        const brandDropdown = document.getElementById('brandFilterDropdown');
+        if (brandDropdown) {
+            brandDropdown.innerHTML = '';
+            const defaultBtn = document.createElement('button');
+            defaultBtn.type = 'button';
+            defaultBtn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition';
+            defaultBtn.textContent = 'All Brands';
+            defaultBtn.onclick = (e) => selectDropdownOption('brandFilter', '', 'All Brands', 'brandFilterDropdown', event);
+            brandDropdown.appendChild(defaultBtn);
+
             Array.from(brands).sort().forEach(brand => {
-                const option = document.createElement('option');
-                option.value = brand;
-                option.textContent = brand;
-                brandSelect.appendChild(option);
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition';
+                btn.textContent = brand;
+                btn.onclick = (e) => selectDropdownOption('brandFilter', brand, brand, 'brandFilterDropdown', e);
+                brandDropdown.appendChild(btn);
             });
         }
 
         // Populate Size dropdown
-        const sizeSelect = document.getElementById('sizeFilter');
-        if (sizeSelect) {
+        const sizeDropdown = document.getElementById('sizeFilterDropdown');
+        if (sizeDropdown) {
+            sizeDropdown.innerHTML = '';
+            const defaultBtn = document.createElement('button');
+            defaultBtn.type = 'button';
+            defaultBtn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition';
+            defaultBtn.textContent = 'All Sizes';
+            defaultBtn.onclick = (e) => selectDropdownOption('sizeFilter', '', 'All Sizes', 'sizeFilterDropdown', e);
+            sizeDropdown.appendChild(defaultBtn);
+
             Array.from(sizes).sort().forEach(size => {
-                const option = document.createElement('option');
-                option.value = size;
-                option.textContent = size;
-                sizeSelect.appendChild(option);
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition';
+                btn.textContent = size;
+                btn.onclick = (e) => selectDropdownOption('sizeFilter', size, size, 'sizeFilterDropdown', e);
+                sizeDropdown.appendChild(btn);
             });
         }
     } catch (error) {
@@ -399,6 +490,8 @@ function attachUIEvents() {
     if (addStockBtn) addStockBtn.addEventListener('click', openAddStockModal);
     const closeAdd = document.getElementById('closeAddStockModal');
     if (closeAdd) closeAdd.addEventListener('click', closeAddStockModal);
+    const closeAddBackdrop = document.getElementById('closeAddStockModalBackdrop');
+    if (closeAddBackdrop) closeAddBackdrop.addEventListener('click', closeAddStockModal);
     const cancelAdd = document.getElementById('cancelAddStock');
     if (cancelAdd) cancelAdd.addEventListener('click', closeAddStockModal);
 
@@ -800,15 +893,15 @@ async function loadProducts(page = 1) {
                 // Status badge
                 let statusBadge = '';
                 if (product.is_archived) {
-                    statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-800">Archived</span>';
+                    statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">Archived</span>';
                 } else if (!product.is_active) {
-                    statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">Inactive</span>';
+                    statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Inactive</span>';
                 } else if (isOutOfStock) {
-                    statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">No Stock</span>';
+                    statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">No Stock</span>';
                 } else if (isLowStock) {
-                    statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">Low Stock</span>';
+                    statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">Low Stock</span>';
                 } else {
-                    statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-800">Available</span>';
+                    statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">Available</span>';
                 }
 
                 row.innerHTML = `
@@ -844,15 +937,14 @@ async function loadProducts(page = 1) {
                         <div class="text-sm font-semibold text-slate-900">₱${unitPrice.toFixed(2)}</div>
                     </td>
                     <td class="px-4 py-3 text-center">${statusBadge}</td>
-                    <td class="px-4 py-3 text-right" onclick="event.stopPropagation()">
-                        <div class="action-dropdown inline-block relative">
-                            <button onclick="toggleDropdown(${product.id})" class="p-1.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg>
+                    <td class="px-4 py-3 text-center align-middle whitespace-nowrap text-[10px] font-medium" onclick="event.stopPropagation()">
+                        <div class="inline-flex items-center gap-1.5 justify-center">
+                            <button type="button" onclick="event.stopPropagation(); openEditModal(${product.id});" class="text-black hover:text-slate-900 inline-flex items-center p-1" title="Edit">
+                                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
                             </button>
-                            <div id="dropdown-${product.id}" class="dropdown-menu hidden absolute right-0 mt-1 w-32 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50 text-left">
-                                <a href="javascript:void(0)" onclick="event.preventDefault(); openEditModal(${product.id});" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Edit</a>
-                                <button onclick="event.preventDefault(); archiveProduct(${product.id});" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Archive</button>
-                            </div>
+                            <button type="button" onclick="event.stopPropagation(); archiveProduct(${product.id});" class="rounded-[8px] border border-slate-200 px-2 py-1 text-[10px] font-semibold transition-all bg-white text-slate-700 hover:bg-black/10">Archive</button>
                         </div>
                     </td>
                 `;
@@ -977,14 +1069,51 @@ function clearSelection() {
 }
 
 // Toggle dropdown menu
-function toggleDropdown(id) {
-    const dropdown = document.getElementById('dropdown-' + id);
+function toggleDropdown(id, event) {
+    if (event) {
+        if (event.preventDefault) event.preventDefault();
+        if (event.stopPropagation) event.stopPropagation();
+    }
+
+    let dropdown = null;
+    if (typeof id === 'string') {
+        dropdown = document.getElementById(id);
+    }
+    if (!dropdown) {
+        dropdown = document.getElementById('dropdown-' + id);
+    }
+    if (!dropdown) return;
+
+    const currentWrapper = dropdown.closest('[data-dropdown-wrapper]');
+
+    // Hide any open calendar popups
+    document.querySelectorAll('.custom-calendar-card').forEach(c => c.classList.add('hidden'));
+
     document.querySelectorAll('.dropdown-menu').forEach(menu => {
-        if (menu.id !== 'dropdown-' + id) {
+        if (menu !== dropdown) {
+            menu.classList.add('hidden');
             menu.classList.remove('show');
+            const w = menu.closest('[data-dropdown-wrapper]');
+            if (w) w.style.zIndex = '';
         }
     });
-    dropdown.classList.toggle('show');
+
+    if (dropdown.classList.contains('hidden')) {
+        dropdown.classList.remove('hidden');
+        dropdown.classList.add('show');
+        if (currentWrapper) currentWrapper.style.zIndex = '100';
+    } else if (dropdown.classList.contains('show')) {
+        dropdown.classList.remove('show');
+        dropdown.classList.add('hidden');
+        if (currentWrapper) currentWrapper.style.zIndex = '';
+    } else {
+        dropdown.classList.toggle('hidden');
+        if (!dropdown.classList.contains('hidden')) {
+            if (currentWrapper) currentWrapper.style.zIndex = '100';
+        } else {
+            if (currentWrapper) currentWrapper.style.zIndex = '';
+        }
+    }
 }
 
 // Toggle row expansion
@@ -1025,24 +1154,24 @@ function updatePagination(pagination) {
         return;
     }
 
-    let html = `<button onclick="loadProducts(${Math.max(1, currentPage - 1)})" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">← Prev</button>`;
+    let html = `<button onclick="loadProducts(${Math.max(1, currentPage - 1)})" ${currentPage === 1 ? 'disabled' : ''} class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">← Prev</button>`;
 
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(pagination.last_page, startPage + 4);
     if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
 
     for (let i = startPage; i <= endPage; i++) {
-        const btnClass = i === currentPage ? 'bg-cyan-600 text-white' : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50';
-        html += `<button onclick="loadProducts(${i})" class="px-2 py-1 rounded-lg text-xs font-medium ${btnClass}">${i}</button>`;
+        const btnClass = i === currentPage ? 'bg-black/10 text-slate-900 font-semibold' : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 font-semibold';
+        html += `<button onclick="loadProducts(${i})" class="inline-flex items-center justify-center rounded-[10px] w-8 h-8 text-xs ${btnClass}">${i}</button>`;
     }
 
-    html += `<button onclick="loadProducts(${Math.min(pagination.last_page, currentPage + 1)})" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">Next →</button>`;
+    html += `<button onclick="loadProducts(${Math.min(pagination.last_page, currentPage + 1)})" ${currentPage === pagination.last_page ? 'disabled' : ''} class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">Next →</button>`;
 
     paginationContainer.innerHTML = html;
 
     const summary = document.getElementById('paginationInfo');
     if (summary) {
-        summary.textContent = `Showing ${pagination.from || 0}-${pagination.to || 0} of ${pagination.total?.toLocaleString() || 0} items`;
+        summary.textContent = `Showing ${pagination.from || 0} to ${pagination.to || 0} of ${pagination.total?.toLocaleString() || 0} products`;
     }
 }
 

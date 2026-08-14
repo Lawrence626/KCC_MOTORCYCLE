@@ -10,7 +10,7 @@
 
         <!-- Controls Section -->
         <div class="flex items-center gap-3 w-full">
-            <button onclick="openNewReplacementModal()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-[#105f68] text-white rounded-[10px] font-semibold text-sm hover:bg-[#0c474e] transition-all ring-1 ring-[#105f68]/10">
+            <button onclick="openNewReplacementModal()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-[#00FFF2] text-slate-900 rounded-[10px] font-bold text-sm shadow-sm hover:bg-[#00D9CC] transition-all">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
@@ -19,18 +19,18 @@
 
             <div class="flex-1 flex items-center gap-3">
                 <div class="flex-1 relative">
-                    <svg class="absolute left-3 top-2.5 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                         <input
                             id="searchInput"
                             type="text" placeholder="Search receipt no. / product"
-                                class="w-full pl-10 pr-10 py-2.5 rounded-[10px] border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#105f68] focus:border-transparent"
+                                class="w-full pl-10 pr-10 py-2.5 rounded-[10px] border border-[#105f68]/20 ring-1 ring-black/10 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent"
                         />
                 </div>
                 <!-- Custom Dropdown -->
                 <div class="relative">
-                    <button type="button" onclick="toggleStatusDropdown()" class="appearance-none pl-4 pr-10 py-2.5 rounded-[10px] border border-slate-300 bg-white text-sm font-medium text-slate-700 text-left focus:outline-none focus:ring-2 focus:ring-[#105f68] flex items-center gap-2 whitespace-nowrap w-40"
+                    <button type="button" onclick="toggleStatusDropdown()" class="appearance-none pl-4 pr-10 py-2.5 rounded-[10px] border border-[#105f68]/20 ring-1 ring-black/10 bg-white text-sm font-medium text-slate-900 text-left hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 flex items-center gap-2 whitespace-nowrap w-40"
                         style="background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 20 20\' fill=\'none\' stroke=\'%2338445d\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M6 8l4 4 4-4\'/%3E%3C/svg%3E'); background-repeat:no-repeat; background-position:right 0.85rem center; background-size:1.2em; line-height:1.25rem;">
                         <span id="statusLabel">All Status</span>
                     </button>
@@ -43,13 +43,13 @@
                 </div>
                 <!-- Date Filter -->
                 <div class="relative">
-                    <button type="button" onclick="toggleDateDropdown()" class="appearance-none pl-4 pr-10 py-2.5 rounded-[10px] border border-slate-300 bg-white text-sm font-medium text-slate-700 text-left focus:outline-none focus:ring-2 focus:ring-[#105f68] flex items-center gap-2 whitespace-nowrap w-40"
+                    <button type="button" onclick="toggleDateDropdown()" class="appearance-none pl-4 pr-10 py-2.5 rounded-[10px] border border-[#105f68]/20 ring-1 ring-black/10 bg-white text-sm font-medium text-slate-900 text-left hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 flex items-center gap-2 whitespace-nowrap w-40"
                         style="background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 20 20\' fill=\'none\' stroke=\'%2338445d\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M6 8l4 4 4-4\'/%3E%3C/svg%3E'); background-repeat:no-repeat; background-position:right 0.85rem center; background-size:1.2em; line-height:1.25rem;">
                         <span id="dateFilterLabel">Today</span>
                     </button>
                     <input type="hidden" id="dateFilter" value="today" />
                     <div id="dateDropdown" class="hidden absolute top-full mt-2 -right-0 w-40 bg-white border border-slate-300 rounded-lg shadow-xl z-50 p-3 space-y-1">
-                        <button type="button" onclick="selectDateFilter('today', 'Today')" class="w-full px-4 py-2 text-center text-sm bg-[#105f68]/10 text-[#105f68] font-semibold rounded-[10px]">Today</button>
+                        <button type="button" onclick="selectDateFilter('today', 'Today')" class="w-full px-4 py-2 text-center text-sm bg-black/10 text-slate-900 font-semibold rounded-[10px]">Today</button>
                         <button type="button" onclick="selectDateFilter('this_week', 'This Week')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">This Week</button>
                         <button type="button" onclick="selectDateFilter('this_month', 'This Month')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">This Month</button>
                         <button type="button" onclick="selectDateFilter('last_month', 'Last Month')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Last Month</button>
@@ -60,18 +60,18 @@
         </div>
 
         <!-- Table Section -->
-        <div class="bg-white rounded-lg border border-slate-200 overflow-hidden flex flex-col" style="min-height: calc(100vh - 220px);">
+        <div class="bg-white rounded-[28px] border border-slate-200 overflow-hidden shadow-sm flex flex-col" style="min-height: calc(100vh - 220px);">
             <div class="overflow-x-auto flex-1">
                 <table class="w-full">
                     <thead>
-                        <tr class="border-b border-slate-200 bg-slate-50">
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-900">Receipt No.</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-900">Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-900">Returned Item</th>
-                            <th class="px-6 py-3 text-center text-xs font-semibold text-slate-900">Qty</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-900">Replacement Item</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-900">Status</th>
-                            <th class="px-6 py-3 text-center text-xs font-semibold text-slate-900">Action</th>
+                        <tr class="border-b border-slate-800 bg-[#0f172a]">
+                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Receipt No.</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Returned Item</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider">Qty</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Replacement Item</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider">Action</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200">
@@ -93,7 +93,7 @@
                 <p class="text-sm text-slate-600">Showing 0 of 0 entries</p>
                 <div class="flex gap-1">
                     <button class="px-3 py-1 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>← Prev</button>
-                    <button class="px-3 py-1 rounded-lg bg-[#8c9db6] text-sm font-medium text-white shadow-sm">1</button>
+                    <button class="px-3 py-1 rounded-lg bg-black/10 text-sm font-medium text-slate-900 shadow-sm">1</button>
                     <button class="px-3 py-1 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>Next →</button>
                 </div>
             </div>
@@ -177,9 +177,9 @@
     <!-- New Replacement Modal -->
     <div id="newReplacementModal" class="hidden fixed inset-0 bg-slate-950/40 backdrop-blur-xl flex items-center justify-center z-50 px-4 py-6">
         <div class="bg-white/95 backdrop-blur-sm rounded-[28px] shadow-[0_30px_100px_rgba(15,23,42,0.18)]  max-w-2xl w-full overflow-hidden">
-            <div class="flex items-center justify-between px-8 py-5 border-b border-transparent bg-[#105f68] rounded-t-[28px]">
-                <h2 class="text-2xl font-semibold text-white">New Replacement</h2>
-                <button onclick="closeNewReplacementModal()" class="text-white transition-colors p-2 rounded-[10px] hover:bg-white/15">
+            <div class="flex items-center justify-between px-8 py-5 border-b border-transparent bg-[#00FFF2] rounded-t-[28px]">
+                <h2 class="text-2xl font-semibold text-slate-900">New Replacement</h2>
+                <button onclick="closeNewReplacementModal()" class="text-slate-900 transition-colors p-2 rounded-[10px] hover:bg-black/10">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -190,31 +190,31 @@
                 <!-- Receipt Number -->
                 <div>
                     <label class="block text-sm font-semibold text-slate-900 mb-3">Receipt No.</label>
-                    <input id="newReceiptNo" type="text" placeholder="Enter receipt number" class="w-full px-5 py-3 rounded-[10px] border border-slate-200 bg-slate-50 text-slate-600 placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#105f68] focus:border-transparent shadow-sm" />
+                    <input id="newReceiptNo" type="text" placeholder="Enter receipt number" class="w-full px-5 py-3 rounded-[10px] border border-[#105f68]/20 bg-white text-slate-900 placeholder:text-slate-400 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent ring-1 ring-black/10 shadow-sm" />
                 </div>
 
                 <!-- Returned Item -->
                 <div class="relative">
                     <label class="block text-sm font-semibold text-slate-900 mb-3">Returned Item</label>
                     <input id="newReturnedItem" type="hidden" value="" />
-                    <button type="button" id="returnedItemButton" onclick="toggleDropdown('returnedItemDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-[#105f68]/20 bg-white text-left text-slate-700 text-sm font-semibold flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#105f68] focus:border-transparent ring-1 ring-[#105f68]/10 shadow-sm hover:bg-[#105f68]/5">
+                    <button type="button" id="returnedItemButton" onclick="toggleDropdown('returnedItemDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-[#105f68]/20 bg-white text-left text-slate-900 text-sm font-semibold flex items-center justify-between focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent ring-1 ring-black/10 shadow-sm">
                         <span id="returnedItemLabel">Select returned item...</span>
                         <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                         </svg>
                     </button>
                     <div id="returnedItemDropdown" class="hidden absolute z-50 w-full mt-2 bg-white border border-slate-200 rounded-[10px] shadow-xl p-1.5 space-y-0.5 max-h-40 overflow-y-auto">
-                        <button type="button" onclick="selectDropdown('newReturnedItem', 'Brembo Brake Pad', 'returnedItemLabel', 'returnedItemDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Brembo Brake Pad</button>
-                        <button type="button" onclick="selectDropdown('newReturnedItem', 'NGK Spark Plug', 'returnedItemLabel', 'returnedItemDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">NGK Spark Plug</button>
-                        <button type="button" onclick="selectDropdown('newReturnedItem', 'Motul 4T 10W40 Oil', 'returnedItemLabel', 'returnedItemDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Motul 4T 10W40 Oil</button>
+                        <button type="button" onclick="selectDropdown('newReturnedItem', 'Brembo Brake Pad', 'returnedItemLabel', 'returnedItemDropdown')" style="-webkit-tap-highlight-color: transparent;" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-black/5 focus:outline-none focus:bg-black/10 active:bg-black/10 rounded-[8px]">Brembo Brake Pad</button>
+                        <button type="button" onclick="selectDropdown('newReturnedItem', 'NGK Spark Plug', 'returnedItemLabel', 'returnedItemDropdown')" style="-webkit-tap-highlight-color: transparent;" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-black/5 focus:outline-none focus:bg-black/10 active:bg-black/10 rounded-[8px]">NGK Spark Plug</button>
+                        <button type="button" onclick="selectDropdown('newReturnedItem', 'Motul 4T 10W40 Oil', 'returnedItemLabel', 'returnedItemDropdown')" style="-webkit-tap-highlight-color: transparent;" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-black/5 focus:outline-none focus:bg-black/10 active:bg-black/10 rounded-[8px]">Motul 4T 10W40 Oil</button>
                     </div>
                 </div>
 
                 <!-- Reason -->
-                <div>
+                <div class="relative">
                     <label class="block text-sm font-semibold text-slate-900 mb-3">Reason</label>
                     <input id="newReason" type="hidden" value="Defective Item" />
-                    <button type="button" id="newReasonButton" onclick="toggleDropdown('reasonDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-[#105f68]/20 bg-white text-left text-slate-700 text-sm font-semibold flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#105f68] focus:border-transparent ring-1 ring-[#105f68]/10 shadow-sm hover:bg-[#105f68]/5">
+                    <button type="button" id="newReasonButton" onclick="toggleDropdown('reasonDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-[#105f68]/20 bg-white text-left text-slate-900 text-sm font-semibold flex items-center justify-between focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent ring-1 ring-black/10 shadow-sm">
                         <span id="newReasonLabel">Defective Item</span>
                         <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
@@ -229,11 +229,11 @@
                 </div>
 
                 <!-- Replacement Product & Quantity (Side by Side) -->
-                <div class="grid grid-cols-3 gap-4">
-                    <div class="col-span-2 relative">
+                <div class="grid grid-cols-5 gap-3">
+                    <div class="col-span-3 relative">
                         <label class="block text-sm font-semibold text-slate-900 mb-3">Replacement Product</label>
                         <input id="newReplacementProduct" type="hidden" value="" />
-                        <button type="button" id="replacementProductButton" onclick="toggleDropdown('replacementProductDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-[#105f68]/20 bg-white text-left text-slate-700 text-sm font-semibold flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#105f68] focus:border-transparent ring-1 ring-[#105f68]/10 shadow-sm hover:bg-[#105f68]/5">
+                        <button type="button" id="replacementProductButton" onclick="toggleDropdown('replacementProductDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-[#105f68]/20 bg-white text-left text-slate-900 text-sm font-semibold flex items-center justify-between focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent ring-1 ring-black/10 shadow-sm">
                             <span id="newReplacementProductLabel">Select product...</span>
                             <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
@@ -245,16 +245,16 @@
                             <button type="button" onclick="selectDropdown('newReplacementProduct', 'Motul 4T 10W40 Oil', 'newReplacementProductLabel', 'replacementProductDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Motul 4T 10W40 Oil</button>
                         </div>
                     </div>
-                    <div>
+                    <div class="col-span-2 min-w-0">
                         <label class="block text-sm font-semibold text-slate-900 mb-2">Quantity</label>
                         <div class="flex items-center gap-2">
-                            <button onclick="decreaseNewQuantity()" class="p-2.5 rounded-lg border border-slate-300 hover:bg-slate-100 transition-colors">
+                            <button onclick="decreaseNewQuantity()" class="shrink-0 p-3 rounded-lg border border-slate-300 hover:bg-black/10 transition-colors">
                                 <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
                                 </svg>
                             </button>
-                            <input id="newQuantity" type="text" value="1" readonly class="flex-1 px-3 py-2.5 rounded-lg border border-slate-300 text-center text-slate-900 font-semibold text-sm" />
-                            <button onclick="increaseNewQuantity()" class="p-2.5 rounded-lg border border-slate-300 hover:bg-slate-100 transition-colors">
+                            <input id="newQuantity" type="text" value="1" readonly class="flex-1 min-w-0 px-2 py-3 rounded-lg border border-slate-300 text-center text-slate-900 font-semibold text-base" />
+                            <button onclick="increaseNewQuantity()" class="shrink-0 p-3 rounded-lg border border-slate-300 hover:bg-black/10 transition-colors">
                                 <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                 </svg>
@@ -266,8 +266,8 @@
 
             <!-- Modal Actions -->
             <div class="px-8 py-5 border-t border-slate-200 flex gap-3 justify-end bg-slate-50 rounded-b-[10px]">
-                <button onclick="closeNewReplacementModal()" class="px-6 py-3 rounded-[10px] border border-slate-300 bg-white text-slate-900 font-semibold text-sm hover:bg-slate-100 transition-all">Cancel</button>
-                <button onclick="submitNewReplacement()" class="px-6 py-3 rounded-[10px] bg-[#105f68] text-white font-semibold text-sm hover:bg-[#0c474e] transition-all shadow-lg shadow-[#105f68]/20">Create Replacement</button>
+                <button onclick="closeNewReplacementModal()" class="px-6 py-3 rounded-[10px] border border-slate-300 bg-white text-slate-900 font-semibold text-sm hover:bg-black/10 transition-all">Cancel</button>
+                <button onclick="submitNewReplacement()" class="px-6 py-3 rounded-[10px] bg-[#00FFF2] text-slate-900 font-semibold text-sm border-2 border-slate-200 hover:bg-[#00D9CC] transition-all shadow-lg shadow-slate-900/10">Create Replacement</button>
             </div>
         </div>
     </div>

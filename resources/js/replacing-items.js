@@ -9,21 +9,21 @@ async function loadShopProducts() {
             headers: { 'Accept': 'application/json' }
         });
         const result = await response.json();
-        
+
         const productList = document.getElementById('productList');
         const productInput = document.getElementById('newReplacementProduct');
-        
+
         if (result.success && result.data && productList) {
             // Store products for filtering
             window.shopProducts = result.data;
-            
+
             // Initially empty - will populate on input
             productList.innerHTML = '';
-            
+
             // Add input event listener for dynamic filtering
             if (productInput && !productInput.hasAttribute('data-filter-added')) {
                 productInput.setAttribute('data-filter-added', 'true');
-                productInput.addEventListener('input', function() {
+                productInput.addEventListener('input', function () {
                     filterProductDatalist(this.value);
                 });
             }
@@ -36,9 +36,9 @@ async function loadShopProducts() {
 function filterProductDatalist(searchTerm) {
     const productList = document.getElementById('productList');
     if (!productList || !window.shopProducts) return;
-    
+
     productList.innerHTML = '';
-    
+
     // Only show results if user types at least 5 characters
     if (searchTerm.length < 5) {
         const option = document.createElement('option');
@@ -47,15 +47,15 @@ function filterProductDatalist(searchTerm) {
         productList.appendChild(option);
         return;
     }
-    
+
     const searchLower = searchTerm.toLowerCase();
     const filtered = window.shopProducts
-        .filter(product => 
-            product.name.toLowerCase().includes(searchLower) || 
+        .filter(product =>
+            product.name.toLowerCase().includes(searchLower) ||
             product.sku.toLowerCase().includes(searchLower)
         )
         .slice(0, 10); // Limit to top 10 results
-    
+
     if (filtered.length === 0) {
         const option = document.createElement('option');
         option.value = '';
@@ -63,7 +63,7 @@ function filterProductDatalist(searchTerm) {
         productList.appendChild(option);
         return;
     }
-    
+
     filtered.forEach(product => {
         const option = document.createElement('option');
         option.value = product.name;
@@ -121,7 +121,7 @@ async function submitNewReplacement() {
 
     // If "Others Reason" is selected, use custom reason
     const finalReason = reason === 'Others Reason' ? customReason : reason;
-    
+
     if (reason === 'Others Reason' && !customReason) {
         alert('Please specify the reason');
         return;
@@ -175,7 +175,7 @@ async function loadReplacements() {
             headers: { 'Accept': 'application/json' }
         });
         const result = await response.json();
-        
+
         if (result.success && result.data) {
             renderReplacementsTable(result.data);
         }
@@ -205,7 +205,7 @@ function renderReplacementsTable(replacements) {
 
     tbody.innerHTML = replacements.map(replacement => {
         let actionButtons = '';
-        
+
         if (replacement.status.toLowerCase() === 'pending') {
             actionButtons = `
                 <button onclick="validateReplacement(${replacement.id})" class="text-blue-600 hover:text-blue-700 font-medium mr-2">Validate</button>
@@ -401,20 +401,20 @@ function toggleStatusDropdown() {
 function selectStatus(status) {
     const label = document.getElementById('statusLabel');
     const dropdown = document.getElementById('statusDropdown');
-    
+
     if (label) label.textContent = status;
-    
+
     const dropdownButtons = dropdown?.querySelectorAll('button');
     dropdownButtons?.forEach(btn => {
         if (btn.textContent.trim() === status) {
-            btn.classList.add('bg-[#105f68]/10', 'text-[#105f68]', 'font-semibold');
+            btn.classList.add('bg-black/10', 'text-slate-900', 'font-semibold');
             btn.classList.remove('hover:bg-slate-100', 'text-slate-700');
         } else {
-            btn.classList.remove('bg-[#105f68]/10', 'text-[#105f68]', 'font-semibold');
+            btn.classList.remove('bg-black/10', 'text-slate-900', 'font-semibold');
             btn.classList.add('hover:bg-slate-100', 'text-slate-700');
         }
     });
-    
+
     if (dropdown) dropdown.classList.add('hidden');
 }
 
@@ -441,10 +441,10 @@ function selectDropdown(inputId, value, labelId, dropdownId) {
     const dropdownButtons = dropdown?.querySelectorAll('button');
     dropdownButtons?.forEach(btn => {
         if (btn.textContent.trim() === value) {
-            btn.classList.add('bg-[#105f68]/10', 'text-[#105f68]', 'font-semibold');
+            btn.classList.add('bg-black/10', 'text-slate-900', 'font-semibold');
             btn.classList.remove('hover:bg-slate-100', 'text-slate-700');
         } else {
-            btn.classList.remove('bg-[#105f68]/10', 'text-[#105f68]', 'font-semibold');
+            btn.classList.remove('bg-black/10', 'text-slate-900', 'font-semibold');
             btn.classList.add('hover:bg-slate-100', 'text-slate-700');
         }
     });
@@ -453,7 +453,7 @@ function selectDropdown(inputId, value, labelId, dropdownId) {
 }
 
 // Close dropdown when clicking outside
-document.addEventListener('click', function(event) {
+document.addEventListener('click', function (event) {
     const statusDropdown = document.getElementById('statusDropdown');
     const returnedDropdown = document.getElementById('returnedItemDropdown');
     const reasonDropdown = document.getElementById('reasonDropdown');
@@ -498,36 +498,36 @@ function selectDateFilter(value, label) {
     const input = document.getElementById('dateFilter');
     const labelEl = document.getElementById('dateFilterLabel');
     const dropdown = document.getElementById('dateDropdown');
-    
+
     if (input) input.value = value;
     if (labelEl) labelEl.textContent = label;
-    
+
     const dropdownButtons = dropdown?.querySelectorAll('button');
     dropdownButtons?.forEach(btn => {
         if (btn.textContent.trim() === label) {
-            btn.classList.add('bg-[#105f68]/10', 'text-[#105f68]', 'font-semibold');
+            btn.classList.add('bg-black/10', 'text-slate-900', 'font-semibold');
             btn.classList.remove('hover:bg-slate-100', 'text-slate-700');
         } else {
-            btn.classList.remove('bg-[#105f68]/10', 'text-[#105f68]', 'font-semibold');
+            btn.classList.remove('bg-black/10', 'text-slate-900', 'font-semibold');
             btn.classList.add('hover:bg-slate-100', 'text-slate-700');
         }
     });
-    
+
     if (dropdown) dropdown.classList.add('hidden');
-    
+
     handleDateFilterChange();
 }
 
-window.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('DOMContentLoaded', function () {
     // Load replacements on page load
     loadReplacements();
 
     // Handle reason dropdown change to show/hide custom reason input
     const reasonSelect = document.getElementById('newReason');
     const customReasonInput = document.getElementById('customReason');
-    
+
     if (reasonSelect && customReasonInput) {
-        reasonSelect.addEventListener('change', function() {
+        reasonSelect.addEventListener('change', function () {
             if (this.value === 'Others Reason') {
                 customReasonInput.classList.remove('hidden');
                 customReasonInput.focus();
@@ -541,7 +541,7 @@ window.addEventListener('DOMContentLoaded', function() {
     // Handle search input for filtering
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
-        searchInput.addEventListener('input', function() {
+        searchInput.addEventListener('input', function () {
             const searchTerm = this.value.toLowerCase().trim();
             filterReplacements(searchTerm);
         });
@@ -550,22 +550,22 @@ window.addEventListener('DOMContentLoaded', function() {
 
 function filterReplacements(searchTerm) {
     const tableRows = document.querySelectorAll('tbody tr');
-    
+
     tableRows.forEach(row => {
         if (row.querySelector('td[colspan]')) {
             // Skip empty state row
             return;
         }
-        
+
         const refNo = row.cells[0]?.textContent.toLowerCase() || '';
         const returnedItem = row.cells[2]?.textContent.toLowerCase() || '';
         const replacementItem = row.cells[4]?.textContent.toLowerCase() || '';
-        
-        const matchesSearch = searchTerm === '' || 
-            refNo.includes(searchTerm) || 
-            returnedItem.includes(searchTerm) || 
+
+        const matchesSearch = searchTerm === '' ||
+            refNo.includes(searchTerm) ||
+            returnedItem.includes(searchTerm) ||
             replacementItem.includes(searchTerm);
-        
+
         row.style.display = matchesSearch ? '' : 'none';
     });
 }

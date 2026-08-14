@@ -426,4 +426,4 @@ unset($__errorArgs, $__bag); ?>
     </script>
 </body>
 </html>
-<?php /**PATH C:\Users\ilano\Herd\KCC_MOTORCYCLE\KCC_MOTORCYCLE\resources\views/login.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\Admin\Desktop\WEQW\KCC_MOTORCYCLE\resources\views/login.blade.php ENDPATH**/ ?>

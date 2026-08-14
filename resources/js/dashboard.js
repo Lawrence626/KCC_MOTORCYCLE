@@ -156,13 +156,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     const CATEGORY_DEFS = [
-        { name: 'Exhaust', color: '#00833b' },
-        { name: 'Helmets', color: '#4bbb00' },
-        { name: 'Tires', color: '#dee200' },
-        { name: 'Brakes', color: '#ff3c00' },
-        { name: 'Oils', color: '#ffa600' },
-        { name: 'Batteries', color: '#3b82f6' },
-        { name: 'Accessories', color: '#0064d6' },
+        { name: 'Exhaust', color: '#00f700ff' },      // coral red
+        { name: 'Helmets', color: '#da0e0eff' },      // theme teal (matches dashboard accent)
+        { name: 'Tires', color: '#f1a204ff' },        // warm amber/yellow
+        { name: 'Brakes', color: '#5541ecff' },       // violet/purple
+        { name: 'Oils', color: '#0948beff' },         // turquoise
+        { name: 'Batteries', color: '#e93071ff' },    // pink
+        { name: 'Accessories', color: '#45AAF2' },  // sky blue
     ];
     const INACTIVE_DOT_COLOR = '#7e7e7e8c'; // muted/gray — kapag walang benta ang category sa araw na 'yon
     const EMPTY_RING_COLOR = '#7e7e7e8c'; // flat gray track kapag walang laman/sales
@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Color palette for custom categories (not in predefined list)
-        const customColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
+        const customColors = ['#00f700ff', '#da0e0eff', '#f1a204ff', '#5541ecff', '#0948beff', '#e93071ff', '#45AAF2'];
         let customColorIndex = 0;
 
         // Assign colors to incoming categories
@@ -350,10 +350,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         backgroundColor: '#1a1a1a',
                         titleColor: '#ffffff',
                         bodyColor: '#ffffff',
-                        borderColor: '#105f68',
+                        borderColor: '#36ADA3',
                         borderWidth: 1,
-                        padding: 8,
+                        padding: 5,
+                        titleFont: { size: 11 },
+                        bodyFont: { size: 11 },
+                        displayColors: false,
                         callbacks: {
+                            title: () => '',
                             label: (context) => `${context.label}: ${currency.format(context.parsed)}`,
                         },
                     },
@@ -430,21 +434,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: comparisonChart.datasets.map((dataset, index) => ({
                     label: dataset.label,
                     data: dataset.data,
-                    backgroundColor: '#105f68',
-                    borderColor: '#105f68',
+                    backgroundColor: '#0dd3c9ff',
+                    borderColor: '#0dd3c9ff',
                     borderWidth: 1,
+                    borderRadius: 6,
                 })),
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: { position: 'top', labels: { font: { size: 11 } } },
                     tooltip: {
                         backgroundColor: '#1a1a1a',
                         titleColor: '#ffffff',
                         bodyColor: '#ffffff',
-                        borderColor: '#105f68',
+                        borderColor: '#00D9FF',
                         borderWidth: 1,
                         padding: 10,
                         displayColors: false,
@@ -456,15 +461,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     },
                 },
                 scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(107,114,128,0.12)' },
-                            ticks: { color: '#374151', callback: (value) => currency.format(value) },
-                        },
-                        x: {
-                            grid: { color: 'rgba(107,114,128,0.08)' },
-                            ticks: { color: '#374151' },
-                        },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(107,114,128,0.12)' },
+                        ticks: { color: '#374151', callback: (value) => currency.format(value) },
+                    },
+                    x: {
+                        grid: { color: 'rgba(107,114,128,0.08)' },
+                        ticks: { color: '#374151' },
+                    },
                 },
             },
         });
@@ -557,6 +562,16 @@ document.addEventListener('DOMContentLoaded', () => {
         setActiveSalesRange(range);
     };
 
+    // ═══════════════════════════════════════════════════════════════
+    // Sales Overview line chart — smooth "mountain silhouette" curve,
+    // cyan theme (same cyan used on the dashboard stat-card icons,
+    // e.g. #00D9FF / #00FFF2). Nananatili ang gridlines at numbers sa
+    // x/y axis — ang binago lang ay ang kulay ng linya/fill at ang
+    // pagkamakinis ng curve (rounded peaks/valleys).
+    // ═══════════════════════════════════════════════════════════════
+    const SALES_CHART_CYAN = '#00D9FF'; // pangunahing linya (matches dashboard icon cyan)
+    const SALES_CHART_CYAN_SOFT = '#00FFF2'; // pantulong na kulay para sa gradient highlight
+
     const renderSalesChart = (salesChart) => {
         const canvas = document.getElementById('salesChart');
         if (!canvas) {
@@ -580,9 +595,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const ctx = canvas.getContext('2d');
 
-        // subtle gradient fill sa ilalim ng linya
-        // No gradient fill for light theme: keep background transparent
-        const gradient = 'transparent';
+        // Cyan gradient fill under the line — mas buo/solid na ngayon,
+        // hindi agad nawawala papunta sa ibaba, para mas makapal ang
+        // highlight sa ilalim ng curve.
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, 'rgba(0, 217, 255, 0.65)');
+        gradient.addColorStop(0.5, 'rgba(0, 217, 255, 0.35)');
+        gradient.addColorStop(1, 'rgba(0, 217, 255, 0.12)');
 
         window.dashboardSalesChart = new Chart(ctx, {
             type: 'line',
@@ -592,24 +611,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: [{
                     label: 'Revenue',
                     data: chartData.values,
-                    borderColor: '#105f68',
-                    backgroundColor: 'transparent',
+                    borderColor: SALES_CHART_CYAN,
+                    backgroundColor: gradient,
                     borderWidth: 2.5,
-                    fill: false,
-                    tension: 0.4,
+                    fill: true,
+                    // Mas mataas na tension para sa makinis/mountain-like na
+                    // curve, gaya ng reference image (rounded peaks/valleys,
+                    // walang matulis na sulok).
+                    tension: 0.55,
+                    cubicInterpolationMode: 'monotone',
                     pointRadius: 0,
                     pointHoverRadius: 5,
-                    pointBackgroundColor: '#105f68',
-                    pointHoverBackgroundColor: '#105f68',
-                    pointHoverBorderColor: '#0f0f0f',
+                    pointBackgroundColor: SALES_CHART_CYAN,
+                    pointHoverBackgroundColor: SALES_CHART_CYAN,
+                    pointHoverBorderColor: '#ffffff',
                     pointHoverBorderWidth: 2,
                 }],
             },
             options: {
                 responsive: true,
-                // FIX: dati "true" ito kaya hindi na-ffill nung chart yung buong height
-                // ng #salesOverviewBody container (kaya masyadong nasa taas yung linya).
-                // Sa "false", susundin ng chart yung actual width/height ng container.
                 maintainAspectRatio: false,
                 layout: {
                     padding: { top: 40, bottom: 0, left: 0, right: 0 },
@@ -622,7 +642,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         backgroundColor: '#1a1a1a',
                         titleColor: '#ffffff',
                         bodyColor: '#ffffff',
-                        borderColor: '#105f68',
+                        borderColor: SALES_CHART_CYAN,
                         borderWidth: 1,
                         padding: 10,
                         displayColors: false,
@@ -635,18 +655,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 scales: {
                     x: {
-                            grid: { color: 'rgb(214, 214, 214)' },
-                            ticks: { color: '#374151', font: { size: 10 } },
+                        grid: { color: 'rgba(0, 0, 0, 0.06)' },
+                        ticks: { color: '#374151', font: { size: 10 } },
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0, 0, 0, 0.06)' },
+                        ticks: {
+                            color: '#616161',
+                            font: { size: 10 },
+                            callback: (value) => currency.format(value),
                         },
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgb(214, 214, 214)' },
-                            ticks: {
-                                color: '#616161',
-                                font: { size: 10 },
-                                callback: (value) => currency.format(value),
-                            },
-                        },
+                    },
                 },
             },
         });

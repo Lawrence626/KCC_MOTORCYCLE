@@ -7,45 +7,73 @@
                 <p class="text-2XL text-slate-500 mt-0.5">Archived inventory items. Restore or permanently delete</p>
             </div>
             <div class="flex gap-2 items-center">
-                <a href="{{ route('pos.terminal') }}" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 transition">
-                    BACK TO POS
+                <a href="{{ route('pos.terminal') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200 flex-shrink-0">
+                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    <span>BACK TO POS</span>
                 </a>
             </div>
         </div>
 
         <!-- Quick Stats -->
         <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-            <div class="bg-white border border-slate-200 rounded-[28px] p-5 shadow-sm">
-                <p class="text-sm text-slate-600 font-medium mb-1">Archived Items</p>
-                <p id="archivedCount" class="text-2xl font-bold text-slate-900">0</p>
-                <p class="text-sm text-slate-500 mt-1">Total archived</p>
+            <div class="border border-slate-200 rounded-[28px] p-5 shadow-sm flex items-start justify-between gap-3" style="border-radius: 28px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div>
+                    <p class="text-sm text-slate-600 font-medium mb-1">Archived Items</p>
+                    <p id="archivedCount" class="text-2xl font-bold text-slate-900">0</p>
+                    <p class="text-sm text-slate-500 mt-1">Total archived</p>
+                </div>
+                <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40">
+                    <!-- Cube Icon (represents inventory items) -->
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12.378 1.602a.75.75 0 00-.756 0L3 6.632l9 5.25 9-5.25-8.622-5.03zM21.75 7.93l-9 5.25v9.344l8.628-5.032a.75.75 0 00.372-.648V7.93zM11.25 22.523v-9.344l-9-5.25v8.914c0 .267.141.514.372.648l8.628 5.032z" clip-rule="evenodd" />
+                    </svg>
+                </span>
             </div>
-            <div class="bg-white border border-slate-200 rounded-[28px] p-5 shadow-sm">
-                <p class="text-sm text-slate-600 font-medium mb-1">Archive Value</p>
-                <p id="archiveValue" class="text-2xl font-bold text-slate-900">₱0</p>
-                <p class="text-sm text-slate-500 mt-1">Total value</p>
+            <div class="border border-slate-200 rounded-[28px] p-5 shadow-sm flex items-start justify-between gap-3" style="border-radius: 28px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div>
+                    <p class="text-sm text-slate-600 font-medium mb-1">Archive Value</p>
+                    <p id="archiveValue" class="text-2xl font-bold text-slate-900">₱0</p>
+                    <p class="text-sm text-slate-500 mt-1">Total value</p>
+                </div>
+                <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40">
+                    <!-- Credit Card Icon (represents monetary value) -->
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M4.5 3.75a3 3 0 00-3 3v.75h21v-.75a3 3 0 00-3-3h-15z" />
+                        <path fill-rule="evenodd" d="M22.5 9.75h-21v7.5a3 3 0 003 3h15a3 3 0 003-3v-7.5zm-18 3.75a.75.75 0 01.75-.75h6a.75.75 0 010 1.5h-6a.75.75 0 01-.75-.75zm.75 2.25a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" clip-rule="evenodd" />
+                    </svg>
+                </span>
             </div>
-            <div class="bg-white border border-slate-200 rounded-[28px] p-5 shadow-sm">
-                <p class="text-sm text-slate-600 font-medium mb-1">Avg Price</p>
-                <p id="avgPrice" class="text-2xl font-bold text-slate-900">₱0</p>
-                <p class="text-sm text-slate-500 mt-1">Per item</p>
+            <div class="border border-slate-200 rounded-[28px] p-5 shadow-sm flex items-start justify-between gap-3" style="border-radius: 28px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div>
+                    <p class="text-sm text-slate-600 font-medium mb-1">Avg Price</p>
+                    <p id="avgPrice" class="text-2xl font-bold text-slate-900">₱0</p>
+                    <p class="text-sm text-slate-500 mt-1">Per item</p>
+                </div>
+                <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40">
+                    <!-- Bar Chart Icon (represents average / stats) -->
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z" clip-rule="evenodd" />
+                    </svg>
+                </span>
             </div>
         </div>
 
         <!-- Search & Filters -->
-        <div class="bg-white rounded-lg border border-slate-200 p-4 shadow-sm space-y-4">
-            <input id="searchInput" type="search" placeholder="Search by product name, SKU, or barcode..." class="w-full px-4 py-3 rounded-lg border border-slate-300 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-[#105f68] focus:border-transparent" />
+        <div class="bg-white rounded-lg border border-slate-200 p-4 space-y-4">
+            <input id="searchInput" type="search" placeholder="Search by product name, SKU, or barcode..." class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-white text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent" />
 
             <div class="flex gap-3 items-end">
                 <div class="flex-1 relative">
                     <label class="block text-slate-600 font-medium mb-1.5 text-sm">Category</label>
                     <input type="hidden" id="categoryFilter" value="" />
-                    <button type="button" id="categoryDropdownBtn" onclick="toggleCategoryDropdown()" class="w-full px-4 py-3 rounded-[10px] border border-slate-300 bg-slate-50 text-sm text-left text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#105f68] focus:border-transparent flex items-center justify-between">
+                    <button type="button" id="categoryDropdownBtn" onclick="toggleCategoryDropdown()" class="w-full px-4 py-3 rounded-[10px] border border-slate-200 bg-white text-sm text-left text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent hover:border-slate-400 flex items-center justify-between transition">
                         <span id="categoryLabel">All Categories</span>
-                        <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" id="categoryChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <svg class="w-3.5 h-3.5 text-slate-400 flex-shrink-0" id="categoryChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
-                    <div id="categoryDropdown" class="hidden absolute top-full mt-2 left-0 w-full bg-white border border-slate-300 rounded-lg shadow-xl z-50 p-3 space-y-1 max-h-60 overflow-y-auto">
-                        <button type="button" onclick="selectCategory('', 'All Categories')" class="w-full px-4 py-2 text-left text-sm bg-[#105f68]/10 text-[#105f68] font-semibold rounded-[10px] category-option" data-value="">All Categories</button>
+                    <div id="categoryDropdown" class="hidden absolute top-full mt-2 left-0 w-full bg-white border border-slate-100 rounded-[18px] shadow-[0_16px_40px_rgba(0,0,0,0.12)] z-50 p-3 space-y-1 max-h-60 overflow-y-auto">
+                        <button type="button" onclick="selectCategory('', 'All Categories')" class="w-full px-4 py-2 text-left text-sm bg-slate-100 text-slate-900 font-semibold rounded-[10px] category-option" data-value="">All Categories</button>
                         <button type="button" onclick="selectCategory('engine_oil', 'Engine Oil')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="engine_oil">Engine Oil</button>
                         <button type="button" onclick="selectCategory('battery', 'Battery')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="battery">Battery</button>
                         <button type="button" onclick="selectCategory('spark_plug', 'Spark Plug')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="spark_plug">Spark Plug</button>
@@ -56,8 +84,8 @@
                         <button type="button" onclick="selectCategory('accessories', 'Accessories')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="accessories">Accessories</button>
                     </div>
                 </div>
-                <button id="applyFilter" class="h-[46px] px-6 rounded-[10px] border border-slate-300 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 transition whitespace-nowrap flex items-center justify-center">Apply</button>
-                <button id="resetFilter" class="h-[46px] px-6 rounded-[10px] border border-slate-300 bg-white text-sm font-semibold text-slate-600 hover:bg-slate-50 transition whitespace-nowrap flex items-center justify-center">Reset</button>
+                <button id="applyFilter" class="h-[46px] px-6 rounded-[10px] border border-slate-300 bg-white text-sm font-semibold text-slate-700 hover:bg-black/10 transition whitespace-nowrap flex items-center justify-center">Apply</button>
+                <button id="resetFilter" class="h-[46px] px-6 rounded-[10px] border border-slate-300 bg-white text-sm font-semibold text-slate-600 hover:bg-black/10 transition whitespace-nowrap flex items-center justify-center">Reset</button>
             </div>
         </div>
 
@@ -104,6 +132,23 @@
             </div>
         </div>
     </div>
+
+    <style>
+        #searchInput::-webkit-search-cancel-button {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 14px;
+            width: 14px;
+            cursor: pointer;
+            background-color: black;
+            -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.3 5.71a1 1 0 00-1.41 0L12 10.59 7.11 5.7A1 1 0 105.7 7.11L10.59 12l-4.9 4.89a1 1 0 101.41 1.41L12 13.41l4.89 4.9a1 1 0 001.41-1.41L13.41 12l4.9-4.89a1 1 0 000-1.4z"/></svg>');
+            mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.3 5.71a1 1 0 00-1.41 0L12 10.59 7.11 5.7A1 1 0 105.7 7.11L10.59 12l-4.9 4.89a1 1 0 101.41 1.41L12 13.41l4.89 4.9a1 1 0 001.41-1.41L13.41 12l4.9-4.89a1 1 0 000-1.4z"/></svg>');
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+        }
+    </style>
 
     <script>
         let currentPage = 1;
@@ -273,8 +318,8 @@
             // Highlight active option
             document.querySelectorAll('.category-option').forEach(btn => {
                 const isActive = btn.dataset.value === value;
-                btn.classList.toggle('bg-[#105f68]/10', isActive);
-                btn.classList.toggle('text-[#105f68]', isActive);
+                btn.classList.toggle('bg-slate-100', isActive);
+                btn.classList.toggle('text-slate-900', isActive);
                 btn.classList.toggle('font-semibold', isActive);
                 btn.classList.toggle('text-slate-700', !isActive);
                 btn.classList.toggle('hover:bg-slate-100', !isActive);
