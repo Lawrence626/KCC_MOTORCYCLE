@@ -28,15 +28,15 @@
 
         <div class="grid grid-cols-1 xl:grid-cols-[1.65fr_1fr] gap-4 mt-6">
             <div class="space-y-3">
-                <div class="rounded-[28px] border border-slate-200 bg-white overflow-hidden shadow-sm">
+                <div class="rounded-[20px] border border-slate-200 bg-white overflow-hidden shadow-sm">
                     <!-- Section Header Bar (matching All Stocks design) -->
                     <div class="bg-[#0f172a] px-6 py-4 border-b border-slate-800 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                         <!-- Left Side: Search Input + Filter Icon Button -->
                         <div class="flex items-center gap-2 flex-1 max-w-[420px]">
                             <div class="relative flex-1">
                                 <label for="posProductSearchInput" class="sr-only">Search products</label>
-                                <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/></svg>
-                                <input id="posProductSearchInput" type="text" placeholder="Search products..." class="w-full rounded-[10px] border border-slate-700 bg-slate-800/90 text-white placeholder-slate-400 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#00fff2]" style="height: 42px;" />
+                                <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/></svg>
+                                <input id="posProductSearchInput" type="text" placeholder="Search products..." class="w-full rounded-[10px] border border-slate-700 bg-slate-800/90 text-white placeholder:text-white placeholder-white pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#00fff2]" style="height: 42px;" />
                             </div>
                             <button id="posFilterToggleButton" type="button" aria-label="Open filter" class="inline-flex h-[42px] w-[42px] items-center justify-center rounded-[10px] bg-slate-800 text-white border border-slate-700 transition hover:bg-slate-700 focus:outline-none focus:ring-1 focus:ring-[#00fff2] flex-shrink-0">
                                 <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L15 13.414V18a1 1 0 01-1.447.894l-4-2A1 1 0 019 16v-2.586L3.293 6.707A1 1 0 013 6V4z"/></svg>
@@ -45,7 +45,7 @@
 
                         <!-- Right Side: Filter by + Two Dropdowns -->
                         <div class="flex flex-wrap items-center gap-2">
-                            <label class="text-xs font-semibold text-slate-300 whitespace-nowrap">Filter by:</label>
+                            <label class="text-xs font-semibold text-white whitespace-nowrap">Filter by:</label>
                             <div class="relative">
                                 <select id="posCategorySelect" class="hidden">
                                     <option value="All">All Product Description</option>
@@ -75,7 +75,7 @@
             </div>
 
             <aside class="space-y-5 xl:sticky xl:top-4">
-                <div class="rounded-[28px] border border-slate-200 bg-white overflow-hidden shadow-sm">
+                <div class="rounded-[20px] border border-slate-200 bg-white overflow-hidden shadow-sm">
                     <div class="bg-[#0f172a] px-6 py-4 flex items-center justify-between gap-3 border-b border-slate-800">
                         <div>
                             <h2 class="text-sm font-bold text-white">Cart</h2>
@@ -124,7 +124,7 @@
                     </div>
                 </div>
 
-                <div class="rounded-[28px] border border-slate-200 bg-white overflow-hidden shadow-sm">
+                <div class="rounded-[20px] border border-slate-200 bg-white overflow-hidden shadow-sm">
                     <div class="bg-[#0f172a] px-6 py-4 flex items-center justify-between gap-3 border-b border-slate-800">
                         <h2 class="text-sm font-bold text-white">Services</h2>
                         <span class="text-xs text-slate-300">Add labor services</span>
@@ -154,7 +154,7 @@
                     </div>
                 </div>
 
-                <div class="rounded-[28px] border border-slate-200 bg-white overflow-hidden shadow-sm">
+                <div class="rounded-[20px] border border-slate-200 bg-white overflow-hidden shadow-sm">
                     <div class="bg-[#0f172a] px-6 py-4 flex items-center justify-between gap-3 border-b border-slate-800">
                         <h2 class="text-sm font-bold text-white">Payment Method</h2>
                         <span class="text-xs text-slate-300">Quick select</span>

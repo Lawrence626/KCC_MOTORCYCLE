@@ -52,6 +52,15 @@
         .product-row-card .product-name {
             background: #ffffff; border: 1px solid rgba(148,163,184,0.25); border-radius: 0.85rem; padding: 0.75rem;
         }
+        .product-row-card input:focus,
+        .product-row-card select:focus,
+        .modal-panel input:focus,
+        .modal-panel select:focus,
+        .modal-panel textarea:focus {
+            outline: none !important;
+            border-color: #94a3b8 !important;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35) !important;
+        }
         .product-row-card .product-select,
         .product-row-card .product-sku,
         .product-row-card .product-brand,
@@ -86,32 +95,30 @@
         <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
         {{-- ═══ HEADER ═══ --}}
-        <div class="rounded-[22px] border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
-            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Warehouse Management</h1>
-                    <p class="text-xs text-slate-500 mt-1">Track and manage storage locations and products across your warehouses</p>
-                </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <input id="wm-search" type="search" placeholder="Search product or SKU..."
-                           class="px-3 py-1.5 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent w-48 transition" />
-                    <button id="view-archived-shelves" type="button"
-                            class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-[12px] bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 shadow-sm transition cursor-pointer">
-                        Archived Shelves
-                    </button>
-                    <button id="view-archived-warehouses" type="button"
-                            class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-[12px] bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 shadow-sm transition cursor-pointer">
-                        Archived Warehouses
-                    </button>
-                    <button id="add-warehouse-button" type="button"
-                            class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-[12px] bg-[#0f172a] text-white hover:bg-slate-800 shadow-sm transition cursor-pointer">
-                        + Add Warehouse
-                    </button>
-                    <button id="add-shelf-button" type="button"
-                            class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-[12px] border border-[#00fff2]/40 bg-[#00fff2] text-black hover:bg-[#00e6da] shadow-sm transition cursor-pointer">
-                        + Add Shelf
-                    </button>
-                </div>
+        <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+            <div class="pl-3 lg:pl-2">
+                <h1 class="text-3xl font-bold text-slate-900">Warehouse Management</h1>
+                <p class="text-xs text-slate-500 mt-1">Track and manage storage locations and products across your warehouses</p>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap pr-4">
+                <input id="wm-search" type="search" placeholder="Search product or SKU..."
+                       class="px-3 py-1.5 text-xs rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm w-44 h-9" />
+                <button id="view-archived-shelves" type="button" onclick="openArchivedShelvesModal()"
+                        class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
+                    Archived Shelves
+                </button>
+                <button id="view-archived-warehouses" type="button"
+                        class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
+                    Archived Warehouses
+                </button>
+                <button id="add-warehouse-button" type="button" onclick="openAddWarehouseModal()"
+                        class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-900 bg-[#0f172a] px-3.5 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-slate-800 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
+                    + Add Warehouse
+                </button>
+                <button id="add-shelf-button" type="button" onclick="openAddShelfModal()"
+                        class="inline-flex items-center gap-1.5 rounded-[10px] border border-[#00fff2]/40 bg-[#00fff2] px-3.5 py-1.5 text-xs font-bold text-black shadow-sm hover:bg-[#00e6da] focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
+                    + Add Shelf
+                </button>
             </div>
         </div>
 
@@ -119,50 +126,91 @@
         <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
             <div class="flex flex-col lg:flex-row lg:items-center gap-2">
                 <div class="flex flex-wrap items-center gap-2 flex-1">
-                    <select id="warehouse-selector"
-                            class="px-3 py-1.5 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent cursor-pointer">
-                        @foreach($warehouses as $wh)
-                            <option value="{{ $wh['id'] }}">{{ $wh['name'] }}</option>
-                        @endforeach
-                    </select>
-                    <select id="wm-product-description-filter"
-                            class="px-3 py-1.5 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent cursor-pointer">
-                        <option value="">All Descriptions</option>
-                        @php
-                            $descriptions = \App\Models\ProductDescription::where('is_active', true)->orderBy('name')->get();
-                            foreach($descriptions as $desc):
-                        @endphp
-                            <option value="{{ $desc->name }}">{{ $desc->name }}</option>
-                        @php endforeach; @endphp
-                    </select>
-                    <select id="wm-brand-filter"
-                            class="px-3 py-1.5 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent cursor-pointer">
-                        <option value="">All Brands</option>
-                        @php
-                            $brands = \App\Models\Product::where('is_archived', false)
-                                ->whereNotNull('brand')
-                                ->where('brand', '!=', '')
-                                ->distinct()
-                                ->orderBy('brand')
-                                ->pluck('brand')
-                                ->toArray();
-                            foreach($brands as $brand):
-                        @endphp
-                            <option value="{{ $brand }}">{{ $brand }}</option>
-                        @php endforeach; @endphp
-                    </select>
-                    <button id="wm-clear-filters" class="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-[12px] transition cursor-pointer">
+                    <div class="relative inline-block" id="dd-warehouse-wrapper">
+                        <select id="warehouse-selector" class="hidden">
+                            @foreach($warehouses as $wh)
+                                <option value="{{ $wh['id'] }}">{{ $wh['name'] }}</option>
+                            @endforeach
+                        </select>
+                        <button type="button" onclick="toggleDropdown('dd-warehouse-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
+                            <span id="dd-warehouse-label">{{ $warehouses[0]['name'] ?? 'Select Warehouse' }}</span>
+                            <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div id="dd-warehouse-menu" class="hidden absolute left-0 top-full z-50 mt-1 min-w-[140px] rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
+                            @foreach($warehouses as $wh)
+                                <button type="button" onclick="selectDropdownOption('warehouse-selector', 'dd-warehouse-label', 'dd-warehouse-menu', '{{ $wh['id'] }}', '{{ addslashes($wh['name']) }}')" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">
+                                    {{ $wh['name'] }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="relative inline-block" id="dd-desc-wrapper">
+                        <select id="wm-product-description-filter" class="hidden">
+                            <option value="">All Descriptions</option>
+                            @php
+                                $descriptions = \App\Models\ProductDescription::where('is_active', true)->orderBy('name')->get();
+                                foreach($descriptions as $desc):
+                            @endphp
+                                <option value="{{ $desc->name }}">{{ $desc->name }}</option>
+                            @php endforeach; @endphp
+                        </select>
+                        <button type="button" onclick="toggleDropdown('dd-desc-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
+                            <span id="dd-desc-label">All Descriptions</span>
+                            <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div id="dd-desc-menu" class="hidden absolute left-0 top-full z-50 mt-1 min-w-[160px] rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
+                            <button type="button" onclick="selectDropdownOption('wm-product-description-filter', 'dd-desc-label', 'dd-desc-menu', '', 'All Descriptions')" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Descriptions</button>
+                            @foreach($descriptions as $desc)
+                                <button type="button" onclick="selectDropdownOption('wm-product-description-filter', 'dd-desc-label', 'dd-desc-menu', '{{ addslashes($desc->name) }}', '{{ addslashes($desc->name) }}')" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">
+                                    {{ $desc->name }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="relative inline-block" id="dd-brand-wrapper">
+                        <select id="wm-brand-filter" class="hidden">
+                            <option value="">All Brands</option>
+                            @php
+                                $brands = \App\Models\Product::where('is_archived', false)
+                                    ->whereNotNull('brand')
+                                    ->where('brand', '!=', '')
+                                    ->distinct()
+                                    ->orderBy('brand')
+                                    ->pluck('brand')
+                                    ->toArray();
+                                foreach($brands as $brand):
+                            @endphp
+                                <option value="{{ $brand }}">{{ $brand }}</option>
+                            @php endforeach; @endphp
+                        </select>
+                        <button type="button" onclick="toggleDropdown('dd-brand-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
+                            <span id="dd-brand-label">All Brands</span>
+                            <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div id="dd-brand-menu" class="hidden absolute left-0 top-full z-50 mt-1 min-w-[140px] rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
+                            <button type="button" onclick="selectDropdownOption('wm-brand-filter', 'dd-brand-label', 'dd-brand-menu', '', 'All Brands')" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Brands</button>
+                            @foreach($brands as $brand)
+                                <button type="button" onclick="selectDropdownOption('wm-brand-filter', 'dd-brand-label', 'dd-brand-menu', '{{ addslashes($brand) }}', '{{ addslashes($brand) }}')" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">
+                                    {{ $brand }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <button id="wm-clear-filters" onclick="document.getElementById('dd-desc-label').textContent='All Descriptions'; document.getElementById('dd-brand-label').textContent='All Brands';" class="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-[10px] transition cursor-pointer">
                         Clear
                     </button>
                 </div>
                 <div class="flex items-center gap-2">
-                    <div class="rounded-[14px] border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
-                        <p class="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">Products</p>
-                        <p id="selectedWarehouseProducts" class="text-sm font-bold text-slate-900">0</p>
+                    <div class="rounded-[12px] border border-slate-200 bg-white px-3.5 py-1.5 shadow-sm min-w-[90px]">
+                        <p class="text-xs font-semibold text-slate-700">Products</p>
+                        <p id="selectedWarehouseProducts" class="text-lg font-bold text-slate-900 leading-tight">0</p>
                     </div>
-                    <div class="rounded-[14px] border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
-                        <p class="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">Empty Slots</p>
-                        <p id="selectedWarehouseEmptySlots" class="text-sm font-bold text-slate-900">0</p>
+                    <div class="rounded-[12px] border border-slate-200 bg-white px-3.5 py-1.5 shadow-sm min-w-[90px]">
+                        <p class="text-xs font-semibold text-slate-700">Empty Slots</p>
+                        <p id="selectedWarehouseEmptySlots" class="text-lg font-bold text-slate-900 leading-tight">0</p>
                     </div>
                 </div>
             </div>
@@ -171,37 +219,37 @@
 
         <div class="grid gap-4 mt-0">
 
-        {{-- â”€â”€ Pending Warehouse Assignment panel (collapsible) â”€â”€ --}}
-        <div id="pending-arrivals-panel" class="rounded-[20px] border border-slate-200 border-l-4 border-l-amber-400 bg-amber-50 shadow-sm overflow-hidden">
+        {{-- ── Pending Warehouse Assignment panel (collapsible) ── --}}
+        <div id="pending-arrivals-panel" class="rounded-[20px] border border-slate-200 border-l-[5px] border-l-[#00fff2] shadow-sm overflow-hidden" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
             {{-- Header / toggle bar --}}
             <button
                 type="button"
                 id="pending-arrivals-toggle"
-                class="w-full flex items-center justify-between px-4 py-3 hover:bg-amber-100/60 transition"
+                class="w-full flex items-center justify-between px-5 py-4 hover:bg-black/5 transition cursor-pointer"
                 aria-expanded="{{ count($pendingArrivals) > 0 ? 'true' : 'false' }}"
             >
                 <div class="flex items-center gap-3">
-                    <div class="flex h-8 w-8 items-center justify-center rounded-[10px] bg-amber-100 text-amber-600">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
+                    <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#00fff2] text-black border border-slate-300/60 shadow-sm flex-shrink-0">
+                        <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.707.293h3.172a1 1 0 01.707-.293l2.414-2.414a1 1 0 01.707-.293H20"/>
                         </svg>
                     </div>
-                    <span class="text-xs font-bold text-amber-900">New Stock: Pending Warehouse Assignment</span>
-                    <span id="pending-arrivals-count" class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold {{ count($pendingArrivals) > 0 ? 'bg-amber-300 text-amber-900' : 'bg-slate-100 text-slate-500' }}">
+                    <span class="text-sm font-bold text-slate-900">New Stock: Pending Warehouse Assignment</span>
+                    <span id="pending-arrivals-count" class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold {{ count($pendingArrivals) > 0 ? 'bg-cyan-100 text-cyan-900 border border-cyan-200' : 'bg-slate-100 text-slate-500' }}">
                         {{ count($pendingArrivals) }} pending
                     </span>
                 </div>
-                <svg id="pending-arrivals-chevron" class="w-4 h-4 text-amber-600 transition-transform duration-200 {{ count($pendingArrivals) > 0 ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg id="pending-arrivals-chevron" class="w-4 h-4 text-slate-500 transition-transform duration-200 {{ count($pendingArrivals) > 0 ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                 </svg>
             </button>
 
             {{-- Collapsible body --}}
             <div id="pending-arrivals-body" class="{{ count($pendingArrivals) > 0 ? '' : 'hidden' }} px-5 pb-5">
-                <p class="text-xs text-amber-700 mb-3">Items that arrived from confirmed purchase orders are listed here. Assign each one to a warehouse before shelving.</p>
+                <p class="text-xs text-slate-600 mb-3 font-medium">Items that arrived from confirmed purchase orders are listed here. Assign each one to a warehouse before shelving.</p>
 
                 @if(count($pendingArrivals) > 0)
-                <div class="overflow-x-auto rounded-[14px] border border-amber-200 bg-white">
+                <div class="overflow-x-auto rounded-[14px] border border-slate-200 bg-white shadow-sm">
                     <table class="min-w-full divide-y divide-slate-200 text-xs" id="pending-arrivals-table">
                         <thead class="bg-[#0f172a] border-b border-slate-200">
                             <tr>
@@ -218,15 +266,15 @@
                             @foreach($pendingArrivals as $arrival)
                             <tr id="arrival-row-{{ $arrival['id'] }}" class="hover:bg-slate-50 transition">
                                 <td class="px-4 py-3 font-medium text-slate-900">{{ $arrival['product_name'] }}</td>
-                                <td class="px-4 py-3 font-mono text-xs text-slate-600">{{ $arrival['sku'] ?? 'â€”' }}</td>
+                                <td class="px-4 py-3 font-mono text-xs text-slate-600">{{ $arrival['sku'] ?? '—' }}</td>
                                 <td class="px-4 py-3 text-center font-semibold text-slate-800">{{ $arrival['quantity'] }}</td>
-                                <td class="px-4 py-3 text-slate-600">{{ $arrival['purchase_order_number'] ?? 'â€”' }}</td>
-                                <td class="px-4 py-3 text-slate-600">{{ $arrival['supplier_name'] ?? 'â€”' }}</td>
+                                <td class="px-4 py-3 text-slate-600">{{ $arrival['purchase_order_number'] ?? '—' }}</td>
+                                <td class="px-4 py-3 text-slate-600">{{ $arrival['supplier_name'] ?? '—' }}</td>
                                 <td class="px-4 py-3 text-xs text-slate-500">{{ $arrival['arrived_at'] }}</td>
                                 <td class="px-4 py-3 text-center">
                                     <button
                                         type="button"
-                                        class="assign-arrival-btn inline-flex items-center gap-1.5 rounded-[10px] bg-[#00fff2] px-3 py-1.5 text-xs font-semibold text-black hover:bg-[#00e6da] transition shadow-sm"
+                                        class="assign-arrival-btn inline-flex items-center gap-1.5 rounded-[10px] bg-[#00fff2] px-3 py-1.5 text-xs font-semibold text-black hover:bg-[#00e6da] transition shadow-sm cursor-pointer"
                                         data-id="{{ $arrival['id'] }}"
                                         data-name="{{ $arrival['product_name'] }}"
                                         data-qty="{{ $arrival['quantity'] }}"
@@ -243,41 +291,56 @@
                     </table>
                 </div>
                 @else
-                <div class="flex flex-col items-center justify-center rounded-lg border border-dashed border-amber-200 bg-white py-8 text-center">
-                    <svg class="w-8 h-8 text-amber-200 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex flex-col items-center justify-center rounded-[14px] border border-dashed border-cyan-200/80 bg-white/80 py-8 text-center">
+                    <svg class="w-8 h-8 text-cyan-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <p class="text-sm font-semibold text-slate-500">All caught up!</p>
+                    <p class="text-sm font-semibold text-slate-700">All caught up!</p>
                     <p class="text-xs text-slate-400 mt-1">New stocks from confirmed purchase orders will appear here.</p>
                 </div>
                 @endif
             </div>
         </div>
-        {{-- â”€â”€ end Pending Warehouse Assignment panel â”€â”€ --}}
+        {{-- ── end Pending Warehouse Assignment panel ── --}}
 
             @foreach($warehouses as $wh)
-                <div class="rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm wh-card" data-id="{{ $wh['id'] }}" style="display:none;">
-                    <div class="flex items-center justify-between">
+                <div class="rounded-[15px] border border-slate-200 bg-white overflow-hidden shadow-sm wh-card" data-id="{{ $wh['id'] }}" style="display:none;">
+                    <div class="flex items-center justify-between bg-[#0f172a] px-5 py-3.5 border-b border-slate-800">
                         <div class="flex items-center gap-3">
-                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm font-bold text-sm">{{ strtoupper(substr($wh['code'], -1)) }}</div>
+                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[#00fff2] text-black font-bold text-sm shadow-sm">{{ strtoupper(substr($wh['code'], -1)) }}</div>
                             <div>
-                                <div class="text-sm font-bold text-slate-900">{{ $wh['name'] }}</div>
-                                <div class="text-[11px] text-slate-500">Code: {{ $wh['code'] }}</div>
+                                <div class="text-sm font-bold text-white tracking-wide">{{ $wh['name'] }}</div>
+                                <div class="text-[11px] text-slate-300">Code: {{ $wh['code'] }}</div>
                             </div>
                         </div>
-                        <select class="warehouse-action-select text-xs text-slate-700 px-3 py-2 border border-slate-300 rounded-[12px] bg-white hover:bg-slate-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent" data-id="{{ $wh['id'] }}">
-                            <option value="">Actions</option>
-                            <option value="archive-warehouse">Archive Warehouse</option>
-                        </select>
+                        <div class="relative inline-block">
+                            <select class="warehouse-action-select hidden" data-id="{{ $wh['id'] }}">
+                                <option value="">Actions</option>
+                                <option value="archive-warehouse">Archive Warehouse</option>
+                            </select>
+                            <button type="button" onclick="toggleDropdown('wh-actions-menu-{{ $wh['id'] }}', event)" class="px-3.5 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-700 bg-slate-800 text-white hover:bg-slate-700 cursor-pointer focus:outline-none transition shadow-sm flex items-center gap-2">
+                                <span>Actions</span>
+                                <svg class="w-3.5 h-3.5 text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div id="wh-actions-menu-{{ $wh['id'] }}" class="hidden absolute right-0 top-full z-50 mt-1 w-44 rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
+                                <button type="button" onclick="triggerWarehouseAction('{{ $wh['id'] }}', 'archive-warehouse'); toggleDropdown('wh-actions-menu-{{ $wh['id'] }}', event);" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-rose-700 hover:bg-rose-50 transition cursor-pointer flex items-center justify-center gap-2">
+                                    <svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                                    Archive Warehouse
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mt-3">
+                    <div class="p-4">
                         <div class="map-container border border-slate-200 rounded-[14px] p-3 bg-slate-50">
                             <div class="warehouse-shelves grid gap-4" data-id="{{ $wh['id'] }}"></div>
-                            <div class="pagination mt-3 flex items-center justify-between text-xs text-slate-600">
-                                <button type="button" class="prev-page px-3 py-1.5 border border-slate-300 rounded-[10px] bg-white text-xs font-semibold hover:bg-slate-50 transition" data-id="{{ $wh['id'] }}">Previous</button>
-                                <div class="page-info text-xs text-slate-500" data-id="{{ $wh['id'] }}">Page 1 of 1</div>
-                                <button type="button" class="next-page px-3 py-1.5 border border-slate-300 rounded-[10px] bg-white text-xs font-semibold hover:bg-slate-50 transition" data-id="{{ $wh['id'] }}">Next</button>
+                            <div class="pagination mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-slate-600 border-t border-slate-200/80 pt-3">
+                                <div class="showing-info text-slate-500 font-medium text-xs" data-id="{{ $wh['id'] }}">Showing shelves</div>
+                                <div class="flex items-center gap-1">
+                                    <button type="button" class="prev-page rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" data-id="{{ $wh['id'] }}">← Prev</button>
+                                    <div class="page-numbers flex items-center gap-1" data-id="{{ $wh['id'] }}"></div>
+                                    <button type="button" class="next-page rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" data-id="{{ $wh['id'] }}">Next →</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -299,79 +362,342 @@
             csrfToken: '{{ csrf_token() }}'
         };
 
+        function toggleModalWarehouseDropdown(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('modalWarehouseDropdownMenu');
+            if (menu) menu.classList.toggle('hidden');
+        }
+
+        function selectModalWarehouseOption(val, labelText) {
+            const selectEl = document.getElementById('modal-warehouse-select');
+            const labelSpan = document.getElementById('modalWarehouseSelectLabel');
+            const menu = document.getElementById('modalWarehouseDropdownMenu');
+            if (selectEl) {
+                selectEl.value = val;
+                selectEl.dispatchEvent(new Event('change'));
+            }
+            if (labelSpan) labelSpan.textContent = labelText;
+            if (menu) menu.classList.add('hidden');
+        }
+
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('modalWarehouseDropdownMenu');
+            const wrapper = document.getElementById('modalWarehouseDropdownWrapper');
+            if (menu && wrapper && !wrapper.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        function toggleDropdown(menuId, event) {
+            if (event) event.stopPropagation();
+            const targetMenu = document.getElementById(menuId);
+            document.querySelectorAll('[id$="-menu"], .shelf-action-menu').forEach(menu => {
+                if (menu !== targetMenu) menu.classList.add('hidden');
+            });
+            if (targetMenu) targetMenu.classList.toggle('hidden');
+        }
+
+        function selectDropdownOption(selectId, labelId, menuId, val, labelText) {
+            const selectEl = document.getElementById(selectId);
+            const labelSpan = document.getElementById(labelId);
+            const menu = document.getElementById(menuId);
+            if (selectEl) {
+                selectEl.value = val;
+                selectEl.dispatchEvent(new Event('change'));
+            }
+            if (labelSpan) labelSpan.textContent = labelText;
+            if (menu) menu.classList.add('hidden');
+        }
+
+        function triggerWarehouseAction(warehouseId, actionVal) {
+            const selectEl = document.querySelector(`.warehouse-action-select[data-id="${warehouseId}"]`);
+            if (selectEl) {
+                selectEl.value = actionVal;
+                selectEl.dispatchEvent(new Event('change'));
+            }
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.relative')) {
+                document.querySelectorAll('[id$="-menu"], .shelf-action-menu').forEach(menu => {
+                    menu.classList.add('hidden');
+                });
+            }
+        });
+
+        let currentArchivedPage = 1;
+        const archivedItemsPerPage = 5;
+
+        function openArchivedShelvesModal() {
+            const modal = document.getElementById('archived-backdrop');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                renderArchivedShelvesList();
+            }
+        }
+
+        function closeArchivedShelvesModal() {
+            const modal = document.getElementById('archived-backdrop');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function renderArchivedShelvesList() {
+            const listEl = document.getElementById('archived-list');
+            const pageInfo = document.getElementById('archived-page-info');
+            const prevBtn = document.getElementById('archived-prev');
+            const nextBtn = document.getElementById('archived-next');
+            if (!listEl) return;
+
+            const warehouses = window.WarehouseData?.warehouses || [];
+            let allArchivedShelves = [];
+
+            warehouses.forEach(wh => {
+                if (Array.isArray(wh.archivedShelves)) {
+                    wh.archivedShelves.forEach(shelf => {
+                        allArchivedShelves.push({ ...shelf, warehouseName: wh.name, warehouseId: wh.id });
+                    });
+                }
+                if (Array.isArray(wh.locations)) {
+                    wh.locations.filter(loc => loc && loc.archived).forEach(shelf => {
+                        allArchivedShelves.push({ ...shelf, warehouseName: wh.name, warehouseId: wh.id });
+                    });
+                }
+            });
+
+            if (allArchivedShelves.length === 0) {
+                listEl.innerHTML = `
+                    <div class="text-center py-8 text-slate-500 text-sm">
+                        <svg class="w-10 h-10 mx-auto text-slate-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                        </svg>
+                        No archived shelves found.
+                    </div>
+                `;
+                if (pageInfo) pageInfo.textContent = 'Page 1 of 1';
+                if (prevBtn) prevBtn.disabled = true;
+                if (nextBtn) nextBtn.disabled = true;
+                return;
+            }
+
+            const totalPages = Math.ceil(allArchivedShelves.length / archivedItemsPerPage);
+            if (currentArchivedPage > totalPages) currentArchivedPage = totalPages;
+            if (currentArchivedPage < 1) currentArchivedPage = 1;
+
+            const startIdx = (currentArchivedPage - 1) * archivedItemsPerPage;
+            const pageItems = allArchivedShelves.slice(startIdx, startIdx + archivedItemsPerPage);
+
+            listEl.innerHTML = pageItems.map(item => `
+                <div class="flex items-center justify-between p-3.5 bg-white rounded-[14px] border border-slate-200 shadow-sm">
+                    <div>
+                        <p class="text-sm font-semibold text-slate-900">${item.name || 'Unnamed Shelf'}</p>
+                        <p class="text-xs text-slate-500 mt-0.5">${item.warehouseName} • ${item.products ? item.products.length : 0} items</p>
+                    </div>
+                    <button type="button" onclick="restoreArchivedShelf('${item.slot_index}', '${item.warehouseId}')" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#00fff2] px-3 py-1.5 text-xs font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">
+                        Restore
+                    </button>
+                </div>
+            `).join('');
+
+            if (pageInfo) pageInfo.textContent = `Page ${currentArchivedPage} of ${totalPages}`;
+            if (prevBtn) prevBtn.disabled = currentArchivedPage <= 1;
+            if (nextBtn) nextBtn.disabled = currentArchivedPage >= totalPages;
+        }
+
+        function openAddShelfModal() {
+            if (window.openShelfModalGlobal) {
+                window.openShelfModalGlobal();
+            } else {
+                const modal = document.getElementById('modal-backdrop');
+                if (modal) {
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                }
+            }
+        }
+
+        function closeShelfModal() {
+            const modal = document.getElementById('modal-backdrop');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function openAddWarehouseModal() {
+            const modal = document.getElementById('add-warehouse-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function closeAddWarehouseModal() {
+            const modal = document.getElementById('add-warehouse-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                const form = document.getElementById('add-warehouse-form');
+                if (form) form.reset();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const addWarehouseBtn = document.getElementById('add-warehouse-button');
+            if (addWarehouseBtn) {
+                addWarehouseBtn.addEventListener('click', openAddWarehouseModal);
+            }
+            const cancelWarehouseBtn = document.getElementById('cancel-add-warehouse');
+            if (cancelWarehouseBtn) {
+                cancelWarehouseBtn.addEventListener('click', closeAddWarehouseModal);
+            }
+            const addWarehouseForm = document.getElementById('add-warehouse-form');
+            if (addWarehouseForm) {
+                addWarehouseForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const nameInput = document.getElementById('warehouse-name');
+                    const name = nameInput ? nameInput.value.trim() : '';
+                    if (!name) return;
+
+                    const submitBtn = addWarehouseForm.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.textContent = 'Creating…';
+                    }
+
+                    try {
+                        const response = await fetch('{{ route("warehouse.management.add_warehouse") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({ name: name })
+                        });
+                        const data = await response.json();
+                        if (data.success || response.ok) {
+                            closeAddWarehouseModal();
+                            window.location.reload();
+                        } else {
+                            alert(data.message || 'Failed to create warehouse.');
+                            if (submitBtn) {
+                                submitBtn.disabled = false;
+                                submitBtn.textContent = 'Create Warehouse';
+                            }
+                        }
+                    } catch (err) {
+                        console.error('Error creating warehouse:', err);
+                        window.location.reload();
+                    }
+                });
+            }
+        });
     </script>
 
-    <div id="modal-backdrop" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center z-50 px-4 py-8">
-        <div class="modal-panel p-6 max-w-2xl">
-            <div class="flex items-center justify-between mb-4">
-                <h2 id="modal-title" class="text-2xl font-semibold text-slate-900">Modal Title</h2>
-                <button id="modal-close" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 transition hover:bg-slate-200">✕</button>
+    <div id="modal-backdrop" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center z-[100000002] px-4 py-6">
+        <div class="modal-panel w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)] flex flex-col">
+            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div>
+                    <h2 id="modal-title" class="text-xl font-bold text-black">Add Shelf</h2>
+                    <p class="text-sm text-slate-800 font-medium">Configure shelf location, capacity, and products before saving.</p>
+                </div>
+                <button id="modal-close" type="button" onclick="closeShelfModal()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
 
-            <form id="modal-form" class="space-y-6">
-                <input type="hidden" id="modal-warehouse-index" />
-                <input type="hidden" id="modal-slot" />
-                <input type="hidden" id="modal-mode" value="addShelf" />
+            <form id="modal-form" class="flex flex-col flex-1 overflow-hidden">
+                <div class="px-6 py-6 overflow-y-auto space-y-5 flex-1">
+                    <input type="hidden" id="modal-warehouse-index" />
+                    <input type="hidden" id="modal-slot" />
+                    <input type="hidden" id="modal-mode" value="addShelf" />
 
-                <div class="space-y-4">
                     <div class="grid grid-cols-1 gap-4 lg:grid-cols-[1.2fr_1fr]">
-                        <div class="modal-field p-4">
-                            <label class="block text-sm font-semibold text-slate-800 mb-2">Warehouse</label>
-                            <select id="modal-warehouse-select" class="block w-full rounded-md border border-slate-300 bg-white px-3 py-3 text-sm text-slate-900">
+                        <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
+                            <label class="block text-sm font-semibold text-slate-900 mb-2">Warehouse</label>
+                            <select id="modal-warehouse-select" class="hidden">
                                 @foreach($warehouses as $index => $wh)
                                     <option value="{{ $index }}">{{ $wh['name'] }}</option>
                                 @endforeach
                             </select>
+                            <div class="relative" id="modalWarehouseDropdownWrapper">
+                                <button type="button" onclick="toggleModalWarehouseDropdown(event)" class="w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-left text-sm font-medium text-slate-900 flex items-center justify-between gap-2 hover:border-slate-400 focus:outline-none focus:ring-1 focus:ring-black/35 transition shadow-sm cursor-pointer">
+                                    <span id="modalWarehouseSelectLabel">{{ $warehouses[0]['name'] ?? 'Select Warehouse' }}</span>
+                                    <svg class="w-4 h-4 text-slate-500 flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                                <div id="modalWarehouseDropdownMenu" class="hidden absolute left-0 right-0 top-full z-50 mt-1 rounded-[12px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
+                                    @foreach($warehouses as $index => $wh)
+                                        <button type="button" onclick="selectModalWarehouseOption('{{ $index }}', '{{ addslashes($wh['name']) }}')" class="w-full text-center px-3 py-2.5 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">{{ $wh['name'] }}</button>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
-                        <div class="modal-field p-4">
-                            <label class="block text-sm font-semibold text-slate-800 mb-2">Shelf Name</label>
-                            <input id="modal-shelf-name" type="text" class="block w-full px-4 py-3 text-sm text-slate-900 rounded-md border border-slate-300" placeholder="Enter shelf name" />
+                        <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
+                            <label class="block text-sm font-semibold text-slate-900 mb-2">Shelf Name</label>
+                            <input id="modal-shelf-name" type="text" class="block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm" placeholder="Enter shelf name" />
                         </div>
-                        <div class="modal-field p-4">
-                            <label class="block text-sm font-semibold text-slate-800 mb-2">Shelf Capacity</label>
+                        <div class="rounded-[28px] border border-slate-200 p-4 bg-white lg:col-span-2">
+                            <label class="block text-sm font-semibold text-slate-900 mb-2">Shelf Capacity</label>
                             <input id="modal-shelf-capacity" type="number" min="1" value="10"
-                                   class="block w-full px-4 py-3 text-sm text-slate-900 rounded-md border border-slate-300"
+                                   class="block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm"
                                    placeholder="Enter shelf capacity" />
-                            <p class="text-xs text-slate-400 mt-1">ðŸ’¡ You can increase this to allow more products per shelf. Default is 10.</p>
+                            <p class="text-xs text-slate-500 mt-2 font-medium flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-black flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C8.8 12.16 8 10.66 8 9c0-2.21 1.79-4 4-4s4 1.79 4 4c0 1.66-.8 3.16-2.15 4.1z"/>
+                                </svg>
+                                <span>You can increase this to allow more products per shelf. Default is 10.</span>
+                            </p>
                         </div>
                     </div>
 
-                    <div class="modal-field p-4">
+                    <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                             <div>
-                                <p class="text-sm font-semibold text-slate-800">Products</p>
-                                <p class="text-xs text-slate-500 mt-1">Choose existing inventory items, quantity, and price before saving.</p>
+                                <h3 class="text-base font-semibold text-slate-900">Products</h3>
+                                <p class="text-xs text-slate-500 mt-0.5">Choose existing inventory items, quantity, and price before saving.</p>
                             </div>
-                            <button type="button" id="modal-add-product-row" class="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">+ Add product</button>
+                            <button type="button" id="modal-add-product-row" onclick="if(window.addProductRowGlobal) window.addProductRowGlobal();" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer">+ Add product</button>
                         </div>
                         <div id="modal-product-rows" class="grid gap-3 max-h-[540px] overflow-y-auto"></div>
                     </div>
                 </div>
 
-                <div class="modal-actions flex flex-col gap-3 sm:flex-row sm:justify-end">
-                    <button type="button" id="modal-cancel" class="modal-footer-button secondary">Cancel</button>
-                    <button type="submit" class="modal-footer-button primary">Save shelf</button>
+                <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
+                    <button type="button" id="modal-cancel" onclick="closeShelfModal()" class="rounded-[10px] bg-black/10 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-black/20 transition cursor-pointer">Cancel</button>
+                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">Save shelf</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="archived-backdrop" class="fixed inset-0 bg-black/30 hidden items-center justify-center z-50 px-4 py-8">
-        <div class="modal-panel p-6 max-w-2xl">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold">Archived Shelves</h3>
-                <button id="archived-close" class="text-slate-600">âœ•</button>
-            </div>
-            <div id="archived-list" class="space-y-2 max-h-64 overflow-y-auto border rounded-md p-3 bg-surface"></div>
-
-            <div class="archived-pagination mt-4 flex items-center justify-center gap-3">
-                <button id="archived-prev" class="px-3 py-1 rounded-md border text-sm">Previous</button>
-                <div id="archived-page-info" class="text-sm text-slate-600">Page 1 of 1</div>
-                <button id="archived-next" class="px-3 py-1 rounded-md border text-sm">Next</button>
+    <div id="archived-backdrop" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center z-[100000002] px-4 py-6">
+        <div class="modal-panel w-full max-w-2xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)] flex flex-col">
+            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div>
+                    <h2 class="text-xl font-bold text-black">Archived Shelves</h2>
+                    <p class="text-sm text-slate-800 font-medium">View and restore archived shelf locations.</p>
+                </div>
+                <button id="archived-close" type="button" onclick="closeArchivedShelvesModal()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
 
-            <div class="mt-4 text-right">
-                <button id="archived-done" class="px-4 py-2 rounded-md bg-slate-100">Close</button>
+            <div class="p-6 space-y-5 flex-1 overflow-y-auto">
+                <div id="archived-list" class="space-y-2 max-h-64 overflow-y-auto rounded-[20px] border border-slate-200 p-4 bg-slate-50"></div>
+
+                <div class="archived-pagination flex items-center justify-center gap-3 pt-2">
+                    <button id="archived-prev" type="button" onclick="if(currentArchivedPage>1){currentArchivedPage--;renderArchivedShelvesList();}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer disabled:opacity-50">Previous</button>
+                    <div id="archived-page-info" class="text-xs font-semibold text-slate-600">Page 1 of 1</div>
+                    <button id="archived-next" type="button" onclick="currentArchivedPage++;renderArchivedShelvesList();" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer disabled:opacity-50">Next</button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end px-6 py-4 border-t border-slate-200 bg-slate-50">
+                <button id="archived-done" type="button" onclick="closeArchivedShelvesModal()" class="rounded-[10px] bg-black/10 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-black/20 transition cursor-pointer">Close</button>
             </div>
         </div>
     </div>
@@ -578,66 +904,87 @@
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
     <!-- Add Warehouse Modal -->
-    <div id="add-warehouse-modal" class="fixed inset-0 bg-black/50 z-[100000002] hidden flex items-center justify-center">
-        <div class="modal-panel p-8 max-w-md">
-            <h2 class="text-2xl font-bold text-slate-900 mb-6">Add New Warehouse</h2>
-            <form id="add-warehouse-form" class="space-y-4">
-                <div class="modal-field">
-                    <label class="block text-sm font-medium mb-2">Warehouse Name</label>
-                    <input type="text" id="warehouse-name" name="name" required class="w-full px-4 py-3" placeholder="Enter warehouse name">
+    <div id="add-warehouse-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100000002] hidden items-center justify-center px-4 py-6">
+        <div class="modal-panel w-full max-w-md overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
+            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div>
+                    <h2 class="text-xl font-bold text-black">Add New Warehouse</h2>
+                    <p class="text-sm text-slate-800 font-medium">Create a new storage location facility.</p>
                 </div>
-                <div class="modal-actions flex justify-end gap-3 mt-6">
-                    <button type="button" id="cancel-add-warehouse" class="modal-footer-button secondary">Cancel</button>
-                    <button type="submit" class="modal-footer-button primary">Create Warehouse</button>
+                <button type="button" onclick="document.getElementById('add-warehouse-modal').classList.add('hidden')" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form id="add-warehouse-form" class="px-6 py-6 space-y-5">
+                <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
+                    <label class="block text-sm font-semibold text-slate-900 mb-2">Warehouse Name</label>
+                    <input type="text" id="warehouse-name" name="name" required class="block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm" placeholder="Enter warehouse name">
+                </div>
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+                    <button type="button" id="cancel-add-warehouse" class="rounded-[10px] bg-black/10 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-black/20 transition cursor-pointer">Cancel</button>
+                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">Create Warehouse</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Transfer Shelf Modal -->
-    <div id="transfer-shelf-modal" class="fixed inset-0 bg-black/50 z-[100000002] hidden flex items-center justify-center">
-        <div class="modal-panel p-8 max-w-md">
-            <h2 class="text-2xl font-bold text-slate-900 mb-6">Transfer Shelf</h2>
-            <form id="transfer-shelf-form" class="space-y-4">
+    <div id="transfer-shelf-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100000002] hidden items-center justify-center px-4 py-6">
+        <div class="modal-panel w-full max-w-md overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
+            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div>
+                    <h2 class="text-xl font-bold text-black">Transfer Shelf</h2>
+                    <p class="text-sm text-slate-800 font-medium">Relocate shelf to another warehouse.</p>
+                </div>
+                <button type="button" onclick="document.getElementById('transfer-shelf-modal').classList.add('hidden')" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form id="transfer-shelf-form" class="px-6 py-6 space-y-5">
                 <input type="hidden" id="transfer-source-warehouse-id">
                 <input type="hidden" id="transfer-slot-index">
-                <div class="modal-field">
-                    <label class="block text-sm font-medium mb-2">Current Shelf</label>
-                    <input type="text" id="transfer-current-shelf" class="w-full px-4 py-3" readonly>
+                <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
+                    <label class="block text-sm font-semibold text-slate-900 mb-2">Current Shelf</label>
+                    <input type="text" id="transfer-current-shelf" class="block w-full rounded-[12px] border border-slate-300 bg-slate-100 px-4 py-3 text-sm text-slate-900 focus:outline-none" readonly>
                 </div>
-                <div class="modal-field">
-                    <label class="block text-sm font-medium mb-2">Destination Warehouse</label>
-                    <select id="transfer-destination-warehouse" class="w-full px-4 py-3" required>
+                <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
+                    <label class="block text-sm font-semibold text-slate-900 mb-2">Destination Warehouse</label>
+                    <select id="transfer-destination-warehouse" class="block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm" required>
                         <option value="">Select destination warehouse</option>
                     </select>
                 </div>
-                <div class="modal-actions flex justify-end gap-3 mt-6">
-                    <button type="button" id="cancel-transfer-shelf" class="modal-footer-button secondary">Cancel</button>
-                    <button type="submit" class="modal-footer-button primary">Transfer Shelf</button>
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+                    <button type="button" id="cancel-transfer-shelf" class="rounded-[10px] bg-black/10 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-black/20 transition cursor-pointer">Cancel</button>
+                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">Transfer Shelf</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Assign Stock Arrival Modal -->
-    <div id="assign-arrival-modal" class="fixed inset-0 bg-black/50 z-[100000003] hidden items-center justify-center">
-        <div class="modal-panel p-8 max-w-md w-full">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-bold text-slate-900">Assign New Stock to Warehouse</h2>
-                <button type="button" id="close-assign-arrival" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200">âœ•</button>
+    <div id="assign-arrival-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100000003] hidden items-center justify-center px-4 py-6">
+        <div class="modal-panel w-full max-w-md overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
+            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div>
+                    <h2 class="text-xl font-bold text-black">Assign Stock Arrival</h2>
+                    <p class="text-sm text-slate-800 font-medium">Assign arrived inventory to destination warehouse.</p>
+                </div>
+                <button type="button" id="close-assign-arrival" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
 
-            <div id="assign-arrival-info" class="mb-5 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm">
-                <p class="font-semibold text-amber-900" id="assign-arrival-product-name">â€”</p>
-                <p class="text-amber-700 mt-0.5">Qty: <span id="assign-arrival-qty" class="font-semibold">â€”</span></p>
-            </div>
-
-            <form id="assign-arrival-form" class="space-y-4">
+            <form id="assign-arrival-form" class="px-6 py-6 space-y-5">
                 <input type="hidden" id="assign-arrival-id">
 
-                <div class="modal-field p-4">
-                    <label class="block text-sm font-semibold text-slate-800 mb-2">Destination Warehouse <span class="text-red-500">*</span></label>
-                    <select id="assign-arrival-warehouse" class="block w-full rounded-md border border-slate-300 bg-white px-3 py-3 text-sm text-slate-900" required>
+                <div id="assign-arrival-info" class="rounded-[20px] bg-amber-50 border border-amber-200 p-4 text-sm">
+                    <p class="font-bold text-amber-900" id="assign-arrival-product-name">—</p>
+                    <p class="text-amber-700 mt-1 font-medium">Qty: <span id="assign-arrival-qty" class="font-bold">—</span></p>
+                </div>
+
+                <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
+                    <label class="block text-sm font-semibold text-slate-900 mb-2">Destination Warehouse <span class="text-red-500">*</span></label>
+                    <select id="assign-arrival-warehouse" class="block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm" required>
                         <option value="">Select warehouse</option>
                         @foreach($warehouses as $wh)
                             <option value="{{ $wh['id'] }}">{{ $wh['name'] }}</option>
@@ -645,19 +992,19 @@
                     </select>
                 </div>
 
-                <div class="modal-field p-4">
-                    <label class="block text-sm font-semibold text-slate-800 mb-2">Date Assigned</label>
-                    <input type="date" id="assign-arrival-date" class="block w-full rounded-md border border-slate-300 bg-white px-3 py-3 text-sm text-slate-900">
+                <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
+                    <label class="block text-sm font-semibold text-slate-900 mb-2">Date Assigned</label>
+                    <input type="date" id="assign-arrival-date" class="block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm">
                 </div>
 
-                <div class="modal-field p-4">
-                    <label class="block text-sm font-semibold text-slate-800 mb-2">Note <span class="text-slate-400 font-normal">(optional)</span></label>
-                    <textarea id="assign-arrival-note" rows="3" class="block w-full rounded-md border border-slate-300 bg-white px-3 py-3 text-sm text-slate-900" placeholder="e.g. Placed in Shelf A-2 area..."></textarea>
+                <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
+                    <label class="block text-sm font-semibold text-slate-900 mb-2">Note <span class="text-slate-400 font-normal">(optional)</span></label>
+                    <textarea id="assign-arrival-note" rows="3" class="block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm" placeholder="e.g. Placed in Shelf A-2 area..."></textarea>
                 </div>
 
-                <div class="flex gap-3 pt-4 border-t border-slate-200">
-                    <button type="button" id="cancel-assign-arrival" class="modal-footer-button secondary flex-1">Cancel</button>
-                    <button type="submit" class="modal-footer-button primary flex-1">Confirm Assignment</button>
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+                    <button type="button" id="cancel-assign-arrival" class="rounded-[10px] bg-black/10 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-black/20 transition cursor-pointer flex-1">Cancel</button>
+                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer flex-1">Confirm Assignment</button>
                 </div>
             </form>
         </div>

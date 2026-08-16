@@ -140,7 +140,7 @@
         </div>
 
         <!-- Unified Filter Toolbar -->
-        <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm flex flex-col space-y-2 relative z-[30]">
+        <div class="rounded-[10px] border border-slate-200 bg-white p-3 shadow-sm flex flex-col space-y-2 relative z-[30]">
             <!-- Primary Row -->
             <div class="flex flex-col lg:flex-row gap-2 relative z-[20]">
                 <!-- Search -->
@@ -316,12 +316,12 @@
         </div>
 
         <!-- Products Table -->
-        <div class="bg-white border border-slate-200 rounded-[20px] shadow-sm overflow-hidden w-full max-w-full">
-            <div class="overflow-x-auto table-responsive w-full">
+        <div class="bg-white border border-slate-200 rounded-[10px] shadow-sm overflow-hidden w-full max-w-full">
+            <div class="overflow-x-auto table-responsive w-full rounded-[10px]">
                 <table class="w-full text-sm text-left whitespace-nowrap min-w-max">
-                    <thead class="bg-[#0f172a] border-b border-slate-200 sticky-header text-xs uppercase tracking-wider">
+                    <thead class="bg-[#0f172a] border-b border-slate-200 sticky-header text-xs uppercase tracking-wider rounded-t-[10px]">
                         <tr>
-                            <th class="px-4 py-3 font-semibold sticky-first-col bg-[#0f172a] w-10 text-white">
+                            <th class="px-4 py-3 font-semibold sticky-first-col bg-[#0f172a] w-10 text-white rounded-tl-[10px]">
                                 <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2] cursor-pointer">
                             </th>
                             <th class="px-4 py-3 font-semibold text-white">Product</th>
@@ -330,7 +330,7 @@
                             <th class="px-4 py-3 font-semibold text-white">Stock</th>
                             <th class="px-4 py-3 font-semibold text-white">Price</th>
                             <th class="px-4 py-3 font-semibold text-center text-white">Status</th>
-                            <th class="px-4 py-3 font-semibold text-center text-white">Actions</th>
+                            <th class="px-4 py-3 font-semibold text-center text-white rounded-tr-[10px]">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 bg-white" id="productsTableBody">
@@ -350,7 +350,7 @@
     </div>
 
     <!-- Add Stock Modal -->
-    <div id="addStockModal" class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 py-4">
+    <div id="addStockModal" class="fixed inset-0 z-[100000] hidden flex items-center justify-center px-4 py-4">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" id="closeAddStockModalBackdrop"></div>
         <div class="relative w-full max-w-2xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
@@ -423,7 +423,7 @@
 </div>
 
     <!-- Edit Product Modal -->
-    <div id="editProductModal" class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 py-4">
+    <div id="editProductModal" class="fixed inset-0 z-[100000] hidden flex items-center justify-center px-4 py-4">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('editProductModal').classList.add('hidden')"></div>
         <div class="relative w-full max-w-3xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[95vh] overflow-y-auto z-10">
             <!-- Header -->
@@ -692,7 +692,7 @@
     </div>
 
     <!-- View Details Modal -->
-    <div id="viewDetailsModal" class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 py-4">
+    <div id="viewDetailsModal" class="fixed inset-0 z-[100000] hidden flex items-center justify-center px-4 py-4">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('viewDetailsModal').classList.add('hidden')"></div>
         <div class="relative w-full max-w-2xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto z-10">
             <!-- Header -->

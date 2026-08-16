@@ -105,7 +105,7 @@
         </div>
 
         <!-- Filters & Search -->
-        <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
+        <div class="rounded-[10px] border border-slate-200 bg-white p-3 shadow-sm">
             <div class="grid grid-cols-1 md:grid-cols-5 gap-2">
                 <div class="md:col-span-2">
                     <input id="searchInput" type="search" placeholder="Search by product name, SKU, brand, or category..." class="w-full px-3 py-[11px] rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm" />
@@ -149,12 +149,12 @@
             </div>
         </div>
         <!-- Inventory Table -->
-        <div class="overflow-hidden rounded-[20px] border border-slate-200 bg-white shadow-[0_14px_40px_-24px_rgba(0,0,0,0.32)]">
-            <div class="overflow-x-auto">
+        <div class="overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-[0_14px_40px_-24px_rgba(0,0,0,0.32)]">
+            <div class="overflow-x-auto rounded-[10px]">
                 <table class="w-full divide-y divide-slate-200 text-[11px]">
-                    <thead class="border-b border-slate-200 bg-[#0f172a]">
+                    <thead class="border-b border-slate-200 bg-[#0f172a] rounded-t-[10px]">
                         <tr>
-                            <th class="px-2 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white w-6">
+                            <th class="px-2 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white w-6 rounded-tl-[10px]">
                                 <input type="checkbox" id="selectAllCheckbox" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2] cursor-pointer" />
                             </th>
                             <th class="px-2 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Motorcycle Compatibility</th>
@@ -168,7 +168,7 @@
                             <th class="px-2 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Supplier</th>
                             <th class="px-2 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Last Restock</th>
                             <th class="px-2 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Expiry</th>
-                            <th class="px-2 py-2.5 text-center text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Actions</th>
+                            <th class="px-2 py-2.5 text-center text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap rounded-tr-[10px]">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 text-[11px]">
@@ -241,8 +241,8 @@
             </div>
         </div>
 
-        <div class="mt-4 rounded-[20px] border border-slate-200 bg-white shadow-sm">
-            <div class="flex items-center justify-between border-b border-slate-200 bg-[#0f172a] rounded-t-[20px] px-4 py-4 text-white">
+        <div class="mt-4 rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div class="flex items-center justify-between border-b border-slate-200 bg-[#0f172a] rounded-t-[15px] px-4 py-4 text-white">
                 <div>
                     <h2 class="text-sm font-semibold text-white">Recent Inventory Movements</h2>
                     <p class="mt-1 text-xs text-slate-200">Latest stock changes, restocks, and price updates.</p>
@@ -422,6 +422,9 @@
             const dropdown = document.getElementById(id);
             if (!dropdown) return;
             
+            // Close all custom calendar cards
+            document.querySelectorAll('.custom-calendar-card').forEach(card => card.classList.add('hidden'));
+
             // Close other dropdowns
             document.querySelectorAll('.dropdown-menu').forEach(menu => {
                 if (menu.id !== id) {
@@ -703,6 +706,15 @@
 
             input.addEventListener('click', (e) => {
                 e.stopPropagation();
+                // Close all dropdown menus
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.classList.add('hidden');
+                    const btnId = menu.id.replace('Dropdown', 'Button');
+                    const btn = document.getElementById(btnId);
+                    if (btn) {
+                        btn.classList.remove('ring-1', 'ring-black/35', 'border-transparent');
+                    }
+                });
                 document.querySelectorAll('.custom-calendar-card').forEach(c => {
                     if (c !== card) c.classList.add('hidden');
                 });

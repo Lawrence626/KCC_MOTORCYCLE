@@ -246,7 +246,7 @@
         @endif
 
         @if(auth()->user() && auth()->user()->role === 'admin')
-        <a href="{{ route('offline.reconciliation') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-2.5 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('offline.reconciliation'), 'text-slate-300 border-transparent' => !request()->routeIs('offline.reconciliation')])>
+        <a href="{{ route('offline.reconciliation') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-2.5 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('offline.*') || request()->is('offline*'), 'text-slate-300 border-transparent' => !(request()->routeIs('offline.*') || request()->is('offline*'))])>
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 11a1 1 0 100-2 1 1 0 000 2zm0 0a4 4 0 100 8 4 4 0 000-8zm0 0V3m0 0L9 6m3-3l3 3" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.071 4.929a10 10 0 00-14.142 0M16.243 7.757a6 6 0 00-8.486 0" />

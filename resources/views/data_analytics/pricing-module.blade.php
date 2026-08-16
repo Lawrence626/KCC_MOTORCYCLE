@@ -1,75 +1,80 @@
 <x-layouts.app :title="__('Pricing Module')">
     <div class="space-y-4">
         <!-- Header -->
-        <div class="rounded-[22px] border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
-            <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-900">Pricing Module</h1>
-                    <p class="text-xs text-slate-500 mt-1">Analyze pricing trends, monitor stock value, and track recent price breaks.</p>
-                </div>
-                <a href="{{ route('analytics.pricing.export') }}" class="inline-flex items-center gap-1.5 justify-center rounded-[12px] border border-[#00fff2]/40 bg-[#00fff2] px-4 py-2 text-xs font-semibold text-black shadow-sm hover:bg-[#00e6da] transition">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div class="pl-3 lg:pl-2">
+                <h1 class="text-3xl font-bold text-slate-900">Pricing Module</h1>
+                <p class="text-xs text-slate-500 mt-1">Analyze pricing trends, monitor stock value, and track recent price breaks.</p>
+            </div>
+            <div class="flex flex-col gap-2 sm:flex-row pr-4">
+                <a href="{{ route('analytics.pricing.export') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
+                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                     </svg>
-                    Export Price Report
+                    <span>Export Price Report</span>
                 </a>
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
-                <div class="flex items-center justify-between gap-2">
-                    <div>
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Average unit price</p>
-                        <p class="text-xl font-semibold text-slate-900">₱{{ number_format($averageUnitPrice, 2) }}</p>
-                        <p class="text-xs text-[#105f68] mt-0.5">Average current price for active inventory items.</p>
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Average Unit Price</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">₱{{ number_format($averageUnitPrice, 2) }}</p>
+                            <p class="text-gray-500 text-xs mt-1 font-medium">Average current price for active inventory items.</p>
+                        </div>
                     </div>
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 1v22" />
-                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
                         </svg>
                     </div>
                 </div>
             </div>
-            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
-                <div class="flex items-center justify-between gap-2">
-                    <div class="overflow-hidden">
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Most expensive SKU</p>
-                        <p class="text-xl font-semibold text-slate-900 truncate">{{ $mostExpensive?->product_name ?: ($mostExpensive?->name ?? '—') }}</p>
-                        <p class="text-xs text-[#105f68] mt-0.5 flex items-center gap-1.5">
-                            <span>₱{{ number_format($mostExpensive?->unit_price ?? 0, 2) }}</span>
-                            @if($mostExpensive?->sku)
-                                <span class="text-[10px]">&bull;</span>
-                                <span class="font-mono text-[11px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">{{ $mostExpensive->sku }}</span>
-                            @endif
-                        </p>
+
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1 overflow-hidden">
+                        <p class="text-black text-xs font-semibold">Most Expensive SKU</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black truncate">{{ $mostExpensive?->product_name ?: ($mostExpensive?->name ?? '—') }}</p>
+                            <p class="text-gray-500 text-xs mt-1 font-medium flex items-center gap-1.5">
+                                <span>₱{{ number_format($mostExpensive?->unit_price ?? 0, 2) }}</span>
+                                @if($mostExpensive?->sku)
+                                    <span class="text-[10px]">&bull;</span>
+                                    <span class="font-mono text-[11px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">{{ $mostExpensive->sku }}</span>
+                                @endif
+                            </p>
+                        </div>
                     </div>
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-                            <polyline points="17 6 23 6 23 12" />
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
                         </svg>
                     </div>
                 </div>
             </div>
-            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
-                <div class="flex items-center justify-between gap-2">
-                    <div class="overflow-hidden">
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Cheapest SKU</p>
-                        <p class="text-xl font-semibold text-slate-900 truncate">{{ $cheapest?->product_name ?: ($cheapest?->name ?? '—') }}</p>
-                        <p class="text-xs text-[#105f68] mt-0.5 flex items-center gap-1.5">
-                            <span>₱{{ number_format($cheapest?->unit_price ?? 0, 2) }}</span>
-                            @if($cheapest?->sku)
-                                <span class="text-[10px]">&bull;</span>
-                                <span class="font-mono text-[11px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">{{ $cheapest->sku }}</span>
-                            @endif
-                        </p>
+
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1 overflow-hidden">
+                        <p class="text-black text-xs font-semibold">Cheapest SKU</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black truncate">{{ $cheapest?->product_name ?: ($cheapest?->name ?? '—') }}</p>
+                            <p class="text-gray-500 text-xs mt-1 font-medium flex items-center gap-1.5">
+                                <span>₱{{ number_format($cheapest?->unit_price ?? 0, 2) }}</span>
+                                @if($cheapest?->sku)
+                                    <span class="text-[10px]">&bull;</span>
+                                    <span class="font-mono text-[11px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">{{ $cheapest->sku }}</span>
+                                @endif
+                            </p>
+                        </div>
                     </div>
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
-                            <polyline points="17 18 23 18 23 12" />
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <path d="M16 18l2.29-2.29-4.88-4.88-4 4L2 7.41 3.41 6l6 6 4-4 6.3 6.29L22 12v6z"/>
                         </svg>
                     </div>
                 </div>
@@ -105,7 +110,7 @@
         @endforeach
 
 
-        <div id="supplier-cost-container" class="rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm overflow-hidden">
+        <div id="supplier-cost-container" class="rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm">
             <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                 <div>
                     <h2 class="text-base font-semibold text-slate-900">Supplier Cost Analysis</h2>
@@ -125,33 +130,37 @@
                             id="supplier-search-input"
                             value="{{ request('search') }}"
                             placeholder="Search product…"
-                            class="pl-9 pr-4 py-2 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition w-52"
+                            class="pl-9 pr-4 py-[11px] text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm w-52"
                             autocomplete="off"
                         />
                     </div>
                     {{-- Cost Change Filter --}}
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path d="M3 6h18M7 12h10M11 18h2"/>
-                            </svg>
-                        </span>
-                        <select
-                            name="cost_change"
-                            id="cost-change-filter"
-                            onchange="supplierFilterSubmit()"
-                            class="pl-9 pr-8 py-2 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition appearance-none cursor-pointer"
-                        >
-                            <option value=""     {{ request('cost_change') === ''     ? 'selected' : '' }}>All</option>
-                            <option value="none" {{ request('cost_change') === 'none' ? 'selected' : '' }}>No Change</option>
-                            <option value="up"   {{ request('cost_change') === 'up'   ? 'selected' : '' }}>Increased Cost</option>
-                            <option value="down" {{ request('cost_change') === 'down' ? 'selected' : '' }}>Decreased Cost</option>
-                        </select>
-                        <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <div class="relative z-[50]" data-dropdown-wrapper="costChangeFilter">
+                        <input type="hidden" id="cost-change-filter" name="cost_change" value="{{ request('cost_change') }}" />
+                        <button type="button" id="costChangeFilterButton" onclick="toggleDropdown('costChangeFilterDropdown')" class="px-3 py-[11px] rounded-[12px] border border-slate-300 bg-white text-left text-xs text-slate-900 flex items-center justify-between gap-2 hover:border-slate-400 focus:outline-none transition shadow-sm w-44">
+                            <span class="flex items-center gap-2 truncate">
+                                <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M3 6h18M7 12h10M11 18h2"/>
+                                </svg>
+                                <span id="costChangeFilterText" class="truncate font-medium">
+                                    @switch(request('cost_change'))
+                                        @case('none') No Change @break
+                                        @case('up') Increased Cost @break
+                                        @case('down') Decreased Cost @break
+                                        @default All
+                                    @endswitch
+                                </span>
+                            </span>
+                            <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M6 9l6 6 6-6"/>
                             </svg>
-                        </span>
+                        </button>
+                        <div id="costChangeFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 right-0 z-[60] mt-1.5 w-full rounded-[12px] border border-slate-200 bg-white shadow-2xl p-1.5 space-y-0.5">
+                            <button type="button" onclick="selectCostChangeOption('', 'All')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">All</button>
+                            <button type="button" onclick="selectCostChangeOption('none', 'No Change')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">No Change</button>
+                            <button type="button" onclick="selectCostChangeOption('up', 'Increased Cost')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">Increased Cost</button>
+                            <button type="button" onclick="selectCostChangeOption('down', 'Decreased Cost')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">Decreased Cost</button>
+                        </div>
                     </div>
                     <button
                         type="button"
@@ -165,7 +174,7 @@
                     @endif
                 </form>
             </div>
-            <div class="mt-4 overflow-x-auto rounded-[14px] border border-slate-200">
+            <div class="mt-4 overflow-x-auto rounded-[10px] border border-slate-200">
                 <table class="min-w-full text-left text-xs text-slate-700">
                     <thead class="border-b border-slate-200 bg-[#0f172a]">
                         <tr>
@@ -304,7 +313,7 @@
                     <h2 class="text-base font-semibold text-slate-900">Retail Price Update</h2>
                     <p class="text-xs text-slate-500 mt-1">Track recent unit price revisions across inventory.</p>
                 </div>
-                <div class="mt-4 overflow-x-auto rounded-[14px] border border-slate-200">
+                <div class="mt-4 overflow-x-auto rounded-[10px] border border-slate-200">
                     <table class="min-w-full text-left text-xs text-slate-700">
                         <thead class="border-b border-slate-200 bg-[#0f172a]">
                             <tr>
@@ -710,6 +719,33 @@
                     modalContainer.classList.add('scale-100', 'opacity-100');
                 }, 10);
             }
+
+            function toggleDropdown(id) {
+                const dropdown = document.getElementById(id);
+                if (!dropdown) return;
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    if (menu.id !== id) {
+                        menu.classList.add('hidden');
+                    }
+                });
+                dropdown.classList.toggle('hidden');
+            }
+
+            function selectCostChangeOption(val, text) {
+                const hiddenInput = document.getElementById('cost-change-filter');
+                const textSpan = document.getElementById('costChangeFilterText');
+                const dropdown = document.getElementById('costChangeFilterDropdown');
+                if (hiddenInput) hiddenInput.value = val;
+                if (textSpan) textSpan.textContent = text;
+                if (dropdown) dropdown.classList.add('hidden');
+                supplierFilterSubmit();
+            }
+
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('[data-dropdown-wrapper]')) {
+                    document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
+                }
+            });
 
             function closeBreakdownModal() {
                 const modal = document.getElementById('breakdown-info-modal');

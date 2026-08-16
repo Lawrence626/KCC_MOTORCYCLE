@@ -7,12 +7,21 @@
                 <p class="text-2XL text-slate-500 mt-0.5">Archived inventory items. Restore or permanently delete</p>
             </div>
             <div class="flex gap-2 items-center">
-                <a href="{{ route('pos.terminal') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200 flex-shrink-0">
-                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                    </svg>
-                    <span>BACK TO POS</span>
-                </a>
+                <div class="relative flex-shrink-0" data-dropdown-wrapper="backNavigation">
+                    <button type="button" id="backNavigationButton" onclick="toggleCustomDropdown('backNavigationDropdown', event)" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
+                        <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        <span>BACK</span>
+                        <svg class="w-3.5 h-3.5 text-slate-500 ml-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="backNavigationDropdown" class="dropdown-menu hidden absolute top-full right-0 z-[999] mt-1.5 w-48 rounded-[12px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-1">
+                        <a href="{{ route('allstocks') }}" class="block text-center px-3 py-2 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition">Back to All Stocks</a>
+                        <a href="{{ route('pos.terminal') }}" class="block text-center px-3 py-2 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition">Back to POS</a>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -61,7 +70,7 @@
         </div>
 
         <!-- Search & Filters -->
-        <div class="bg-white rounded-lg border border-slate-200 p-4 space-y-4">
+        <div class="bg-white rounded-[10px] border border-slate-200 p-4 space-y-4 shadow-sm">
             <input id="searchInput" type="search" placeholder="Search by product name, SKU, or barcode..." class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-white text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent" />
 
             <div class="flex gap-3 items-end">
@@ -89,19 +98,19 @@
         </div>
 
         <!-- Archived Table -->
-        <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden flex-1 flex flex-col">
-            <div class="overflow-x-auto">
+        <div class="bg-white rounded-[10px] border border-slate-200 shadow-sm flex-1 flex flex-col overflow-visible">
+            <div class="overflow-x-auto overflow-y-visible rounded-[10px]">
                 <table class="w-full divide-y divide-slate-200 text-xs">
-                    <thead class="bg-slate-50 border-b border-slate-200">
+                    <thead class="border-b border-slate-200 bg-[#0f172a] rounded-t-[10px]">
                         <tr>
-                            <th class="px-3 py-2 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">Product</th>
-                            <th class="px-3 py-2 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">SKU</th>
-                            <th class="px-3 py-2 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">Category</th>
-                            <th class="px-3 py-2 text-center text-xs font-semibold text-slate-700 uppercase tracking-wide">Stock</th>
-                            <th class="px-3 py-2 text-right text-xs font-semibold text-slate-700 uppercase tracking-wide">Unit Price</th>
-                            <th class="px-3 py-2 text-right text-xs font-semibold text-slate-700 uppercase tracking-wide">Total Value</th>
-                            <th class="px-3 py-2 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">Archived Date</th>
-                            <th class="px-3 py-2 text-center text-xs font-semibold text-slate-700 uppercase tracking-wide">Actions</th>
+                            <th class="px-3 py-2 text-left text-xs font-semibold text-white uppercase tracking-wide rounded-tl-[10px]">Product</th>
+                            <th class="px-3 py-2 text-left text-xs font-semibold text-white uppercase tracking-wide">SKU</th>
+                            <th class="px-3 py-2 text-left text-xs font-semibold text-white uppercase tracking-wide">Category</th>
+                            <th class="px-3 py-2 text-center text-xs font-semibold text-white uppercase tracking-wide">Stock</th>
+                            <th class="px-3 py-2 text-right text-xs font-semibold text-white uppercase tracking-wide">Unit Price</th>
+                            <th class="px-3 py-2 text-right text-xs font-semibold text-white uppercase tracking-wide">Total Value</th>
+                            <th class="px-3 py-2 text-left text-xs font-semibold text-white uppercase tracking-wide">Archived Date</th>
+                            <th class="px-3 py-2 text-center text-xs font-semibold text-white uppercase tracking-wide rounded-tr-[10px]">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="archivedTableBody" class="divide-y divide-slate-200">
@@ -113,20 +122,30 @@
             </div>
 
             <!-- Table Footer - Pagination -->
-            <div id="pagination" class="hidden px-3 py-2 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs">
+            <div id="pagination" class="hidden px-3 py-2 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs overflow-visible relative z-30 pb-2">
                 <div class="flex items-center gap-2 text-slate-600">
                     <span>Showing</span>
-                    <select id="perPage" class="px-2 py-1 rounded border border-slate-300 bg-white text-xs">
-                        <option value="10">10</option>
-                        <option value="25">25</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                    </select>
+                    <div class="relative inline-block z-50" data-dropdown-wrapper="perPage">
+                        <input type="hidden" id="perPage" value="10" />
+                        <button type="button" id="perPageButton" onclick="toggleCustomDropdown('perPageDropdown', event)" class="px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-700 flex items-center justify-between gap-1.5 hover:border-slate-400 focus:outline-none transition shadow-sm h-8 min-w-[56px]">
+                            <span id="perPageDisplay">10</span>
+                            <svg class="w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div id="perPageDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[9999] mt-1 w-full min-w-[60px] rounded-[10px] border border-slate-200 bg-white shadow-xl p-1 space-y-0.5">
+                            <button type="button" onclick="selectPerPage(10)" class="w-full text-center px-2 py-1 rounded-md text-xs font-semibold text-slate-900 bg-black/10 transition">10</button>
+                            <button type="button" onclick="selectPerPage(25)" class="w-full text-center px-2 py-1 rounded-md text-xs font-medium text-slate-700 hover:bg-slate-100 transition">25</button>
+                            <button type="button" onclick="selectPerPage(50)" class="w-full text-center px-2 py-1 rounded-md text-xs font-medium text-slate-700 hover:bg-slate-100 transition">50</button>
+                            <button type="button" onclick="selectPerPage(100)" class="w-full text-center px-2 py-1 rounded-md text-xs font-medium text-slate-700 hover:bg-slate-100 transition">100</button>
+                        </div>
+                    </div>
                     <span id="showingText">of 0 items</span>
                 </div>
-                <div class="flex gap-1">
-                    <button id="prevPage" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">← Prev</button>
-                    <button id="nextPage" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">Next →</button>
+                <div class="flex gap-1 items-center">
+                    <button id="prevPage" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition">← Prev</button>
+                    <div id="pageNumbers" class="flex items-center gap-1"></div>
+                    <button id="nextPage" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition">Next →</button>
                 </div>
             </div>
         </div>
@@ -222,7 +241,7 @@
                     <td class="px-3 py-2 text-slate-600">${archivedDate}</td>
                     <td class="px-3 py-2 text-center">
                         <div class="flex gap-1 justify-center">
-                            <button onclick="restoreProduct(${product.id})" class="p-1 text-cyan-600 hover:bg-cyan-50 rounded transition" title="Restore">
+                            <button onclick="restoreProduct(${product.id})" class="p-1 text-slate-900 hover:bg-slate-100 rounded transition" title="Restore">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                 </svg>
@@ -240,12 +259,25 @@
         }
 
         function updatePagination(pagination) {
-            totalPages = pagination.last_page;
-            currentPage = pagination.current_page;
+            totalPages = pagination.last_page || 1;
+            currentPage = pagination.current_page || 1;
             
             document.getElementById('showingText').textContent = `of ${pagination.total} items`;
             document.getElementById('prevPage').disabled = currentPage <= 1;
             document.getElementById('nextPage').disabled = currentPage >= totalPages;
+
+            const pageNumbersContainer = document.getElementById('pageNumbers');
+            if (pageNumbersContainer) {
+                let numsHtml = '';
+                for (let p = 1; p <= totalPages; p++) {
+                    if (p === currentPage) {
+                        numsHtml += `<button type="button" disabled class="rounded-[10px] bg-slate-200 border border-slate-300 px-2.5 py-1 text-xs font-bold text-slate-900">${p}</button>`;
+                    } else {
+                        numsHtml += `<button type="button" onclick="goToPage(${p})" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer">${p}</button>`;
+                    }
+                }
+                pageNumbersContainer.innerHTML = numsHtml;
+            }
             
             const paginationDiv = document.getElementById('pagination');
             if (pagination.total > 0) {
@@ -253,6 +285,11 @@
             } else {
                 paginationDiv.classList.add('hidden');
             }
+        }
+
+        function goToPage(p) {
+            currentPage = p;
+            loadArchivedProducts();
         }
 
         function updateStats(products) {
@@ -303,6 +340,44 @@
             }
         }
 
+        // Custom Dropdown Toggle (for per-page card)
+        function toggleCustomDropdown(id, event) {
+            if (event) event.stopPropagation();
+            const dropdown = document.getElementById(id);
+            if (!dropdown) return;
+            const isHidden = dropdown.classList.contains('hidden');
+
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                if (menu !== dropdown) menu.classList.add('hidden');
+            });
+
+            if (isHidden) {
+                dropdown.classList.remove('hidden');
+            } else {
+                dropdown.classList.add('hidden');
+            }
+        }
+
+        function selectPerPage(val) {
+            perPage = parseInt(val);
+            document.getElementById('perPage').value = val;
+            document.getElementById('perPageDisplay').textContent = val;
+            
+            const dropdown = document.getElementById('perPageDropdown');
+            if (dropdown) {
+                dropdown.querySelectorAll('button').forEach(btn => {
+                    if (btn.textContent.trim() === String(val)) {
+                        btn.className = 'w-full text-center px-2 py-1 rounded-md text-xs font-semibold text-slate-900 bg-black/10 transition';
+                    } else {
+                        btn.className = 'w-full text-center px-2 py-1 rounded-md text-xs font-medium text-slate-700 hover:bg-slate-100 transition';
+                    }
+                });
+                dropdown.classList.add('hidden');
+            }
+            currentPage = 1;
+            loadArchivedProducts();
+        }
+
         // Category custom dropdown
         function toggleCategoryDropdown() {
             const dd = document.getElementById('categoryDropdown');
@@ -325,12 +400,15 @@
             });
         }
 
-        // Click outside to close category dropdown
+        // Click outside to close custom dropdowns
         document.addEventListener('click', function(e) {
             const dd = document.getElementById('categoryDropdown');
             const btn = document.getElementById('categoryDropdownBtn');
             if (dd && btn && !dd.contains(e.target) && !btn.contains(e.target)) {
                 dd.classList.add('hidden');
+            }
+            if (!e.target.closest('[data-dropdown-wrapper]')) {
+                document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.add('hidden'));
             }
         });
 
@@ -344,7 +422,6 @@
         });
         document.getElementById('prevPage').addEventListener('click', () => { if (currentPage > 1) { currentPage--; loadArchivedProducts(); } });
         document.getElementById('nextPage').addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; loadArchivedProducts(); } });
-        document.getElementById('perPage').addEventListener('change', (e) => { perPage = parseInt(e.target.value); currentPage = 1; loadArchivedProducts(); });
 
         // Load on page load
         loadArchivedProducts();

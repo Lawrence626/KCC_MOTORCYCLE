@@ -27,13 +27,13 @@
     </style>
 
     <div class="space-y-6">
-        <div class="flex items-start justify-between">
+        <div class="flex items-center justify-between pl-3 lg:pl-2 pr-4">
             <div>
-                <h1 class="text-3xl font-extrabold text-slate-900">Archived Shelves</h1>
-                <p class="mt-2 text-sm text-gray-500">View and manage archived shop shelves.</p>
+                <h1 class="text-3xl font-bold text-slate-900">Archived Shelves</h1>
+                <p class="mt-1 text-sm text-slate-500 font-medium">View and manage archived shop shelves.</p>
             </div>
             <div class="flex items-center gap-3">
-                <a href="{{ route('shop.inventory') }}" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:border-emerald-500 hover:text-slate-900 transition">
+                <a href="{{ route('shop.inventory') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
@@ -57,10 +57,10 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button onclick="restoreShelf({{ $shelf->id }})" class="btn-success px-4 py-2 rounded-xl text-sm font-medium">
+                            <button onclick="restoreShelf({{ $shelf->id }})" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#00fff2] px-4 py-2 text-xs font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">
                                 Restore
                             </button>
-                            <button onclick="deleteShelf({{ $shelf->id }})" class="btn-danger px-4 py-2 rounded-xl text-sm font-medium">
+                            <button onclick="deleteShelf({{ $shelf->id }})" class="inline-flex items-center gap-1.5 rounded-[10px] bg-rose-50 border border-rose-200/80 px-4 py-2 text-xs font-bold text-rose-700 hover:bg-rose-100 transition cursor-pointer">
                                 Delete Permanently
                             </button>
                         </div>
@@ -97,7 +97,7 @@
                 </svg>
                 <h3 class="text-lg font-semibold text-slate-900 mb-2">No Archived Shelves</h3>
                 <p class="text-sm text-gray-500">You haven't archived any shelves yet.</p>
-                <a href="{{ route('shop.inventory') }}" class="inline-flex items-center gap-2 mt-4 text-emerald-600 hover:text-emerald-700 text-sm font-medium">
+                <a href="{{ route('shop.inventory') }}" class="inline-flex items-center gap-2 mt-4 text-black hover:text-slate-700 text-sm font-semibold">
                     Go to Shop Inventory
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>

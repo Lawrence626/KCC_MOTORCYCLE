@@ -57,7 +57,7 @@
         </div>
 
         <!-- Filters -->
-        <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
+        <div class="rounded-[10px] border border-slate-200 bg-white p-3 shadow-sm">
             <form action="{{ route('product-catalog.index') }}" method="GET" id="filterForm">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
                     <div>
@@ -132,25 +132,25 @@
         </div>
 
         <!-- Products Table -->
-        <div class="overflow-hidden rounded-[20px] border border-slate-200 bg-white shadow-sm">
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs">
-                    <thead class="border-b border-slate-200 bg-[#0f172a]">
+        <div class="overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-sm">
+            <div class="overflow-x-auto rounded-[10px]">
+                <table class="w-full text-sm text-left whitespace-nowrap min-w-max">
+                    <thead class="bg-[#0f172a] border-b border-slate-200 sticky-header text-xs uppercase tracking-wider rounded-t-[10px]">
                         <tr>
-                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap w-10">
+                            <th class="px-4 py-3 font-semibold text-white w-10 rounded-tl-[10px]">
                                 <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2] cursor-pointer">
                             </th>
-                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Locations</th>
-                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Product Description</th>
-                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Brand</th>
-                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">SKU</th>
-                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Size</th>
-                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Color</th>
-                            <th class="px-3 py-2.5 text-center text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Stock</th>
-                            <th class="px-3 py-2.5 text-center text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Reorder Level</th>
-                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Compatible Models</th>
-                            <th class="px-3 py-2.5 text-center text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Status</th>
-                            <th class="px-3 py-2.5 text-center text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Actions</th>
+                            <th class="px-4 py-3 font-semibold text-white">Locations</th>
+                            <th class="px-4 py-3 font-semibold text-white">Product Description</th>
+                            <th class="px-4 py-3 font-semibold text-white">Brand</th>
+                            <th class="px-4 py-3 font-semibold text-white">SKU</th>
+                            <th class="px-4 py-3 font-semibold text-white">Size</th>
+                            <th class="px-4 py-3 font-semibold text-white">Color</th>
+                            <th class="px-4 py-3 font-semibold text-center text-white">Stock</th>
+                            <th class="px-4 py-3 font-semibold text-center text-white">Reorder Level</th>
+                            <th class="px-4 py-3 font-semibold text-white">Compatible Models</th>
+                            <th class="px-4 py-3 font-semibold text-center text-white">Status</th>
+                            <th class="px-4 py-3 font-semibold text-center text-white rounded-tr-[10px]">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 text-xs">

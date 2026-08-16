@@ -268,7 +268,7 @@
             </div>
         </div>
 
-        <div class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="rounded-[10px] border border-slate-200 bg-white p-5 shadow-sm">
             <div id="userListWrapper">
             <div class="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 @php
@@ -286,12 +286,12 @@
 
                 @unless($showArchived ?? false)
                 <div class="flex flex-wrap items-center gap-2">
-                    <a href="{{ route('user.management') }}{{ $hasQ ? '?q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border border-slate-200 px-4 py-2 text-sm font-bold transition-all {{ !$hasRole ? 'bg-[#00FFF2] text-slate-900 shadow-sm' : 'bg-white text-slate-700' }}">All</a>
-                    <a href="{{ route('user.management') }}?role=admin{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border border-slate-200 px-4 py-2 text-sm font-bold transition-all {{ request('role') === 'admin' ? 'bg-[#00FFF2] text-slate-900 shadow-sm' : 'bg-white text-slate-700' }}">Administrator</a>
-                    <a href="{{ route('user.management') }}?role=cashier{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border border-slate-200 px-4 py-2 text-sm font-bold transition-all {{ request('role') === 'cashier' ? 'bg-[#00FFF2] text-slate-900 shadow-sm' : 'bg-white text-slate-700' }}">Cashier</a>
-                    <a href="{{ route('user.management') }}?role=inventory_clerk{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border border-slate-200 px-4 py-2 text-sm font-bold transition-all {{ request('role') === 'inventory_clerk' ? 'bg-[#00FFF2] text-slate-900 shadow-sm' : 'bg-white text-slate-700' }}">Inventory Clerk</a>
-                    <a href="{{ route('user.management') }}?role=warehouse_personnel{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border border-slate-200 px-4 py-2 text-sm font-bold transition-all {{ request('role') === 'warehouse_personnel' ? 'bg-[#00FFF2] text-slate-900 shadow-sm' : 'bg-white text-slate-700' }}">Warehouse</a>
-                    <a href="{{ route('user.management.archived') }}{{ $archiveQuery }}" class="rounded-[10px] border border-slate-200 px-4 py-2 text-sm font-bold transition-all bg-white text-slate-700">Archived</a>
+                    <a href="{{ route('user.management') }}{{ $hasQ ? '?q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ !$hasRole && !($showArchived ?? false) ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">All</a>
+                    <a href="{{ route('user.management') }}?role=admin{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ request('role') === 'admin' ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">Administrator</a>
+                    <a href="{{ route('user.management') }}?role=cashier{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ request('role') === 'cashier' ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">Cashier</a>
+                    <a href="{{ route('user.management') }}?role=inventory_clerk{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ request('role') === 'inventory_clerk' ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">Inventory Clerk</a>
+                    <a href="{{ route('user.management') }}?role=warehouse_personnel{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ request('role') === 'warehouse_personnel' ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">Warehouse</a>
+                    <a href="{{ route('user.management.archived') }}{{ $archiveQuery }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ ($showArchived ?? false) ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">Archived</a>
                 </div>
                 @endunless
 
@@ -317,7 +317,7 @@
                 $roles = ['admin' => 'Admin','cashier' => 'Cashier','inventory_clerk' => 'Clerk','warehouse_personnel' => 'Warehouse'];
             @endphp
 
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto rounded-[10px] border border-slate-200">
                 <table class="w-full divide-y divide-slate-200 table-auto">
                     <thead class="border-b border-slate-200 bg-[#0f172a]">
                         <tr>
