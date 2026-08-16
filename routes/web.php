@@ -117,6 +117,7 @@ Route::middleware(['auth'])->group(function () {
     // POS Transaction APIs - Admin and Cashier only
     Route::middleware('role:admin,cashier')->group(function () {
         Route::post('api/pos/transactions', [POSTransactionController::class, 'store'])->name('api.pos.transactions.store');
+        Route::post('api/pos/validate-stock', [POSTransactionController::class, 'validateStock'])->name('api.pos.validate_stock');
     });
     // POS Transaction read access - Admin, Cashier, Inventory Clerk
     Route::middleware('role:admin,cashier,inventory_clerk')->group(function () {

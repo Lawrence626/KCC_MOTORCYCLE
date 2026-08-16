@@ -79,29 +79,34 @@ class DashboardController extends Controller
 
         $productsForCat = Product::query()
             ->whereIn('id', array_merge($productIds, $todayProductIds))
-            ->where('is_archived', false)
-            ->get(['id', 'category', 'product_name', 'name']);
+            ->get(['id', 'category', 'product_name', 'name', 'sku', 'unit_price'])
+            ->keyBy('id');
             
         $productCategories = [];
-        foreach ($productsForCat as $prod) {
+        foreach ($productsForCat as $id => $prod) {
             $cat = $prod->category;
             if (!$cat || strtolower(trim($cat)) === 'uncategorized') {
                 $cat = $prod->product_name ?: ($prod->name ?? 'Uncategorized');
             }
-            $productCategories[$prod->id] = $cat;
+            $productCategories[$id] = $cat;
         }
 
         // Use TODAY's transactions for category breakdown (daily reset)
         $categoryService = new SalesCategoryService();
         $categoryBreakdown = $categoryService->getTodaysCategoryBreakdown();
 
-        $topItems = $currentTransactions->flatMap(function ($transaction) use ($productCategories) {
-            return collect($transaction->items ?? [])->map(function ($item) use ($productCategories) {
+        $topItems = $currentTransactions->flatMap(function ($transaction) use ($productCategories, $productsForCat) {
+            return collect($transaction->items ?? [])->map(function ($item) use ($productCategories, $productsForCat) {
                 $quantity = (int) ($item['quantity'] ?? $item['qty'] ?? 0);
-                $unitPrice = (float) ($item['unit_price'] ?? $item['price'] ?? 0);
                 $productId = $item['id'] ?? null;
-                $categoryValue = null;
+                $product = $productId ? $productsForCat->get($productId) : null;
 
+                $unitPrice = (float) ($item['unit_price'] ?? $item['price'] ?? 0);
+                if ($unitPrice <= 0 && $product) {
+                    $unitPrice = (float) ($product->unit_price ?? 0);
+                }
+
+                $categoryValue = null;
                 if ($productId && isset($productCategories[$productId])) {
                     $categoryValue = $productCategories[$productId];
                 }
@@ -110,9 +115,13 @@ class DashboardController extends Controller
                     $categoryValue = $item['category'];
                 }
 
+                $name = $item['name'] ?? $product?->product_name ?? $product?->name ?? 'Unknown Product';
+                $sku = $item['sku'] ?? $product?->sku ?? '';
+
                 return [
                     'product_id' => $productId,
-                    'name' => $item['name'] ?? 'Unknown Product',
+                    'name' => $name,
+                    'sku' => $sku,
                     'category' => $this->normalizeCategory($categoryValue),
                     'quantity' => $quantity,
                     'revenue' => $quantity * $unitPrice,
@@ -122,6 +131,7 @@ class DashboardController extends Controller
             return [
                 'product_id' => $items->first()['product_id'] ?? null,
                 'name' => $items->first()['name'],
+                'sku' => $items->first()['sku'] ?? '',
                 'category' => $items->first()['category'],
                 'quantity' => $items->sum('quantity'),
                 'revenue' => $items->sum('revenue'),
@@ -177,6 +187,7 @@ class DashboardController extends Controller
                     'rank' => $index + 1,
                     'product_id' => $item['product_id'] ?? null,
                     'name' => $item['name'],
+                    'sku' => $item['sku'] ?? '',
                     'category' => $item['category'],
                     'qty' => $item['quantity'],
                     'revenue' => $item['revenue'],
@@ -205,10 +216,23 @@ class DashboardController extends Controller
 
     protected function calculateProfit($transactions)
     {
-        return $transactions->sum(function ($transaction) {
-            return collect($transaction->items ?? [])->sum(function ($item) {
+        $productIds = $transactions->flatMap(function ($transaction) {
+            return collect($transaction->items ?? [])->pluck('id');
+        })->filter()->unique()->all();
+
+        $products = Product::whereIn('id', $productIds)->get(['id', 'unit_price'])->keyBy('id');
+
+        return $transactions->sum(function ($transaction) use ($products) {
+            return collect($transaction->items ?? [])->sum(function ($item) use ($products) {
+                $productId = $item['id'] ?? null;
+                $product = $productId ? $products->get($productId) : null;
+
                 $quantity = (int) ($item['quantity'] ?? $item['qty'] ?? 0);
                 $unitPrice = (float) ($item['unit_price'] ?? $item['price'] ?? 0);
+                if ($unitPrice <= 0 && $product) {
+                    $unitPrice = (float) ($product->unit_price ?? 0);
+                }
+
                 $costPrice = (float) ($item['cost_price'] ?? 0);
 
                 return max(0, ($unitPrice - $costPrice) * $quantity);

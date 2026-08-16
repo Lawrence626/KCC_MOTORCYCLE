@@ -56,24 +56,31 @@ class SalesCategoryService
             return collect($transaction->items ?? [])->pluck('id');
         })->filter()->unique()->all();
 
-        // Get product categories for lookup
-        $productCategories = Product::query()
+        // Get product details for lookup
+        $products = Product::query()
             ->whereIn('id', $productIds)
-            ->where('is_archived', false)
-            ->pluck('category', 'id')
-            ->all();
+            ->get(['id', 'category', 'product_name', 'name', 'unit_price'])
+            ->keyBy('id');
 
         // Process items and group by category
-        return $transactions->flatMap(function ($transaction) use ($productCategories) {
-            return collect($transaction->items ?? [])->map(function ($item) use ($productCategories) {
+        return $transactions->flatMap(function ($transaction) use ($products) {
+            return collect($transaction->items ?? [])->map(function ($item) use ($products) {
+                $productId = $item['id'] ?? null;
+                $product = $productId ? $products->get($productId) : null;
+
                 $quantity = (int) ($item['quantity'] ?? $item['qty'] ?? 0);
                 $unitPrice = (float) ($item['unit_price'] ?? $item['price'] ?? 0);
-                $productId = $item['id'] ?? null;
-                $categoryValue = $item['category'] ?? null;
+                if ($unitPrice <= 0 && $product) {
+                    $unitPrice = (float) ($product->unit_price ?? 0);
+                }
 
-                // Fallback to product's category if not found or is "Uncategorized"
-                if ((!$categoryValue || strcasecmp(trim($categoryValue), 'uncategorized') === 0) && $productId) {
-                    $categoryValue = $productCategories[$productId] ?? null;
+                $categoryValue = $item['category'] ?? null;
+                // Fallback to product's category/product_name/name if not found or is "Uncategorized"
+                if ((!$categoryValue || strcasecmp(trim($categoryValue), 'uncategorized') === 0) && $product) {
+                    $categoryValue = $product->category;
+                    if (!$categoryValue || strcasecmp(trim($categoryValue), 'uncategorized') === 0) {
+                        $categoryValue = $product->product_name ?: ($product->name ?? 'Uncategorized');
+                    }
                 }
 
                 $category = $this->normalizeCategory($categoryValue);
@@ -169,7 +176,7 @@ class SalesCategoryService
      *
      * @return array
      */
-    public function getStandardCategories(): array
+    public static function getStandardCategories(): array
     {
         return [
             'Exhaust',
@@ -197,61 +204,6 @@ class SalesCategoryService
             'Oils' => '#fb923c',         // orange-400
             'Batteries' => '#3b82f6',    // blue-500
             'Accessories' => '#10b981',  // emerald-500
-            'Uncategorized' => '#6b7280',// gray-500
-        ];
-    }
-
-    /**
-     * Format category breakdown for frontend (chart display).
-     *
-     * @param Carbon|null $startDate
-     * @param Carbon|null $endDate
-     * @return array
-     */
-    public function formatForChart(?Carbon $startDate = null, ?Carbon $endDate = null): array
-    {
-        $breakdown = $this->getCategoryBreakdownWithPercentages($startDate, $endDate);
-        $colors = $this->getCategoryColors();
-        $total = $breakdown->sum('amount');
-
-        $labels = [];
-        $data = [];
-        $backgroundColors = [];
-        $legend = [];
-
-        foreach ($breakdown as $category => $item) {
-            $labels[] = $category;
-            $data[] = $item['amount'];
-            $backgroundColors[] = $colors[$category] ?? '#9ca3af';
-
-            $legend[] = [
-                'label' => $category,
-                'value' => $item['amount'],
-                'quantity' => $item['quantity'],
-                'percentage' => $item['percentage'],
-                'color' => $colors[$category] ?? '#9ca3af',
-            ];
-        }
-
-        return [
-            'labels' => $labels,
-            'data' => $data,
-            'backgroundColors' => $backgroundColors,
-            'legend' => $legend,
-            'total' => $total,
-            'totalQuantity' => $breakdown->sum('quantity'),
-            'chartConfig' => [
-                'type' => 'doughnut',
-                'options' => [
-                    'responsive' => true,
-                    'maintainAspectRatio' => true,
-                    'plugins' => [
-                        'legend' => [
-                            'display' => false,
-                        ],
-                    ],
-                ],
-            ],
         ];
     }
 
@@ -261,27 +213,45 @@ class SalesCategoryService
      * @param string|null $value
      * @return string
      */
-    protected function normalizeCategory(?string $value): string
+    public static function normalizeCategory(?string $value): string
     {
-        if (empty($value)) {
-            return 'Uncategorized';
-        }
-
-        $normalized = trim($value);
-        $normalized = !empty($normalized) ? $normalized : 'Uncategorized';
-        
-        // Map actual categories to predefined ones
-        return $this->mapToPredefinedCategory($normalized);
+        return self::mapToPredefinedCategory($value);
     }
 
     /**
-     * Map actual product categories to predefined 7 categories
+     * Map actual product categories to predefined 7 categories:
+     * Exhaust, Helmets, Tires, Brakes, Oils, Batteries, Accessories
      */
-    protected function mapToPredefinedCategory(string $category): string
+    public static function mapToPredefinedCategory(?string $category): string
     {
-        $categoryLower = strtolower($category);
+        if (empty($category)) {
+            return 'Accessories';
+        }
 
-        // Mapping rules for actual categories to predefined ones
+        $categoryLower = strtolower(trim($category));
+
+        // If it's already one of the 7 predefined categories (case-insensitive)
+        $standard = [
+            'exhaust' => 'Exhaust',
+            'helmets' => 'Helmets',
+            'helmet' => 'Helmets',
+            'tires' => 'Tires',
+            'tire' => 'Tires',
+            'brakes' => 'Brakes',
+            'brake' => 'Brakes',
+            'oils' => 'Oils',
+            'oil' => 'Oils',
+            'batteries' => 'Batteries',
+            'battery' => 'Batteries',
+            'accessories' => 'Accessories',
+            'accessory' => 'Accessories',
+        ];
+
+        if (isset($standard[$categoryLower])) {
+            return $standard[$categoryLower];
+        }
+
+        // Mapping rules for actual categories and product names
         $categoryMap = [
             // Exhaust group
             'pipe' => 'Exhaust',
@@ -297,13 +267,16 @@ class SalesCategoryService
             'tire' => 'Tires',
             'tires' => 'Tires',
             'wheel' => 'Tires',
+            'wheels' => 'Tires',
             'rim' => 'Tires',
+            'rims' => 'Tires',
             'mags' => 'Tires',
 
             // Brakes group
             'brake' => 'Brakes',
             'brakes' => 'Brakes',
             'brake master' => 'Brakes',
+            'brake master pair' => 'Brakes',
             'brake shoe' => 'Brakes',
             'caliper' => 'Brakes',
             'disc' => 'Brakes',
@@ -313,24 +286,51 @@ class SalesCategoryService
             'oils' => 'Oils',
             'engine_oil' => 'Oils',
             'engine oil' => 'Oils',
+            'lubricant' => 'Oils',
+            'lubricants' => 'Oils',
 
             // Batteries group
             'battery' => 'Batteries',
             'batteries' => 'Batteries',
 
-            // Accessories group (default for most things)
+            // Accessories group
             'shock' => 'Accessories',
+            'frontshock' => 'Accessories',
+            'monoshock' => 'Accessories',
             'spring' => 'Accessories',
             'suspension' => 'Accessories',
             'seat' => 'Accessories',
+            'flatseat' => 'Accessories',
+            'indo seat' => 'Accessories',
             'mirror' => 'Accessories',
+            'side mirror' => 'Accessories',
             'lever' => 'Accessories',
             'clutch' => 'Accessories',
+            'clutch perch' => 'Accessories',
             'perch' => 'Accessories',
             'stand' => 'Accessories',
+            'center/side stand' => 'Accessories',
+            'center stand' => 'Accessories',
+            'side stand' => 'Accessories',
             'support' => 'Accessories',
+            'engine support' => 'Accessories',
             'cover' => 'Accessories',
+            'rad cover' => 'Accessories',
+            'radiator' => 'Accessories',
             'frame' => 'Accessories',
+            'monorack frame' => 'Accessories',
+            'cvt' => 'Accessories',
+            'cvt half' => 'Accessories',
+            'hugger' => 'Accessories',
+            'tire hugger' => 'Accessories',
+            'spark plug' => 'Accessories',
+            'spark_plug' => 'Accessories',
+            'filter' => 'Accessories',
+            'filters' => 'Accessories',
+            'throttle' => 'Accessories',
+            'quick throttle' => 'Accessories',
+            'swing arm' => 'Accessories',
+            'product desc' => 'Accessories',
         ];
 
         // Check if exact match exists
@@ -345,7 +345,7 @@ class SalesCategoryService
             }
         }
 
-        // Default to Accessories for unknown categories
+        // Default to Accessories
         return 'Accessories';
     }
 }

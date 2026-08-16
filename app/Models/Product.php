@@ -12,6 +12,14 @@ class Product extends Model
 {
     protected static function booted()
     {
+        static::saving(function ($product) {
+            $rawCategory = $product->category;
+            if (empty($rawCategory) || in_array(strtolower(trim($rawCategory)), ['uncategorized', 'unknown', 'n/a', 'none', ''], true)) {
+                $rawCategory = !empty($product->product_name) ? $product->product_name : $product->name;
+            }
+            $product->category = \App\Services\SalesCategoryService::mapToPredefinedCategory($rawCategory);
+        });
+
         static::saved(function ($product) {
             // Automatically sync alert state when product stock levels or details change
             try {

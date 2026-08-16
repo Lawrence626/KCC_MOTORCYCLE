@@ -6,6 +6,7 @@ let allProducts = [];
 let currentFilters = {
     search: '',
     warehouse: '',
+    category: '',
     product_name: '',
     brand: '',
     size: '',
@@ -72,19 +73,9 @@ function populateEditProductForm(product) {
     document.getElementById('editCategory').value = categoryVal;
     const categoryBtn = document.getElementById('editCategoryButton');
     if (categoryBtn) {
-        const categoryLabels = {
-            'engine_oil': 'Engine Oil',
-            'battery': 'Battery',
-            'spark_plug': 'Spark Plug',
-            'brake_pads': 'Brake Pads',
-            'tires': 'Tires',
-            'filters': 'Filters',
-            'lubricants': 'Lubricants',
-            'accessories': 'Accessories'
-        };
         const span = categoryBtn.querySelector('span');
         if (span) {
-            span.textContent = categoryLabels[categoryVal] || categoryVal || 'Select category';
+            span.textContent = categoryVal || 'Select category';
         }
     }
 
@@ -216,15 +207,25 @@ window.selectDropdownOption = function (inputId, value, text, dropdownId, event)
     const input = document.getElementById(inputId);
     if (input) {
         input.value = value;
+        const wrapper = input.closest('[data-dropdown-wrapper]');
+        if (wrapper) {
+            const btnSpan = wrapper.querySelector('button span');
+            if (btnSpan) {
+                btnSpan.textContent = text;
+            }
+        }
         input.dispatchEvent(new Event('change', { bubbles: true }));
     }
     const display = document.getElementById('addStockProductDisplay');
-    if (display) {
+    if (display && inputId === 'productSelect') {
         display.textContent = text;
     }
     const dropdown = document.getElementById(dropdownId);
     if (dropdown) {
         dropdown.classList.add('hidden');
+        dropdown.classList.remove('show');
+        const wrapper = dropdown.closest('[data-dropdown-wrapper]');
+        if (wrapper) wrapper.style.zIndex = '';
     }
 };
 
@@ -275,29 +276,35 @@ async function loadProductsForSelect() {
 // Load filter options (Product Name, Brand, Size)
 async function loadFilterOptions() {
     try {
-        // Load product descriptions from Product Categorization module
-        const descriptionsResponse = await fetch(window.AllStocks.routes.apiProductDescriptions);
-        const descriptionsResult = await descriptionsResponse.json();
-
-        // Load products for brands and sizes
-        const productsResponse = await fetch(window.AllStocks.routes.apiProducts + '?per_page=1000');
-        const productsResult = await productsResponse.json();
-
+        let productNames = new Set();
         let brands = new Set();
         let sizes = new Set();
 
         // Store product name to brands mapping from Product Categorization
         window.productNameToBrands = {};
 
-        let productNames = new Set();
-
-        if (descriptionsResult && descriptionsResult.length > 0) {
-            descriptionsResult.forEach(description => {
-                window.productNameToBrands[description.name] = new Set(description.brands || []);
-                description.brands.forEach(brand => brands.add(brand));
-                productNames.add(description.name);
-            });
+        // Load product descriptions from Product Categorization module if route available
+        if (window.AllStocks?.routes?.apiProductDescriptions) {
+            try {
+                const descriptionsResponse = await fetch(window.AllStocks.routes.apiProductDescriptions);
+                const descriptionsResult = await descriptionsResponse.json();
+                if (descriptionsResult && Array.isArray(descriptionsResult)) {
+                    descriptionsResult.forEach(description => {
+                        if (description.name) {
+                            window.productNameToBrands[description.name] = new Set(description.brands || []);
+                            (description.brands || []).forEach(brand => { if (brand) brands.add(brand); });
+                            productNames.add(description.name);
+                        }
+                    });
+                }
+            } catch (e) {
+                console.warn('Could not load product descriptions:', e);
+            }
         }
+
+        // Load products for brands, sizes, and product names
+        const productsResponse = await fetch(window.AllStocks.routes.apiProducts + '?per_page=1000');
+        const productsResult = await productsResponse.json();
 
         if (productsResult.data && productsResult.data.length > 0) {
             productsResult.data.forEach(product => {
@@ -308,8 +315,9 @@ async function loadFilterOptions() {
             });
         }
 
+        window.allAvailableBrands = Array.from(brands);
+
         // Populate Product Name dropdown
-        const productNameSelect = document.getElementById('productNameFilter');
         const productNameDropdown = document.getElementById('productNameFilterDropdown');
         if (productNameDropdown) {
             productNameDropdown.innerHTML = '';
@@ -338,7 +346,7 @@ async function loadFilterOptions() {
             defaultBtn.type = 'button';
             defaultBtn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition';
             defaultBtn.textContent = 'All Brands';
-            defaultBtn.onclick = (e) => selectDropdownOption('brandFilter', '', 'All Brands', 'brandFilterDropdown', event);
+            defaultBtn.onclick = (e) => selectDropdownOption('brandFilter', '', 'All Brands', 'brandFilterDropdown', e);
             brandDropdown.appendChild(defaultBtn);
 
             Array.from(brands).sort().forEach(brand => {
@@ -379,49 +387,38 @@ async function loadFilterOptions() {
 // Update brand dropdown based on selected product description
 function updateBrandDropdown() {
     const productNameFilter = document.getElementById('productNameFilter');
+    const brandDropdown = document.getElementById('brandFilterDropdown');
     const brandFilter = document.getElementById('brandFilter');
 
-    if (!productNameFilter || !brandFilter) return;
+    if (!brandDropdown) return;
 
-    const selectedOption = productNameFilter.options[productNameFilter.selectedIndex];
-    let brands = [];
+    const selectedProductName = productNameFilter ? productNameFilter.value : '';
+    let brandsToShow = [];
 
-    if (selectedOption.dataset.brands) {
-        try {
-            brands = JSON.parse(selectedOption.dataset.brands);
-        } catch (e) {
-            console.error('Error parsing brands:', e);
-            brands = [];
-        }
+    if (selectedProductName && window.productNameToBrands && window.productNameToBrands[selectedProductName] && window.productNameToBrands[selectedProductName].size > 0) {
+        brandsToShow = Array.from(window.productNameToBrands[selectedProductName]);
+    } else if (window.allAvailableBrands && window.allAvailableBrands.length > 0) {
+        brandsToShow = Array.from(window.allAvailableBrands);
     }
 
-    // Clear brand dropdown
-    brandFilter.innerHTML = '';
+    if (brandsToShow.length > 0) {
+        brandDropdown.innerHTML = '';
 
-    // Always add "All Brands" option
-    const allBrandsOption = document.createElement('option');
-    allBrandsOption.value = '';
-    allBrandsOption.textContent = 'All Brands';
-    brandFilter.appendChild(allBrandsOption);
+        const defaultBtn = document.createElement('button');
+        defaultBtn.type = 'button';
+        defaultBtn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition';
+        defaultBtn.textContent = 'All Brands';
+        defaultBtn.onclick = (e) => selectDropdownOption('brandFilter', '', 'All Brands', 'brandFilterDropdown', e);
+        brandDropdown.appendChild(defaultBtn);
 
-    if (productNameFilter.value !== '' && brands.length > 0) {
-        // Add only brands that belong to the selected product description
-        brands.forEach(brand => {
-            const option = document.createElement('option');
-            option.value = brand;
-            option.textContent = brand;
-            brandFilter.appendChild(option);
+        brandsToShow.sort().forEach(brand => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition';
+            btn.textContent = brand;
+            btn.onclick = (e) => selectDropdownOption('brandFilter', brand, brand, 'brandFilterDropdown', e);
+            brandDropdown.appendChild(btn);
         });
-    } else {
-        // If no product description selected, show all brands
-        if (window.originalBrandOptions) {
-            window.originalBrandOptions.forEach(brand => {
-                const option = document.createElement('option');
-                option.value = brand;
-                option.textContent = brand;
-                brandFilter.appendChild(option);
-            });
-        }
     }
 }
 
@@ -434,11 +431,42 @@ function performSearch() {
 function resetFilters() {
     const searchInput = document.getElementById('searchInput');
     if (searchInput) searchInput.value = '';
-    ['warehouseFilter', 'productNameFilter', 'brandFilter', 'sizeFilter', 'statusFilter', 'expiryStatusFilter', 'dateOfStockFilter'].forEach(id => {
+
+    const filterDefaults = {
+        'warehouseFilter': 'All Locations',
+        'categoryFilter': 'All Categories',
+        'productNameFilter': 'All Products',
+        'brandFilter': 'All Brands',
+        'statusFilter': 'All Status',
+        'expiryStatusFilter': 'All Expiry',
+        'sizeFilter': 'All Sizes',
+        'dateOfStockFilter': ''
+    };
+
+    Object.entries(filterDefaults).forEach(([id, defaultText]) => {
         const el = document.getElementById(id);
-        if (el) el.value = '';
+        if (el) {
+            el.value = '';
+            const wrapper = el.closest('[data-dropdown-wrapper]');
+            if (wrapper) {
+                const btnSpan = wrapper.querySelector('button span');
+                if (btnSpan) btnSpan.textContent = defaultText;
+            }
+        }
     });
-    currentFilters = { search: '', warehouse: '', product_name: '', brand: '', size: '', status: '', expiry_status: '', date_of_stock: '' };
+
+    currentFilters = {
+        search: '',
+        warehouse: '',
+        category: '',
+        product_name: '',
+        brand: '',
+        size: '',
+        status: '',
+        expiry_status: '',
+        date_of_stock: ''
+    };
+
     currentPage = 1;
     loadProducts(1);
 }
@@ -463,7 +491,6 @@ function attachUIEvents() {
     if (categoryEl) {
         categoryEl.addEventListener('change', function (e) {
             currentFilters.category = e.target.value;
-            renderCategoryChips();
             performSearch();
         });
     }
@@ -472,7 +499,15 @@ function attachUIEvents() {
         updateBrandDropdown();
         currentFilters.product_name = e.target.value;
         currentFilters.brand = ''; // Reset brand when product name changes
-        document.getElementById('brandFilter').value = '';
+        const brandInput = document.getElementById('brandFilter');
+        if (brandInput) {
+            brandInput.value = '';
+            const wrapper = brandInput.closest('[data-dropdown-wrapper]');
+            if (wrapper) {
+                const span = wrapper.querySelector('button span');
+                if (span) span.textContent = 'All Brands';
+            }
+        }
         performSearch();
     });
     const brandEl = document.getElementById('brandFilter');
@@ -860,6 +895,7 @@ async function loadProducts(page = 1) {
 
         if (currentFilters.search) url += `&search=${encodeURIComponent(currentFilters.search)}`;
         if (currentFilters.warehouse) url += `&warehouse=${encodeURIComponent(currentFilters.warehouse)}`;
+        if (currentFilters.category) url += `&category=${encodeURIComponent(currentFilters.category)}`;
         if (currentFilters.product_name) url += `&product_name=${encodeURIComponent(currentFilters.product_name)}`;
         if (currentFilters.brand) url += `&brand=${encodeURIComponent(currentFilters.brand)}`;
         if (currentFilters.size) url += `&size=${encodeURIComponent(currentFilters.size)}`;
@@ -1826,3 +1862,11 @@ window.openViewDetailsModal = function (product) {
 
     document.getElementById('viewDetailsModal').classList.remove('hidden');
 };
+
+// Expose filter and modal utilities globally for blade templates
+window.toggleDropdown = toggleDropdown;
+window.resetFilters = resetFilters;
+window.loadProducts = loadProducts;
+window.performSearch = performSearch;
+window.selectDropdownOption = selectDropdownOption;
+

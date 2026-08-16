@@ -382,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Create a map of incoming data for lookup
             const valueMap = {};
             incomingLabels.forEach((label, index) => {
-                valueMap[String(label).trim().toLowerCase()] = chartValues[index] || 0;
+                valueMap[String(label).trim().toLowerCase()] = Number(incomingValues[index] || 0);
             });
 
             legend.innerHTML = CATEGORY_DEFS.map((cat) => {

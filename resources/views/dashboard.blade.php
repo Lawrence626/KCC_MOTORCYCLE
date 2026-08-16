@@ -891,7 +891,8 @@
                     return;
                 }
                 const top = items[idx] || items[0];
-                placeholder.innerHTML = `<div class="font-semibold text-gray-900">${escapeHtml(top.name)}</div><div class="text-gray-500">Rank ${idx + 1} • ${escapeHtml(top.category || '')}</div>`;
+                const skuBadge = top.sku ? `<span class="text-xs text-gray-500 font-mono font-normal">(${escapeHtml(top.sku)})</span>` : '';
+                placeholder.innerHTML = `<div class="font-semibold text-gray-900">${escapeHtml(top.name)} ${skuBadge}</div><div class="text-gray-500">Rank ${idx + 1} • ${escapeHtml(top.category || '')}</div>`;
             }
 
             function startRotate(){
@@ -938,6 +939,7 @@
                             <tr style="text-align:left">
                                 <th style="padding:8px">Rank</th>
                                 <th style="padding:8px">Item</th>
+                                <th style="padding:8px">SKU</th>
                                 <th style="padding:8px">Category</th>
                                 <th style="padding:8px">Qty</th>
                                 <th style="padding:8px">Revenue</th>
@@ -958,7 +960,7 @@
     const body = modal.querySelector('#topItemsModalBody'); body.innerHTML = '';
     (list||[]).forEach((it, i)=>{
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td style="padding:8px">${i+1}</td><td style="padding:8px">${escapeHtml(it.name)}</td><td style="padding:8px">${escapeHtml(it.category||'')}</td><td style="padding:8px">${it.qty ?? it.quantity ?? ''}</td><td style="padding:8px">${it.revenue ? (new Intl.NumberFormat('en-PH',{style:'currency',currency:'PHP'}).format(it.revenue)):''}</td>`;
+        tr.innerHTML = `<td style="padding:8px">${i+1}</td><td style="padding:8px">${escapeHtml(it.name)}</td><td style="padding:8px;font-family:monospace;font-size:12px;color:#4b5563;">${escapeHtml(it.sku || '—')}</td><td style="padding:8px">${escapeHtml(it.category||'')}</td><td style="padding:8px">${it.qty ?? it.quantity ?? ''}</td><td style="padding:8px">${it.revenue ? (new Intl.NumberFormat('en-PH',{style:'currency',currency:'PHP'}).format(it.revenue)):''}</td>`;
         body.appendChild(tr);
     });
 

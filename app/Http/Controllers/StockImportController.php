@@ -72,6 +72,10 @@ class StockImportController extends Controller
                         continue;
                     }
 
+                    $category = !empty($row['category']) && strcasecmp(trim($row['category']), 'uncategorized') !== 0 
+                        ? $row['category'] 
+                        : ($row['product_name'] ?? $row['name'] ?? 'Accessories');
+
                     // Create product
                     $product = Product::create([
                         'name' => $row['name'],
@@ -79,7 +83,7 @@ class StockImportController extends Controller
                         'description' => $row['description'] ?? null,
                         'sku' => $row['sku'],
                         'barcode' => $row['barcode'] ?? null,
-                        'category' => $row['category'] ?? 'Uncategorized',
+                        'category' => $category,
                         'brand' => $row['brand'] ?? null,
                         'size' => $row['size'] ?? null,
                         'color' => $row['color'] ?? null,
@@ -305,7 +309,7 @@ class StockImportController extends Controller
 
             // Set category if not already set
             if (empty($mapped['category'])) {
-                $mapped['category'] = !empty($mapped['bodega']) ? $mapped['bodega'] : 'Uncategorized';
+                $mapped['category'] = !empty($mapped['bodega']) ? $mapped['bodega'] : (!empty($mapped['product_name']) ? $mapped['product_name'] : (!empty($mapped['name']) ? $mapped['name'] : 'Accessories'));
             }
 
             // Use CURRENT STOCK or ACTUAL COUNT
@@ -408,12 +412,12 @@ class StockImportController extends Controller
 
         $query = Product::with('warehouseStocks');
 
-        // Filter by status
+        // Filter by status (exclude archived products)
         $query->where('is_archived', false);
 
         // Apply search filter
-        if ($request->has('search') && !empty($request->input('search'))) {
-            $search = $request->input('search');
+        if ($request->filled('search')) {
+            $search = trim($request->input('search'));
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('sku', 'like', "%{$search}%")
@@ -422,22 +426,34 @@ class StockImportController extends Controller
                   ->orWhere('description', 'like', "%{$search}%")
                   ->orWhere('brand', 'like', "%{$search}%")
                   ->orWhere('size', 'like', "%{$search}%")
+                  ->orWhere('category', 'like', "%{$search}%")
                   ->orWhere('compatibility', 'like', "%{$search}%");
             });
         }
 
         // Apply category filter
-        if ($request->has('category') && !empty($request->input('category'))) {
-            $category = $request->input('category');
-            $query->where('category', $category);
+        if ($request->filled('category')) {
+            $category = trim($request->input('category'));
+            $standardCategory = \App\Services\SalesCategoryService::mapToPredefinedCategory($category);
+            $query->where('category', $standardCategory);
         }
 
-        // Apply warehouse filter strictly using active shelf locations
-        if ($request->has('warehouse') && !empty($request->input('warehouse'))) {
-            $warehouse = $request->input('warehouse');
-            if ($warehouse === 'Shop' || $warehouse === 'SHOP') {
-                $assignedProductIds = array_keys($activeWarehouseLocationsByProductId);
-                $query->whereNotIn('id', $assignedProductIds);
+        // Apply warehouse location filter
+        if ($request->filled('warehouse')) {
+            $warehouse = trim($request->input('warehouse'));
+            if (strcasecmp($warehouse, 'shop') === 0) {
+                $warehouseProductIds = [];
+                foreach ($activeWarehouseLocationsByProductId as $pId => $whs) {
+                    if (!in_array('Shop', $whs) && !empty($whs)) {
+                        $warehouseProductIds[] = $pId;
+                    }
+                }
+                $query->where(function ($q) use ($warehouseProductIds) {
+                    $q->where('warehouse', 'Shop')
+                      ->orWhere('warehouse', 'SHOP')
+                      ->orWhereNull('warehouse')
+                      ->orWhereNotIn('id', $warehouseProductIds);
+                });
             } else {
                 $matchingProductIds = [];
                 foreach ($activeWarehouseLocationsByProductId as $pId => $whs) {
@@ -445,62 +461,75 @@ class StockImportController extends Controller
                         $matchingProductIds[] = $pId;
                     }
                 }
-                $query->whereIn('id', $matchingProductIds);
+                $matchingSkus = [];
+                foreach ($activeWarehouseLocationsBySku as $sku => $whs) {
+                    if (in_array($warehouse, $whs)) {
+                        $matchingSkus[] = $sku;
+                    }
+                }
+
+                $query->where(function ($q) use ($warehouse, $matchingProductIds, $matchingSkus) {
+                    $q->where('warehouse', $warehouse);
+                    if (!empty($matchingProductIds)) {
+                        $q->orWhereIn('id', $matchingProductIds);
+                    }
+                    if (!empty($matchingSkus)) {
+                        $q->orWhereIn('sku', $matchingSkus);
+                    }
+                });
             }
         }
 
-        // Apply product name filter (actually filters by description/category)
-        if ($request->has('product_name') && !empty($request->input('product_name'))) {
-            $productName = $request->input('product_name');
+        // Apply product name / description filter
+        if ($request->filled('product_name')) {
+            $productName = trim($request->input('product_name'));
             $query->where(function($q) use ($productName) {
-                $q->where('description', 'like', "%{$productName}%")
-                  ->orWhere('category', 'like', "%{$productName}%");
+                $q->where('product_name', $productName)
+                  ->orWhere('name', 'like', "%{$productName}%")
+                  ->orWhere('description', 'like', "%{$productName}%");
             });
         }
 
         // Apply brand filter
-        if ($request->has('brand') && !empty($request->input('brand'))) {
-            $brand = $request->input('brand');
-            $query->where('brand', 'like', "%{$brand}%");
+        if ($request->filled('brand')) {
+            $brand = trim($request->input('brand'));
+            $query->where('brand', $brand);
         }
 
         // Apply size filter
-        if ($request->has('size') && !empty($request->input('size'))) {
-            $size = $request->input('size');
+        if ($request->filled('size')) {
+            $size = trim($request->input('size'));
             $query->where('size', $size);
         }
 
-        // Apply status filter for inventory monitoring
-        if ($request->has('status') && !empty($request->input('status'))) {
-            $status = $request->input('status');
-            if ($status === 'active') {
-                $query->where('stock_quantity', '>', DB::raw('reorder_level'))
+        // Apply status filter (Available, Low Stock, Out of Stock)
+        if ($request->filled('status')) {
+            $status = trim($request->input('status'));
+            if ($status === 'active' || $status === 'available') {
+                $query->where('stock_quantity', '>', DB::raw('COALESCE(reorder_level, 10)'))
                       ->where('stock_quantity', '>', 0);
             } elseif ($status === 'low') {
-                $query->whereColumn('stock_quantity', '<=', 'reorder_level')
+                $query->where('stock_quantity', '<=', DB::raw('COALESCE(reorder_level, 10)'))
                       ->where('stock_quantity', '>', 0);
             } elseif ($status === 'out') {
                 $query->where('stock_quantity', '<=', 0);
             }
         }
 
-        // Apply restock date filter
-        if ($request->has('restock_date') && !empty($request->input('restock_date'))) {
-            $query->whereDate('last_restock_date', $request->input('restock_date'));
-        }
-
-        // Apply date_of_stock filter (alias for restock_date)
-        if ($request->has('date_of_stock') && !empty($request->input('date_of_stock'))) {
-            $query->whereDate('last_restock_date', $request->input('date_of_stock'));
+        // Apply restock date / date of stock filter
+        $restockDate = $request->input('date_of_stock') ?: $request->input('restock_date');
+        if (!empty($restockDate)) {
+            $query->whereDate('last_restock_date', $restockDate);
         }
 
         // Apply expiry status filter
-        if ($request->has('expiry_status') && !empty($request->input('expiry_status'))) {
-            $expiryStatus = $request->input('expiry_status');
+        if ($request->filled('expiry_status')) {
+            $expiryStatus = trim($request->input('expiry_status'));
             if ($expiryStatus === 'expired') {
-                $query->whereDate('expiry_date', '<', now());
+                $query->whereNotNull('expiry_date')->whereDate('expiry_date', '<', now());
             } elseif ($expiryStatus === 'expiring') {
-                $query->whereDate('expiry_date', '>=', now())
+                $query->whereNotNull('expiry_date')
+                      ->whereDate('expiry_date', '>=', now())
                       ->whereDate('expiry_date', '<=', now()->addDays(30));
             } elseif ($expiryStatus === 'non_expiring') {
                 $query->whereNull('expiry_date');
