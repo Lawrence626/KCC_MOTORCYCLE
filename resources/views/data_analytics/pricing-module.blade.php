@@ -1,45 +1,88 @@
 <x-layouts.app :title="__('Pricing Module')">
     <div class="space-y-4">
+        <!-- Header -->
         <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-slate-900">Pricing Module</h1>
+            <div class="pl-3 lg:pl-2">
+                <h1 class="text-3xl font-bold text-slate-900">Pricing Module</h1>
                 <p class="text-xs text-slate-500 mt-1">Analyze pricing trends, monitor stock value, and track recent price breaks.</p>
             </div>
-            <button class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-slate-800 transition">Export price report</button>
+            <div class="flex flex-col gap-2 sm:flex-row pr-4">
+                <a href="{{ route('analytics.pricing.export') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
+                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    <span>Export Price Report</span>
+                </a>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-                <p class="text-[10px] uppercase tracking-[0.24em] text-slate-400">Average unit price</p>
-                <p class="mt-2 text-2xl font-semibold text-slate-900">₱{{ number_format($averageUnitPrice, 2) }}</p>
-                <p class="mt-1 text-xs text-slate-500">Average current price for active inventory items.</p>
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Average Unit Price</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">₱{{ number_format($averageUnitPrice, 2) }}</p>
+                            <p class="text-gray-500 text-xs mt-1 font-medium">Average current price for active inventory items.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
-            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-                <p class="text-[10px] uppercase tracking-[0.24em] text-slate-400">Most expensive SKU</p>
-                <p class="mt-2 text-xl font-semibold text-slate-900">{{ $mostExpensive?->product_name ?: ($mostExpensive?->name ?? '—') }}</p>
-                <p class="mt-1 text-xs text-slate-500 flex items-center gap-1.5">
-                    <span>₱{{ number_format($mostExpensive?->unit_price ?? 0, 2) }}</span>
-                    @if($mostExpensive?->sku)
-                        <span class="text-[10px]">&bull;</span>
-                        <span class="font-mono text-[11px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">{{ $mostExpensive->sku }}</span>
-                    @endif
-                </p>
+
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1 overflow-hidden">
+                        <p class="text-black text-xs font-semibold">Most Expensive SKU</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black truncate">{{ $mostExpensive?->product_name ?: ($mostExpensive?->name ?? '—') }}</p>
+                            <p class="text-gray-500 text-xs mt-1 font-medium flex items-center gap-1.5">
+                                <span>₱{{ number_format($mostExpensive?->unit_price ?? 0, 2) }}</span>
+                                @if($mostExpensive?->sku)
+                                    <span class="text-[10px]">&bull;</span>
+                                    <span class="font-mono text-[11px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">{{ $mostExpensive->sku }}</span>
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
-            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-                <p class="text-[10px] uppercase tracking-[0.24em] text-slate-400">Cheapest SKU</p>
-                <p class="mt-2 text-xl font-semibold text-slate-900">{{ $cheapest?->product_name ?: ($cheapest?->name ?? '—') }}</p>
-                <p class="mt-1 text-xs text-slate-500 flex items-center gap-1.5">
-                    <span>₱{{ number_format($cheapest?->unit_price ?? 0, 2) }}</span>
-                    @if($cheapest?->sku)
-                        <span class="text-[10px]">&bull;</span>
-                        <span class="font-mono text-[11px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">{{ $cheapest->sku }}</span>
-                    @endif
-                </p>
+
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1 overflow-hidden">
+                        <p class="text-black text-xs font-semibold">Cheapest SKU</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black truncate">{{ $cheapest?->product_name ?: ($cheapest?->name ?? '—') }}</p>
+                            <p class="text-gray-500 text-xs mt-1 font-medium flex items-center gap-1.5">
+                                <span>₱{{ number_format($cheapest?->unit_price ?? 0, 2) }}</span>
+                                @if($cheapest?->sku)
+                                    <span class="text-[10px]">&bull;</span>
+                                    <span class="font-mono text-[11px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">{{ $cheapest->sku }}</span>
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <path d="M16 18l2.29-2.29-4.88-4.88-4 4L2 7.41 3.41 6l6 6 4-4 6.3 6.29L22 12v6z"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
         </div>
 
         @foreach($supplierCostAlerts as $alert)
-            <div id="pricing-alert-banner-{{ $alert->id }}" class="rounded-3xl border border-amber-200 bg-amber-50 p-4 shadow-sm transition-all duration-300 mb-3">
+            <div id="pricing-alert-banner-{{ $alert->id }}" class="rounded-[18px] border border-amber-200 bg-amber-50 p-4 shadow-sm transition-all duration-300 mb-3">
                 <div class="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between">
                     <div>
                         <p class="text-[10px] uppercase tracking-[0.24em] text-amber-600">Pricing alert</p>
@@ -67,7 +110,7 @@
         @endforeach
 
 
-        <div id="supplier-cost-container" class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div id="supplier-cost-container" class="rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm">
             <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                 <div>
                     <h2 class="text-base font-semibold text-slate-900">Supplier Cost Analysis</h2>
@@ -87,56 +130,60 @@
                             id="supplier-search-input"
                             value="{{ request('search') }}"
                             placeholder="Search product…"
-                            class="pl-9 pr-4 py-2 text-sm rounded-2xl border border-slate-200 bg-slate-50 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-400 transition w-52"
+                            class="pl-9 pr-4 py-[11px] text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm w-52"
                             autocomplete="off"
                         />
                     </div>
                     {{-- Cost Change Filter --}}
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path d="M3 6h18M7 12h10M11 18h2"/>
-                            </svg>
-                        </span>
-                        <select
-                            name="cost_change"
-                            id="cost-change-filter"
-                            onchange="supplierFilterSubmit()"
-                            class="pl-9 pr-8 py-2 text-sm rounded-2xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-400 transition appearance-none cursor-pointer"
-                        >
-                            <option value=""     {{ request('cost_change') === ''     ? 'selected' : '' }}>All</option>
-                            <option value="none" {{ request('cost_change') === 'none' ? 'selected' : '' }}>No Change</option>
-                            <option value="up"   {{ request('cost_change') === 'up'   ? 'selected' : '' }}>Increased Cost</option>
-                            <option value="down" {{ request('cost_change') === 'down' ? 'selected' : '' }}>Decreased Cost</option>
-                        </select>
-                        <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <div class="relative z-[50]" data-dropdown-wrapper="costChangeFilter">
+                        <input type="hidden" id="cost-change-filter" name="cost_change" value="{{ request('cost_change') }}" />
+                        <button type="button" id="costChangeFilterButton" onclick="toggleDropdown('costChangeFilterDropdown')" class="px-3 py-[11px] rounded-[12px] border border-slate-300 bg-white text-left text-xs text-slate-900 flex items-center justify-between gap-2 hover:border-slate-400 focus:outline-none transition shadow-sm w-44">
+                            <span class="flex items-center gap-2 truncate">
+                                <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M3 6h18M7 12h10M11 18h2"/>
+                                </svg>
+                                <span id="costChangeFilterText" class="truncate font-medium">
+                                    @switch(request('cost_change'))
+                                        @case('none') No Change @break
+                                        @case('up') Increased Cost @break
+                                        @case('down') Decreased Cost @break
+                                        @default All
+                                    @endswitch
+                                </span>
+                            </span>
+                            <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M6 9l6 6 6-6"/>
                             </svg>
-                        </span>
+                        </button>
+                        <div id="costChangeFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 right-0 z-[60] mt-1.5 w-full rounded-[12px] border border-slate-200 bg-white shadow-2xl p-1.5 space-y-0.5">
+                            <button type="button" onclick="selectCostChangeOption('', 'All')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">All</button>
+                            <button type="button" onclick="selectCostChangeOption('none', 'No Change')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">No Change</button>
+                            <button type="button" onclick="selectCostChangeOption('up', 'Increased Cost')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">Increased Cost</button>
+                            <button type="button" onclick="selectCostChangeOption('down', 'Decreased Cost')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">Decreased Cost</button>
+                        </div>
                     </div>
                     <button
                         type="button"
                         onclick="supplierFilterSubmit()"
-                        class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-slate-700 transition"
+                        class="inline-flex items-center justify-center rounded-[12px] bg-[#0f172a] px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-slate-800 transition"
                     >Search</button>
                     @if(request('search') || request('cost_change'))
                         <a href="{{ strtok(request()->fullUrl(), '?') }}"
-                           class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm hover:bg-slate-50 transition"
+                           class="inline-flex items-center justify-center rounded-[12px] border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm hover:bg-slate-50 transition"
                            title="Clear filters">✕ Clear</a>
                     @endif
                 </form>
             </div>
-            <div class="mt-4 overflow-x-auto">
-                <table class="min-w-full text-left text-sm text-slate-700">
-                    <thead class="bg-slate-50 text-xs uppercase tracking-[0.24em] text-slate-500">
+            <div class="mt-4 overflow-x-auto rounded-[10px] border border-slate-200">
+                <table class="min-w-full text-left text-xs text-slate-700">
+                    <thead class="border-b border-slate-200 bg-[#0f172a]">
                         <tr>
-                            <th class="px-4 py-3">Product</th>
-                            <th class="px-4 py-3">Previous Cost</th>
-                            <th class="px-4 py-3">Current Cost</th>
-                            <th class="px-4 py-3">Change</th>
-                            <th class="px-4 py-3">Suggested Retail Price</th>
-                            <th class="px-4 py-3">Recommendation</th>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</th>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Previous Cost</th>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Current Cost</th>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Change</th>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Suggested Retail Price</th>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Recommendation</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 bg-white">
@@ -217,7 +264,7 @@
             </div>
 
             @foreach($supplierCostAlerts as $alert)
-                <div id="retail-reco-banner-{{ $alert->id }}" class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <div id="retail-reco-banner-{{ $alert->id }}" class="mt-4 rounded-[18px] border border-slate-200 bg-slate-50 p-4">
                     <div class="flex items-start justify-between gap-2">
                         <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Retail recommendation</p>
                         <button
@@ -239,14 +286,14 @@
                             <p class="text-sm text-slate-600">Suggested Retail Price: ₱{{ number_format((float) $alert->suggested_retail_price, 2) }}</p>
                             <p class="mt-2 text-sm text-slate-600">Reason: {{ $alert->reason ?? 'Supplier cost has changed.' }}</p>
                         </div>
-                        <span class="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white">{{ $alert->recommendation ?? 'Review pricing' }}</span>
+                        <span class="rounded-full bg-[#0f172a] px-3 py-1 text-xs font-semibold text-white">{{ $alert->recommendation ?? 'Review pricing' }}</span>
                     </div>
                 </div>
             @endforeach
         </div>
 
         <div class="grid grid-cols-1 xl:grid-cols-[1.4fr_1fr] gap-3">
-            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between">
+            <div class="rounded-[20px] border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between">
                 <div>
                     <h2 class="text-base font-semibold text-slate-900">Pricing Analysis Overview</h2>
                     <p class="text-xs text-slate-500 mt-1">Summary of supplier cost changes.</p>
@@ -261,28 +308,28 @@
                 </div>
             </div>
 
-            <div id="retail-price-container" class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div id="retail-price-container" class="rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm overflow-hidden">
                 <div>
                     <h2 class="text-base font-semibold text-slate-900">Retail Price Update</h2>
                     <p class="text-xs text-slate-500 mt-1">Track recent unit price revisions across inventory.</p>
                 </div>
-                <div class="mt-4 overflow-x-auto">
-                    <table class="min-w-full text-left text-sm text-slate-700">
-                        <thead class="bg-slate-50 text-xs uppercase tracking-[0.24em] text-slate-500">
+                <div class="mt-4 overflow-x-auto rounded-[10px] border border-slate-200">
+                    <table class="min-w-full text-left text-xs text-slate-700">
+                        <thead class="border-b border-slate-200 bg-[#0f172a]">
                             <tr>
-                                <th class="px-4 py-3">Product</th>
-                                <th class="px-4 py-3">Old</th>
-                                <th class="px-4 py-3">New</th>
-                                <th class="px-4 py-3">Date</th>
+                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</th>
+                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Old</th>
+                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">New</th>
+                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Date</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 bg-white">
                             @forelse($priceUpdates as $update)
                                 <tr class="hover:bg-slate-50 transition">
-                                    <td class="px-4 py-4 font-semibold text-slate-900">{{ $update->product->name ?? 'Unknown' }}</td>
-                                    <td class="px-4 py-4 text-slate-600">{{ data_get($update, 'metadata.old_price') ? '₱' . number_format(data_get($update, 'metadata.old_price'), 2) : '—' }}</td>
-                                    <td class="px-4 py-4 text-slate-900">₱{{ number_format((float) $update->unit_price, 2) }}</td>
-                                    <td class="px-4 py-4 text-slate-500">{{ $update->created_at->format('M d, Y') }}</td>
+                                    <td class="px-4 py-3 font-semibold text-slate-900">{{ $update->product->name ?? 'Unknown' }}</td>
+                                    <td class="px-4 py-3 text-slate-600">{{ data_get($update, 'metadata.old_price') ? '₱' . number_format(data_get($update, 'metadata.old_price'), 2) : '—' }}</td>
+                                    <td class="px-4 py-3 text-slate-900">₱{{ number_format((float) $update->unit_price, 2) }}</td>
+                                    <td class="px-4 py-3 text-slate-500">{{ $update->created_at->format('M d, Y') }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -672,6 +719,33 @@
                     modalContainer.classList.add('scale-100', 'opacity-100');
                 }, 10);
             }
+
+            function toggleDropdown(id) {
+                const dropdown = document.getElementById(id);
+                if (!dropdown) return;
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    if (menu.id !== id) {
+                        menu.classList.add('hidden');
+                    }
+                });
+                dropdown.classList.toggle('hidden');
+            }
+
+            function selectCostChangeOption(val, text) {
+                const hiddenInput = document.getElementById('cost-change-filter');
+                const textSpan = document.getElementById('costChangeFilterText');
+                const dropdown = document.getElementById('costChangeFilterDropdown');
+                if (hiddenInput) hiddenInput.value = val;
+                if (textSpan) textSpan.textContent = text;
+                if (dropdown) dropdown.classList.add('hidden');
+                supplierFilterSubmit();
+            }
+
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('[data-dropdown-wrapper]')) {
+                    document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
+                }
+            });
 
             function closeBreakdownModal() {
                 const modal = document.getElementById('breakdown-info-modal');

@@ -1,120 +1,120 @@
 let products = [
     // PIPE
-    { id: 1,  name: 'APIDO',        category: 'PIPE',           sku: 'PIPE-APIDO',        models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 2,  name: 'KVIN',         category: 'PIPE',           sku: 'PIPE-KVIN',         models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 3,  name: 'TRC',          category: 'PIPE',           sku: 'PIPE-TRC',          models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 4,  name: 'MVR1',         category: 'PIPE',           sku: 'PIPE-MVR1',         models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 5,  name: 'MT8 TT',       category: 'PIPE',           sku: 'PIPE-MT8TT',        models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 6,  name: 'MT8 ST',       category: 'PIPE',           sku: 'PIPE-MT8ST',        models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 7,  name: 'MT8 V3',       category: 'PIPE',           sku: 'PIPE-MT8V3',        models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 8,  name: 'MT8 RL',       category: 'PIPE',           sku: 'PIPE-MT8RL',        models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 9,  name: 'MT8 CNC',      category: 'PIPE',           sku: 'PIPE-MT8CNC',       models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 10, name: 'ORBR ST',      category: 'PIPE',           sku: 'PIPE-ORBRST',       models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 11, name: 'ORBR V2',      category: 'PIPE',           sku: 'PIPE-ORBRV2',       models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 12, name: 'ORBR BT',      category: 'PIPE',           sku: 'PIPE-ORBRBT',       models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 13, name: 'HUN',          category: 'PIPE',           sku: 'PIPE-HUN',          models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 14, name: 'KENOCHI',      category: 'PIPE',           sku: 'PIPE-KENOCHI',      models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 15, name: 'SOLFILI',      category: 'PIPE',           sku: 'PIPE-SOLFILI',      models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 16, name: 'NAMBAN GT 125',category: 'PIPE',           sku: 'PIPE-NAMBANGT125',  models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 17, name: 'TSMP',         category: 'PIPE',           sku: 'PIPE-TSMP',         models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 1, name: 'APIDO', category: 'PIPE', sku: 'PIPE-APIDO', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 2, name: 'KVIN', category: 'PIPE', sku: 'PIPE-KVIN', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 3, name: 'TRC', category: 'PIPE', sku: 'PIPE-TRC', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 4, name: 'MVR1', category: 'PIPE', sku: 'PIPE-MVR1', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 5, name: 'MT8 TT', category: 'PIPE', sku: 'PIPE-MT8TT', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 6, name: 'MT8 ST', category: 'PIPE', sku: 'PIPE-MT8ST', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 7, name: 'MT8 V3', category: 'PIPE', sku: 'PIPE-MT8V3', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 8, name: 'MT8 RL', category: 'PIPE', sku: 'PIPE-MT8RL', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 9, name: 'MT8 CNC', category: 'PIPE', sku: 'PIPE-MT8CNC', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 10, name: 'ORBR ST', category: 'PIPE', sku: 'PIPE-ORBRST', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 11, name: 'ORBR V2', category: 'PIPE', sku: 'PIPE-ORBRV2', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 12, name: 'ORBR BT', category: 'PIPE', sku: 'PIPE-ORBRBT', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 13, name: 'HUN', category: 'PIPE', sku: 'PIPE-HUN', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 14, name: 'KENOCHI', category: 'PIPE', sku: 'PIPE-KENOCHI', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 15, name: 'SOLFILI', category: 'PIPE', sku: 'PIPE-SOLFILI', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 16, name: 'NAMBAN GT 125', category: 'PIPE', sku: 'PIPE-NAMBANGT125', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 17, name: 'TSMP', category: 'PIPE', sku: 'PIPE-TSMP', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
     // SHOCK
-    { id: 18, name: 'RCB A3',       category: 'SHOCK',          sku: 'SHOCK-RCBA3',       models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 19, name: 'RCB S2',       category: 'SHOCK',          sku: 'SHOCK-RCBS2',       models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 20, name: 'BOMX X2',      category: 'SHOCK',          sku: 'SHOCK-BOMXX2',      models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 21, name: 'BOMX XSTREET', category: 'SHOCK',          sku: 'SHOCK-BOMXXST',     models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 22, name: 'BOMX BLAZE',   category: 'SHOCK',          sku: 'SHOCK-BOMXBLAZE',   models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 23, name: 'BOMX PULSE',   category: 'SHOCK',          sku: 'SHOCK-BOMXPULSE',   models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 24, name: 'MUTARRU',      category: 'SHOCK',          sku: 'SHOCK-MUTARRU',     models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 25, name: 'SPARK S1',     category: 'SHOCK',          sku: 'SHOCK-SPARKS1',     models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 18, name: 'RCB A3', category: 'SHOCK', sku: 'SHOCK-RCBA3', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 19, name: 'RCB S2', category: 'SHOCK', sku: 'SHOCK-RCBS2', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 20, name: 'BOMX X2', category: 'SHOCK', sku: 'SHOCK-BOMXX2', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 21, name: 'BOMX XSTREET', category: 'SHOCK', sku: 'SHOCK-BOMXXST', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 22, name: 'BOMX BLAZE', category: 'SHOCK', sku: 'SHOCK-BOMXBLAZE', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 23, name: 'BOMX PULSE', category: 'SHOCK', sku: 'SHOCK-BOMXPULSE', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 24, name: 'MUTARRU', category: 'SHOCK', sku: 'SHOCK-MUTARRU', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 25, name: 'SPARK S1', category: 'SHOCK', sku: 'SHOCK-SPARKS1', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
     // SWING ARM
-    { id: 26, name: 'DT10',         category: 'SWING ARM',      sku: 'SWINGARM-DT10',     models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 27, name: 'V3',           category: 'SWING ARM',      sku: 'SWINGARM-V3',       models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 28, name: 'KBF',          category: 'SWING ARM',      sku: 'SWINGARM-KBF',      models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 29, name: 'MINH ANH',     category: 'SWING ARM',      sku: 'SWINGARM-MINHANH',  models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 26, name: 'DT10', category: 'SWING ARM', sku: 'SWINGARM-DT10', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 27, name: 'V3', category: 'SWING ARM', sku: 'SWINGARM-V3', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 28, name: 'KBF', category: 'SWING ARM', sku: 'SWINGARM-KBF', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 29, name: 'MINH ANH', category: 'SWING ARM', sku: 'SWINGARM-MINHANH', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
     // ENGINE SUPPORT
-    { id: 30, name: 'P TITANIUM',   category: 'ENGINE SUPPORT', sku: 'ENGSUP-PTITANIUM',  models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 31, name: 'DT10',         category: 'ENGINE SUPPORT', sku: 'ENGSUP-DT10',       models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 30, name: 'P TITANIUM', category: 'ENGINE SUPPORT', sku: 'ENGSUP-PTITANIUM', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 31, name: 'DT10', category: 'ENGINE SUPPORT', sku: 'ENGSUP-DT10', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
     // SIDE MIRROR
-    { id: 32, name: 'H2C',          category: 'SIDE MIRROR',    sku: 'SIDEMIRROR-H2C',    models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 32, name: 'H2C', category: 'SIDE MIRROR', sku: 'SIDEMIRROR-H2C', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
     // TIRE HUGGER
-    { id: 33, name: 'YAMAHA',       category: 'TIRE HUGGER',    sku: 'TIREHUGGER-YAMAHA', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 34, name: 'OEM V1',       category: 'TIRE HUGGER',    sku: 'TIREHUGGER-OEMV1',  models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
-    { id: 35, name: 'OEM V2',       category: 'TIRE HUGGER',    sku: 'TIREHUGGER-OEMV2',  models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 33, name: 'YAMAHA', category: 'TIRE HUGGER', sku: 'TIREHUGGER-YAMAHA', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 34, name: 'OEM V1', category: 'TIRE HUGGER', sku: 'TIREHUGGER-OEMV1', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 35, name: 'OEM V2', category: 'TIRE HUGGER', sku: 'TIREHUGGER-OEMV2', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
     // MONORACK FRAME
-    { id: 36, name: 'DC',           category: 'MONORACK FRAME', sku: 'MONORACK-DC',       models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 36, name: 'DC', category: 'MONORACK FRAME', sku: 'MONORACK-DC', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
     // QUICK THROTTLE
-    { id: 37, name: 'KYTA',         category: 'QUICK THROTTLE', sku: 'QTHROTTLE-KYTA',    models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
+    { id: 37, name: 'KYTA', category: 'QUICK THROTTLE', sku: 'QTHROTTLE-KYTA', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse A' },
     // TIRE
-    { id: 38, name: 'PRIMAAX',      category: 'TIRE',           sku: 'TIRE-PRIMAAX',      models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
-    { id: 39, name: 'FDR CHAMPION', category: 'TIRE',           sku: 'TIRE-FDRCHAMPION',  models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
-    { id: 40, name: 'MUTARRU',      category: 'TIRE',           sku: 'TIRE-MUTARRU',      models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
-    { id: 41, name: 'QUICK',        category: 'TIRE',           sku: 'TIRE-QUICK',        models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
-    { id: 42, name: 'ZENEOS',       category: 'TIRE',           sku: 'TIRE-ZENEOS',       models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
-    { id: 43, name: 'PIRELLI',      category: 'TIRE',           sku: 'TIRE-PIRELLI',      models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
-    { id: 44, name: 'VEE RUBBER',   category: 'TIRE',           sku: 'TIRE-VEERUBBER',    models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
-    { id: 45, name: 'MET ZELLER',   category: 'TIRE',           sku: 'TIRE-METZELLER',    models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
-    { id: 46, name: 'CORSA PLATINUM',category: 'TIRE',          sku: 'TIRE-CORSAPLATINUM',models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
-    { id: 47, name: 'BEAST TIRE',   category: 'TIRE',           sku: 'TIRE-BEASTTIRE',    models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
-    { id: 48, name: 'MAXXIS',       category: 'TIRE',           sku: 'TIRE-MAXXIS',       models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
-    { id: 49, name: 'APC',          category: 'TIRE',           sku: 'TIRE-APC',          models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
-    { id: 50, name: 'ARISUN',       category: 'TIRE',           sku: 'TIRE-ARISUN',       models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
-    { id: 51, name: 'JOURNEY',      category: 'TIRE',           sku: 'TIRE-JOURNEY',      models: [], reorder_level: 100, deleted: false, warehouse: 'Warehouse B' },
+    { id: 38, name: 'PRIMAAX', category: 'TIRE', sku: 'TIRE-PRIMAAX', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
+    { id: 39, name: 'FDR CHAMPION', category: 'TIRE', sku: 'TIRE-FDRCHAMPION', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
+    { id: 40, name: 'MUTARRU', category: 'TIRE', sku: 'TIRE-MUTARRU', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
+    { id: 41, name: 'QUICK', category: 'TIRE', sku: 'TIRE-QUICK', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
+    { id: 42, name: 'ZENEOS', category: 'TIRE', sku: 'TIRE-ZENEOS', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
+    { id: 43, name: 'PIRELLI', category: 'TIRE', sku: 'TIRE-PIRELLI', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
+    { id: 44, name: 'VEE RUBBER', category: 'TIRE', sku: 'TIRE-VEERUBBER', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
+    { id: 45, name: 'MET ZELLER', category: 'TIRE', sku: 'TIRE-METZELLER', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
+    { id: 46, name: 'CORSA PLATINUM', category: 'TIRE', sku: 'TIRE-CORSAPLATINUM', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
+    { id: 47, name: 'BEAST TIRE', category: 'TIRE', sku: 'TIRE-BEASTTIRE', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
+    { id: 48, name: 'MAXXIS', category: 'TIRE', sku: 'TIRE-MAXXIS', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
+    { id: 49, name: 'APC', category: 'TIRE', sku: 'TIRE-APC', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
+    { id: 50, name: 'ARISUN', category: 'TIRE', sku: 'TIRE-ARISUN', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
+    { id: 51, name: 'JOURNEY', category: 'TIRE', sku: 'TIRE-JOURNEY', models: [], reorder_level: 100, deleted: false, warehouse: 'Warehouse B' },
 ];
 
 // ─── DOM References ───────────────────────────────────────────────────────────
-const modal               = document.getElementById('productModal');
-const overlay             = document.getElementById('productOverlay');
-const openBtn             = document.getElementById('openAddProduct');
-const closeBtn            = document.getElementById('closeProductModal');
-const cancelBtn           = document.getElementById('cancelProductModal');
-const deleteBtn           = document.getElementById('deleteProductBtn');
-const form                = document.getElementById('productForm');
-const productId           = document.getElementById('productId');
-const productName         = document.getElementById('productName');
-const productCategory     = document.getElementById('productCategory');
-const productSku          = document.getElementById('productSku');
+const modal = document.getElementById('productModal');
+const overlay = document.getElementById('productOverlay');
+const openBtn = document.getElementById('openAddProduct');
+const closeBtn = document.getElementById('closeProductModal');
+const cancelBtn = document.getElementById('cancelProductModal');
+const deleteBtn = document.getElementById('deleteProductBtn');
+const form = document.getElementById('productForm');
+const productId = document.getElementById('productId');
+const productName = document.getElementById('productName');
+const productCategory = document.getElementById('productCategory');
+const productSku = document.getElementById('productSku');
 const productReorderLevel = document.getElementById('productReorderLevel');
-const modalTitle          = document.getElementById('modalTitle');
-const selectAllCheckbox   = document.getElementById('selectAll');
-const bulkActionsToolbar  = document.getElementById('bulkActionsToolbar');
-const selectedCount       = document.getElementById('selectedCount');
-const bulkDeleteBtn       = document.getElementById('bulkDeleteBtn');
-const clearSelectionBtn   = document.getElementById('clearSelectionBtn');
-const searchInput         = document.getElementById('searchInput');
-const clearFilterBtn      = document.getElementById('clearFilterBtn');
+const modalTitle = document.getElementById('modalTitle');
+const selectAllCheckbox = document.getElementById('selectAll');
+const bulkActionsToolbar = document.getElementById('bulkActionsToolbar');
+const selectedCount = document.getElementById('selectedCount');
+const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+const clearSelectionBtn = document.getElementById('clearSelectionBtn');
+const searchInput = document.getElementById('searchInput');
+const clearFilterBtn = document.getElementById('clearFilterBtn');
 
 // Delete List Modal
-const deleteListModal        = document.getElementById('deleteListModal');
-const deleteListOverlay      = document.getElementById('deleteListOverlay');
-const openDeleteListBtn      = document.getElementById('openDeleteList');
-const closeDeleteListBtn     = document.getElementById('closeDeleteListModal');
-const cancelDeleteListBtn    = document.getElementById('cancelDeleteList');
-const confirmBulkDeleteBtn   = document.getElementById('confirmBulkDelete');
-const selectAllDeleteChk     = document.getElementById('selectAllDelete');
-const deleteListTableBody    = document.getElementById('deleteListTableBody');
-const deleteSelectedCount    = document.getElementById('deleteSelectedCount');
+const deleteListModal = document.getElementById('deleteListModal');
+const deleteListOverlay = document.getElementById('deleteListOverlay');
+const openDeleteListBtn = document.getElementById('openDeleteList');
+const closeDeleteListBtn = document.getElementById('closeDeleteListModal');
+const cancelDeleteListBtn = document.getElementById('cancelDeleteList');
+const confirmBulkDeleteBtn = document.getElementById('confirmBulkDelete');
+const selectAllDeleteChk = document.getElementById('selectAllDelete');
+const deleteListTableBody = document.getElementById('deleteListTableBody');
+const deleteSelectedCount = document.getElementById('deleteSelectedCount');
 
 // Trash / Restore Modal
-const trashModal             = document.getElementById('trashModal');
-const openTrashBtn           = document.getElementById('openTrashBtn');
-const closeTrashBtn          = document.getElementById('closeTrashModal');
-const trashTableBody         = document.getElementById('trashTableBody');
-const trashCount             = document.getElementById('trashCount');
-const trashBadge             = document.getElementById('trashBadge');
-const selectAllTrashChk      = document.getElementById('selectAllTrash');
-const trashSelectedCount     = document.getElementById('trashSelectedCount');
-const restoreSelectedBtn     = document.getElementById('restoreSelectedBtn');
-const permanentDeleteBtn     = document.getElementById('permanentDeleteBtn');
+const trashModal = document.getElementById('trashModal');
+const openTrashBtn = document.getElementById('openTrashBtn');
+const closeTrashBtn = document.getElementById('closeTrashModal');
+const trashTableBody = document.getElementById('trashTableBody');
+const trashCount = document.getElementById('trashCount');
+const trashBadge = document.getElementById('trashBadge');
+const selectAllTrashChk = document.getElementById('selectAllTrash');
+const trashSelectedCount = document.getElementById('trashSelectedCount');
+const restoreSelectedBtn = document.getElementById('restoreSelectedBtn');
+const permanentDeleteBtn = document.getElementById('permanentDeleteBtn');
 
 // ─── State ────────────────────────────────────────────────────────────────────
-let currentEditId     = null;
-let selectedIds       = [];
+let currentEditId = null;
+let selectedIds = [];
 let deleteSelectedIds = [];
-let trashSelectedIds  = [];
+let trashSelectedIds = [];
 
 // ─── Active-product helpers ───────────────────────────────────────────────────
-function activeProducts()  { return products.filter(p => !p.deleted); }
-function deletedProducts() { return products.filter(p => p.deleted);  }
+function activeProducts() { return products.filter(p => !p.deleted); }
+function deletedProducts() { return products.filter(p => p.deleted); }
 
 // ─── Trash badge ──────────────────────────────────────────────────────────────
 function updateTrashBadge() {
@@ -147,16 +147,16 @@ function renderTable() {
 
     tbody.innerHTML = active.map(product => `
         <tr class="hover:bg-slate-50">
-            <td class="px-6 py-3">
-                <input type="checkbox" class="product-checkbox rounded border-slate-300 text-cyan-600 focus:ring-cyan-500" value="${product.id}" ${selectedIds.includes(product.id) ? 'checked' : ''}>
+            <td class="px-4 py-3">
+                <input type="checkbox" class="product-checkbox rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]" value="${product.id}" ${selectedIds.includes(product.id) ? 'checked' : ''}>
             </td>
-            <td class="px-6 py-3 font-medium text-slate-900">${product.name}</td>
-            <td class="px-6 py-3 text-slate-600"><span class="px-2 py-1 rounded-full bg-cyan-100 text-cyan-700 text-xs font-medium">${product.category}</span></td>
-            <td class="px-6 py-3 text-slate-600 font-mono text-xs">${product.sku}</td>
-            <td class="px-6 py-3 text-slate-600 text-xs">${product.warehouse || '-'}</td>
-            <td class="px-6 py-3 text-slate-600"><div class="flex flex-wrap gap-1">${product.models.map(m => `<span class="px-2 py-1 bg-slate-100 text-slate-700 rounded text-xs">${m}</span>`).join('')}</div></td>
-            <td class="px-6 py-3 text-center font-semibold ${(product.reorder_level ?? 10) >= 100 ? 'text-orange-600' : 'text-slate-700'}">${product.reorder_level ?? 10}</td>
-            <td class="px-6 py-3 text-center"><button onclick="openEditProduct(${product.id})" class="text-cyan-600 hover:text-cyan-700 text-sm font-medium">Edit</button></td>
+            <td class="px-4 py-3 font-semibold text-slate-900">${product.name}</td>
+            <td class="px-4 py-3 text-slate-600"><span class="px-2.5 py-0.5 rounded-full bg-[#105f68] text-[#00fff2] text-[11px] font-semibold">${product.category}</span></td>
+            <td class="px-4 py-3 text-slate-600 font-mono text-xs">${product.sku}</td>
+            <td class="px-4 py-3 text-slate-600 text-xs">${product.warehouse || '-'}</td>
+            <td class="px-4 py-3 text-slate-600"><div class="flex flex-wrap gap-1">${product.models.map(m => `<span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded text-xs">${m}</span>`).join('')}</div></td>
+            <td class="px-4 py-3 text-center font-semibold ${(product.reorder_level ?? 10) >= 100 ? 'text-amber-600' : 'text-slate-700'}">${product.reorder_level ?? 10}</td>
+            <td class="px-4 py-3 text-center"><button onclick="openEditProduct(${product.id})" class="text-[#105f68] hover:underline text-xs font-semibold">Edit</button></td>
         </tr>
     `).join('');
 
@@ -206,20 +206,20 @@ function handleFormSubmit(event) {
     const selectedModels = Array.from(document.querySelectorAll('.motorcycle-checkbox:checked')).map(cb => cb.value);
 
     const category = productCategory.value;
-    const brand    = productName.value;
+    const brand = productName.value;
 
     // Slugify: uppercase, spaces → underscores
-    const descSlug  = category.toUpperCase().replace(/\s+/g, '_');
+    const descSlug = category.toUpperCase().replace(/\s+/g, '_');
     const brandSlug = brand.toUpperCase().replace(/\s+/g, '_');
 
     if (productId.value) {
         // EDIT: update existing product
         const product = products.find(p => p.id === parseInt(productId.value, 10));
         if (product) {
-            product.name          = brand;
-            product.category      = category;
+            product.name = brand;
+            product.category = category;
             product.reorder_level = parseInt(productReorderLevel?.value) || 10;
-            product.models        = selectedModels;
+            product.models = selectedModels;
 
             // Only regenerate SKU if brand or category changed
             const sameDescBrand = products.filter(p =>
@@ -344,7 +344,7 @@ function renderDeleteListTable() {
                 <input type="checkbox" class="delete-checkbox rounded border-slate-300 text-red-500 focus:ring-red-400" value="${product.id}" ${deleteSelectedIds.includes(product.id) ? 'checked' : ''}>
             </td>
             <td class="px-4 py-2 font-medium text-slate-900">${product.name}</td>
-            <td class="px-4 py-2 text-slate-600"><span class="px-2 py-1 rounded-full bg-cyan-100 text-cyan-700 text-xs font-medium">${product.category}</span></td>
+            <td class="px-4 py-2 text-slate-600"><span class="px-2.5 py-0.5 rounded-full bg-[#105f68] text-[#00fff2] text-[11px] font-semibold">${product.category}</span></td>
             <td class="px-4 py-2 text-slate-600 font-mono text-xs">${product.sku}</td>
         </tr>
     `).join('');
@@ -464,8 +464,8 @@ function attachTrashCheckboxListeners() {
 function updateTrashActions() {
     const count = trashSelectedIds.length;
     if (trashSelectedCount) trashSelectedCount.textContent = count;
-    if (restoreSelectedBtn)  restoreSelectedBtn.disabled  = count === 0;
-    if (permanentDeleteBtn)  permanentDeleteBtn.disabled  = count === 0;
+    if (restoreSelectedBtn) restoreSelectedBtn.disabled = count === 0;
+    if (permanentDeleteBtn) permanentDeleteBtn.disabled = count === 0;
     if (selectAllTrashChk) {
         selectAllTrashChk.checked = count === deletedProducts().length && count > 0;
     }
@@ -499,16 +499,16 @@ function handlePermanentDelete() {
 
 // ─── Expose globals ───────────────────────────────────────────────────────────
 window.openEditProduct = openEditProduct;
-window.clearSelection  = clearSelection;
+window.clearSelection = clearSelection;
 
 // ─── Event listeners ──────────────────────────────────────────────────────────
-if (openBtn)           openBtn.addEventListener('click', () => openModal());
-if (closeBtn)          closeBtn.addEventListener('click', closeModal);
-if (cancelBtn)         cancelBtn.addEventListener('click', closeModal);
-if (overlay)           overlay.addEventListener('click', closeModal);
-if (form)              form.addEventListener('submit', handleFormSubmit);
-if (deleteBtn)         deleteBtn.addEventListener('click', handleDelete);
-if (bulkDeleteBtn)     bulkDeleteBtn.addEventListener('click', handleBulkDelete);
+if (openBtn) openBtn.addEventListener('click', () => openModal());
+if (closeBtn) closeBtn.addEventListener('click', closeModal);
+if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+if (overlay) overlay.addEventListener('click', closeModal);
+if (form) form.addEventListener('submit', handleFormSubmit);
+if (deleteBtn) deleteBtn.addEventListener('click', handleDelete);
+if (bulkDeleteBtn) bulkDeleteBtn.addEventListener('click', handleBulkDelete);
 if (clearSelectionBtn) clearSelectionBtn.addEventListener('click', clearSelection);
 
 // Search filter
@@ -516,7 +516,7 @@ if (searchInput) {
     searchInput.addEventListener('input', renderTable);
 }
 if (clearFilterBtn) {
-    clearFilterBtn.addEventListener('click', function() {
+    clearFilterBtn.addEventListener('click', function () {
         if (searchInput) {
             searchInput.value = '';
             renderTable();
@@ -540,10 +540,10 @@ if (selectAllCheckbox) {
 }
 
 // Delete List modal
-if (openDeleteListBtn)    openDeleteListBtn.addEventListener('click', openDeleteListModal);
-if (closeDeleteListBtn)   closeDeleteListBtn.addEventListener('click', closeDeleteListModal);
-if (cancelDeleteListBtn)  cancelDeleteListBtn.addEventListener('click', closeDeleteListModal);
-if (deleteListOverlay)    deleteListOverlay.addEventListener('click', closeDeleteListModal);
+if (openDeleteListBtn) openDeleteListBtn.addEventListener('click', openDeleteListModal);
+if (closeDeleteListBtn) closeDeleteListBtn.addEventListener('click', closeDeleteListModal);
+if (cancelDeleteListBtn) cancelDeleteListBtn.addEventListener('click', closeDeleteListModal);
+if (deleteListOverlay) deleteListOverlay.addEventListener('click', closeDeleteListModal);
 if (confirmBulkDeleteBtn) confirmBulkDeleteBtn.addEventListener('click', handleConfirmBulkDelete);
 
 if (selectAllDeleteChk) {
@@ -562,8 +562,8 @@ if (selectAllDeleteChk) {
 }
 
 // Trash modal
-if (openTrashBtn)       openTrashBtn.addEventListener('click', openTrashModal);
-if (closeTrashBtn)      closeTrashBtn.addEventListener('click', closeTrashModal);
+if (openTrashBtn) openTrashBtn.addEventListener('click', openTrashModal);
+if (closeTrashBtn) closeTrashBtn.addEventListener('click', closeTrashModal);
 if (restoreSelectedBtn) restoreSelectedBtn.addEventListener('click', handleRestoreSelected);
 if (permanentDeleteBtn) permanentDeleteBtn.addEventListener('click', handlePermanentDelete);
 

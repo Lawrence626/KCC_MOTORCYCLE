@@ -82,7 +82,9 @@ class ShopInventoryController extends Controller
                 try {
                     // Generate SKU if not provided
                     if (empty($productData['sku'])) {
-                        $category = $productData['category'] ?? 'UNCATEGORIZED';
+                        $category = !empty($productData['category']) && strcasecmp(trim($productData['category']), 'uncategorized') !== 0 
+                            ? $productData['category'] 
+                            : ($productData['product_name'] ?? $productData['name'] ?? 'ACCESSORIES');
                         $brand = $productData['brand'] ?? $productData['name'];
                         
                         // Find existing products with same category and brand to determine unique identifier
@@ -92,15 +94,20 @@ class ShopInventoryController extends Controller
                         $nextId = $existingCount + 1;
                         $uniqueId = str_pad($nextId, 3, '0', STR_PAD_LEFT);
                         
-                        $productData['sku'] = 'KCC_' . str_replace(' ', '_', $category) . '_' . $brand . '_' . $uniqueId;
+                        $productData['sku'] = 'KCC_' . str_replace(' ', '_', strtoupper($category)) . '_' . $brand . '_' . $uniqueId;
                     }
                     
+                    $category = !empty($productData['category']) && strcasecmp(trim($productData['category']), 'uncategorized') !== 0
+                        ? $productData['category']
+                        : ($productData['product_name'] ?? $productData['name'] ?? 'Accessories');
+
                     // Find or create product by SKU
                     $product = Product::firstOrCreate(
                         ['sku' => $productData['sku']],
                         [
                             'name' => $productData['name'],
-                            'category' => $productData['category'] ?? 'Uncategorized',
+                            'product_name' => $productData['product_name'] ?? $productData['name'] ?? null,
+                            'category' => $category,
                             'brand' => $productData['brand'] ?? null,
                             'unit_price' => $productData['price'],
                         ]
@@ -735,7 +742,7 @@ class ShopInventoryController extends Controller
                         'name' => 'Product ' . $productSku,
                         'unit_price' => 0,
                         'stock_quantity' => 0,
-                        'category' => 'Uncategorized',
+                        'category' => 'Accessories',
                     ]
                 );
 

@@ -1,65 +1,111 @@
 <x-layouts.app :title="__('Out of Stock Report')">
     <div class="space-y-4">
-        <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-slate-900">Out of Stock Report</h1>
+        <!-- Header -->
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div class="pl-3 lg:pl-2">
+                <h1 class="text-3xl font-bold text-slate-900">Out of Stock Report</h1>
                 <p class="text-xs text-slate-500 mt-1">Monitor critical stockouts and low inventory that need replenishment first.</p>
             </div>
-            <button class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-slate-800 transition">Download stockout list</button>
+            <div class="flex flex-col gap-2 sm:flex-row pr-4">
+                <a href="{{ route('analytics.out_of_stock.export') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
+                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    <span>Download Stockout List</span>
+                </a>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-                <p class="text-[10px] uppercase tracking-[0.24em] text-slate-400">Out of stock SKUs</p>
-                <p class="mt-2 text-2xl font-semibold text-slate-900">{{ number_format($outOfStockCount) }}</p>
-                <p class="mt-1 text-xs text-slate-500">Products currently unavailable for sale.</p>
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Out of Stock SKUs</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">{{ number_format($outOfStockCount) }}</p>
+                            <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Products currently unavailable for sale.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm5.31-3.1L6.1 5.69C7.45 4.63 9.15 4 12 4c4.42 0 8 3.58 8 8 0 1.85-.63 3.55-1.69 4.9z"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
-            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-                <p class="text-[10px] uppercase tracking-[0.24em] text-slate-400">Low stock SKUs</p>
-                <p class="mt-2 text-2xl font-semibold text-slate-900">{{ number_format($lowStockCount) }}</p>
-                <p class="mt-1 text-xs text-slate-500">Products at or below reorder level demanding urgent attention.</p>
+
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Low Stock SKUs</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">{{ number_format($lowStockCount) }}</p>
+                            <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Products at or below reorder level demanding urgent attention.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M4.47 21h15.06c1.54 0 2.5-1.67 1.73-3L13.73 4.99c-.77-1.33-2.69-1.33-3.46 0L2.74 18c-.77 1.33.19 3 1.73 3zM13 18h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
-            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-                <p class="text-[10px] uppercase tracking-[0.24em] text-slate-400">Action priority</p>
-                <p class="mt-2 text-xl font-semibold text-slate-900">{{ $outOfStockCount > 0 ? 'Restock Out-of-Stock First' : 'Inventory Stable' }}</p>
-                <p class="mt-1 text-xs text-slate-500">Recommended first step for replenishment planning.</p>
+
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Action Priority</p>
+                        <div class="mt-1">
+                            <p class="text-lg font-bold text-black">{{ $outOfStockCount > 0 ? 'Restock Out-of-Stock First' : 'Inventory Stable' }}</p>
+                            <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Recommended first step for replenishment planning.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-3">
-            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col h-full">
+            <div class="rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm flex flex-col justify-between h-full overflow-hidden">
                 <div class="flex items-center justify-between gap-3">
                     <div>
                         <h2 class="text-base font-semibold text-slate-900">Out of stock products</h2>
                         <p class="text-xs text-slate-500 mt-1">Products that need immediate restocking.</p>
                     </div>
-                    <span class="text-xs uppercase tracking-[0.2em] text-slate-400">Critical</span>
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-red-700 border border-red-200/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                        Critical
+                    </span>
                 </div>
 
-                <div class="mt-4 flex-1 overflow-hidden">
-                    <div class="h-[340px] overflow-y-auto overflow-x-hidden rounded-2xl border border-slate-100">
-                        <table class="w-full min-w-full table-fixed text-left text-sm text-slate-700">
-                            <thead class="bg-slate-50 text-xs uppercase tracking-[0.24em] text-slate-500">
-                                <tr class="sticky top-0 z-10 bg-slate-50">
-                                    <th class="w-[40%] px-3 py-3">Product</th>
-                                    <th class="w-[20%] px-3 py-3">Category</th>
-                                    <th class="w-[20%] px-3 py-3">SKU</th>
-                                    <th class="w-[20%] px-3 py-3">Last restock</th>
+                <div class="mt-4 flex-1 flex flex-col justify-between overflow-hidden rounded-[10px] border border-slate-200">
+                    <div class="overflow-x-auto flex-1">
+                        <table class="w-full text-left text-xs text-slate-700">
+                            <thead class="border-b border-slate-200 bg-[#0f172a]">
+                                <tr>
+                                    <th class="w-[30%] px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white whitespace-nowrap">Product</th>
+                                    <th class="w-[20%] px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white whitespace-nowrap">Category</th>
+                                    <th class="w-[25%] px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white whitespace-nowrap">SKU</th>
+                                    <th class="w-[25%] px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white whitespace-nowrap">Last restock</th>
                                 </tr>
                             </thead>
                             <tbody id="outOfStockTableBody" class="divide-y divide-slate-200 bg-white">
-                                @forelse($outOfStockProducts as $product)
+                                @forelse(collect($outOfStockProducts)->take(5) as $product)
                                     <tr class="hover:bg-slate-50 transition">
-                                        <td class="px-3 py-3 font-semibold text-slate-900">
+                                        <td class="px-3 py-2.5 font-semibold text-slate-900">
                                             <div class="truncate">{{ $product->product_name ?: $product->name }}</div>
                                         </td>
-                                        <td class="px-3 py-3 text-slate-600">
+                                        <td class="px-3 py-2.5 text-slate-600">
                                             <div class="truncate">{{ $product->category }}</div>
                                         </td>
-                                        <td class="px-3 py-3 text-slate-900">
+                                        <td class="px-3 py-2.5 text-slate-900 font-mono text-[11px]">
                                             <div class="truncate">{{ $product->sku }}</div>
                                         </td>
-                                        <td class="px-3 py-3 text-slate-500">
+                                        <td class="px-3 py-2.5 text-slate-500">
                                             <div class="truncate">{{ optional($product->last_restock_date)->format('M d, Y') ?? 'N/A' }}</div>
                                         </td>
                                     </tr>
@@ -71,54 +117,55 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
-
-                <div class="mt-4 border-t border-slate-200 pt-4">
-                    <div class="flex flex-wrap items-center gap-3">
-                        <div class="flex gap-3">
-                            <button id="outOfStockPrev" type="button" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed">← Previous</button>
-                            <button id="outOfStockNext" type="button" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed">Next →</button>
-                        </div>
-                        <div class="flex-1 text-center min-w-[140px]">
-                            <p id="outOfStockPageInfo" class="text-sm text-slate-600">Page 1 of 1</p>
+                    <!-- Out of Stock Pagination -->
+                    <div class="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-3 py-2 text-xs">
+                        <p id="outOfStockPageInfo" class="text-slate-600">Showing {{ collect($outOfStockProducts)->count() > 0 ? 1 : 0 }}-{{ min(5, collect($outOfStockProducts)->count()) }} of {{ collect($outOfStockProducts)->count() }} products</p>
+                        <div id="outOfStockPaginationControls" class="flex gap-1">
+                            <button type="button" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>← Prev</button>
+                            <button type="button" class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">1</button>
+                            <button type="button" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" {{ collect($outOfStockProducts)->count() <= 5 ? 'disabled' : '' }}>Next →</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col h-full">
+            <div class="rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm flex flex-col justify-between h-full overflow-hidden">
                 <div class="flex items-center justify-between gap-3">
                     <div>
-                        <h2 class="text-base font-semibold text-slate-900">Low stock alerts</h2>
+                        <h2 class="text-base font-semibold text-slate-900">Low stock products</h2>
                         <p class="text-xs text-slate-500 mt-1">Products at or below reorder levels.</p>
                     </div>
-                    <span class="text-xs uppercase tracking-[0.2em] text-slate-400">Review</span>
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-amber-700 border border-amber-200/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                        Review
+                    </span>
                 </div>
 
-                <div class="mt-4 flex-1 overflow-hidden">
-                    <div class="h-[340px] overflow-y-auto overflow-x-hidden rounded-2xl border border-slate-100">
-                        <table class="w-full min-w-full table-fixed text-left text-sm text-slate-700">
-                            <thead class="bg-slate-50 text-xs uppercase tracking-[0.24em] text-slate-500">
-                                <tr class="sticky top-0 z-10 bg-slate-50">
-                                    <th class="w-[40%] px-3 py-3">Product</th>
-                                    <th class="w-[20%] px-3 py-3">Stock</th>
-                                    <th class="w-[20%] px-3 py-3">Reorder</th>
-                                    <th class="w-[20%] px-3 py-3">Need</th>
+                <div class="mt-4 flex-1 flex flex-col justify-between overflow-hidden rounded-[10px] border border-slate-200">
+                    <div class="overflow-x-auto flex-1">
+                        <table class="w-full text-left text-xs text-slate-700">
+                            <thead class="border-b border-slate-200 bg-[#0f172a]">
+                                <tr>
+                                    <th class="w-[40%] px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white whitespace-nowrap">Product</th>
+                                    <th class="w-[20%] px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white whitespace-nowrap">Stock</th>
+                                    <th class="w-[20%] px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white whitespace-nowrap">Reorder</th>
+                                    <th class="w-[20%] px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white whitespace-nowrap">Need</th>
                                 </tr>
                             </thead>
                             <tbody id="lowStockTableBody" class="divide-y divide-slate-200 bg-white">
-                                @forelse($lowStockProducts as $product)
+                                @forelse(collect($lowStockProducts)->take(5) as $product)
                                     <tr class="hover:bg-slate-50 transition">
-                                        <td class="px-3 py-3 font-semibold text-slate-900">
+                                        <td class="px-3 py-2.5 font-semibold text-slate-900">
                                             <div class="truncate">{{ $product->product_name ?: $product->name }}</div>
+                                            <div class="truncate text-[10px] text-slate-400 font-normal tracking-wide mt-0.5">{{ $product->sku }}</div>
                                         </td>
-                                        <td class="px-3 py-3 text-slate-900">
+                                        <td class="px-3 py-2.5 text-slate-900">
                                             <div class="truncate">{{ number_format($product->stock_quantity) }}</div>
                                         </td>
-                                        <td class="px-3 py-3 text-slate-600">
+                                        <td class="px-3 py-2.5 text-slate-600">
                                             <div class="truncate">{{ number_format($product->reorder_level) }}</div>
                                         </td>
-                                        <td class="px-3 py-3 text-slate-900">
+                                        <td class="px-3 py-2.5 text-slate-900">
                                             <div class="truncate">{{ number_format(max(0, $product->reorder_level - $product->stock_quantity)) }}</div>
                                         </td>
                                     </tr>
@@ -130,16 +177,13 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
-
-                <div class="mt-4 border-t border-slate-200 pt-4">
-                    <div class="flex flex-wrap items-center gap-3">
-                        <div class="flex gap-3">
-                            <button id="lowStockPrev" type="button" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed">← Previous</button>
-                            <button id="lowStockNext" type="button" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed">Next →</button>
-                        </div>
-                        <div class="flex-1 text-center min-w-[140px]">
-                            <p id="lowStockPageInfo" class="text-sm text-slate-600">Page 1 of 1</p>
+                    <!-- Low Stock Pagination -->
+                    <div class="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-3 py-2 text-xs">
+                        <p id="lowStockPageInfo" class="text-slate-600">Showing {{ collect($lowStockProducts)->count() > 0 ? 1 : 0 }}-{{ min(5, collect($lowStockProducts)->count()) }} of {{ collect($lowStockProducts)->count() }} products</p>
+                        <div id="lowStockPaginationControls" class="flex gap-1">
+                            <button type="button" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>← Prev</button>
+                            <button type="button" class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">1</button>
+                            <button type="button" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" {{ collect($lowStockProducts)->count() <= 5 ? 'disabled' : '' }}>Next →</button>
                         </div>
                     </div>
                 </div>
@@ -151,26 +195,26 @@
         $outOfStockJs = $outOfStockProducts->map(function($product) {
             return [
                 'name' => $product->product_name ?: $product->name,
-                'category' => $product->category,
                 'sku' => $product->sku,
-                'last_restock_date' => optional($product->last_restock_date)->format('Y-m-d'),
+                'stock_quantity' => $product->stock_quantity ?? 0,
+                'reorder_level' => $product->reorder_level ?? 0,
+                'need' => max(0, 100 - ($product->stock_quantity ?? 0)),
             ];
         })->toArray();
 
         $lowStockJs = $lowStockProducts->map(function($product) {
             return [
                 'name' => $product->product_name ?: $product->name,
+                'sku' => $product->sku,
                 'stock_quantity' => $product->stock_quantity,
                 'reorder_level' => $product->reorder_level,
-                'need' => max(0, $product->reorder_level - $product->stock_quantity),
+                'need' => max(0, 100 - $product->stock_quantity),
             ];
         })->toArray();
     @endphp
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const pageSize = 5;
-
             const outOfStockData = @json($outOfStockJs);
             const lowStockData = @json($lowStockJs);
 
@@ -179,125 +223,114 @@
                 lowStockPage: 1,
             };
 
-            function formatDate(value) {
-                if (!value) {
-                    return 'N/A';
-                }
-                const date = new Date(value);
-                if (Number.isNaN(date.getTime())) {
-                    return value;
-                }
-                return new Intl.DateTimeFormat('en', { month: 'short', day: '2-digit', year: 'numeric' }).format(date);
-            }
+            window.goToPage = function(stateKey, page) {
+                state[stateKey] = page;
+                if (stateKey === 'outOfStockPage') window.updateOutOfStock();
+                if (stateKey === 'lowStockPage') window.updateLowStock();
+            };
 
-            function renderTable({ data, page, bodyId, infoId, prevId, nextId, renderRow, emptyMessage }) {
+            function renderPaginatedTable({ data, stateKey, bodyId, infoId, controlsId, renderRow, emptyMessage }) {
                 const body = document.getElementById(bodyId);
-                const pageInfo = document.getElementById(infoId);
-                const prevButton = document.getElementById(prevId);
-                const nextButton = document.getElementById(nextId);
+                const info = document.getElementById(infoId);
+                const controls = document.getElementById(controlsId);
 
-                if (!body || !pageInfo || !prevButton || !nextButton) {
-                    return;
-                }
+                if (!body || !info || !controls) return;
 
+                const pageSize = 5;
+                const page = state[stateKey] || 1;
                 const totalPages = Math.max(1, Math.ceil(data.length / pageSize));
                 const currentPage = Math.min(Math.max(page, 1), totalPages);
-                const start = (currentPage - 1) * pageSize;
-                const pageItems = data.slice(start, start + pageSize);
+                state[stateKey] = currentPage;
 
-                if (pageItems.length === 0) {
+                const start = (currentPage - 1) * pageSize;
+                const end = Math.min(start + pageSize, data.length);
+                const pageItems = data.slice(start, end);
+
+                if (data.length === 0) {
+                    info.textContent = 'Showing 0 of 0 products';
                     body.innerHTML = `<tr><td colspan="4" class="px-3 py-5 text-center text-slate-500">${emptyMessage}</td></tr>`;
                 } else {
+                    info.textContent = `Showing ${start + 1}-${end} of ${data.length} products`;
                     body.innerHTML = pageItems.map(renderRow).join('');
                 }
 
-                pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-                prevButton.disabled = currentPage <= 1;
-                nextButton.disabled = currentPage >= totalPages;
-                prevButton.setAttribute('aria-disabled', String(prevButton.disabled));
-                nextButton.setAttribute('aria-disabled', String(nextButton.disabled));
+                let controlsHtml = `<button type="button" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" ${currentPage <= 1 ? 'disabled' : ''} onclick="window.goToPage('${stateKey}', ${currentPage - 1})">← Prev</button>`;
 
-                return currentPage;
-            }
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, startPage + 4);
+                if (endPage - startPage < 4) {
+                    startPage = Math.max(1, endPage - 4);
+                }
+                startPage = Math.max(1, startPage);
 
-            function setupPagination({ data, stateKey, bodyId, infoId, prevId, nextId, renderRow, emptyMessage }) {
-                const prevButton = document.getElementById(prevId);
-                const nextButton = document.getElementById(nextId);
-
-                const update = () => {
-                    state[stateKey] = renderTable({
-                        data,
-                        page: state[stateKey],
-                        bodyId,
-                        infoId,
-                        prevId,
-                        nextId,
-                        renderRow,
-                        emptyMessage,
-                    });
-                };
-
-                if (prevButton) {
-                    prevButton.addEventListener('click', function() {
-                        if (state[stateKey] > 1) {
-                            state[stateKey] -= 1;
-                            update();
-                        }
-                    });
+                for (let i = startPage; i <= endPage; i++) {
+                    if (i === currentPage) {
+                        controlsHtml += `<button type="button" class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">${i}</button>`;
+                    } else {
+                        controlsHtml += `<button type="button" onclick="window.goToPage('${stateKey}', ${i})" class="inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50">${i}</button>`;
+                    }
                 }
 
-                if (nextButton) {
-                    nextButton.addEventListener('click', function() {
-                        const totalPages = Math.max(1, Math.ceil(data.length / pageSize));
-                        if (state[stateKey] < totalPages) {
-                            state[stateKey] += 1;
-                            update();
-                        }
-                    });
-                }
+                controlsHtml += `<button type="button" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" ${currentPage >= totalPages ? 'disabled' : ''} onclick="window.goToPage('${stateKey}', ${currentPage + 1})">Next →</button>`;
 
-                update();
+                controls.innerHTML = controlsHtml;
             }
 
-            setupPagination({
-                data: outOfStockData,
-                stateKey: 'outOfStockPage',
-                bodyId: 'outOfStockTableBody',
-                infoId: 'outOfStockPageInfo',
-                prevId: 'outOfStockPrev',
-                nextId: 'outOfStockNext',
-                renderRow: function(product) {
-                    return `
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="px-3 py-3 font-semibold text-slate-900"><div class="truncate">${product.name}</div></td>
-                            <td class="px-3 py-3 text-slate-600"><div class="truncate">${product.category}</div></td>
-                            <td class="px-3 py-3 text-slate-900"><div class="truncate">${product.sku}</div></td>
-                            <td class="px-3 py-3 text-slate-500"><div class="truncate">${formatDate(product.last_restock_date)}</div></td>
-                        </tr>
-                    `.trim();
-                },
-                emptyMessage: 'No out of stock items currently.',
-            });
+            window.updateOutOfStock = function() {
+                renderPaginatedTable({
+                    data: outOfStockData,
+                    stateKey: 'outOfStockPage',
+                    bodyId: 'outOfStockTableBody',
+                    infoId: 'outOfStockPageInfo',
+                    controlsId: 'outOfStockPaginationControls',
+                    renderRow: function(product) {
+                        return `
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="px-3 py-2.5 font-semibold text-slate-900">
+                                    <div class="truncate">${product.name}</div>
+                                </td>
+                                <td class="px-3 py-2.5 text-slate-600">
+                                    <div class="truncate">${product.category || 'N/A'}</div>
+                                </td>
+                                <td class="px-3 py-2.5 text-slate-900 font-mono text-[11px]">
+                                    <div class="truncate">${product.sku || 'N/A'}</div>
+                                </td>
+                                <td class="px-3 py-2.5 text-slate-500">
+                                    <div class="truncate">${product.last_restock_date || 'N/A'}</div>
+                                </td>
+                            </tr>
+                        `.trim();
+                    },
+                    emptyMessage: 'No out of stock items currently.',
+                });
+            };
 
-            setupPagination({
-                data: lowStockData,
-                stateKey: 'lowStockPage',
-                bodyId: 'lowStockTableBody',
-                infoId: 'lowStockPageInfo',
-                prevId: 'lowStockPrev',
-                nextId: 'lowStockNext',
-                renderRow: function(product) {
-                    return `
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="px-3 py-3 font-semibold text-slate-900"><div class="truncate">${product.name}</div></td>
-                            <td class="px-3 py-3 text-slate-900"><div class="truncate">${product.stock_quantity}</div></td>
-                            <td class="px-3 py-3 text-slate-600"><div class="truncate">${product.reorder_level}</div></td>
-                            <td class="px-3 py-3 text-slate-900"><div class="truncate">${product.need}</div></td>
-                        </tr>
-                    `.trim();
-                },
-                emptyMessage: 'No low stock products detected.',
-            });
+            window.updateLowStock = function() {
+                renderPaginatedTable({
+                    data: lowStockData,
+                    stateKey: 'lowStockPage',
+                    bodyId: 'lowStockTableBody',
+                    infoId: 'lowStockPageInfo',
+                    controlsId: 'lowStockPaginationControls',
+                    renderRow: function(product) {
+                        return `
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="px-3 py-2.5 font-semibold text-slate-900">
+                                    <div class="truncate">${product.name}</div>
+                                    <div class="truncate text-[10px] text-slate-400 font-normal tracking-wide mt-0.5">${product.sku || 'N/A'}</div>
+                                </td>
+                                <td class="px-3 py-2.5 text-slate-900"><div class="truncate">${product.stock_quantity}</div></td>
+                                <td class="px-3 py-2.5 text-slate-600"><div class="truncate">${product.reorder_level}</div></td>
+                                <td class="px-3 py-2.5 text-slate-900"><div class="truncate">${product.need}</div></td>
+                            </tr>
+                        `.trim();
+                    },
+                    emptyMessage: 'No low stock products detected.',
+                });
+            };
+
+            window.updateOutOfStock();
+            window.updateLowStock();
         });
     </script>
 </x-layouts.app>

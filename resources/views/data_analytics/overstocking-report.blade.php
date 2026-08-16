@@ -1,64 +1,124 @@
 <x-layouts.app :title="__('Overstocking Report')">
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 #f1f5f9;
+        }
+    </style>
+
     <div class="space-y-4">
-        <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-slate-900">Overstocking Report</h1>
+        <!-- Header -->
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div class="pl-3 lg:pl-2">
+                <h1 class="text-3xl font-bold text-slate-900">Overstocking Report</h1>
                 <p class="text-xs text-slate-500 mt-1">Identify excess inventory and categories that are tying up working capital.</p>
             </div>
-            <button class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-slate-800 transition">Export overstock data</button>
+            <div class="flex flex-col gap-2 sm:flex-row pr-4">
+                <a href="{{ route('analytics.overstocking.export') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
+                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    <span>Export Overstock Report</span>
+                </a>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-                <p class="text-[10px] uppercase tracking-[0.24em] text-slate-400">Overstock SKUs</p>
-                <p class="mt-2 text-2xl font-semibold text-slate-900">{{ number_format($overstockSkuCount) }}</p>
-                <p class="mt-1 text-xs text-slate-500">Products stocked above reorder levels.</p>
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Overstock SKUs</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">{{ number_format($overstockSkuCount) }}</p>
+                            <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Products stocked above reorder levels.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v3.01c0 .72.38 1.36.96 1.72L3 20c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2l.04-11.27c.58-.36.96-1 .96-1.72V4c0-1.1-.9-2-2-2zM9 4h6v2H9V4zm10 16H5l-.03-10h14.06L19 20z"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
-            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-                <p class="text-[10px] uppercase tracking-[0.24em] text-slate-400">Excess units</p>
-                <p class="mt-2 text-2xl font-semibold text-slate-900">{{ number_format($totalExcessUnits) }}</p>
-                <p class="mt-1 text-xs text-slate-500">Total units above minimum target levels.</p>
+
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Excess Stock Units</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">{{ number_format($totalExcessUnits) }}</p>
+                            <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Total units available beyond reorder point.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.38 5.74zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
-            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-                <p class="text-[10px] uppercase tracking-[0.24em] text-slate-400">Potential overstock value</p>
-                <p class="mt-2 text-2xl font-semibold text-slate-900">₱{{ number_format($totalOverstockValue, 2) }}</p>
-                <p class="mt-1 text-xs text-slate-500">Estimated capital tied up in surplus inventory.</p>
+
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Tied-up Capital Value</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">₱{{ number_format($totalOverstockValue ?? 0, 2) }}</p>
+                            <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Estimated cost value of excess units in stock.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 xl:grid-cols-[1.4fr_0.8fr] gap-3">
-            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col h-full">
-                <div class="flex items-center justify-between gap-3">
-                    <div>
-                        <h2 class="text-base font-semibold text-slate-900">Overstocked products</h2>
-                        <p class="text-xs text-slate-500 mt-1">SKU list sorted by excess quantity and inventory value.</p>
-                    </div>
-                    <span class="text-xs uppercase tracking-[0.2em] text-slate-400">Paginated</span>
+        <div class="grid grid-cols-1 xl:grid-cols-[1.4fr_1fr] gap-3">
+            <div class="rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm">
+                <div>
+                    <h2 class="text-base font-semibold text-slate-900">Overstocked Products</h2>
+                    <p class="text-xs text-slate-500 mt-1">Products with inventory levels exceeding reorder limits.</p>
                 </div>
-
-                <div class="mt-4 flex-1 overflow-hidden">
-                    <div class="overflow-hidden rounded-2xl border border-slate-100">
-                        <table class="w-full min-w-full table-fixed text-left text-sm text-slate-700">
-                            <thead class="bg-slate-50 text-xs uppercase tracking-[0.24em] text-slate-500">
-                                <tr class="sticky top-0 z-10 bg-slate-50">
-                                    <th class="w-[35%] px-3 py-3">Product</th>
-                                    <th class="w-[15%] px--5 py-3">Current Stock</th>
-                                    <th class="w-[15%] px--5 py-3">Maximum Stock</th>
-                                    <th class="w-[15%] px--5 py-3">Excess Stock</th>
-                                    <th class="w-[20%] px-3 py-3">Value</th>
+                <div class="mt-4 overflow-hidden rounded-[10px] border border-slate-200">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-left text-xs text-slate-700">
+                            <thead class="border-b border-slate-200 bg-[#0f172a]">
+                                <tr>
+                                    <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</th>
+                                    <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Stock</th>
+                                    <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Reorder</th>
+                                    <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Excess</th>
+                                    <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Tied Capital</th>
                                 </tr>
                             </thead>
                             <tbody id="overstockTableBody" class="divide-y divide-slate-200 bg-white">
                                 @forelse($overstockedProducts as $product)
                                     <tr class="hover:bg-slate-50 transition">
-                                        <td class="px-3 py-3 font-semibold text-slate-900">
+                                        <td class="px-3 py-2.5 font-semibold text-slate-900">
                                             <div class="truncate">{{ $product->product_name ?: $product->name }}</div>
-                                            <div class="text-xs text-slate-500 truncate">{{ $product->sku }}</div>
+                                            <div class="text-[11px] text-slate-400 font-mono truncate">{{ $product->sku }}</div>
                                         </td>
-                                        <td class="px-3 py-3 text-slate-900"><div class="truncate">{{ number_format($product->stock_quantity) }}</div></td>
-                                        <td class="px-3 py-3 text-slate-600"><div class="truncate">{{ number_format($product->reorder_level) }}</div></td>
-                                        <td class="px-3 py-3 text-slate-900"><div class="truncate">{{ number_format(max(0, $product->stock_quantity - $product->reorder_level)) }}</div></td>
-                                        <td class="px-3 py-3 text-slate-900"><div class="truncate">₱{{ number_format(max(0, $product->stock_quantity - $product->reorder_level) * $product->unit_price, 2) }}</div></td>
+                                        <td class="px-3 py-2.5 text-slate-900"><div class="truncate">{{ number_format($product->stock_quantity) }}</div></td>
+                                        <td class="px-3 py-2.5 text-slate-600"><div class="truncate">{{ number_format($product->reorder_level) }}</div></td>
+                                        <td class="px-3 py-2.5 text-slate-900"><div class="truncate">{{ number_format(max(0, $product->stock_quantity - $product->reorder_level)) }}</div></td>
+                                        <td class="px-3 py-2.5 text-slate-900 font-semibold"><div class="truncate">₱{{ number_format(max(0, $product->stock_quantity - $product->reorder_level) * $product->unit_price, 2) }}</div></td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -68,39 +128,35 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
-
-                <div class="mt-4 border-t border-slate-200 pt-4">
-                    <div class="flex flex-wrap items-center gap-3">
-                        <div class="flex gap-3">
-                            <button id="overstockPrev" type="button" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed">← Previous</button>
-                            <button id="overstockNext" type="button" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed">Next →</button>
-                        </div>
-                        <div class="flex-1 text-center min-w-[140px]">
-                            <p id="overstockPageInfo" class="text-sm text-slate-600">Page 1 of 1</p>
+                    <!-- Overstock Pagination -->
+                    <div class="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-3 py-2 text-xs">
+                        <p id="overstockPageInfo" class="text-slate-600">Showing 0 of 0 overstocked products</p>
+                        <div id="overstockPaginationControls" class="flex gap-1">
+                            <button id="overstockPrev" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">← Prev</button>
+                            <button id="overstockNext" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">Next →</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col h-full">
+            <div class="rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm flex flex-col h-full">
                 <div>
                     <h2 class="text-base font-semibold text-slate-900">Category exposure</h2>
                     <p class="text-xs text-slate-500 mt-1">Overstock exposure by product category.</p>
                 </div>
-                <div class="mt-4 space-y-2 flex-1 overflow-y-auto max-h-[340px] pr-1 sidebar-scroll">
+                <div class="mt-4 space-y-2 flex-1 overflow-y-auto max-h-[340px] pr-1 custom-scrollbar">
                     @forelse($categoryBreakdown as $category => $value)
-                        <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                        <div class="rounded-[14px] border border-slate-100 p-3" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
                             <div class="flex items-center justify-between gap-3">
                                 <div>
-                                    <p class="font-semibold text-slate-900">{{ $category ?: 'Uncategorized' }}</p>
-                                    <p class="text-xs text-slate-500">Potential value by category</p>
+                                    <p class="font-semibold text-slate-900 text-xs">{{ $category ?: 'Uncategorized' }}</p>
+                                    <p class="text-[11px] text-slate-500">Potential value by category</p>
                                 </div>
-                                <p class="text-slate-900 font-semibold">₱{{ number_format($value, 2) }}</p>
+                                <p class="text-slate-900 font-semibold text-xs">₱{{ number_format($value, 2) }}</p>
                             </div>
                         </div>
                     @empty
-                        <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4 text-slate-500">No category overstock data available.</div>
+                        <div class="rounded-[14px] border border-slate-100 p-3 text-xs text-slate-500" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">No category overstock data available.</div>
                     @endforelse
                 </div>
             </div>
@@ -124,95 +180,81 @@
         document.addEventListener('DOMContentLoaded', function() {
             const pageSize = 5;
             const overstockData = @json($overstockJs);
-            const state = { overstockPage: 1 };
+            let currentPage = 1;
 
-            function renderTable({ data, page, bodyId, infoId, prevId, nextId, renderRow, emptyMessage }) {
-                const body = document.getElementById(bodyId);
-                const pageInfo = document.getElementById(infoId);
-                const prevButton = document.getElementById(prevId);
-                const nextButton = document.getElementById(nextId);
-                if (!body || !pageInfo || !prevButton || !nextButton) {
-                    return 1;
-                }
+            window.goToOverstockPage = function(page) {
+                currentPage = page;
+                render();
+            };
 
-                const totalPages = Math.max(1, Math.ceil(data.length / pageSize));
-                const currentPage = Math.min(Math.max(page, 1), totalPages);
+            function render() {
+                const body = document.getElementById('overstockTableBody');
+                const pageInfo = document.getElementById('overstockPageInfo');
+                const controls = document.getElementById('overstockPaginationControls');
+                if (!body || !pageInfo || !controls) return;
+
+                const totalPages = Math.max(1, Math.ceil(overstockData.length / pageSize));
+                currentPage = Math.min(Math.max(currentPage, 1), totalPages);
                 const start = (currentPage - 1) * pageSize;
-                const pageItems = data.slice(start, start + pageSize);
+                const end = Math.min(start + pageSize, overstockData.length);
+                const pageItems = overstockData.slice(start, end);
 
                 if (pageItems.length === 0) {
-                    body.innerHTML = `<tr><td colspan="5" class="px-3 py-5 text-center text-slate-500">${emptyMessage}</td></tr>`;
+                    body.innerHTML = `<tr><td colspan="5" class="px-3 py-6 text-center text-slate-500">No overstocked products found.</td></tr>`;
+                    pageInfo.textContent = `Showing 0 of 0 overstocked products`;
                 } else {
-                    body.innerHTML = pageItems.map(renderRow).join('');
-                }
-
-                pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-                prevButton.disabled = currentPage <= 1;
-                nextButton.disabled = currentPage >= totalPages;
-                prevButton.setAttribute('aria-disabled', String(prevButton.disabled));
-                nextButton.setAttribute('aria-disabled', String(nextButton.disabled));
-                return currentPage;
-            }
-
-            function setupPagination({ data, stateKey, bodyId, infoId, prevId, nextId, renderRow, emptyMessage }) {
-                const prevButton = document.getElementById(prevId);
-                const nextButton = document.getElementById(nextId);
-
-                const update = () => {
-                    state[stateKey] = renderTable({
-                        data,
-                        page: state[stateKey],
-                        bodyId,
-                        infoId,
-                        prevId,
-                        nextId,
-                        renderRow,
-                        emptyMessage,
-                    });
-                };
-
-                if (prevButton) {
-                    prevButton.addEventListener('click', function() {
-                        if (state[stateKey] > 1) {
-                            state[stateKey] -= 1;
-                            update();
-                        }
-                    });
-                }
-
-                if (nextButton) {
-                    nextButton.addEventListener('click', function() {
-                        const totalPages = Math.max(1, Math.ceil(data.length / pageSize));
-                        if (state[stateKey] < totalPages) {
-                            state[stateKey] += 1;
-                            update();
-                        }
-                    });
-                }
-
-                update();
-            }
-
-            setupPagination({
-                data: overstockData,
-                stateKey: 'overstockPage',
-                bodyId: 'overstockTableBody',
-                infoId: 'overstockPageInfo',
-                prevId: 'overstockPrev',
-                nextId: 'overstockNext',
-                renderRow: function(product) {
-                    return `
+                    body.innerHTML = pageItems.map(product => `
                         <tr class="hover:bg-slate-50 transition">
-                            <td class="px-3 py-3 font-semibold text-slate-900"><div class="truncate">${product.name}</div><div class="text-xs text-slate-500 truncate">${product.sku}</div></td>
-                            <td class="px-3 py-3 text-slate-900"><div class="truncate">${product.stock_quantity.toLocaleString()}</div></td>
-                            <td class="px-3 py-3 text-slate-600"><div class="truncate">${product.reorder_level.toLocaleString()}</div></td>
-                            <td class="px-3 py-3 text-slate-900"><div class="truncate">${product.excess.toLocaleString()}</div></td>
-                            <td class="px-3 py-3 text-slate-900"><div class="truncate">₱${product.value.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div></td>
+                            <td class="px-3 py-2.5 font-semibold text-slate-900">
+                                <div class="truncate">${product.name}</div>
+                                <div class="text-[11px] text-slate-400 font-mono truncate">${product.sku}</div>
+                            </td>
+                            <td class="px-3 py-2.5 text-slate-900"><div class="truncate">${product.stock_quantity.toLocaleString()}</div></td>
+                            <td class="px-3 py-2.5 text-slate-600"><div class="truncate">${product.reorder_level.toLocaleString()}</div></td>
+                            <td class="px-3 py-2.5 text-slate-900"><div class="truncate">${product.excess.toLocaleString()}</div></td>
+                            <td class="px-3 py-2.5 text-slate-900 font-semibold"><div class="truncate">₱${product.value.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div></td>
                         </tr>
-                    `.trim();
-                },
-                emptyMessage: 'No overstocked products found.',
-            });
+                    `).join('');
+                    pageInfo.textContent = `Showing ${start + 1}-${end} of ${overstockData.length} overstocked products`;
+                }
+
+                let controlsHtml = `<button type="button" id="overstockPrev" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" ${currentPage <= 1 ? 'disabled' : ''}>← Prev</button>`;
+
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, startPage + 4);
+                if (endPage - startPage < 4) {
+                    startPage = Math.max(1, endPage - 4);
+                }
+                startPage = Math.max(1, startPage);
+
+                for (let i = startPage; i <= endPage; i++) {
+                    if (i === currentPage) {
+                        controlsHtml += `<button type="button" class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">${i}</button>`;
+                    } else {
+                        controlsHtml += `<button type="button" onclick="goToOverstockPage(${i})" class="inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50">${i}</button>`;
+                    }
+                }
+
+                controlsHtml += `<button type="button" id="overstockNext" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" ${currentPage >= totalPages ? 'disabled' : ''}>Next →</button>`;
+
+                controls.innerHTML = controlsHtml;
+
+                document.getElementById('overstockPrev')?.addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        render();
+                    }
+                });
+
+                document.getElementById('overstockNext')?.addEventListener('click', () => {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        render();
+                    }
+                });
+            }
+
+            render();
         });
     </script>
 </x-layouts.app>

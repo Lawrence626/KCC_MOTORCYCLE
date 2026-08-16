@@ -128,6 +128,7 @@ class WarehouseManagementController extends Controller
                     'compatible_model' => $cat->product_name,
                     'sku'              => $cat->sku,
                     'price'            => $p->unit_price ?? 0,
+                    'product_name'     => $p->product_name ?? $p->name,
                 ];
                 if ($cat->sku) {
                     $catalogBySku[strtolower(trim($cat->sku))] = $entry;
@@ -147,6 +148,7 @@ class WarehouseManagementController extends Controller
                     'compatible_model' => $p->compatibility,
                     'sku'              => $sku,
                     'price'            => $p->unit_price ?? 0,
+                    'product_name'     => $p->product_name ?? $p->name,
                 ];
                 if ($sku) {
                     $catalogBySku[strtolower(trim($sku))] = $entry;
@@ -195,6 +197,7 @@ class WarehouseManagementController extends Controller
                     'brand'            => $cat['brand'],
                     'compatible_model' => $cat['compatible_model'],
                     'sku'              => $cat['sku'] ?: ($storedProduct['sku'] ?? ''),
+                    'product_name'     => $cat['product_name'],
                 ]);
             }
 

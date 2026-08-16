@@ -60,18 +60,18 @@
         </div>
 
         <!-- Table Section -->
-        <div class="bg-white rounded-lg border border-slate-200 overflow-hidden flex flex-col" style="min-height: calc(100vh - 220px);">
-            <div class="overflow-x-auto flex-1">
+        <div class="bg-white rounded-[10px] border border-slate-200 overflow-hidden shadow-sm flex flex-col" style="min-height: calc(100vh - 220px);">
+            <div class="overflow-x-auto flex-1 rounded-[10px]">
                 <table class="w-full">
-                    <thead>
-                        <tr class="border-b border-slate-200 bg-slate-50">
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-900">Receipt No.</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-900">Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-900">Returned Item</th>
-                            <th class="px-6 py-3 text-center text-xs font-semibold text-slate-900">Qty</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-900">Replacement Item</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-900">Status</th>
-                            <th class="px-6 py-3 text-center text-xs font-semibold text-slate-900">Action</th>
+                    <thead class="rounded-t-[10px]">
+                        <tr class="border-b border-slate-800 bg-[#0f172a] rounded-t-[10px]">
+                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider rounded-tl-[10px]">Receipt No.</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Returned Item</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider">Qty</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Replacement Item</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider rounded-tr-[10px]">Action</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200">
@@ -93,7 +93,7 @@
                 <p class="text-sm text-slate-600">Showing 0 of 0 entries</p>
                 <div class="flex gap-1">
                     <button class="px-3 py-1 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>← Prev</button>
-                    <button class="px-3 py-1 rounded-lg bg-[#8c9db6] text-sm font-medium text-white shadow-sm">1</button>
+                    <button class="px-3 py-1 rounded-lg bg-black/10 text-sm font-medium text-slate-900 shadow-sm">1</button>
                     <button class="px-3 py-1 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>Next →</button>
                 </div>
             </div>

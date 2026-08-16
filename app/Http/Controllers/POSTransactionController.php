@@ -2,13 +2,89 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\POSTransaction;
 use App\Http\Controllers\ShopInventoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class POSTransactionController extends Controller
 {
+    /**
+     * Validate stock for items in cart before payment.
+     */
+    public function validateStock(Request $request)
+    {
+        $validated = $request->validate([
+            'items' => 'required|array|min:1',
+            'items.*.id' => 'required|integer',
+            'items.*.quantity' => 'required|integer|min:1',
+        ]);
+
+        $productIds = collect($validated['items'])->pluck('id')->all();
+        $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+
+        $results = [];
+        $isValid = true;
+        $errors = [];
+
+        foreach ($validated['items'] as $item) {
+            $productId = $item['id'];
+            $requestedQty = (int) $item['quantity'];
+            $product = $products->get($productId);
+
+            if (!$product || $product->is_archived) {
+                $isValid = false;
+                $name = $product ? $product->name : "Product #{$productId}";
+                $errors[] = "{$name} is no longer available.";
+                $results[] = [
+                    'id' => $productId,
+                    'name' => $name,
+                    'requested_quantity' => $requestedQty,
+                    'current_stock' => 0,
+                    'available' => 0,
+                    'is_out_of_stock' => true,
+                    'is_insufficient' => true,
+                    'message' => "{$name} is no longer available.",
+                ];
+                continue;
+            }
+
+            $currentStock = (int) $product->stock_quantity;
+            $isOutOfStock = $currentStock <= 0;
+            $isInsufficient = $requestedQty > $currentStock;
+
+            if ($isInsufficient || $isOutOfStock) {
+                $isValid = false;
+                $msg = $isOutOfStock
+                    ? "Product '{$product->name}' is out of stock."
+                    : "Insufficient stock. Only {$currentStock} item(s) available for '{$product->name}'.";
+                $errors[] = $msg;
+            }
+
+            $results[] = [
+                'id' => $productId,
+                'name' => $product->name,
+                'sku' => $product->sku,
+                'requested_quantity' => $requestedQty,
+                'current_stock' => $currentStock,
+                'available' => max(0, $currentStock),
+                'is_out_of_stock' => $isOutOfStock,
+                'is_insufficient' => $isInsufficient,
+                'message' => ($isInsufficient || $isOutOfStock)
+                    ? ($isOutOfStock ? "Product '{$product->name}' is out of stock." : "Insufficient stock. Only {$currentStock} item(s) available.")
+                    : null,
+            ];
+        }
+
+        return response()->json([
+            'valid' => $isValid,
+            'items' => $results,
+            'errors' => $errors,
+        ]);
+    }
+
     /**
      * Store a new POS transaction.
      */
@@ -17,6 +93,15 @@ class POSTransactionController extends Controller
         $validated = $request->validate([
             'invoice_number' => 'required|string|unique:pos_transactions',
             'items' => 'required|array|min:1',
+            'items.*.id' => 'required|integer',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.name' => 'nullable|string',
+            'items.*.unit_price' => 'nullable|numeric',
+            'items.*.price' => 'nullable|numeric',
+            'items.*.cost_price' => 'nullable|numeric',
+            'items.*.category' => 'nullable|string',
+            'items.*.sku' => 'nullable|string',
+            'items.*.compatibility' => 'nullable|string',
             'subtotal' => 'required|numeric|min:0',
             'services_total' => 'required|numeric|min:0',
             'extra_charge' => 'required|numeric|min:0',
@@ -26,48 +111,130 @@ class POSTransactionController extends Controller
             'payment_method' => 'required|in:cash,qr',
         ]);
 
-        $transaction = POSTransaction::create([
-            'invoice_number' => $validated['invoice_number'],
-            'user_id' => auth()->id(),
-            'items' => $validated['items'],
-            'subtotal' => $validated['subtotal'],
-            'services_total' => $validated['services_total'],
-            'extra_charge' => $validated['extra_charge'],
-            'discount' => $validated['discount'],
-            'tax' => $validated['tax'],
-            'total_amount' => $validated['total_amount'],
-            'payment_method' => $validated['payment_method'],
-            'status' => 'completed',
-            'completed_at' => now(),
-        ]);
+        DB::beginTransaction();
+        try {
+            $productIds = collect($validated['items'])->pluck('id')->all();
+            $products = Product::whereIn('id', $productIds)->lockForUpdate()->get()->keyBy('id');
 
-        // Deduct stock from shop inventory
-        $shopInventoryController = new ShopInventoryController();
-        $itemsForDeduction = collect($validated['items'])->map(function ($item) {
-            return [
-                'product_id' => $item['id'],
-                'quantity' => $item['quantity'],
-            ];
-        })->toArray();
+            $insufficientItems = [];
 
-        $deductRequest = new Request(['items' => $itemsForDeduction]);
-        $shopInventoryController->deductFromShopInventory($deductRequest);
+            foreach ($validated['items'] as $item) {
+                $productId = $item['id'];
+                $requestedQty = (int) $item['quantity'];
+                $product = $products->get($productId);
 
-        // Deduct from main product stock_quantity and sync alerts
-        $alertService = app(\App\Services\InventoryAlertService::class);
-        foreach ($validated['items'] as $item) {
-            $product = \App\Models\Product::find($item['id']);
-            if ($product) {
-                $product->decrement('stock_quantity', $item['quantity']);
-                $alertService->syncProductAlert($product);
+                if (!$product || $product->is_archived) {
+                    $productName = $product ? $product->name : "Product #{$productId}";
+                    $insufficientItems[] = "{$productName} is unavailable or archived.";
+                    continue;
+                }
+
+                if ($product->stock_quantity < $requestedQty) {
+                    $available = max(0, (int) $product->stock_quantity);
+                    if ($available <= 0) {
+                        $insufficientItems[] = "Product '{$product->name}' is out of stock (0 available).";
+                    } else {
+                        $insufficientItems[] = "Insufficient stock for '{$product->name}'. Only {$available} available (requested: {$requestedQty}).";
+                    }
+                }
             }
-        }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Transaction saved successfully',
-            'transaction' => $transaction,
-        ], 201);
+            if (!empty($insufficientItems)) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => implode("\n", $insufficientItems),
+                    'errors' => $insufficientItems,
+                ], 422);
+            }
+
+            // Deduct stock from Product table and sync alerts
+            $alertService = app(\App\Services\InventoryAlertService::class);
+            foreach ($validated['items'] as $item) {
+                $product = $products->get($item['id']);
+                $newStock = max(0, $product->stock_quantity - (int) $item['quantity']);
+                $product->stock_quantity = $newStock;
+                $product->save();
+                try {
+                    $alertService->syncProductAlert($product);
+                } catch (\Exception $e) {
+                    Log::warning("InventoryAlertService sync failed: " . $e->getMessage());
+                }
+            }
+
+            // Deduct stock from shop inventory / warehouse stock where available
+            $itemsForDeduction = collect($validated['items'])->map(function ($item) {
+                return [
+                    'product_id' => $item['id'],
+                    'quantity' => $item['quantity'],
+                ];
+            })->toArray();
+
+            try {
+                $shopInventoryController = new ShopInventoryController();
+                $deductRequest = new Request(['items' => $itemsForDeduction]);
+                $shopInventoryController->deductFromShopInventory($deductRequest);
+            } catch (\Exception $e) {
+                Log::warning("Shop inventory deduction warning: " . $e->getMessage());
+            }
+
+            $itemsToStore = collect($validated['items'])->map(function ($item) use ($products) {
+                $product = $products->get($item['id']);
+                $unitPrice = isset($item['unit_price']) && is_numeric($item['unit_price']) && (float) $item['unit_price'] > 0
+                    ? (float) $item['unit_price']
+                    : (isset($item['price']) && is_numeric($item['price']) && (float) $item['price'] > 0 ? (float) $item['price'] : (float) ($product?->unit_price ?? 0));
+
+                $category = $item['category'] ?? null;
+                if (!$category || strcasecmp(trim($category), 'uncategorized') === 0) {
+                    $category = $product?->category;
+                    if (!$category || strcasecmp(trim($category), 'uncategorized') === 0) {
+                        $category = $product?->product_name ?: ($product?->name ?? 'Uncategorized');
+                    }
+                }
+
+                return [
+                    'id' => (int) $item['id'],
+                    'product_id' => (int) $item['id'],
+                    'name' => $item['name'] ?? $product?->product_name ?? $product?->name ?? 'Unknown Product',
+                    'sku' => $item['sku'] ?? $product?->sku ?? '',
+                    'quantity' => (int) $item['quantity'],
+                    'unit_price' => $unitPrice,
+                    'cost_price' => isset($item['cost_price']) && is_numeric($item['cost_price']) ? (float) $item['cost_price'] : 0,
+                    'category' => $category ?? 'Uncategorized',
+                    'compatibility' => $item['compatibility'] ?? $product?->compatibility ?? null,
+                ];
+            })->toArray();
+
+            $transaction = POSTransaction::create([
+                'invoice_number' => $validated['invoice_number'],
+                'user_id' => auth()->id(),
+                'items' => $itemsToStore,
+                'subtotal' => $validated['subtotal'],
+                'services_total' => $validated['services_total'],
+                'extra_charge' => $validated['extra_charge'],
+                'discount' => $validated['discount'],
+                'tax' => $validated['tax'],
+                'total_amount' => $validated['total_amount'],
+                'payment_method' => $validated['payment_method'],
+                'status' => 'completed',
+                'completed_at' => now(),
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Transaction saved successfully',
+                'transaction' => $transaction,
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to process transaction: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**

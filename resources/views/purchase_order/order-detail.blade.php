@@ -37,7 +37,7 @@
                 <div class="mt-3 space-y-2 text-sm text-slate-700">
                     <p><span class="font-semibold">Status:</span> {{ ucwords($purchaseOrder->status) }}</p>
                     <p><span class="font-semibold">Created:</span> {{ $purchaseOrder->created_at->format('M j, Y') }}</p>
-                    <p><span class="font-semibold">ETA:</span> {{ optional($purchaseOrder->expected_delivery_date)->format('M j, Y') ?? 'TBD' }}</p>
+                    <p><span class="font-semibold">ETA:</span> {{ optional($purchaseOrder->estimated_delivery_date ?? $purchaseOrder->expected_delivery_date)->format('M j, Y') ?? 'TBD' }}</p>
                     <p><span class="font-semibold">Order total:</span> ₱{{ number_format($purchaseOrder->total_amount, 2) }}</p>
                 </div>
             </div>
@@ -261,8 +261,10 @@
                                 <select name="shelf_id" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none">
                                     <option value="">No specific shelf</option>
                                     @php
-                                        $warehouse = 'Warehouse A'; // Default to Warehouse A for shelf options
-                                        $shelves = \App\Models\WarehouseShelf::where('warehouse', $warehouse)->where('archived', false)->get();
+                                        $warehouseName = 'Warehouse A'; // Default to Warehouse A for shelf options
+                                        $shelves = \App\Models\WarehouseShelf::whereHas('warehouse', function($q) use ($warehouseName) {
+                                            $q->where('name', $warehouseName);
+                                        })->where('archived', false)->get();
                                     @endphp
                                     @foreach($shelves as $shelf)
                                         <option value="{{ $shelf->id }}">{{ $shelf->name }}</option>

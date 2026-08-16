@@ -1,5 +1,5 @@
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const warehouses = window.WarehouseData.warehouses;
     const products = window.WarehouseData.products;
     const PRODUCTS_PER_SHELF = 10;
@@ -8,18 +8,18 @@ document.addEventListener('DOMContentLoaded', function() {
     let warehouseSearchQuery = '';
     let productDescriptionFilter = '';
     let brandFilter = '';
-    
+
     // Load filter options
     loadProductDescriptions();
     loadBrands();
-    
+
     // Add filter event listeners
     const productDescFilter = document.getElementById('wm-product-description-filter');
     const brandFilterEl = document.getElementById('wm-brand-filter');
     const clearFiltersBtn = document.getElementById('wm-clear-filters');
-    
+
     if (productDescFilter) {
-        productDescFilter.addEventListener('change', function() {
+        productDescFilter.addEventListener('change', function () {
             console.log('Product description filter changed:', this.value);
             productDescriptionFilter = this.value;
             const currentWarehouse = getCurrentWarehouseIndex();
@@ -29,9 +29,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     if (brandFilterEl) {
-        brandFilterEl.addEventListener('change', function() {
+        brandFilterEl.addEventListener('change', function () {
             console.log('Brand filter changed:', this.value);
             brandFilter = this.value;
             const currentWarehouse = getCurrentWarehouseIndex();
@@ -41,9 +41,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     if (clearFiltersBtn) {
-        clearFiltersBtn.addEventListener('click', function() {
+        clearFiltersBtn.addEventListener('click', function () {
             console.log('Clear filters clicked');
             productDescriptionFilter = '';
             brandFilter = '';
@@ -56,10 +56,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     const searchInput = document.getElementById('wm-search');
     if (searchInput) {
-        searchInput.addEventListener('input', function() {
+        searchInput.addEventListener('input', function () {
             console.log('Search input changed:', this.value);
             warehouseSearchQuery = this.value.trim().toLowerCase();
             const currentWarehouse = getCurrentWarehouseIndex();
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
             undoBtn.style.padding = '4px 8px';
             undoBtn.style.borderRadius = '6px';
             undoBtn.textContent = undo.label || 'Undo';
-            undoBtn.addEventListener('click', function() {
+            undoBtn.addEventListener('click', function () {
                 try { undo.callback(); } catch (e) { console.error(e); }
                 if (toast.parentNode) toast.parentNode.removeChild(toast);
                 clearTimeout(timeout);
@@ -149,14 +149,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function showWarehouse(warehouseId) {
         console.log('showWarehouse called with warehouseId:', warehouseId);
-        
+
         document.querySelectorAll('.wh-card').forEach(el => {
             el.style.display = 'none';
         });
-        
+
         const el = document.querySelector(`.wh-card[data-id="${warehouseId}"]`);
         console.log('Found element:', el);
-        
+
         if (el) {
             el.style.display = 'block';
             // Find the warehouse index in the array
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const modalWarehouseSelect = document.getElementById('modal-warehouse-select');
     if (modalWarehouseSelect) {
-        modalWarehouseSelect.addEventListener('change', function() {
+        modalWarehouseSelect.addEventListener('change', function () {
             const warehouseIndex = parseInt(this.value, 10);
             if (!Number.isNaN(warehouseIndex) && warehouses[warehouseIndex]) {
                 updateModalShelfTemplate(warehouseIndex);
@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     if (warehouseSelector) {
-        warehouseSelector.addEventListener('change', function() {
+        warehouseSelector.addEventListener('change', function () {
             const warehouseIndex = parseInt(this.value, 10);
             if (!Number.isNaN(warehouseIndex) && warehouses[warehouseIndex]) {
                 showWarehouse(warehouseIndex);
@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (addShelfButton) {
-        addShelfButton.addEventListener('click', function() {
+        addShelfButton.addEventListener('click', function () {
             const currentWarehouse = getCurrentWarehouseIndex();
             const nextSlot = getNextShelfIndex(warehouses[currentWarehouse]);
             showModal('Add Shelf', currentWarehouse, nextSlot, 'addShelf');
@@ -279,13 +279,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (generateQRButton) {
-        generateQRButton.addEventListener('click', function() {
+        generateQRButton.addEventListener('click', function () {
             document.getElementById('wm-qr-modal').style.display = 'flex';
         });
     }
 
     if (scanQRButton) {
-        scanQRButton.addEventListener('click', function() {
+        scanQRButton.addEventListener('click', function () {
             document.getElementById('wm-scan-modal').style.display = 'flex';
             wmInitScanner();
         });
@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (mobileScannerButton) {
         mobileScannerButton.addEventListener('click', wmOpenMobileScanner);
     }
-    
+
     // Start polling for mobile scanner data
     wmStartMobileScannerPolling();
 
@@ -304,9 +304,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!wmScanner) {
             wmScanner = new Html5Qrcode("wm-scanner-reader");
         }
-        
-        const config = { 
-            fps: 10, 
+
+        const config = {
+            fps: 10,
             qrbox: { width: 250, height: 250 },
             aspectRatio: 1.0
         };
@@ -335,12 +335,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function wmOnScanSuccess(decodedText, decodedResult) {
         document.getElementById('wm-scanner-status').textContent = 'Scanned: ' + decodedText;
         document.getElementById('wm-scanner-status').classList.add('text-green-400');
-        
+
         setTimeout(() => {
             document.getElementById('wm-scanner-status').classList.remove('text-green-400');
             document.getElementById('wm-scanner-status').textContent = 'Position QR code within the frame';
         }, 2000);
-        
+
         // Handle scanned QR code - add to warehouse
         wmHandleScannedCode(decodedText);
     }
@@ -363,7 +363,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const productName = parsed.product_name;
             const sku = parsed.sku;
             const restockDate = parsed.restock_date;
-            
+
             if (productName && sku && parsed.type === 'new_stock') {
                 // Check if already scanned
                 const alreadyScanned = wmScannedItems.find(item => item.sku === sku);
@@ -371,7 +371,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     showToast('This item is already scanned', 'error');
                     return;
                 }
-                
+
                 // Add to scanned items list
                 wmScannedItems.push({ productName, sku, restockDate });
                 wmUpdateScannedList();
@@ -390,12 +390,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const scanCount = document.getElementById('wm-scan-count');
         const proceedBtn = document.getElementById('wm-proceed-btn');
         const pagination = document.getElementById('wm-scan-pagination');
-        
+
         if (wmScannedItems.length > 0) {
             scannedItemsDiv.classList.remove('hidden');
             scanCount.textContent = wmScannedItems.length;
             proceedBtn.disabled = false;
-            
+
             // Show pagination if needed
             if (wmScannedItems.length > WM_SCAN_PER_PAGE) {
                 pagination.classList.remove('hidden');
@@ -404,12 +404,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 pagination.classList.add('hidden');
                 pagination.classList.remove('flex');
             }
-            
+
             // Render current page
             const start = wmScanCurrentPage * WM_SCAN_PER_PAGE;
             const end = Math.min(start + WM_SCAN_PER_PAGE, wmScannedItems.length);
             const pageItems = wmScannedItems.slice(start, end);
-            
+
             scanList.innerHTML = pageItems.map((item, index) => {
                 const actualIndex = start + index;
                 return `
@@ -427,7 +427,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             }).join('');
-            
+
             // Update pagination controls
             const totalPages = Math.ceil(wmScannedItems.length / WM_SCAN_PER_PAGE);
             document.getElementById('wm-scan-page-info').textContent = `Page ${wmScanCurrentPage + 1} of ${totalPages}`;
@@ -463,16 +463,16 @@ document.addEventListener('DOMContentLoaded', function() {
         setInterval(() => {
             const scannedData = localStorage.getItem('warehouseScannedItems');
             const timestamp = localStorage.getItem('warehouseScanTimestamp');
-            
+
             if (scannedData && timestamp) {
                 const scanTime = parseInt(timestamp);
                 const now = Date.now();
-                
+
                 // Only process if data is recent (within 5 seconds)
                 if (now - scanTime < 5000) {
                     try {
                         const items = JSON.parse(scannedData);
-                        
+
                         // Add items to scanned list
                         items.forEach(item => {
                             const alreadyScanned = wmScannedItems.find(i => i.sku === item.sku);
@@ -484,13 +484,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                 });
                             }
                         });
-                        
+
                         wmUpdateScannedList();
-                        
+
                         // Clear localStorage after processing
                         localStorage.removeItem('warehouseScannedItems');
                         localStorage.removeItem('warehouseScanTimestamp');
-                        
+
                         showToast('Received items from mobile scanner', 'success');
                     } catch (e) {
                         console.error('Error parsing mobile scanner data:', e);
@@ -518,9 +518,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function wmProceedToDetails() {
         if (wmScannedItems.length === 0) return;
-        
+
         wmCloseScanner();
-        
+
         // Open modal for first item
         wmScannedNewStock = wmScannedItems[0];
         wmOpenNewStockModal();
@@ -528,17 +528,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function wmOpenNewStockModal() {
         if (!wmScannedNewStock) return;
-        
+
         document.getElementById('wm-ns-product-name').textContent = wmScannedNewStock.productName;
         document.getElementById('wm-ns-sku').textContent = wmScannedNewStock.sku;
         document.getElementById('wm-ns-restock-date').textContent = wmScannedNewStock.restockDate;
-        
+
         // Clear form fields
         document.getElementById('wm-ns-price').value = '';
         document.getElementById('wm-ns-quantity').value = '';
         document.getElementById('wm-ns-category').value = '';
         document.getElementById('wm-ns-description').value = '';
-        
+
         // Update button text if multiple items
         const saveBtn = document.querySelector('#wm-new-stock-modal button[onclick="wmSaveNewStock()"]');
         const currentIndex = wmScannedItems.findIndex(item => item.sku === wmScannedNewStock.sku);
@@ -547,7 +547,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             saveBtn.textContent = 'Save & Add to Warehouse';
         }
-        
+
         document.getElementById('wm-new-stock-modal').style.display = 'flex';
     }
 
@@ -558,17 +558,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function wmSaveNewStock() {
         if (!wmScannedNewStock) return;
-        
+
         const price = parseFloat(document.getElementById('wm-ns-price').value);
         const quantity = parseInt(document.getElementById('wm-ns-quantity').value);
         const category = document.getElementById('wm-ns-category').value;
         const description = document.getElementById('wm-ns-description').value;
-        
+
         if (!price || !quantity || !category) {
             showToast('Please fill in price, quantity, and category', 'error');
             return;
         }
-        
+
         try {
             // Create product in All Stocks using stock.add endpoint
             const response = await fetch('/stock/add', {
@@ -587,25 +587,25 @@ document.addEventListener('DOMContentLoaded', function() {
                     quantity: quantity,
                 }),
             });
-            
+
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Failed to create product');
             }
-            
+
             const result = await response.json();
             const productId = result.id || result.product_id;
-            
+
             if (!productId) {
                 throw new Error('No product ID returned');
             }
-            
+
             // Save product data for warehouse
             wmScannedNewStock.productId = productId;
             wmScannedNewStock.price = price;
             wmScannedNewStock.quantity = quantity;
             wmScannedNewStock.restockDate = wmScannedNewStock.restockDate || restockDateInput.value;
-            
+
             // Check if there are more items
             const currentIndex = wmScannedItems.findIndex(item => item.sku === wmScannedNewStock.sku);
             if (currentIndex < wmScannedItems.length - 1) {
@@ -619,7 +619,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 wmCloseNewStockModal();
                 wmAddAllToWarehouse();
             }
-            
+
         } catch (error) {
             console.error('Error saving new stock:', error);
             showToast(error.message || 'Failed to create product. Please try again.', 'error');
@@ -630,12 +630,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentWarehouse = getCurrentWarehouseIndex();
         const nextSlot = getNextShelfIndex(warehouses[currentWarehouse]);
         showModal('Add Product', currentWarehouse, nextSlot, 'addProduct');
-        
+
         // Pre-fill with all scanned products
         setTimeout(() => {
             const container = document.getElementById('modal-product-rows');
             container.innerHTML = '';
-            
+
             wmScannedItems.forEach(item => {
                 if (item.productId) {
                     const row = document.createElement('div');
@@ -652,13 +652,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     `;
                     container.appendChild(row);
-                    
+
                     // Set the select value
                     const select = row.querySelector('select');
                     select.value = item.productId;
                 }
             });
-            
+
             wmScannedItems = [];
             showToast('All products created. Please select a shelf to add them.', 'success');
         }, 100);
@@ -667,7 +667,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function wmAddProductRow() {
         const container = document.getElementById('wm-product-rows');
         if (!container) return;
-        
+
         const row = document.createElement('div');
         row.className = 'flex items-center gap-2 bg-slate-50 rounded-lg p-3';
         row.innerHTML = `
@@ -679,16 +679,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 </svg>
             </button>
         `;
-        
+
         // Auto-generate SKU as user types
         const nameInput = row.querySelector('.wm-product-name');
         const skuDisplay = row.querySelector('.wm-sku-display');
-        
-        nameInput.addEventListener('input', function() {
+
+        nameInput.addEventListener('input', function () {
             const name = this.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
             skuDisplay.textContent = name ? `KCC_${name}` : 'KCC_';
         });
-        
+
         container.appendChild(row);
     }
 
@@ -696,7 +696,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const productRows = document.querySelectorAll('#wm-product-rows > div');
         const restockDate = document.getElementById('wm-qr-restock-date').value;
         const previewContainer = document.getElementById('wm-qr-preview');
-        
+
         const products = [];
         productRows.forEach(row => {
             const nameInput = row.querySelector('.wm-product-name');
@@ -706,20 +706,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 products.push({ name, sku });
             }
         });
-        
+
         if (products.length === 0) {
             showToast('Please enter at least one product name', 'error');
             return;
         }
-        
+
         // Show loading
         previewContainer.innerHTML = '<div id="wm-qr-loading" class="text-center py-12"><div class="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-600 mb-4"></div><p class="text-sm text-slate-600">Generating QR codes...</p></div>';
-        
+
         setTimeout(() => {
             previewContainer.innerHTML = '';
             wmGeneratedQRs = [];
             wmCurrentPage = 0;
-            
+
             products.forEach((product, index) => {
                 // Create QR code data for new stock
                 const qrData = JSON.stringify({
@@ -728,16 +728,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     restock_date: restockDate,
                     type: 'new_stock'
                 });
-                
+
                 wmGeneratedQRs.push({
                     product,
                     qrData,
                     index
                 });
             });
-            
+
             wmRenderQRPage();
-            
+
             // Show pagination if needed
             const pagination = document.getElementById('wm-qr-pagination');
             if (wmGeneratedQRs.length > WM_QR_PER_PAGE) {
@@ -747,7 +747,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 pagination.classList.add('hidden');
                 pagination.classList.remove('flex');
             }
-            
+
             showToast(`Generated ${products.length} QR codes successfully`, 'success');
         }, 500);
     }
@@ -755,14 +755,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function wmRenderQRPage() {
         const previewContainer = document.getElementById('wm-qr-preview');
         previewContainer.innerHTML = '';
-        
+
         const start = wmCurrentPage * WM_QR_PER_PAGE;
         const end = Math.min(start + WM_QR_PER_PAGE, wmGeneratedQRs.length);
         const pageItems = wmGeneratedQRs.slice(start, end);
-        
+
         pageItems.forEach((item) => {
             const { product, qrData, index } = item;
-            
+
             const qrCard = document.createElement('div');
             qrCard.className = 'border border-slate-200 rounded-lg p-4 bg-white';
             qrCard.innerHTML = `
@@ -776,9 +776,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
             `;
-            
+
             previewContainer.appendChild(qrCard);
-            
+
             // Generate QR code
             try {
                 const qrElement = document.getElementById(`wm-qr-code-${index}`);
@@ -794,7 +794,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Error generating QR code:', error);
             }
         });
-        
+
         // Update pagination controls
         const totalPages = Math.ceil(wmGeneratedQRs.length / WM_QR_PER_PAGE);
         document.getElementById('wm-page-info').textContent = `Page ${wmCurrentPage + 1} of ${totalPages}`;
@@ -822,15 +822,15 @@ document.addEventListener('DOMContentLoaded', function() {
             showToast('Please generate QR codes first', 'error');
             return;
         }
-        
+
         try {
             const printWindow = window.open('', '_blank');
-            
+
             if (!printWindow) {
                 showToast('Popup blocked. Please allow popups.', 'error');
                 return;
             }
-            
+
             let htmlContent = `
                 <!DOCTYPE html>
                 <html>
@@ -875,19 +875,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p>Restock Date: ${document.getElementById('wm-qr-restock-date').value}</p>
                     <div class="qr-grid>
             `;
-            
+
             // Generate all QR codes for printing
             wmGeneratedQRs.forEach((item, index) => {
                 const { product, qrData } = item;
-                
+
                 // Create a temporary canvas to generate QR code
                 const tempDiv = document.createElement('div');
                 tempDiv.style.display = 'none';
                 document.body.appendChild(tempDiv);
-                
+
                 const tempQrElement = document.createElement('div');
                 tempDiv.appendChild(tempQrElement);
-                
+
                 new QRCode(tempQrElement, {
                     text: qrData,
                     width: 150,
@@ -896,12 +896,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     colorLight: "#ffffff",
                     correctLevel: QRCode.CorrectLevel.M
                 });
-                
+
                 setTimeout(() => {
                     const canvas = tempQrElement.querySelector('canvas');
                     if (canvas) {
                         const dataUrl = canvas.toDataURL('image/png');
-                        
+
                         htmlContent += `
                             <div class="qr-card">
                                 <div class="info">
@@ -913,11 +913,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         `;
                     }
-                    
+
                     document.body.removeChild(tempDiv);
                 }, 100);
             });
-            
+
             setTimeout(() => {
                 htmlContent += `
                     </div>
@@ -925,14 +925,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 </body>
                 </html>
                 `;
-                
+
                 printWindow.document.write(htmlContent);
                 printWindow.document.close();
                 setTimeout(() => {
                     printWindow.print();
                 }, 500);
             }, wmGeneratedQRs.length * 150);
-            
+
         } catch (error) {
             console.error('Error printing:', error);
             showToast('Error opening print dialog', 'error');
@@ -985,7 +985,7 @@ document.addEventListener('DOMContentLoaded', function() {
             archivedList.appendChild(el);
 
             const btn = el.querySelector('.restore-shelf');
-            btn.addEventListener('click', async function() {
+            btn.addEventListener('click', async function () {
                 const wi = parseInt(this.dataset.widx, 10);
                 const li = parseInt(this.dataset.lidx, 10);
                 const warehouse = warehouses[wi];
@@ -1031,7 +1031,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (viewArchivedButton) {
-        viewArchivedButton.addEventListener('click', function() {
+        viewArchivedButton.addEventListener('click', function () {
             // gather archived shelves into an array for pagination
             archivedItems = [];
             warehouses.forEach((wh, widx) => {
@@ -1049,14 +1049,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    document.getElementById('archived-prev').addEventListener('click', function() { renderArchivedPage(archivedPage - 1); });
-    document.getElementById('archived-next').addEventListener('click', function() { renderArchivedPage(archivedPage + 1); });
+    document.getElementById('archived-prev').addEventListener('click', function () { renderArchivedPage(archivedPage - 1); });
+    document.getElementById('archived-next').addEventListener('click', function () { renderArchivedPage(archivedPage + 1); });
 
     if (archivedClose) archivedClose.addEventListener('click', () => { archivedBackdrop.classList.add('hidden'); archivedBackdrop.classList.remove('flex'); });
     if (archivedDone) archivedDone.addEventListener('click', () => { archivedBackdrop.classList.add('hidden'); archivedBackdrop.classList.remove('flex'); });
 
     document.querySelectorAll('.prev-page').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const warehouseId = parseInt(this.dataset.id, 10);
             const warehouseIndex = warehouses.findIndex(wh => wh.id == warehouseId);
             if (warehouseIndex !== -1) {
@@ -1067,7 +1067,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.querySelectorAll('.next-page').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const warehouseId = parseInt(this.dataset.id, 10);
             const warehouseIndex = warehouses.findIndex(wh => wh.id == warehouseId);
             if (warehouseIndex !== -1) {
@@ -1081,7 +1081,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function shelfMatchesQuery(loc, query, productDesc = '', brand = '') {
         console.log('shelfMatchesQuery called with:', { query, productDesc, brand });
-        
+
         if (!query && !productDesc && !brand) {
             return true;
         }
@@ -1097,15 +1097,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const skuValue = (product.sku || `KCC_${(product.name || '').replace(/[^A-Za-z0-9\-\+]/g, '')}`).toLowerCase();
             const description = (product.description || '').toLowerCase();
             const productBrand = (product.brand || '').toLowerCase();
-            
+
             console.log('Product:', { name, description, productBrand });
-            
+
             const matchesSearch = !query || name.includes(normalized) || skuValue.includes(normalized) || description.includes(normalized);
             const matchesProductDesc = !productDesc || description === productDesc.toLowerCase();
             const matchesBrand = !brand || productBrand === brand.toLowerCase();
-            
+
             console.log('Matches:', { matchesSearch, matchesProductDesc, matchesBrand });
-            
+
             return matchesSearch && matchesProductDesc && matchesBrand;
         });
     }
@@ -1167,11 +1167,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const productDesc = productDescriptionFilter.trim().toLowerCase();
         const brand = brandFilter.trim().toLowerCase();
         const allSlots = warehouse.locations.map((loc) => ({ loc, slotIndex: loc?.slot_index ?? null }));
-        
+
         if (!query && !productDesc && !brand) {
             return allSlots;
         }
-        
+
         return allSlots.filter(item => shelfMatchesQuery(item.loc, query, productDesc, brand));
     }
 
@@ -1207,23 +1207,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 const locView = (loc && loc.archived) ? null : loc;
                 const slotCount = Array.isArray(locView?.products) ? locView.products.length : 0;
                 let productsHtml = '';
+                const whLetter = String.fromCharCode(65 + (warehouseIndex % 26));
+
                 for (let productSlot = 0; productSlot < PRODUCTS_PER_SHELF; productSlot += 1) {
+                    const binCode = `${whLetter}${productSlot + 1}`;
                     const product = (locView ? (locView.products[productSlot] || null) : null);
                     if (product) {
                         const priceText = (product.price || product.price === 0) ? Number(product.price).toFixed(2) : '-';
                         const displaySku = `KCC_${(product.sku || product.name || '').replace(/[^A-Za-z0-9\-\+]/g, '')}`;
+                        const productName = product.product_name || product.name || '—';
+                        const finalTitle = `${binCode} - ${productName}`;
                         productsHtml += `<div class="product-chip rounded-xl bg-emerald-50 border border-emerald-100">
                             <div class="left">
-                                <div class="name">${product.name}</div>
+                                <div class="name">${finalTitle}</div>
                                 <div class="meta">SKU: ${displaySku} • Price: ${priceText}</div>
                             </div>
                             <div class="qty">Qty: ${product.qty}</div>
                         </div>`;
                     } else {
-                        productsHtml += `<div class="product-chip opacity-50 rounded-xl px-3 py-2 text-sm text-gray-500 border border-dashed border-gray-200">Empty slot</div>`;
+                        productsHtml += `<div class="product-chip opacity-50 rounded-xl px-3 py-2 text-sm text-gray-500 border border-dashed border-gray-200">${binCode} - Empty slot</div>`;
                     }
                 }
-                const shelfTitle = locView?.name || 'Empty shelf';
+                const rawShelfName = locView?.name || 'Empty shelf';
+                const shelfNumber = slotIndex + 1;
+                const shelfTitle = rawShelfName.toLowerCase().startsWith('shelf') ? rawShelfName : `Shelf ${shelfNumber} - ${rawShelfName}`;
                 const shelfCountText = locView ? `${slotCount}/${PRODUCTS_PER_SHELF} products` : `0/${PRODUCTS_PER_SHELF} products`;
                 const addProductOption = (locView && Array.isArray(locView.products) && locView.products.length < PRODUCTS_PER_SHELF) ? '<option value="add-product">Add Product</option>' : '';
                 html += `
@@ -1255,7 +1262,7 @@ document.addEventListener('DOMContentLoaded', function() {
         nextButton.disabled = warehousePage[warehouseIndex] === totalPages - 1;
 
         shelvesContainer.querySelectorAll('.action-select').forEach(selectEl => {
-            selectEl.addEventListener('change', function() {
+            selectEl.addEventListener('change', function () {
                 const action = this.value;
                 const slotIndex = parseInt(this.dataset.slot, 10);
                 if (action === 'add-shelf') {
@@ -1383,6 +1390,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function saveShelfData(shelfData) {
+        if (shelfData.warehouse_index !== undefined && window.WarehouseData.warehouses[shelfData.warehouse_index]) {
+            shelfData.warehouse_id = window.WarehouseData.warehouses[shelfData.warehouse_index].id;
+        }
         try {
             const response = await fetch(window.WarehouseData.routes.saveShelf, {
                 method: 'POST',
@@ -1507,7 +1517,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const container = document.getElementById('modal-product-rows');
             const confirmRemove = confirm('Remove this product row? This will remove it from the shelf when you save.');
             if (!confirmRemove) return;
-            const productData = (function() {
+            const productData = (function () {
                 const select = row.querySelector('.product-select');
                 const sku = row.querySelector('.product-sku').value || '';
                 const name = select.selectedOptions[0]?.dataset.name || '';
@@ -1522,7 +1532,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showToast('Product row removed.', 'success', {
                 undo: {
                     label: 'Undo',
-                    callback: function() {
+                    callback: function () {
                         addProductRow(productData, index);
                         showToast('Product row restored.', 'success');
                     }
@@ -1554,7 +1564,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateAddRowButtonState();
     }
 
-    document.getElementById('modal-add-product-row').addEventListener('click', function() {
+    document.getElementById('modal-add-product-row').addEventListener('click', function () {
         addProductRow();
     });
 
@@ -1591,7 +1601,7 @@ document.addEventListener('DOMContentLoaded', function() {
         renderWarehousePage(currentWarehouse, warehousePage[currentWarehouse]);
         updateWarehouseStats(currentWarehouse);
         closeModal();
-        showToast(`${shelf.name || 'Shelf '+(slot+1)} archived from ${warehouse.name}.`, 'success');
+        showToast(`${shelf.name || 'Shelf ' + (slot + 1)} archived from ${warehouse.name}.`, 'success');
     }
 
     function deleteShelf(slot) {

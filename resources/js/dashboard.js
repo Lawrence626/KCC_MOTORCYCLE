@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const arrow = comparison.direction === 'up' ? '↑' : '↓';
             const color = comparison.direction === 'up' ? 'text-teal-500' : 'text-red-500';
             comparisonEl.textContent = `${arrow} ${comparison.value}% vs. previous period`;
-            comparisonEl.className = `${color} text-xs mt-1 font-medium`;
+            comparisonEl.className = `${color} text-[11px] leading-tight mt-1 font-medium whitespace-nowrap`;
         }
     };
 
@@ -382,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Create a map of incoming data for lookup
             const valueMap = {};
             incomingLabels.forEach((label, index) => {
-                valueMap[String(label).trim().toLowerCase()] = chartValues[index] || 0;
+                valueMap[String(label).trim().toLowerCase()] = Number(incomingValues[index] || 0);
             });
 
             legend.innerHTML = CATEGORY_DEFS.map((cat) => {

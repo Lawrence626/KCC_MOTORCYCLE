@@ -4,6 +4,7 @@ use App\Models\POSTransaction;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Session;
 
 beforeEach(function () {
     Schema::create('users', function ($table) {
@@ -20,8 +21,11 @@ beforeEach(function () {
     Schema::create('products', function ($table) {
         $table->id();
         $table->string('name');
+        $table->string('product_name')->nullable();
         $table->string('category')->nullable();
         $table->string('sku')->nullable();
+        $table->decimal('unit_price', 10, 2)->default(0);
+        $table->decimal('cost_price', 10, 2)->default(0);
         $table->integer('stock_quantity')->default(0);
         $table->integer('reorder_level')->default(0);
         $table->boolean('is_active')->default(true);
@@ -139,3 +143,99 @@ it('returns dashboard analytics for completed pos transactions', function () {
         ->assertJsonPath('comparison_chart.labels.0', 'Current Period')
         ->assertJsonPath('top_items.0.category', 'Exhaust');
 });
+
+it('allows otp login to reach the dashboard when the user is not yet email verified', function () {
+    $user = User::create([
+        'name' => 'OTP User',
+        'email' => 'otp@example.com',
+        'password' => Hash::make('password123'),
+        'role' => 'admin',
+        'email_verified_at' => null,
+    ]);
+
+    Session::put('login.otp', [
+        'user_id' => $user->id,
+        'email' => $user->email,
+        'code' => '123456',
+        'expires_at' => now()->addMinutes(10)->timestamp,
+        'remember' => false,
+    ]);
+
+    $verifyResponse = $this->postJson(route('login.otp.verify'), ['code' => '123456']);
+
+    $verifyResponse->assertOk()
+        ->assertJsonPath('redirectUrl', route('dashboard'));
+
+    $dashboardResponse = $this->get(route('dashboard'));
+
+    $dashboardResponse->assertOk();
+});
+
+it('calculates sales by category even when transaction items have minimal fields', function () {
+    $user = User::create([
+        'name' => 'Admin User',
+        'email' => 'admin_cat@example.com',
+        'password' => Hash::make('password123'),
+        'role' => 'admin',
+    ]);
+
+    $product = \App\Models\Product::create([
+        'name' => 'ICON BEAT',
+        'product_name' => 'PIPE',
+        'category' => 'uncategorized',
+        'sku' => 'KCC_PIPE_001',
+        'unit_price' => 200,
+        'stock_quantity' => 50,
+        'reorder_level' => 10,
+        'is_active' => true,
+        'is_archived' => false,
+    ]);
+
+    POSTransaction::create([
+        'invoice_number' => 'INV-CAT-1',
+        'user_id' => $user->id,
+        'items' => [
+            [
+                'id' => $product->id,
+                'quantity' => 5,
+            ],
+        ],
+        'subtotal' => 1000,
+        'services_total' => 0,
+        'extra_charge' => 0,
+        'discount' => 0,
+        'tax' => 0,
+        'total_amount' => 1000,
+        'payment_method' => 'cash',
+        'status' => 'completed',
+        'completed_at' => now(),
+    ]);
+
+    $response = $this->actingAs($user)->getJson(route('dashboard.data'));
+
+    $response->assertOk()
+        ->assertJsonPath('category_chart.labels.0', 'Exhaust')
+        ->assertJsonPath('category_chart.data.0', 1000);
+});
+
+it('automatically sets product category from product_name or name when uncategorized or empty', function () {
+    $p1 = \App\Models\Product::create([
+        'name' => 'ICON BEAT',
+        'product_name' => 'PIPE',
+        'category' => 'uncategorized',
+        'unit_price' => 200,
+    ]);
+
+    expect($p1->category)->toBe('Exhaust');
+
+    $p2 = \App\Models\Product::create([
+        'name' => 'SHOCK A3',
+        'product_name' => '',
+        'category' => '',
+        'unit_price' => 500,
+    ]);
+
+    expect($p2->category)->toBe('Accessories');
+});
+
+

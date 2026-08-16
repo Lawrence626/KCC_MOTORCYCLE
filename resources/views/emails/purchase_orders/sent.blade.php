@@ -9,7 +9,7 @@
         </tr>
         <tr>
             <td>Expected delivery date</td>
-            <td>{{ optional($purchaseOrder->expected_delivery_date)->format('M j, Y') ?? 'TBD' }}</td>
+            <td>{{ optional($purchaseOrder->estimated_delivery_date ?? $purchaseOrder->expected_delivery_date)->format('M j, Y') ?? 'TBD' }}</td>
         </tr>
         <tr>
             <td>Status</td>
