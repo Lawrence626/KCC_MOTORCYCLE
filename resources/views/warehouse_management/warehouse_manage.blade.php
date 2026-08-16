@@ -102,7 +102,7 @@
             </div>
             <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap pr-4">
                 <input id="wm-search" type="search" placeholder="Search product or SKU..."
-                       class="px-3 py-1.5 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm w-44 h-9" />
+                       class="px-3 py-1.5 text-xs rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm w-44 h-9" />
                 <button id="view-archived-shelves" type="button" onclick="openArchivedShelvesModal()"
                         class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
                     Archived Shelves
@@ -132,7 +132,7 @@
                                 <option value="{{ $wh['id'] }}">{{ $wh['name'] }}</option>
                             @endforeach
                         </select>
-                        <button type="button" onclick="toggleDropdown('dd-warehouse-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
+                        <button type="button" onclick="toggleDropdown('dd-warehouse-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
                             <span id="dd-warehouse-label">{{ $warehouses[0]['name'] ?? 'Select Warehouse' }}</span>
                             <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
@@ -155,7 +155,7 @@
                                 <option value="{{ $desc->name }}">{{ $desc->name }}</option>
                             @php endforeach; @endphp
                         </select>
-                        <button type="button" onclick="toggleDropdown('dd-desc-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
+                        <button type="button" onclick="toggleDropdown('dd-desc-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
                             <span id="dd-desc-label">All Descriptions</span>
                             <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
@@ -185,7 +185,7 @@
                                 <option value="{{ $brand }}">{{ $brand }}</option>
                             @php endforeach; @endphp
                         </select>
-                        <button type="button" onclick="toggleDropdown('dd-brand-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
+                        <button type="button" onclick="toggleDropdown('dd-brand-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
                             <span id="dd-brand-label">All Brands</span>
                             <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
@@ -199,7 +199,7 @@
                         </div>
                     </div>
 
-                    <button id="wm-clear-filters" onclick="document.getElementById('dd-desc-label').textContent='All Descriptions'; document.getElementById('dd-brand-label').textContent='All Brands';" class="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-[12px] transition cursor-pointer">
+                    <button id="wm-clear-filters" onclick="document.getElementById('dd-desc-label').textContent='All Descriptions'; document.getElementById('dd-brand-label').textContent='All Brands';" class="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-[10px] transition cursor-pointer">
                         Clear
                     </button>
                 </div>
@@ -334,10 +334,13 @@
                     <div class="p-4">
                         <div class="map-container border border-slate-200 rounded-[14px] p-3 bg-slate-50">
                             <div class="warehouse-shelves grid gap-4" data-id="{{ $wh['id'] }}"></div>
-                            <div class="pagination mt-4 flex items-center justify-end gap-1.5 text-xs text-slate-600">
-                                <button type="button" class="prev-page rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" data-id="{{ $wh['id'] }}">← Prev</button>
-                                <div class="page-numbers flex items-center gap-1.5" data-id="{{ $wh['id'] }}"></div>
-                                <button type="button" class="next-page rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" data-id="{{ $wh['id'] }}">Next →</button>
+                            <div class="pagination mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-slate-600 border-t border-slate-200/80 pt-3">
+                                <div class="showing-info text-slate-500 font-medium text-xs" data-id="{{ $wh['id'] }}">Showing shelves</div>
+                                <div class="flex items-center gap-1">
+                                    <button type="button" class="prev-page rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" data-id="{{ $wh['id'] }}">← Prev</button>
+                                    <div class="page-numbers flex items-center gap-1" data-id="{{ $wh['id'] }}"></div>
+                                    <button type="button" class="next-page rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" data-id="{{ $wh['id'] }}">Next →</button>
+                                </div>
                             </div>
                         </div>
                     </div>

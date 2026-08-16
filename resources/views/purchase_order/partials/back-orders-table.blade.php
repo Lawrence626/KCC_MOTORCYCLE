@@ -1,6 +1,6 @@
 <div class="mt-6 overflow-hidden rounded-[10px] border border-slate-200">
     <table class="min-w-full text-left text-sm">
-        <thead class="bg-slate-50 text-slate-500 text-[11px] uppercase tracking-[0.18em]">
+        <thead class="bg-[#0f172a] text-white text-[11px] font-semibold uppercase tracking-[0.18em]">
             <tr>
                 <th class="px-4 py-3">PO No.</th>
                 <th class="px-4 py-3">Supplier</th>

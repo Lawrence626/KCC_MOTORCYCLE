@@ -48,36 +48,38 @@
             </div>
 
             <!-- Details Card -->
-            <div class="lg:col-span-2 border border-gray-200 p-6" style="border-radius: 20px; background-color: #ffffff;">
-                <div class="mb-6">
-                    <h2 class="text-xl font-semibold text-black">Personal Information</h2>
-                    <p class="text-sm text-gray-500 mt-1">Your account details and contact information</p>
+            <div class="lg:col-span-2 border border-gray-200 overflow-hidden shadow-sm" style="border-radius: 20px; background-color: #ffffff;">
+                <div class="bg-[#0f172a] border-b border-slate-800 px-6 py-5">
+                    <h2 class="text-xl font-bold text-white">Personal Information</h2>
+                    <p class="text-sm text-slate-300 mt-0.5">Your account details and contact information</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
-                        <p class="text-xs font-semibold text-slate-500">Full Name</p>
-                        <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->name }}</p>
-                    </div>
-                    <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
-                        <p class="text-xs font-semibold text-slate-500">Email Address</p>
-                        <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->email }}</p>
-                    </div>
-                    <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
-                        <p class="text-xs font-semibold text-slate-500">Contact Number</p>
-                        <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->contact ?? '-' }}</p>
-                    </div>
-                    <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
-                        <p class="text-xs font-semibold text-slate-500">Address</p>
-                        <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->address ?? '-' }}</p>
-                    </div>
-                    <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
-                        <p class="text-xs font-semibold text-slate-500">Age</p>
-                        <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->age ?? '-' }}</p>
-                    </div>
-                    <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
-                        <p class="text-xs font-semibold text-slate-500">Gender</p>
-                        <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->gender ?? '-' }}</p>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+                            <p class="text-xs font-semibold text-slate-500">Full Name</p>
+                            <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->name }}</p>
+                        </div>
+                        <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+                            <p class="text-xs font-semibold text-slate-500">Email Address</p>
+                            <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->email }}</p>
+                        </div>
+                        <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+                            <p class="text-xs font-semibold text-slate-500">Contact Number</p>
+                            <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->contact ?? '-' }}</p>
+                        </div>
+                        <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+                            <p class="text-xs font-semibold text-slate-500">Address</p>
+                            <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->address ?? '-' }}</p>
+                        </div>
+                        <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+                            <p class="text-xs font-semibold text-slate-500">Age</p>
+                            <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->age ?? '-' }}</p>
+                        </div>
+                        <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+                            <p class="text-xs font-semibold text-slate-500">Gender</p>
+                            <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->gender ?? '-' }}</p>
+                        </div>
                     </div>
                 </div>
             </div>

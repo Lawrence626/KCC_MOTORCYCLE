@@ -143,9 +143,10 @@
                     </div>
                     <span id="showingText">of 0 items</span>
                 </div>
-                <div class="flex gap-1">
-                    <button id="prevPage" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">← Prev</button>
-                    <button id="nextPage" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">Next →</button>
+                <div class="flex gap-1 items-center">
+                    <button id="prevPage" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition">← Prev</button>
+                    <div id="pageNumbers" class="flex items-center gap-1"></div>
+                    <button id="nextPage" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition">Next →</button>
                 </div>
             </div>
         </div>
@@ -259,12 +260,25 @@
         }
 
         function updatePagination(pagination) {
-            totalPages = pagination.last_page;
-            currentPage = pagination.current_page;
+            totalPages = pagination.last_page || 1;
+            currentPage = pagination.current_page || 1;
             
             document.getElementById('showingText').textContent = `of ${pagination.total} items`;
             document.getElementById('prevPage').disabled = currentPage <= 1;
             document.getElementById('nextPage').disabled = currentPage >= totalPages;
+
+            const pageNumbersContainer = document.getElementById('pageNumbers');
+            if (pageNumbersContainer) {
+                let numsHtml = '';
+                for (let p = 1; p <= totalPages; p++) {
+                    if (p === currentPage) {
+                        numsHtml += `<button type="button" disabled class="rounded-[10px] bg-slate-200 border border-slate-300 px-2.5 py-1 text-xs font-bold text-slate-900">${p}</button>`;
+                    } else {
+                        numsHtml += `<button type="button" onclick="goToPage(${p})" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer">${p}</button>`;
+                    }
+                }
+                pageNumbersContainer.innerHTML = numsHtml;
+            }
             
             const paginationDiv = document.getElementById('pagination');
             if (pagination.total > 0) {
@@ -272,6 +286,11 @@
             } else {
                 paginationDiv.classList.add('hidden');
             }
+        }
+
+        function goToPage(p) {
+            currentPage = p;
+            loadArchivedProducts();
         }
 
         function updateStats(products) {

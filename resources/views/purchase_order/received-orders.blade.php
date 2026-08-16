@@ -29,42 +29,56 @@
             </div>
         </div>
 
-       <div class="grid gap-3 sm:grid-cols-3 items-stretch">
-            <div class="rounded-[28px] border border-slate-200 p-5 shadow-sm flex flex-col justify-between h-full" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between gap-3">
-                    <p class="text-sm text-slate-600 font-medium mb-1">Delivered today</p>
-                <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40 border border-gray-200">
-            <svg class="h-6 w-6 text-black" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
-            </svg>
-        </span>
+        <div class="grid gap-4 sm:grid-cols-3">
+            <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Delivered today</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">{{ number_format($deliveredToday) }}</p>
+                            <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Orders received and logged today.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5 text-black" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
                 </div>
-                <p class="mt-3 text-2xl font-bold text-slate-900">{{ number_format($deliveredToday) }}</p>
-                <p class="mt-1 text-sm text-slate-500">Orders received and logged today.</p>
             </div>
-            <div class="rounded-[28px] border border-slate-200 p-5 shadow-sm flex flex-col justify-between h-full" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between gap-3">
-                    <p class="text-sm text-slate-600 font-medium mb-1">Pending confirmation</p>
-                    <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40 border border-gray-200">
-                        <svg class="h-6 w-6 text-black" viewBox="0 0 20 20" fill="currentColor">
+
+            <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Pending confirmation</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">{{ number_format($pendingConfirmation) }}</p>
+                            <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Awaiting goods inspection or paperwork.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5 text-black" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
                         </svg>
-                    </span>
+                    </div>
                 </div>
-                <p class="mt-3 text-2xl font-bold text-slate-900">{{ number_format($pendingConfirmation) }}</p>
-                <p class="mt-1 text-sm text-slate-500">Awaiting goods inspection or paperwork.</p>
             </div>
-            <div class="rounded-[28px] border border-slate-200 p-5 shadow-sm flex flex-col justify-between h-full" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between gap-3">
-                    <p class="text-sm text-slate-600 font-medium mb-1">Issues found</p>
-                    <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40 border border-gray-200">
-                        <svg class="h-6 w-6 text-black" viewBox="0 0 24 24" fill="currentColor">
+
+            <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Issues found</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">{{ number_format($issuesFound) }}</p>
+                            <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Discrepancies requiring follow-up.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="currentColor">
                             <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
                         </svg>
-                    </span>
+                    </div>
                 </div>
-                <p class="mt-3 text-2xl font-bold text-slate-900">{{ number_format($issuesFound) }}</p>
-                <p class="mt-1 text-sm text-slate-500">Discrepancies requiring follow-up.</p>
             </div>
         </div>
 

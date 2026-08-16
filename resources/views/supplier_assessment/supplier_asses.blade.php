@@ -48,44 +48,56 @@
             </div>
         @endif
 
-        <div class="grid gap-3 sm:grid-cols-3">
-            <div class="rounded-[28px] border border-slate-200 p-5 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between gap-3">
-                    <p class="text-sm text-slate-600 font-medium mb-1">Active Suppliers</p>
-                    <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40 border border-gray-200">
-                        <svg class="h-6 w-6 text-black" viewBox="0 0 24 24" fill="currentColor">
+        <div class="grid gap-4 sm:grid-cols-3">
+            <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Active Suppliers</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">{{ number_format($quickStats['activeSuppliers']) }}</p>
+                            <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Currently active supplier records.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
                         </svg>
-                    </span>
+                    </div>
                 </div>
-                <p class="mt-3 text-2xl font-bold text-slate-900">{{ number_format($quickStats['activeSuppliers']) }}</p>
-                <p class="mt-1 text-sm text-slate-500">Currently active supplier records.</p>
             </div>
 
-            <div class="rounded-[28px] border border-slate-200 p-5 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between gap-3">
-                    <p class="text-sm text-slate-600 font-medium mb-1">Tracked Products</p>
-                    <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40 border border-gray-200">
-                        <svg class="h-6 w-6 text-black" viewBox="0 0 24 24" fill="currentColor">
+            <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Tracked Products</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">{{ number_format($quickStats['trackedProducts']) }}</p>
+                            <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Total products linked across suppliers.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
                         </svg>
-                    </span>
+                    </div>
                 </div>
-                <p class="mt-3 text-2xl font-bold text-slate-900">{{ number_format($quickStats['trackedProducts']) }}</p>
-                <p class="mt-1 text-sm text-slate-500">Total products linked across suppliers.</p>
             </div>
 
-            <div class="rounded-[28px] border border-slate-200 p-5 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between gap-3">
-                    <p class="text-sm text-slate-600 font-medium mb-1">Stock Inventory Value</p>
-                    <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40 border border-gray-200">
-                        <svg class="h-6 w-6 text-black" viewBox="0 0 24 24" fill="currentColor">
+            <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Stock Inventory Value</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">&#8369;{{ number_format($quickStats['stockValue'], 2) }}</p>
+                            <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Combined value of supplier stock.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05 1.18 1.91 2.53 1.91 1.29 0 2.13-.59 2.13-1.61 0-1.11-1.02-1.55-2.74-2.02-2.09-.56-3.72-1.35-3.72-3.47 0-1.89 1.45-3.09 3.11-3.43V4h2.67v1.93c1.61.32 2.82 1.43 2.92 3.16h-1.92c-.09-.91-.89-1.63-2.18-1.63-1.12 0-1.86.52-1.86 1.41 0 .96.89 1.38 2.49 1.84 2.19.62 3.97 1.46 3.97 3.65 0 2.01-1.52 3.23-3.32 3.73z"/>
                         </svg>
-                    </span>
+                    </div>
                 </div>
-                <p class="mt-3 text-2xl font-bold text-slate-900">&#8369;{{ number_format($quickStats['stockValue'], 2) }}</p>
-                <p class="mt-1 text-sm text-slate-500">Combined value of supplier stock.</p>
             </div>
         </div>
 

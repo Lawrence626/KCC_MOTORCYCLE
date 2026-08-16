@@ -97,7 +97,7 @@
                 </svg>
                 <h3 class="text-lg font-semibold text-slate-900 mb-2">No Archived Shelves</h3>
                 <p class="text-sm text-gray-500">You haven't archived any shelves yet.</p>
-                <a href="{{ route('shop.inventory') }}" class="inline-flex items-center gap-2 mt-4 text-emerald-600 hover:text-emerald-700 text-sm font-medium">
+                <a href="{{ route('shop.inventory') }}" class="inline-flex items-center gap-2 mt-4 text-black hover:text-slate-700 text-sm font-semibold">
                     Go to Shop Inventory
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>

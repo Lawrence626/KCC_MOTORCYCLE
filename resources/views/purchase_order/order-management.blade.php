@@ -32,61 +32,75 @@
                 <button class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200">Upload CSV</button>
             </div>
         </div>
-<div class="grid gap-3 sm:grid-cols-3">
-    <div class="rounded-[28px] border border-slate-200 p-5 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-        <div class="flex items-start justify-between gap-3">
-            <p class="text-sm text-slate-600 font-medium mb-1">Total orders</p>
-          <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40 border border-gray-200">
-    <svg class="h-6 w-6 text-black" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M8 2a1 1 0 0 0-1 1v1H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7.101A6.5 6.5 0 0 1 12 18.5 6.5 6.5 0 0 1 18.5 12c.352 0 .696.027 1.032.08A2 2 0 0 0 20 10V6a2 2 0 0 0-2-2h-1V3a1 1 0 1 0-2 0v1H9V3a1 1 0 0 0-1-1Zm-2 9h6a1 1 0 1 1 0 2H6a1 1 0 1 1 0-2Zm0-4h10a1 1 0 1 1 0 2H6a1 1 0 1 1 0-2Zm0 8h4.5a1 1 0 1 1 0 2H6a1 1 0 1 1 0-2Z"/>
-        <path d="M18.5 13.5a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm2.78 3.72-3.25 3.25a.75.75 0 0 1-1.06 0l-1.25-1.25a.75.75 0 1 1 1.06-1.06l.72.72 2.72-2.72a.75.75 0 1 1 1.06 1.06Z"/>
-    </svg>
-</span>
+<div class="grid gap-4 sm:grid-cols-3">
+    <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+        <div class="flex items-start justify-between">
+            <div class="flex-1">
+                <p class="text-black text-xs font-semibold">Total orders</p>
+                <div class="mt-1">
+                    <p class="text-2xl font-bold text-black">{{ number_format($totalOrders) }}</p>
+                    <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">All purchase orders created so far.</p>
+                </div>
+            </div>
+            <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 2a1 1 0 0 0-1 1v1H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7.101A6.5 6.5 0 0 1 12 18.5 6.5 6.5 0 0 1 18.5 12c.352 0 .696.027 1.032.08A2 2 0 0 0 20 10V6a2 2 0 0 0-2-2h-1V3a1 1 0 1 0-2 0v1H9V3a1 1 0 0 0-1-1Zm-2 9h6a1 1 0 1 1 0 2H6a1 1 0 1 1 0-2Zm0-4h10a1 1 0 1 1 0 2H6a1 1 0 1 1 0-2Zm0 8h4.5a1 1 0 1 1 0 2H6a1 1 0 1 1 0-2Z"/>
+                    <path d="M18.5 13.5a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm2.78 3.72-3.25 3.25a.75.75 0 0 1-1.06 0l-1.25-1.25a.75.75 0 1 1 1.06-1.06l.72.72 2.72-2.72a.75.75 0 1 1 1.06 1.06Z"/>
+                </svg>
+            </div>
         </div>
-        <p class="mt-3 text-2xl font-bold text-slate-900">{{ number_format($totalOrders) }}</p>
-        <p class="mt-1 text-sm text-slate-500">All purchase orders created so far.</p>
     </div>
-    <div class="rounded-[28px] border border-slate-200 p-5 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-        <div class="flex items-start justify-between gap-3">
-            <p class="text-sm text-slate-600 font-medium mb-1">In transit value</p>
-            <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40 border border-gray-200">
-                <svg class="h-6 w-6 text-black" viewBox="0 0 20 20" fill="currentColor">
+
+    <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+        <div class="flex items-start justify-between">
+            <div class="flex-1">
+                <p class="text-black text-xs font-semibold">In transit value</p>
+                <div class="mt-1">
+                    <p class="text-2xl font-bold text-black">&#8369;{{ number_format($inTransitTotal, 2) }}</p>
+                    <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Total value of orders currently in transit.</p>
+                </div>
+            </div>
+            <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                <svg class="w-5 h-5 text-black" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M3.375 4.25A2.125 2.125 0 0 0 1.25 6.375v8.75c0 .966.66 1.777 1.55 2.006a2.626 2.626 0 0 0 5.153-.256h4.11a2.626 2.626 0 0 0 5.13.256A2.001 2.001 0 0 0 18.75 15v-2.62a2 2 0 0 0-.386-1.185l-2.309-3.148A2 2 0 0 0 14.44 7.25H13V6.375A2.125 2.125 0 0 0 10.875 4.25h-7.5ZM13 8.75h1.44l1.965 2.677A.5.5 0 0 1 16 12H13V8.75ZM5.375 14.375a1.125 1.125 0 1 1 0 2.25 1.125 1.125 0 0 1 0-2.25Zm9.25 0a1.125 1.125 0 1 1 0 2.25 1.125 1.125 0 0 1 0-2.25Z" />
                 </svg>
-            </span>
+            </div>
         </div>
-        <p class="mt-3 text-2xl font-bold text-slate-900">&#8369;{{ number_format($inTransitTotal, 2) }}</p>
-        <p class="mt-1 text-sm text-slate-500">Total value of orders currently in transit.</p>
     </div>
-    <div class="relative rounded-[28px] border border-slate-200 p-5 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-        <div class="flex items-start justify-between gap-3">
-            <p class="text-sm text-slate-600 font-medium mb-1 whitespace-nowrap">Received {{ $receivedLabel }}</p>
+
+    <div class="relative border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+        <div class="flex items-start justify-between">
+            <div class="flex-1">
+                <p class="text-black text-xs font-semibold">Received {{ $receivedLabel }}</p>
+                <div class="mt-1">
+                    <p class="text-2xl font-bold text-black">{{ number_format($receivedCount) }}</p>
+                    <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Completed orders added to inventory.</p>
+                </div>
+            </div>
             <div class="flex flex-shrink-0 items-end gap-2">
                 <form id="receivedRangeForm" method="GET" action="{{ route('order.management') }}">
                     <input type="hidden" name="tab" value="{{ $activeTab }}" />
                     <label class="block text-sm text-slate-700 relative" data-dropdown-wrapper="receivedRange">
                         <span class="sr-only">Received range</span>
                         <input type="hidden" name="received_range" id="receivedRangeInput" value="{{ $receivedRange }}" />
-                        <button type="button" id="receivedRangeButton" onclick="toggleDropdown('receivedRangeDropdown')" class="w-32 rounded-[10px] border border-slate-300 ring-1 ring-gray-200 bg-[#00fff2] px-4 py-2 text-left text-sm text-slate-900 flex items-center justify-between gap-2 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring-1 focus:ring-black/35">
-                            <svg class="h-5 w-5 text-black flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <button type="button" id="receivedRangeButton" onclick="toggleDropdown('receivedRangeDropdown')" class="w-full min-w-[110px] px-2.5 py-1.5 rounded-[10px] border border-slate-300 bg-[#00fff2] text-xs font-bold text-slate-900 flex items-center justify-between gap-1.5 hover:border-[#00fff2] hover:shadow-md transition cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#00fff2] shadow-sm">
+                            <svg class="h-4 w-4 text-black flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
                             </svg>
                             <span>{{ ucfirst($receivedRange) }}</span>
-                            <svg class="w-4 h-4 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-3.5 h-3.5 text-slate-700 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                             </svg>
                         </button>
-                        <div id="receivedRangeDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-32 rounded-[10px] border border-slate-200/50 bg-white shadow-xl p-3 space-y-1">
+                        <div id="receivedRangeDropdown" class="dropdown-menu hidden absolute top-full left-0 right-0 w-full z-50 mt-1.5 rounded-[10px] border border-slate-200 bg-white shadow-xl p-1 space-y-0.5">
                             @foreach(['daily' => 'Daily', 'weekly' => 'Weekly', 'monthly' => 'Monthly', 'yearly' => 'Yearly'] as $value => $label)
-                                <button type="button" onclick="selectDropdown(event, 'receivedRangeInput', '{{ $value }}', 'receivedRangeButton', '{{ $label }}', 'receivedRangeDropdown', 'receivedRangeForm')" class="w-full px-2 py-1.5 text-center text-sm {{ $receivedRange === $value ? 'font-semibold text-slate-900 bg-gray-200' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
+                                <button type="button" onclick="selectDropdown(event, 'receivedRangeInput', '{{ $value }}', 'receivedRangeButton', '{{ $label }}', 'receivedRangeDropdown', 'receivedRangeForm')" class="w-full px-2 py-1 text-center text-xs {{ $receivedRange === $value ? 'font-semibold text-slate-900 bg-gray-200' : 'text-slate-700 hover:bg-slate-100' }} rounded-[6px]">{{ $label }}</button>
                             @endforeach
                         </div>
                     </label>
                 </form>
             </div>
         </div>
-        <p class="mt-5 text-2xl font-bold text-slate-900">{{ number_format($receivedCount) }}</p>
-        <p class="text-sm text-slate-500 whitespace-nowrap">Completed orders added to inventory.</p>
     </div>
 </div>
 

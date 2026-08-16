@@ -139,7 +139,7 @@
         <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
             <div class="flex flex-col lg:flex-row items-center justify-between gap-2">
                 <div class="relative w-full lg:w-64">
-                    <input type="search" id="search-input" class="w-full pl-9 pr-3 py-1.5 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm" placeholder="Search product name, SKU, shelf...">
+                    <input type="search" id="search-input" class="w-full pl-9 pr-3 py-1.5 text-xs rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm" placeholder="Search product name, SKU, shelf...">
                     <svg class="absolute left-2.5 top-2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
@@ -155,14 +155,14 @@
                                 <option value="{{ $desc->name }}">{{ $desc->name }}</option>
                             @php endforeach; @endphp
                         </select>
-                        <button type="button" onclick="toggleDropdown('dd-desc-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
+                        <button type="button" onclick="toggleDropdown('dd-desc-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
                             <span id="dd-desc-label">All Descriptions</span>
                             <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                         <div id="dd-desc-menu" class="hidden absolute left-0 top-full z-50 mt-1 min-w-[160px] rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
-                            <button type="button" onclick="selectShopDropdownOption('product-description-filter', 'dd-desc-label', 'dd-desc-menu', '', 'All Descriptions')" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Descriptions</button>
+                            <button type="button" onclick="selectShopDropdownOption('product-description-filter', 'dd-desc-label', 'dd-desc-menu', '', 'All Descriptions')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Descriptions</button>
                             @foreach($descriptions as $desc)
-                                <button type="button" onclick="selectShopDropdownOption('product-description-filter', 'dd-desc-label', 'dd-desc-menu', '{{ addslashes($desc->name) }}', '{{ addslashes($desc->name) }}')" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">
+                                <button type="button" onclick="selectShopDropdownOption('product-description-filter', 'dd-desc-label', 'dd-desc-menu', '{{ addslashes($desc->name) }}', '{{ addslashes($desc->name) }}')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">
                                     {{ $desc->name }}
                                 </button>
                             @endforeach
@@ -185,14 +185,14 @@
                                 <option value="{{ $brand }}">{{ $brand }}</option>
                             @php endforeach; @endphp
                         </select>
-                        <button type="button" onclick="toggleDropdown('dd-brand-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
+                        <button type="button" onclick="toggleDropdown('dd-brand-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
                             <span id="dd-brand-label">All Brands</span>
                             <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                         <div id="dd-brand-menu" class="hidden absolute left-0 top-full z-50 mt-1 min-w-[140px] rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
-                            <button type="button" onclick="selectShopDropdownOption('brand-filter', 'dd-brand-label', 'dd-brand-menu', '', 'All Brands')" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Brands</button>
+                            <button type="button" onclick="selectShopDropdownOption('brand-filter', 'dd-brand-label', 'dd-brand-menu', '', 'All Brands')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Brands</button>
                             @foreach($brands as $brand)
-                                <button type="button" onclick="selectShopDropdownOption('brand-filter', 'dd-brand-label', 'dd-brand-menu', '{{ addslashes($brand) }}', '{{ addslashes($brand) }}')" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">
+                                <button type="button" onclick="selectShopDropdownOption('brand-filter', 'dd-brand-label', 'dd-brand-menu', '{{ addslashes($brand) }}', '{{ addslashes($brand) }}')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">
                                     {{ $brand }}
                                 </button>
                             @endforeach
@@ -203,16 +203,16 @@
                         <select id="section-filter" class="hidden">
                             <option value="">All Sections</option>
                         </select>
-                        <button type="button" onclick="toggleDropdown('dd-section-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
+                        <button type="button" onclick="toggleDropdown('dd-section-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
                             <span id="dd-section-label">All Sections</span>
                             <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                         <div id="dd-section-menu" class="hidden absolute left-0 top-full z-50 mt-1 min-w-[140px] rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
-                            <button type="button" onclick="selectShopDropdownOption('section-filter', 'dd-section-label', 'dd-section-menu', '', 'All Sections')" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Sections</button>
+                            <button type="button" onclick="selectShopDropdownOption('section-filter', 'dd-section-label', 'dd-section-menu', '', 'All Sections')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Sections</button>
                         </div>
                     </div>
 
-                    <button id="clear-search" onclick="document.getElementById('dd-desc-label').textContent='All Descriptions'; document.getElementById('dd-brand-label').textContent='All Brands'; document.getElementById('dd-section-label').textContent='All Sections';" class="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-[12px] transition cursor-pointer">
+                    <button id="clear-search" onclick="document.getElementById('dd-desc-label').textContent='All Descriptions'; document.getElementById('dd-brand-label').textContent='All Brands'; document.getElementById('dd-section-label').textContent='All Sections';" class="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-[10px] transition cursor-pointer">
                         Clear
                     </button>
                 </div>
@@ -995,7 +995,7 @@
                     });
                 }
 
-                menuHtml += `<button type="button" onclick="selectAddShelfLocationOption('ADD_NEW_SECTION', '+ Add New Section')" class="w-full text-center px-3 py-2.5 rounded-[8px] text-xs font-bold text-emerald-600 hover:bg-emerald-50 transition cursor-pointer">+ Add New Section</button>`;
+                menuHtml += `<button type="button" onclick="selectAddShelfLocationOption('ADD_NEW_SECTION', '+ Add New Section')" class="w-full text-center px-3 py-2.5 rounded-[8px] text-xs font-bold text-black hover:bg-slate-100 transition cursor-pointer">+ Add New Section</button>`;
 
                 if (locationMenu) locationMenu.innerHTML = menuHtml;
 
@@ -1055,7 +1055,7 @@
 
                 const sectionMenu = document.getElementById('dd-section-menu');
                 if (sectionMenu) {
-                    let html = `<button type="button" onclick="selectShopDropdownOption('section-filter', 'dd-section-label', 'dd-section-menu', '', 'All Sections')" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Sections</button>`;
+                    let html = `<button type="button" onclick="selectShopDropdownOption('section-filter', 'dd-section-label', 'dd-section-menu', '', 'All Sections')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Sections</button>`;
                     if (data.success && data.sections && data.sections.length > 0) {
                         data.sections.forEach(section => {
                             if (sectionFilter) {
@@ -1064,7 +1064,7 @@
                                 option.textContent = section.name;
                                 sectionFilter.appendChild(option);
                             }
-                            html += `<button type="button" onclick="selectShopDropdownOption('section-filter', 'dd-section-label', 'dd-section-menu', '${section.name}', '${section.name}')" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">${section.name}</button>`;
+                            html += `<button type="button" onclick="selectShopDropdownOption('section-filter', 'dd-section-label', 'dd-section-menu', '${section.name}', '${section.name}')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">${section.name}</button>`;
                         });
                     }
                     sectionMenu.innerHTML = html;

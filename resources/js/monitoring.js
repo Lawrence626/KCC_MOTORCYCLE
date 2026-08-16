@@ -575,13 +575,23 @@ function updatePagination(pagination) {
         return;
     }
 
-    let html = `<button onclick="loadProducts(${Math.max(1, currentPage - 1)})" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">← Prev</button>`;
+    const totalPages = pagination.last_page;
+    let html = `<button type="button" onclick="loadProducts(${Math.max(1, currentPage - 1)})" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" ${currentPage <= 1 ? 'disabled' : ''}>← Prev</button>`;
 
     let startPage = Math.max(1, currentPage - 2);
-    let endPage = Math.min(pagination.last_page, startPage + 4);
+    let endPage = Math.min(totalPages, startPage + 4);
     if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
+    startPage = Math.max(1, startPage);
 
+    for (let i = startPage; i <= endPage; i++) {
+        if (i === currentPage) {
+            html += `<button type="button" class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">${i}</button>`;
+        } else {
+            html += `<button type="button" onclick="loadProducts(${i})" class="inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50">${i}</button>`;
+        }
+    }
 
+    html += `<button type="button" onclick="loadProducts(${Math.min(totalPages, currentPage + 1)})" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" ${currentPage >= totalPages ? 'disabled' : ''}>Next →</button>`;
 
     paginationContainer.innerHTML = html;
 

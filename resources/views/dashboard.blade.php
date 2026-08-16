@@ -130,7 +130,7 @@
                             <p class="text-black text-xs font-semibold">Total Sales</p>
                             <div class="mt-1">
                                 <p id="salesValue" class="text-2xl font-bold text-black">—</p>
-                                <p id="salesComparison" class="text-gray-500 text-xs mt-1 font-medium">Loading…</p>
+                                <p id="salesComparison" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
                             </div>
                         </div>
                         <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
@@ -148,7 +148,7 @@
                             <p class="text-black text-xs font-semibold" style="color: #000000;">Total Transaction</p>
                             <div class="mt-1">
                                 <p id="transactionsValue" class="text-2xl font-bold" style="color: #000000;">—</p>
-                                <p id="transactionsComparison" class="text-gray-500 text-xs mt-1 font-medium;">Loading…</p>
+                                <p id="transactionsComparison" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
                             </div>
                         </div>
                         <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
@@ -166,7 +166,7 @@
                             <p class="text-black text-xs font-semibold" style="color: #000000;">Total Profit</p>
                             <div class="mt-1">
                                 <p id="profitValue" class="text-2xl font-bold" style="color: #000000;">—</p>
-                                <p id="profitComparison" class="text-gray-500 text-xs mt-1 font-medium;">Loading…</p>
+                                <p id="profitComparison" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
                             </div>
                         </div>
                         <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
@@ -184,7 +184,7 @@
                             <p class="text-black text-xs font-semibold" style="color: #000000;">Total Item Sold</p>
                             <div class="mt-1">
                                 <p id="itemsSoldValue" class="text-2xl font-bold" style="color: #030303;">—</p>
-                                <p id="itemsSoldComparison" class="text-gray-500 text-xs mt-1 font-medium;">Loading…</p>
+                                <p id="itemsSoldComparison" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
                             </div>
                         </div>
                         <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
@@ -202,7 +202,7 @@
                             <p class="text-black text-xs font-semibold">Dead Stock</p>
                             <div class="mt-1">
                                 <p id="deadStockCardItems" class="text-2xl font-bold text-black">0 Items</p>
-                                <p id="deadStockCardValue" class="text-gray-500 text-xs mt-1 font-medium">Value at Risk: ₱0</p>
+                                <p id="deadStockCardValue" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Value at Risk: ₱0</p>
                             </div>
                         </div>
                         <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">

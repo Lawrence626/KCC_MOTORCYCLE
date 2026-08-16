@@ -1355,10 +1355,20 @@ document.addEventListener('DOMContentLoaded', function () {
         if (prevButton) {
             prevButton.innerHTML = '← Prev';
             prevButton.disabled = warehousePage[warehouseIndex] === 0;
+            prevButton.className = 'prev-page rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition';
         }
         if (nextButton) {
             nextButton.innerHTML = 'Next →';
             nextButton.disabled = warehousePage[warehouseIndex] === totalPages - 1;
+            nextButton.className = 'next-page rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition';
+        }
+
+        const showingInfoContainer = card.querySelector('.showing-info');
+        if (showingInfoContainer) {
+            const totalItems = totalSlots;
+            const startItem = totalSlots > 0 ? (warehousePage[warehouseIndex] * itemsPerPage) + 1 : 0;
+            const endItem = Math.min((warehousePage[warehouseIndex] + 1) * itemsPerPage, totalSlots);
+            showingInfoContainer.textContent = `Showing ${startItem} - ${endItem} of ${totalItems} items`;
         }
 
         const pageNumbersContainer = card.querySelector('.page-numbers');
@@ -1366,9 +1376,9 @@ document.addEventListener('DOMContentLoaded', function () {
             let numsHtml = '';
             for (let p = 1; p <= totalPages; p++) {
                 if (p === currentPageNum) {
-                    numsHtml += `<span class="inline-flex items-center justify-center min-w-[32px] h-8 px-2 rounded-[10px] bg-slate-200 text-xs font-bold text-slate-900 shadow-inner">${p}</span>`;
+                    numsHtml += `<button type="button" disabled class="rounded-[10px] bg-slate-200 border border-slate-300 px-2.5 py-1 text-xs font-bold text-slate-900">${p}</button>`;
                 } else {
-                    numsHtml += `<button type="button" onclick="window.goToWarehousePage(${warehouseIndex}, ${p - 1})" class="inline-flex items-center justify-center min-w-[32px] h-8 px-2 rounded-[10px] border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer">${p}</button>`;
+                    numsHtml += `<button type="button" onclick="window.goToWarehousePage(${warehouseIndex}, ${p - 1})" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer">${p}</button>`;
                 }
             }
             pageNumbersContainer.innerHTML = numsHtml;

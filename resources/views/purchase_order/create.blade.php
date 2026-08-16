@@ -348,7 +348,7 @@
         Cancel
     </a>
     <button type="submit"
-            class="max-w-xs inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#00fff2] px-5 py-3 text-sm font-bold text-black shadow-sm hover:bg-[#00e6da] transition-all duration-200">
+            class="max-w-xs inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#00fff2] px-5 py-3 text-sm font-semibold text-black shadow-sm hover:bg-[#00e6da] transition-all duration-200">
         Submit Purchase Order
     </button>
 </div>

@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const arrow = comparison.direction === 'up' ? '↑' : '↓';
             const color = comparison.direction === 'up' ? 'text-teal-500' : 'text-red-500';
             comparisonEl.textContent = `${arrow} ${comparison.value}% vs. previous period`;
-            comparisonEl.className = `${color} text-xs mt-1 font-medium`;
+            comparisonEl.className = `${color} text-[11px] leading-tight mt-1 font-medium whitespace-nowrap`;
         }
     };
 
