@@ -7,18 +7,18 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-3">
-                <button id="openSupplierModal" class="inline-flex items-center gap-2 rounded-[10px] bg-[#00FFF2] px-4 py-2 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#00D9CC] transition-all duration-200">
-                    <svg class="h-4 w-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Add supplier
-                </button>
                 <a href="{{ route('supplier.assessment.archived') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200">
                     <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
                     </svg>
                     Archive list
                 </a>
+                <button id="openSupplierModal" class="inline-flex items-center gap-2 rounded-[10px] bg-[#00FFF2] px-4 py-2 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#00D9CC] transition-all duration-200">
+                    <svg class="h-4 w-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Add supplier
+                </button>
             </div>
         </div>
 

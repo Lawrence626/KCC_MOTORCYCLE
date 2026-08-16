@@ -6,19 +6,19 @@
                 <p class="text-gray-600 text-sm mt-1">Process sales, service billing, and payments from one compact page.</p>
             </div>
             <div class="flex flex-wrap gap-2">
-         <button id="posOpenDesktopScannerButton" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-slate-800 font-semibold shadow-sm hover:bg-black/10 transition-all duration-200">
+         <button id="posOpenDesktopScannerButton" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 font-semibold shadow-sm hover:bg-black/10 transition-all duration-200">
                     <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     Scan QR
                 </button>
-                <button id="posOpenScannerButton" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-slate-800 font-semibold shadow-sm hover:bg-black/10 transition-all duration-200">
+                <button id="posOpenScannerButton" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 font-semibold shadow-sm hover:bg-black/10 transition-all duration-200">
                     <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
                     Mobile Scanner
                 </button>
-                <button id="posOpenTransactionHistoryButton" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-slate-800 font-semibold shadow-sm hover:bg-black/10 transition-all duration-200">
+                <button id="posOpenTransactionHistoryButton" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 font-semibold shadow-sm hover:bg-black/10 transition-all duration-200">
                     <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/></svg>
                     Transaction History
                 </button>
-                <a href="{{ route('archived') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-slate-800 font-semibold shadow-sm hover:bg-black/10 transition-all duration-200">
+                <a href="{{ route('archived') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 font-semibold shadow-sm hover:bg-black/10 transition-all duration-200">
                     <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
                     Archived Items
                 </a>
@@ -516,23 +516,23 @@
                         <button id="posHistoryFilterClearButton" class="h-11 rounded-[10px] border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-900 hover:bg-black/10">Clear</button>
                     </div>
                 </div>
-                <div class="overflow-x-auto overflow-y-auto max-h-[40vh]">
+                <div class="overflow-x-auto overflow-y-auto max-h-[40vh] rounded-[10px] border border-slate-200">
                     <table class="min-w-full text-left text-sm text-slate-700">
-                        <thead>
-                            <tr class="border-b border-slate-200 text-slate-500 text-[11px] uppercase tracking-wide">
+                        <thead class="bg-[#0f172a] text-white text-[11px] font-semibold uppercase tracking-wider sticky top-0 z-10" style="background-color: #0f172a;">
+                            <tr class="border-b border-slate-800 bg-[#0f172a]" style="background-color: #0f172a;">
                                 <th class="px-3 py-3 text-center w-10">
                                     <input type="checkbox" id="posSelectAllTransactions" class="rounded border-slate-300 text-red-600 focus:ring-red-500 cursor-pointer" />
                                 </th>
-                                <th class="px-3 py-3">Invoice</th>
-                                <th class="px-3 py-3">SKU</th>
-                                <th class="px-3 py-3">Date</th>
-                                <th class="px-3 py-3">Method</th>
-                                <th class="px-3 py-3 text-center">Items</th>
-                                <th class="px-3 py-3 text-right">Total</th>
-                                <th class="px-3 py-3 text-center">Action</th>
+                                <th class="px-3 py-3 text-white">Invoice</th>
+                                <th class="px-3 py-3 text-white">SKU</th>
+                                <th class="px-3 py-3 text-white">Date</th>
+                                <th class="px-3 py-3 text-white">Method</th>
+                                <th class="px-3 py-3 text-center text-white">Items</th>
+                                <th class="px-3 py-3 text-right text-white">Total</th>
+                                <th class="px-3 py-3 text-center text-white">Action</th>
                             </tr>
                         </thead>
-                        <tbody id="posTransactionHistoryBody"></tbody>
+                        <tbody id="posTransactionHistoryBody" class="divide-y divide-slate-200"></tbody>
                     </table>
                 </div>
                 <div id="posTransactionHistoryBulkActions" class="mt-4 hidden rounded-[10px] border border-red-200 bg-red-50 px-4 py-3 flex items-center justify-between">

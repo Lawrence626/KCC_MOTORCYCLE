@@ -178,7 +178,7 @@
         <!-- Row 1: Sales Trend (xl:col-span-2) & Category Distribution (xl:col-span-1) Aligned -->
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 items-stretch">
             <!-- Sales Trend -->
-            <div id="salesTrendCard" class="xl:col-span-2 border border-slate-200 relative overflow-hidden rounded-[28px] bg-white shadow-sm h-[350px] flex flex-col justify-between">
+            <div id="salesTrendCard" class="xl:col-span-2 border border-slate-200 relative overflow-hidden rounded-[15px] bg-white shadow-sm h-[350px] flex flex-col justify-between" style="border-radius: 15px;">
                 <!-- Header (title + range buttons) -->
                 <div id="salesTrendHeader" class="bg-[#0f172a] px-6 py-4 flex items-center justify-between border-b border-slate-800">
                     <div class="flex items-center gap-2">
@@ -201,8 +201,8 @@
             </div>
 
             <!-- Category Distribution -->
-            <div class="xl:col-span-1 rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm relative h-[350px] flex flex-col justify-between" id="categoryDistributionSection">
-                <div id="categoryLoadingOverlay" class="hidden absolute inset-0 bg-white/80 rounded-[20px] z-10 flex items-center justify-center">
+            <div class="xl:col-span-1 rounded-[15px] border border-slate-200 bg-white p-4 shadow-sm relative h-[350px] flex flex-col justify-between" id="categoryDistributionSection" style="border-radius: 15px;">
+                <div id="categoryLoadingOverlay" class="hidden absolute inset-0 bg-white/80 rounded-[15px] z-10 flex items-center justify-center">
                     <div class="flex flex-col items-center gap-2"><svg class="animate-spin h-6 w-6 text-[#105f68]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg><span class="text-xs text-slate-400">Loading…</span></div>
                 </div>
                 <div class="flex items-center justify-between">

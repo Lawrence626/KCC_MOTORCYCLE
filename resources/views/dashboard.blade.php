@@ -272,7 +272,7 @@
         <!-- Charts Row -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-8">
             <!-- Sales Overview Chart -->
-            <div id="salesOverviewCard" class="lg:col-span-2 border border-slate-200 relative overflow-hidden rounded-[28px] bg-white shadow-sm" style="min-height: 240px; box-sizing: border-box;">
+            <div id="salesOverviewCard" class="lg:col-span-2 border border-slate-200 relative overflow-hidden rounded-[15px] bg-white shadow-sm" style="min-height: 240px; box-sizing: border-box; border-radius: 15px;">
 
                 <!-- Header (title + range buttons) -->
                 <div id="salesOverviewHeader" class="bg-[#0f172a] px-6 py-4 flex items-center justify-between border-b border-slate-800">
@@ -293,7 +293,7 @@
             </div>
 
             <!-- Sales by Category (full-circle ring + white knockout center + neon-on-sale legend) -->
-            <div class="border border-gray-200 p-3" style="border-radius: 20px; background-color: #ffffff;">
+            <div class="border border-gray-200 p-3 rounded-[15px]" style="border-radius: 15px; background-color: #ffffff;">
                 <h2 class="text-sm font-bold text-black mb-2" style="font-family: 'Poppins', sans-serif;">Sales by Category</h2>
                 <div class="flex flex-col items-center gap-3">
                     <div style="position: relative; width: 150px; height: 160px; max-width: 160px; max-height: 160px; aspect-ratio: 1 / 1;">
