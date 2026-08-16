@@ -68,9 +68,9 @@
             </div>
         </div>
 
-        <section class="rounded-[10px] border border-slate-200 bg-white overflow-hidden shadow-sm" style="min-height: calc(100vh - 220px);">
+        <section class="rounded-[15px] border border-slate-200 bg-white overflow-hidden shadow-sm" style="min-height: calc(100vh - 220px);">
             <!-- Section Header Bar (matching All Stocks design) -->
-            <div class="bg-[#0f172a] px-6 py-4 flex items-center justify-between gap-4 border-b border-slate-800 rounded-t-[10px]">
+            <div class="bg-[#0f172a] px-6 py-4 flex items-center justify-between gap-4 border-b border-slate-800 rounded-t-[15px]">
                 <div>
                     <h2 class="text-lg font-bold text-white">Latest received orders</h2>
                     <p class="text-xs text-slate-300">Recent receipts in a concise table.</p>
@@ -134,12 +134,12 @@
 
             <div class="mt-6 overflow-hidden rounded-[10px] border border-slate-200">
                 <table class="min-w-full text-left text-sm">
-                    <thead class="bg-slate-50 text-slate-500 text-[11px] uppercase tracking-[0.18em]">
+                    <thead class="bg-[#0f172a] border-b border-slate-200 text-xs uppercase tracking-wider text-white">
                         <tr>
-                            <th class="px-4 py-3">Order</th>
-                            <th class="px-4 py-3">Supplier</th>
-                            <th class="px-4 py-3">Received</th>
-                            <th class="px-4 py-3">Status</th>
+                            <th class="px-4 py-3 font-semibold text-white">Order</th>
+                            <th class="px-4 py-3 font-semibold text-white">Supplier</th>
+                            <th class="px-4 py-3 font-semibold text-white">Received</th>
+                            <th class="px-4 py-3 font-semibold text-white">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 text-slate-700">

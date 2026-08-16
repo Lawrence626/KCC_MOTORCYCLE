@@ -160,18 +160,18 @@
         <!-- Table -->
         <div class="overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-sm">
             <div class="overflow-x-auto rounded-[10px]">
-                <table class="w-full min-w-[900px] text-xs text-left">
-                    <thead class="bg-[#0f172a] border-b border-slate-200 rounded-t-[10px]">
+                <table class="w-full text-sm text-left whitespace-nowrap min-w-max">
+                    <thead class="bg-[#0f172a] border-b border-slate-200 sticky-header text-xs uppercase tracking-wider rounded-t-[10px]">
                         <tr>
-                            <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white rounded-tl-[10px]">Product</th>
-                            <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">SKU</th>
-                            <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Return Reason</th>
-                            <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Condition</th>
-                            <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Quantity</th>
-                            <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Warehouse</th>
-                            <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Date Received</th>
-                            <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Status</th>
-                            <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white text-center rounded-tr-[10px]">Actions</th>
+                            <th class="px-4 py-3 font-semibold text-white rounded-tl-[10px]">Product</th>
+                            <th class="px-4 py-3 font-semibold text-white">SKU</th>
+                            <th class="px-4 py-3 font-semibold text-white">Return Reason</th>
+                            <th class="px-4 py-3 font-semibold text-white">Condition</th>
+                            <th class="px-4 py-3 font-semibold text-white">Quantity</th>
+                            <th class="px-4 py-3 font-semibold text-white">Warehouse</th>
+                            <th class="px-4 py-3 font-semibold text-white">Date Received</th>
+                            <th class="px-4 py-3 font-semibold text-white">Status</th>
+                            <th class="px-4 py-3 font-semibold text-center text-white rounded-tr-[10px]">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="recordsTableBody" class="divide-y divide-slate-200 text-xs bg-white">

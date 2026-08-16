@@ -241,8 +241,8 @@
             </div>
         </div>
 
-        <div class="mt-4 rounded-[10px] border border-slate-200 bg-white shadow-sm">
-            <div class="flex items-center justify-between border-b border-slate-200 bg-[#0f172a] rounded-t-[10px] px-4 py-4 text-white">
+        <div class="mt-4 rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div class="flex items-center justify-between border-b border-slate-200 bg-[#0f172a] rounded-t-[15px] px-4 py-4 text-white">
                 <div>
                     <h2 class="text-sm font-semibold text-white">Recent Inventory Movements</h2>
                     <p class="mt-1 text-xs text-slate-200">Latest stock changes, restocks, and price updates.</p>

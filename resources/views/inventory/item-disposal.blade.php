@@ -2,7 +2,7 @@
     <div class="space-y-4">
         <!-- Header -->
         <div class="flex items-center justify-between gap-3">
-            <div>
+            <div class="pl-3 lg:pl-2">
                 <h1 class="text-3xl font-bold text-slate-900">Item Disposal List</h1>
                 <p class="text-sm text-slate-500 mt-1">Automatically identifies expired, damaged, or recalled inventory items requiring disposal.</p>
             </div>
@@ -97,22 +97,22 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-xs">
-                    <thead class="border-b border-slate-200 bg-[#0f172a]">
+                <table class="w-full text-sm text-left whitespace-nowrap min-w-max">
+                    <thead class="bg-[#0f172a] border-b border-slate-200 sticky-header text-xs uppercase tracking-wider">
                         <tr>
-                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Product Image</th>
-                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Item Name</th>
-                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">SKU</th>
-                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Category</th>
-                            <th class="px-3 py-2.5 text-center text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Total Stock</th>
-                            <th class="px-3 py-2.5 text-center text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Shop Qty</th>
-                            <th class="px-3 py-2.5 text-center text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Wh Qty</th>
-                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Expiration Date</th>
-                            <th class="px-3 py-2.5 text-center text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Days Expired</th>
-                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Reason</th>
-                            <th class="px-3 py-2.5 text-center text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Status</th>
-                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Date Identified</th>
-                            <th class="px-3 py-2.5 text-center text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Actions</th>
+                            <th class="px-4 py-3 font-semibold text-white">Product Image</th>
+                            <th class="px-4 py-3 font-semibold text-white">Item Name</th>
+                            <th class="px-4 py-3 font-semibold text-white">SKU</th>
+                            <th class="px-4 py-3 font-semibold text-white">Category</th>
+                            <th class="px-4 py-3 font-semibold text-center text-white">Total Stock</th>
+                            <th class="px-4 py-3 font-semibold text-center text-white">Shop Qty</th>
+                            <th class="px-4 py-3 font-semibold text-center text-white">Wh Qty</th>
+                            <th class="px-4 py-3 font-semibold text-white">Expiration Date</th>
+                            <th class="px-4 py-3 font-semibold text-center text-white">Days Expired</th>
+                            <th class="px-4 py-3 font-semibold text-white">Reason</th>
+                            <th class="px-4 py-3 font-semibold text-center text-white">Status</th>
+                            <th class="px-4 py-3 font-semibold text-white">Date Identified</th>
+                            <th class="px-4 py-3 font-semibold text-center text-white">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 text-xs">

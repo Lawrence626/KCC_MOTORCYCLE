@@ -90,9 +90,9 @@
     </div>
 </div>
 
-        <div class="rounded-[10px] border border-slate-200 bg-white overflow-hidden shadow-sm">
+        <div class="rounded-[15px] border border-slate-200 bg-white overflow-hidden shadow-sm">
             <!-- Section Header Bar (matching All Stocks design) -->
-            <div id="orderTabs" class="bg-[#0f172a] px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-slate-800 rounded-t-[10px]">
+            <div id="orderTabs" class="bg-[#0f172a] px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-slate-800 rounded-t-[15px]">
                 <div class="flex flex-wrap items-center gap-2">
                     <button class="tab-btn rounded-[10px] bg-[#00FFF2] px-4 py-2 text-xs font-bold text-slate-900 shadow-sm transition-all" data-tab="orders">Purchase Orders</button>
                     <button class="tab-btn rounded-[10px] border border-slate-700 bg-slate-800/80 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-all" data-tab="back_orders">Back Orders</button>

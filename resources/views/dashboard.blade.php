@@ -772,11 +772,11 @@
         .notif-item:last-child {
             border-bottom: none;
         }
-        .notif-item:hover { background-color: #f8fafc; }
+        .notif-item:hover { background-color: transparent; }
         .notif-item-unread {
             background-color: #fefce8;
         }
-        .notif-item-unread:hover { background-color: #fef9c3; }
+        .notif-item-unread:hover { background-color: #fefce8; }
         
         .notif-status-dot {
             width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;

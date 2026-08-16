@@ -99,7 +99,7 @@
         </div>
 
         <!-- Archived Table -->
-        <div class="bg-white rounded-[10px] border border-slate-200 shadow-sm flex-1 flex flex-col overflow-hidden">
+        <div class="bg-white rounded-[10px] border border-slate-200 shadow-sm flex-1 flex flex-col overflow-visible">
             <div class="overflow-x-auto overflow-y-visible rounded-[10px]">
                 <table class="w-full divide-y divide-slate-200 text-xs">
                     <thead class="border-b border-slate-200 bg-[#0f172a] rounded-t-[10px]">
@@ -123,10 +123,10 @@
             </div>
 
             <!-- Table Footer - Pagination -->
-            <div id="pagination" class="hidden px-3 py-2 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs overflow-visible pb-12 sm:pb-2">
+            <div id="pagination" class="hidden px-3 py-2 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs overflow-visible relative z-30 pb-2">
                 <div class="flex items-center gap-2 text-slate-600">
                     <span>Showing</span>
-                    <div class="relative inline-block" data-dropdown-wrapper="perPage">
+                    <div class="relative inline-block z-50" data-dropdown-wrapper="perPage">
                         <input type="hidden" id="perPage" value="10" />
                         <button type="button" id="perPageButton" onclick="toggleCustomDropdown('perPageDropdown', event)" class="px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-700 flex items-center justify-between gap-1.5 hover:border-slate-400 focus:outline-none transition shadow-sm h-8 min-w-[56px]">
                             <span id="perPageDisplay">10</span>
@@ -134,7 +134,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <div id="perPageDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[999] mt-1 w-full min-w-full rounded-[10px] border border-slate-200 bg-white shadow-xl p-1 space-y-0.5">
+                        <div id="perPageDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[9999] mt-1 w-full min-w-[60px] rounded-[10px] border border-slate-200 bg-white shadow-xl p-1 space-y-0.5">
                             <button type="button" onclick="selectPerPage(10)" class="w-full text-center px-2 py-1 rounded-md text-xs font-semibold text-slate-900 bg-black/10 transition">10</button>
                             <button type="button" onclick="selectPerPage(25)" class="w-full text-center px-2 py-1 rounded-md text-xs font-medium text-slate-700 hover:bg-slate-100 transition">25</button>
                             <button type="button" onclick="selectPerPage(50)" class="w-full text-center px-2 py-1 rounded-md text-xs font-medium text-slate-700 hover:bg-slate-100 transition">50</button>

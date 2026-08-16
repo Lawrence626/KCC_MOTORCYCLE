@@ -89,19 +89,19 @@
             </div>
         </div>
 
-        <section class="rounded-[10px] border border-slate-200 bg-white overflow-hidden shadow-sm">
+        <section class="rounded-[15px] border border-slate-200 bg-white overflow-hidden shadow-sm">
             <!-- Section Header Bar (matching All Stocks design) -->
-            <div class="bg-[#0f172a] px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-slate-800 rounded-t-[10px]">
+            <div class="bg-[#0f172a] px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-slate-800 rounded-t-[15px]">
                 <div>
                     <h2 class="text-lg font-bold text-white">Select a Supplier</h2>
                     <p class="text-xs text-slate-300">Search and pick a supplier partner to inspect details below</p>
                 </div>
                 <div class="flex items-center gap-3">
                     <div class="relative w-72 md:w-80">
-                        <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/>
                         </svg>
-                        <input id="supplierSearch" type="search" placeholder="Search supplier, contact, email..." class="w-full rounded-[10px] border border-slate-700 bg-slate-800/90 pl-10 pr-4 py-2 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#00fff2]" />
+                        <input id="supplierSearch" type="search" placeholder="Search supplier, contact, email..." class="w-full rounded-[10px] border border-slate-700 bg-slate-800/90 pl-10 pr-4 py-2 text-xs text-white placeholder:text-slate-300 focus:outline-none focus:ring-1 focus:ring-[#00fff2]" />
                     </div>
                     <span id="supplierListCount" class="rounded-[10px] bg-[#00FFF2] px-3 py-2 text-xs font-bold text-slate-900 shadow-sm whitespace-nowrap">{{ number_format($supplierSummaries->count()) }} shown</span>
                 </div>
@@ -113,7 +113,7 @@
             </div>
         </section>
 
-        <main id="supplierDetailsContainer" class="rounded-[10px] border border-slate-200 bg-white shadow-sm min-h-[350px] overflow-hidden">
+        <main id="supplierDetailsContainer" class="rounded-[15px] border border-slate-200 bg-white shadow-sm min-h-[350px] overflow-hidden">
             <div id="supplierDetailPlaceholder" class="p-6 py-16 text-center text-slate-500">
                 <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0v-4m0 4h4m-4-4l4 4"/>
@@ -124,7 +124,7 @@
 
             <section id="supplierDetailPanel" class="hidden space-y-6">
                 <!-- Section Header Bar (matching All Stocks design) -->
-                <div class="bg-[#0f172a] px-6 py-5 border-b border-slate-800 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between rounded-t-[10px]">
+                <div class="bg-[#0f172a] px-6 py-5 border-b border-slate-800 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between rounded-t-[15px]">
                     <div>
                         <p class="text-xs uppercase tracking-wider font-semibold text-[#00fff2]">Supplier overview</p>
                         <h2 id="detailSupplierName" class="mt-0.5 text-2xl md:text-3xl font-bold text-white"></h2>
@@ -258,16 +258,16 @@
                         </div>
                         <span id="detailTotalValue" class="rounded-[10px] bg-slate-100 px-3 py-1 text-xs font-bold text-slate-900 border border-slate-200"></span>
                     </div>
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto rounded-[10px] border border-slate-200">
                         <table class="min-w-full text-left text-sm text-slate-700">
-                            <thead class="bg-slate-50 text-xs font-semibold text-slate-700 border-b border-slate-200">
+                            <thead class="bg-[#0f172a] border-b border-slate-200 text-xs font-semibold text-white uppercase tracking-wider">
                                 <tr>
-                                    <th class="px-4 py-3">Product</th>
-                                    <th class="px-4 py-3">SKU</th>
-                                    <th class="px-4 py-3">Category</th>
-                                    <th class="px-4 py-3">Stock</th>
-                                    <th class="px-4 py-3">Unit Price</th>
-                                    <th class="px-4 py-3">Restock</th>
+                                    <th class="px-4 py-3 font-semibold text-white">Product</th>
+                                    <th class="px-4 py-3 font-semibold text-white">SKU</th>
+                                    <th class="px-4 py-3 font-semibold text-white">Category</th>
+                                    <th class="px-4 py-3 font-semibold text-white">Stock</th>
+                                    <th class="px-4 py-3 font-semibold text-white">Unit Price</th>
+                                    <th class="px-4 py-3 font-semibold text-white">Restock</th>
                                 </tr>
                             </thead>
                             <tbody id="detailProductTable" class="divide-y divide-slate-200 bg-white"></tbody>

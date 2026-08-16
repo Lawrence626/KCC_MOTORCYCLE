@@ -268,7 +268,7 @@
             </div>
         </div>
 
-        <div class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="rounded-[10px] border border-slate-200 bg-white p-5 shadow-sm">
             <div id="userListWrapper">
             <div class="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 @php
