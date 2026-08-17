@@ -1,7 +1,7 @@
 <x-layouts.app :title="__('Pricing Module')">
     <div class="space-y-4">
         <!-- Header -->
-        <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div class="pl-3 lg:pl-2">
                 <h1 class="text-3xl font-bold text-slate-900">Pricing Module</h1>
                 <p class="text-xs text-slate-500 mt-1">Analyze pricing trends, monitor stock value, and track recent price breaks.</p>
