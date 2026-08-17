@@ -15,7 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('product_name');
             $table->string('brand');
-            $table->foreignId('category_id')->constrained('product_categories')->onDelete('cascade');
+            if (\Illuminate\Support\Facades\DB::getDriverName() !== 'sqlite') {
+                $table->foreignId('category_id')->constrained('product_categories')->onDelete('cascade');
+            } else {
+                $table->unsignedBigInteger('category_id')->nullable();
+            }
             $table->string('sku')->unique();
             $table->text('description')->nullable();
             $table->string('qr_code_path')->nullable();

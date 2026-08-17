@@ -244,6 +244,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('purchase-order/{purchaseOrder}', [PurchaseOrderController::class, 'show'])->name('order.show');
         Route::post('purchase-order/{purchaseOrder}/receive', [PurchaseOrderController::class, 'receive'])->name('order.receive');
         Route::post('purchase-order/{purchaseOrder}/confirm-receive', [PurchaseOrderController::class, 'confirmReceive'])->name('order.confirm_receive');
+        Route::post('purchase-order/{purchaseOrder}/defective-request/{defectiveRequest}/resolve', [PurchaseOrderController::class, 'resolveDefectiveRequest'])->name('order.defective.resolve');
+        Route::post('purchase-order/{purchaseOrder}/defective-request/{defectiveRequest}/receive-replacement', [PurchaseOrderController::class, 'receiveReplacement'])->name('order.defective.receive_replacement');
     });
 
     Route::middleware('role:admin')->group(function () {

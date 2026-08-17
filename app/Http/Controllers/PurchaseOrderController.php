@@ -3,17 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Mail\PurchaseOrderSentMail;
+use App\Models\DefectiveReturnRequest;
 use App\Models\InventoryMovement;
 use App\Services\InventoryAlertService;
 use App\Models\POSTransaction;
 use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
+use App\Models\ReverseLogistics;
 use App\Models\StockArrivalNotice;
 use App\Models\Supplier;
+use App\Models\SupplierPriceHistory;
 use App\Models\User;
 use App\Models\WarehouseShelf;
-use App\Models\SupplierPriceHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -28,13 +30,12 @@ class PurchaseOrderController extends Controller
 
         $lowStockProducts = Product::where('is_active', true)
             ->where('is_archived', false)
-            ->whereRaw('stock_quantity < reorder_level')
-            ->paginate(8)
-            ->withQueryString();
+            ->where('stock_quantity', '<=', 10)
+            ->count();
 
         $suppliers = Supplier::orderBy('name')->get();
         $totalOrders = PurchaseOrder::count();
-        $inTransitTotal = PurchaseOrder::where('status', 'in transit')->sum('total_amount');
+        $inTransitTotal = PurchaseOrder::where('status', 'in transit')->count();
 
         $receivedCount = PurchaseOrder::where('status', 'completed')
             ->when($receivedRange === 'daily', fn ($query) => $query->whereDate('updated_at', today()))
@@ -60,6 +61,18 @@ class PurchaseOrderController extends Controller
             ->paginate(10, ['*'], 'back_orders_page')
             ->withQueryString();
 
+        $replacementBackOrders = DefectiveReturnRequest::with(['purchaseOrder', 'product'])
+            ->where('resolution', 'Replacement')
+            ->whereIn('status', ['Replacement Approved', 'Awaiting Replacement'])
+            ->when($request->query('back_orders_supplier'), fn ($q, $s) => $q->where('supplier_name', $s))
+            ->when($request->query('back_orders_search'), fn ($q, $s) => $q->where(function ($q) use ($s) {
+                $q->where('product_name', 'like', "%{$s}%")
+                    ->orWhere('replacement_order_number', 'like', "%{$s}%")
+                    ->orWhere('supplier_name', 'like', "%{$s}%");
+            }))
+            ->latest()
+            ->get();
+
         $receivedOrders = $this->filteredPurchaseOrders($request, ['completed', 'partially received'], 'received')
             ->latest()
             ->paginate(10, ['*'], 'received_page')
@@ -80,6 +93,7 @@ class PurchaseOrderController extends Controller
             'receivedLabel' => $receivedLabel,
             'orders' => $orders,
             'backOrders' => $backOrders,
+            'replacementBackOrders' => $replacementBackOrders,
             'receivedOrders' => $receivedOrders,
             'cancelledOrders' => $cancelledOrders,
             'activeTab' => $request->query('tab', 'orders'),
@@ -337,14 +351,31 @@ class PurchaseOrderController extends Controller
 
         $selectedProducts = collect($validated['products'])
             ->filter(fn ($item) => isset($item['selected']) && $item['selected'])
-            ->map(fn ($item) => [
-                'product_id' => $item['product_id'] ?? null,
-                'product_name' => $item['product_name'] ?? null,
-                'sku' => $item['sku'] ?? null,
-                'quantity' => (int) ($item['quantity'] ?? 1),
-                'unit_price' => (float) ($item['unit_price'] ?? 0),
-                'total_price' => (float) ($item['quantity'] ?? 1) * (float) ($item['unit_price'] ?? 0),
-            ])
+            ->map(function ($item) use ($validated) {
+                $productId = $item['product_id'] ?? null;
+                $product = $productId ? Product::find($productId) : null;
+                
+                $unitPrice = (float) ($item['unit_price'] ?? 0);
+                if ($unitPrice <= 0 && $product) {
+                    $supplierCost = SupplierPriceHistory::where('supplier_id', $validated['supplier_id'])
+                        ->where('product_id', $product->id)
+                        ->latest('id')
+                        ->value('supplier_cost');
+                    $unitPrice = (float) ($supplierCost ?? $product->unit_price ?? 0);
+                }
+
+                $quantity = (int) ($item['quantity'] ?? 1);
+                $totalPrice = $quantity * $unitPrice;
+
+                return [
+                    'product_id' => $productId,
+                    'product_name' => $item['product_name'] ?? $product?->product_name ?? $product?->name ?? 'Unknown Product',
+                    'sku' => $item['sku'] ?? $product?->sku ?? null,
+                    'quantity' => $quantity,
+                    'unit_price' => $unitPrice,
+                    'total_price' => $totalPrice,
+                ];
+            })
             ->values();
 
         if ($selectedProducts->isEmpty()) {
@@ -634,7 +665,7 @@ class PurchaseOrderController extends Controller
 
     public function show(PurchaseOrder $purchaseOrder)
     {
-        $purchaseOrder->load(['items', 'supplier']);
+        $purchaseOrder->load(['items.product', 'supplier', 'defectiveReturnRequests.product', 'defectiveReturnRequests.replacementPurchaseOrder.items']);
 
         return view('purchase_order.order-detail', [
             'purchaseOrder' => $purchaseOrder,
@@ -715,8 +746,39 @@ class PurchaseOrderController extends Controller
             'items' => 'required|array',
             'items.*.item_id' => 'required|exists:purchase_order_items,id',
             'items.*.received_quantity' => 'required|integer|min:0',
+            'items.*.defective_quantity' => 'nullable|integer|min:0',
+            'items.*.defect_reason' => 'nullable|string|max:255',
             'items.*.unit_price' => 'nullable|numeric|min:0',
         ]);
+
+        $receivedData = collect($validated['items'])->keyBy('item_id');
+
+        // Validate item-level defective rules
+        foreach ($purchaseOrder->items as $item) {
+            if (! isset($receivedData[$item->id])) {
+                continue;
+            }
+
+            $itemInput = $receivedData[$item->id];
+            $recvQty = (int) ($itemInput['received_quantity'] ?? 0);
+            $defQty = (int) ($itemInput['defective_quantity'] ?? 0);
+            $reason = trim((string) ($itemInput['defect_reason'] ?? ''));
+
+            if ($defQty < 0) {
+                return redirect()->route('order.show', $purchaseOrder)
+                    ->with('warning', "Defective quantity for {$item->product_name} must be 0 or greater.");
+            }
+
+            if ($defQty > $recvQty) {
+                return redirect()->route('order.show', $purchaseOrder)
+                    ->with('warning', "Defective quantity ({$defQty}) cannot exceed received quantity ({$recvQty}) for {$item->product_name}.");
+            }
+
+            if ($defQty > 0 && empty($reason)) {
+                return redirect()->route('order.show', $purchaseOrder)
+                    ->with('warning', "Please provide a defect reason/remarks for {$item->product_name} since defective quantity is {$defQty}.");
+            }
+        }
 
         $receivedSomething = false;
 
@@ -728,22 +790,67 @@ class PurchaseOrderController extends Controller
                     continue;
                 }
 
+                $itemInput = $receivedData[$item->id];
                 $currentReceived = (int) ($item->received_quantity ?? 0);
+                $currentDefective = (int) ($item->defective_quantity ?? 0);
+                $currentAccepted = (int) ($item->accepted_quantity ?? 0);
+
                 $remainingQuantity = max(0, $item->quantity - $currentReceived);
-                $quantityChange = min($remainingQuantity, (int) $receivedData[$item->id]['received_quantity']);
+                $quantityChange = min($remainingQuantity, (int) $itemInput['received_quantity']);
 
                 if ($quantityChange <= 0) {
                     continue;
                 }
 
-                $updateData = ['received_quantity' => $currentReceived + $quantityChange];
-                if (isset($receivedData[$item->id]['unit_price'])) {
-                    $updateData['unit_price'] = (float) $receivedData[$item->id]['unit_price'];
+                $defectiveChange = min($quantityChange, max(0, (int) ($itemInput['defective_quantity'] ?? 0)));
+                $acceptedChange = max(0, $quantityChange - $defectiveChange);
+                $defectReason = !empty($itemInput['defect_reason']) ? trim($itemInput['defect_reason']) : $item->defect_reason;
+
+                $updateData = [
+                    'received_quantity' => $currentReceived + $quantityChange,
+                    'defective_quantity' => $currentDefective + $defectiveChange,
+                    'accepted_quantity' => $currentAccepted + $acceptedChange,
+                    'defect_reason' => $defectReason,
+                ];
+
+                if (isset($itemInput['unit_price'])) {
+                    $updateData['unit_price'] = (float) $itemInput['unit_price'];
                 }
 
-                // Only record received quantity and cost, do NOT update inventory yet
+                // Record received quantity, defectives, accepted and cost (do NOT update inventory yet)
                 $item->update($updateData);
                 $receivedSomething = true;
+
+                // If defective quantity reported, store ReverseLogistics record and DefectiveReturnRequest
+                if ($defectiveChange > 0) {
+                    ReverseLogistics::create([
+                        'product_id' => $item->product_id,
+                        'product_name' => $item->product_name,
+                        'sku' => $item->sku,
+                        'quantity' => $defectiveChange,
+                        'warehouse' => 'Shop',
+                        'return_reason' => $defectReason ?: 'Defective upon delivery',
+                        'condition' => 'Defective',
+                        'source' => 'Purchase Order ' . $purchaseOrder->order_number,
+                        'status' => 'Pending Return',
+                        'reported_date' => now(),
+                        'notes' => 'Defective units recorded on receipt of PO ' . $purchaseOrder->order_number . ' from ' . $purchaseOrder->supplier_name . ($defectReason ? " (Reason: {$defectReason})" : ''),
+                    ]);
+
+                    DefectiveReturnRequest::create([
+                        'purchase_order_id' => $purchaseOrder->id,
+                        'purchase_order_item_id' => $item->id,
+                        'supplier_id' => $purchaseOrder->supplier_id,
+                        'supplier_name' => $purchaseOrder->supplier_name,
+                        'product_id' => $item->product_id,
+                        'product_name' => $item->product_name,
+                        'sku' => $item->sku,
+                        'defective_quantity' => $defectiveChange,
+                        'defect_reason' => $defectReason ?: 'Defective upon delivery',
+                        'warehouse' => 'Shop',
+                        'status' => 'Pending Supplier Response',
+                    ]);
+                }
             }
 
             $purchaseOrder->load('items');
@@ -781,26 +888,37 @@ class PurchaseOrderController extends Controller
             $purchaseOrder->loadMissing('items');
 
             foreach ($purchaseOrder->items as $item) {
-                if ((int) $item->received_quantity === 0) {
+                // Determine usable accepted quantity to add to inventory (Only Accepted Qty enters inventory)
+                $usableQuantity = isset($item->accepted_quantity) && $item->accepted_quantity > 0
+                    ? (int) $item->accepted_quantity
+                    : max(0, (int) $item->received_quantity - (int) ($item->defective_quantity ?? 0));
+
+                if ($usableQuantity <= 0) {
                     continue;
                 }
 
                 $product = $item->product;
                 if ($product) {
-                    // Check if product already exists in the selected warehouse
+                    // Check if product already exists in the selected warehouse (or has null warehouse)
                     $warehouseProduct = Product::where('sku', $product->sku)
-                        ->where('warehouse', $warehouse)
+                        ->where(function ($q) use ($warehouse) {
+                            $q->where('warehouse', $warehouse)
+                                ->orWhereNull('warehouse');
+                        })
                         ->first();
 
                     if ($warehouseProduct) {
-                        // Update existing warehouse product
-                        $warehouseProduct->increment('stock_quantity', $item->received_quantity);
-                        $warehouseProduct->update(['last_restock_date' => now()]);
+                        // Update existing warehouse product with ONLY ACCEPTED quantity
+                        $warehouseProduct->increment('stock_quantity', $usableQuantity);
+                        $warehouseProduct->update([
+                            'warehouse' => $warehouse,
+                            'last_restock_date' => now(),
+                        ]);
                     } else {
-                        // Create new warehouse record
+                        // Create new warehouse record with ONLY ACCEPTED quantity
                         $newProduct = $product->replicate();
                         $newProduct->warehouse = $warehouse;
-                        $newProduct->stock_quantity = $item->received_quantity;
+                        $newProduct->stock_quantity = $usableQuantity;
                         $newProduct->last_restock_date = now();
                         $newProduct->save();
                         $warehouseProduct = $newProduct;
@@ -865,12 +983,12 @@ class PurchaseOrderController extends Controller
                         'suggested_retail_price' => $suggestedRetailPrice,
                     ]);
 
-                    // Create stock arrival notice for warehouse assignment
+                    // Create stock arrival notice for warehouse assignment (for accepted usable stock)
                     StockArrivalNotice::create([
                         'product_id'             => $warehouseProduct->id,
                         'product_name'           => $warehouseProduct->name,
                         'sku'                    => $warehouseProduct->sku,
-                        'quantity'               => $item->received_quantity,
+                        'quantity'               => $usableQuantity,
                         'purchase_order_id'      => $purchaseOrder->id,
                         'purchase_order_number'  => $purchaseOrder->order_number,
                         'supplier_name'          => $purchaseOrder->supplier_name,
@@ -878,19 +996,21 @@ class PurchaseOrderController extends Controller
                         'is_assigned'            => true,
                     ]);
 
-                    // Create inventory movement record
+                    // Create inventory movement record for accepted stock
                     InventoryMovement::create([
                         'product_id' => $warehouseProduct->id,
                         'type' => 'restock',
-                        'quantity_change' => $item->received_quantity,
+                        'quantity_change' => $usableQuantity,
                         'unit_price' => $item->unit_price,
                         'supplier_name' => $purchaseOrder->supplier_name,
-                        'notes' => 'Received from purchase order ' . $purchaseOrder->order_number . ' to ' . $warehouse,
+                        'notes' => 'Received from purchase order ' . $purchaseOrder->order_number . ' to ' . $warehouse . ($item->defective_quantity > 0 ? " (Accepted: {$usableQuantity}, Defective: {$item->defective_quantity})" : ''),
                         'metadata' => [
                             'purchase_order_id' => $purchaseOrder->id,
                             'purchase_order_item_id' => $item->id,
                             'warehouse' => $warehouse,
                             'shelf_id' => $shelfId,
+                            'accepted_quantity' => $usableQuantity,
+                            'defective_quantity' => (int) ($item->defective_quantity ?? 0),
                         ],
                     ]);
 
@@ -905,14 +1025,14 @@ class PurchaseOrderController extends Controller
 
                             if ($existingProductIndex !== false) {
                                 // Update existing product quantity
-                                $products[$existingProductIndex]['qty'] += $item->received_quantity;
+                                $products[$existingProductIndex]['qty'] += $usableQuantity;
                             } else {
                                 // Add new product to shelf
                                 $products[] = [
                                     'product_id' => $product->id,
                                     'sku' => $product->sku,
                                     'name' => $product->name,
-                                    'qty' => $item->received_quantity,
+                                    'qty' => $usableQuantity,
                                     'price' => (float) $item->unit_price,
                                 ];
                             }
@@ -928,6 +1048,17 @@ class PurchaseOrderController extends Controller
                 'status' => 'completed',
                 'completed_at' => now(),
             ]);
+
+            // If this is a Replacement Purchase Order, update the linked DefectiveReturnRequest
+            $linkedDefectiveReq = DefectiveReturnRequest::where('replacement_purchase_order_id', $purchaseOrder->id)->first();
+            if ($linkedDefectiveReq) {
+                $totalAccepted = (int) $purchaseOrder->items->sum('accepted_quantity');
+                $linkedDefectiveReq->update([
+                    'replacement_received_quantity' => $totalAccepted,
+                    'replacement_received_at' => now(),
+                    'status' => 'Completed',
+                ]);
+            }
         });
 
         return redirect()->route('order.show', $purchaseOrder)->with('success', 'Purchase order confirmed and inventory updated.');
@@ -944,5 +1075,167 @@ class PurchaseOrderController extends Controller
         ]);
 
         return redirect()->route('order.show', $purchaseOrder)->with('success', 'Estimated delivery date updated successfully.');
+    }
+
+    public function resolveDefectiveRequest(Request $request, PurchaseOrder $purchaseOrder, DefectiveReturnRequest $defectiveRequest)
+    {
+        $validated = $request->validate([
+            'resolution' => 'required|in:Replacement,Refund/Credit,No Replacement',
+            'expected_replacement_date' => 'nullable|required_if:resolution,Replacement|date',
+            'resolution_notes' => 'nullable|string|max:1000',
+        ]);
+
+        $resolution = $validated['resolution'];
+        $notes = $validated['resolution_notes'] ?? null;
+        $expectedDate = $validated['expected_replacement_date'] ?? null;
+
+        $updateData = [
+            'resolution' => $resolution,
+            'resolution_notes' => $notes,
+            'resolved_at' => now(),
+        ];
+
+        if ($resolution === 'Replacement') {
+            $replacementOrderNumber = 'RPO-' . $purchaseOrder->order_number . '-' . $defectiveRequest->id;
+
+            // Create separate Replacement Purchase Order
+            $replacementPO = PurchaseOrder::create([
+                'order_number' => $replacementOrderNumber,
+                'supplier_id' => $purchaseOrder->supplier_id,
+                'supplier_name' => $purchaseOrder->supplier_name,
+                'status' => 'sent to supplier',
+                'expected_delivery_date' => $expectedDate,
+                'notes' => "Replacement order for {$defectiveRequest->defective_quantity} defective unit(s) of {$defectiveRequest->product_name} from original PO {$purchaseOrder->order_number} (Reason: {$defectiveRequest->defect_reason}).",
+                'total_amount' => 0.00,
+                'approved_at' => now(),
+                'sent_to_supplier_at' => now(),
+            ]);
+
+            // Create PurchaseOrderItem on the replacement PO
+            PurchaseOrderItem::create([
+                'purchase_order_id' => $replacementPO->id,
+                'product_id' => $defectiveRequest->product_id,
+                'product_name' => $defectiveRequest->product_name,
+                'sku' => $defectiveRequest->sku,
+                'quantity' => $defectiveRequest->defective_quantity,
+                'received_quantity' => 0,
+                'defective_quantity' => 0,
+                'accepted_quantity' => 0,
+                'unit_price' => 0.00,
+                'total_price' => 0.00,
+            ]);
+
+            $updateData['status'] = 'Awaiting Replacement';
+            $updateData['expected_replacement_date'] = $expectedDate;
+            $updateData['replacement_order_number'] = $replacementOrderNumber;
+            $updateData['replacement_purchase_order_id'] = $replacementPO->id;
+        } elseif ($resolution === 'Refund/Credit') {
+            $updateData['status'] = 'Refund Approved';
+            $updateData['expected_replacement_date'] = null;
+        } else {
+            $updateData['status'] = 'Completed';
+            $updateData['expected_replacement_date'] = null;
+        }
+
+        $defectiveRequest->update($updateData);
+
+        return redirect()->route('order.show', $purchaseOrder)
+            ->with('success', "Supplier resolution recorded: {$resolution}." . ($resolution === 'Replacement' ? " Replacement PO {$replacementOrderNumber} created." : ''));
+    }
+
+    public function receiveReplacement(Request $request, PurchaseOrder $purchaseOrder, DefectiveReturnRequest $defectiveRequest)
+    {
+        if ($defectiveRequest->resolution !== 'Replacement' || $defectiveRequest->status === 'Completed') {
+            return redirect()->route('order.show', $purchaseOrder)
+                ->with('warning', 'Only active replacement requests can be received.');
+        }
+
+        $validated = $request->validate([
+            'replacement_quantity' => 'required|integer|min:1|max:' . $defectiveRequest->defective_quantity,
+            'warehouse' => 'required|in:Shop,Warehouse A,Warehouse B,Warehouse C',
+            'shelf_id' => 'nullable|integer|exists:warehouse_shelves,id',
+        ]);
+
+        $receivedQty = (int) $validated['replacement_quantity'];
+        $warehouse = $validated['warehouse'];
+        $shelfId = $validated['shelf_id'] ?? null;
+
+        DB::transaction(function () use ($purchaseOrder, $defectiveRequest, $receivedQty, $warehouse, $shelfId) {
+            $product = Product::find($defectiveRequest->product_id);
+            if ($product) {
+                $product->increment('stock_quantity', $receivedQty);
+                $product->update([
+                    'warehouse' => $warehouse,
+                    'last_restock_date' => now(),
+                ]);
+
+                // Shelf update
+                if ($shelfId) {
+                    $shelf = WarehouseShelf::find($shelfId);
+                    if ($shelf) {
+                        $shelfProducts = $shelf->products ?? [];
+                        $existingProductIndex = collect($shelfProducts)->search(function ($p) use ($product) {
+                            return isset($p['product_id']) && $p['product_id'] === $product->id;
+                        });
+
+                        if ($existingProductIndex !== false) {
+                            $shelfProducts[$existingProductIndex]['qty'] += $receivedQty;
+                        } else {
+                            $shelfProducts[] = [
+                                'product_id' => $product->id,
+                                'sku' => $product->sku,
+                                'name' => $product->name,
+                                'qty' => $receivedQty,
+                                'price' => (float) $product->unit_price,
+                            ];
+                        }
+
+                        $shelf->update(['products' => array_values($shelfProducts)]);
+                    }
+                }
+
+                // Inventory movement
+                InventoryMovement::create([
+                    'product_id' => $product->id,
+                    'type' => 'restock',
+                    'quantity_change' => $receivedQty,
+                    'unit_price' => $product->unit_price,
+                    'supplier_name' => $defectiveRequest->supplier_name,
+                    'notes' => "Replacement units received for PO {$purchaseOrder->order_number} ({$defectiveRequest->replacement_order_number})",
+                    'metadata' => [
+                        'purchase_order_id' => $purchaseOrder->id,
+                        'defective_return_request_id' => $defectiveRequest->id,
+                        'replacement_order_number' => $defectiveRequest->replacement_order_number,
+                        'warehouse' => $warehouse,
+                        'shelf_id' => $shelfId,
+                    ],
+                ]);
+
+                // Stock arrival notice
+                StockArrivalNotice::create([
+                    'purchase_order_id' => $purchaseOrder->id,
+                    'purchase_order_number' => $purchaseOrder->order_number,
+                    'product_id' => $product->id,
+                    'product_name' => $product->product_name ?? $product->name,
+                    'sku' => $product->sku,
+                    'quantity' => $receivedQty,
+                    'warehouse' => $warehouse,
+                    'arrived_at' => now(),
+                    'received_by' => auth()->id(),
+                    'status' => 'delivered',
+                ]);
+
+                app(InventoryAlertService::class)->checkAndResolveProduct($product->id);
+            }
+
+            $defectiveRequest->update([
+                'replacement_received_quantity' => $receivedQty,
+                'replacement_received_at' => now(),
+                'status' => 'Completed',
+            ]);
+        });
+
+        return redirect()->route('order.show', $purchaseOrder)
+            ->with('success', "Received {$receivedQty} replacement unit(s) into {$warehouse} inventory. Replacement back order completed.");
     }
 }

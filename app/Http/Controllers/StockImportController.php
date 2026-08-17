@@ -1072,6 +1072,9 @@ class StockImportController extends Controller
             $product->is_archived = true;
             $product->save();
 
+            // Immediately remove active inventory notifications for archived product
+            app(\App\Services\InventoryAlertService::class)->removeProductAlerts($product->id);
+
             \Log::info('Product archived successfully', ['id' => $id, 'is_archived' => $product->is_archived]);
 
             return response()->json([
@@ -1096,6 +1099,9 @@ class StockImportController extends Controller
             $product = Product::findOrFail($id);
             $product->is_archived = false;
             $product->save();
+
+            // Sync stock alerts based on current stock level
+            app(\App\Services\InventoryAlertService::class)->syncProductAlert($product);
 
             return response()->json([
                 'success' => true,

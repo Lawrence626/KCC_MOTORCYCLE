@@ -11,14 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
+
         Schema::table('product_catalog', function (Blueprint $table) {
             // Add product_description column
             $table->string('product_description')->after('brand')->nullable();
             
-            // Drop category_id foreign key and column
-            $table->dropForeign(['category_id']);
+            // Drop category_id foreign key, index and column
+            if (\Illuminate\Support\Facades\DB::getDriverName() !== 'sqlite') {
+                $table->dropForeign(['category_id']);
+            }
+            $table->dropIndex(['category_id']);
             $table->dropColumn('category_id');
         });
+
+        Schema::enableForeignKeyConstraints();
     }
 
     /**

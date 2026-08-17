@@ -4,16 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\PurchaseOrder;
+use App\Models\ReverseLogistics;
+use App\Models\StockArrivalNotice;
 use App\Models\Supplier;
+use App\Models\SupplierPriceHistory;
+use App\Services\SupplierPerformanceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 
 class SupplierAssessmentController extends Controller
 {
-    public function index()
+    public function index(SupplierPerformanceService $performanceService)
     {
-        $actualSupplierNames = Supplier::where('status', 'active')->pluck('name');
+        $activeSuppliers = Supplier::where('status', 'active')->get();
+        $actualSupplierNames = $activeSuppliers->pluck('name');
 
         $productSupplierNames = Product::whereNotNull('supplier_name')
             ->whereIn('supplier_name', $actualSupplierNames)
@@ -25,29 +30,54 @@ class SupplierAssessmentController extends Controller
         $allSupplierNames = $productSupplierNames->merge($actualSupplierNames)->unique()->values();
 
         $products = Product::whereNotNull('supplier_name')
-            ->whereIn('supplier_name', $actualSupplierNames)
+            ->whereIn('supplier_name', $allSupplierNames)
             ->orderBy('supplier_name')
             ->orderByDesc('stock_quantity')
             ->get()
             ->groupBy('supplier_name');
 
-        $orders = PurchaseOrder::whereIn('supplier_name', $allSupplierNames)
-            ->get()
-            ->groupBy('supplier_name');
+        $orders = PurchaseOrder::with(['items', 'supplier'])
+            ->where(function ($q) use ($activeSuppliers, $allSupplierNames) {
+                $q->whereIn('supplier_name', $allSupplierNames)
+                  ->orWhereIn('supplier_id', $activeSuppliers->pluck('id'));
+            })
+            ->get();
 
-        $suppliersByName = Supplier::whereIn('name', $allSupplierNames)->where('status', 'active')->get()->keyBy('name');
+        $ordersBySupplierName = $orders->groupBy('supplier_name');
+        $ordersBySupplierId = $orders->groupBy('supplier_id');
 
-        $supplierSummaries = $allSupplierNames->map(function ($supplierName) use ($products, $orders, $suppliersByName) {
+        $arrivalNotices = StockArrivalNotice::all();
+        $reverseLogistics = ReverseLogistics::all();
+        $priceHistories = SupplierPriceHistory::all();
+
+        $suppliersByName = $activeSuppliers->keyBy('name');
+
+        $supplierSummaries = $allSupplierNames->map(function ($supplierName) use (
+            $products,
+            $ordersBySupplierName,
+            $ordersBySupplierId,
+            $suppliersByName,
+            $performanceService,
+            $arrivalNotices,
+            $reverseLogistics,
+            $priceHistories
+        ) {
             $supplier = $suppliersByName->get($supplierName);
             $group = $products->get($supplierName, collect());
-            $supplierOrders = $orders->get($supplierName, collect());
-            $deliveredOrders = $supplierOrders->filter(fn ($order) => strtolower($order->status) === 'delivered');
-            $onTimeDeliveries = $deliveredOrders->filter(function ($order) {
-                if (!$order->expected_delivery_date) {
-                    return false;
-                }
-                return optional($order->updated_at)->toDateString() <= optional($order->expected_delivery_date)->toDateString();
-            });
+
+            $supplierOrdersByName = $ordersBySupplierName->get($supplierName, collect());
+            $supplierOrdersById = $supplier?->id ? $ordersBySupplierId->get($supplier->id, collect()) : collect();
+            $supplierOrders = $supplierOrdersByName->merge($supplierOrdersById)->unique('id')->values();
+
+            $performance = $performanceService->calculateForSupplier(
+                $supplier,
+                $group,
+                $supplierOrders,
+                $arrivalNotices,
+                $reverseLogistics,
+                $priceHistories
+            );
+
             $totalValue = $group->sum(fn (Product $product) => $product->stock_quantity * $product->unit_price);
             $avgPrice = $group->count() ? $group->avg('unit_price') : 0;
             $minPrice = $group->count() ? $group->min('unit_price') : 0;
@@ -55,12 +85,6 @@ class SupplierAssessmentController extends Controller
             $priceRange = $maxPrice - $minPrice;
             $priceStdDeviation = $group->count() ? sqrt($group->avg(fn (Product $product) => pow($product->unit_price - $avgPrice, 2))) : 0;
             $lastRestock = $group->max('last_restock_date');
-            $ordersCount = $supplierOrders->count();
-            $deliveredCount = $deliveredOrders->count();
-            $onTimeCount = $onTimeDeliveries->count();
-            $orderCompletionRate = $ordersCount ? ($deliveredCount / $ordersCount) * 100 : 0;
-            $onTimeRate = $deliveredCount ? ($onTimeCount / $deliveredCount) * 100 : 0;
-            $performanceScore = round(($orderCompletionRate + $onTimeRate) / 2);
 
             return (object) [
                 'id' => $supplier?->id,
@@ -90,19 +114,22 @@ class SupplierAssessmentController extends Controller
                     'last_restock_date' => optional($product->last_restock_date)->toDateString(),
                 ])->values(),
                 'has_record' => $supplier !== null,
-                'orders_count' => $ordersCount,
-                'delivered_orders_count' => $deliveredCount,
-                'on_time_deliveries' => $onTimeCount,
-                'on_time_rate' => round($onTimeRate),
-                'completion_rate' => round($orderCompletionRate),
-                'performance_score' => $performanceScore,
-                'orders' => $supplierOrders->map(fn ($order) => [
-                    'order_number' => $order->order_number,
-                    'status' => $order->status,
-                    'expected_delivery_date' => optional($order->expected_delivery_date)->toDateString(),
-                    'updated_at' => optional($order->updated_at)->toDateString(),
-                    'total_amount' => (float) $order->total_amount,
-                ])->values(),
+                'orders_count' => $performance['orders_count'],
+                'delivered_orders_count' => $performance['delivered_orders_count'],
+                'on_time_deliveries' => $performance['on_time_deliveries'],
+                'on_time_rate' => $performance['on_time_rate'],
+                'on_time_rate_precise' => $performance['on_time_rate_precise'],
+                'completion_rate' => $performance['completion_rate'],
+                'completion_rate_precise' => $performance['completion_rate_precise'],
+                'total_quantity_ordered' => $performance['total_quantity_ordered'],
+                'total_quantity_received' => $performance['total_quantity_received'],
+                'defective_quantity' => $performance['defective_quantity'],
+                'defect_rate' => $performance['defect_rate'],
+                'quality_score' => $performance['quality_score'],
+                'price_stability' => $performance['price_stability'],
+                'price_stability_precise' => $performance['price_stability_precise'],
+                'performance_score' => $performance['performance_score'],
+                'orders' => $performance['orders'],
             ];
         });
 
@@ -113,13 +140,13 @@ class SupplierAssessmentController extends Controller
         $totalStockValue = Product::whereNotNull('supplier_name')
             ->get()
             ->sum(fn (Product $product) => $product->stock_quantity * $product->unit_price);
-        $activeSuppliers = $supplierSummaries->filter(fn ($summary) => $summary->status === 'active')->count();
+        $activeSuppliersCount = $supplierSummaries->filter(fn ($summary) => $summary->status === 'active')->count();
 
         return view('supplier_assessment.supplier_asses', [
             'supplierSummaries' => $supplierSummaries,
             'quickStats' => [
                 'totalSuppliers' => $totalSuppliers,
-                'activeSuppliers' => $activeSuppliers,
+                'activeSuppliers' => $activeSuppliersCount,
                 'trackedProducts' => $totalProducts,
                 'stockValue' => $totalStockValue,
             ],

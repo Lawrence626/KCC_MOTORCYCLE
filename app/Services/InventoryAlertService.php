@@ -13,6 +13,11 @@ class InventoryAlertService
      */
     public function syncAlerts(): void
     {
+        // Immediately remove active notifications for archived or inactive products
+        InventoryNotification::whereHas('product', function ($q) {
+            $q->where('is_archived', true)->orWhere('is_active', false);
+        })->orWhereDoesntHave('product')->delete();
+
         $products = Product::query()
             ->where('is_active', true)
             ->where('is_archived', false)
@@ -24,10 +29,24 @@ class InventoryAlertService
     }
 
     /**
+     * Remove all notifications for a given product (e.g. when archived).
+     */
+    public function removeProductAlerts(int $productId): void
+    {
+        InventoryNotification::where('product_id', $productId)->delete();
+    }
+
+    /**
      * Sync alert state for a single product.
      */
     public function syncProductAlert(Product $product): void
     {
+        // If product is archived or inactive, remove any alerts immediately
+        if ($product->is_archived || ! $product->is_active) {
+            $this->removeProductAlerts($product->id);
+            return;
+        }
+
         $stock = (int) $product->stock_quantity;
         $reorderLevel = (int) $product->reorder_level;
 
@@ -91,7 +110,10 @@ class InventoryAlertService
 
     public function getNotificationCenterItems(int $limit = 50): \Illuminate\Database\Eloquent\Collection
     {
-        return InventoryNotification::orderByRaw("CASE WHEN status = 'resolved' THEN 1 ELSE 0 END")
+        return InventoryNotification::whereHas('product', function ($q) {
+                $q->where('is_archived', false)->where('is_active', true);
+            })
+            ->orderByRaw("CASE WHEN status = 'resolved' THEN 1 ELSE 0 END")
             ->orderByDesc('created_at')
             ->with('product')
             ->limit($limit)
@@ -103,7 +125,10 @@ class InventoryAlertService
      */
     public function getNotificationCenterPaginated(int $perPage = 20)
     {
-        return InventoryNotification::orderByRaw("CASE WHEN status = 'resolved' THEN 1 ELSE 0 END")
+        return InventoryNotification::whereHas('product', function ($q) {
+                $q->where('is_archived', false)->where('is_active', true);
+            })
+            ->orderByRaw("CASE WHEN status = 'resolved' THEN 1 ELSE 0 END")
             ->orderByDesc('created_at')
             ->with('product')
             ->paginate($perPage);

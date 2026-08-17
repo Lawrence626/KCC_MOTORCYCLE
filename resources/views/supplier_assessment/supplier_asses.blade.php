@@ -550,11 +550,11 @@
                             </div>
                             <div class="mt-3 grid gap-2 sm:grid-cols-2">
                                 <div class="rounded-[10px] border border-slate-100 p-2 text-xs text-slate-600" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                                    <p class="font-bold text-slate-900 text-xs">${supplier.product_count}</p>
+                                    <p class="font-bold text-slate-900 text-xs">${supplier.product_count ?? 0}</p>
                                     <p class="text-[11px]">Products</p>
                                 </div>
                                 <div class="rounded-[10px] border border-slate-100 p-2 text-xs text-slate-600" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                                    <p class="font-bold text-slate-900 text-xs">${supplier.performance_score}</p>
+                                    <p class="font-bold text-slate-900 text-xs">${supplier.performance_score ?? 0}</p>
                                     <p class="text-[11px]">Performance</p>
                                 </div>
                             </div>
@@ -659,33 +659,41 @@
                     detailSupplierContact.textContent = supplier.contact_person ? `${supplier.contact_person} · ${supplier.email || supplier.phone || 'No contact info'}` : (supplier.email || supplier.phone || 'No contact info');
                     activeSupplier = supplier;
 
-                    detailPerformanceScore.textContent = `${supplier.performance_score}/100`;
-                    detailOnTimeRate.textContent = `${supplier.on_time_rate}%`;
-                    detailCompletionRate.textContent = `${supplier.completion_rate}%`;
-                    detailProductCount.textContent = supplier.product_count;
-                    detailDeliveredCount.textContent = `${supplier.delivered_orders_count} delivered`;
-                    detailOrdersCount.textContent = `${supplier.orders_count} orders`;
-                    detailOnTimeBar.style.width = `${supplier.on_time_rate}%`;
-                    detailCompletionBar.style.width = `${supplier.completion_rate}%`;
-                    if (detailOnTimeText) detailOnTimeText.textContent = `${supplier.on_time_rate}%`;
-                    if (detailCompletionText) detailCompletionText.textContent = `${supplier.completion_rate}%`;
-                    detailTotalValue.textContent = `₱${Number(supplier.total_value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                    detailPerformanceScore.textContent = `${supplier.performance_score ?? 0}/100`;
+                    detailOnTimeRate.textContent = `${supplier.on_time_rate ?? 0}%`;
+                    detailCompletionRate.textContent = `${supplier.completion_rate ?? 0}%`;
+                    detailProductCount.textContent = supplier.product_count ?? 0;
+                    detailDeliveredCount.textContent = `${supplier.delivered_orders_count ?? 0} delivered`;
+                    detailOrdersCount.textContent = `${supplier.orders_count ?? 0} orders`;
+                    detailOnTimeBar.style.width = `${Math.min(100, Math.max(0, supplier.on_time_rate || 0))}%`;
+                    detailCompletionBar.style.width = `${Math.min(100, Math.max(0, supplier.completion_rate || 0))}%`;
+                    if (detailOnTimeText) detailOnTimeText.textContent = `${supplier.on_time_rate ?? 0}%`;
+                    if (detailCompletionText) detailCompletionText.textContent = `${supplier.completion_rate ?? 0}%`;
+                    detailTotalValue.textContent = `₱${Number(supplier.total_value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
                     detailOrderHistory.innerHTML = '';
-                    if (!supplier.orders.length) {
+                    if (!supplier.orders || !supplier.orders.length) {
                         detailOrderHistory.innerHTML = '<div class="rounded-[12px] border border-slate-200/80 bg-slate-50/70 p-3.5 text-xs text-slate-500">No order history available for this supplier.</div>';
                     } else {
-                        supplier.orders.slice(0, 3).forEach(order => {
+                        supplier.orders.slice(0, 5).forEach(order => {
+                            const statusLower = (order.status || '').toLowerCase();
+                            const isDelivered = statusLower === 'completed' || statusLower === 'delivered';
+                            const isPartiallyReceived = statusLower === 'partially received';
+                            const statusBadgeClass = isDelivered
+                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                : (isPartiallyReceived ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-slate-100 text-slate-600 border border-slate-200');
+                            const receivedDisplay = order.received_date || order.completed_at || 'Pending';
+
                             detailOrderHistory.insertAdjacentHTML('beforeend', `
                                 <div class="rounded-[12px] border border-slate-200 bg-white p-3.5 shadow-sm">
                                     <div class="flex items-center justify-between gap-2">
                                         <p class="font-bold text-slate-900 text-xs">${order.order_number}</p>
-                                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-[6px] ${order.status.toLowerCase() === 'delivered' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600 border border-slate-200'}">${order.status}</span>
+                                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-[6px] ${statusBadgeClass}">${order.status}</span>
                                     </div>
                                     <div class="mt-1 text-[11px] text-slate-500">
-                                        Expected: ${order.expected_delivery_date || 'Unknown'} · Updated: ${order.updated_at || 'Unknown'}
+                                        Expected: ${order.expected_delivery_date || 'Not yet provided'} · Received: ${receivedDisplay}
                                     </div>
-                                    <div class="mt-1.5 text-xs font-bold text-slate-900">₱${Number(order.total_amount).toFixed(2)}</div>
+                                    <div class="mt-1.5 text-xs font-bold text-slate-900">₱${Number(order.total_amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                                 </div>
                             `);
                         });

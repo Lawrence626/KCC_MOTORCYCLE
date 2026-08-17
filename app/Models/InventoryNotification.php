@@ -35,23 +35,29 @@ class InventoryNotification extends Model
     /* ───────────────────── Scopes ───────────────────── */
 
     /**
-     * Active notifications (not resolved).
+     * Active notifications (not resolved) for non-archived, active products.
      */
     public function scopeActive(Builder $query): Builder
     {
-        return $query->whereIn('status', ['unread', 'read']);
+        return $query->whereIn('status', ['unread', 'read'])
+            ->whereHas('product', function (Builder $q) {
+                $q->where('is_archived', false)->where('is_active', true);
+            });
     }
 
     /**
-     * Unread notifications only.
+     * Unread notifications only for non-archived, active products.
      */
     public function scopeUnread(Builder $query): Builder
     {
-        return $query->where('status', 'unread');
+        return $query->where('status', 'unread')
+            ->whereHas('product', function (Builder $q) {
+                $q->where('is_archived', false)->where('is_active', true);
+            });
     }
 
     /**
-     * Dashboard-visible alerts: active AND not dismissed.
+     * Dashboard-visible alerts: active AND not dismissed for non-archived, active products.
      */
     public function scopeDashboard(Builder $query): Builder
     {

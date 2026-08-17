@@ -12,6 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         // Sync warehouse data from products to product_catalog table based on SKU
         DB::statement("
             UPDATE product_catalog pc
