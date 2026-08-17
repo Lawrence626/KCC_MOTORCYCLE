@@ -8,26 +8,27 @@
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 <div id="offline-indicator" class="hidden"></div>
-                <button onclick="toggleArchiveList()" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer">
-                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
-                    </svg>
-                    <span>Archive (<span id="archive-count">0</span>)</span>
-                </button>
                 <a href="{{ Route::has('offline.reconciliation') ? route('offline.reconciliation') : url('/offline-reconciliation') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
                     <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                     <span>Back to Offline Home</span>
                 </a>
+                <button onclick="toggleArchiveList()" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer">
+                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                    </svg>
+                    <span>Archive (<span id="archive-count">0</span>)</span>
+                </button>
             </div>
         </div>
 
         @include('partials.offline-submenu')
 
         <!-- Archive List Modal -->
-        <div id="archiveModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center px-4 py-6">
-            <div class="w-full max-w-2xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
+        <div id="archiveModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
+            <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="toggleArchiveList()"></div>
+            <div class="relative w-full max-w-2xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
                 <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                     <div>
                         <h3 class="text-xl font-bold text-black">Archived Orders</h3>
@@ -67,17 +68,17 @@
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                     <h2 class="text-sm font-bold text-slate-900">Create Purchase Order (Offline)</h2>
                     <div class="flex items-center gap-2">
-                        <button type="button" onclick="exportLocalOrders()" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
-                            <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                            </svg>
-                            <span>Export to CSV</span>
-                        </button>
                         <button type="submit" class="inline-flex items-center gap-2 rounded-[10px] border border-[#00fff2]/40 bg-[#00fff2] px-4 py-2 text-sm font-semibold text-black shadow-sm hover:bg-[#00e6da] focus:outline-none transition-all duration-200 cursor-pointer">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
                             </svg>
                             <span>Save Order Locally</span>
+                        </button>
+                        <button type="button" onclick="exportLocalOrders()" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
+                            <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            <span>Export to CSV</span>
                         </button>
                     </div>
                 </div>
@@ -195,13 +196,13 @@
             <div class="overflow-hidden rounded-[10px] border border-slate-200">
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-left text-xs text-slate-700">
-                        <thead class="border-b border-slate-200 bg-[#0f172a]">
+                        <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                             <tr>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Order Number</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Supplier</th>
-                                <th class="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Total</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Date</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Actions</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Order Number</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Supplier</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white">Total</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Date</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 bg-white" id="localOrdersTable">
@@ -250,15 +251,15 @@
             <div class="overflow-hidden rounded-[10px] border border-slate-200">
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-left text-xs text-slate-700">
-                        <thead class="border-b border-slate-200 bg-[#0f172a]">
+                        <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                             <tr>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Order Number</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Supplier</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Status</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Sync Status</th>
-                                <th class="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Total Amount</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Expected Delivery</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Created At</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Order Number</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Supplier</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Status</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Sync Status</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white">Total Amount</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Expected Delivery</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Created At</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 bg-white">
@@ -797,10 +798,10 @@
                     const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
 
                     let dayClasses = "h-5.5 w-5.5 mx-auto flex items-center justify-center rounded-md font-medium cursor-pointer transition-all duration-150 text-[11px] ";
-                    if (isToday) {
+                    if (isSelected) {
+                        dayClasses += "bg-[#0f172a] text-white font-bold shadow-sm";
+                    } else if (isToday) {
                         dayClasses += "bg-[#00fff2] text-black font-bold shadow-sm";
-                    } else if (isSelected) {
-                        dayClasses += "bg-black/10 text-slate-900 font-bold shadow-sm";
                     } else {
                         dayClasses += "text-slate-700 hover:bg-slate-100";
                     }

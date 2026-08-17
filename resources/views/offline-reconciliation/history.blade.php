@@ -57,19 +57,19 @@
             <div class="overflow-hidden rounded-[10px] border border-slate-200">
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-left text-xs text-slate-700">
-                        <thead class="border-b border-slate-200 bg-[#0f172a]">
+                        <thead class="border-b border-slate-200 bg-[#0f172a] text-[11px] uppercase tracking-wider text-white">
                             <tr>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">File Name</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Export Date</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Import Date</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Exported By</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Imported By</th>
-                                <th class="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Total</th>
-                                <th class="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Imported</th>
-                                <th class="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Duplicates</th>
-                                <th class="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Failed</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Status</th>
-                                <th class="px-3 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Actions</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white whitespace-nowrap">File Name</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white whitespace-nowrap">Export Date</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white whitespace-nowrap">Import Date</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white whitespace-nowrap">Exported By</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white whitespace-nowrap">Imported By</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white whitespace-nowrap">Total</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white whitespace-nowrap">Imported</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white whitespace-nowrap">Duplicates</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white whitespace-nowrap">Failed</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white whitespace-nowrap">Status</th>
+                                <th class="px-3 py-3 text-center font-semibold text-white whitespace-nowrap">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 text-xs bg-white">

@@ -87,7 +87,7 @@
                                             </div>
                                         </div>
                                         <div class="mt-3">
-                                            <span class="inline-flex items-center rounded-full border border-cyan-500/20 bg-cyan-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-cyan-300">
+                                            <span class="inline-flex items-center rounded-full border border-cyan-500/20 bg-cyan-500/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-cyan-300">
                                                 {{ ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'user')) }}
                                             </span>
                                         </div>
@@ -404,6 +404,36 @@
                 }
             })
             .catch(function() {});
+        })();
+
+        // Teleport all fixed modals directly to document.body so that their backdrop blur
+        // covers 100% of the screen without bottom white gaps or container clipping
+        (function() {
+            function teleportModals() {
+                document.querySelectorAll('.fixed.inset-0').forEach(function(el) {
+                    if (el.id !== 'mobile-overlay' && !el.closest('#sidebar-wrapper') && el.parentElement !== document.body) {
+                        document.body.appendChild(el);
+                    }
+                });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', teleportModals);
+            } else {
+                teleportModals();
+            }
+
+            setTimeout(teleportModals, 100);
+            setTimeout(teleportModals, 400);
+            setTimeout(teleportModals, 1000);
+
+            // Listen for any modal openings or dynamic modal creations
+            var modalObserver = new MutationObserver(function() {
+                teleportModals();
+            });
+            if (document.body) {
+                modalObserver.observe(document.body, { childList: true, subtree: true });
+            }
         })();
     </script>
 

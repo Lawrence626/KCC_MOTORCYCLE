@@ -47,18 +47,18 @@
         <div class="overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-sm">
             <div class="overflow-x-auto rounded-[10px]">
                 <table class="w-full text-sm text-left whitespace-nowrap min-w-max">
-                    <thead class="bg-[#0f172a] border-b border-slate-200 sticky-header text-xs uppercase tracking-wider rounded-t-[10px]">
+                    <thead class="bg-[#0f172a] border-b border-slate-200 sticky-header text-[10px] uppercase tracking-wider rounded-t-[10px] text-white">
                         <tr>
-                            <th class="px-4 py-3 font-semibold text-white w-10 rounded-tl-[10px]">
+                            <th class="px-3.5 py-3 font-semibold text-center text-white w-10 rounded-tl-[10px]">
                                 <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2] cursor-pointer">
                             </th>
-                            <th class="px-4 py-3 font-semibold text-white">Brand</th>
-                            <th class="px-4 py-3 font-semibold text-white">Product Description</th>
-                            <th class="px-4 py-3 font-semibold text-white">SKU (QR Code)</th>
-                            <th class="px-4 py-3 font-semibold text-white">Location</th>
-                            <th class="px-4 py-3 font-semibold text-white">Compatible Models</th>
-                            <th class="px-4 py-3 font-semibold text-center text-white">Reorder Level</th>
-                            <th class="px-4 py-3 font-semibold text-center text-white rounded-tr-[10px]">Actions</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Brand</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Product Description</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">SKU (QR Code)</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Location</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Compatible Models</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Reorder Level</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white rounded-tr-[10px]">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="productsTableBody" class="divide-y divide-slate-200 text-xs">
@@ -74,7 +74,7 @@
 
     <!-- Add/Edit Product Modal -->
     <div id="productModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="display:none">
-        <div id="productOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+        <div id="productOverlay" class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl"></div>
 
         <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden transform transition-all z-10">
             <div class="px-6 py-5 bg-[#0f172a] relative flex items-start justify-between">
@@ -150,7 +150,7 @@
 
     <!-- Delete List Modal (soft-delete picker) -->
     <div id="deleteListModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="display:none">
-        <div id="deleteListOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+        <div id="deleteListOverlay" class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl"></div>
         <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden transform transition-all z-10">
             <div class="px-6 py-5 bg-[#0f172a] relative flex items-start justify-between">
                 <div>
@@ -163,14 +163,14 @@
             <div class="p-6">
                 <div class="max-h-96 overflow-y-auto border border-slate-200 rounded-xl overflow-hidden">
                     <table class="w-full text-xs">
-                        <thead class="bg-[#0f172a] border-b border-slate-200 sticky top-0">
+                        <thead class="bg-[#0f172a] border-b border-slate-200 sticky top-0 text-xs uppercase tracking-wider text-white">
                             <tr>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white w-10">
+                                <th class="px-4 py-3 text-left font-semibold text-white w-10">
                                     <input type="checkbox" id="selectAllDelete" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]">
                                 </th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Brand</th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Category</th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">SKU</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">Brand</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">Category</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">SKU</th>
                             </tr>
                         </thead>
                         <tbody id="deleteListTableBody" class="divide-y divide-slate-200">
@@ -212,14 +212,14 @@
                 <!-- Table -->
                 <div class="max-h-96 overflow-y-auto border border-slate-200 rounded-xl overflow-hidden">
                     <table class="w-full text-xs">
-                        <thead class="bg-[#0f172a] border-b border-slate-800 sticky top-0">
+                        <thead class="bg-[#0f172a] border-b border-slate-800 sticky top-0 text-xs uppercase tracking-wider text-white">
                             <tr>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white w-10">
+                                <th class="px-4 py-3 text-left font-semibold text-white w-10">
                                     <input type="checkbox" id="selectAllTrash" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]">
                                 </th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Brand</th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Category</th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">SKU</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">Brand</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">Category</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">SKU</th>
                             </tr>
                         </thead>
                         <tbody id="trashTableBody" class="divide-y divide-slate-100">

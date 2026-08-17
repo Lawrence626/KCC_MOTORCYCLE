@@ -1,17 +1,17 @@
 <div class="mt-6 overflow-hidden rounded-[10px] border border-slate-200">
     <table class="min-w-full text-left text-sm">
-        <thead class="bg-[#0f172a] text-white text-[11px] font-semibold uppercase tracking-[0.18em]">
+        <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
             <tr>
-                <th class="px-4 py-3">PO / Ref No.</th>
-                <th class="px-4 py-3">Type</th>
-                <th class="px-4 py-3">Supplier</th>
-                <th class="px-4 py-3">Product</th>
-                <th class="px-4 py-3 text-center">Ordered / Defective</th>
-                <th class="px-4 py-3 text-center">Received</th>
-                <th class="px-4 py-3 text-center">Remaining</th>
-                <th class="px-4 py-3">Order Date</th>
-                <th class="px-4 py-3">Status</th>
-                <th class="px-4 py-3 text-right">Action</th>
+                <th class="px-4 py-3 text-left font-semibold text-white">PO / Ref No.</th>
+                <th class="px-4 py-3 text-left font-semibold text-white">Type</th>
+                <th class="px-4 py-3 text-left font-semibold text-white">Supplier</th>
+                <th class="px-4 py-3 text-left font-semibold text-white">Product</th>
+                <th class="px-4 py-3 text-center font-semibold text-white">Ordered / Defective</th>
+                <th class="px-4 py-3 text-center font-semibold text-white">Received</th>
+                <th class="px-4 py-3 text-center font-semibold text-white">Remaining</th>
+                <th class="px-4 py-3 text-left font-semibold text-white">Order Date</th>
+                <th class="px-4 py-3 text-left font-semibold text-white">Status</th>
+                <th class="px-4 py-3 text-right font-semibold text-white">Action</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-slate-200 text-slate-700">

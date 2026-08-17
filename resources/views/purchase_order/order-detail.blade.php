@@ -27,13 +27,13 @@
 
         <div class="grid gap-4 lg:grid-cols-3">
             <div class="rounded-[26px] border border-slate-200 bg-white p-6 shadow-sm">
-                <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Supplier</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Supplier</p>
                 <p class="mt-3 text-xl font-semibold text-slate-900">{{ $purchaseOrder->supplier_name }}</p>
                 <p class="mt-2 text-sm text-slate-500">{{ optional($purchaseOrder->supplier)->email ?? 'No supplier email on file' }}</p>
                 <p class="text-sm text-slate-500">{{ optional($purchaseOrder->supplier)->phone ?? 'No phone available' }}</p>
             </div>
             <div class="rounded-[26px] border border-slate-200 bg-white p-6 shadow-sm">
-                <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Order details</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Order details</p>
                 <div class="mt-3 space-y-2 text-sm text-slate-700">
                     <p><span class="font-semibold">Status:</span> {{ ucwords($purchaseOrder->status) }}</p>
                     <p><span class="font-semibold">Created:</span> {{ $purchaseOrder->created_at->format('M j, Y') }}</p>
@@ -59,7 +59,7 @@
                 </div>
             </div>
             <div class="rounded-[26px] border border-slate-200 bg-white p-6 shadow-sm">
-                <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Timeline</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Timeline</p>
                 <div class="mt-3 space-y-2 text-sm text-slate-700">
                     @if($purchaseOrder->approved_at)
                         <p><span class="font-semibold">Approved:</span> {{ $purchaseOrder->approved_at->format('M j, Y H:i') }}</p>
@@ -120,7 +120,7 @@
         <div class="rounded-[26px] border {{ $estBg }} p-6 shadow-sm">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div class="space-y-3">
-                    <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Estimated Delivery Date</p>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Estimated Delivery Date</p>
                     <div class="flex items-center gap-3">
                         <span class="text-2xl">{{ $estIcon }}</span>
                         <div>
@@ -186,18 +186,18 @@
 
             <div class="mt-4 overflow-hidden rounded-3xl border border-slate-200">
                 <table class="min-w-full text-left text-sm">
-                    <thead class="bg-slate-100 text-slate-500 text-[11px] uppercase tracking-[0.18em]">
+                    <thead class="bg-slate-100 text-slate-700 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
                         <tr>
-                            <th class="px-4 py-3">Product</th>
-                            <th class="px-4 py-3">SKU</th>
-                            <th class="px-4 py-3">Qty ordered</th>
+                            <th class="px-4 py-3 text-left font-semibold">Product</th>
+                            <th class="px-4 py-3 text-left font-semibold">SKU</th>
+                            <th class="px-4 py-3 text-left font-semibold">Qty ordered</th>
                             @if($isReceivingStage)
-                                <th class="px-4 py-3">Received</th>
-                                <th class="px-4 py-3">Defective</th>
-                                <th class="px-4 py-3">Accepted</th>
+                                <th class="px-4 py-3 text-left font-semibold">Received</th>
+                                <th class="px-4 py-3 text-left font-semibold">Defective</th>
+                                <th class="px-4 py-3 text-left font-semibold">Accepted</th>
                             @endif
-                            <th class="px-4 py-3">Supplier Cost/Unit</th>
-                            <th class="px-4 py-3">Total</th>
+                            <th class="px-4 py-3 text-left font-semibold">Supplier Cost/Unit</th>
+                            <th class="px-4 py-3 text-left font-semibold">Total</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 text-slate-700">
@@ -256,16 +256,16 @@
 
                         <div class="mt-4 overflow-hidden rounded-3xl border border-slate-200">
                             <table class="min-w-full text-left text-sm">
-                                <thead class="bg-slate-100 text-slate-500 text-[11px] uppercase tracking-[0.18em]">
+                                <thead class="bg-slate-100 text-slate-700 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
                                     <tr>
-                                        <th class="px-4 py-3">Product</th>
-                                        <th class="px-4 py-3">Ordered</th>
-                                        <th class="px-4 py-3">Received</th>
-                                        <th class="px-4 py-3">Remaining</th>
-                                        <th class="px-4 py-3">Supplier Cost/Unit</th>
-                                        <th class="px-4 py-3">Receive Quantity</th>
-                                        <th class="px-4 py-3">Defective Qty</th>
-                                        <th class="px-4 py-3">Accepted Qty</th>
+                                        <th class="px-4 py-3 text-left font-semibold">Product</th>
+                                        <th class="px-4 py-3 text-left font-semibold">Ordered</th>
+                                        <th class="px-4 py-3 text-left font-semibold">Received</th>
+                                        <th class="px-4 py-3 text-left font-semibold">Remaining</th>
+                                        <th class="px-4 py-3 text-left font-semibold">Supplier Cost/Unit</th>
+                                        <th class="px-4 py-3 text-left font-semibold">Receive Quantity</th>
+                                        <th class="px-4 py-3 text-left font-semibold">Defective Qty</th>
+                                        <th class="px-4 py-3 text-left font-semibold">Accepted Qty</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-200 text-slate-700">

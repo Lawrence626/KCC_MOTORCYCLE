@@ -1,7 +1,7 @@
 <x-layouts.app :title="__('Pricing Module')">
     <div class="space-y-4">
         <!-- Header -->
-        <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div class="pl-3 lg:pl-2">
                 <h1 class="text-3xl font-bold text-slate-900">Pricing Module</h1>
                 <p class="text-xs text-slate-500 mt-1">Analyze pricing trends, monitor stock value, and track recent price breaks.</p>
@@ -85,7 +85,7 @@
             <div id="pricing-alert-banner-{{ $alert->id }}" class="rounded-[18px] border border-amber-200 bg-amber-50 p-4 shadow-sm transition-all duration-300 mb-3">
                 <div class="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between">
                     <div>
-                        <p class="text-[10px] uppercase tracking-[0.24em] text-amber-600">Pricing alert</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-amber-600">Pricing alert</p>
                         <h2 class="mt-1 text-base font-semibold text-amber-900">Supplier cost review needed</h2>
                         <p class="mt-1 text-sm text-amber-800">
                             {{ $alert->product?->product_name ?? 'A product' }} ({{ $alert->product?->sku ?? '—' }}) supplier cost increased by {{ number_format((float) $alert->change_percentage, 0) }}%. Review retail pricing to protect your target margin.
@@ -176,14 +176,14 @@
             </div>
             <div class="mt-4 overflow-x-auto rounded-[10px] border border-slate-200">
                 <table class="min-w-full text-left text-xs text-slate-700">
-                    <thead class="border-b border-slate-200 bg-[#0f172a]">
+                    <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                         <tr>
-                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</th>
-                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Previous Cost</th>
-                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Current Cost</th>
-                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Change</th>
-                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Suggested Retail Price</th>
-                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Recommendation</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">Product</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">Previous Cost</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">Current Cost</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">Change</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">Suggested Retail Price</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">Recommendation</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 bg-white">
@@ -266,7 +266,7 @@
             @foreach($supplierCostAlerts as $alert)
                 <div id="retail-reco-banner-{{ $alert->id }}" class="mt-4 rounded-[18px] border border-slate-200 bg-slate-50 p-4">
                     <div class="flex items-start justify-between gap-2">
-                        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Retail recommendation</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Retail recommendation</p>
                         <button
                             type="button"
                             onclick="dismissAlert({{ $alert->id }}, '{{ $alert->product?->product_name ?? 'Product' }}', '{{ $alert->product?->sku ?? '' }}', {{ $alert->change_percentage }})"
@@ -315,12 +315,12 @@
                 </div>
                 <div class="mt-4 overflow-x-auto rounded-[10px] border border-slate-200">
                     <table class="min-w-full text-left text-xs text-slate-700">
-                        <thead class="border-b border-slate-200 bg-[#0f172a]">
+                        <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                             <tr>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Old</th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">New</th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Date</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">Product</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">Old</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">New</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">Date</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 bg-white">
@@ -347,8 +347,9 @@
     </div>
 
     {{-- Info Modal --}}
-    <div id="breakdown-info-modal" onclick="closeBreakdownModal()" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all duration-300">
-        <div onclick="event.stopPropagation()" class="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="breakdown-modal-container">
+    <div id="breakdown-info-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 transition-all duration-300">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeBreakdownModal()"></div>
+        <div onclick="event.stopPropagation()" class="relative bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="breakdown-modal-container">
             <div class="border-b border-slate-100 bg-slate-50 px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -364,7 +365,7 @@
             </div>
             <div class="p-6" id="breakdown-modal-body">
                 <div class="flex items-start gap-4">
-                    <span class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400 shrink-0 mt-0.5">Reason</span>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 shrink-0 mt-0.5">Reason</span>
                     <p class="text-sm text-slate-700 leading-relaxed" id="breakdown-modal-text"></p>
                 </div>
             </div>
@@ -664,7 +665,7 @@
 
                         <!-- Structured Breakdown Table -->
                         <div class="border border-slate-100 rounded-2xl overflow-hidden bg-slate-50 shadow-sm">
-                            <div class="px-4 py-2 bg-slate-100 text-slate-500 font-semibold text-[10px] uppercase tracking-[0.24em] border-b border-slate-200/50">
+                            <div class="px-4 py-2 bg-slate-100 text-slate-500 font-semibold text-xs uppercase tracking-wider border-b border-slate-200/50">
                                 Pricing Breakdown Details
                             </div>
                             <div class="divide-y divide-slate-100 bg-white">

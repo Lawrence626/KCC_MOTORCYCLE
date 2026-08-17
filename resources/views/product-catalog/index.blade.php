@@ -41,6 +41,10 @@
                     </form>
                     <button onclick="clearSelection()" class="text-xs text-slate-600 hover:text-slate-800 font-medium">Clear</button>
                 </div>
+                <a href="{{ route('product-catalog.create') }}" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#00fff2] text-slate-900 text-sm font-semibold hover:bg-[#00e6da] transition shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                    <span>Add Product</span>
+                </a>
                 <!-- Trash Button -->
                 <button onclick="openTrashModal()" class="relative inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 text-sm font-semibold hover:bg-slate-50 transition shadow-sm">
                     <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,10 +53,6 @@
                     <span>Trash</span>
                     <span id="trashBadge" class="absolute -top-1.5 -right-1.5 hidden items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs font-bold">0</span>
                 </button>
-                <a href="{{ route('product-catalog.create') }}" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#00fff2] text-slate-900 text-sm font-semibold hover:bg-[#00e6da] transition shadow-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                    <span>Add Product</span>
-                </a>
             </div>
         </div>
 
@@ -135,37 +135,37 @@
         <div class="overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-sm">
             <div class="overflow-x-auto rounded-[10px]">
                 <table class="w-full text-sm text-left whitespace-nowrap min-w-max">
-                    <thead class="bg-[#0f172a] border-b border-slate-200 sticky-header text-xs uppercase tracking-wider rounded-t-[10px]">
+                    <thead class="bg-[#0f172a] border-b border-slate-200 sticky-header text-[10px] uppercase tracking-wider rounded-t-[10px] text-white">
                         <tr>
-                            <th class="px-4 py-3 font-semibold text-white w-10 rounded-tl-[10px]">
+                            <th class="px-3.5 py-3 font-semibold text-center text-white w-10 rounded-tl-[10px]">
                                 <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2] cursor-pointer">
                             </th>
-                            <th class="px-4 py-3 font-semibold text-white">Locations</th>
-                            <th class="px-4 py-3 font-semibold text-white">Product Description</th>
-                            <th class="px-4 py-3 font-semibold text-white">Brand</th>
-                            <th class="px-4 py-3 font-semibold text-white">SKU</th>
-                            <th class="px-4 py-3 font-semibold text-white">Size</th>
-                            <th class="px-4 py-3 font-semibold text-white">Color</th>
-                            <th class="px-4 py-3 font-semibold text-center text-white">Stock</th>
-                            <th class="px-4 py-3 font-semibold text-center text-white">Reorder Level</th>
-                            <th class="px-4 py-3 font-semibold text-white">Compatible Models</th>
-                            <th class="px-4 py-3 font-semibold text-center text-white">Status</th>
-                            <th class="px-4 py-3 font-semibold text-center text-white rounded-tr-[10px]">Actions</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Locations</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Product Description</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Brand</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">SKU</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Size</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Color</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Stock</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Reorder Level</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Compatible Models</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Status</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white rounded-tr-[10px]">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 text-xs">
                         @if($products->count() > 0)
                             @foreach($products as $product)
-                                <tr class="hover:bg-slate-50 transition">
-                                    <td class="px-4 py-3">
+                                <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+                                    <td class="px-3.5 py-3 text-center align-middle w-10">
                                         <input type="checkbox" class="product-checkbox rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]" value="{{ $product->id }}">
                                     </td>
-                                    <td class="px-4 py-3 text-slate-600 text-xs">{{ $product->warehouse ?? '-' }}</td>
-                                    <td class="px-4 py-3">
+                                    <td class="px-3.5 py-3 text-left text-slate-600 text-xs align-middle">{{ $product->warehouse ?? '-' }}</td>
+                                    <td class="px-3.5 py-3 text-left align-middle">
                                         <span class="px-2.5 py-0.5 rounded-full bg-[#105f68] text-[#00fff2] text-[11px] font-semibold">{{ $product->product_description }}</span>
                                     </td>
-                                    <td class="px-4 py-3 font-semibold text-slate-900">{{ $product->brand }}</td>
-                                    <td class="px-4 py-3">
+                                    <td class="px-3.5 py-3 text-left font-semibold text-slate-900 align-middle">{{ $product->brand }}</td>
+                                    <td class="px-3.5 py-3 text-left align-middle">
                                         <div class="flex items-center gap-2">
                                             @if($product->qr_code_path)
                                                 <img src="/storage/{{ $product->qr_code_path }}" alt="QR" class="qr-thumbnail rounded border border-slate-200">
@@ -173,15 +173,15 @@
                                             <span class="font-mono text-xs text-slate-600">{{ $product->sku }}</span>
                                         </div>
                                     </td>
-                                    <td class="px-4 py-3 text-slate-600 text-xs">{{ $product->size ?? '-' }}</td>
-                                    <td class="px-4 py-3 text-slate-600 text-xs">{{ $product->color ?? '-' }}</td>
-                                    <td class="px-4 py-3">
+                                    <td class="px-3.5 py-3 text-center text-slate-600 text-xs align-middle">{{ $product->size ?? '-' }}</td>
+                                    <td class="px-3.5 py-3 text-center text-slate-600 text-xs align-middle">{{ $product->color ?? '-' }}</td>
+                                    <td class="px-3.5 py-3 text-center align-middle">
                                         <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold {{ $product->effective_stock_quantity <= $product->effective_reorder_level ? 'bg-red-600 text-white' : 'bg-[#00fff2] text-black' }}">
                                             {{ $product->effective_stock_quantity }}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-3 text-slate-600 text-xs">{{ $product->effective_reorder_level }}</td>
-                                    <td class="px-4 py-3">
+                                    <td class="px-3.5 py-3 text-center text-slate-600 text-xs align-middle">{{ $product->effective_reorder_level }}</td>
+                                    <td class="px-3.5 py-3 text-left align-middle">
                                         @if($product->product_name)
                                             <div class="text-xs text-slate-900 font-semibold mb-1">{{ $product->product_name }}</div>
                                         @endif
@@ -198,12 +198,12 @@
                                             @endif
                                         </div>
                                     </td>
-                                    <td class="px-4 py-3 text-center">
+                                    <td class="px-3.5 py-3 text-center align-middle">
                                         <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold {{ $product->status === 'Active' ? 'bg-[#105f68] text-white' : 'bg-red-600 text-white' }}">
                                             {{ $product->status }}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-3 text-center align-middle whitespace-nowrap text-[10px] font-medium" onclick="event.stopPropagation()">
+                                    <td class="px-3.5 py-3 text-center align-middle whitespace-nowrap text-[10px] font-medium" onclick="event.stopPropagation()">
                                          <div class="inline-flex items-center gap-1.5 justify-center">
                                              <a href="{{ route('product-catalog.edit', $product) }}" class="text-black hover:text-slate-900 inline-flex items-center p-1" title="Edit">
                                                  <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -757,14 +757,14 @@
             <div class="p-6">
                 <div class="max-h-96 overflow-y-auto border border-slate-200 rounded-xl overflow-hidden">
                     <table class="w-full text-xs">
-                        <thead class="bg-[#0f172a] border-b border-slate-800 sticky top-0">
+                        <thead class="bg-[#0f172a] border-b border-slate-800 sticky top-0 text-xs uppercase tracking-wider text-white">
                             <tr>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white w-10">
+                                <th class="px-4 py-3 text-left font-semibold text-white w-10">
                                     <input type="checkbox" id="selectAllTrash" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]">
                                 </th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Description</th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Brand</th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">SKU</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">Description</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">Brand</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">SKU</th>
                             </tr>
                         </thead>
                         <tbody id="trashTableBody" class="divide-y divide-slate-100">

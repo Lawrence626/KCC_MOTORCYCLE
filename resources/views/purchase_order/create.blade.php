@@ -95,7 +95,7 @@
 
                 <div class="overflow-hidden rounded-[10px] border border-slate-200">
                     <table class="min-w-full text-left text-sm">
-                        <thead class="bg-[#0f172a] text-white text-[11px] uppercase tracking-[0.18em] rounded-t-[10px]" style="background-color: #0f172a;">
+                        <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider border-b border-slate-200 rounded-t-[10px]" style="background-color: #0f172a;">
                             <tr>
                                 <th class="px-4 py-3 rounded-tl-[10px]">
                                     <input type="checkbox" id="select-all-products"
@@ -157,7 +157,7 @@
                                                 default         => 'bg-slate-100 text-slate-600 ring-slate-200',
                                             };
                                         @endphp
-                                        <span class="inline-flex items-center rounded-full px-2.5 py-1.5 text-xs font-medium ring-1 ring-inset {{ $movClass }}">
+                                        <span class="inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ring-inset {{ $movClass }}">
                                             {{ $movLabel }}
                                         </span>
                                     </td>
@@ -252,19 +252,19 @@
             <div class="p-6">
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                        <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Supplier Name</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Supplier Name</p>
                         <p id="si-name" class="text-sm font-semibold text-slate-800">—</p>
                     </div>
                     <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                        <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Contact Person</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Contact Person</p>
                         <p id="si-contact" class="text-sm text-slate-700">—</p>
                     </div>
                     <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                        <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Last Purchase</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Last Purchase</p>
                         <p id="si-last-purchase" class="text-sm text-slate-700">—</p>
                     </div>
                     <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                        <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Reliability Score</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Reliability Score</p>
                         <p id="si-reliability" class="text-sm font-semibold text-slate-800">—</p>
                     </div>
                 </div>
@@ -302,7 +302,7 @@
                 <div id="recommended-supplier-badge" class="hidden rounded-[10px] bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800"></div>
                 <div class="overflow-hidden rounded-3xl border border-slate-200">
                     <table class="min-w-full text-left text-sm">
-                        <thead class="bg-[#0f172a] text-white text-[11px] uppercase tracking-[0.18em]" style="background-color: #0f172a;">
+                        <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider border-b border-slate-200" style="background-color: #0f172a;">
                             <tr>
                                 <th class="px-4 py-3">Supplier</th>
                                 <th class="px-4 py-3">Total Cost (₱)</th>
@@ -692,19 +692,19 @@
             summaryGrid.className = 'grid gap-3 sm:grid-cols-2 lg:grid-cols-4';
             summaryGrid.innerHTML = `
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                    <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Current Cost</p>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Current Cost</p>
                     <p class="text-base font-bold text-slate-800">${ph.current_cost != null ? fmt(ph.current_cost) : '—'}</p>
                 </div>
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                    <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Previous Cost</p>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Previous Cost</p>
                     <p class="text-base font-bold text-slate-600">${ph.previous_cost != null ? fmt(ph.previous_cost) : '—'}</p>
                 </div>
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                    <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Price Change</p>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Price Change</p>
                     <p class="text-base ${changeColor}">${fmtP(ph.change_percentage)}</p>
                 </div>
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                    <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Trend</p>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Trend</p>
                     <p class="text-base font-semibold text-slate-700">${icon(ph.trend)} ${cap(ph.trend)}</p>
                 </div>
             `;
@@ -727,7 +727,7 @@
                 tableWrap.className = 'overflow-hidden rounded-3xl border border-slate-200';
                 tableWrap.innerHTML = `
                     <table class="min-w-full text-left text-sm">
-                        <thead class="bg-[#0f172a] text-white text-[11px] uppercase tracking-[0.18em]" style="background-color: #0f172a;">
+                        <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider border-b border-slate-200" style="background-color: #0f172a;">
                             <tr>
                                 <th class="px-4 py-3">Purchase Date</th>
                                 <th class="px-4 py-3">Purchase Order</th>
@@ -932,10 +932,10 @@
                 const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
 
                 let dayClasses = "h-7 w-7 mx-auto flex items-center justify-center rounded-lg font-medium cursor-pointer transition-all duration-150 ";
-                if (isToday) {
+                if (isSelected) {
+                    dayClasses += "bg-[#0f172a] text-white font-bold shadow-sm";
+                } else if (isToday) {
                     dayClasses += "bg-[#00fff2] text-black font-bold shadow-sm";
-                } else if (isSelected) {
-                    dayClasses += "bg-black/10 text-slate-900 font-bold shadow-sm";
                 } else {
                     dayClasses += "text-slate-700 hover:bg-slate-100";
                 }

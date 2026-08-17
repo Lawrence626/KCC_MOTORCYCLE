@@ -169,6 +169,69 @@ function recordTransaction(invoice, date, total, paymentMethod, items) {
     };
     posState.transactionHistory.unshift(transaction);
     saveTransactionHistory();
+    // Also save to database
+    saveTransactionToDatabase(invoice, total, paymentMethod, items);
+}
+
+function saveTransactionToDatabase(invoice, total, paymentMethod, items) {
+    // Calculate totals for the database
+    const subtotal = items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const extra = Number(document.getElementById('posExtraChargeInput')?.value || 0);
+    const discount = Number(document.getElementById('posDiscountInput')?.value || 0);
+    const servicesTotal = Array.from(posState.selectedServices).reduce((sum, serviceId) => {
+        const service = posState.services.find(s => s.id === serviceId);
+        return service ? sum + service.price : sum;
+    }, 0);
+    const subtotalWithExtras = subtotal + servicesTotal + extra - discount;
+    const tax = Math.max(0, subtotalWithExtras * 0.12);
+
+    // Prepare items with additional data
+    const transactionItems = items.map(item => {
+        const cartItem = posState.cart.find(c => c.id === item.id);
+        return {
+            id: item.id,
+            name: item.name,
+            sku: cartItem?.sku || '',
+            compatibility: cartItem?.compatibility || '',
+            quantity: item.qty,
+            unit_price: item.price,
+            category: cartItem?.category || 'Uncategorized',
+        };
+    });
+
+    const payload = {
+        invoice_number: invoice,
+        items: transactionItems,
+        subtotal: subtotal,
+        services_total: servicesTotal,
+        extra_charge: extra,
+        discount: discount,
+        tax: tax,
+        total_amount: total,
+        payment_method: paymentMethod === 'qr' ? 'qr' : 'cash',
+    };
+
+    fetch('/api/pos/transactions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+        },
+        body: JSON.stringify(payload),
+    })
+        .then(response => {
+            if (!response.ok) {
+                console.error('Failed to save transaction to database', response.status);
+                return;
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Transaction saved to database:', data);
+        })
+        .catch(error => {
+            console.error('Error saving transaction to database:', error);
+        });
 }
 
 function formatCurrency(value) {
@@ -339,7 +402,7 @@ function renderTransactionHistory() {
             <td class="px-3 py-4 text-center text-slate-700">${transaction.items.length}</td>
             <td class="px-3 py-4 text-right text-slate-900 font-semibold">${formatCurrency(transaction.total)}</td>
             <td class="px-3 py-4 text-center">
-                <button onclick="viewTransactionInvoice('${transaction.invoice}')" class="text-emerald-600 hover:text-emerald-700 font-medium text-xs mr-2">View</button>
+                <button onclick="viewTransactionInvoice('${transaction.invoice}')" class="font-semibold text-xs mr-2" style="color: #000000;">View</button>
                 <button onclick="deleteTransaction('${transaction.invoice}')" class="text-red-600 hover:text-red-700 font-medium text-xs">Delete</button>
             </td>
         `;
@@ -2523,13 +2586,31 @@ function playScanNotification() {
 
 function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 px-4 py-2 rounded-lg text-sm font-medium z-50 ${type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-        }`;
+    notification.className = 'fixed top-4 right-8 z-50 rounded-[10px] border p-4 text-sm font-medium shadow-lg transition-all duration-300';
+    if (type === 'success') {
+        notification.style.backgroundColor = '#e6fffe';
+        notification.style.borderColor = '#00fff2';
+        notification.style.borderWidth = '1px';
+        notification.style.borderStyle = 'solid';
+        notification.style.color = '#0f172a';
+        notification.style.borderRadius = '10px';
+        notification.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+    } else {
+        notification.style.backgroundColor = '#fff1f2';
+        notification.style.borderColor = '#fecdd3';
+        notification.style.borderWidth = '1px';
+        notification.style.borderStyle = 'solid';
+        notification.style.color = '#9f1239';
+        notification.style.borderRadius = '10px';
+        notification.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+    }
     notification.textContent = message;
     document.body.appendChild(notification);
 
     setTimeout(() => {
-        notification.remove();
+        notification.style.opacity = '0';
+        notification.style.transition = 'opacity 0.5s ease';
+        setTimeout(() => notification.remove(), 500);
     }, 3000);
 }
 

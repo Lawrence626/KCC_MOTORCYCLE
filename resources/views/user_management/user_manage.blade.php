@@ -319,17 +319,17 @@
 
             <div class="overflow-x-auto rounded-[10px] border border-slate-200">
                 <table class="w-full divide-y divide-slate-200 table-auto">
-                    <thead class="border-b border-slate-200 bg-[#0f172a]">
+                    <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                         <tr>
-                            <th class="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Name</th>
-                            <th class="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Role</th>
-                            <th class="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Email</th>
-                            <th class="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Contact</th>
-                            <th class="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Full Address</th>
-                            <th class="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Age</th>
-                            <th class="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Gender</th>
-                            <th class="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Status</th>
-                            <th class="px-3 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Actions</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Name</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Role</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Email</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Contact</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Full Address</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Age</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Gender</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Status</th>
+                            <th class="px-3 py-3 text-center font-semibold text-white">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-slate-200 text-xs">

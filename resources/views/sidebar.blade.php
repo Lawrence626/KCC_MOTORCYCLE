@@ -1,4 +1,4 @@
-<div class="w-full md:w-70 text-white flex flex-col h-screen shadow-2xl border-r border-slate-700 "
+<div class="w-full md:w-70 text-white flex flex-col h-full min-h-full shadow-2xl border-r border-slate-700 "
      style="background: linear-gradient( #000000, #2b2b2b); position: relative;">
 
     <a href="{{ route('dashboard') }}" class="px-6 py-5 flex-shrink-0">

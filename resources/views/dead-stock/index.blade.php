@@ -17,6 +17,13 @@
                 </p>
             </div>
             <div class="flex flex-wrap items-center gap-2 pr-4">
+                <form action="{{ route('dss.dead-stock.recalculate') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" class="inline-flex items-center gap-2 rounded-[10px] border border-[#00fff2]/40 bg-[#00fff2] px-4 py-2 text-sm font-semibold text-black shadow-sm hover:bg-[#00e6da] focus:outline-none transition-all duration-200" onclick="this.innerHTML='<svg class=\'w-4 h-4 animate-spin\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15\'/></svg> <span>Analyzing...</span>'; this.disabled=true; this.closest('form').submit();">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        <span>Recalculate Analysis</span>
+                    </button>
+                </form>
                 <a href="{{ route('dss.dead-stock.export-excel') }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}"
                    class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
                     <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -27,13 +34,6 @@
                     <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                     <span>Export PDF</span>
                 </a>
-                <form action="{{ route('dss.dead-stock.recalculate') }}" method="POST" class="inline">
-                    @csrf
-                    <button type="submit" class="inline-flex items-center gap-2 rounded-[10px] border border-[#00fff2]/40 bg-[#00fff2] px-4 py-2 text-sm font-semibold text-black shadow-sm hover:bg-[#00e6da] focus:outline-none transition-all duration-200" onclick="this.innerHTML='<svg class=\'w-4 h-4 animate-spin\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15\'/></svg> <span>Analyzing...</span>'; this.disabled=true; this.closest('form').submit();">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                        <span>Recalculate Analysis</span>
-                    </button>
-                </form>
             </div>
         </div>
 
@@ -157,13 +157,13 @@
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-xs">
-                    <thead class="border-b border-slate-200 bg-[#0f172a]">
+                    <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                         <tr>
-                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</th>
-                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">SKU</th>
-                            <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Days Unsold</th>
-                            <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Current Stock</th>
-                            <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Last Sold</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">Product</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">SKU</th>
+                            <th class="px-4 py-3 text-right font-semibold text-white">Days Unsold</th>
+                            <th class="px-4 py-3 text-right font-semibold text-white">Current Stock</th>
+                            <th class="px-4 py-3 text-right font-semibold text-white">Last Sold</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 bg-white">
@@ -247,16 +247,16 @@
 
             <div class="overflow-x-auto">
                 <table class="w-full text-xs text-center">
-                    <thead class="border-b border-slate-200 bg-[#0f172a]">
+                    <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                         <tr>
-                            <th class="px-4 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white whitespace-nowrap">Product</th>
-                            <th class="px-4 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white whitespace-nowrap">SKU</th>
-                            <th class="px-4 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white whitespace-nowrap">Stock</th>
-                            <th class="px-4 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white whitespace-nowrap">Value</th>
-                            <th class="px-4 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white whitespace-nowrap">Days Unsold</th>
-                            <th class="px-4 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white whitespace-nowrap">Status</th>
-                            <th class="px-4 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white whitespace-nowrap">Action</th>
-                            <th class="px-4 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white whitespace-nowrap"></th>
+                            <th class="px-4 py-3 text-center font-semibold text-white whitespace-nowrap">Product</th>
+                            <th class="px-4 py-3 text-center font-semibold text-white whitespace-nowrap">SKU</th>
+                            <th class="px-4 py-3 text-center font-semibold text-white whitespace-nowrap">Stock</th>
+                            <th class="px-4 py-3 text-center font-semibold text-white whitespace-nowrap">Value</th>
+                            <th class="px-4 py-3 text-center font-semibold text-white whitespace-nowrap">Days Unsold</th>
+                            <th class="px-4 py-3 text-center font-semibold text-white whitespace-nowrap">Status</th>
+                            <th class="px-4 py-3 text-center font-semibold text-white whitespace-nowrap">Action</th>
+                            <th class="px-4 py-3 text-center font-semibold text-white whitespace-nowrap"></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 bg-white">
@@ -354,7 +354,7 @@
 {{-- SALES HISTORY MODAL --}}
 {{-- ═══════════════════════════════════════════════════════════ --}}
 <div id="salesHistoryModal" class="fixed inset-0 z-[9999] hidden">
-    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeSalesHistoryModal()"></div>
+    <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl transition-opacity" onclick="closeSalesHistoryModal()"></div>
     <div class="absolute inset-4 md:inset-y-12 md:inset-x-[15%] lg:inset-x-[20%] bg-white rounded-xl shadow-xl flex flex-col overflow-hidden">
         <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-white">
             <div>
@@ -392,7 +392,7 @@
 {{-- APPLY DISCOUNT MODAL --}}
 {{-- ═══════════════════════════════════════════════════════════ --}}
 <div id="discountModal" class="fixed inset-0 z-[9999] hidden">
-    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeDiscountModal()"></div>
+    <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl transition-opacity" onclick="closeDiscountModal()"></div>
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-xl shadow-xl overflow-hidden">
         <div class="px-5 py-4 border-b border-slate-100 bg-white">
             <h3 class="text-base font-semibold text-slate-900">Apply Discount</h3>

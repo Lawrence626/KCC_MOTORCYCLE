@@ -143,22 +143,22 @@
                         <p id="detailSupplierNotes" class="mt-1 text-xs text-slate-300"></p>
                         <p id="detailSupplierAddress" class="mt-1 text-xs text-slate-400"></p>
                     </div>
-                    <div class="flex flex-wrap items-center gap-3">
-                        <div class="rounded-[10px] bg-slate-800/90 px-3.5 py-2 text-sm text-slate-300 border border-slate-700">
-                            <p class="text-[10px] uppercase tracking-[0.2em] text-[#00fff2] font-semibold">Role</p>
-                            <p id="detailSupplierPosition" class="mt-0.5 font-semibold text-white text-xs"></p>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <div class="rounded-[8px] bg-slate-800/90 px-3 py-1.5 border border-slate-700">
+                            <p class="text-[10px] uppercase tracking-wider text-[#00fff2] font-semibold leading-tight">Role</p>
+                            <p id="detailSupplierPosition" class="mt-0.5 font-semibold text-white text-[11px] leading-tight"></p>
                         </div>
-                        <div class="rounded-[10px] bg-slate-800/90 px-3.5 py-2 text-sm text-slate-300 border border-slate-700">
-                            <p class="text-[10px] uppercase tracking-[0.2em] text-[#00fff2] font-semibold">Primary Contact</p>
-                            <p id="detailSupplierContact" class="mt-0.5 font-medium text-white text-xs"></p>
+                        <div class="rounded-[8px] bg-slate-800/90 px-3 py-1.5 border border-slate-700">
+                            <p class="text-[10px] uppercase tracking-wider text-[#00fff2] font-semibold leading-tight">Primary Contact</p>
+                            <p id="detailSupplierContact" class="mt-0.5 font-medium text-white text-[11px] leading-tight"></p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button id="detailEditSupplierButton" type="button" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#00FFF2] px-4 py-2 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#00D9CC] transition-all duration-200">
-                                <svg class="h-4 w-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                            <button id="detailEditSupplierButton" type="button" class="inline-flex items-center gap-1.5 rounded-[8px] bg-[#00FFF2] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#00D9CC] transition-all duration-200">
+                                <svg class="h-3.5 w-3.5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                 Edit
                             </button>
-                            <button id="detailArchiveSupplierButton" type="button" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-slate-700 transition-all duration-200">
-                                <svg class="h-4 w-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                            <button id="detailArchiveSupplierButton" type="button" class="inline-flex items-center gap-1.5 rounded-[8px] border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-slate-700 transition-all duration-200">
+                                <svg class="h-3.5 w-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
                                 Archive
                             </button>
                         </div>
@@ -167,55 +167,75 @@
 
                 <div class="p-6 pt-0 space-y-6">
 
-                <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                    <div class="rounded-[18px] border border-slate-200/80 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                        <div class="flex items-start justify-between gap-2">
-                            <p class="text-xs uppercase tracking-[0.15em] text-slate-900 font-medium">Performance score</p>
-                            <span class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#00fff2] border border-gray-200">
-                                <svg class="h-4 w-4 text-black" viewBox="0 0 24 24" fill="currentColor">
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <p class="text-black text-xs font-semibold">Performance Score</p>
+                                <div class="mt-1">
+                                    <p id="detailPerformanceScore" class="text-2xl font-bold text-black"></p>
+                                    <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Overall vendor rating score.</p>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                                <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
                                 </svg>
-                            </span>
+                            </div>
                         </div>
-                        <p id="detailPerformanceScore" class="mt-2 text-2xl font-bold text-slate-900"></p>
                     </div>
-                    <div class="rounded-[18px] border border-slate-200/80 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                        <div class="flex items-start justify-between gap-2">
-                            <p class="text-xs uppercase tracking-[0.15em] text-slate-900 font-medium">On-time delivery</p>
-          <span class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#00fff2] border border-gray-200">
-    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="#000000" stroke="#000000" stroke-width="1">
-        <rect x="9" y="1.5" width="6" height="2" rx="1"/>
-        <line x1="17" y1="4" x2="19.5" y2="6.5" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="12" cy="14" r="8"/>
-        <line x1="12" y1="14" x2="12" y2="10" stroke="#00fff2" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
-</span>
+                    <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <p class="text-black text-xs font-semibold">On-Time Delivery</p>
+                                <div class="mt-1">
+                                    <p id="detailOnTimeRate" class="text-2xl font-bold text-black"></p>
+                                    <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Punctual shipment rate.</p>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                                <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="#000000" stroke="#000000" stroke-width="1">
+                                    <rect x="9" y="1.5" width="6" height="2" rx="1"/>
+                                    <line x1="17" y1="4" x2="19.5" y2="6.5" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+                                    <circle cx="12" cy="14" r="8"/>
+                                    <line x1="12" y1="14" x2="12" y2="10" stroke="#00fff2" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                            </div>
                         </div>
-                        <p id="detailOnTimeRate" class="mt-2 text-2xl font-bold text-slate-900"></p>
                     </div>
-                    <div class="rounded-[18px] border border-slate-200/80 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                        <div class="flex items-start justify-between gap-2">
-                            <p class="text-xs uppercase tracking-[0.15em] text-slate-900 font-medium">Order completion</p>
-                        <span class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#00fff2] border border-gray-200">
-    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="#000000">
-        <path d="M7 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2.18a3 3 0 0 0-5.64 0H7zm5 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2zM7 9h10v1.5H7V9zm0 3h10v1.5H7V12zm0 3h6v1.5H7V15z"/>
-        <circle cx="17" cy="17" r="5.5" fill="#00fff2"/>
-        <path d="M17 22a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm-2.2-5.1 1.4-1.4 1 1 2.2-2.2 1.4 1.4-3.6 3.6-2.4-2.4z" fill="#000000"/>
-    </svg>
-</span>
+                    <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <p class="text-black text-xs font-semibold">Order Completion</p>
+                                <div class="mt-1">
+                                    <p id="detailCompletionRate" class="text-2xl font-bold text-black"></p>
+                                    <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Fulfilled orders without issues.</p>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                                <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="#000000">
+                                    <path d="M7 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2.18a3 3 0 0 0-5.64 0H7zm5 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2zM7 9h10v1.5H7V9zm0 3h10v1.5H7V12zm0 3h6v1.5H7V15z"/>
+                                    <circle cx="17" cy="17" r="5.5" fill="#00fff2"/>
+                                    <path d="M17 22a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm-2.2-5.1 1.4-1.4 1 1 2.2-2.2 1.4 1.4-3.6 3.6-2.4-2.4z" fill="#000000"/>
+                                </svg>
+                            </div>
                         </div>
-                        <p id="detailCompletionRate" class="mt-2 text-2xl font-bold text-slate-900"></p>
                     </div>
-                    <div class="rounded-[18px] border border-slate-200/80 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                        <div class="flex items-start justify-between gap-2">
-                            <p class="text-xs uppercase tracking-[0.15em] text-slate-900 font-medium">Total products</p>
-                         <span class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#00fff2] border border-gray-200">
-    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="#000000" fill-rule="evenodd">
-        <path d="M20.59 13.41 13.42 20.58c-.39.39-.9.58-1.42.58s-1.03-.19-1.42-.58L2 12V2h10l8.59 8.59c.78.79.78 2.04 0 2.82zM7 8.5c-.83 0-1.5-.67-1.5-1.5S6.17 5.5 7 5.5 8.5 6.17 8.5 7 7.83 8.5 7 8.5z"/>
-    </svg>
-</span>
+                    <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <p class="text-black text-xs font-semibold">Total Products</p>
+                                <div class="mt-1">
+                                    <p id="detailProductCount" class="text-2xl font-bold text-black"></p>
+                                    <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Supplied catalog items.</p>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                                <svg class="w-5 h-5 text-black" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                                    <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
+                                </svg>
+                            </div>
                         </div>
-                        <p id="detailProductCount" class="mt-2 text-2xl font-bold text-slate-900"></p>
                     </div>
                 </div>
 
@@ -287,12 +307,11 @@
                     </div>
                     <div id="productPagination" class="mt-4 flex flex-col items-center gap-2 sm:flex-row sm:justify-between"></div>
                 </div>
-                </div>
             </section>
-        </main>
 
-        <div id="supplierModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 p-4">
-            <div class="w-full max-w-2xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-2xl">
+        <div id="supplierModal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-4">
+            <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" data-action="close-modal"></div>
+            <div class="relative w-full max-w-2xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
                 <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                     <div>
                         <h2 id="supplierModalTitle" class="text-xl font-bold text-black">Add supplier</h2>
@@ -356,8 +375,9 @@
             </div>
         </div>
 
-        <div id="productsModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 p-4">
-            <div class="w-full max-w-4xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-2xl">
+        <div id="productsModal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-4">
+            <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" data-action="close-modal"></div>
+            <div class="relative w-full max-w-4xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
                 <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                     <div>
                         <h2 id="productsModalTitle" class="text-xl font-bold text-black">Supplier products</h2>

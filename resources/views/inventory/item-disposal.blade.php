@@ -98,21 +98,21 @@
 
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left whitespace-nowrap min-w-max">
-                    <thead class="bg-[#0f172a] border-b border-slate-200 sticky-header text-[10px] uppercase tracking-wider">
+                    <thead class="bg-[#0f172a] border-b border-slate-200 sticky-header text-[10px] uppercase tracking-wider text-white">
                         <tr>
-                            <th class="px-2.5 py-2.5 font-semibold text-white">Product Image</th>
-                            <th class="px-2.5 py-2.5 font-semibold text-white">Item Name</th>
-                            <th class="px-2.5 py-2.5 font-semibold text-white">SKU</th>
-                            <th class="px-2.5 py-2.5 font-semibold text-white">Category</th>
-                            <th class="px-2.5 py-2.5 font-semibold text-center text-white">Total Stock</th>
-                            <th class="px-2.5 py-2.5 font-semibold text-center text-white">Shop Qty</th>
-                            <th class="px-2.5 py-2.5 font-semibold text-center text-white">Wh Qty</th>
-                            <th class="px-2.5 py-2.5 font-semibold text-white">Expiration Date</th>
-                            <th class="px-2.5 py-2.5 font-semibold text-center text-white">Days Expired</th>
-                            <th class="px-2.5 py-2.5 font-semibold text-white">Reason</th>
-                            <th class="px-2.5 py-2.5 font-semibold text-center text-white">Status</th>
-                            <th class="px-2.5 py-2.5 font-semibold text-white">Date Identified</th>
-                            <th class="px-2.5 py-2.5 font-semibold text-center text-white">Actions</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Product Image</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Item Name</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">SKU</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Category</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Total Stock</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Shop Qty</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Wh Qty</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Expiration Date</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Days Expired</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Reason</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Status</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Date Identified</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 text-xs">
@@ -131,30 +131,30 @@
                                         }
                                     }
                                 @endphp
-                                <tr class="hover:bg-slate-50">
-                                    <td class="px-4 py-3">
-                                        <div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center border border-slate-200">
+                                <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+                                    <td class="px-3.5 py-3 text-center align-middle">
+                                        <div class="w-10 h-10 mx-auto rounded-lg bg-slate-100 flex items-center justify-center border border-slate-200">
                                             <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
                                         </div>
                                     </td>
-                                    <td class="px-4 py-3 font-semibold text-slate-900">{{ $product->name }}</td>
-                                    <td class="px-4 py-3 text-slate-600">{{ $product->sku ?? '-' }}</td>
-                                    <td class="px-4 py-3 text-slate-600">{{ $product->category ?? '-' }}</td>
-                                    <td class="px-4 py-3 font-bold text-slate-900">{{ $product->stock_quantity }}</td>
-                                    <td class="px-4 py-3 font-semibold text-blue-600">{{ $shopQty }}</td>
-                                    <td class="px-4 py-3 font-semibold text-amber-600">{{ $whQty }}</td>
-                                    <td class="px-4 py-3 text-slate-600">{{ $product->expiry_date?->format('M d, Y') ?? '-' }}</td>
-                                    <td class="px-4 py-3 text-slate-600">
+                                    <td class="px-3.5 py-3 text-left font-semibold text-slate-900 align-middle">{{ $product->name }}</td>
+                                    <td class="px-3.5 py-3 text-left text-slate-600 font-mono text-[10.5px] align-middle">{{ $product->sku ?? '-' }}</td>
+                                    <td class="px-3.5 py-3 text-left text-slate-600 align-middle">{{ $product->category ?? '-' }}</td>
+                                    <td class="px-3.5 py-3 text-center font-bold text-slate-900 align-middle">{{ $product->stock_quantity }}</td>
+                                    <td class="px-3.5 py-3 text-center font-semibold text-blue-600 align-middle">{{ $shopQty }}</td>
+                                    <td class="px-3.5 py-3 text-center font-semibold text-amber-600 align-middle">{{ $whQty }}</td>
+                                    <td class="px-3.5 py-3 text-left text-slate-600 align-middle">{{ $product->expiry_date?->format('M d, Y') ?? '-' }}</td>
+                                    <td class="px-3.5 py-3 text-center text-slate-600 align-middle">
                                         @if($product->expiry_date && $product->expiry_date->isPast())
                                             {{ $product->expiry_date->diffInDays(now()) }} days
                                         @else
                                             -
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3 text-slate-600">{{ $product->disposal_reason ?? '-' }}</td>
-                                    <td class="px-4 py-3">
+                                    <td class="px-3.5 py-3 text-left text-slate-600 align-middle">{{ $product->disposal_reason ?? '-' }}</td>
+                                    <td class="px-3.5 py-3 text-center align-middle">
                                         @if($product->disposal_status === 'Pending')
                                             <span onclick="openItemModal({{ $product->id }})" class="cursor-pointer inline-flex items-center rounded-full bg-[#105f68] px-2.5 py-0.5 text-[11px] font-semibold text-white hover:bg-[#0d4f57]">Pending Review</span>
                                         @elseif($product->disposal_status === 'Approved')
@@ -165,8 +165,8 @@
                                             <span class="inline-flex items-center rounded-full bg-slate-200 px-2.5 py-0.5 text-[11px] font-semibold text-slate-700">None</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3 text-slate-600">{{ $product->disposal_date_identified?->format('M d, Y') ?? '-' }}</td>
-                                    <td class="px-4 py-3 text-center">
+                                    <td class="px-3.5 py-3 text-left text-slate-600 align-middle">{{ $product->disposal_date_identified?->format('M d, Y') ?? '-' }}</td>
+                                    <td class="px-3.5 py-3 text-center align-middle">
                                         <div class="relative inline-block">
                                             <button onclick="toggleDropdown({{ $product->id }})" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600">
                                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
