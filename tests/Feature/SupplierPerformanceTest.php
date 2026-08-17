@@ -317,9 +317,9 @@ test('supplier assessment page displays data-driven supplier metrics for admin',
     $response->assertStatus(200);
     $response->assertSee('Active Supplier Co');
     $response->assertSee('Supplier overview');
-    $response->assertSee('Performance score');
-    $response->assertSee('On-time delivery');
-    $response->assertSee('Order completion');
+    $response->assertSee('Performance Score');
+    $response->assertSee('On-Time Delivery');
+    $response->assertSee('Order Completion');
 });
 
 test('it accurately filters and sorts latest orders by most recent relevant date', function () {
