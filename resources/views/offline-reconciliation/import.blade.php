@@ -31,9 +31,9 @@
                             </svg>
                             <span>Validate First</span>
                         </button>
-                        <button type="submit" class="inline-flex items-center gap-2 rounded-[10px] border border-[#00fff2]/40 bg-[#00fff2] px-4 py-2 text-sm font-semibold text-black shadow-sm hover:bg-[#00e6da] focus:outline-none transition-all duration-200 cursor-pointer">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-900 bg-[#0f172a] px-4 py-2 text-sm font-medium text-[#00fff2] shadow-sm hover:bg-slate-800 focus:outline-none transition-all duration-200 cursor-pointer">
+                            <svg class="h-4 w-4 text-[#00fff2]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                             </svg>
                             <span>Import Data</span>
                         </button>
@@ -94,14 +94,14 @@
             <div class="overflow-hidden rounded-[10px] border border-slate-200">
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-left text-xs text-slate-700">
-                        <thead class="border-b border-slate-200 bg-[#0f172a]">
+                        <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                             <tr>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">File Name</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Uploaded By</th>
-                                <th class="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Total</th>
-                                <th class="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Valid</th>
-                                <th class="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Invalid</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Actions</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">File Name</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Uploaded By</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white">Total</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white">Valid</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white">Invalid</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 bg-white">
@@ -168,16 +168,16 @@
             <div class="overflow-hidden rounded-[10px] border border-slate-200">
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-left text-xs text-slate-700">
-                        <thead class="border-b border-slate-200 bg-[#0f172a]">
+                        <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                             <tr>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">File Name</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Import Date</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Imported By</th>
-                                <th class="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Total</th>
-                                <th class="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Imported</th>
-                                <th class="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Duplicates</th>
-                                <th class="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Failed</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Status</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">File Name</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Import Date</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Imported By</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white">Total</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white">Imported</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white">Duplicates</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white">Failed</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Status</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 bg-white">

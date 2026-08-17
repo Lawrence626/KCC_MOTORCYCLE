@@ -86,13 +86,13 @@
                     <div class="p-5 space-y-4">
                         <div class="overflow-x-auto">
                             <table id="posCartTable" class="min-w-full text-left text-[11px]">
-                                <thead>
-                                    <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wide text-[10px]">
-                                        <th class="px-3 py-2">Item</th>
-                                        <th class="px-6 py-2 text-right">Price</th>
-                                        <th class="px-3 py-2 text-center">Qty</th>
-                                        <th class="px-6 py-2 text-right">Total</th>
-                                        <th class="px-3 py-2 text-center">Action</th>
+                                <thead class="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-700">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left font-semibold">Item</th>
+                                        <th class="px-6 py-2 text-right font-semibold">Price</th>
+                                        <th class="px-3 py-2 text-center font-semibold">Qty</th>
+                                        <th class="px-6 py-2 text-right font-semibold">Total</th>
+                                        <th class="px-3 py-2 text-center font-semibold">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="posCartBody"></tbody>
@@ -176,8 +176,9 @@
         </div>
     </div>
 
-    <div id="posPaymentModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-md px-4 py-6">
-        <div class="w-full max-w-4xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
+    <div id="posPaymentModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('posPaymentModal').classList.add('hidden')"></div>
+        <div class="relative w-full max-w-4xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
             <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Process Payment</h2>
@@ -208,12 +209,12 @@
                         </div>
                         <div class="overflow-x-auto">
                             <table class="min-w-full text-left text-sm text-slate-700">
-                                <thead>
-                                    <tr class="border-b border-slate-200 text-slate-500 text-[11px] uppercase tracking-wide">
-                                        <th class="px-3 py-2">Item</th>
-                                        <th class="px-3 py-2">SKU</th>
-                                        <th class="px-3 py-2">Qty</th>
-                                        <th class="px-3 py-2 text-right">Total</th>
+                                <thead class="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-700">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left font-semibold">Item</th>
+                                        <th class="px-3 py-2 text-left font-semibold">SKU</th>
+                                        <th class="px-3 py-2 text-left font-semibold">Qty</th>
+                                        <th class="px-3 py-2 text-right font-semibold">Total</th>
                                     </tr>
                                 </thead>
                                 <tbody id="posPaymentItems"></tbody>
@@ -256,8 +257,9 @@
         </div>
     </div>
 
-    <div id="posReceiptOverlay" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-md px-4 py-6">
-        <div class="w-full max-w-3xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
+    <div id="posReceiptOverlay" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('posReceiptOverlay').classList.add('hidden')"></div>
+        <div class="relative w-full max-w-3xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
             <div class="receipt-content">
                 <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                     <div class="flex items-center gap-4">
@@ -370,8 +372,9 @@
         </div>
     </div>
 
-    <div id="posQRPaymentModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-md px-4 py-6">
-        <div class="w-full max-w-md overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
+    <div id="posQRPaymentModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('posQRPaymentModal').classList.add('hidden')"></div>
+        <div class="relative w-full max-w-md overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
             <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
                 <div>
                     <h2 class="text-xl font-semibold text-slate-900">Scan to Pay</h2>
@@ -396,8 +399,9 @@
     </div>
 
     <!-- Invoice View Modal -->
-    <div id="posInvoiceModal" class="hidden fixed inset-0 z-[100000002] flex items-center justify-center bg-slate-950/90 backdrop-blur-md px-4 py-6">
-        <div class="w-full max-w-3xl max-h-[100vh] overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
+    <div id="posInvoiceModal" class="hidden fixed inset-0 z-[100000002] flex items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('posInvoiceModal').classList.add('hidden')"></div>
+        <div class="relative w-full max-w-3xl max-h-[100vh] overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
             <div class="receipt-content">
                 <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                     <div class="flex items-center gap-4">
@@ -490,8 +494,9 @@
         </div>
     </div>
 
-    <div id="posTransactionHistoryModal" class="hidden fixed inset-0 z-[100000001] flex items-center justify-center bg-slate-950/90 backdrop-blur-md px-4 py-6">
-        <div class="flex w-full max-w-5xl max-h-[90vh] flex-col overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
+    <div id="posTransactionHistoryModal" class="hidden fixed inset-0 z-[100000001] flex items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('posTransactionHistoryModal').classList.add('hidden')"></div>
+        <div class="relative flex w-full max-w-5xl max-h-[90vh] flex-col overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
             <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5 flex-shrink-0">
                 <div>
                     <h2 class="text-xl font-bold text-black">Transaction History</h2>
@@ -518,7 +523,7 @@
                 </div>
                 <div class="overflow-x-auto overflow-y-auto max-h-[40vh] rounded-[10px] border border-slate-200">
                     <table class="min-w-full text-left text-sm text-slate-700">
-                        <thead class="bg-[#0f172a] text-white text-[11px] font-semibold uppercase tracking-wider sticky top-0 z-10" style="background-color: #0f172a;">
+                        <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider sticky top-0 z-10" style="background-color: #0f172a;">
                             <tr class="border-b border-slate-800 bg-[#0f172a]" style="background-color: #0f172a;">
                                 <th class="px-3 py-3 text-center w-10">
                                     <input type="checkbox" id="posSelectAllTransactions" class="rounded border-slate-300 text-red-600 focus:ring-red-500 cursor-pointer" />
@@ -554,8 +559,9 @@
     </div>
 
     <!-- Desktop QR Scanner Modal -->
-    <div id="posDesktopScannerModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4">
+    <div id="posDesktopScannerModal" class="fixed inset-0 hidden items-center justify-center z-50 px-4 py-6" style="display: none;">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('posDesktopScannerModal').style.display='none'"></div>
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4">
             <div class="bg-[#00fff2] px-6 py-4 rounded-t-2xl">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -583,8 +589,9 @@
     </div>
 
     <!-- Mobile Scanner Modal -->
-    <div id="posMobileScannerModal" class="fixed inset-0 bg-slate-900 hidden items-center justify-center z-[9999] px-4 py-6">
-        <div class="w-full max-w-md bg-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+    <div id="posMobileScannerModal" class="fixed inset-0 hidden items-center justify-center z-[9999] px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('posMobileScannerModal').classList.add('hidden')"></div>
+        <div class="relative w-full max-w-md bg-slate-800 rounded-2xl overflow-hidden shadow-2xl">
             <div class="bg-slate-800 px-4 py-3 flex items-center justify-between">
                 <div>
                     <h1 class="text-lg font-bold text-white">POS Scanner</h1>
@@ -714,10 +721,10 @@
                         const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
 
                         let dayClasses = "h-7 w-7 mx-auto flex items-center justify-center rounded-lg font-medium cursor-pointer transition-all duration-150 ";
-                        if (isToday) {
+                        if (isSelected) {
+                            dayClasses += "bg-[#0f172a] text-white font-bold shadow-sm";
+                        } else if (isToday) {
                             dayClasses += "bg-[#00fff2] text-black font-bold shadow-sm";
-                        } else if (isSelected) {
-                            dayClasses += "bg-black/10 text-slate-900 font-bold shadow-sm";
                         } else {
                             dayClasses += "text-slate-700 hover:bg-slate-100";
                         }

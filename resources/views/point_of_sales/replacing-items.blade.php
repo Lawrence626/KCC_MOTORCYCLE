@@ -101,8 +101,9 @@
     </div>
 
     <!-- Process Replacement Modal -->
-    <div id="processModal" class="hidden fixed inset-0 bg-slate-950/40 backdrop-blur-xl flex items-center justify-center z-50 px-4 py-6">
-        <div class="bg-white/95 backdrop-blur-sm rounded-[28px] shadow-[0_30px_80px_rgba(15,23,42,0.15)] border border-slate-200/80 max-w-2xl w-full overflow-hidden">
+    <div id="processModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeProcessModal()"></div>
+        <div class="relative bg-white rounded-[28px] shadow-[0_30px_80px_rgba(15,23,42,0.15)] border border-slate-200/80 max-w-2xl w-full overflow-hidden">
             <div class="flex items-center justify-between px-8 py-5 border-b border-slate-200/80">
                 <h2 class="text-2xl font-semibold text-slate-900">Process Replacement</h2>
                 <button onclick="closeProcessModal()" class="text-slate-500 hover:text-slate-700 transition-colors p-2 rounded-full hover:bg-slate-100">
@@ -175,8 +176,9 @@
     </div>
 
     <!-- New Replacement Modal -->
-    <div id="newReplacementModal" class="hidden fixed inset-0 bg-slate-950/40 backdrop-blur-xl flex items-center justify-center z-50 px-4 py-6">
-        <div class="bg-white/95 backdrop-blur-sm rounded-[28px] shadow-[0_30px_100px_rgba(15,23,42,0.18)]  max-w-2xl w-full overflow-hidden">
+    <div id="newReplacementModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeNewReplacementModal()"></div>
+        <div class="relative bg-white rounded-[28px] shadow-[0_30px_100px_rgba(15,23,42,0.18)] max-w-2xl w-full overflow-hidden">
             <div class="flex items-center justify-between px-8 py-5 border-b border-transparent bg-[#00FFF2] rounded-t-[28px]">
                 <h2 class="text-2xl font-semibold text-slate-900">New Replacement</h2>
                 <button onclick="closeNewReplacementModal()" class="text-slate-900 transition-colors p-2 rounded-[10px] hover:bg-black/10">

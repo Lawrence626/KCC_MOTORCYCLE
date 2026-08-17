@@ -75,8 +75,8 @@
                     </div>
                 </div>
                 <div>
-                    <a href="{{ route('offline.export') }}" class="inline-flex items-center justify-center gap-2 w-full px-3 py-[11px] rounded-[12px] border border-[#00fff2]/40 bg-[#00fff2] text-xs font-semibold text-black shadow-sm hover:bg-[#00e6da] focus:outline-none transition-all duration-200 cursor-pointer">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <a href="{{ route('offline.export') }}" class="inline-flex items-center justify-center gap-2 w-full px-3 py-[11px] rounded-[12px] border border-slate-200 bg-white text-xs font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer">
+                        <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                         </svg>
                         <span>Export Data</span>
@@ -90,15 +90,15 @@
             <div class="overflow-hidden rounded-[10px] border border-slate-200">
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-left text-xs text-slate-700">
-                        <thead class="border-b border-slate-200 bg-[#0f172a]">
+                        <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                             <tr>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Type</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Sync Status</th>
-                                <th class="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Quantity Change</th>
-                                <th class="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Unit Price</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Supplier</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Created At</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Product</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Type</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Sync Status</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white">Quantity Change</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white">Unit Price</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Supplier</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Created At</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 bg-white">

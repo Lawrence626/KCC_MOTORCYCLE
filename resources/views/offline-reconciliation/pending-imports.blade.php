@@ -66,16 +66,16 @@
             <div class="overflow-hidden rounded-[10px] border border-slate-200">
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-left text-xs text-slate-700">
-                        <thead class="border-b border-slate-200 bg-[#0f172a]">
+                        <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                             <tr>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">File Name</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Uploaded By</th>
-                                <th class="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Total</th>
-                                <th class="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Valid</th>
-                                <th class="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Invalid</th>
-                                <th class="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Duplicates</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Status</th>
-                                <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Actions</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">File Name</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Uploaded By</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white">Total</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white">Valid</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white">Invalid</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white">Duplicates</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Status</th>
+                                <th class="px-3 py-3 text-left font-semibold text-white">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 bg-white">
@@ -173,8 +173,9 @@
         </div>
 
         <!-- Review Modal -->
-        <div id="reviewModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
-            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+        <div id="reviewModal" class="fixed inset-0 hidden items-center justify-center z-50 px-4 py-6">
+            <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeModal()"></div>
+            <div class="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
                 <div class="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
                     <h3 class="text-sm font-semibold text-slate-900">Review Import Data</h3>
                     <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">

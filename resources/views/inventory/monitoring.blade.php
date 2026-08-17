@@ -151,29 +151,29 @@
         <!-- Inventory Table -->
         <div class="overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-[0_14px_40px_-24px_rgba(0,0,0,0.32)]">
             <div class="overflow-x-auto rounded-[10px]">
-                <table class="w-full divide-y divide-slate-200 text-[11px]">
-                    <thead class="border-b border-slate-200 bg-[#0f172a] rounded-t-[10px]">
+                <table class="w-full text-left whitespace-nowrap min-w-max text-[11px] divide-y divide-slate-200">
+                    <thead class="border-b border-slate-200 bg-[#0f172a] rounded-t-[10px] text-[10px] uppercase tracking-wider text-white">
                         <tr>
-                            <th class="px-2 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white w-6 rounded-tl-[10px]">
+                            <th class="px-3.5 py-3 text-center font-semibold text-white w-10 rounded-tl-[10px]">
                                 <input type="checkbox" id="selectAllCheckbox" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2] cursor-pointer" />
                             </th>
-                            <th class="px-2 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Motorcycle Compatibility</th>
-                            <th class="px-2 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Product Name</th>
-                            <th class="px-2 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">SKU</th>
-                            <th class="px-2 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Brand</th>
-                            <th class="px-2 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Size</th>
-                            <th class="px-2 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Color</th>
-                            <th class="px-2 py-2.5 text-center text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Stock</th>
-                            <th class="px-2 py-2.5 text-right text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Unit Price</th>
-                            <th class="px-2 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Supplier</th>
-                            <th class="px-2 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Last Restock</th>
-                            <th class="px-2 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap">Expiry</th>
-                            <th class="px-2 py-2.5 text-center text-[10px] font-semibold uppercase tracking-[0.10em] text-white whitespace-nowrap rounded-tr-[10px]">Actions</th>
+                            <th class="px-3.5 py-3 text-left font-semibold text-white whitespace-nowrap">Motorcycle Compatibility</th>
+                            <th class="px-3.5 py-3 text-left font-semibold text-white whitespace-nowrap">Product Name</th>
+                            <th class="px-3.5 py-3 text-left font-semibold text-white whitespace-nowrap">SKU</th>
+                            <th class="px-3.5 py-3 text-left font-semibold text-white whitespace-nowrap">Brand</th>
+                            <th class="px-3.5 py-3 text-center font-semibold text-white whitespace-nowrap">Size</th>
+                            <th class="px-3.5 py-3 text-center font-semibold text-white whitespace-nowrap">Color</th>
+                            <th class="px-3.5 py-3 text-center font-semibold text-white whitespace-nowrap">Stock</th>
+                            <th class="px-3.5 py-3 text-right font-semibold text-white whitespace-nowrap">Unit Price</th>
+                            <th class="px-3.5 py-3 text-left font-semibold text-white whitespace-nowrap">Supplier</th>
+                            <th class="px-3.5 py-3 text-left font-semibold text-white whitespace-nowrap">Last Restock</th>
+                            <th class="px-3.5 py-3 text-left font-semibold text-white whitespace-nowrap">Expiry</th>
+                            <th class="px-3.5 py-3 text-center font-semibold text-white whitespace-nowrap rounded-tr-[10px]">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-200 text-[11px]">
+                    <tbody class="divide-y divide-slate-200 bg-white text-[11px]">
                         <tr>
-                            <td colspan="13" class="px-3 py-8 text-center text-slate-500">Loading inventory...</td>
+                            <td colspan="13" class="px-4 py-8 text-center text-slate-500">Loading inventory...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -269,13 +269,13 @@
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-xs text-left divide-y divide-slate-200">
-                    <thead class="bg-slate-50">
+                    <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-700 border-b border-slate-200">
                         <tr>
-                            <th class="px-3 py-2 uppercase tracking-[0.18em] text-slate-700">Date</th>
-                            <th class="px-3 py-2 uppercase tracking-[0.18em] text-slate-700">Product</th>
-                            <th class="px-3 py-2 uppercase tracking-[0.18em] text-slate-700">Type</th>
-                            <th class="px-3 py-2 uppercase tracking-[0.18em] text-slate-700 text-center">Qty</th>
-                            <th class="px-3 py-2 uppercase tracking-[0.18em] text-slate-700">Details</th>
+                            <th class="px-3 py-3 text-left font-semibold text-slate-700">Date</th>
+                            <th class="px-3 py-3 text-left font-semibold text-slate-700">Product</th>
+                            <th class="px-3 py-3 text-left font-semibold text-slate-700">Type</th>
+                            <th class="px-3 py-3 text-center font-semibold text-slate-700">Qty</th>
+                            <th class="px-3 py-3 text-left font-semibold text-slate-700">Details</th>
                         </tr>
                     </thead>
                     <tbody id="movementFeed" class="bg-white">
@@ -582,10 +582,10 @@
                     const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
 
                     let dayClasses = "h-5.5 w-5.5 mx-auto flex items-center justify-center rounded-md font-medium cursor-pointer transition-all duration-150 text-[11px] ";
-                    if (isToday) {
+                    if (isSelected) {
+                        dayClasses += "bg-[#0f172a] text-white font-bold shadow-sm";
+                    } else if (isToday) {
                         dayClasses += "bg-[#00fff2] text-black font-bold shadow-sm";
-                    } else if (isSelected) {
-                        dayClasses += "bg-black/10 text-slate-900 font-bold shadow-sm";
                     } else {
                         dayClasses += "text-slate-700 hover:bg-slate-100";
                     }

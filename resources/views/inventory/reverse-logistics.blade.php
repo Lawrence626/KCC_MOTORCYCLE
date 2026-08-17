@@ -935,10 +935,10 @@
                     const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
 
                     let dayClasses = "h-5 w-5 mx-auto flex items-center justify-center rounded font-medium cursor-pointer transition-all duration-150 text-[11px] ";
-                    if (isToday) {
+                    if (isSelected) {
+                        dayClasses += "bg-[#0f172a] text-white font-bold shadow-sm";
+                    } else if (isToday) {
                         dayClasses += "bg-[#00fff2] text-black font-bold shadow-sm";
-                    } else if (isSelected) {
-                        dayClasses += "bg-black/10 text-slate-900 font-bold shadow-sm";
                     } else {
                         dayClasses += "text-slate-700 hover:bg-slate-100";
                     }

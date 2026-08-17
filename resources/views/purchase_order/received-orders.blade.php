@@ -6,7 +6,6 @@
                 <p class="max-w-2xl text-sm text-slate-500">Track completed deliveries, confirm order receipts, and view inventory impact.</p>
             </div>
             <div class="flex flex-wrap items-center gap-3">
-                <button class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200">Confirm Receipt</button>
                 <button id="ro-generate-qr" type="button" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200">
                     <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
@@ -26,6 +25,7 @@
                     </svg>
                     Mobile Scanner
                 </button>
+                <button class="inline-flex items-center gap-2 rounded-[10px] border border-[#00fff2]/40 bg-[#00fff2] px-4 py-2 text-sm font-semibold text-black shadow-sm hover:bg-[#00e6da] focus:outline-none transition-all duration-200">Confirm Receipt</button>
             </div>
         </div>
 
@@ -253,8 +253,9 @@
         });
     </script>
     <!-- QR Code Generation Modal -->
-    <div id="ro-qr-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-md px-4 py-6" style="display: none;">
-        <div class="w-full max-w-2xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
+    <div id="ro-qr-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 py-6" style="display: none;">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('ro-qr-modal').style.display='none'"></div>
+        <div class="relative w-full max-w-2xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
             <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Generate QR Codes</h2>
@@ -320,8 +321,9 @@
     </div>
 
     <!-- New Stock Details Modal -->
-    <div id="ro-new-stock-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-md px-4 py-6" style="display: none;">
-        <div class="w-full max-w-lg overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
+    <div id="ro-new-stock-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 py-6" style="display: none;">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="roCloseNewStockModal()"></div>
+        <div class="relative w-full max-w-lg overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
             <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">New Stock Details</h2>
@@ -378,8 +380,9 @@
     </div>
 
     <!-- QR Code Scanner Modal -->
-    <div id="ro-scan-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-md px-4 py-6" style="display: none;">
-        <div class="w-full max-w-[500px] overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
+    <div id="ro-scan-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 py-6" style="display: none;">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="roCloseScanner()"></div>
+        <div class="relative w-full max-w-[500px] overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
             <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">QR Code Scanner</h2>

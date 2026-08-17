@@ -99,13 +99,13 @@
                 <div class="mt-4 overflow-hidden rounded-[10px] border border-slate-200">
                     <div class="overflow-x-auto">
                         <table class="min-w-full text-left text-xs text-slate-700">
-                            <thead class="border-b border-slate-200 bg-[#0f172a]">
+                            <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                                 <tr>
-                                    <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</th>
-                                    <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Stock</th>
-                                    <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Reorder</th>
-                                    <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Excess</th>
-                                    <th class="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Tied Capital</th>
+                                    <th class="px-3 py-3 text-left font-semibold text-white">Product</th>
+                                    <th class="px-3 py-3 text-left font-semibold text-white">Stock</th>
+                                    <th class="px-3 py-3 text-left font-semibold text-white">Reorder</th>
+                                    <th class="px-3 py-3 text-left font-semibold text-white">Excess</th>
+                                    <th class="px-3 py-3 text-left font-semibold text-white">Tied Capital</th>
                                 </tr>
                             </thead>
                             <tbody id="overstockTableBody" class="divide-y divide-slate-200 bg-white">

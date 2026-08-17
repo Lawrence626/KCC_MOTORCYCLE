@@ -17,7 +17,7 @@ function formatDate(dateStr) {
             month: 'short',
             day: 'numeric'
         });
-    } catch(e) {
+    } catch (e) {
         return dateStr;
     }
 }
@@ -523,22 +523,23 @@ async function loadProducts(page = 1) {
         if (result.data && result.data.length > 0) {
             result.data.forEach(product => {
                 const row = document.createElement('tr');
+                row.className = 'hover:bg-slate-50 transition border-b border-slate-100';
                 row.innerHTML = `
-                    <td class="px-2 py-2 w-6">
+                    <td class="px-3.5 py-3 text-center w-10 align-middle">
                         <input type="checkbox" class="product-checkbox rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 cursor-pointer" data-product-id="${product.id}" />
                     </td>
-                    <td class="px-2 py-2 text-slate-900 font-medium whitespace-nowrap">${product.name}</td>
-                    <td class="px-2 py-2 text-slate-600 whitespace-nowrap">${product.product_name || 'Uncategorized'}</td>
-                    <td class="px-2 py-2 text-slate-600 font-mono text-[10.5px]">${`KCC_${(product.sku || product.name || '').replace(/[^A-Za-z0-9\-\+]/g, '')}`}</td>
-                    <td class="px-2 py-2 text-slate-600">${product.brand || '-'}</td>
-                    <td class="px-2 py-2 text-slate-600">${product.size || '-'}</td>
-                    <td class="px-2 py-2 text-slate-600">${product.color || '-'}</td>
-                    <td class="px-2 py-2 text-center font-semibold ${product.stock_quantity === 0 ? 'text-red-600' : 'text-slate-900'}">${product.stock_quantity}</td>
-                    <td class="px-2 py-2 text-right text-slate-900 whitespace-nowrap">₱${parseFloat(product.unit_price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                    <td class="px-2 py-2 text-slate-600 whitespace-nowrap">${product.supplier_name || '-'}</td>
-                    <td class="px-2 py-2 text-slate-600 whitespace-nowrap">${formatDate(product.last_restock_date)}</td>
-                    <td class="px-2 py-2 text-slate-600 whitespace-nowrap">${product.expiry_date ? `${formatDate(product.expiry_date)} • ${product.expiry_status_label || 'Status'}` : 'Non-expiring'}</td>
-                    <td class="px-2 py-2 text-center align-middle whitespace-nowrap text-[10px] font-medium" onclick="event.stopPropagation()">
+                    <td class="px-3.5 py-3 text-left text-slate-900 font-medium whitespace-nowrap align-middle">${product.name}</td>
+                    <td class="px-3.5 py-3 text-left text-slate-600 whitespace-nowrap align-middle">${product.product_name || 'Uncategorized'}</td>
+                    <td class="px-3.5 py-3 text-left text-slate-600 font-mono text-[10.5px] whitespace-nowrap align-middle">${`KCC_${(product.sku || product.name || '').replace(/[^A-Za-z0-9\-\+]/g, '')}`}</td>
+                    <td class="px-3.5 py-3 text-left text-slate-600 whitespace-nowrap align-middle">${product.brand || '-'}</td>
+                    <td class="px-3.5 py-3 text-center text-slate-600 whitespace-nowrap align-middle">${product.size || '-'}</td>
+                    <td class="px-3.5 py-3 text-center text-slate-600 whitespace-nowrap align-middle">${product.color || '-'}</td>
+                    <td class="px-3.5 py-3 text-center font-semibold whitespace-nowrap align-middle ${product.stock_quantity === 0 ? 'text-red-600' : 'text-slate-900'}">${product.stock_quantity}</td>
+                    <td class="px-3.5 py-3 text-right text-slate-900 whitespace-nowrap align-middle">₱${parseFloat(product.unit_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td class="px-3.5 py-3 text-left text-slate-600 whitespace-nowrap align-middle">${product.supplier_name || '-'}</td>
+                    <td class="px-3.5 py-3 text-left text-slate-600 whitespace-nowrap align-middle">${formatDate(product.last_restock_date)}</td>
+                    <td class="px-3.5 py-3 text-left text-slate-600 whitespace-nowrap align-middle">${product.expiry_date ? `${formatDate(product.expiry_date)} • ${product.expiry_status_label || 'Status'}` : 'Non-expiring'}</td>
+                    <td class="px-3.5 py-3 text-center align-middle whitespace-nowrap text-[10px] font-medium" onclick="event.stopPropagation()">
                         <div class="inline-flex items-center gap-1.5 justify-center">
                             <button type="button" onclick="event.stopPropagation(); openEditModal(${product.id});" class="text-black hover:text-slate-900 inline-flex items-center p-1" title="Edit">
                                 <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -552,7 +553,7 @@ async function loadProducts(page = 1) {
                 tbody.appendChild(row);
             });
         } else {
-            tbody.innerHTML = '<tr><td colspan="13" class="px-3 py-8 text-center text-slate-500">No products found</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="13" class="px-4 py-8 text-center text-slate-500">No products found</td></tr>';
         }
 
         currentPage = page;

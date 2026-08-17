@@ -7,15 +7,15 @@
 
 <div class="mt-6 overflow-hidden rounded-[10px] border border-slate-200">
     <table class="min-w-full text-left text-sm">
-        <thead class="bg-[#0f172a] text-white text-[11px] font-semibold uppercase tracking-[0.18em]">
+        <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
             <tr>
-                <th class="px-4 py-3">Order</th>
-                <th class="px-4 py-3">Supplier</th>
-                <th class="px-4 py-3">{{ $dateLabel }}</th>
-                <th class="px-4 py-3">Est. Delivery</th>
-                <th class="px-4 py-3">Status</th>
+                <th class="px-4 py-3 text-left font-semibold text-white">Order</th>
+                <th class="px-4 py-3 text-left font-semibold text-white">Supplier</th>
+                <th class="px-4 py-3 text-left font-semibold text-white">{{ $dateLabel }}</th>
+                <th class="px-4 py-3 text-left font-semibold text-white">Est. Delivery</th>
+                <th class="px-4 py-3 text-left font-semibold text-white">Status</th>
                 @if($showAction)
-                    <th class="px-4 py-3">Action</th>
+                    <th class="px-4 py-3 text-left font-semibold text-white">Action</th>
                 @endif
             </tr>
         </thead>

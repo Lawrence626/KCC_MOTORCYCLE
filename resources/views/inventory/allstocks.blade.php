@@ -28,21 +28,21 @@
                 <p class="text-sm text-slate-500 mt-1">Complete inventory overview with stock availability and warehouse information.</p>
             </div>
             <div class="flex items-center gap-2">
-                <div class="action-dropdown inline-block relative" data-dropdown-wrapper="moreActions">
-                    <button type="button" onclick="toggleDropdown('moreActionsMenu', event)" class="px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition shadow-sm flex items-center gap-2">
-                        More Actions
-                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-                    <div id="moreActionsMenu" class="dropdown-menu hidden absolute right-0 top-full z-[50] mt-2 w-48 rounded-[12px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
-                        <button id="generateQrBtn" type="button" onclick="document.getElementById('moreActionsMenu').classList.add('hidden')" class="w-full px-4 py-2.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition font-medium">Generate QR Codes</button>
-                        <button id="exportBtn" type="button" onclick="document.getElementById('moreActionsMenu').classList.add('hidden')" class="w-full px-4 py-2.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition font-medium">Export Inventory</button>
-                        <a href="{{ route('archived') }}" onclick="document.getElementById('moreActionsMenu').classList.add('hidden')" class="block w-full px-4 py-2.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition font-medium">Archived Items</a>
-                    </div>
-                </div>
                 <button id="addStockBtn" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#00fff2] text-slate-900 text-sm font-semibold hover:bg-[#00e6da] transition shadow-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                     <span>Add Stock</span>
                 </button>
+                <div class="action-dropdown inline-block relative" data-dropdown-wrapper="moreActions">
+                    <button type="button" onclick="toggleDropdown('moreActionsMenu', event)" class="px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition shadow-sm flex items-center justify-between gap-2">
+                        <span>More Actions</span>
+                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div id="moreActionsMenu" class="dropdown-menu hidden absolute left-0 right-0 top-full z-[50] mt-1 w-full min-w-full rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
+                        <button id="generateQrBtn" type="button" onclick="document.getElementById('moreActionsMenu').classList.add('hidden')" class="w-full px-2 py-1.5 text-center text-[11px] text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-semibold cursor-pointer">Generate QR Codes</button>
+                        <button id="exportBtn" type="button" onclick="document.getElementById('moreActionsMenu').classList.add('hidden')" class="w-full px-2 py-1.5 text-center text-[11px] text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-semibold cursor-pointer">Export Inventory</button>
+                        <a href="{{ route('archived') }}" onclick="document.getElementById('moreActionsMenu').classList.add('hidden')" class="block w-full px-2 py-1.5 text-center text-[11px] text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-semibold cursor-pointer">Archived Items</a>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -885,10 +885,10 @@
                     const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
 
                     let dayClasses = "h-5.5 w-5.5 mx-auto flex items-center justify-center rounded font-medium cursor-pointer transition-all duration-150 text-[11px] ";
-                    if (isToday) {
+                    if (isSelected) {
+                        dayClasses += "bg-[#0f172a] text-white font-bold shadow-xs";
+                    } else if (isToday) {
                         dayClasses += "bg-[#00fff2] text-black font-bold shadow-xs";
-                    } else if (isSelected) {
-                        dayClasses += "bg-black/10 text-slate-900 font-bold shadow-xs";
                     } else {
                         dayClasses += "text-slate-700 hover:bg-slate-100";
                     }

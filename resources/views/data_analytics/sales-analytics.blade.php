@@ -210,7 +210,7 @@
                         <h2 class="text-base font-semibold text-slate-900">Category distribution</h2>
                         <p class="text-xs text-slate-500 mt-1">Revenue contribution per product category.</p>
                     </div>
-                    <span class="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#105f68]">Revenue</span>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-[#105f68]">Revenue</span>
                 </div>
                 <div class="my-auto grid gap-3 lg:grid-cols-[1fr_auto] items-center justify-center w-full" id="categoryContentGrid">
                     <div id="categoryChartWrapper" class="h-48 w-full flex items-center justify-center @if(empty($categoryBreakdown['labels'])) hidden @endif">
@@ -255,9 +255,9 @@
                     </div>
                 </div>
                 <div class="flex gap-2">
-                    <button type="button" onclick="switchProductTab('top')" id="productTabBtn-top" class="product-tab-btn px-3.5 py-[6px] text-sm font-medium rounded-[10px] bg-[#0f172a] text-white transition">Top Selling</button>
-                    <button type="button" onclick="switchProductTab('fast')" id="productTabBtn-fast" class="product-tab-btn px-3.5 py-[6px] text-sm font-medium rounded-[10px] bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Fast-Moving</button>
-                    <button type="button" onclick="switchProductTab('slow')" id="productTabBtn-slow" class="product-tab-btn px-3.5 py-[6px] text-sm font-medium rounded-[10px] bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Slow-Moving</button>
+                    <button type="button" onclick="switchProductTab('top')" id="productTabBtn-top" class="product-tab-btn rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all bg-[#0f172a] text-white border-[#0f172a] shadow-sm">Top Selling</button>
+                    <button type="button" onclick="switchProductTab('fast')" id="productTabBtn-fast" class="product-tab-btn rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all bg-white text-slate-700 border-slate-200 hover:bg-slate-50">Fast-Moving</button>
+                    <button type="button" onclick="switchProductTab('slow')" id="productTabBtn-slow" class="product-tab-btn rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all bg-white text-slate-700 border-slate-200 hover:bg-slate-50">Slow-Moving</button>
                 </div>
             </div>
 
@@ -267,26 +267,26 @@
                 <div id="productTab-top" class="product-tab-content flex-1 flex flex-col justify-between overflow-hidden rounded-[10px] border border-slate-200">
                     <div class="overflow-x-auto flex-1">
                         <table class="w-full text-left text-xs text-slate-700">
-                            <thead class="border-b border-slate-200 bg-[#0f172a]">
+                            <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                                 <tr>
-                                    <th class="px-4 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white w-16">Rank</th>
-                                    <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</th>
-                                    <th class="px-4 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Category</th>
-                                    <th class="px-4 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Units</th>
-                                    <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Revenue</th>
+                                    <th class="px-4 py-3 text-center font-semibold text-white w-16 whitespace-nowrap">Rank</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-white">Product</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-white w-44 whitespace-nowrap">Category</th>
+                                    <th class="px-4 py-3 text-center font-semibold text-white w-32 whitespace-nowrap">Units</th>
+                                    <th class="px-4 py-3 text-right font-semibold text-white w-36 whitespace-nowrap">Revenue</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-200 bg-white" id="topProductsBody">
                                 @forelse(collect($topProducts)->take(5) as $product)
                                     <tr class="hover:bg-slate-50 transition">
-                                        <td class="px-4 py-2.5 text-center font-semibold text-slate-900">{{ $product['rank'] }}</td>
+                                        <td class="px-4 py-2.5 text-center font-semibold text-slate-900 w-16 whitespace-nowrap">{{ $product['rank'] }}</td>
                                         <td class="px-4 py-2.5 text-left">
                                             <div class="font-medium text-slate-900">{{ $product['name'] }}</div>
                                             <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">{{ $product['sku'] ?? 'N/A' }}</div>
                                         </td>
-                                        <td class="px-4 py-2.5 text-center text-slate-600">{{ $product['category'] }}</td>
-                                        <td class="px-4 py-2.5 text-center text-slate-900">{{ $product['qty'] }}</td>
-                                        <td class="px-4 py-2.5 text-right font-semibold text-slate-900">{{ $product['revenue'] }}</td>
+                                        <td class="px-4 py-2.5 text-left text-slate-600 w-44 whitespace-nowrap">{{ $product['category'] }}</td>
+                                        <td class="px-4 py-2.5 text-center text-slate-900 w-32 whitespace-nowrap">{{ $product['qty'] }}</td>
+                                        <td class="px-4 py-2.5 text-right font-semibold text-slate-900 w-36 whitespace-nowrap">{{ $product['revenue'] }}</td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -311,11 +311,11 @@
                 <div id="productTab-fast" class="product-tab-content hidden flex-1 flex flex-col justify-between overflow-hidden rounded-[10px] border border-slate-200">
                     <div class="overflow-x-auto flex-1">
                         <table class="w-full text-left text-xs text-slate-700">
-                            <thead class="border-b border-slate-200 bg-[#0f172a]">
+                            <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                                 <tr>
-                                    <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</th>
-                                    <th class="px-4 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Quantity Sold</th>
-                                    <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Revenue</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-white">Product</th>
+                                    <th class="px-4 py-3 text-center font-semibold text-white w-40 whitespace-nowrap">Quantity Sold</th>
+                                    <th class="px-4 py-3 text-right font-semibold text-white w-36 whitespace-nowrap">Revenue</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-200 bg-white" id="fastMovingProductsBody">
@@ -325,8 +325,8 @@
                                             <div class="font-medium text-slate-900">{{ $product['name'] }}</div>
                                             <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">{{ $product['sku'] ?? 'N/A' }}</div>
                                         </td>
-                                        <td class="px-4 py-2.5 text-center text-slate-900">{{ $product['qty'] }}</td>
-                                        <td class="px-4 py-2.5 text-right font-semibold text-slate-900">{{ $product['revenue'] }}</td>
+                                        <td class="px-4 py-2.5 text-center text-slate-900 w-40 whitespace-nowrap">{{ $product['qty'] }}</td>
+                                        <td class="px-4 py-2.5 text-right font-semibold text-slate-900 w-36 whitespace-nowrap">{{ $product['revenue'] }}</td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -351,10 +351,10 @@
                 <div id="productTab-slow" class="product-tab-content hidden flex-1 flex flex-col justify-between overflow-hidden rounded-[10px] border border-slate-200">
                     <div class="overflow-x-auto flex-1">
                         <table class="w-full text-left text-xs text-slate-700">
-                            <thead class="border-b border-slate-200 bg-[#0f172a]">
+                            <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                                 <tr>
-                                    <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</th>
-                                    <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Quantity Sold</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-white">Product</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-white w-36 whitespace-nowrap">Quantity Sold</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-200 bg-white" id="slowMovingProductsBody">
@@ -364,7 +364,7 @@
                                             <div class="font-medium text-slate-900">{{ $product['name'] }}</div>
                                             <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">{{ $product['sku'] ?? 'N/A' }}</div>
                                         </td>
-                                        <td class="px-4 py-2.5 text-right text-slate-900">{{ $product['qty'] }}</td>
+                                        <td class="px-4 py-2.5 text-left text-slate-900 w-36 whitespace-nowrap">{{ $product['qty'] }}</td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -401,15 +401,15 @@
                 </div>
                 <div class="mt-4 grid gap-3 lg:grid-cols-3">
                     <div class="rounded-[18px] border border-slate-200 bg-slate-50 p-4">
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#105f68]">Opportunity</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-[#105f68]">Opportunity</p>
                         <p class="mt-2 text-xs text-slate-700">Boost cross-sell bundles for high-margin accessories during weekend promotions.</p>
                     </div>
                     <div class="rounded-[18px] border border-slate-200 bg-slate-50 p-4">
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#105f68]">Attention</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-[#105f68]">Attention</p>
                         <p class="mt-2 text-xs text-slate-700">Review Mindanao stock replenishment after a strong 7.1% lift in sales demand.</p>
                     </div>
                     <div class="rounded-[18px] border border-slate-200 bg-slate-50 p-4">
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#105f68]">Next step</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-[#105f68]">Next step</p>
                         <p class="mt-2 text-xs text-slate-700">Align pricing and promotions ahead of next month’s seasonal demand spike.</p>
                     </div>
                 </div>
@@ -619,35 +619,42 @@
             .flatpickr-day.today.inRange,
             .flatpickr-day.prevMonthDay.today.inRange,
             .flatpickr-day.nextMonthDay.today.inRange {
-                background: rgba(0, 255, 242, 0.1) !important;
+                background: rgba(0, 255, 242, 0.15) !important;
                 color: #0f172a !important;
                 border-radius: 0 !important;
-                box-shadow: -2px 0 0 rgba(0, 255, 242, 0.1), 2px 0 0 rgba(0, 255, 242, 0.1) !important;
+                box-shadow: -2px 0 0 rgba(0, 255, 242, 0.15), 2px 0 0 rgba(0, 255, 242, 0.15) !important;
             }
             .flatpickr-day.selected,
             .flatpickr-day.startRange,
-            .flatpickr-day.endRange,
             .flatpickr-day.selected.inRange,
             .flatpickr-day.startRange.inRange,
-            .flatpickr-day.endRange.inRange,
             .flatpickr-day.selected:focus,
             .flatpickr-day.startRange:focus,
-            .flatpickr-day.endRange:focus,
             .flatpickr-day.selected:hover,
             .flatpickr-day.startRange:hover,
-            .flatpickr-day.endRange:hover,
             .flatpickr-day.selected.prevMonthDay,
             .flatpickr-day.startRange.prevMonthDay,
-            .flatpickr-day.endRange.prevMonthDay,
             .flatpickr-day.selected.nextMonthDay,
-            .flatpickr-day.startRange.nextMonthDay,
-            .flatpickr-day.endRange.nextMonthDay {
+            .flatpickr-day.startRange.nextMonthDay {
                 background: #00fff2 !important;
                 color: #000000 !important;
                 border-radius: 8px !important;
                 box-shadow: none !important;
-                font-weight: 600 !important;
+                font-weight: 700 !important;
                 z-index: 2;
+            }
+            .flatpickr-day.endRange,
+            .flatpickr-day.endRange.inRange,
+            .flatpickr-day.endRange:focus,
+            .flatpickr-day.endRange:hover,
+            .flatpickr-day.endRange.prevMonthDay,
+            .flatpickr-day.endRange.nextMonthDay {
+                background: #0f172a !important;
+                color: #ffffff !important;
+                border-radius: 8px !important;
+                box-shadow: none !important;
+                font-weight: 700 !important;
+                z-index: 3;
             }
             .flatpickr-day.startRange {
                 box-shadow: none !important;
@@ -656,6 +663,8 @@
                 box-shadow: none !important;
             }
             .flatpickr-day.startRange.endRange {
+                background: #00fff2 !important;
+                color: #000000 !important;
                 box-shadow: none !important;
             }
             .flatpickr-day.today {
@@ -663,6 +672,21 @@
                 background: #ffffff !important;
                 color: #334155 !important;
                 font-weight: 600 !important;
+            }
+            .flatpickr-day.today.startRange {
+                background: #00fff2 !important;
+                color: #000000 !important;
+                border: 1px solid #00fff2 !important;
+            }
+            .flatpickr-day.today.endRange {
+                background: #0f172a !important;
+                color: #ffffff !important;
+                border: 1px solid #0f172a !important;
+            }
+            .flatpickr-day.today.inRange {
+                background: rgba(0, 255, 242, 0.15) !important;
+                color: #0f172a !important;
+                border: 1px solid #cbd5e1 !important;
             }
             .flatpickr-day.flatpickr-disabled {
                 color: #cbd5e1 !important;
@@ -1081,14 +1105,14 @@
 
                 tbody.innerHTML = pageItems.map(p => `
                     <tr class="hover:bg-slate-50 transition">
-                        <td class="px-4 py-2.5 text-center font-semibold text-slate-900">${p.rank}</td>
+                        <td class="px-4 py-2.5 text-center font-semibold text-slate-900 w-16 whitespace-nowrap">${p.rank}</td>
                         <td class="px-4 py-2.5 text-left">
                             <div class="font-medium text-slate-900">${p.name}</div>
                             <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">${p.sku || 'N/A'}</div>
                         </td>
-                        <td class="px-4 py-2.5 text-center text-slate-600">${p.category}</td>
-                        <td class="px-4 py-2.5 text-center text-slate-900">${p.qty}</td>
-                        <td class="px-4 py-2.5 text-right font-semibold text-slate-900">${p.revenue}</td>
+                        <td class="px-4 py-2.5 text-left text-slate-600 w-44 whitespace-nowrap">${p.category}</td>
+                        <td class="px-4 py-2.5 text-center text-slate-900 w-32 whitespace-nowrap">${p.qty}</td>
+                        <td class="px-4 py-2.5 text-right font-semibold text-slate-900 w-36 whitespace-nowrap">${p.revenue}</td>
                     </tr>
                 `).join('');
             };
@@ -1111,8 +1135,8 @@
                             <div class="font-medium text-slate-900">${p.name}</div>
                             <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">${p.sku || 'N/A'}</div>
                         </td>
-                        <td class="px-4 py-2.5 text-center text-slate-900">${p.qty}</td>
-                        <td class="px-4 py-2.5 text-right font-semibold text-slate-900">${p.revenue}</td>
+                        <td class="px-4 py-2.5 text-center text-slate-900 w-40 whitespace-nowrap">${p.qty}</td>
+                        <td class="px-4 py-2.5 text-right font-semibold text-slate-900 w-36 whitespace-nowrap">${p.revenue}</td>
                     </tr>
                 `).join('');
             };
@@ -1135,7 +1159,7 @@
                             <div class="font-medium text-slate-900">${p.name}</div>
                             <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">${p.sku || 'N/A'}</div>
                         </td>
-                        <td class="px-4 py-2.5 text-right text-slate-900">${p.qty}</td>
+                        <td class="px-4 py-2.5 text-left text-slate-900 w-36 whitespace-nowrap">${p.qty}</td>
                     </tr>
                 `).join('');
             };
@@ -1231,16 +1255,14 @@
                     if (subEl) subEl.textContent = t.subtitle;
                 }
 
-                // Update tab buttons style (1-by-1 standalone buttons on light background)
+                // Update tab buttons style (matching User Management buttons)
                 document.querySelectorAll('.product-tab-btn').forEach(btn => {
-                    btn.classList.remove('bg-[#0f172a]', 'text-white');
-                    btn.classList.add('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
+                    btn.className = 'product-tab-btn rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all bg-white text-slate-700 border-slate-200 hover:bg-slate-50';
                 });
 
                 const activeBtn = document.getElementById('productTabBtn-' + tabName);
                 if (activeBtn) {
-                    activeBtn.classList.add('bg-[#0f172a]', 'text-white');
-                    activeBtn.classList.remove('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
+                    activeBtn.className = 'product-tab-btn rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all bg-[#0f172a] text-white border-[#0f172a] shadow-sm';
                 }
             };
         </script>

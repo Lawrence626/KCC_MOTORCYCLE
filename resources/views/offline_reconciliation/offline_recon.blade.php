@@ -155,10 +155,10 @@
 
         <!-- Navigation Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <a href="{{ Route::has('offline.inventory-movements') ? route('offline.inventory-movements') : '#' }}" class="rounded-[18px] border border-slate-200 p-3.5 shadow-sm hover:border-[#00fff2] hover:shadow-md transition cursor-pointer group" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <a href="{{ Route::has('offline.inventory-movements') ? route('offline.inventory-movements') : '#' }}" class="rounded-[18px] border border-slate-200 p-3.5 shadow-sm hover:border-[#0f172a] hover:shadow-md transition cursor-pointer group" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
                 <div class="flex items-center gap-3 mb-2">
-                    <div class="w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 border border-gray-200" style="background-color: #00fff2;">
-                        <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 border border-slate-800 bg-[#0f172a]">
+                        <svg class="w-4 h-4 text-[#00fff2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
                         </svg>
                     </div>
@@ -175,10 +175,10 @@
                 </div>
             </a>
 
-            <a href="{{ Route::has('offline.purchase-orders') ? route('offline.purchase-orders') : '#' }}" class="rounded-[18px] border border-slate-200 p-3.5 shadow-sm hover:border-[#00fff2] hover:shadow-md transition cursor-pointer group" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <a href="{{ Route::has('offline.purchase-orders') ? route('offline.purchase-orders') : '#' }}" class="rounded-[18px] border border-slate-200 p-3.5 shadow-sm hover:border-[#0f172a] hover:shadow-md transition cursor-pointer group" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
                 <div class="flex items-center gap-3 mb-2">
-                    <div class="w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 border border-gray-200" style="background-color: #00fff2;">
-                        <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 border border-slate-800 bg-[#0f172a]">
+                        <svg class="w-4 h-4 text-[#00fff2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                         </svg>
                     </div>
@@ -195,10 +195,10 @@
                 </div>
             </a>
 
-            <a href="{{ Route::has('offline.history') ? route('offline.history') : '#' }}" class="rounded-[18px] border border-slate-200 p-3.5 shadow-sm hover:border-[#00fff2] hover:shadow-md transition cursor-pointer group" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <a href="{{ Route::has('offline.history') ? route('offline.history') : '#' }}" class="rounded-[18px] border border-slate-200 p-3.5 shadow-sm hover:border-[#0f172a] hover:shadow-md transition cursor-pointer group" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
                 <div class="flex items-center gap-3 mb-2">
-                    <div class="w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 border border-gray-200" style="background-color: #00fff2;">
-                        <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 border border-slate-800 bg-[#0f172a]">
+                        <svg class="w-4 h-4 text-[#00fff2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>

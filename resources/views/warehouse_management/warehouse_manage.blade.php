@@ -101,23 +101,21 @@
                 <p class="text-xs text-slate-500 mt-1">Track and manage storage locations and products across your warehouses</p>
             </div>
             <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap pr-4">
-                <input id="wm-search" type="search" placeholder="Search product or SKU..."
-                       class="px-3 py-1.5 text-xs rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm w-44 h-9" />
+                <button id="add-shelf-button" type="button" onclick="openAddShelfModal()"
+                        class="inline-flex items-center gap-2 rounded-[10px] border border-[#00fff2]/40 bg-[#00fff2] px-3 py-2 text-sm font-bold text-black shadow-sm hover:bg-[#00e6da] focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
+                    + Add Shelf
+                </button>
+                <button id="add-warehouse-button" type="button" onclick="openAddWarehouseModal()"
+                        class="inline-flex items-center gap-2 rounded-[10px] border border-slate-900 bg-[#0f172a] px-3 py-2 text-sm font-bold text-white shadow-sm hover:bg-slate-800 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
+                    + Add Warehouse
+                </button>
                 <button id="view-archived-shelves" type="button" onclick="openArchivedShelvesModal()"
-                        class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
+                        class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
                     Archived Shelves
                 </button>
                 <button id="view-archived-warehouses" type="button"
-                        class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
+                        class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
                     Archived Warehouses
-                </button>
-                <button id="add-warehouse-button" type="button" onclick="openAddWarehouseModal()"
-                        class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-900 bg-[#0f172a] px-3.5 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-slate-800 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
-                    + Add Warehouse
-                </button>
-                <button id="add-shelf-button" type="button" onclick="openAddShelfModal()"
-                        class="inline-flex items-center gap-1.5 rounded-[10px] border border-[#00fff2]/40 bg-[#00fff2] px-3.5 py-1.5 text-xs font-bold text-black shadow-sm hover:bg-[#00e6da] focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
-                    + Add Shelf
                 </button>
             </div>
         </div>
@@ -126,13 +124,21 @@
         <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
             <div class="flex flex-col lg:flex-row lg:items-center gap-2">
                 <div class="flex flex-wrap items-center gap-2 flex-1">
+                    <div class="relative w-full sm:w-56">
+                        <input id="wm-search" type="search" placeholder="Search product or SKU..."
+                               class="w-full pl-8 pr-3 py-1.5 text-xs rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm h-9" />
+                        <svg class="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+
                     <div class="relative inline-block" id="dd-warehouse-wrapper">
                         <select id="warehouse-selector" class="hidden">
                             @foreach($warehouses as $wh)
                                 <option value="{{ $wh['id'] }}">{{ $wh['name'] }}</option>
                             @endforeach
                         </select>
-                        <button type="button" onclick="toggleDropdown('dd-warehouse-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
+                        <button type="button" onclick="toggleDropdown('dd-warehouse-menu', event)" class="h-9 px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer inline-flex items-center gap-2">
                             <span id="dd-warehouse-label">{{ $warehouses[0]['name'] ?? 'Select Warehouse' }}</span>
                             <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
@@ -155,7 +161,7 @@
                                 <option value="{{ $desc->name }}">{{ $desc->name }}</option>
                             @php endforeach; @endphp
                         </select>
-                        <button type="button" onclick="toggleDropdown('dd-desc-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
+                        <button type="button" onclick="toggleDropdown('dd-desc-menu', event)" class="h-9 px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer inline-flex items-center gap-2">
                             <span id="dd-desc-label">All Descriptions</span>
                             <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
@@ -185,7 +191,7 @@
                                 <option value="{{ $brand }}">{{ $brand }}</option>
                             @php endforeach; @endphp
                         </select>
-                        <button type="button" onclick="toggleDropdown('dd-brand-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
+                        <button type="button" onclick="toggleDropdown('dd-brand-menu', event)" class="h-9 px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer inline-flex items-center gap-2">
                             <span id="dd-brand-label">All Brands</span>
                             <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
@@ -199,7 +205,7 @@
                         </div>
                     </div>
 
-                    <button id="wm-clear-filters" onclick="document.getElementById('dd-desc-label').textContent='All Descriptions'; document.getElementById('dd-brand-label').textContent='All Brands';" class="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-[10px] transition cursor-pointer">
+                    <button id="wm-clear-filters" onclick="document.getElementById('dd-desc-label').textContent='All Descriptions'; document.getElementById('dd-brand-label').textContent='All Brands';" class="h-9 px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-[10px] transition cursor-pointer inline-flex items-center">
                         Clear
                     </button>
                 </div>
@@ -251,15 +257,15 @@
                 @if(count($pendingArrivals) > 0)
                 <div class="overflow-x-auto rounded-[14px] border border-slate-200 bg-white shadow-sm">
                     <table class="min-w-full divide-y divide-slate-200 text-xs" id="pending-arrivals-table">
-                        <thead class="bg-[#0f172a] border-b border-slate-200">
+                        <thead class="bg-[#0f172a] border-b border-slate-200 text-xs uppercase tracking-wider text-white">
                             <tr>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">SKU</th>
-                                <th class="px-4 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Qty</th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">PO #</th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Supplier</th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Arrived</th>
-                                <th class="px-4 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Action</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">Product</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">SKU</th>
+                                <th class="px-4 py-3 text-center font-semibold text-white">Qty</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">PO #</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">Supplier</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">Arrived</th>
+                                <th class="px-4 py-3 text-center font-semibold text-white">Action</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 bg-white" id="pending-arrivals-tbody">
@@ -598,8 +604,9 @@
         });
     </script>
 
-    <div id="modal-backdrop" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center z-[100000002] px-4 py-6">
-        <div class="modal-panel w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)] flex flex-col">
+    <div id="modal-backdrop" class="fixed inset-0 z-[100000002] hidden items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeShelfModal()"></div>
+        <div class="relative modal-panel w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)] flex flex-col">
             <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                 <div>
                     <h2 id="modal-title" class="text-xl font-bold text-black">Add Shelf</h2>
@@ -646,7 +653,7 @@
                                    class="block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm"
                                    placeholder="Enter shelf capacity" />
                             <p class="text-xs text-slate-500 mt-2 font-medium flex items-center gap-1.5">
-                                <svg class="w-4 h-4 text-black flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 text-slate-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C8.8 12.16 8 10.66 8 9c0-2.21 1.79-4 4-4s4 1.79 4 4c0 1.66-.8 3.16-2.15 4.1z"/>
                                 </svg>
                                 <span>You can increase this to allow more products per shelf. Default is 10.</span>
@@ -674,8 +681,9 @@
         </div>
     </div>
 
-    <div id="archived-backdrop" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center z-[100000002] px-4 py-6">
-        <div class="modal-panel w-full max-w-2xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)] flex flex-col">
+    <div id="archived-backdrop" class="fixed inset-0 z-[100000002] hidden items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeArchivedShelvesModal()"></div>
+        <div class="relative modal-panel w-full max-w-2xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)] flex flex-col">
             <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Archived Shelves</h2>
@@ -708,8 +716,9 @@
     </div>
 
     <!-- QR Code Generation Modal -->
-    <div id="wm-qr-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+    <div id="wm-qr-modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-4" style="display: none;">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('wm-qr-modal').style.display='none'"></div>
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
             <div class="bg-[#105f68] px-6 py-4 rounded-t-2xl">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -782,8 +791,9 @@
     </div>
 
     <!-- New Stock Details Modal -->
-    <div id="wm-new-stock-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4">
+    <div id="wm-new-stock-modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-4" style="display: none;">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="wmCloseNewStockModal()"></div>
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4">
             <div class="bg-[#105f68] px-6 py-4 rounded-t-2xl">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -846,8 +856,9 @@
     </div>
 
     <!-- QR Code Scanner Modal -->
-    <div id="wm-scan-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-4">
+    <div id="wm-scan-modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-4" style="display: none;">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="wmCloseScanner()"></div>
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-4">
             <div class="bg-[#105f68] px-6 py-4 rounded-t-2xl">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -904,8 +915,9 @@
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
     <!-- Add Warehouse Modal -->
-    <div id="add-warehouse-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100000002] hidden items-center justify-center px-4 py-6">
-        <div class="modal-panel w-full max-w-md overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
+    <div id="add-warehouse-modal" class="fixed inset-0 z-[100000002] hidden items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('add-warehouse-modal').classList.add('hidden')"></div>
+        <div class="relative modal-panel w-full max-w-md overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
             <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Add New Warehouse</h2>
@@ -929,8 +941,9 @@
     </div>
 
     <!-- Transfer Shelf Modal -->
-    <div id="transfer-shelf-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100000002] hidden items-center justify-center px-4 py-6">
-        <div class="modal-panel w-full max-w-md overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
+    <div id="transfer-shelf-modal" class="fixed inset-0 z-[100000002] hidden items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('transfer-shelf-modal').classList.add('hidden')"></div>
+        <div class="relative modal-panel w-full max-w-md overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
             <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Transfer Shelf</h2>
@@ -962,8 +975,9 @@
     </div>
 
     <!-- Assign Stock Arrival Modal -->
-    <div id="assign-arrival-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100000003] hidden items-center justify-center px-4 py-6">
-        <div class="modal-panel w-full max-w-md overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
+    <div id="assign-arrival-modal" class="fixed inset-0 z-[100000003] hidden items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('assign-arrival-modal').classList.add('hidden')"></div>
+        <div class="relative modal-panel w-full max-w-md overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
             <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Assign Stock Arrival</h2>

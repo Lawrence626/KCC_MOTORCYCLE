@@ -24,7 +24,7 @@
                     </div>
                     <h3 class="mt-4 text-xl font-semibold text-black">{{ auth()->user()->name }}</h3>
                     <p class="text-sm text-gray-500 mt-1">{{ auth()->user()->email }}</p>
-                    <div class="mt-3 inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em]" style="color: #36ADA3;">
+                    <div class="mt-3 inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wider" style="color: #36ADA3;">
                         {{ auth()->user()->role === 'admin' ? 'Administrator' : ucfirst(auth()->user()->role ?? 'user') }}
                     </div>
                 </div>
@@ -87,8 +87,8 @@
     </div>
 
 <!-- Edit Profile Modal (styled to match the POS "Process Payment" modal) -->
-<div id="editProfileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-md px-4 py-6">
-    <div id="editOverlay" class="absolute inset-0"></div>
+<div id="editProfileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
+    <div id="editOverlay" class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl"></div>
 
     <div id="editProfileModalPanel" class="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)] z-10 flex flex-col">
         <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
