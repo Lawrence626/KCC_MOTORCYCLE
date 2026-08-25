@@ -3,12 +3,11 @@
        
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div class="pl-3 lg:pl-2">
-                    <h1 class="text-3xl font-bold text-slate-900">Dashboard</h1>
-                    <p class="text-gray-600 text-sm mt-1">Overview of sales, inventory and performance insights</p>
+                    <h1 class="text-4xl font-bold text-slate-900">Dashboard</h1>
+                    <p class="text-gray-600 text-base mt-1">Overview of sales, inventory and performance insights</p>
                 </div>
                 <div class="flex flex-col gap-1 sm:flex-row sm:items-center pr-4">
-                    
-                   
+                    @if(!auth()->check() || (auth()->user()->role !== 'cashier' && auth()->user()->role !== 'inventory_clerk' && auth()->user()->role !== 'warehouse_personnel'))
                         <div class="relative" id="notification-bell-wrapper">
                             <button
                                 type="button"
@@ -114,6 +113,7 @@
                             </div>
                         </div>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -122,15 +122,15 @@
 
         <!-- Stats Grid -->
         <div class="w-full">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 <!-- Total Sales -->
                  <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
-                            <p class="text-black text-xs font-semibold">Total Sales</p>
+                            <p class="text-black text-sm font-semibold">Total Sales</p>
                             <div class="mt-1">
-                                <p id="salesValue" class="text-2xl font-bold text-black">—</p>
-                                <p id="salesComparison" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
+                                <p id="salesValue" class="text-3xl font-bold text-black">—</p>
+                                <p id="salesComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
                             </div>
                         </div>
                         <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
@@ -145,10 +145,10 @@
                <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
-                            <p class="text-black text-xs font-semibold" style="color: #000000;">Total Transaction</p>
+                            <p class="text-black text-sm font-semibold" style="color: #000000;">Total Transaction</p>
                             <div class="mt-1">
-                                <p id="transactionsValue" class="text-2xl font-bold" style="color: #000000;">—</p>
-                                <p id="transactionsComparison" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
+                                <p id="transactionsValue" class="text-3xl font-bold" style="color: #000000;">—</p>
+                                <p id="transactionsComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
                             </div>
                         </div>
                         <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
@@ -163,10 +163,10 @@
                 <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
-                            <p class="text-black text-xs font-semibold" style="color: #000000;">Total Profit</p>
+                            <p class="text-black text-sm font-semibold" style="color: #000000;">Total Profit</p>
                             <div class="mt-1">
-                                <p id="profitValue" class="text-2xl font-bold" style="color: #000000;">—</p>
-                                <p id="profitComparison" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
+                                <p id="profitValue" class="text-3xl font-bold" style="color: #000000;">—</p>
+                                <p id="profitComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
                             </div>
                         </div>
                         <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
@@ -181,10 +181,10 @@
                  <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
-                            <p class="text-black text-xs font-semibold" style="color: #000000;">Total Item Sold</p>
+                            <p class="text-black text-sm font-semibold" style="color: #000000;">Total Item Sold</p>
                             <div class="mt-1">
-                                <p id="itemsSoldValue" class="text-2xl font-bold" style="color: #030303;">—</p>
-                                <p id="itemsSoldComparison" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
+                                <p id="itemsSoldValue" class="text-3xl font-bold" style="color: #030303;">—</p>
+                                <p id="itemsSoldComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
                             </div>
                         </div>
                         <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
@@ -194,22 +194,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Dead Stock Alert Card -->
-                <a href="{{ route('dss.dead-stock.index') }}" class="block border border-gray-200 p-4 hover:border-[#00fff2] hover:shadow-md transition cursor-pointer group" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-black text-xs font-semibold">Dead Stock</p>
-                            <div class="mt-1">
-                                <p id="deadStockCardItems" class="text-2xl font-bold text-black">0 Items</p>
-                                <p id="deadStockCardValue" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Value at Risk: ₱0</p>
-                            </div>
-                        </div>
-                        <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                            <svg class="w-4.5 h-4.5 text-black" fill="currentColor" viewBox="0 0 24 24" style="transform: translateY(-1px);"><path d="M4.47 21h15.06c1.54 0 2.5-1.67 1.73-3L13.73 4.99c-.77-1.33-2.69-1.33-3.46 0L2.74 18c-.77 1.33.19 3 1.73 3zM13 18h-2v-2h2v2zm0-4h-2v-4h2v4z" style="color: #000000ff;"/></svg>
-                        </div>
-                    </div>
-                </a>
             </div>
         </div>
 

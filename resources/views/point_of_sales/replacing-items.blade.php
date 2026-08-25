@@ -3,8 +3,8 @@
         <!-- Header Section -->
          <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div class="pl-3 lg:pl-1">
-                <h1 class="text-3xl font-bold text-slate-900">Replacing Items</h1>
-                <p class="text-slate-600 text-sm mt-1">Manage returned products and issue replacements.</p>
+                <h1 class="text-4xl font-bold text-slate-900">Replacing Items</h1>
+                <p class="text-slate-600 text-base mt-1">Manage returned products and issue replacements.</p>
             </div>
         </div>
 
