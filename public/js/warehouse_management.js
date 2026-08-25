@@ -1283,7 +1283,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         const matches = productMatchesFilters(product, query, productDesc, brand);
                         const displayStyle = (isFiltering && !matches) ? 'display: none;' : '';
                         
-                        const finalDesc       = product.description       || product.name          || '—';
+                        const productName = product.product_name || product.name || '—';
+                        const oldBinCode = product.old_bin_code || 'E-3';
+                        const finalTitle = `${productName} - ${oldBinCode}`;
+                        
                         const finalBrand      = product.brand                                      || '—';
                         const finalCompatible = product.compatible_model  || product.compatibility  || '—';
                         const finalSku        = product.sku                                        || '—';
@@ -1294,18 +1297,20 @@ document.addEventListener('DOMContentLoaded', function() {
                             : '—';
                         const qty = product.qty ?? product.stock_quantity ?? 0;
 
-                        productsHtml += `<div class="product-chip" style="${displayStyle}">
-                            <div class="chip-header">
-                                <div class="chip-desc">${finalDesc}</div>
-                            </div>
+                        productsHtml += `<details class="product-chip" style="${displayStyle}">
+                            <summary class="chip-header cursor-pointer select-none">
+                                <div class="chip-desc flex items-center justify-between">
+                                    <span>${finalTitle}</span>
+                                    <svg class="w-4 h-4 text-emerald-700 transition-transform duration-200 details-arrow flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </summary>
                             <div class="chip-body">
-                                <div class="chip-row"><span class="chip-label">Brand:</span><span class="chip-value">${finalBrand}</span></div>
                                 <div class="chip-row"><span class="chip-label">Compatible:</span><span class="chip-value">${finalCompatible}</span></div>
                                 <div class="chip-row"><span class="chip-label">SKU:</span><span class="chip-value sku">${finalSku}</span></div>
                                 <div class="chip-row"><span class="chip-label">Price:</span><span class="chip-value price">${priceText}</span></div>
                                 <div class="chip-row"><span class="chip-label">Qty:</span><span class="chip-value qty">${qty}</span></div>
                             </div>
-                        </div>`;
+                        </details>`;
                     } else {
                         const displayStyle = isFiltering ? 'display: none;' : '';
                         productsHtml += `<div class="product-chip opacity-50 rounded-xl px-3 py-2 text-sm text-gray-500 border border-dashed border-gray-200" style="${displayStyle}">Empty slot</div>`;

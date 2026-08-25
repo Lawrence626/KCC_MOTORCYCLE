@@ -812,4 +812,277 @@ class AnalyticsController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    /**
+     * Export Sales Analytics report as CSV
+     */
+    public function exportSales(Request $request)
+    {
+        $startDate = $request->get('start_date', now()->startOfMonth()->toDateString());
+        $endDate   = $request->get('end_date', now()->endOfMonth()->toDateString());
+
+        $topProducts  = $this->getTopSellingProductsFromTransactions(50, $startDate, $endDate);
+        $movementData = $this->getProductMovementFromTransactions($startDate, $endDate);
+
+        $fileName = 'sales_analytics_' . date('Y_m_d') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
+            'Pragma'              => 'no-cache',
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires'             => '0',
+        ];
+
+        $callback = function () use ($topProducts, $movementData, $startDate, $endDate) {
+            $handle = fopen('php://output', 'w');
+            // UTF-8 BOM for Excel
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            // Report metadata
+            fputcsv($handle, ['Sales Analytics Report']);
+            fputcsv($handle, ['Period:', $startDate . ' to ' . $endDate]);
+            fputcsv($handle, ['Generated:', now()->format('Y-m-d H:i:s')]);
+            fputcsv($handle, []);
+
+            // Top Selling Products
+            fputcsv($handle, ['--- TOP SELLING PRODUCTS ---']);
+            fputcsv($handle, ['Rank', 'Product Name', 'SKU', 'Category', 'Qty Sold', 'Revenue']);
+            foreach ($topProducts as $product) {
+                fputcsv($handle, [
+                    $product['rank'],
+                    $product['name'],
+                    $product['sku'],
+                    $product['category'],
+                    $product['qty'],
+                    $product['revenue'],
+                ]);
+            }
+
+            fputcsv($handle, []);
+            fputcsv($handle, ['--- FAST MOVING PRODUCTS ---']);
+            fputcsv($handle, ['Product Name', 'SKU', 'Qty Sold', 'Revenue']);
+            foreach ($movementData['fast'] as $item) {
+                fputcsv($handle, [$item['name'], $item['sku'], $item['qty'], $item['revenue']]);
+            }
+
+            fputcsv($handle, []);
+            fputcsv($handle, ['--- SLOW MOVING PRODUCTS ---']);
+            fputcsv($handle, ['Product Name', 'SKU', 'Qty Sold']);
+            foreach ($movementData['slow'] as $item) {
+                fputcsv($handle, [$item['name'], $item['sku'], $item['qty']]);
+            }
+
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Export Pricing Module report as CSV
+     */
+    public function exportPricing(Request $request)
+    {
+        $products = $this->activeProducts();
+
+        $productIdsWithPOs = PurchaseOrderItem::where('received_quantity', '>', 0)
+            ->whereHas('purchaseOrder')
+            ->select('product_id')
+            ->distinct()
+            ->pluck('product_id');
+
+        $allProducts = Product::whereIn('id', $productIdsWithPOs)->get();
+
+        $allProductIds = $allProducts->pluck('id');
+        $poItems = PurchaseOrderItem::whereIn('product_id', $allProductIds)
+            ->where('received_quantity', '>', 0)
+            ->whereHas('purchaseOrder')
+            ->with('purchaseOrder')
+            ->get()
+            ->groupBy('product_id');
+
+        $analysisCollection = $allProducts->map(function ($product) use ($poItems) {
+            $items = collect($poItems->get($product->id, collect()))
+                ->sortByDesc(fn($item) => $item->purchaseOrder?->id)
+                ->values();
+
+            $currentCost  = $items->count() > 0  ? (float) $items[0]->unit_price : 0;
+            $previousCost = $items->count() >= 2 ? (float) $items[1]->unit_price : null;
+
+            $changePercentage = $previousCost && $previousCost > 0
+                ? round((($currentCost - $previousCost) / $previousCost) * 100, 2)
+                : 0;
+
+            return [
+                'product_name'     => $product->product_name ?: ($product->name ?? 'Unknown'),
+                'sku'              => $product->sku ?? 'N/A',
+                'category'         => $product->category ?? 'Uncategorized',
+                'retail_price'     => $product->unit_price ?? 0,
+                'supplier_cost'    => $currentCost,
+                'previous_cost'    => $previousCost ?? 'N/A',
+                'change_pct'       => $changePercentage,
+                'suggested_retail' => $currentCost > 0 ? round(($currentCost * 1.12) / 0.70, 2) : 0,
+            ];
+        });
+
+        $fileName = 'pricing_report_' . date('Y_m_d') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
+            'Pragma'              => 'no-cache',
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires'             => '0',
+        ];
+
+        $callback = function () use ($analysisCollection) {
+            $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            fputcsv($handle, ['Pricing Module Report']);
+            fputcsv($handle, ['Generated:', now()->format('Y-m-d H:i:s')]);
+            fputcsv($handle, []);
+            fputcsv($handle, ['Product Name', 'SKU', 'Category', 'Retail Price (₱)', 'Latest Supplier Cost (₱)', 'Previous Cost (₱)', 'Cost Change (%)', 'Suggested Retail (₱)']);
+
+            foreach ($analysisCollection as $row) {
+                fputcsv($handle, [
+                    $row['product_name'],
+                    $row['sku'],
+                    $row['category'],
+                    number_format((float) $row['retail_price'], 2),
+                    number_format((float) $row['supplier_cost'], 2),
+                    $row['previous_cost'] !== 'N/A' ? number_format((float) $row['previous_cost'], 2) : 'N/A',
+                    $row['change_pct'] . '%',
+                    number_format((float) $row['suggested_retail'], 2),
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Export Overstocking report as CSV
+     */
+    public function exportOverstocking(Request $request)
+    {
+        $overstocked = $this->activeProducts()
+            ->whereColumn('stock_quantity', '>', 'reorder_level')
+            ->orderByDesc(DB::raw('stock_quantity - reorder_level'))
+            ->get(['id', 'name', 'product_name', 'sku', 'category', 'stock_quantity', 'reorder_level', 'unit_price']);
+
+        $fileName = 'overstocking_report_' . date('Y_m_d') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
+            'Pragma'              => 'no-cache',
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires'             => '0',
+        ];
+
+        $callback = function () use ($overstocked) {
+            $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            fputcsv($handle, ['Overstocking Report']);
+            fputcsv($handle, ['Generated:', now()->format('Y-m-d H:i:s')]);
+            fputcsv($handle, []);
+            fputcsv($handle, ['Product Name', 'SKU', 'Category', 'Stock Qty', 'Reorder Level', 'Excess Units', 'Unit Price (₱)', 'Excess Value (₱)']);
+
+            foreach ($overstocked as $product) {
+                $excessUnits = max(0, $product->stock_quantity - $product->reorder_level);
+                $excessValue = $excessUnits * $product->unit_price;
+                fputcsv($handle, [
+                    $product->product_name ?: $product->name,
+                    $product->sku ?? 'N/A',
+                    $product->category ?? 'Uncategorized',
+                    $product->stock_quantity,
+                    $product->reorder_level,
+                    $excessUnits,
+                    number_format($product->unit_price, 2),
+                    number_format($excessValue, 2),
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Export Out-of-Stock report as CSV
+     */
+    public function exportOutOfStock(Request $request)
+    {
+        $products = $this->activeProducts();
+
+        $outOfStock = (clone $products)
+            ->where('stock_quantity', '<=', 0)
+            ->orderBy('name')
+            ->get(['id', 'name', 'product_name', 'sku', 'category', 'stock_quantity', 'reorder_level', 'unit_price', 'last_restock_date']);
+
+        $lowStock = (clone $products)
+            ->whereColumn('stock_quantity', '<=', 'reorder_level')
+            ->where('stock_quantity', '>', 0)
+            ->whereNotNull('reorder_level')
+            ->orderBy('stock_quantity')
+            ->get(['id', 'name', 'product_name', 'sku', 'category', 'stock_quantity', 'reorder_level', 'unit_price', 'last_restock_date']);
+
+        $fileName = 'stockout_list_' . date('Y_m_d') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
+            'Pragma'              => 'no-cache',
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires'             => '0',
+        ];
+
+        $callback = function () use ($outOfStock, $lowStock) {
+            $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            fputcsv($handle, ['Out of Stock & Low Stock Report']);
+            fputcsv($handle, ['Generated:', now()->format('Y-m-d H:i:s')]);
+            fputcsv($handle, []);
+
+            fputcsv($handle, ['--- OUT OF STOCK PRODUCTS ---']);
+            fputcsv($handle, ['Product Name', 'SKU', 'Category', 'Stock Qty', 'Reorder Level', 'Unit Price (₱)', 'Last Restock Date']);
+            foreach ($outOfStock as $product) {
+                fputcsv($handle, [
+                    $product->product_name ?: $product->name,
+                    $product->sku ?? 'N/A',
+                    $product->category ?? 'Uncategorized',
+                    $product->stock_quantity,
+                    $product->reorder_level ?? 'N/A',
+                    number_format($product->unit_price, 2),
+                    $product->last_restock_date ? \Carbon\Carbon::parse($product->last_restock_date)->format('Y-m-d') : 'Never',
+                ]);
+            }
+
+            fputcsv($handle, []);
+            fputcsv($handle, ['--- LOW STOCK PRODUCTS ---']);
+            fputcsv($handle, ['Product Name', 'SKU', 'Category', 'Stock Qty', 'Reorder Level', 'Unit Price (₱)', 'Last Restock Date']);
+            foreach ($lowStock as $product) {
+                fputcsv($handle, [
+                    $product->product_name ?: $product->name,
+                    $product->sku ?? 'N/A',
+                    $product->category ?? 'Uncategorized',
+                    $product->stock_quantity,
+                    $product->reorder_level,
+                    number_format($product->unit_price, 2),
+                    $product->last_restock_date ? \Carbon\Carbon::parse($product->last_restock_date)->format('Y-m-d') : 'Never',
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

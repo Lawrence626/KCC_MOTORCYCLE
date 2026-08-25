@@ -51,7 +51,7 @@ class PurchaseOrderController extends Controller
             default => 'This week',
         };
 
-        $orders = $this->filteredPurchaseOrders($request, ['pending approval', 'approved', 'sent to supplier', 'in transit'], 'orders')
+        $orders = $this->filteredPurchaseOrders($request, ['pending approval', 'approved', 'sent to supplier', 'in transit', 'awaiting confirmation'], 'orders')
             ->latest()
             ->paginate(10, ['*'], 'orders_page')
             ->withQueryString();
@@ -293,7 +293,7 @@ class PurchaseOrderController extends Controller
             ->whereDate('updated_at', today())
             ->count();
 
-        $pendingConfirmation = PurchaseOrder::whereIn('status', ['pending approval', 'approved', 'sent to supplier', 'in transit', 'partially received'])
+        $pendingConfirmation = PurchaseOrder::whereIn('status', ['pending approval', 'approved', 'sent to supplier', 'in transit', 'partially received', 'awaiting confirmation'])
             ->count();
 
         $issuesFound = PurchaseOrder::where('status', 'rejected')

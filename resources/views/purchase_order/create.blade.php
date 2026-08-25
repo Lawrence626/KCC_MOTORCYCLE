@@ -3,19 +3,23 @@
 
     {{-- Page Header --}}
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div class="space-y-1">
+       
+            <div class="pl-3 lg:pl-2">
             <h1 class="text-3xl font-bold text-slate-900">Create Purchase Order</h1>
             <p class="max-w-2xl text-sm text-slate-500">Select products first, then choose a qualified supplier. Pricing insights update automatically.</p>
         </div>
         <a href="{{ route('order.management') }}"
-           class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:border-emerald-500 hover:text-slate-900">
-            ← Back to orders
+           class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200">
+            <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Back to orders
         </a>
     </div>
 
     {{-- Validation Errors --}}
     @if($errors->any())
-        <div class="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+        <div class="rounded-[10px] border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
             <strong class="block font-semibold">Please fix the following:</strong>
             <ul class="mt-2 list-disc space-y-1 pl-5">
                 @foreach($errors->all() as $error)
@@ -32,8 +36,8 @@
              STEP 1 – SELECT PRODUCTS
         ════════════════════════════════════════════════════════════ --}}
         <div class="rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-100 bg-slate-50 px-6 py-4 flex items-center gap-3">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-600 text-xs font-bold text-white">1</span>
+            <div class="border-b border-slate-100 px-6 py-4 flex items-center gap-3" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">1</span>
                 <div>
                     <h2 class="text-sm font-semibold text-slate-800">Select Products to Reorder</h2>
                     <p class="text-xs text-slate-500">Choose from low-stock products. The supplier list will update automatically.</p>
@@ -42,17 +46,17 @@
 
             <div class="p-6">
                 @if(!empty($selectedProductIds))
-                    <div class="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                    <div class="mb-4 rounded-[10px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
                         ✓ Low-stock alert pre-selected products for replenishment. Review and confirm your selection.
                     </div>
                 @endif
 
                 {{-- Filter bar: Search (left) + Dropdown (right) --}}
-                <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                    <div class="flex-1">
-                        <p class="text-sm font-medium text-slate-700 mb-1">Low stock products</p>
-                        <p class="text-xs text-slate-500 mb-2">Select the items to include in the order.</p>
-                        <div class="relative max-w-sm">
+                <div class="mb-4">
+                    <p class="text-sm font-medium text-slate-700 mb-1">Low stock products</p>
+                    <p class="text-xs text-slate-500 mb-2">Select the items to include in the order.</p>
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <div class="relative flex-1 max-w-sm">
                             <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400">
                                 <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
@@ -61,37 +65,41 @@
                             <input type="text"
                                    id="product-search"
                                    placeholder="Search by Product Name or SKU…"
-                                   class="w-full rounded-2xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-900 outline-none transition-colors focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" />
+                                   class="w-full rounded-[10px] border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-900 outline-none transition-colors focus:outline-none focus:ring-1 focus:ring-black/35" />
                         </div>
-                    </div>
-                    <div class="flex-shrink-0">
-                        <label for="movement-filter" class="block text-xs font-semibold text-slate-500 mb-2">Filter</label>
-                        @php
-                            $filters = [
-                                'all'           => 'All',
-                                'fast_moving'   => 'Fast moving',
-                                'slow_moving'   => 'Slow moving',
-                                'special_order' => 'Special order',
-                            ];
-                        @endphp
-                        <select id="movement-filter"
-                                class="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 outline-none transition-colors focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 cursor-pointer min-w-[160px]">
-                            @foreach($filters as $key => $label)
-                                <option value="{{ $key }}" {{ ($currentFilter ?? 'all') === $key ? 'selected' : '' }}>
-                                    {{ $label }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <div class="flex-shrink-0 relative z-50" data-dropdown-wrapper="movementFilter">
+                            @php
+                                $filters = [
+                                    'all'           => 'All',
+                                    'fast_moving'   => 'Fast moving',
+                                    'slow_moving'   => 'Slow moving',
+                                    'special_order' => 'Special order',
+                                ];
+                                $currentFilterLabel = $filters[$currentFilter ?? 'all'] ?? 'All';
+                            @endphp
+                            <input type="hidden" name="movement" id="movementFilterInput" value="{{ $currentFilter ?? 'all' }}" />
+                            <button type="button" id="movementFilterButton" onclick="toggleDropdown('movementFilterDropdown')" class="rounded-[10px] border border-slate-200 bg-white px-4 py-2.5 text-left text-sm text-slate-900 flex items-center justify-between gap-2 hover:ring-1 hover:ring-black/35 focus:outline-none focus:ring-1 focus:ring-black/35 min-w-[160px]">
+                                <span>{{ $currentFilterLabel }}</span>
+                                <svg class="w-4 h-4 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                                </svg>
+                            </button>
+                            <div id="movementFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
+                                @foreach($filters as $key => $label)
+                                    <button type="button" onclick="selectMovementFilter(event, '{{ $key }}', '{{ $label }}')" class="w-full px-4 py-2.5 text-center text-sm {{ ($currentFilter ?? 'all') === $key ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
+                                @endforeach
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="overflow-hidden rounded-3xl border border-slate-200">
                     <table class="min-w-full text-left text-sm">
-                        <thead class="bg-slate-100 text-slate-500 text-[11px] uppercase tracking-[0.18em]">
+                        <thead class="bg-slate-100 text-slate-500 text-[11px] uppercase tracking-[0.18em]" style="background: linear-gradient(50deg, #29d5d81e 0%);">
                             <tr>
                                 <th class="px-4 py-3">
                                     <input type="checkbox" id="select-all-products"
-                                           class="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                                           class="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 "
                                            title="Select all" />
                                 </th>
                                 <th class="px-4 py-3">Product</th>
@@ -149,7 +157,7 @@
                                                 default         => 'bg-slate-100 text-slate-600 ring-slate-200',
                                             };
                                         @endphp
-                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset {{ $movClass }}">
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-1.5 text-xs font-medium ring-1 ring-inset {{ $movClass }}">
                                             {{ $movLabel }}
                                         </span>
                                     </td>
@@ -165,13 +173,13 @@
                                         <input name="products[{{ $idx }}][quantity]"
                                                type="number" min="1"
                                                value="{{ old('products.' . $idx . '.quantity', max(1, 100 - $product->stock_quantity)) }}"
-                                               class="w-20 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" />
+                                               class="w-20 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:outline-none focus:ring-1 focus:ring-black/35" />
                                     </td>
                                     <td class="px-4 py-3">
                                         <input name="products[{{ $idx }}][unit_price]"
                                                type="number" step="0.01" min="0"
                                                value="{{ old('products.' . $idx . '.unit_price', $product->unit_price) }}"
-                                               class="w-28 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" />
+                                               class="w-28 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:outline-none focus:ring-1 focus:ring-black/35" />
                                     </td>
                                 </tr>
                             @empty
@@ -187,7 +195,7 @@
 
                 <div class="mt-4 px-2">{{ $lowStockProducts->links() }}</div>
 
-                <div id="selected-count-bar" class="mt-4 hidden rounded-2xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800 font-medium">
+                <div id="selected-count-bar" class="mt-4 hidden rounded-[10px] bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800 font-medium">
                     <span id="selected-count-text"></span>
                 </div>
             </div>
@@ -197,8 +205,8 @@
              STEP 2 – SELECT SUPPLIER
         ════════════════════════════════════════════════════════════ --}}
         <div class="rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-100 bg-slate-50 px-6 py-4 flex items-center gap-3">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-600 text-xs font-bold text-white">2</span>
+            <div class="border-b border-slate-100 px-6 py-4 flex items-center gap-3" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">2</span>
                 <div>
                     <h2 class="text-sm font-semibold text-slate-800">Select Supplier</h2>
                     <p class="text-xs text-slate-500">Only suppliers that can fulfill every selected product are shown.</p>
@@ -214,16 +222,19 @@
                     Finding qualified suppliers…
                 </div>
 
-                <div id="no-product-hint" class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                    ☝ Select at least one product above to see qualified suppliers.
+                <div id="no-product-hint" class="rounded-[10px] border border-gray-300 bg-gray-200/50 px-4 py-3 text-sm text-gray-700 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+                    </svg>
+                    Select at least one product above to see qualified suppliers.
                 </div>
 
-                <div id="no-supplier-message" class="hidden rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"></div>
+                <div id="no-supplier-message" class="hidden rounded-[10px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"></div>
 
                 <div id="supplier-dropdown-wrapper" class="hidden">
                     <label class="block text-xs font-semibold text-slate-500 mb-2">Supplier</label>
                     <select name="supplier_id" id="supplier-select" required
-                            class="w-full max-w-sm rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none">
+                            class="w-full max-w-sm rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 outline-none">
                         <option value="">Select supplier…</option>
                     </select>
                 </div>
@@ -234,25 +245,25 @@
              STEP 3 – SUPPLIER INFORMATION
         ════════════════════════════════════════════════════════════ --}}
         <div id="supplier-info-panel" class="hidden rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-100 bg-slate-50 px-6 py-4 flex items-center gap-3">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-600 text-xs font-bold text-white">3</span>
+            <div class="border-b border-slate-100 px-6 py-4 flex items-center gap-3" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">3</span>
                 <h2 class="text-sm font-semibold text-slate-800">Supplier Information</h2>
             </div>
             <div class="p-6">
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <div class="rounded-2xl bg-slate-50 border border-slate-100 px-4 py-3">
+                    <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                         <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Supplier Name</p>
                         <p id="si-name" class="text-sm font-semibold text-slate-800">—</p>
                     </div>
-                    <div class="rounded-2xl bg-slate-50 border border-slate-100 px-4 py-3">
+                    <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                         <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Contact Person</p>
                         <p id="si-contact" class="text-sm text-slate-700">—</p>
                     </div>
-                    <div class="rounded-2xl bg-slate-50 border border-slate-100 px-4 py-3">
+                    <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                         <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Last Purchase</p>
                         <p id="si-last-purchase" class="text-sm text-slate-700">—</p>
                     </div>
-                    <div class="rounded-2xl bg-slate-50 border border-slate-100 px-4 py-3">
+                    <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                         <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Reliability Score</p>
                         <p id="si-reliability" class="text-sm font-semibold text-slate-800">—</p>
                     </div>
@@ -264,8 +275,8 @@
              STEP 4+5+6 – PRICE HISTORY / SUMMARY / RECOMMENDATIONS
         ════════════════════════════════════════════════════════════ --}}
         <div id="price-analysis-panel" class="hidden rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-100 bg-slate-50 px-6 py-4 flex items-center gap-3">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-600 text-xs font-bold text-white">4</span>
+            <div class="border-b border-slate-100 px-6 py-4 flex items-center gap-3" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">4</span>
                 <div>
                     <h2 class="text-sm font-semibold text-slate-800">Supplier Price Analysis</h2>
                     <p class="text-xs text-slate-500">Historical costs, trends, and purchasing recommendations per product.</p>
@@ -280,15 +291,15 @@
              BONUS – SUPPLIER COMPARISON TABLE
         ════════════════════════════════════════════════════════════ --}}
         <div id="comparison-panel" class="hidden rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-100 bg-slate-50 px-6 py-4 flex items-center gap-3">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-violet-600 text-xs font-bold text-white">★</span>
+            <div class="border-b border-slate-100 px-6 py-4 flex items-center gap-3" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">★</span>
                 <div>
                     <h2 class="text-sm font-semibold text-slate-800">Supplier Comparison</h2>
                     <p class="text-xs text-slate-500">All qualified suppliers ranked by cost. Click Select to choose one.</p>
                 </div>
             </div>
             <div class="p-6 space-y-4">
-                <div id="recommended-supplier-badge" class="hidden rounded-2xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800"></div>
+                <div id="recommended-supplier-badge" class="hidden rounded-[10px] bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800"></div>
                 <div class="overflow-hidden rounded-3xl border border-slate-200">
                     <table class="min-w-full text-left text-sm">
                         <thead class="bg-slate-100 text-slate-500 text-[11px] uppercase tracking-[0.18em]">
@@ -310,37 +321,37 @@
         {{-- ══════════════════════════════════════════════════════════
              ORDER DETAILS
         ════════════════════════════════════════════════════════════ --}}
-        <div class="rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-100 bg-slate-50 px-6 py-4 flex items-center gap-3">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-400 text-xs font-bold text-white">5</span>
+       <div class="rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden min-h-[510px]">
+            <div class="border-b border-slate-100 px-6 py-4 flex items-center gap-3" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">5</span>
                 <h2 class="text-sm font-semibold text-slate-800">Order Details</h2>
             </div>
-            <div class="p-6 grid gap-4 lg:grid-cols-2">
-                <label class="block text-sm text-slate-700">
+            <div class="p-6 grid gap-4 relative">
+                <label class="block text-sm text-slate-700 w-72">
                     <span class="text-xs font-semibold text-slate-500">Expected Delivery Date</span>
                     <input name="expected_delivery_date"
+                           id="expectedDeliveryDate"
                            value="{{ old('expected_delivery_date') }}"
                            type="date"
-                           class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none" />
+                           class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 outline-none" />
                 </label>
                 <label class="block text-sm text-slate-700">
                     <span class="text-xs font-semibold text-slate-500">Notes</span>
-                    <textarea name="notes" rows="3"
-                              class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none">{{ old('notes') }}</textarea>
+                    <textarea name="notes" rows="6"
+                              class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 outline-none">{{ old('notes') }}</textarea>
                 </label>
             </div>
-        </div>
-
-        {{-- Actions --}}
-        <div class="flex flex-wrap items-center justify-between gap-3">
-            <a href="{{ route('order.management') }}"
-               class="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:border-emerald-500 hover:text-slate-900">
-                Cancel
-            </a>
-            <button type="submit"
-                    class="inline-flex items-center gap-2 rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-emerald-500/20 hover:bg-emerald-700">
-                Submit Purchase Order
-            </button>
+{{-- Actions --}}
+<div class="px-6 pb-6 pt-15 flex flex-wrap items-center justify-end gap-3">
+    <a href="{{ route('order.management') }}"
+       class="max-w-xs rounded-[10px] border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-black/10 transition-all duration-200">
+        Cancel
+    </a>
+    <button type="submit"
+            class="max-w-xs inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#00fff2] px-5 py-3 text-sm font-bold text-black shadow-sm hover:bg-[#00e6da] transition-all duration-200">
+        Submit Purchase Order
+    </button>
+</div>
         </div>
     </form>
 </div>
@@ -379,17 +390,80 @@
     const checkboxes        = document.querySelectorAll('.product-checkbox');
     const selectAllBox      = $el('select-all-products');
     const supplierSelect    = $el('supplier-select');
-    const movementFilter    = $el('movement-filter');
     const productSearch     = $el('product-search');
     const productRows       = document.querySelectorAll('.product-row');
     const productTableBody  = document.querySelector('table tbody');
 
-    // ── Movement filter dropdown (server-side navigation) ─────────────────────
-    movementFilter?.addEventListener('change', function () {
+    // ── Dropdown functions ────────────────────────────────────────────────────────
+    function resetDropdownButtonStyles() {
+        document.querySelectorAll('[id$="Button"]').forEach(btn => {
+            btn.style.borderColor = '';
+            btn.style.borderWidth = '';
+            btn.style.boxShadow = '';
+            btn.style.backgroundColor = '';
+            const chevron = btn.querySelector('.w-4.h-4');
+            if (chevron) chevron.style.color = '';
+        });
+    }
+
+    function toggleDropdown(id) {
+        const dropdown = document.getElementById(id);
+        const allDropdowns = document.querySelectorAll('.dropdown-menu');
+        const button = document.getElementById(id.replace('Dropdown', 'Button'));
+
+        allDropdowns.forEach(d => {
+            if (d.id !== id) d.classList.add('hidden');
+        });
+
+        resetDropdownButtonStyles();
+
+        if (dropdown.classList.contains('hidden')) {
+            dropdown.classList.remove('hidden');
+            if (button) {
+                button.style.borderColor = 'rgba(0, 0, 0, 0.35)';
+                button.style.borderWidth = '1px';
+                button.style.boxShadow = 'none';
+                button.style.backgroundColor = '#9ca3af !important';
+                const chevron = button.querySelector('.w-4.h-4');
+                if (chevron) chevron.style.color = 'black';
+            }
+        } else {
+            dropdown.classList.add('hidden');
+        }
+    }
+
+    function selectMovementFilter(event, value, label) {
+        if (event && typeof event.preventDefault === 'function') {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        document.getElementById('movementFilterInput').value = value;
+        document.getElementById('movementFilterButton').querySelector('span').textContent = label;
+        document.getElementById('movementFilterDropdown').classList.add('hidden');
+        const button = document.getElementById('movementFilterButton');
+        if (button) {
+            button.style.borderColor = '';
+            button.style.borderWidth = '';
+            button.style.boxShadow = '';
+        }
+
+        // Navigate to new URL with filter
         const url = new URL(window.location.href);
-        url.searchParams.set('movement', this.value);
+        url.searchParams.set('movement', value);
         url.searchParams.set('page', '1');
         window.location.href = url.toString();
+    }
+
+    // Attach functions to window for inline onclick handlers
+    window.toggleDropdown = toggleDropdown;
+    window.selectMovementFilter = selectMovementFilter;
+
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.dropdown-menu') && !event.target.closest('[onclick^="toggleDropdown"]')) {
+            document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.add('hidden'));
+            resetDropdownButtonStyles();
+        }
     });
 
     // ── Product search (client-side filtering) ────────────────────────────────
@@ -617,19 +691,19 @@
             const summaryGrid = document.createElement('div');
             summaryGrid.className = 'grid gap-3 sm:grid-cols-2 lg:grid-cols-4';
             summaryGrid.innerHTML = `
-                <div class="rounded-2xl bg-slate-50 border border-slate-100 px-4 py-3">
+                <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                     <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Current Cost</p>
                     <p class="text-base font-bold text-slate-800">${ph.current_cost != null ? fmt(ph.current_cost) : '—'}</p>
                 </div>
-                <div class="rounded-2xl bg-slate-50 border border-slate-100 px-4 py-3">
+                <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                     <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Previous Cost</p>
                     <p class="text-base font-bold text-slate-600">${ph.previous_cost != null ? fmt(ph.previous_cost) : '—'}</p>
                 </div>
-                <div class="rounded-2xl bg-slate-50 border border-slate-100 px-4 py-3">
+                <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                     <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Price Change</p>
                     <p class="text-base ${changeColor}">${fmtP(ph.change_percentage)}</p>
                 </div>
-                <div class="rounded-2xl bg-slate-50 border border-slate-100 px-4 py-3">
+                <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                     <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Trend</p>
                     <p class="text-base font-semibold text-slate-700">${icon(ph.trend)} ${cap(ph.trend)}</p>
                 </div>
@@ -643,7 +717,7 @@
                     ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
                     : 'border-slate-200 bg-slate-50 text-slate-700';
             const recBox = document.createElement('div');
-            recBox.className   = `rounded-2xl border px-4 py-3 text-sm ${recStyle}`;
+            recBox.className   = `rounded-[10px] border px-4 py-3 text-sm ${recStyle}`;
             recBox.textContent = ph.recommendation;
             section.appendChild(recBox);
 
@@ -771,8 +845,237 @@
     // ── Boot: trigger initial state ───────────────────────────────────────────
     onProductSelectionChange();
 
+    // ── Custom Date Picker for Expected Delivery Date ───────────────────────
+    function setupCustomDatePicker(inputId) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+
+        input.type = 'text';
+        input.readOnly = true;
+        input.placeholder = 'mm/dd/yyyy';
+        input.className = 'h-11 w-full rounded-[14px] border border-slate-300 bg-white px-3.5 pr-10 text-sm text-slate-900 focus:outline-none focus:border-slate-400 focus:ring-1 focus:ring-slate-300 cursor-pointer shadow-sm transition';
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'relative w-full mt-2 z-[999999]';
+        input.parentNode.insertBefore(wrapper, input);
+        wrapper.appendChild(input);
+
+        // Add calendar icon inside input
+        const icon = document.createElement('div');
+        icon.className = 'absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 transition-colors duration-150';
+        icon.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`;
+        wrapper.appendChild(icon);
+
+        function setIconActive(isActive) {
+            if (isActive) {
+                icon.classList.remove('text-slate-400');
+                icon.classList.add('text-slate-600');
+            } else {
+                icon.classList.remove('text-slate-600');
+                icon.classList.add('text-slate-400');
+            }
+        }
+
+        const card = document.createElement('div');
+        card.className = 'custom-calendar-card hidden absolute top-full left-0 mt-2 z-[999999] w-72 rounded-[18px] bg-white p-4 shadow-[0_16px_40px_rgba(0,0,0,0.12)] border border-slate-100 transition-all duration-200';
+        wrapper.appendChild(card);
+
+        let currentDate = new Date();
+        let selectedDate = input.value ? new Date(input.value) : null;
+        let viewMode = 'days';
+
+        function render() {
+            if (viewMode === 'days') {
+                renderDaysView();
+            } else {
+                renderMonthsView();
+            }
+        }
+
+        function renderDaysView() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+            let html = `
+                <div class="flex items-center justify-between mb-3 px-1">
+                    <button type="button" class="toggle-view-btn text-sm font-bold text-slate-900 hover:text-slate-700 inline-flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-slate-100 transition">
+                        <span>${monthNames[month]} ${year}</span>
+                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div class="flex items-center gap-1">
+                        <button type="button" class="prev-month-btn p-1.5 rounded-full text-slate-600 hover:bg-slate-100 transition" title="Previous Month">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                        </button>
+                        <button type="button" class="next-month-btn p-1.5 rounded-full text-slate-600 hover:bg-slate-100 transition" title="Next Month">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-7 gap-1 text-center mb-1 text-[11px] font-semibold text-slate-400">
+                    <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+                </div>
+                <div class="grid grid-cols-7 gap-1.5 text-center text-xs">
+            `;
+
+            for (let i = firstDay - 1; i >= 0; i--) {
+                html += `<span class="h-7 flex items-center justify-center text-slate-300">${daysInPrevMonth - i}</span>`;
+            }
+
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const isSelected = selectedDate && selectedDate.getFullYear() === year && selectedDate.getMonth() === month && selectedDate.getDate() === day;
+                const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
+
+                let dayClasses = "h-7 w-7 mx-auto flex items-center justify-center rounded-lg font-medium cursor-pointer transition-all duration-150 ";
+                if (isToday) {
+                    dayClasses += "bg-[#00fff2] text-black font-bold shadow-sm";
+                } else if (isSelected) {
+                    dayClasses += "bg-black/10 text-slate-900 font-bold shadow-sm";
+                } else {
+                    dayClasses += "text-slate-700 hover:bg-slate-100";
+                }
+
+                html += `<button type="button" data-day="${day}" class="day-btn ${dayClasses}">${day}</button>`;
+            }
+
+            const totalSlots = firstDay + daysInMonth;
+            const nextDays = (7 - (totalSlots % 7)) % 7;
+            for (let i = 1; i <= nextDays; i++) {
+                html += `<span class="h-7 flex items-center justify-center text-slate-300">${i}</span>`;
+            }
+
+            html += `
+                </div>
+                <div class="flex items-center justify-between mt-3 pt-2.5 border-t border-slate-100 text-xs font-semibold px-1">
+                    <button type="button" class="clear-btn text-slate-500 hover:text-red-600 transition">Clear</button>
+                    <button type="button" class="today-btn text-slate-900 font-bold hover:underline transition">Today</button>
+                </div>
+            `;
+
+            card.innerHTML = html;
+
+            card.querySelector('.toggle-view-btn')?.addEventListener('click', (e) => { e.stopPropagation(); viewMode = 'months'; render(); });
+            card.querySelector('.prev-month-btn')?.addEventListener('click', (e) => { e.stopPropagation(); currentDate.setMonth(currentDate.getMonth() - 1); render(); });
+            card.querySelector('.next-month-btn')?.addEventListener('click', (e) => { e.stopPropagation(); currentDate.setMonth(currentDate.getMonth() + 1); render(); });
+            card.querySelector('.clear-btn')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectedDate = null;
+                input.value = '';
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+                card.classList.add('hidden');
+                setIconActive(false);
+            });
+            card.querySelector('.today-btn')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectedDate = new Date();
+                currentDate = new Date();
+                const yyyy = selectedDate.getFullYear();
+                const mm = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                const dd = String(selectedDate.getDate()).padStart(2, '0');
+                input.value = `${yyyy}-${mm}-${dd}`;
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+                card.classList.add('hidden');
+                setIconActive(false);
+            });
+
+            card.querySelectorAll('.day-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const day = parseInt(btn.dataset.day);
+                    selectedDate = new Date(year, month, day);
+                    const yyyy = year;
+                    const mm = String(month + 1).padStart(2, '0');
+                    const dd = String(day).padStart(2, '0');
+                    input.value = `${yyyy}-${mm}-${dd}`;
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                    card.classList.add('hidden');
+                    setIconActive(false);
+                });
+            });
+        }
+
+        function renderMonthsView() {
+            const year = currentDate.getFullYear();
+            const shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+            let html = `
+                <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100 px-1">
+                    <button type="button" class="prev-year-btn p-1.5 rounded-full text-slate-600 hover:bg-slate-100 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    <span class="text-sm font-bold text-slate-900">${year}</span>
+                    <button type="button" class="next-year-btn p-1.5 rounded-full text-slate-600 hover:bg-slate-100 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-xs">
+            `;
+
+            shortMonths.forEach((m, idx) => {
+                const isSel = selectedDate && selectedDate.getFullYear() === year && selectedDate.getMonth() === idx;
+                let mClasses = "py-2.5 rounded-xl text-center font-semibold cursor-pointer transition-all duration-150 ";
+                if (isSel) {
+                    mClasses += "bg-[#00fff2] text-black font-bold shadow-md";
+                } else {
+                    mClasses += "text-slate-700 hover:bg-slate-100";
+                }
+                html += `<button type="button" data-month="${idx}" class="month-btn ${mClasses}">${m}</button>`;
+            });
+
+            html += `
+                </div>
+                <div class="mt-3 text-right">
+                    <button type="button" class="back-days-btn text-xs font-bold text-black hover:underline">Back to Days</button>
+                </div>
+            `;
+
+            card.innerHTML = html;
+
+            card.querySelector('.prev-year-btn')?.addEventListener('click', (e) => { e.stopPropagation(); currentDate.setFullYear(year - 1); render(); });
+            card.querySelector('.next-year-btn')?.addEventListener('click', (e) => { e.stopPropagation(); currentDate.setFullYear(year + 1); render(); });
+            card.querySelector('.back-days-btn')?.addEventListener('click', (e) => { e.stopPropagation(); viewMode = 'days'; render(); });
+
+            card.querySelectorAll('.month-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const mIdx = parseInt(btn.dataset.month);
+                    currentDate.setMonth(mIdx);
+                    viewMode = 'days';
+                    render();
+                });
+            });
+        }
+
+        input.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.querySelectorAll('.custom-calendar-card').forEach(c => {
+                if (c !== card) c.classList.add('hidden');
+            });
+            card.classList.toggle('hidden');
+            const isOpen = !card.classList.contains('hidden');
+            if (isOpen) {
+                render();
+            }
+            setIconActive(isOpen);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!wrapper.contains(e.target)) {
+                card.classList.add('hidden');
+                setIconActive(false);
+            }
+        });
+    }
+
+    // Initialize custom date picker
+    setupCustomDatePicker('expectedDeliveryDate');
+
 })();
 </script>
 
 </x-layouts.app>
-

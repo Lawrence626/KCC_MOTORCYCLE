@@ -154,7 +154,21 @@
                 if (input) {
                     const isPassword = input.type === 'password';
                     input.type = isPassword ? 'text' : 'password';
-                    this.classList.toggle('text-teal-600', !isPassword);
+                    const svg = this.querySelector('svg');
+                    
+                    if (isPassword) {
+                        // Show password - eye without slash
+                        svg.innerHTML = `
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        `;
+                    } else {
+                        // Hide password - eye with slash
+                        svg.innerHTML = `
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 012.223-3.488m.518-.59A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.074 5.123M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18" />
+                        `;
+                    }
                 }
             });
         });
@@ -204,6 +218,12 @@
     // Add user password validation listeners
     if (addPasswordInput) {
         addPasswordInput.addEventListener('input', function() {
+            // Show/hide password requirements based on input
+            if (this.value.length > 0) {
+                addPasswordReqs.classList.remove('hidden');
+            } else {
+                addPasswordReqs.classList.add('hidden');
+            }
             updatePasswordRequirements(addPasswordReqs, this.value);
             if (addPasswordConfirm && addPasswordConfirm.value) {
                 validatePasswordMatch();
@@ -394,6 +414,47 @@
             updateUserList(href, true);
         }
     }
+
+    // === Dropdown Functions ===
+    function toggleDropdown(id) {
+        const dropdown = document.getElementById(id);
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            if (menu.id !== id) {
+                menu.classList.add('hidden');
+            }
+        });
+        dropdown.classList.toggle('hidden');
+    }
+
+    function selectDropdown(event, inputId, value, buttonId, label, dropdownId, formId) {
+        event.preventDefault();
+        const input = document.getElementById(inputId);
+        const button = document.getElementById(buttonId);
+        const span = button.querySelector('span');
+        
+        input.value = value;
+        span.textContent = label;
+        
+        document.getElementById(dropdownId).classList.add('hidden');
+        
+        // Update button styling
+        const dropdown = document.getElementById(dropdownId);
+        dropdown.querySelectorAll('button').forEach(btn => {
+            btn.classList.remove('font-semibold', 'text-slate-900', 'bg-black/10');
+            btn.classList.add('text-slate-700', 'hover:bg-slate-100');
+        });
+        event.target.classList.remove('text-slate-700', 'hover:bg-slate-100');
+        event.target.classList.add('font-semibold', 'text-slate-900', 'bg-black/10');
+        
+        // Submit form if provided
+        if (formId) {
+            document.getElementById(formId).submit();
+        }
+    }
+
+    // Make functions globally available
+    window.toggleDropdown = toggleDropdown;
+    window.selectDropdown = selectDropdown;
 
     // === Initialization ===
     refreshBindings();

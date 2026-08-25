@@ -12,9 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('product_catalog', function (Blueprint $table) {
-            $table->date('manufacturing_date')->nullable()->after('warehouse');
-            $table->string('batch_lot_number')->nullable()->after('manufacturing_date');
-            $table->date('expiration_date')->nullable()->after('batch_lot_number');
+            if (!Schema::hasColumn('product_catalog', 'manufacturing_date')) {
+                $table->date('manufacturing_date')->nullable()->after('warehouse');
+            }
+            if (!Schema::hasColumn('product_catalog', 'batch_lot_number')) {
+                $table->string('batch_lot_number')->nullable()->after('manufacturing_date');
+            }
+            if (!Schema::hasColumn('product_catalog', 'expiration_date')) {
+                $table->date('expiration_date')->nullable()->after('batch_lot_number');
+            }
         });
     }
 

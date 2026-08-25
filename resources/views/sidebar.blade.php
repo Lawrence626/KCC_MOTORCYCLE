@@ -23,8 +23,11 @@
     <nav class="flex-1 py-4 space-y-2 overflow-y-auto overflow-x-visible sidebar-scroll">
 
         <a href="{{ route('dashboard') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-2.5 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('dashboard'), 'text-slate-300 border-transparent' => !request()->routeIs('dashboard')])>
-            <svg class="w-5.5 h-5.5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M4 11.5 L12 4 L20 11.5 V20 H14 V14 H10 V20 H4 Z" />
+            <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <rect width="8" height="8" x="3" y="3" rx="1.5" />
+                <rect width="8" height="8" x="13" y="3" rx="1.5" />
+                <rect width="8" height="8" x="3" y="13" rx="1.5" />
+                <rect width="8" height="8" x="13" y="13" rx="1.5" />
             </svg>
             <span>Dashboard</span>
         </a>
@@ -35,7 +38,7 @@
         @endphp
         <div class="group space-y-1 @if($isInventoryActive) open @endif">
             <button type="button" @class(['sidebar-group-toggle w-full flex items-center justify-between gap-3 pl-6 pr-4 py-2.5 text-sm font-medium cursor-pointer text-slate-300 border-l-[3px] border-transparent'])>
-                <span class="flex items-center gap-2">
+                <span class="flex items-center gap-3">
                     <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                         <rect x="3" y="7" width="18" height="11" rx="1.2" />
                         <rect x="8" y="3.8" width="8" height="2" rx="0.6" />
@@ -74,7 +77,7 @@
         @endphp
         <div class="group space-y-1 @if($isInventoryStaffActive) open @endif">
             <button type="button" @class(['sidebar-group-toggle w-full flex items-center justify-between gap-3 pl-6 pr-4 py-2.5 text-sm font-medium cursor-pointer text-slate-300 border-l-[3px] border-transparent'])>
-                <span class="flex items-center gap-2">
+                <span class="flex items-center gap-3">
                     <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                         <rect x="2.5" y="6.5" width="19" height="12" rx="1.4" />
                         <rect x="8.2" y="3.5" width="7.6" height="2.6" rx="0.6" />
@@ -225,8 +228,8 @@
 
         @if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk'))
         <a href="{{ route('shop.inventory') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-2.5 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('shop.inventory'), 'text-slate-300 border-transparent' => !request()->routeIs('shop.inventory')])>
-            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M4 11.5 L12 4 L20 11.5 V20 H14 V14 H10 V20 H4 Z" />
             </svg>
             <span>Shop Inventory Items</span>
         </a>
@@ -253,7 +256,7 @@
         @endif
 
         @if(auth()->user() && auth()->user()->role === 'admin')
-        <a href="{{ route('offline.reconciliation') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-2.5 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('offline.reconciliation'), 'hover:bg-[#242b35] text-slate-300' => !request()->routeIs('offline.reconciliation')])>
+        <a href="{{ route('offline.reconciliation') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-2.5 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('offline.reconciliation'), 'text-slate-300 border-transparent' => !request()->routeIs('offline.reconciliation')])>
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 11a1 1 0 100-2 1 1 0 000 2zm0 0a4 4 0 100 8 4 4 0 000-8zm0 0V3m0 0L9 6m3-3l3 3" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.071 4.929a10 10 0 00-14.142 0M16.243 7.757a6 6 0 00-8.486 0" />
@@ -468,16 +471,6 @@
         }
     }
 
-/* ===========================
-   ARROW ALIGNMENT FIX
-   =========================== */
-.sidebar-group-toggle{
-    padding-right:20px !important;
-}
-.sidebar-group-toggle .sidebar-arrow{
-    margin-right:8px !important;
-    flex-shrink:0;
-}
 
 </style>
 

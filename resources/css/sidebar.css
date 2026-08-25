@@ -22,13 +22,18 @@
     transition: all 0.25s ease;
     padding-right: 0.75rem;
 }
+/* Align standalone nav items with dropdown toggles */
+a.sidebar-nav-item[class*="border-l-"] {
+    padding-left: 1.25rem !important;
+    gap: 0.5rem !important;
+}
 .sidebar-nav-item:hover {
     transform: translateX(3px);
 }
 
 .sidebar-group-toggle {
     transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
-    justify-content: flex-start;
+    justify-content: space-between;
     gap: 0.4rem;
     padding-left: 1.25rem !important;
     padding-right: 0.75rem !important;
@@ -39,7 +44,8 @@
     gap: 0.5rem !important;
 }
 .sidebar-group-toggle .sidebar-arrow {
-    margin: 0 0 0 0.4rem;
+    margin: 0 1.2rem 0 0;
+    flex-shrink: 0;
 }
 
 /* Updated Flyout Dropdown Content */

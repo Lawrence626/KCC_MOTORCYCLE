@@ -326,7 +326,7 @@ unset($__errorArgs, $__bag); ?>
                         'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ code }),
+                    body: JSON.stringify({ email: emailInput.value.trim(), code }),
                 });
 
                 const data = await response.json();

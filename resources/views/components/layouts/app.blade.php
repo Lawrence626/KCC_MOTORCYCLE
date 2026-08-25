@@ -26,7 +26,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col md:ml-[270px] relative z-40 h-full">
+        <div class="flex-1 min-w-0 flex flex-col md:ml-[270px] relative z-40 h-full">
             <!-- Header Container - Optional if a header slot is provided -->
             @if(!empty($header))
             <div id="dashboardHeader" class="flex-shrink-0 bg-white border border-slate-300 border-b-0 px-5 py-2 sticky top-0 z-10 transition-all duration-200 rounded-tl-[10px] rounded-tr-none shadow-none">
@@ -128,14 +128,14 @@
                 $flush = $flush ?? false;
                 $stretch = $stretch ?? true;
             @endphp
-            <div id="mainScrollArea" class="flex-1 min-h-0 overflow-y-auto relative flex flex-col z-40">
+            <div id="mainScrollArea" class="flex-1 min-w-0 min-h-0 overflow-y-auto relative flex flex-col z-40">
                 <div id="topScrollFade" class="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-white/95 via-white/70 to-transparent opacity-0 transition-opacity duration-200"></div>
-                <div class="w-full max-w-full flex-1 {{ $stretch ? 'flex flex-col' : '' }}">
+                <div class="w-full min-w-0 max-w-full flex-1 {{ $stretch ? 'flex flex-col' : '' }}">
                     @if($flush)
                         {{ $slot }}
                     @else
-                        <div class="bg-white border border-slate-300 border-t-0 shadow-sm overflow-hidden flex-1 min-h-0 rounded-[10px] {{ $stretch ? 'flex flex-col' : '' }}">
-                            <div class="px-8 py-6 space-y-8 {{ $stretch ? 'flex-1' : 'h-full' }}">
+                        <div class="bg-white border border-slate-300 border-t-0 shadow-sm overflow-hidden flex-1 min-w-0 min-h-0 rounded-[10px] {{ $stretch ? 'flex flex-col' : '' }}">
+                            <div class="px-8 py-6 space-y-8 min-w-0 {{ $stretch ? 'flex-1' : 'h-full' }}">
                                 {{ $slot }}
                             </div>
                         </div>

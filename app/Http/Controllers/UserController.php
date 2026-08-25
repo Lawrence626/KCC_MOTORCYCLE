@@ -131,6 +131,13 @@ class UserController extends Controller
         return redirect()->route('user.management')->with('success', 'User updated successfully.');
     }
 
+    public function showProfile()
+    {
+        // Force a fresh DB query so the view always sees the latest avatar/fields
+        auth()->setUser(auth()->user()->fresh());
+        return view('profile.show');
+    }
+
     /**
      * Update the authenticated user's profile (self-service)
      */
@@ -139,13 +146,12 @@ class UserController extends Controller
         $user = $request->user();
 
         $rules = [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,'.$user->id,
+            'name'    => 'required|string|max:255',
+            'email'   => 'required|email|unique:users,email,'.$user->id,
             'contact' => 'nullable|string|max:50',
             'address' => 'nullable|string|max:255',
-            'age' => 'nullable|integer|min:0',
-            'gender' => 'nullable|in:Male,Female,Other',
-            'avatar' => 'nullable|image|max:2048',
+            'age'     => 'nullable|integer|min:0',
+            'gender'  => 'nullable|string|max:50',
         ];
 
         if ($request->filled('password')) {
@@ -154,38 +160,47 @@ class UserController extends Controller
                 'string',
                 'min:12',
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&^()\-]).+$/',
-                'confirmed'
+                'confirmed',
             ];
         }
 
+        // Only add avatar rule when a valid file is actually present.
+        // isValid() ensures the PHP upload succeeded and the temp path is not empty —
+        // calling store() on an invalid file throws ValueError("Path must not be empty").
+        $hasValidAvatar = $request->hasFile('avatar') && $request->file('avatar')->isValid();
+        if ($hasValidAvatar) {
+            $rules['avatar'] = 'image|max:5120';
+        }
+
         $data = $request->validate($rules, [
-            'password.regex' => 'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character.',
+            'password.regex'     => 'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character.',
             'password.confirmed' => 'The password confirmation does not match.',
         ]);
 
-        if ($request->filled('password')) {
-            $data['password'] = $request->input('password');
+        // Remove file object from $data — we store the path string manually below
+        unset($data['avatar']);
+
+        // Only update password when explicitly provided
+        if (!$request->filled('password')) {
+            unset($data['password']);
         }
 
-        // Handle avatar upload if the file input exists and the users table has an avatar column
-        if ($request->hasFile('avatar')) {
+        // Store the avatar and add the path to $data only when a valid file exists.
+        // Never touch the DB avatar column when no new file is uploaded.
+        if ($hasValidAvatar) {
             try {
-                $avatar = $request->file('avatar');
-                $path = $avatar->store('avatars', 'public');
-                if (\Schema::hasColumn('users', 'avatar')) {
+                $path = $request->file('avatar')->store('avatars', 'public');
+                if ($path !== false && $path !== null && $path !== '') {
                     $data['avatar'] = $path;
                 }
             } catch (\Throwable $e) {
-                // ignore avatar save errors
+                // Storage failed — skip avatar update, leave existing photo intact
             }
         }
 
-        // Remove empty password to avoid nullifying
-        if (empty($data['password'])) unset($data['password']);
-
         $user->update($data);
 
-        return redirect()->route('settings.general')->with('success', 'Profile updated successfully.');
+        return redirect()->route('profile.show')->with('success', 'Profile updated successfully.');
     }
 
     public function destroy(User $user)

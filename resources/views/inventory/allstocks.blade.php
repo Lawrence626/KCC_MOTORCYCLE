@@ -22,179 +22,122 @@
         }
     </style>
 
-    <div class="space-y-6">
+    <div class="space-y-4 max-w-screen-2xl mx-auto w-full">
         <!-- Header -->
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-                <h1 class="text-3xl font-bold text-slate-900">All Stocks</h1>
-                <p class="text-sm text-slate-500 mt-1">Complete inventory overview with stock availability, pricing, expiration monitoring, and warehouse information.</p>
-            </div>
-            <div class="flex flex-wrap gap-2">
-                <button id="addStockBtn" class="px-4 py-2.5 rounded-lg bg-gradient-to-r from-cyan-600 to-cyan-500 text-white font-semibold hover:from-cyan-700 hover:to-cyan-600 transition shadow-sm">
-                    + Add Stock
-                </button>
-                <button id="generateQrBtn" class="px-4 py-2.5 rounded-lg bg-white border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition shadow-sm">
-                    Generate QR Codes
-                </button>
-                <button id="exportBtn" class="px-4 py-2.5 rounded-lg bg-white border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition shadow-sm">
-                    Export
-                </button>
-                <a href="{{ route('archived') }}" class="px-4 py-2.5 rounded-lg bg-white border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition shadow-sm">
-                    Archived Items
-                </a>
-            </div>
-        </div>
-
-        <!-- Summary Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-            <div class="dashboard-card bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Total Products</p>
-                        <p id="stat-total-products" class="text-2xl font-bold text-slate-900 mt-1">--</p>
-                    </div>
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <div class="dashboard-card bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Shop</p>
-                        <p id="stat-shop" class="text-2xl font-bold text-blue-600 mt-1">--</p>
-                    </div>
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <div class="dashboard-card bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Warehouse A</p>
-                        <p id="stat-warehouse-a" class="text-2xl font-bold text-green-600 mt-1">--</p>
-                    </div>
-                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <div class="dashboard-card bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Warehouse B</p>
-                        <p id="stat-warehouse-b" class="text-2xl font-bold text-yellow-600 mt-1">--</p>
-                    </div>
-                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <div class="dashboard-card bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Warehouse C</p>
-                        <p id="stat-warehouse-c" class="text-2xl font-bold text-purple-600 mt-1">--</p>
-                    </div>
-                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Additional Stats Row -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="dashboard-card bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Low Stock</p>
-                        <p id="stat-low-stock" class="text-2xl font-bold text-orange-500 mt-1">--</p>
-                    </div>
-                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77-1.333.192 3 1.732 3z"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <div class="dashboard-card bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Expiring Soon</p>
-                        <p id="stat-expiring-soon" class="text-2xl font-bold text-yellow-500 mt-1">--</p>
-                    </div>
-                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <div class="dashboard-card bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Inventory Value</p>
-                        <p id="stat-total-value" class="text-2xl font-bold text-blue-600 mt-1">--</p>
-                    </div>
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-               <!-- Search Bar -->
-        <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-            <div class="relative">
-                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-                <input
-                    id="searchInput"
-                    type="search"
-                    placeholder="Search product, SKU, barcode, motorcycle compatibility, brand..."
-                    class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                />
-            </div>
-        </div>
-
-        <!-- Filter Panel -->
-        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                    <label class="text-xs text-slate-500 font-medium mb-1 block">Location</label>
-                    <select id="warehouseFilter" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">All Stocks</h1>
+                    <p class="text-sm text-slate-500 mt-0.5">Complete inventory overview with stock availability and warehouse information.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="action-dropdown inline-block relative">
+                        <button onclick="document.getElementById('moreActionsMenu').classList.toggle('hidden')" class="px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition shadow-sm flex items-center gap-2">
+                            More Actions
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div id="moreActionsMenu" class="hidden absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-slate-200 z-50 py-1">
+                            <button id="generateQrBtn" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition">Generate QR Codes</button>
+                            <button id="exportBtn" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition">Export Inventory</button>
+                            <div class="border-t border-slate-100 my-1"></div>
+                            <a href="{{ route('archived') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition">Archived Items</a>
+                        </div>
+                    </div>
+                    <button id="addStockBtn" class="px-4 py-2 rounded-lg bg-[#00fff2] text-slate-900 text-sm font-semibold hover:bg-[#00e6da] transition shadow-sm flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg> + Add Stock
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div class="bg-white border border-slate-200 rounded-[18px] p-4 shadow-sm flex flex-col justify-center">
+                <div class="flex items-center justify-between mb-2">
+                    <div>
+                        <p class="text-xs text-slate-600 font-semibold uppercase tracking-[0.16em] mb-1">Total Products</p>
+                    </div>
+                    <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 7l9-4 9 4-9 4-9-4z" />
+                            <path d="M3 12l9 4 9-4" />
+                            <path d="M3 17l9 4 9-4" />
+                        </svg>
+                    </div>
+                </div>
+                <p id="stat-total-products" class="text-2xl font-bold text-slate-900 leading-none">--</p>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-[18px] p-4 shadow-sm flex flex-col justify-center">
+                <div class="flex items-center justify-between mb-2">
+                    <div>
+                        <p class="text-xs text-slate-600 font-semibold uppercase tracking-[0.16em] mb-1">Inventory Value</p>
+                    </div>
+                    <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                </div>
+                <p id="stat-total-value" class="text-2xl font-bold text-slate-900 leading-none">--</p>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-[18px] p-4 shadow-sm flex flex-col justify-center">
+                <div class="flex items-center justify-between mb-2">
+                    <div>
+                        <p class="text-xs text-slate-600 font-semibold uppercase tracking-[0.16em] mb-1">Low Stock</p>
+                    </div>
+                    <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77-1.333.192 3 1.732 3z"/></svg>
+                    </div>
+                </div>
+                <p id="stat-low-stock" class="text-2xl font-bold text-slate-900 leading-none">--</p>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-[18px] p-4 shadow-sm flex flex-col justify-center">
+                <div class="flex items-center justify-between mb-2">
+                    <div>
+                        <p class="text-xs text-slate-600 font-semibold uppercase tracking-[0.16em] mb-1">Expiring Soon</p>
+                    </div>
+                    <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                </div>
+                <p id="stat-expiring-soon" class="text-2xl font-bold text-slate-900 leading-none">--</p>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-[18px] p-4 shadow-sm flex flex-col justify-center">
+                <div class="flex items-center justify-between mb-2">
+                    <div>
+                        <p class="text-xs text-slate-600 font-semibold uppercase tracking-[0.16em] mb-1">Warehouse Dist.</p>
+                    </div>
+                    <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2 text-xs font-medium mt-1">
+                    <div class="flex items-center gap-1" title="Shop"><span class="w-2 h-2 rounded-full bg-blue-500"></span><span id="stat-shop" class="text-slate-700">--</span></div>
+                    <div class="flex items-center gap-1" title="Warehouse A"><span class="w-2 h-2 rounded-full bg-green-500"></span><span id="stat-warehouse-a" class="text-slate-700">--</span></div>
+                    <div class="flex items-center gap-1" title="Warehouse B"><span class="w-2 h-2 rounded-full bg-yellow-500"></span><span id="stat-warehouse-b" class="text-slate-700">--</span></div>
+                    <div class="flex items-center gap-1" title="Warehouse C"><span class="w-2 h-2 rounded-full bg-purple-500"></span><span id="stat-warehouse-c" class="text-slate-700">--</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unified Filter Toolbar -->
+        <div class="bg-white border border-slate-200 rounded-lg shadow-sm flex flex-col p-2 space-y-2">
+            <!-- Primary Row -->
+            <div class="flex flex-col lg:flex-row gap-2">
+                <!-- Search -->
+                <div class="relative flex-grow lg:w-[200px]">
+                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <input id="searchInput" type="search" placeholder="Search product, SKU, barcode..." class="w-full pl-9 pr-3 py-2 rounded-md border border-slate-200 text-sm focus:outline-none focus:ring-1 focus:ring-[#00fff2] placeholder-slate-400 bg-slate-50 hover:bg-white transition h-9"/>
+                </div>
+                
+                <div class="flex flex-wrap gap-2 lg:flex-nowrap">
+                    <select id="warehouseFilter" class="px-2 py-2 rounded-md border border-slate-200 text-sm focus:outline-none focus:ring-1 focus:ring-[#00fff2] bg-white w-full lg:w-[120px] h-9">
                         <option value="">All Locations</option>
                         <option value="Shop">Shop</option>
                         <option value="Warehouse A">Warehouse A</option>
                         <option value="Warehouse B">Warehouse B</option>
                         <option value="Warehouse C">Warehouse C</option>
                     </select>
-                </div>
-
-                <div>
-                    <label class="text-xs text-slate-500 font-medium mb-1 block">Category</label>
-                    <select id="categoryFilter" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                    
+                    <select id="categoryFilter" class="px-2 py-2 rounded-md border border-slate-200 text-sm focus:outline-none focus:ring-1 focus:ring-[#00fff2] bg-white w-full lg:w-[130px] h-9">
                         <option value="">All Categories</option>
                         <option value="Tires & Wheels">Tires & Wheels</option>
                         <option value="Brakes">Brakes</option>
@@ -209,110 +152,105 @@
                         <option value="Helmets & Safety Gear">Helmets & Safety Gear</option>
                         <option value="Oils & Lubricants">Oils & Lubricants</option>
                     </select>
-                </div>
 
-                <div>
-                    <label class="text-xs text-slate-500 font-medium mb-1 block">Product Description</label>
-                    <div class="flex gap-2">
-                        <select id="productNameFilter" class="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                    <div class="flex gap-1 w-full lg:w-[160px]">
+                        <select id="productNameFilter" class="flex-1 px-2 py-2 rounded-md border border-slate-200 text-sm focus:outline-none focus:ring-1 focus:ring-[#00fff2] bg-white w-full h-9">
                             <option value="">All Products</option>
                         </select>
-                        <button type="button" 
-                                id="addNewProductDescBtn"
-                                class="px-3 py-2 rounded-lg bg-cyan-600 text-white text-sm font-medium hover:bg-cyan-700 transition">
-                            + New
+                        <button type="button" id="addNewProductDescBtn" class="shrink-0 px-2 py-1 rounded-md bg-slate-100 border border-slate-200 text-slate-600 text-xs font-medium hover:bg-slate-200 transition h-9" title="Add New Product Description">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                         </button>
                     </div>
-                </div>
 
-                <div>
-                    <label class="text-xs text-slate-500 font-medium mb-1 block">Brand</label>
-                    <select id="brandFilter" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                    <select id="brandFilter" class="px-3 py-2 rounded-md border border-slate-200 text-sm focus:outline-none focus:ring-1 focus:ring-[#00fff2] bg-white w-full lg:w-[110px] h-9">
                         <option value="">All Brands</option>
                     </select>
-                </div>
 
-                <div>
-                    <label class="text-xs text-slate-500 font-medium mb-1 block">Stock Status</label>
-                    <select id="statusFilter" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                    <select id="statusFilter" class="px-2 py-2 rounded-md border border-slate-200 text-sm focus:outline-none focus:ring-1 focus:ring-[#00fff2] bg-white w-full lg:w-[110px] h-9">
                         <option value="">All Statuses</option>
                         <option value="active">Available</option>
                         <option value="low">Low Stock</option>
                         <option value="out">Out of Stock</option>
                     </select>
-                </div>
 
-                <div>
-                    <label class="text-xs text-slate-500 font-medium mb-1 block">Expiry Status</label>
-                    <select id="expiryStatusFilter" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
-                        <option value="">All Expiry</option>
-                        <option value="expiring">Expiring Soon</option>
-                        <option value="expired">Expired</option>
-                        <option value="non_expiring">Non-expiring</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="text-xs text-slate-500 font-medium mb-1 block">Size</label>
-                    <select id="sizeFilter" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
-                        <option value="">All Sizes</option>
-                        <option value="190">190</option>
-                        <option value="230">230</option>
-                        <option value="260">260</option>
-                        <option value="300">300</option>
-                        <option value="305">305</option>
-                        <option value="320">320</option>
-                        <option value="330">330</option>
-                        <option value="335">335</option>
-                        <option value="365">365</option>
-                        <option value="60/80 17">60/80 17</option>
-                        <option value="70/80 14">70/80 14</option>
-                        <option value="70/80 17">70/80 17</option>
-                        <option value="70/90 12">70/90 12</option>
-                        <option value="70/90 14">70/90 14</option>
-                        <option value="70/90 17">70/90 17</option>
-                        <option value="80/80 14">80/80 14</option>
-                        <option value="80/80 17">80/80 17</option>
-                        <option value="80/90 14">80/90 14</option>
-                        <option value="80/90 17">80/90 17</option>
-                        <option value="90/80 14">90/80 14</option>
-                        <option value="90/80 17">90/80 17</option>
-                        <option value="90/90 10">90/90 10</option>
-                        <option value="90/90 14">90/90 14</option>
-                        <option value="100/80 10">100/80 10</option>
-                        <option value="100/80 14">100/80 14</option>
-                        <option value="100/90 12">100/90 12</option>
-                        <option value="110/70 13">110/70 13</option>
-                        <option value="110/80 14">110/80 14</option>
-                        <option value="120/70 12">120/70 12</option>
-                        <option value="120/70 13">120/70 13</option>
-                        <option value="120/70 17">120/70 17</option>
-                        <option value="130/70 12">130/70 12</option>
-                        <option value="130/70 13">130/70 13</option>
-                        <option value="140/70 14">140/70 14</option>
-                        <option value="140/70 17">140/70 17</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="text-xs text-slate-500 font-medium mb-1 block">Date of Stock</label>
-                    <input type="date" id="dateOfStockFilter" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                    <button onclick="document.getElementById('advancedFiltersPanel').classList.toggle('hidden')" class="px-3 py-2 rounded-md border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition h-9 flex items-center gap-1 bg-white whitespace-nowrap">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                        Filters
+                    </button>
+                    
+                    <button onclick="resetFilters()" class="px-3 py-2 rounded-md text-slate-500 text-sm hover:text-slate-800 transition h-9 whitespace-nowrap" title="Clear Filters">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
                 </div>
             </div>
-            
-            <div class="mt-4 flex justify-end">
-                <button onclick="resetFilters()" class="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition">
-                    Clear Filters
-                </button>
+
+            <!-- Advanced Filters Panel -->
+            <div id="advancedFiltersPanel" class="hidden pt-2 border-t border-slate-100">
+                <div class="flex flex-wrap gap-2">
+                    <div class="flex-1 min-w-[150px]">
+                        <select id="expiryStatusFilter" class="w-full px-3 py-2 rounded-md border border-slate-200 text-sm focus:outline-none focus:ring-1 focus:ring-[#00fff2] bg-white h-9">
+                            <option value="">All Expiry</option>
+                            <option value="expiring">Expiring Soon</option>
+                            <option value="expired">Expired</option>
+                            <option value="non_expiring">Non-expiring</option>
+                        </select>
+                    </div>
+
+                    <div class="flex-1 min-w-[150px]">
+                        <select id="sizeFilter" class="w-full px-3 py-2 rounded-md border border-slate-200 text-sm focus:outline-none focus:ring-1 focus:ring-[#00fff2] bg-white h-9">
+                            <option value="">All Sizes</option>
+                            <option value="190">190</option>
+                            <option value="230">230</option>
+                            <option value="260">260</option>
+                            <option value="300">300</option>
+                            <option value="305">305</option>
+                            <option value="320">320</option>
+                            <option value="330">330</option>
+                            <option value="335">335</option>
+                            <option value="365">365</option>
+                            <option value="60/80 17">60/80 17</option>
+                            <option value="70/80 14">70/80 14</option>
+                            <option value="70/80 17">70/80 17</option>
+                            <option value="70/90 12">70/90 12</option>
+                            <option value="70/90 14">70/90 14</option>
+                            <option value="70/90 17">70/90 17</option>
+                            <option value="80/80 14">80/80 14</option>
+                            <option value="80/80 17">80/80 17</option>
+                            <option value="80/90 14">80/90 14</option>
+                            <option value="80/90 17">80/90 17</option>
+                            <option value="90/80 14">90/80 14</option>
+                            <option value="90/80 17">90/80 17</option>
+                            <option value="90/90 10">90/90 10</option>
+                            <option value="90/90 14">90/90 14</option>
+                            <option value="100/80 10">100/80 10</option>
+                            <option value="100/80 14">100/80 14</option>
+                            <option value="100/90 12">100/90 12</option>
+                            <option value="110/70 13">110/70 13</option>
+                            <option value="110/80 14">110/80 14</option>
+                            <option value="120/70 12">120/70 12</option>
+                            <option value="120/70 13">120/70 13</option>
+                            <option value="120/70 17">120/70 17</option>
+                            <option value="130/70 12">130/70 12</option>
+                            <option value="130/70 13">130/70 13</option>
+                            <option value="140/70 14">140/70 14</option>
+                            <option value="140/70 17">140/70 17</option>
+                        </select>
+                    </div>
+
+                    <div class="flex-1 min-w-[150px] flex items-center gap-2">
+                        <label class="text-xs text-slate-500 font-medium whitespace-nowrap">Date of Stock</label>
+                        <input type="date" id="dateOfStockFilter" class="w-full px-3 py-2 rounded-md border border-slate-200 text-sm focus:outline-none focus:ring-1 focus:ring-[#00fff2] bg-white h-9">
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Bulk Actions Toolbar -->
-        <div id="bulkActionsToolbar" class="hidden bg-cyan-50 border border-cyan-200 rounded-xl p-4 shadow-sm">
+        <div id="bulkActionsToolbar" class="hidden bg-[#00fff2]/10 border border-[#00fff2]/30 rounded-xl p-4 shadow-sm">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <span class="text-sm font-medium text-cyan-900"><span id="selectedCount">0</span> products selected</span>
-                    <button onclick="clearSelection()" class="text-sm text-cyan-600 hover:text-cyan-700">Clear selection</button>
+                    <span class="text-sm font-medium text-[#105f68]"><span id="selectedCount">0</span> products selected</span>
+                    <button onclick="clearSelection()" class="text-sm text-[#105f68] hover:text-[#0f172a]">Clear selection</button>
                 </div>
                 <div class="flex flex-wrap gap-2">
                     <button class="px-4 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition">
@@ -332,32 +270,24 @@
         </div>
 
         <!-- Products Table -->
-        <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-            <div class="overflow-x-auto table-responsive">
-                <table class="w-full text-sm">
-                    <thead class="bg-slate-50 border-b border-slate-200 sticky-header">
+        <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden w-full max-w-full">
+            <div class="overflow-x-auto table-responsive w-full">
+                <table class="w-full text-sm text-left whitespace-nowrap min-w-max">
+                    <thead class="bg-[#0f172a] border-b border-slate-200 sticky-header text-xs uppercase tracking-wider">
                         <tr>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900 sticky-first-col bg-slate-50">
-                                <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-cyan-600 focus:ring-cyan-500">
+                            <th class="px-4 py-3 font-semibold sticky-first-col bg-[#0f172a] w-10 text-white">
+                                <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]">
                             </th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">Locations (Qty)</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">Product Description</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">Brand</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">SKU</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">Size</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">Color</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">Total Stock</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">Reorder Level</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">Compatible Models</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">Unit Price</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">Supplier</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">Date of Stock</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">Expiration Date</th>
-                            <th class="px-4 py-3 text-center font-semibold text-slate-900">Status</th>
-                            <th class="px-4 py-3 text-center font-semibold text-slate-900">Actions</th>
+                            <th class="px-4 py-3 font-semibold text-white">Product</th>
+                            <th class="px-4 py-3 font-semibold text-white">Category</th>
+                            <th class="px-4 py-3 font-semibold text-white">Location (Qty)</th>
+                            <th class="px-4 py-3 font-semibold text-white">Stock</th>
+                            <th class="px-4 py-3 font-semibold text-white">Price</th>
+                            <th class="px-4 py-3 font-semibold text-center text-white">Status</th>
+                            <th class="px-4 py-3 font-semibold text-right text-white">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-200" id="productsTableBody">
+                    <tbody class="divide-y divide-slate-200 bg-white" id="productsTableBody">
                         <!-- Data will be loaded from JavaScript -->
                     </tbody>
                 </table>
@@ -406,7 +336,7 @@
                     </button>
                 </div>
                 <!-- Accent bar -->
-                <div class="absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r from-cyan-500 via-cyan-400 to-cyan-500"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-[#00fff2]"></div>
             </div>
 
             <!-- Form Content -->
@@ -417,11 +347,11 @@
                 <div class="space-y-2">
                     <label class="block text-sm font-semibold text-slate-700">
                         <span class="flex items-center gap-1">
-                            <svg class="w-4 h-4 text-cyan-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" clip-rule="evenodd"/></svg>
+                            <svg class="w-4 h-4 text-[#105f68]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" clip-rule="evenodd"/></svg>
                             Product
                         </span>
                     </label>
-                    <select id="productSelect" name="product_id" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 placeholder-slate-400 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" required>
+                    <select id="productSelect" name="product_id" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 placeholder-slate-400 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" required>
                         <option value="">Select a product...</option>
                     </select>
                 </div>
@@ -431,22 +361,22 @@
                     <div class="space-y-2">
                         <label class="block text-sm font-semibold text-slate-700">
                             <span class="flex items-center gap-1">
-                                <svg class="w-4 h-4 text-cyan-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm6 0a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
+                                <svg class="w-4 h-4 text-[#105f68]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm6 0a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
                                 Quantity
                             </span>
                         </label>
-                        <input type="number" id="quantityInput" name="quantity" min="1" value="1" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" required />
+                        <input type="number" id="quantityInput" name="quantity" min="1" value="1" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" required />
                     </div>
 
                     <!-- Unit Price -->
                     <div class="space-y-2">
                         <label class="block text-sm font-semibold text-slate-700">
                             <span class="flex items-center gap-1">
-                                <svg class="w-4 h-4 text-cyan-600" fill="currentColor" viewBox="0 0 20 20"><path d="M8.16 5a.75.75 0 00-.73.73v2.02H5a.75.75 0 000 1.5h2.43v2.02a.75.75 0 001.5 0V9.25h2.43a.75.75 0 000-1.5H9.66V5.73A.75.75 0 008.16 5z"/><path fill-rule="evenodd" d="M10 18A8 8 0 1 0 10 2a8 8 0 0 0 0 16zm0-1.5A6.5 6.5 0 1 0 10 3.5a6.5 6.5 0 0 0 0 13z" clip-rule="evenodd"/></svg>
+                                <svg class="w-4 h-4 text-[#105f68]" fill="currentColor" viewBox="0 0 20 20"><path d="M8.16 5a.75.75 0 00-.73.73v2.02H5a.75.75 0 000 1.5h2.43v2.02a.75.75 0 001.5 0V9.25h2.43a.75.75 0 000-1.5H9.66V5.73A.75.75 0 008.16 5z"/><path fill-rule="evenodd" d="M10 18A8 8 0 1 0 10 2a8 8 0 0 0 0 16zm0-1.5A6.5 6.5 0 1 0 10 3.5a6.5 6.5 0 0 0 0 13z" clip-rule="evenodd"/></svg>
                                 Price
                             </span>
                         </label>
-                        <input type="number" id="unitPriceInput" name="unit_price" min="0" step="0.01" placeholder="Optional" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 placeholder-slate-400 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+                        <input type="number" id="unitPriceInput" name="unit_price" min="0" step="0.01" placeholder="Optional" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 placeholder-slate-400 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" />
                     </div>
                 </div>
 
@@ -454,22 +384,22 @@
                 <div class="space-y-2">
                     <label class="block text-sm font-semibold text-slate-700">
                         <span class="flex items-center gap-1">
-                            <svg class="w-4 h-4 text-cyan-600" fill="currentColor" viewBox="0 0 20 20"><path d="M10.5 1.5H5.75A2.25 2.25 0 003.5 3.75v12.5A2.25 2.25 0 005.75 18.5h8.5a2.25 2.25 0 002.25-2.25V6.5m-11-4v3m6-3v3m-6 2h6M3.5 13h13"/></svg>
+                            <svg class="w-4 h-4 text-[#105f68]" fill="currentColor" viewBox="0 0 20 20"><path d="M10.5 1.5H5.75A2.25 2.25 0 003.5 3.75v12.5A2.25 2.25 0 005.75 18.5h8.5a2.25 2.25 0 002.25-2.25V6.5m-11-4v3m6-3v3m-6 2h6M3.5 13h13"/></svg>
                             Supplier
                         </span>
                     </label>
-                    <input type="text" id="supplierInput" name="supplier_name" placeholder="Optional" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 placeholder-slate-400 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+                    <input type="text" id="supplierInput" name="supplier_name" placeholder="Optional" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 placeholder-slate-400 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" />
                 </div>
 
                 <!-- Notes -->
                 <div class="space-y-2">
                     <label class="block text-sm font-semibold text-slate-700">
                         <span class="flex items-center gap-1">
-                            <svg class="w-4 h-4 text-cyan-600" fill="currentColor" viewBox="0 0 20 20"><path d="M3.5 2.75A1.75 1.75 0 015.25 1h9.5a1.75 1.75 0 011.75 1.75v14.5a1.75 1.75 0 01-1.75 1.75h-9.5a1.75 1.75 0 01-1.75-1.75V2.75zm1.5 0v14.5c0 .138.112.25.25.25h9.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25h-9.5a.25.25 0 00-.25.25z"/></svg>
+                            <svg class="w-4 h-4 text-[#105f68]" fill="currentColor" viewBox="0 0 20 20"><path d="M3.5 2.75A1.75 1.75 0 015.25 1h9.5a1.75 1.75 0 011.75 1.75v14.5a1.75 1.75 0 01-1.75 1.75h-9.5a1.75 1.75 0 01-1.75-1.75V2.75zm1.5 0v14.5c0 .138.112.25.25.25h9.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25h-9.5a.25.25 0 00-.25.25z"/></svg>
                             Notes
                         </span>
                     </label>
-                    <textarea id="notesInput" name="notes" rows="2" placeholder="Add any additional notes..." class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 placeholder-slate-400 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300 resize-none"></textarea>
+                    <textarea id="notesInput" name="notes" rows="2" placeholder="Add any additional notes..." class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 placeholder-slate-400 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300 resize-none"></textarea>
                 </div>
 
                 <!-- Action Buttons -->
@@ -477,7 +407,7 @@
                     <button type="button" id="cancelAddStock" class="flex-1 px-4 py-2.5 rounded-lg border-2 border-slate-300 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 transition hover:border-slate-400">
                         Cancel
                     </button>
-                    <button type="submit" id="submitAddStock" class="flex-1 px-4 py-2.5 rounded-lg bg-linear-to-r from-cyan-600 to-cyan-500 text-white text-sm font-semibold hover:from-cyan-700 hover:to-cyan-600 transition shadow-lg hover:shadow-cyan-600/30">
+                    <button type="submit" id="submitAddStock" class="flex-1 px-4 py-2.5 rounded-lg bg-[#00fff2] text-black text-sm font-semibold hover:bg-[#00e6da] transition shadow-lg hover:shadow-[#00fff2]/30">
                         <span class="flex items-center justify-center gap-2">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                             Add Stock
@@ -520,61 +450,61 @@
                         <!-- Motorcycle Compatibility -->
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-slate-700">Motorcycle Compatibility</label>
-                            <input type="text" id="editName" name="name" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" required />
+<input type="text" id="editName" name="name" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" required />
                         </div>
 
                         <!-- Product Name -->
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-slate-700">Product Name</label>
-                            <input type="text" id="editProductName" name="product_name" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+<input type="text" id="editProductName" name="product_name" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" />
                         </div>
 
                         <!-- SKU -->
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-slate-700">SKU</label>
-                            <input type="text" id="editSku" name="sku" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+<input type="text" id="editSku" name="sku" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" />
                         </div>
 
                         <!-- Brand -->
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-slate-700">Brand</label>
-                            <input type="text" id="editBrand" name="brand" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+<input type="text" id="editBrand" name="brand" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" />
                         </div>
 
                         <!-- Size -->
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-slate-700">Size</label>
-                            <input type="text" id="editSize" name="size" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+<input type="text" id="editSize" name="size" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" />
                         </div>
 
                         <!-- Color -->
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-slate-700">Color</label>
-                            <input type="text" id="editColor" name="color" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+<input type="text" id="editColor" name="color" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" />
                         </div>
 
                         <!-- Stock Quantity -->
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-slate-700">Stock Quantity</label>
-                            <input type="number" id="editStockQuantity" name="stock_quantity" min="0" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" required />
+<input type="number" id="editStockQuantity" name="stock_quantity" min="0" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" required />
                         </div>
 
                         <!-- Unit Price -->
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-slate-700">Unit Price</label>
-                            <input type="number" id="editUnitPrice" name="unit_price" min="0" step="0.01" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" required />
+<input type="number" id="editUnitPrice" name="unit_price" min="0" step="0.01" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" required />
                         </div>
 
                         <!-- Supplier -->
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-slate-700">Supplier</label>
-                            <input type="text" id="editSupplier" name="supplier_name" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+<input type="text" id="editSupplier" name="supplier_name" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" />
                         </div>
 
                         <!-- Category -->
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-slate-700">Category</label>
-                            <select id="editCategory" name="category" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300">
+                            <select id="editCategory" name="category" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300">
                                 <option value="">Select category</option>
                                 <option value="engine_oil">Engine Oil</option>
                                 <option value="battery">Battery</option>
@@ -590,32 +520,32 @@
                         <!-- Last Restock Date -->
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-slate-700">Last Restock Date</label>
-                            <input type="date" id="editLastRestock" name="last_restock_date" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+<input type="date" id="editLastRestock" name="last_restock_date" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" />
                         </div>
 
                         <!-- Expiry Date -->
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-slate-700">Expiry Date</label>
-                            <input type="date" id="editExpiryDate" name="expiry_date" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+<input type="date" id="editExpiryDate" name="expiry_date" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" />
                         </div>
 
                         <!-- Reorder Level -->
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-slate-700">Reorder Level</label>
-                            <input type="number" id="editReorderLevel" name="reorder_level" min="0" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+<input type="number" id="editReorderLevel" name="reorder_level" min="0" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" />
                         </div>
 
                         <!-- Barcode -->
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-slate-700">Barcode</label>
-                            <input type="text" id="editBarcode" name="barcode" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300" />
+                            <input type="text" id="editBarcode" name="barcode" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" />
                         </div>
                     </div>
 
                     <!-- Description -->
                     <div class="space-y-2">
                         <label class="block text-sm font-semibold text-slate-700">Description</label>
-                        <textarea id="editDescription" name="description" rows="3" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 hover:border-slate-300 resize-none"></textarea>
+                        <textarea id="editDescription" name="description" rows="3" class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-sm font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300 resize-none"></textarea>
                     </div>
 
                     <!-- Action Buttons -->
@@ -623,7 +553,7 @@
                         <button type="button" id="cancelEditProduct" onclick="document.getElementById('editProductModal').classList.add('hidden')" class="flex-1 px-4 py-2.5 rounded-lg border-2 border-slate-300 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 transition hover:border-slate-400 cursor-pointer">
                             Cancel
                         </button>
-                        <button type="submit" id="submitEditProduct" class="flex-1 px-4 py-2.5 rounded-lg bg-linear-to-r from-cyan-600 to-cyan-500 text-white text-sm font-semibold hover:from-cyan-700 hover:to-cyan-600 transition shadow-lg hover:shadow-cyan-600/30">
+                        <button type="submit" id="submitEditProduct" class="flex-1 px-4 py-2.5 rounded-lg bg-[#00fff2] text-black text-sm font-semibold hover:bg-[#00e6da] transition shadow-lg hover:shadow-[#00fff2]/30">
                             <span class="flex items-center justify-center gap-2">
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                                 Save Changes
@@ -653,7 +583,7 @@
     <div id="addProductDescModal" class="hidden fixed inset-0 backdrop-blur-sm bg-black/30 z-50">
         <div class="flex items-center justify-center min-h-screen">
             <div class="bg-white rounded-2xl shadow-2xl w-full mx-4 sm:max-w-md overflow-hidden">
-                <div class="px-6 py-4 bg-gradient-to-r from-cyan-600 to-cyan-500">
+                <div class="px-6 py-4 bg-[#105f68]">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-bold text-white">Add New Product Description</h3>
                         <button id="closeProductDescModal" class="text-white/80 hover:text-white transition">
@@ -687,7 +617,7 @@
                         <button type="button" id="cancelProductDesc" class="flex-1 px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm font-medium hover:bg-slate-50 transition">
                             Cancel
                         </button>
-                        <button type="submit" class="flex-1 px-4 py-2 rounded-lg bg-cyan-600 text-white text-sm font-medium hover:bg-cyan-700 transition">
+                        <button type="submit" class="flex-1 px-4 py-2 rounded-lg bg-[#105f68] text-white text-sm font-medium hover:bg-[#0d4f56] transition">
                             Add Description
                         </button>
                     </div>
@@ -764,6 +694,74 @@
         </div>
     </div>
 
+    <!-- View Details Modal -->
+    <div id="viewDetailsModal" class="hidden fixed inset-0 backdrop-blur-sm bg-black/30 z-[9999]">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden transform transition-all">
+                <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                    <h2 class="text-lg font-bold text-slate-900" id="vdProductTitle">Product Details</h2>
+                    <button onclick="document.getElementById('viewDetailsModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-2 gap-y-4 gap-x-8 text-sm">
+                        <div>
+                            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">SKU</span>
+                            <span class="text-slate-900 font-mono" id="vdSku"></span>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Barcode</span>
+                            <div id="vdBarcodeContainer" class="mt-1">
+                                <svg id="vdBarcode"></svg>
+                                <span class="text-slate-900 font-mono hidden" id="vdBarcodeText"></span>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Brand</span>
+                            <span class="text-slate-900" id="vdBrand"></span>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Supplier</span>
+                            <span class="text-slate-900" id="vdSupplier"></span>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Size</span>
+                            <span class="text-slate-900" id="vdSize"></span>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Color</span>
+                            <span class="text-slate-900" id="vdColor"></span>
+                        </div>
+                        <div class="col-span-2">
+                            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Compatible Models</span>
+                            <span class="text-slate-900" id="vdCompatibleModels"></span>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Reorder Level</span>
+                            <span class="text-slate-900" id="vdReorderLevel"></span>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">VAT details</span>
+                            <span class="text-slate-900" id="vdVat"></span>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Date of Stock</span>
+                            <span class="text-slate-900" id="vdDateOfStock"></span>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Expiration Date</span>
+                            <span class="text-slate-900" id="vdExpirationDate"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end">
+                    <button onclick="document.getElementById('viewDetailsModal').classList.add('hidden')" class="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-100 transition">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         window.AllStocks = {
             routes: {
@@ -782,5 +780,6 @@
         };
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     @vite('resources/js/allstocks.js')
 </x-layouts.app>

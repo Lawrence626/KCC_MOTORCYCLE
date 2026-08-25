@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('product_descriptions', function (Blueprint $table) {
-            $table->boolean('is_expirable')->default(false)->after('brands');
-        });
+        if (!Schema::hasColumn('product_descriptions', 'is_expirable')) {
+            Schema::table('product_descriptions', function (Blueprint $table) {
+                $table->boolean('is_expirable')->default(false)->after('brands');
+            });
+        }
     }
 
     /**

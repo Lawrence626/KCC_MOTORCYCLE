@@ -261,8 +261,10 @@
                                 <select name="shelf_id" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none">
                                     <option value="">No specific shelf</option>
                                     @php
-                                        $warehouse = 'Warehouse A'; // Default to Warehouse A for shelf options
-                                        $shelves = \App\Models\WarehouseShelf::where('warehouse', $warehouse)->where('archived', false)->get();
+                                        $warehouseName = 'Warehouse A'; // Default to Warehouse A for shelf options
+                                        $shelves = \App\Models\WarehouseShelf::whereHas('warehouse', function($q) use ($warehouseName) {
+                                            $q->where('name', $warehouseName);
+                                        })->where('archived', false)->get();
                                     @endphp
                                     @foreach($shelves as $shelf)
                                         <option value="{{ $shelf->id }}">{{ $shelf->name }}</option>
