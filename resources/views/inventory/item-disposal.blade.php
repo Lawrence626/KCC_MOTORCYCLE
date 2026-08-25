@@ -1,57 +1,61 @@
 <x-layouts.app :title="__('Item Disposal')">
     <div class="space-y-4">
         <!-- Header -->
-        <div class="rounded-[22px] border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
-            <div class="flex items-center justify-between gap-3">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-900">Item Disposal List</h1>
-                    <p class="mt-1 text-xs text-slate-500">Automatically identifies expired, damaged, or recalled inventory items requiring disposal.</p>
-                </div>
+        <div class="flex items-center justify-between gap-3">
+            <div class="pl-3 lg:pl-2">
+                <h1 class="text-3xl font-bold text-slate-900">Item Disposal List</h1>
+                <p class="text-sm text-slate-500 mt-1">Automatically identifies expired, damaged, or recalled inventory items requiring disposal.</p>
             </div>
         </div>
 
         <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            <div onclick="openItemsByStatus('all')" class="rounded-[18px] border border-slate-200 bg-white p-4 shadow-sm cursor-pointer hover:border-[#00fff2] transition">
-                <div class="flex items-center justify-between gap-2">
-                    <div>
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Items Identified</p>
-                        <p class="text-2xl font-semibold text-slate-900">{{ $stats['total'] }}</p>
-                        <p class="text-xs text-[#105f68] mt-0.5">Total flagged items</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div onclick="openItemsByStatus('all')" class="border border-gray-200 p-4 cursor-pointer hover:border-[#00fff2] transition" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Items Identified</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">{{ $stats['total'] }}</p>
+                            <p class="text-gray-500 text-xs mt-1 font-medium">Total flagged items</p>
+                        </div>
                     </div>
-                    <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm shrink-0">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div onclick="openItemsByStatus('Pending')" class="rounded-[18px] border border-slate-200 bg-white p-4 shadow-sm cursor-pointer hover:border-[#00fff2] transition">
-                <div class="flex items-center justify-between gap-2">
-                    <div>
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Pending Review</p>
-                        <p class="text-2xl font-semibold text-slate-900">{{ $stats['pending'] }}</p>
-                        <p class="text-xs text-amber-600 mt-0.5">Awaiting disposal check</p>
+            <div onclick="openItemsByStatus('Pending')" class="border border-gray-200 p-4 cursor-pointer hover:border-[#00fff2] transition" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Pending Review</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">{{ $stats['pending'] }}</p>
+                            <p class="text-gray-500 text-xs mt-1 font-medium">Awaiting disposal check</p>
+                        </div>
                     </div>
-                    <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm shrink-0">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div onclick="openItemsByStatus('Approved')" class="rounded-[18px] border border-slate-200 bg-white p-4 shadow-sm cursor-pointer hover:border-[#00fff2] transition">
-                <div class="flex items-center justify-between gap-2">
-                    <div>
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Approved Disposal</p>
-                        <p class="text-2xl font-semibold text-slate-900">{{ $stats['approved'] }}</p>
-                        <p class="text-xs text-[#105f68] mt-0.5">Ready for removal</p>
+            <div onclick="openItemsByStatus('Approved')" class="border border-gray-200 p-4 cursor-pointer hover:border-[#00fff2] transition" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Approved Disposal</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">{{ $stats['approved'] }}</p>
+                            <p class="text-gray-500 text-xs mt-1 font-medium">Ready for removal</p>
+                        </div>
                     </div>
-                    <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm shrink-0">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                         </svg>
                     </div>
                 </div>
@@ -64,33 +68,51 @@
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                     <h2 class="text-sm font-semibold text-slate-900">Identified Disposal Items</h2>
                     <div class="flex items-center gap-3">
-                        <select id="statusFilter" class="px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent">
-                            <option value="all" {{ request('status') == 'all' || !request('status') ? 'selected' : '' }}>All Status</option>
-                            <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Pending Review</option>
-                            <option value="Approved" {{ request('status') == 'Approved' ? 'selected' : '' }}>Approved</option>
-                        </select>
-                        <input type="text" id="searchInput" placeholder="Search items..." value="{{ request('search') }}" class="px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent w-64" />
+                        @php
+                            $currentStatus = request('status', 'all');
+                            $statusLabels = [
+                                'all' => 'All Status',
+                                'Pending' => 'Pending Review',
+                                'Approved' => 'Approved',
+                            ];
+                            $currentLabel = $statusLabels[$currentStatus] ?? 'All Status';
+                        @endphp
+                        <div class="relative min-w-[150px]" data-dropdown-wrapper="statusFilter">
+                            <input type="hidden" id="statusFilter" value="{{ $currentStatus }}" />
+                            <button type="button" id="statusFilterButton" onclick="toggleDropdown('statusFilterDropdown', event)" class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-left text-xs text-slate-900 flex items-center justify-between hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 transition shadow-sm h-10 gap-2">
+                                <span id="statusFilterLabel">{{ $currentLabel }}</span>
+                                <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                                </svg>
+                            </button>
+                            <div id="statusFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[999] mt-2 w-full rounded-[12px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
+                                <button type="button" onclick="selectStatusOption('all', 'All Status', event)" class="w-full px-4 py-2 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">All Status</button>
+                                <button type="button" onclick="selectStatusOption('Pending', 'Pending Review', event)" class="w-full px-4 py-2 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Pending Review</button>
+                                <button type="button" onclick="selectStatusOption('Approved', 'Approved', event)" class="w-full px-4 py-2 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Approved</button>
+                            </div>
+                        </div>
+                        <input type="text" id="searchInput" placeholder="Search items..." value="{{ request('search') }}" class="px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm h-10 w-64" />
                     </div>
                 </div>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-xs">
-                    <thead class="bg-[#0f172a] border-b border-slate-200">
+                <table class="w-full text-sm text-left whitespace-nowrap min-w-max">
+                    <thead class="bg-[#0f172a] border-b border-slate-200 sticky-header text-[10px] uppercase tracking-wider text-white">
                         <tr>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product Image</th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Item Name</th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">SKU</th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Category</th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Total Stock</th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Shop Qty</th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Wh Qty</th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Expiration Date</th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Days Expired</th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Reason</th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Status</th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Date Identified</th>
-                            <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Actions</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Product Image</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Item Name</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">SKU</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Category</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Total Stock</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Shop Qty</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Wh Qty</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Expiration Date</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Days Expired</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Reason</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Status</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Date Identified</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 text-xs">
@@ -109,30 +131,30 @@
                                         }
                                     }
                                 @endphp
-                                <tr class="hover:bg-slate-50">
-                                    <td class="px-4 py-3">
-                                        <div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center border border-slate-200">
+                                <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+                                    <td class="px-3.5 py-3 text-center align-middle">
+                                        <div class="w-10 h-10 mx-auto rounded-lg bg-slate-100 flex items-center justify-center border border-slate-200">
                                             <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
                                         </div>
                                     </td>
-                                    <td class="px-4 py-3 font-semibold text-slate-900">{{ $product->name }}</td>
-                                    <td class="px-4 py-3 text-slate-600">{{ $product->sku ?? '-' }}</td>
-                                    <td class="px-4 py-3 text-slate-600">{{ $product->category ?? '-' }}</td>
-                                    <td class="px-4 py-3 font-bold text-slate-900">{{ $product->stock_quantity }}</td>
-                                    <td class="px-4 py-3 font-semibold text-blue-600">{{ $shopQty }}</td>
-                                    <td class="px-4 py-3 font-semibold text-amber-600">{{ $whQty }}</td>
-                                    <td class="px-4 py-3 text-slate-600">{{ $product->expiry_date?->format('M d, Y') ?? '-' }}</td>
-                                    <td class="px-4 py-3 text-slate-600">
+                                    <td class="px-3.5 py-3 text-left font-semibold text-slate-900 align-middle">{{ $product->name }}</td>
+                                    <td class="px-3.5 py-3 text-left text-slate-600 font-mono text-[10.5px] align-middle">{{ $product->sku ?? '-' }}</td>
+                                    <td class="px-3.5 py-3 text-left text-slate-600 align-middle">{{ $product->category ?? '-' }}</td>
+                                    <td class="px-3.5 py-3 text-center font-bold text-slate-900 align-middle">{{ $product->stock_quantity }}</td>
+                                    <td class="px-3.5 py-3 text-center font-semibold text-blue-600 align-middle">{{ $shopQty }}</td>
+                                    <td class="px-3.5 py-3 text-center font-semibold text-amber-600 align-middle">{{ $whQty }}</td>
+                                    <td class="px-3.5 py-3 text-left text-slate-600 align-middle">{{ $product->expiry_date?->format('M d, Y') ?? '-' }}</td>
+                                    <td class="px-3.5 py-3 text-center text-slate-600 align-middle">
                                         @if($product->expiry_date && $product->expiry_date->isPast())
                                             {{ $product->expiry_date->diffInDays(now()) }} days
                                         @else
                                             -
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3 text-slate-600">{{ $product->disposal_reason ?? '-' }}</td>
-                                    <td class="px-4 py-3">
+                                    <td class="px-3.5 py-3 text-left text-slate-600 align-middle">{{ $product->disposal_reason ?? '-' }}</td>
+                                    <td class="px-3.5 py-3 text-center align-middle">
                                         @if($product->disposal_status === 'Pending')
                                             <span onclick="openItemModal({{ $product->id }})" class="cursor-pointer inline-flex items-center rounded-full bg-[#105f68] px-2.5 py-0.5 text-[11px] font-semibold text-white hover:bg-[#0d4f57]">Pending Review</span>
                                         @elseif($product->disposal_status === 'Approved')
@@ -143,8 +165,8 @@
                                             <span class="inline-flex items-center rounded-full bg-slate-200 px-2.5 py-0.5 text-[11px] font-semibold text-slate-700">None</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3 text-slate-600">{{ $product->disposal_date_identified?->format('M d, Y') ?? '-' }}</td>
-                                    <td class="px-4 py-3 text-center">
+                                    <td class="px-3.5 py-3 text-left text-slate-600 align-middle">{{ $product->disposal_date_identified?->format('M d, Y') ?? '-' }}</td>
+                                    <td class="px-3.5 py-3 text-center align-middle">
                                         <div class="relative inline-block">
                                             <button onclick="toggleDropdown({{ $product->id }})" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600">
                                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -214,21 +236,20 @@
     </div>
 
     <!-- Item Details Modal -->
-    <div id="itemModal" class="hidden fixed inset-0 backdrop-blur-sm bg-black/30 z-[9999] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl lg:max-w-3xl overflow-hidden transform transition-all max-h-[90vh] relative z-[10000] border border-slate-200">
-            <div class="px-6 py-5 bg-[#0f172a] relative flex items-start justify-between">
+    <div id="itemModal" class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 py-4">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('itemModal').classList.add('hidden')"></div>
+        <div class="relative w-full max-w-2xl lg:max-w-3xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                 <div>
-                    <h2 class="text-lg font-bold text-white mb-0.5">Item Details</h2>
-                    <p class="text-xs text-slate-300">View complete item information</p>
+                    <h2 class="text-xl font-bold text-black">Item Details</h2>
+                    <p class="text-sm text-slate-800 font-medium">View complete item information</p>
                 </div>
-                <button onclick="document.getElementById('itemModal').classList.add('hidden')" class="text-slate-400 hover:text-white transition p-1 hover:bg-slate-700/50 rounded-lg cursor-pointer">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
+                <button onclick="document.getElementById('itemModal').classList.add('hidden')" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
 
-            <div id="itemModalContent" class="p-6 overflow-y-auto max-h-[calc(90vh-80px)] text-xs">
+            <div id="itemModalContent" class="p-4 sm:p-5 overflow-y-auto max-h-[calc(90vh-120px)] text-xs">
                 <!-- Content will be populated by JavaScript -->
             </div>
         </div>
@@ -368,31 +389,74 @@
             modal.classList.remove('hidden');
         }
 
+        function toggleDropdown(id, event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            const dropdown = document.getElementById(id);
+            if (!dropdown) return;
+
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                if (menu.id !== id) {
+                    menu.classList.add('hidden');
+                }
+            });
+
+            dropdown.classList.toggle('hidden');
+        }
+
+        function selectStatusOption(value, label, event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            const input = document.getElementById('statusFilter');
+            if (input) {
+                input.value = value;
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+            const labelSpan = document.getElementById('statusFilterLabel');
+            if (labelSpan) {
+                labelSpan.textContent = label;
+            }
+            const dropdown = document.getElementById('statusFilterDropdown');
+            if (dropdown) {
+                dropdown.classList.add('hidden');
+            }
+        }
+
         // Close dropdowns when clicking outside
         document.addEventListener('click', function(e) {
-            if (!e.target.closest('[onclick^="toggleDropdown"]') && !e.target.closest('[id^="dropdown-"]')) {
-                document.querySelectorAll('[id^="dropdown-"]').forEach(d => {
+            if (!e.target.closest('[data-dropdown-wrapper]') && !e.target.closest('[onclick^="toggleDropdown"]') && !e.target.closest('[id^="dropdown-"]')) {
+                document.querySelectorAll('.dropdown-menu, [id^="dropdown-"]').forEach(d => {
                     d.classList.add('hidden');
                 });
             }
         });
 
         // Status filter
-        document.getElementById('statusFilter').addEventListener('change', function() {
-            const url = new URL(window.location);
-            url.searchParams.set('status', this.value);
-            url.searchParams.set('page', 1);
-            window.location.href = url.toString();
-        });
-
-        // Search input
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
+        const statusFilterEl = document.getElementById('statusFilter');
+        if (statusFilterEl) {
+            statusFilterEl.addEventListener('change', function() {
                 const url = new URL(window.location);
-                url.searchParams.set('search', this.value);
+                url.searchParams.set('status', this.value);
                 url.searchParams.set('page', 1);
                 window.location.href = url.toString();
-            }
-        });
+            });
+        }
+
+        // Search input
+        const searchInputEl = document.getElementById('searchInput');
+        if (searchInputEl) {
+            searchInputEl.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const url = new URL(window.location);
+                    url.searchParams.set('search', this.value);
+                    url.searchParams.set('page', 1);
+                    window.location.href = url.toString();
+                }
+            });
+        }
     </script>
 </x-layouts.app>

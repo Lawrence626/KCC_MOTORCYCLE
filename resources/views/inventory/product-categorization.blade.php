@@ -1,37 +1,38 @@
 <x-layouts.app :title="__('Product Categorization')">
     <div class="space-y-4">
         <!-- Header -->
-        <div class="rounded-[22px] border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-900">Product Categorization</h1>
-                    <p class="mt-1 text-xs text-slate-500">Add, update, and delete product categories. Set SKU (QR code) and filter compatibility for each motorcycle.</p>
-                </div>
-                <div class="flex items-center gap-3 flex-wrap">
-                    <!-- Bulk Actions Toolbar -->
-                    <div id="bulkActionsToolbar" class="items-center gap-3 bg-slate-50 px-4 py-2 rounded-xl border border-slate-200" style="display:none">
-                        <span class="text-xs text-slate-700 font-medium"><span id="selectedCount">0</span> selected</span>
-                        <button id="bulkDeleteBtn" class="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition">
-                            Move to Trash
-                        </button>
-                        <button id="clearSelectionBtn" class="text-xs text-slate-600 hover:text-slate-800 font-medium">Clear</button>
-                    </div>
-                    <!-- Trash Button with badge -->
-                    <button id="openTrashBtn" class="relative px-3.5 py-2 rounded-xl border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition flex items-center gap-2">
-                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                        </svg>
-                        Trash
-                        <span id="trashBadge" class="absolute -top-1.5 -right-1.5 items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs font-bold" style="display:none">0</span>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 px-2 py-1">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900">Product Categorization</h1>
+                <p class="text-sm text-slate-500 mt-1">Add, update, and delete product categories. Set SKU (QR code) and filter compatibility for each motorcycle.</p>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap">
+                <!-- Bulk Actions Toolbar -->
+                <div id="bulkActionsToolbar" class="items-center gap-3 bg-slate-50 px-4 py-2 rounded-xl border border-slate-200" style="display:none">
+                    <span class="text-xs text-slate-700 font-medium"><span id="selectedCount">0</span> selected</span>
+                    <button id="bulkDeleteBtn" class="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition">
+                        Move to Trash
                     </button>
-                    <button id="openDeleteList" class="px-3.5 py-2 rounded-xl border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-50 transition">Delete List</button>
-                    <button id="openAddProduct" class="rounded-full border border-[#00fff2]/40 bg-[#00fff2] px-4 py-2 text-xs font-semibold text-black hover:bg-[#00e6da] transition shadow-sm">+ Add Product</button>
+                    <button id="clearSelectionBtn" class="text-xs text-slate-600 hover:text-slate-800 font-medium">Clear</button>
                 </div>
+                <!-- Trash Button with badge -->
+                <button id="openTrashBtn" class="relative inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 text-sm font-semibold hover:bg-slate-50 transition shadow-sm">
+                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    <span>Trash</span>
+                    <span id="trashBadge" class="absolute -top-1.5 -right-1.5 items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs font-bold" style="display:none">0</span>
+                </button>
+                <button id="openDeleteList" class="px-4 py-2 rounded-lg border border-red-200 bg-white text-red-600 text-sm font-semibold hover:bg-red-50 transition shadow-sm">Delete List</button>
+                <button id="openAddProduct" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#00fff2] text-slate-900 text-sm font-semibold hover:bg-[#00e6da] transition shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                    <span>Add Product</span>
+                </button>
             </div>
         </div>
 
         <!-- Filter Section -->
-        <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
+        <div class="rounded-[10px] border border-slate-200 bg-white p-3 shadow-sm">
             <div class="flex items-center gap-3">
                 <div class="flex-1">
                     <input type="text" id="searchInput" placeholder="Search by brand, product description, or SKU..." class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent">
@@ -43,21 +44,21 @@
         </div>
 
         <!-- Products Table -->
-        <div class="overflow-hidden rounded-[20px] border border-slate-200 bg-white shadow-sm">
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs">
-                    <thead class="bg-[#0f172a] border-b border-slate-200">
+        <div class="overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-sm">
+            <div class="overflow-x-auto rounded-[10px]">
+                <table class="w-full text-sm text-left whitespace-nowrap min-w-max">
+                    <thead class="bg-[#0f172a] border-b border-slate-200 sticky-header text-[10px] uppercase tracking-wider rounded-t-[10px] text-white">
                         <tr>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white w-10">
+                            <th class="px-3.5 py-3 font-semibold text-center text-white w-10 rounded-tl-[10px]">
                                 <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2] cursor-pointer">
                             </th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Brand</th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product Description</th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">SKU (QR Code)</th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Location</th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Compatible Models</th>
-                            <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Reorder Level</th>
-                            <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Actions</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Brand</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Product Description</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">SKU (QR Code)</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Location</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Compatible Models</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white">Reorder Level</th>
+                            <th class="px-3.5 py-3 font-semibold text-center text-white rounded-tr-[10px]">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="productsTableBody" class="divide-y divide-slate-200 text-xs">
@@ -73,7 +74,7 @@
 
     <!-- Add/Edit Product Modal -->
     <div id="productModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="display:none">
-        <div id="productOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+        <div id="productOverlay" class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl"></div>
 
         <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden transform transition-all z-10">
             <div class="px-6 py-5 bg-[#0f172a] relative flex items-start justify-between">
@@ -149,7 +150,7 @@
 
     <!-- Delete List Modal (soft-delete picker) -->
     <div id="deleteListModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="display:none">
-        <div id="deleteListOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+        <div id="deleteListOverlay" class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl"></div>
         <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden transform transition-all z-10">
             <div class="px-6 py-5 bg-[#0f172a] relative flex items-start justify-between">
                 <div>
@@ -162,14 +163,14 @@
             <div class="p-6">
                 <div class="max-h-96 overflow-y-auto border border-slate-200 rounded-xl overflow-hidden">
                     <table class="w-full text-xs">
-                        <thead class="bg-[#0f172a] border-b border-slate-200 sticky top-0">
+                        <thead class="bg-[#0f172a] border-b border-slate-200 sticky top-0 text-xs uppercase tracking-wider text-white">
                             <tr>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white w-10">
+                                <th class="px-4 py-3 text-left font-semibold text-white w-10">
                                     <input type="checkbox" id="selectAllDelete" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]">
                                 </th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Brand</th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Category</th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">SKU</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">Brand</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">Category</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">SKU</th>
                             </tr>
                         </thead>
                         <tbody id="deleteListTableBody" class="divide-y divide-slate-200">
@@ -191,35 +192,34 @@
 
     <!-- Trash / Restore Modal -->
     <div id="trashModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="display:none">
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeTrashModal()"></div>
-        <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden transform transition-all z-10">
-            <!-- Header -->
-            <div class="px-6 py-5 bg-[#0f172a] relative flex items-start justify-between">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeTrashModal()"></div>
+        <div class="relative w-full max-w-2xl bg-white rounded-[28px] border border-slate-200 shadow-[0_30px_80px_rgba(15,23,42,0.18)] overflow-hidden transform transition-all z-10">
+            <!-- Header (matching Add User Modal style) -->
+            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                 <div>
-                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                        <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                        </svg>
+                    <h3 class="text-xl font-bold text-black flex items-center gap-2">
                         Trash
-                        <span class="text-xs font-normal text-slate-300">(<span id="trashCount">0</span> items)</span>
+                        <span class="text-sm font-medium text-slate-800">(<span id="trashCount">0</span> items)</span>
                     </h3>
-                    <p class="text-xs text-slate-300 mt-0.5">Restore items or permanently delete them.</p>
+                    <p class="text-sm text-slate-800 font-medium mt-0.5">Restore items or permanently delete them.</p>
                 </div>
-                <button id="closeTrashModal" class="text-slate-400 hover:text-white transition p-1 hover:bg-slate-700/50 rounded-lg cursor-pointer">✕</button>
+                <button id="closeTrashModal" type="button" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
 
             <div class="p-6">
                 <!-- Table -->
                 <div class="max-h-96 overflow-y-auto border border-slate-200 rounded-xl overflow-hidden">
                     <table class="w-full text-xs">
-                        <thead class="bg-[#0f172a] border-b border-slate-200 sticky top-0">
+                        <thead class="bg-[#0f172a] border-b border-slate-800 sticky top-0 text-xs uppercase tracking-wider text-white">
                             <tr>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white w-10">
+                                <th class="px-4 py-3 text-left font-semibold text-white w-10">
                                     <input type="checkbox" id="selectAllTrash" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]">
                                 </th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Brand</th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Category</th>
-                                <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">SKU</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">Brand</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">Category</th>
+                                <th class="px-4 py-3 text-left font-semibold text-white">SKU</th>
                             </tr>
                         </thead>
                         <tbody id="trashTableBody" class="divide-y divide-slate-100">
@@ -232,14 +232,15 @@
                 <div class="mt-4 flex items-center justify-between">
                     <span class="text-xs font-medium text-slate-600"><span id="trashSelectedCount">0</span> selected</span>
                     <div class="flex items-center gap-3">
-                        <button onclick="closeTrashModal()" class="px-4 py-2 rounded-lg border-2 border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50">Close</button>
+                        <button onclick="closeTrashModal()" class="rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition">Close</button>
                         <button id="restoreSelectedBtn"
-                            class="px-4 py-2 rounded-lg border border-[#00fff2]/40 bg-[#105f68] text-[#00fff2] text-xs font-semibold hover:bg-[#0d4f57] transition disabled:opacity-40 disabled:cursor-not-allowed"
+                            class="rounded-[10px] bg-[#00fff2] px-4 py-2 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#00e6da] transition disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1.5"
                             disabled>
-                            ↩ Restore Selected
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                            Restore Selected
                         </button>
                         <button id="permanentDeleteBtn"
-                            class="px-4 py-2 rounded-lg bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                            class="rounded-[10px] bg-red-600 px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-red-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
                             disabled>
                             Delete Forever
                         </button>

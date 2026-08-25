@@ -13,6 +13,9 @@ class PurchaseOrderItem extends Model
         'sku',
         'quantity',
         'received_quantity',
+        'defective_quantity',
+        'accepted_quantity',
+        'defect_reason',
         'unit_price',
         'total_price',
     ];
@@ -21,6 +24,8 @@ class PurchaseOrderItem extends Model
         'unit_price' => 'decimal:2',
         'total_price' => 'decimal:2',
         'received_quantity' => 'integer',
+        'defective_quantity' => 'integer',
+        'accepted_quantity' => 'integer',
     ];
 
     public function purchaseOrder()
@@ -31,5 +36,10 @@ class PurchaseOrderItem extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function defectiveReturnRequests()
+    {
+        return $this->hasMany(DefectiveReturnRequest::class);
     }
 }

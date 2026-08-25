@@ -16,7 +16,7 @@
                 $isActive = request()->routeIs($item['route']);
             @endphp
             <a href="{{ Route::has($item['route']) ? route($item['route']) : '#' }}"
-               class="px-3 py-1.5 text-xs font-semibold rounded-[12px] transition {{ $isActive ? 'bg-[#0f172a] text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50' }}">
+               class="px-4 py-2 text-xs font-semibold rounded-[10px] border transition-all {{ $isActive ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">
                 {{ $item['label'] }}
             </a>
         @endforeach

@@ -1,8 +1,8 @@
 <x-layouts.app :title="__('Product Details')">
     <div class="max-w-4xl mx-auto space-y-4">
         <div class="mb-2">
-            <a href="{{ route('product-catalog.index') }}" class="inline-flex items-center gap-1.5 text-[#105f68] hover:underline text-xs font-semibold">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            <a href="{{ route('product-catalog.index') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-50 transition-all">
+                <svg class="w-4 h-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                 Back to Products
             </a>
         </div>
@@ -31,7 +31,7 @@
                     <div class="lg:col-span-2 space-y-6">
                         <!-- Basic Info -->
                         <div>
-                            <h3 class="text-xs font-bold text-slate-900 mb-3 uppercase tracking-[0.1em]">Product Information</h3>
+                            <h3 class="text-xs font-bold text-slate-900 mb-3 uppercase tracking-wider">Product Information</h3>
                             <dl class="grid grid-cols-2 gap-4 text-xs">
                                 <div class="bg-slate-50 rounded-[12px] p-3 border border-slate-100">
                                     <dt class="text-slate-500 font-medium mb-0.5">SKU</dt>
@@ -79,7 +79,7 @@
                         <!-- Expiration Information - Only for expirable products -->
                         @if(in_array(strtoupper($productCatalog->product_description), ['ENGINE OIL', 'BRAKE FLUID (BRAKE OIL)', 'GEAR OIL', 'COOLANT / RADIATOR COOLANT', 'CVT CLEANER', 'TIRE SEALANT']))
                             <div>
-                                <h3 class="text-xs font-bold text-slate-900 mb-3 uppercase tracking-[0.1em]">Expiration Information</h3>
+                                <h3 class="text-xs font-bold text-slate-900 mb-3 uppercase tracking-wider">Expiration Information</h3>
                                 <dl class="grid grid-cols-2 gap-4 text-xs">
                                     @if($productCatalog->manufacturing_date)
                                         <div class="bg-amber-50/50 rounded-[12px] p-3 border border-amber-100">
@@ -106,14 +106,14 @@
                         <!-- Description -->
                         @if($productCatalog->description)
                             <div>
-                                <h3 class="text-xs font-bold text-slate-900 mb-3 uppercase tracking-[0.1em]">Description</h3>
+                                <h3 class="text-xs font-bold text-slate-900 mb-3 uppercase tracking-wider">Description</h3>
                                 <p class="text-xs text-slate-600 bg-slate-50 rounded-[12px] p-3 border border-slate-100">{{ $productCatalog->description }}</p>
                             </div>
                         @endif
 
                         <!-- Compatible Models -->
                         <div>
-                            <h3 class="text-xs font-bold text-slate-900 mb-3 uppercase tracking-[0.1em]">Compatible Motorcycle Models</h3>
+                            <h3 class="text-xs font-bold text-slate-900 mb-3 uppercase tracking-wider">Compatible Motorcycle Models</h3>
                             @if($productCatalog->motorcycleModels->count() > 0)
                                 <div class="flex flex-wrap gap-2">
                                     @foreach($productCatalog->motorcycleModels as $model)
@@ -129,7 +129,7 @@
 
                         <!-- Timestamps -->
                         <div>
-                            <h3 class="text-xs font-bold text-slate-900 mb-3 uppercase tracking-[0.1em]">Timestamps</h3>
+                            <h3 class="text-xs font-bold text-slate-900 mb-3 uppercase tracking-wider">Timestamps</h3>
                             <dl class="grid grid-cols-2 gap-4 text-xs">
                                 <div class="bg-slate-50 rounded-[12px] p-3 border border-slate-100">
                                     <dt class="text-slate-500 font-medium mb-0.5">Created</dt>

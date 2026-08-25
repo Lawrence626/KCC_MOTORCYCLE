@@ -1,44 +1,39 @@
-<x-layouts.app :title="__('Dead Stock Analysis')" :stretch="true">
-<div id="dead-stock-root"
-     data-recalculate-url="{{ route('dss.dead-stock.recalculate') }}"
-     data-export-excel-url="{{ route('dss.dead-stock.export-excel') }}"
-     data-export-pdf-url="{{ route('dss.dead-stock.export-pdf') }}"
-     data-api-url="{{ route('api.dss.dead-stocks.index') }}"
-     data-dashboard-stats-url="{{ route('api.dss.dashboard-stats') }}"
-     data-csrf="{{ csrf_token() }}"
-     class="h-full flex flex-col overflow-hidden bg-slate-50/50">
-
-    {{-- ═══════ SCROLLABLE CONTENT ═══════ --}}
-    <div class="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+<x-layouts.app :title="__('Dead Stock Analysis')">
+    <div id="dead-stock-root"
+         data-recalculate-url="{{ route('dss.dead-stock.recalculate') }}"
+         data-export-excel-url="{{ route('dss.dead-stock.export-excel') }}"
+         data-export-pdf-url="{{ route('dss.dead-stock.export-pdf') }}"
+         data-api-url="{{ route('api.dss.dead-stocks.index') }}"
+         data-dashboard-stats-url="{{ route('api.dss.dashboard-stats') }}"
+         data-csrf="{{ csrf_token() }}"
+         class="space-y-4">
 
         {{-- ═══ HEADER ═══ --}}
-        <div class="rounded-[22px] border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
-            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Dead Stock Analysis</h1>
-                    <p class="text-xs text-slate-500 mt-1">
-                        Inventory items without sales for <span class="text-slate-900 font-semibold">{{ $thresholdDays }} days</span> or more.
-                    </p>
-                </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <a href="{{ route('dss.dead-stock.export-excel') }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}"
-                       class="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-[12px] bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 shadow-sm transition">
-                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        Export CSV
-                    </a>
-                    <a href="{{ route('dss.dead-stock.export-pdf') }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}" target="_blank"
-                       class="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-[12px] bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 shadow-sm transition">
-                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                        Export PDF
-                    </a>
-                    <form action="{{ route('dss.dead-stock.recalculate') }}" method="POST" class="inline">
-                        @csrf
-                        <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-[12px] border border-[#00fff2]/40 bg-[#00fff2] text-black hover:bg-[#00e6da] shadow-sm transition focus:ring-2 focus:ring-[#00fff2] focus:outline-none" onclick="this.innerHTML='<svg class=\'w-4 h-4 animate-spin\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15\'/></svg> Analyzing...'; this.disabled=true; this.closest('form').submit();">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                            Recalculate Analysis
-                        </button>
-                    </form>
-                </div>
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div class="pl-3 lg:pl-2">
+                <h1 class="text-3xl font-bold text-slate-900">Dead Stock Analysis</h1>
+                <p class="text-xs text-slate-500 mt-1">
+                    Inventory items without sales for <span class="text-slate-900 font-semibold">{{ $thresholdDays }} days</span> or more.
+                </p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 pr-4">
+                <form action="{{ route('dss.dead-stock.recalculate') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" class="inline-flex items-center gap-2 rounded-[10px] border border-[#00fff2]/40 bg-[#00fff2] px-4 py-2 text-sm font-semibold text-black shadow-sm hover:bg-[#00e6da] focus:outline-none transition-all duration-200" onclick="this.innerHTML='<svg class=\'w-4 h-4 animate-spin\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15\'/></svg> <span>Analyzing...</span>'; this.disabled=true; this.closest('form').submit();">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        <span>Recalculate Analysis</span>
+                    </button>
+                </form>
+                <a href="{{ route('dss.dead-stock.export-excel') }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}"
+                   class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
+                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>Export CSV</span>
+                </a>
+                <a href="{{ route('dss.dead-stock.export-pdf') }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}" target="_blank"
+                   class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
+                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    <span>Export PDF</span>
+                </a>
             </div>
         </div>
 
@@ -52,86 +47,102 @@
 
         {{-- ═══ KPI CARDS ═══ --}}
         <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
-            {{-- Total (Primary KPI) --}}
-            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
-                <div class="flex items-center justify-between gap-2">
-                    <div>
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Total Items</p>
-                        <p class="text-xl font-semibold text-slate-900">{{ $totalDeadStocks }}</p>
-                        <p class="text-xs text-[#105f68] mt-0.5">Identified items</p>
+            {{-- Total Items --}}
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Total Items</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">{{ $totalDeadStocks }}</p>
+                            <p class="text-gray-500 text-xs mt-1 font-medium">Identified items</p>
+                        </div>
                     </div>
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
+                        </svg>
                     </div>
                 </div>
             </div>
-            
-            {{-- Value --}}
-            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
-                <div class="flex items-center justify-between gap-2">
-                    <div>
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Value at Risk</p>
-                        <p class="text-xl font-semibold text-slate-900">₱{{ number_format($totalValue, 0) }}</p>
-                        <p class="text-xs text-[#105f68] mt-0.5">Total capital locked</p>
+
+            {{-- Value at Risk --}}
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Value at Risk</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">₱{{ number_format($totalValue, 0) }}</p>
+                            <p class="text-gray-500 text-xs mt-1 font-medium">Total capital locked</p>
+                        </div>
                     </div>
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+                        </svg>
                     </div>
                 </div>
             </div>
 
             {{-- Critical --}}
-            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
-                <div class="flex items-center justify-between gap-2">
-                    <div>
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Critical</p>
-                        <p class="text-xl font-semibold text-slate-900">{{ $countByPriority['Critical'] ?? 0 }}</p>
-                        <p class="text-xs text-rose-600 mt-0.5">Urgent resolution</p>
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Critical</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">{{ $countByPriority['Critical'] ?? 0 }}</p>
+                            <p class="text-red-600 text-xs mt-1 font-medium">Urgent resolution</p>
+                        </div>
                     </div>
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
-                        <span class="w-3 h-3 rounded-full bg-red-600"></span>
+                    <div class="flex items-center justify-center flex-shrink-0 ml-2 pt-1">
+                        <span class="w-3.5 h-3.5 rounded-full bg-red-600 inline-block shadow-sm"></span>
                     </div>
                 </div>
             </div>
 
             {{-- High --}}
-            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
-                <div class="flex items-center justify-between gap-2">
-                    <div>
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">High</p>
-                        <p class="text-xl font-semibold text-slate-900">{{ $countByPriority['High'] ?? 0 }}</p>
-                        <p class="text-xs text-amber-600 mt-0.5">High concern</p>
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">High</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">{{ $countByPriority['High'] ?? 0 }}</p>
+                            <p class="text-orange-600 text-xs mt-1 font-medium">High concern</p>
+                        </div>
                     </div>
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
-                        <span class="w-3 h-3 rounded-full bg-orange-500"></span>
+                    <div class="flex items-center justify-center flex-shrink-0 ml-2 pt-1">
+                        <span class="w-3.5 h-3.5 rounded-full bg-orange-500 inline-block shadow-sm"></span>
                     </div>
                 </div>
             </div>
 
             {{-- Medium --}}
-            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
-                <div class="flex items-center justify-between gap-2">
-                    <div>
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Medium</p>
-                        <p class="text-xl font-semibold text-slate-900">{{ $countByPriority['Medium'] ?? 0 }}</p>
-                        <p class="text-xs text-[#105f68] mt-0.5">Moderate concern</p>
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Medium</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">{{ $countByPriority['Medium'] ?? 0 }}</p>
+                            <p class="text-amber-600 text-xs mt-1 font-medium">Moderate concern</p>
+                        </div>
                     </div>
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
-                        <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                    <div class="flex items-center justify-center flex-shrink-0 ml-2 pt-1">
+                        <span class="w-3.5 h-3.5 rounded-full bg-amber-500 inline-block shadow-sm"></span>
                     </div>
                 </div>
             </div>
 
             {{-- Low --}}
-            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
-                <div class="flex items-center justify-between gap-2">
-                    <div>
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-1">Low</p>
-                        <p class="text-xl font-semibold text-slate-900">{{ $countByPriority['Low'] ?? 0 }}</p>
-                        <p class="text-xs text-[#105f68] mt-0.5">Low concern</p>
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Low</p>
+                        <div class="mt-1">
+                            <p class="text-2xl font-bold text-black">{{ $countByPriority['Low'] ?? 0 }}</p>
+                            <p class="text-blue-600 text-xs mt-1 font-medium">Low concern</p>
+                        </div>
                     </div>
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm">
-                        <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                    <div class="flex items-center justify-center flex-shrink-0 ml-2 pt-1">
+                        <span class="w-3.5 h-3.5 rounded-full bg-blue-500 inline-block shadow-sm"></span>
                     </div>
                 </div>
             </div>
@@ -146,13 +157,13 @@
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-xs">
-                    <thead class="border-b border-slate-200 bg-[#0f172a]">
+                    <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                         <tr>
-                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</th>
-                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">SKU</th>
-                            <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Days Unsold</th>
-                            <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Current Stock</th>
-                            <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Last Sold</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">Product</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">SKU</th>
+                            <th class="px-4 py-3 text-right font-semibold text-white">Days Unsold</th>
+                            <th class="px-4 py-3 text-right font-semibold text-white">Current Stock</th>
+                            <th class="px-4 py-3 text-right font-semibold text-white">Last Sold</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 bg-white">
@@ -179,28 +190,54 @@
         <div class="bg-white rounded-[20px] border border-slate-200 shadow-sm flex flex-col overflow-hidden">
             {{-- Toolbar --}}
             <div class="px-4 py-3 border-b border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between gap-3">
-                <form method="GET" action="{{ route('dss.dead-stock.index') }}" class="w-full flex flex-col sm:flex-row items-center gap-2">
+                <form method="GET" action="{{ route('dss.dead-stock.index') }}" id="deadStockFilterForm" class="w-full flex flex-col sm:flex-row items-center gap-2">
                     <div class="relative flex-1 min-w-[240px]">
                         <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Search inventory..."
-                               class="w-full pl-9 pr-3 py-2 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition">
+                               class="w-full pl-9 pr-3 h-9 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm">
                     </div>
-                    <select name="priority" class="px-3 py-2 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent cursor-pointer min-w-[130px]">
-                        <option value="">All Priorities</option>
-                        <option value="Critical" {{ request('priority') === 'Critical' ? 'selected' : '' }}>Critical</option>
-                        <option value="High" {{ request('priority') === 'High' ? 'selected' : '' }}>High</option>
-                        <option value="Medium" {{ request('priority') === 'Medium' ? 'selected' : '' }}>Medium</option>
-                        <option value="Low" {{ request('priority') === 'Low' ? 'selected' : '' }}>Low</option>
-                    </select>
-                    <select name="sort_by" class="px-3 py-2 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent cursor-pointer min-w-[150px]">
-                        <option value="days_without_sale" {{ request('sort_by', 'days_without_sale') === 'days_without_sale' ? 'selected' : '' }}>Longest Unsold</option>
-                        <option value="stock_value" {{ request('sort_by') === 'stock_value' ? 'selected' : '' }}>Highest Value</option>
-                        <option value="current_stock" {{ request('sort_by') === 'current_stock' ? 'selected' : '' }}>Highest Stock</option>
-                        <option value="last_sold_date" {{ request('sort_by') === 'last_sold_date' ? 'selected' : '' }}>Last Sold</option>
-                    </select>
+
+                    <!-- Custom Priority Dropdown -->
+                    <div class="relative min-w-[130px]" data-dropdown-wrapper="priorityFilter">
+                        <input type="hidden" name="priority" id="priorityFilter" value="{{ request('priority', '') }}" />
+                        <button type="button" id="priorityFilterBtn" onclick="toggleCustomDropdown('priorityFilterDropdown', event)" class="w-full h-9 rounded-[12px] border border-slate-300 bg-white px-3 text-left text-xs text-slate-900 flex items-center justify-between gap-2 hover:border-slate-400 focus:outline-none focus:ring-1 focus:ring-black/35 transition shadow-sm">
+                            <span id="priorityFilterDisplay">{{ request('priority') ?: 'All Priorities' }}</span>
+                            <svg class="w-4 h-4 text-slate-500 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                        <div id="priorityFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-1 w-full min-w-[130px] rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
+                            <button type="button" onclick="selectDeadStockFilter('priorityFilter', '', 'All Priorities', 'priorityFilterDisplay', 'priorityFilterDropdown')" class="w-full text-center px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">All Priorities</button>
+                            <button type="button" onclick="selectDeadStockFilter('priorityFilter', 'Critical', 'Critical', 'priorityFilterDisplay', 'priorityFilterDropdown')" class="w-full text-center px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Critical</button>
+                            <button type="button" onclick="selectDeadStockFilter('priorityFilter', 'High', 'High', 'priorityFilterDisplay', 'priorityFilterDropdown')" class="w-full text-center px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">High</button>
+                            <button type="button" onclick="selectDeadStockFilter('priorityFilter', 'Medium', 'Medium', 'priorityFilterDisplay', 'priorityFilterDropdown')" class="w-full text-center px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Medium</button>
+                            <button type="button" onclick="selectDeadStockFilter('priorityFilter', 'Low', 'Low', 'priorityFilterDisplay', 'priorityFilterDropdown')" class="w-full text-center px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Low</button>
+                        </div>
+                    </div>
+
+                    <!-- Custom Sort Dropdown -->
+                    <div class="relative min-w-[150px]" data-dropdown-wrapper="sortFilter">
+                        <input type="hidden" name="sort_by" id="sortFilter" value="{{ request('sort_by', 'days_without_sale') }}" />
+                        <button type="button" id="sortFilterBtn" onclick="toggleCustomDropdown('sortFilterDropdown', event)" class="w-full h-9 rounded-[12px] border border-slate-300 bg-white px-3 text-left text-xs text-slate-900 flex items-center justify-between gap-2 hover:border-slate-400 focus:outline-none focus:ring-1 focus:ring-black/35 transition shadow-sm">
+                            <span id="sortFilterDisplay">
+                                @switch(request('sort_by', 'days_without_sale'))
+                                    @case('stock_value') Highest Value @break
+                                    @case('current_stock') Highest Stock @break
+                                    @case('last_sold_date') Last Sold @break
+                                    @default Longest Unsold
+                                @endswitch
+                            </span>
+                            <svg class="w-4 h-4 text-slate-500 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                        <div id="sortFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-1 w-full min-w-[150px] rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
+                            <button type="button" onclick="selectDeadStockFilter('sortFilter', 'days_without_sale', 'Longest Unsold', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-center px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Longest Unsold</button>
+                            <button type="button" onclick="selectDeadStockFilter('sortFilter', 'stock_value', 'Highest Value', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-center px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Highest Value</button>
+                            <button type="button" onclick="selectDeadStockFilter('sortFilter', 'current_stock', 'Highest Stock', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-center px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Highest Stock</button>
+                            <button type="button" onclick="selectDeadStockFilter('sortFilter', 'last_sold_date', 'Last Sold', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-center px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Last Sold</button>
+                        </div>
+                    </div>
+
                     <input type="hidden" name="sort_order" value="{{ request('sort_order', 'desc') }}">
-                    <button type="submit" class="p-2 text-slate-600 hover:text-slate-900 rounded-[12px] hover:bg-slate-100 transition" title="Apply Filters">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                    <button type="submit" class="shrink-0 h-9 w-9 rounded-[12px] border border-slate-300 bg-white text-slate-700 hover:bg-black/10 transition shadow-sm flex items-center justify-center" title="Apply Filters">
+                        <svg class="w-4 h-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
                     </button>
                     @if(request('search') || request('priority') || request('sort_by'))
                     <a href="{{ route('dss.dead-stock.index') }}" class="text-xs font-semibold text-slate-500 hover:text-slate-700 transition">Clear</a>
@@ -209,17 +246,17 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-xs text-left">
-                    <thead class="border-b border-slate-200 bg-[#0f172a]">
+                <table class="w-full text-xs text-center">
+                    <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                         <tr>
-                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</th>
-                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">SKU</th>
-                            <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Stock</th>
-                            <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Value</th>
-                            <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Days Unsold</th>
-                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Status</th>
-                            <th class="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Action</th>
-                            <th class="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-white"></th>
+                            <th class="px-4 py-3 text-center font-semibold text-white whitespace-nowrap">Product</th>
+                            <th class="px-4 py-3 text-center font-semibold text-white whitespace-nowrap">SKU</th>
+                            <th class="px-4 py-3 text-center font-semibold text-white whitespace-nowrap">Stock</th>
+                            <th class="px-4 py-3 text-center font-semibold text-white whitespace-nowrap">Value</th>
+                            <th class="px-4 py-3 text-center font-semibold text-white whitespace-nowrap">Days Unsold</th>
+                            <th class="px-4 py-3 text-center font-semibold text-white whitespace-nowrap">Status</th>
+                            <th class="px-4 py-3 text-center font-semibold text-white whitespace-nowrap">Action</th>
+                            <th class="px-4 py-3 text-center font-semibold text-white whitespace-nowrap"></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 bg-white">
@@ -235,7 +272,7 @@
                         @endphp
                         <tr class="hover:bg-slate-50/80 transition-colors group">
                             {{-- Product Details --}}
-                            <td class="px-5 py-3 max-w-[260px]">
+                            <td class="px-5 py-3 max-w-[260px] text-center">
                                 <a href="{{ route('dss.dead-stock.show', $ds->id) }}" class="block truncate font-medium text-slate-900 group-hover:text-teal-600 transition">
                                     {{ $product->description ?? $product->name ?? 'N/A' }}
                                 </a>
@@ -246,26 +283,26 @@
                                 @endif
                             </td>
                             {{-- SKU --}}
-                            <td class="px-4 py-3 text-xs text-slate-500 font-mono">{{ $product->sku ?? '—' }}</td>
+                            <td class="px-4 py-3 text-center text-xs text-slate-500 font-mono">{{ $product->sku ?? '—' }}</td>
                             {{-- Stock --}}
-                            <td class="px-4 py-3 text-right text-slate-700">{{ $ds->current_stock }}</td>
+                            <td class="px-4 py-3 text-center text-slate-700">{{ $ds->current_stock }}</td>
                             {{-- Value --}}
-                            <td class="px-4 py-3 text-right text-slate-700">₱{{ number_format($ds->stock_value, 0) }}</td>
+                            <td class="px-4 py-3 text-center text-slate-700">₱{{ number_format($ds->stock_value, 0) }}</td>
                             {{-- Days Unsold --}}
-                            <td class="px-4 py-3 text-right font-medium text-slate-700">{{ $ds->days_without_sale }}</td>
+                            <td class="px-4 py-3 text-center font-medium text-slate-700">{{ $ds->days_without_sale }}</td>
                             {{-- Priority Status --}}
-                            <td class="px-4 py-3">
+                            <td class="px-4 py-3 text-center">
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium {{ $priorityStyles[$ds->priority_level] ?? 'bg-slate-50 text-slate-600 ring-1 ring-inset ring-slate-500/10' }}">
                                     {{ $ds->priority_level }}
                                 </span>
                             </td>
                             {{-- Suggested Action --}}
-                            <td class="px-4 py-3 text-xs text-slate-600">
+                            <td class="px-4 py-3 text-center text-xs text-slate-600">
                                 {{ $ds->analysis_notes ?? 'Monitor' }}
                             </td>
                             {{-- Actions --}}
-                            <td class="px-5 py-3 text-right">
-                                <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <td class="px-5 py-3 text-center">
+                                <div class="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <button onclick="openSalesHistoryModal({{ $ds->id }}, '{{ addslashes($product->name ?? $product->description ?? '') }}')" class="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" title="Sales History">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                                     </button>
@@ -311,15 +348,13 @@
             </div>
             @endif
         </div>
-
-    </div>{{-- end scrollable --}}
-</div>
+    </div>
 
 {{-- ═══════════════════════════════════════════════════════════ --}}
 {{-- SALES HISTORY MODAL --}}
 {{-- ═══════════════════════════════════════════════════════════ --}}
 <div id="salesHistoryModal" class="fixed inset-0 z-[9999] hidden">
-    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeSalesHistoryModal()"></div>
+    <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl transition-opacity" onclick="closeSalesHistoryModal()"></div>
     <div class="absolute inset-4 md:inset-y-12 md:inset-x-[15%] lg:inset-x-[20%] bg-white rounded-xl shadow-xl flex flex-col overflow-hidden">
         <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-white">
             <div>
@@ -357,7 +392,7 @@
 {{-- APPLY DISCOUNT MODAL --}}
 {{-- ═══════════════════════════════════════════════════════════ --}}
 <div id="discountModal" class="fixed inset-0 z-[9999] hidden">
-    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeDiscountModal()"></div>
+    <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl transition-opacity" onclick="closeDiscountModal()"></div>
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-xl shadow-xl overflow-hidden">
         <div class="px-5 py-4 border-b border-slate-100 bg-white">
             <h3 class="text-base font-semibold text-slate-900">Apply Discount</h3>
@@ -500,11 +535,41 @@
         btn.classList.add('border-teal-500', 'bg-teal-50', 'text-teal-700');
     }
 
+    function toggleCustomDropdown(dropdownId, event) {
+        if (event) event.stopPropagation();
+        const dropdown = document.getElementById(dropdownId);
+        if (!dropdown) return;
+        const isHidden = dropdown.classList.contains('hidden');
+        document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
+        if (isHidden) {
+            dropdown.classList.remove('hidden');
+        }
+    }
+
+    function selectDeadStockFilter(inputId, value, displayText, displayId, dropdownId) {
+        const inputElem = document.getElementById(inputId);
+        const displayElem = document.getElementById(displayId);
+        const dropdown = document.getElementById(dropdownId);
+
+        if (inputElem) inputElem.value = value;
+        if (displayElem) displayElem.textContent = displayText;
+        if (dropdown) dropdown.classList.add('hidden');
+
+        document.getElementById('deadStockFilterForm')?.submit();
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('[data-dropdown-wrapper]')) {
+            document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
+        }
+    });
+
     // Close modals with Escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeSalesHistoryModal();
             closeDiscountModal();
+            document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
         }
     });
 </script>

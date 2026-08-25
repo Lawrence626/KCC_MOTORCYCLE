@@ -29,19 +29,19 @@
                             {{-- Notification Dropdown Panel --}}
                             <div
                                 id="notification-panel"
-                                class="hidden absolute right-0 top-full mt-2 w-[320px] rounded-xl bg-white border border-slate-200 shadow-lg z-50 flex flex-col"
+                                class="hidden absolute right-0 top-full mt-2 w-[320px] rounded-xl bg-white border border-slate-200 shadow-2xl z-[9999] flex flex-col"
                                 style="max-height: 350px;"
                             >
-                                <div class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b border-slate-100 rounded-t-xl" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+                                <div class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b border-slate-800 rounded-t-xl bg-[#0f172a]" style="background-color: #0f172a;">
                                     <div class="flex items-center gap-2">
-                                        <span class="text-sm font-semibold text-slate-900">Notifications</span>
+                                        <span class="text-sm font-bold text-white">Notifications</span>
                                         <span id="notif-center-unread-badge" class="hidden inline-flex items-center rounded-[10px] px-2 py-0.5 text-[10px] font-medium text-white" style="background-color: #ef4444;">0</span>
                                     </div>
                                     <div class="flex items-center gap-3">
                                         <button
                                             type="button"
                                             onclick="markAllNotificationsRead()"
-                                            class="text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+                                            class="text-xs font-semibold text-slate-300 hover:text-white transition-colors"
                                         >Mark all as read</button>
                                     </div>
                                 </div>
@@ -133,7 +133,7 @@
                             <p class="text-black text-xs font-semibold">Total Sales</p>
                             <div class="mt-1">
                                 <p id="salesValue" class="text-2xl font-bold text-black">—</p>
-                                <p id="salesComparison" class="text-gray-500 text-xs mt-1 font-medium">Loading…</p>
+                                <p id="salesComparison" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
                             </div>
                         </div>
                         <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
@@ -151,7 +151,7 @@
                             <p class="text-black text-xs font-semibold" style="color: #000000;">Total Transaction</p>
                             <div class="mt-1">
                                 <p id="transactionsValue" class="text-2xl font-bold" style="color: #000000;">—</p>
-                                <p id="transactionsComparison" class="text-gray-500 text-xs mt-1 font-medium;">Loading…</p>
+                                <p id="transactionsComparison" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
                             </div>
                         </div>
                         <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
@@ -169,7 +169,7 @@
                             <p class="text-black text-xs font-semibold" style="color: #000000;">Total Profit</p>
                             <div class="mt-1">
                                 <p id="profitValue" class="text-2xl font-bold" style="color: #000000;">—</p>
-                                <p id="profitComparison" class="text-gray-500 text-xs mt-1 font-medium;">Loading…</p>
+                                <p id="profitComparison" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
                             </div>
                         </div>
                         <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
@@ -187,7 +187,7 @@
                             <p class="text-black text-xs font-semibold" style="color: #000000;">Total Item Sold</p>
                             <div class="mt-1">
                                 <p id="itemsSoldValue" class="text-2xl font-bold" style="color: #030303;">—</p>
-                                <p id="itemsSoldComparison" class="text-gray-500 text-xs mt-1 font-medium;">Loading…</p>
+                                <p id="itemsSoldComparison" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
                             </div>
                         </div>
                         <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
@@ -199,13 +199,13 @@
                 </div>
 
                 <!-- Dead Stock Alert Card -->
-                <a href="{{ route('dss.dead-stock.index') }}" class="block border border-gray-200 p-4 hover:shadow-md transition cursor-pointer group" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <a href="{{ route('dss.dead-stock.index') }}" class="block border border-gray-200 p-4 hover:border-[#00fff2] hover:shadow-md transition cursor-pointer group" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <p class="text-black text-xs font-semibold">Dead Stock</p>
                             <div class="mt-1">
                                 <p id="deadStockCardItems" class="text-2xl font-bold text-black">0 Items</p>
-                                <p id="deadStockCardValue" class="text-gray-500 text-xs mt-1 font-medium">Value at Risk: ₱0</p>
+                                <p id="deadStockCardValue" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Value at Risk: ₱0</p>
                             </div>
                         </div>
                         <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
@@ -275,12 +275,12 @@
         <!-- Charts Row -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-8">
             <!-- Sales Overview Chart -->
-            <div id="salesOverviewCard" class="lg:col-span-2 border border-gray-200 p-4 relative overflow-hidden" style="border-radius: 20px; background-color: #ffffff; min-height: 240px; box-sizing: border-box;">
+            <div id="salesOverviewCard" class="lg:col-span-2 border border-slate-200 relative overflow-hidden rounded-[15px] bg-white shadow-sm" style="min-height: 240px; box-sizing: border-box; border-radius: 15px;">
 
                 <!-- Header (title + range buttons) -->
-                <div id="salesOverviewHeader" class="flex items-center justify-between mb-3 relative">
+                <div id="salesOverviewHeader" class="bg-[#0f172a] px-6 py-4 flex items-center justify-between border-b border-slate-800">
                     <div class="flex items-center gap-2">
-                       <h2 id="salesOverviewTitle" class="font-semibold tracking-wide text-black" style="font-size: 20px; font-family: 'Poppins', sans-serif;">Sales Overview</h2>
+                       <h2 id="salesOverviewTitle" class="font-bold tracking-wide text-white text-lg">Sales Overview</h2>
                     </div>
                     <div class="flex gap-2">
                         <button type="button" data-range="daily" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Day</button>
@@ -290,13 +290,13 @@
                 </div>
 
                 <!-- Body (chart) -->
-                <div id="salesOverviewBody" class="relative w-full" style="height:360px;">
+                <div id="salesOverviewBody" class="relative w-full p-4" style="height:360px;">
                     <canvas id="salesChart"></canvas>
                 </div>
             </div>
 
             <!-- Sales by Category (full-circle ring + white knockout center + neon-on-sale legend) -->
-            <div class="border border-gray-200 p-3" style="border-radius: 20px; background-color: #ffffff;">
+            <div class="border border-gray-200 p-3 rounded-[15px]" style="border-radius: 15px; background-color: #ffffff;">
                 <h2 class="text-sm font-bold text-black mb-2" style="font-family: 'Poppins', sans-serif;">Sales by Category</h2>
                 <div class="flex flex-col items-center gap-3">
                     <div style="position: relative; width: 150px; height: 160px; max-width: 160px; max-height: 160px; aspect-ratio: 1 / 1;">
@@ -417,12 +417,14 @@
                     <canvas id="barChart" class="w-full h-full" style="max-width: 100%; display: block;"></canvas>
                 </div>
             </div>
-        <!-- ═══ Toast Notification Container (top-right, stacking) ═══ -->
-        <div id="inventory-toast-container" class="fixed top-20 right-16 z-[200] flex flex-col gap-3 pointer-events-none" style="max-width: 360px; width: 100%;"></div>
+
+        <!-- ═══ Toast Notifications Container ═══ -->
+        <div id="inventory-toast-container" class="fixed top-20 right-6 z-[40] flex flex-col gap-3 pointer-events-none" style="max-width: 360px; width: 100%;"></div>
 
         <!-- ═══ View All Notifications Modal ═══ -->
-        <div id="all-notifications-modal" class="hidden fixed inset-0 z-[250] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-            <div class="bg-white rounded-[28px] border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]">
+        <div id="all-notifications-modal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeAllNotificationsModal()"></div>
+            <div class="relative bg-white rounded-[28px] border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]">
                 <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                     <div>
                         <h3 class="text-xl font-bold text-black">All Inventory Notifications</h3>
@@ -659,9 +661,9 @@
         
         /* Range buttons: unselected = original light teal tint background with teal text, selected (clicked) = solid #36ADA3 with same color teal text */
         .sales-range-btn {
-            background-color: #e3edee;
-            color: #000000ff;
-            border: 1px solid rgba(0,0,0,0.02);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.15);
             box-shadow: none;
             padding-top: 0.35rem;
             padding-bottom: 0.35rem;
@@ -671,18 +673,19 @@
         }
 
         .sales-range-btn:hover {
-            background-color: #cfe0e1;
-            color: #000000ff;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
         }
 
         .sales-range-btn.active {
             background-color: #00fff2ff !important;
             color: #000000ff !important;
-            font-weight: 600 !important;
+            font-weight: 700 !important;
+            border-color: transparent !important;
         }
 
         .sales-range-btn.active:hover {
-            background-color: #00fff2ff !important;
+            background-color: #00e6da !important;
             color: #000000ff !important;
         }
         
@@ -773,11 +776,11 @@
         .notif-item:last-child {
             border-bottom: none;
         }
-        .notif-item:hover { background-color: #f8fafc; }
+        .notif-item:hover { background-color: transparent; }
         .notif-item-unread {
             background-color: #fefce8;
         }
-        .notif-item-unread:hover { background-color: #fef9c3; }
+        .notif-item-unread:hover { background-color: #fefce8; }
         
         .notif-status-dot {
             width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
@@ -893,7 +896,8 @@
                     return;
                 }
                 const top = items[idx] || items[0];
-                placeholder.innerHTML = `<div class="font-semibold text-gray-900">${escapeHtml(top.name)}</div><div class="text-gray-500">Rank ${idx + 1} • ${escapeHtml(top.category || '')}</div>`;
+                const skuBadge = top.sku ? `<span class="text-xs text-gray-500 font-mono font-normal">(${escapeHtml(top.sku)})</span>` : '';
+                placeholder.innerHTML = `<div class="font-semibold text-gray-900">${escapeHtml(top.name)} ${skuBadge}</div><div class="text-gray-500">Rank ${idx + 1} • ${escapeHtml(top.category || '')}</div>`;
             }
 
             function startRotate(){
@@ -940,6 +944,7 @@
                             <tr style="text-align:left">
                                 <th style="padding:8px">Rank</th>
                                 <th style="padding:8px">Item</th>
+                                <th style="padding:8px">SKU</th>
                                 <th style="padding:8px">Category</th>
                                 <th style="padding:8px">Qty</th>
                                 <th style="padding:8px">Revenue</th>
@@ -960,7 +965,7 @@
     const body = modal.querySelector('#topItemsModalBody'); body.innerHTML = '';
     (list||[]).forEach((it, i)=>{
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td style="padding:8px">${i+1}</td><td style="padding:8px">${escapeHtml(it.name)}</td><td style="padding:8px">${escapeHtml(it.category||'')}</td><td style="padding:8px">${it.qty ?? it.quantity ?? ''}</td><td style="padding:8px">${it.revenue ? (new Intl.NumberFormat('en-PH',{style:'currency',currency:'PHP'}).format(it.revenue)):''}</td>`;
+        tr.innerHTML = `<td style="padding:8px">${i+1}</td><td style="padding:8px">${escapeHtml(it.name)}</td><td style="padding:8px;font-family:monospace;font-size:12px;color:#4b5563;">${escapeHtml(it.sku || '—')}</td><td style="padding:8px">${escapeHtml(it.category||'')}</td><td style="padding:8px">${it.qty ?? it.quantity ?? ''}</td><td style="padding:8px">${it.revenue ? (new Intl.NumberFormat('en-PH',{style:'currency',currency:'PHP'}).format(it.revenue)):''}</td>`;
         body.appendChild(tr);
     });
 
@@ -1239,6 +1244,11 @@
         function showInventoryToasts(alerts) {
             var container = document.getElementById('inventory-toast-container');
             if (!container) return;
+
+            var panel = document.getElementById('notification-panel');
+            if (panel && !panel.classList.contains('hidden')) {
+                return; // Do not spawn toast popups while Notification Panel is open
+            }
 
             var newAlerts = (Array.isArray(alerts) ? alerts : []).filter(function(a) {
                 var toastKey = a.id + '_' + a.notification_type;

@@ -32,9 +32,9 @@
     </script>
 @endif
 
-        <div class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="rounded-[10px] border border-slate-200 bg-white overflow-hidden shadow-sm">
             @if($archivedSuppliers->isEmpty())
-                <div class="rounded-[24px] border border-dashed border-slate-300 bg-slate-50/70 p-12 text-center text-slate-500">
+                <div class="p-12 text-center text-slate-500">
                     <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
                     </svg>
@@ -44,7 +44,7 @@
             @else
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-left text-sm text-slate-700">
-                        <thead class="text-xs font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-200" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+                        <thead class="text-xs font-semibold uppercase tracking-wider text-white border-b border-slate-800 bg-[#0f172a]" style="background-color: #0f172a;">
                             <tr>
                                 <th class="px-4 py-3">Supplier Name</th>
                                 <th class="px-4 py-3">Contact Person</th>
@@ -77,7 +77,7 @@
                 </div>
 
                 @if($archivedSuppliers->hasPages())
-                    <div class="mt-6 flex items-center justify-between border-t border-slate-200 pt-4">
+                    <div class="p-4 flex items-center justify-between border-t border-slate-200">
                         <div class="text-xs text-slate-500">
                             Showing {{ $archivedSuppliers->firstItem() }} to {{ $archivedSuppliers->lastItem() }} of {{ $archivedSuppliers->total() }} results
                         </div>

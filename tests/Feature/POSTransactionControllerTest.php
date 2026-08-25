@@ -118,3 +118,131 @@ it('reduces stock for products sold through the POS', function () {
     $product->refresh();
     expect($product->stock_quantity)->toBe(7);
 });
+
+it('validates stock correctly via api.pos.validate_stock', function () {
+    $user = User::create([
+        'name' => 'Cashier User',
+        'email' => 'cashier@example.com',
+        'password' => Hash::make('password123'),
+        'role' => 'cashier',
+    ]);
+
+    $inStock = Product::create([
+        'name' => 'Chain Lube',
+        'stock_quantity' => 5,
+    ]);
+
+    $outOfStock = Product::create([
+        'name' => 'Helmet Visor',
+        'stock_quantity' => 0,
+    ]);
+
+    $lowStock = Product::create([
+        'name' => 'Spark Plug',
+        'stock_quantity' => 2,
+    ]);
+
+    // Test with sufficient stock
+    $res1 = $this->actingAs($user)->postJson(route('api.pos.validate_stock'), [
+        'items' => [
+            ['id' => $inStock->id, 'quantity' => 3],
+        ],
+    ]);
+    $res1->assertOk();
+    expect($res1->json('valid'))->toBeTrue();
+    expect($res1->json('errors'))->toBeEmpty();
+
+    // Test with out of stock product
+    $res2 = $this->actingAs($user)->postJson(route('api.pos.validate_stock'), [
+        'items' => [
+            ['id' => $outOfStock->id, 'quantity' => 1],
+        ],
+    ]);
+    $res2->assertOk();
+    expect($res2->json('valid'))->toBeFalse();
+    expect($res2->json('items.0.is_out_of_stock'))->toBeTrue();
+
+    // Test with quantity exceeding available stock
+    $res3 = $this->actingAs($user)->postJson(route('api.pos.validate_stock'), [
+        'items' => [
+            ['id' => $lowStock->id, 'quantity' => 5],
+        ],
+    ]);
+    $res3->assertOk();
+    expect($res3->json('valid'))->toBeFalse();
+    expect($res3->json('items.0.is_insufficient'))->toBeTrue();
+    expect($res3->json('items.0.current_stock'))->toBe(2);
+});
+
+it('prevents checkout when product is out of stock (0 stock)', function () {
+    $user = User::create([
+        'name' => 'Cashier User',
+        'email' => 'cashier@example.com',
+        'password' => Hash::make('password123'),
+        'role' => 'cashier',
+    ]);
+
+    $zeroStockProduct = Product::create([
+        'name' => 'Zero Stock Item',
+        'stock_quantity' => 0,
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('api.pos.transactions.store'), [
+        'invoice_number' => 'INV-ZERO-1',
+        'items' => [[
+            'id' => $zeroStockProduct->id,
+            'name' => $zeroStockProduct->name,
+            'quantity' => 1,
+            'unit_price' => 500,
+        ]],
+        'subtotal' => 500,
+        'services_total' => 0,
+        'extra_charge' => 0,
+        'discount' => 0,
+        'tax' => 60,
+        'total_amount' => 560,
+        'payment_method' => 'cash',
+    ]);
+
+    $response->assertStatus(422);
+    $response->assertJsonFragment(['success' => false]);
+    $zeroStockProduct->refresh();
+    expect($zeroStockProduct->stock_quantity)->toBe(0);
+});
+
+it('prevents checkout when requested quantity exceeds available stock', function () {
+    $user = User::create([
+        'name' => 'Admin User',
+        'email' => 'admin@example.com',
+        'password' => Hash::make('password123'),
+        'role' => 'admin',
+    ]);
+
+    $product = Product::create([
+        'name' => 'Limited Stock Item',
+        'stock_quantity' => 2,
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('api.pos.transactions.store'), [
+        'invoice_number' => 'INV-EXCEED-1',
+        'items' => [[
+            'id' => $product->id,
+            'name' => $product->name,
+            'quantity' => 5,
+            'unit_price' => 200,
+        ]],
+        'subtotal' => 1000,
+        'services_total' => 0,
+        'extra_charge' => 0,
+        'discount' => 0,
+        'tax' => 120,
+        'total_amount' => 1120,
+        'payment_method' => 'cash',
+    ]);
+
+    $response->assertStatus(422);
+    $response->assertJsonFragment(['success' => false]);
+    $product->refresh();
+    expect($product->stock_quantity)->toBe(2);
+});
+

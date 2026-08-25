@@ -4,29 +4,21 @@
         .motorcycle-group::-webkit-scrollbar { width: 6px; }
         .motorcycle-group::-webkit-scrollbar-track { background: #f1f5f9; }
         .motorcycle-group::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        .qr-preview { width: 150px; height: 150px; }
+        .qr-preview { width: 180px; height: 180px; }
     </style>
 
-    <div class="max-w-4xl mx-auto space-y-4">
-        <div class="mb-2">
-            <a href="{{ route('product-catalog.index') }}" class="inline-flex items-center gap-1.5 text-[#105f68] hover:underline text-xs font-semibold">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                Back to Products
-            </a>
-        </div>
-
-        <!-- Page Header -->
-        <div class="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-900">Add New Product</h1>
-                    <p class="mt-1 text-xs text-slate-500">Create a new product with SKU generation, QR code, and motorcycle compatibility.</p>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-[12px] bg-[#00fff2]/10 flex items-center justify-center">
-                        <svg class="w-4 h-4 text-[#105f68]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    </div>
-                </div>
+    <div class="space-y-4">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1 py-1 mb-2">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900">Add New Product</h1>
+                <p class="text-sm text-slate-500 mt-1">Create a new product with SKU generation, QR code, and motorcycle compatibility.</p>
+            </div>
+            <div>
+                <a href="{{ route('product-catalog.index') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-50 transition-all">
+                    <svg class="w-4 h-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Back to Products
+                </a>
             </div>
         </div>
 
@@ -44,7 +36,7 @@
                                        name="warehouse" 
                                        value="{{ old('warehouse') }}" 
                                        placeholder="e.g., Warehouse A" 
-                                       class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition">
+                                       class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm">
                                 @error('warehouse')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
@@ -55,7 +47,7 @@
                                 <div class="flex gap-2">
                                     <select name="product_description" 
                                             id="productDescriptionSelect"
-                                            class="flex-1 px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition" 
+                                            class="flex-1 px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm" 
                                             required>
                                         <option value="">Select product description</option>
                                         @foreach($productDescriptions as $description)
@@ -68,8 +60,8 @@
                                     </select>
                                     <button type="button" 
                                             id="addNewProductDescBtn"
-                                            class="px-3 py-2 rounded-[12px] bg-[#0f172a] text-white text-xs font-semibold hover:bg-[#1e293b] transition">
-                                        + New
+                                            class="shrink-0 h-10 px-4 rounded-[12px] bg-[#00fff2] text-slate-900 text-xs font-bold hover:bg-[#00e6da] transition shadow-sm inline-flex items-center justify-center text-center leading-none whitespace-nowrap gap-1">
+                                        <span class="text-sm font-black">+</span><span>New</span>
                                     </button>
                                 </div>
                                 @error('product_description')
@@ -81,7 +73,7 @@
                                 <label class="text-xs font-semibold text-slate-600 mb-1 block">Brand <span class="text-red-500">*</span></label>
                                 <select name="brand" 
                                         id="brandSelect"
-                                        class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition" 
+                                        class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm" 
                                         required>
                                     <option value="">Select product description first</option>
                                 </select>
@@ -96,7 +88,7 @@
                                        name="product_name" 
                                        value="{{ old('product_name') }}" 
                                        placeholder="e.g., Additional product name" 
-                                       class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition">
+                                       class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm">
                                 @error('product_name')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
@@ -109,7 +101,7 @@
                                            name="size" 
                                            value="{{ old('size') }}" 
                                            placeholder="e.g., L, XL, 14 inch" 
-                                           class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition">
+                                           class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm">
                                     @error('size')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -120,7 +112,7 @@
                                            name="color" 
                                            value="{{ old('color') }}" 
                                            placeholder="e.g., Black, Red, Blue" 
-                                           class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition">
+                                           class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm">
                                     @error('color')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -135,7 +127,7 @@
                                            value="{{ old('stock_quantity') ?? 0 }}" 
                                            min="0" 
                                            placeholder="0" 
-                                           class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition">
+                                           class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm">
                                     @error('stock_quantity')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -147,7 +139,7 @@
                                            value="{{ old('reorder_level') ?? 10 }}" 
                                            min="0" 
                                            placeholder="10" 
-                                           class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition">
+                                           class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm">
                                     @error('reorder_level')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -162,11 +154,11 @@
                                            id="skuInput"
                                            value="{{ old('sku') }}" 
                                            placeholder="Auto-generated or enter manually" 
-                                           class="flex-1 px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent font-mono transition" 
+                                           class="flex-1 px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 font-mono transition shadow-sm" 
                                            required>
                                     <button type="button" 
                                             id="generateSkuBtn"
-                                            class="px-4 py-2 rounded-[12px] bg-slate-100 border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-200 transition">
+                                            class="shrink-0 h-10 px-4 rounded-[12px] bg-[#0f172a] text-white text-xs font-semibold hover:bg-[#1e293b] transition shadow-sm flex items-center justify-center whitespace-nowrap">
                                         Generate SKU
                                     </button>
                                 </div>
@@ -180,7 +172,7 @@
                                 <textarea name="description" 
                                           rows="3" 
                                           placeholder="Product description (optional)" 
-                                          class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition">{{ old('description') }}</textarea>
+                                          class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm">{{ old('description') }}</textarea>
                                 @error('description')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
@@ -195,7 +187,7 @@
                                     <input type="date" 
                                            name="manufacturing_date" 
                                            value="{{ old('manufacturing_date') }}" 
-                                           class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition">
+                                           class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm">
                                     @error('manufacturing_date')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -207,7 +199,7 @@
                                            name="batch_lot_number" 
                                            value="{{ old('batch_lot_number') }}" 
                                            placeholder="e.g., LOT-2024-001" 
-                                           class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition">
+                                           class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm">
                                     @error('batch_lot_number')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -218,7 +210,7 @@
                                     <input type="date" 
                                            name="expiration_date" 
                                            value="{{ old('expiration_date') }}" 
-                                           class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition">
+                                           class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm">
                                     @error('expiration_date')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -227,7 +219,7 @@
 
                             <div>
                                 <label class="text-xs font-semibold text-slate-600 mb-1 block">Status <span class="text-red-500">*</span></label>
-                                <select name="status" class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition" required>
+                                <select name="status" id="statusSelect" class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm h-10" required>
                                     <option value="Active" {{ old('status', 'Active') == 'Active' ? 'selected' : '' }}>Active</option>
                                     <option value="Inactive" {{ old('status') == 'Inactive' ? 'selected' : '' }}>Inactive</option>
                                 </select>
@@ -238,7 +230,7 @@
 
                             <div>
                                 <label class="text-xs font-semibold text-slate-600 mb-2 block">Compatible Motorcycle Models <span class="text-red-500">*</span></label>
-                                <div class="border border-slate-300 rounded-[16px] p-4 motorcycle-group">
+                                <div class="border border-slate-300 rounded-[12px] p-4 motorcycle-group">
                                     @foreach($motorcycles as $brand => $models)
                                         <div class="mb-4">
                                             <h4 class="text-xs font-bold text-slate-900 mb-2">{{ $brand }}</h4>
@@ -264,81 +256,175 @@
 
                         <!-- Right Column - QR Preview -->
                         <div class="lg:col-span-1">
-                            <div class="bg-slate-50 rounded-[18px] p-4 border border-slate-200">
-                                <h3 class="text-xs font-bold text-slate-900 mb-3">QR Code Preview</h3>
+                            <div class="bg-[#0f172a] rounded-[12px] p-4 border border-slate-800 shadow-sm">
+                                <h3 class="text-xs font-bold text-white mb-3">QR Code Preview</h3>
                                 <div class="flex items-center justify-center mb-4">
-                                    <div id="qrPreview" class="qr-preview bg-white rounded-[12px] border border-slate-200 flex items-center justify-center">
+                                    <div id="qrPreview" class="qr-preview bg-white rounded-[12px] border border-slate-700 flex items-center justify-center">
                                         <span class="text-xs text-slate-400">Enter SKU to preview</span>
                                     </div>
                                 </div>
-                                <p class="text-xs text-slate-500 text-center">QR code will be automatically generated when you save the product.</p>
+                                <p class="text-xs text-slate-300 text-center">QR code will be automatically generated when you save the product.</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Footer Actions -->
-                <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center gap-3">
-                    <button type="submit" class="px-5 py-2 rounded-full bg-[#00fff2] text-black text-xs font-semibold hover:bg-[#00e6da] transition shadow-sm">
-                        Save Product
-                    </button>
-                    <a href="{{ route('product-catalog.index') }}" class="px-5 py-2 rounded-full border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-white transition">
+                <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-start gap-3">
+                    <a href="{{ route('product-catalog.index') }}" class="rounded-[10px] bg-black/10 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-black/20 transition">
                         Cancel
                     </a>
+                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-4 py-2 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#00e6da] transition">
+                        Save Product
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Add New Product Description Modal -->
-    <div id="addProductDescModal" class="hidden fixed inset-0 backdrop-blur-sm bg-black/40 z-50">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200">
-                <div class="px-6 py-5 bg-[#0f172a]">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-base font-bold text-white">Add New Product Description</h3>
-                        <button id="closeProductDescModal" class="text-slate-400 hover:text-white transition p-1 hover:bg-slate-700/50 rounded-lg">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                        </button>
-                    </div>
+    <!-- Add New Product Description Modal (Matching Add User Modal design) -->
+    <div id="addProductDescModal" class="hidden fixed inset-0 z-[10000] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" id="closeProductDescModalBackdrop"></div>
+        <div class="relative w-full max-w-md bg-white rounded-[28px] border border-slate-200 shadow-[0_30px_80px_rgba(15,23,42,0.18)] overflow-hidden transform transition-all z-10">
+            <!-- Header (matching Add User Modal style) -->
+            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div>
+                    <h3 class="text-xl font-bold text-black">Add New Product Description</h3>
+                    <p class="text-sm text-slate-800 font-medium mt-0.5">Enter description name and default brand.</p>
                 </div>
-                <form id="addProductDescForm" class="p-6 space-y-4">
-                    @csrf
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Product Description Name <span class="text-red-500">*</span></label>
-                        <input type="text" 
-                               id="newProductDescName" 
-                               name="name" 
-                               placeholder="e.g., Brake Pads" 
-                               class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition" 
-                               required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Brand <span class="text-red-500">*</span></label>
-                        <input type="text" 
-                               id="newProductDescBrand" 
-                               name="brand" 
-                               placeholder="e.g., Bosch" 
-                               class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition" 
-                               required>
-                    </div>
-                    <div class="flex gap-3 pt-4">
-                        <button type="button" id="cancelProductDesc" class="flex-1 px-4 py-2 rounded-full border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition">
-                            Cancel
-                        </button>
-                        <button type="submit" class="flex-1 px-4 py-2 rounded-full bg-[#00fff2] text-black text-xs font-semibold hover:bg-[#00e6da] transition shadow-sm">
-                            Add Description
-                        </button>
-                    </div>
-                </form>
+                <button type="button" id="closeProductDescModal" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
+            <form id="addProductDescForm" class="p-6 space-y-4">
+                @csrf
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Product Description Name <span class="text-red-500">*</span></label>
+                    <input type="text" 
+                           id="newProductDescName" 
+                           name="name" 
+                           placeholder="e.g., Brake Pads" 
+                           class="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 shadow-sm hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" 
+                           required>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Brand <span class="text-red-500">*</span></label>
+                    <input type="text" 
+                           id="newProductDescBrand" 
+                           name="brand" 
+                           placeholder="e.g., Bosch" 
+                           class="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 shadow-sm hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" 
+                           required>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" id="cancelProductDesc" class="rounded-[10px] bg-black/10 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-black/20 transition flex-1">
+                        Cancel
+                    </button>
+                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-4 py-2 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#00e6da] transition flex-1">
+                        Add Description
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            function setupCustomSelectDropdown(selectId, placeholder) {
+                const select = document.getElementById(selectId);
+                if (!select || select.dataset.customized === 'true') return;
+                select.dataset.customized = 'true';
+                select.classList.add('hidden');
+
+                const wrapper = select.parentElement;
+                wrapper.classList.add('relative', 'flex-1');
+
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.id = selectId + 'Button';
+                button.className = 'custom-select-button w-full h-10 px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-left text-xs text-slate-900 flex items-center justify-between hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 transition shadow-sm';
+                button.innerHTML = `
+                    <span class="custom-select-label truncate"></span>
+                    <svg class="w-4 h-4 text-slate-500 shrink-0 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6"/>
+                    </svg>
+                `;
+                wrapper.insertBefore(button, select);
+
+                const panel = document.createElement('div');
+                panel.className = 'custom-select-panel hidden absolute left-0 top-full z-[999] mt-2 w-full max-h-60 overflow-y-auto rounded-[12px] border border-slate-200 bg-white p-3 space-y-1 shadow-xl';
+                wrapper.appendChild(panel);
+
+                const labelSpan = button.querySelector('.custom-select-label');
+
+                function renderOptions() {
+                    panel.innerHTML = '';
+                    Array.from(select.options).forEach((opt) => {
+                        const item = document.createElement('button');
+                        item.type = 'button';
+                        item.dataset.value = opt.value;
+                        const isSelected = opt.value === select.value;
+                        item.className = 'custom-select-item w-full rounded-[10px] px-3 py-2 text-left text-xs transition-colors duration-100 ' +
+                            (isSelected
+                                ? 'bg-slate-100 font-semibold text-slate-900'
+                                : 'text-slate-700 hover:bg-slate-100');
+                        item.textContent = opt.textContent;
+                        item.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            if (select.value !== opt.value) {
+                                select.value = opt.value;
+                                select.dispatchEvent(new Event('change', { bubbles: true }));
+                            }
+                            updateButtonLabel();
+                            closePanel();
+                        });
+                        panel.appendChild(item);
+                    });
+                }
+
+                function updateButtonLabel() {
+                    const selectedOption = select.options[select.selectedIndex];
+                    labelSpan.textContent = selectedOption ? selectedOption.textContent : (placeholder || '');
+                }
+
+                function openPanel() {
+                    document.querySelectorAll('.custom-select-panel').forEach((p) => {
+                        if (p !== panel) p.classList.add('hidden');
+                    });
+                    renderOptions();
+                    panel.classList.remove('hidden');
+                }
+
+                function closePanel() {
+                    panel.classList.add('hidden');
+                }
+
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (panel.classList.contains('hidden')) {
+                        openPanel();
+                    } else {
+                        closePanel();
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!wrapper.contains(e.target)) closePanel();
+                });
+
+                const observer = new MutationObserver(() => {
+                    updateButtonLabel();
+                    if (!panel.classList.contains('hidden')) renderOptions();
+                });
+                observer.observe(select, { childList: true, subtree: true, attributes: true });
+
+                updateButtonLabel();
+            }
+
+            setupCustomSelectDropdown('productDescriptionSelect', 'Select product description');
+            setupCustomSelectDropdown('brandSelect', 'Select brand');
+            setupCustomSelectDropdown('statusSelect', 'Active');
+
             const productDescriptionSelect = document.getElementById('productDescriptionSelect');
             const brandSelect = document.getElementById('brandSelect');
             const skuInput = document.getElementById('skuInput');
@@ -454,8 +540,8 @@
                 qrPreview.innerHTML = '';
                 const qr = new QRCode(qrPreview, {
                     text: sku,
-                    width: 150,
-                    height: 150,
+                    width: 180,
+                    height: 180,
                     colorDark: "#000000",
                     colorLight: "#ffffff",
                     correctLevel: QRCode.CorrectLevel.M
@@ -464,9 +550,18 @@
 
             // Add New Product Description Modal
             addNewProductDescBtn.addEventListener('click', function() {
+                document.querySelectorAll('.custom-select-panel').forEach(p => p.classList.add('hidden'));
                 addProductDescModal.classList.remove('hidden');
                 newProductDescName.focus();
             });
+
+            const closeProductDescModalBackdrop = document.getElementById('closeProductDescModalBackdrop');
+            if (closeProductDescModalBackdrop) {
+                closeProductDescModalBackdrop.addEventListener('click', function() {
+                    addProductDescModal.classList.add('hidden');
+                    addProductDescForm.reset();
+                });
+            }
 
             closeProductDescModal.addEventListener('click', function() {
                 addProductDescModal.classList.add('hidden');
@@ -543,5 +638,5 @@
             });
         });
     </script>
-    @vite(['resources/js/qrcode.js'])
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </x-layouts.app>

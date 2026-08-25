@@ -42,13 +42,13 @@
                                     <span id="headerNotificationBadge" class="absolute -top-1 -right-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-rose-600 px-1.5 text-[10px] font-semibold text-white hidden">0</span>
                                 </button>
                                 <div id="headerNotificationDropdown" class="absolute right-0 top-full z-[99999] mt-2 w-[24rem] overflow-hidden rounded-[15px] border border-slate-700/60 bg-gradient-to-b from-[#0b0c10] to-[#20232a] shadow-2xl shadow-black/40 hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right">
-                                    <div class="px-4 py-4 border-b border-slate-800/60">
+                                    <div class="px-4 py-4 border-b border-slate-800 bg-[#0f172a]" style="background-color: #0f172a;">
                                         <div class="flex items-center justify-between gap-3">
                                             <div>
-                                                <p class="text-sm font-semibold text-white">Inventory Notifications</p>
-                                                <p class="text-xs text-slate-400">Recent stock alerts and reminders.</p>
+                                                <p class="text-sm font-bold text-white">Inventory Notifications</p>
+                                                <p class="text-xs text-slate-300">Recent stock alerts and reminders.</p>
                                             </div>
-                                            <button id="headerNotificationClose" type="button" class="text-slate-400 transition hover:text-slate-200" aria-label="Close notifications">×</button>
+                                            <button id="headerNotificationClose" type="button" class="text-slate-400 transition hover:text-white font-bold text-lg" aria-label="Close notifications">×</button>
                                         </div>
                                     </div>
                                     <div id="headerNotificationList" class="max-h-80 overflow-y-auto">
@@ -87,7 +87,7 @@
                                             </div>
                                         </div>
                                         <div class="mt-3">
-                                            <span class="inline-flex items-center rounded-full border border-cyan-500/20 bg-cyan-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-cyan-300">
+                                            <span class="inline-flex items-center rounded-full border border-cyan-500/20 bg-cyan-500/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-cyan-300">
                                                 {{ ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'user')) }}
                                             </span>
                                         </div>
@@ -404,6 +404,36 @@
                 }
             })
             .catch(function() {});
+        })();
+
+        // Teleport all fixed modals directly to document.body so that their backdrop blur
+        // covers 100% of the screen without bottom white gaps or container clipping
+        (function() {
+            function teleportModals() {
+                document.querySelectorAll('.fixed.inset-0').forEach(function(el) {
+                    if (el.id !== 'mobile-overlay' && !el.closest('#sidebar-wrapper') && el.parentElement !== document.body) {
+                        document.body.appendChild(el);
+                    }
+                });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', teleportModals);
+            } else {
+                teleportModals();
+            }
+
+            setTimeout(teleportModals, 100);
+            setTimeout(teleportModals, 400);
+            setTimeout(teleportModals, 1000);
+
+            // Listen for any modal openings or dynamic modal creations
+            var modalObserver = new MutationObserver(function() {
+                teleportModals();
+            });
+            if (document.body) {
+                modalObserver.observe(document.body, { childList: true, subtree: true });
+            }
         })();
     </script>
 

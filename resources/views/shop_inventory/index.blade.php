@@ -50,7 +50,7 @@
         .modal-footer-button.secondary { background: #ffffff; color: #334155; border: 1px solid #cbd5e1; }
         .modal-footer-button.secondary:hover { background: #f8fafc; }
         .toast-container { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 60; display: flex; flex-direction: column; gap: 0.75rem; pointer-events: none; width: max-content; min-width: 280px; }
-        .toast { pointer-events: auto; display: flex; align-items: center; justify-between; gap: 0.8rem; background: #0f172a; color: #fff; border-radius: 12px; box-shadow: 0 10px 25px rgba(15,23,42,0.18); padding: 0.6rem 0.85rem; font-size: 0.8rem; animation: toast-in 0.22s ease forwards; }
+        .toast { pointer-events: auto; display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; background: #0f172a; color: #fff; border-radius: 12px; box-shadow: 0 10px 25px rgba(15,23,42,0.18); padding: 0.6rem 0.85rem; font-size: 0.8rem; animation: toast-in 0.22s ease forwards; }
         .toast.success { background: #0f172a; border-left: 4px solid #00fff2; }
         .toast.error { background: #ef4444; }
         .toast button { background: transparent; border: none; color: rgba(255,255,255,0.95); cursor: pointer; font-size: 0.9rem; line-height: 1; padding: 0; }
@@ -67,68 +67,68 @@
         <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
         
         <!-- Header -->
-        <div class="rounded-[22px] border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Shop Inventory Items</h1>
-                    <p class="mt-1 text-xs text-slate-500">Track and manage products across shop shelves for POS sales</p>
-                </div>
-                <div class="flex flex-wrap items-center gap-2 relative z-[100000001]">
-                    <button id="add-shelf-button" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[12px] border border-[#00fff2]/40 bg-[#00fff2] text-black hover:bg-[#00e6da] shadow-sm transition cursor-pointer" onclick="openAddShelfModal()">
-                        + Add Shelf
-                    </button>
-                    <button id="transfer-from-warehouse" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[12px] bg-[#0f172a] text-white hover:bg-slate-800 shadow-sm transition cursor-pointer">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
-                        </svg>
-                        Transfer from Warehouse
-                    </button>
-                    <button id="view-history" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[12px] bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 shadow-sm transition cursor-pointer">
-                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        History Logs
-                    </button>
-                    <a href="{{ route('shop.inventory.archived') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[12px] bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 shadow-sm transition">
-                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
-                        </svg>
-                        Archive List
-                    </a>
-                </div>
+        <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+            <div class="pl-3 lg:pl-2">
+                <h1 class="text-3xl font-bold text-slate-900">Shop Inventory Items</h1>
+                <p class="text-xs text-slate-500 mt-1">Track and manage products across shop shelves for POS sales</p>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap pr-4 relative z-[100000001]">
+                <button id="add-shelf-button" type="button" class="inline-flex items-center gap-2 rounded-[10px] border border-[#00fff2]/40 bg-[#00fff2] px-3 py-2 text-sm font-bold text-black shadow-sm hover:bg-[#00e6da] focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap" onclick="openAddShelfModal()">
+                    + Add Shelf
+                </button>
+                <button id="transfer-from-warehouse" type="button" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-900 bg-[#0f172a] px-3 py-2 text-sm font-bold text-white shadow-sm hover:bg-slate-800 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                    </svg>
+                    Transfer from Warehouse
+                </button>
+                <button id="view-history" type="button" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
+                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    History Logs
+                </button>
+                <a href="{{ route('shop.inventory.archived') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 whitespace-nowrap">
+                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                    </svg>
+                    Archive List
+                </a>
             </div>
         </div>
 
         <!-- Metrics Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
-                <div class="flex items-center justify-between gap-2">
-                    <div>
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-0.5">Total Shop Products</p>
-                        <p id="total-products" class="text-xl font-semibold text-slate-900">{{ $totalProducts ?? 0 }}</p>
-                        <p class="text-xs text-[#105f68] mt-0.5">Items allocated in shop</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Total Shop Products</p>
+                        <div class="mt-1">
+                            <p id="total-products" class="text-2xl font-bold text-black">{{ number_format($totalProducts ?? 0) }}</p>
+                            <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Items allocated across active shop shelves.</p>
+                        </div>
                     </div>
-                    <div class="flex h-9 w-9 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm shrink-0">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 7l9-4 9 4-9 4-9-4z" />
-                            <path d="M3 12l9 4 9-4" />
-                            <path d="M3 17l9 4 9-4" />
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
-                <div class="flex items-center justify-between gap-2">
-                    <div>
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 mb-0.5">Total Shop Shelves</p>
-                        <p id="total-shelves" class="text-xl font-semibold text-slate-900">{{ $totalShelves ?? 0 }}</p>
-                        <p class="text-xs text-[#105f68] mt-0.5">Active shop display units</p>
+            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-black text-xs font-semibold">Total Shop Shelves</p>
+                        <div class="mt-1">
+                            <p id="total-shelves" class="text-2xl font-bold text-black">{{ number_format($totalShelves ?? 0) }}</p>
+                            <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Active retail display shelves in shop.</p>
+                        </div>
                     </div>
-                    <div class="flex h-9 w-9 items-center justify-center rounded-[12px] bg-[#00fff2] text-black shadow-sm shrink-0">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 22h16V8.5L12 3 4 8.5V22z" />
-                            <path d="M9 22V12h6v10" />
+                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
+                        <svg class="w-5 h-5" style="color: #000000ff;" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                            <polyline points="22 4 12 14.01 9 11.01" />
                         </svg>
                     </div>
                 </div>
@@ -137,42 +137,82 @@
 
         <!-- Search and Filter Bar -->
         <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
-            <div class="flex flex-col lg:flex-row items-center gap-2">
-                <div class="relative flex-1 w-full">
-                    <input type="search" id="search-input" class="w-full pl-9 pr-3 py-1.5 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent transition" placeholder="Search product name, SKU, shelf...">
+            <div class="flex flex-col lg:flex-row items-center justify-between gap-2">
+                <div class="relative w-full lg:w-64">
+                    <input type="search" id="search-input" class="w-full pl-9 pr-3 py-1.5 text-xs rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm" placeholder="Search product name, SKU, shelf...">
                     <svg class="absolute left-2.5 top-2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                 </div>
-                <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
-                    <select id="product-description-filter" class="px-3 py-1.5 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent cursor-pointer">
-                        <option value="">All Descriptions</option>
-                        @php
-                            $descriptions = \App\Models\ProductDescription::where('is_active', true)->orderBy('name')->get();
-                            foreach($descriptions as $desc):
-                        @endphp
-                            <option value="{{ $desc->name }}">{{ $desc->name }}</option>
-                        @php endforeach; @endphp
-                    </select>
-                    <select id="brand-filter" class="px-3 py-1.5 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent cursor-pointer">
-                        <option value="">All Brands</option>
-                        @php
-                            $brands = \App\Models\Product::where('is_archived', false)
-                                ->whereNotNull('brand')
-                                ->where('brand', '!=', '')
-                                ->distinct()
-                                ->orderBy('brand')
-                                ->pluck('brand')
-                                ->toArray();
-                            foreach($brands as $brand):
-                        @endphp
-                            <option value="{{ $brand }}">{{ $brand }}</option>
-                        @php endforeach; @endphp
-                    </select>
-                    <select id="section-filter" class="px-3 py-1.5 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent cursor-pointer">
-                        <option value="">All Sections</option>
-                    </select>
-                    <button id="clear-search" class="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-[12px] transition">
+                <div class="flex flex-wrap items-center justify-end gap-2 w-full lg:w-auto">
+                    <div class="relative inline-block" id="dd-desc-wrapper">
+                        <select id="product-description-filter" class="hidden">
+                            <option value="">All Descriptions</option>
+                            @php
+                                $descriptions = \App\Models\ProductDescription::where('is_active', true)->orderBy('name')->get();
+                                foreach($descriptions as $desc):
+                            @endphp
+                                <option value="{{ $desc->name }}">{{ $desc->name }}</option>
+                            @php endforeach; @endphp
+                        </select>
+                        <button type="button" onclick="toggleDropdown('dd-desc-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
+                            <span id="dd-desc-label">All Descriptions</span>
+                            <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div id="dd-desc-menu" class="hidden absolute left-0 top-full z-50 mt-1 min-w-[160px] rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
+                            <button type="button" onclick="selectShopDropdownOption('product-description-filter', 'dd-desc-label', 'dd-desc-menu', '', 'All Descriptions')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Descriptions</button>
+                            @foreach($descriptions as $desc)
+                                <button type="button" onclick="selectShopDropdownOption('product-description-filter', 'dd-desc-label', 'dd-desc-menu', '{{ addslashes($desc->name) }}', '{{ addslashes($desc->name) }}')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">
+                                    {{ $desc->name }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="relative inline-block" id="dd-brand-wrapper">
+                        <select id="brand-filter" class="hidden">
+                            <option value="">All Brands</option>
+                            @php
+                                $brands = \App\Models\Product::where('is_archived', false)
+                                    ->whereNotNull('brand')
+                                    ->where('brand', '!=', '')
+                                    ->distinct()
+                                    ->orderBy('brand')
+                                    ->pluck('brand')
+                                    ->toArray();
+                                foreach($brands as $brand):
+                            @endphp
+                                <option value="{{ $brand }}">{{ $brand }}</option>
+                            @php endforeach; @endphp
+                        </select>
+                        <button type="button" onclick="toggleDropdown('dd-brand-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
+                            <span id="dd-brand-label">All Brands</span>
+                            <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div id="dd-brand-menu" class="hidden absolute left-0 top-full z-50 mt-1 min-w-[140px] rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
+                            <button type="button" onclick="selectShopDropdownOption('brand-filter', 'dd-brand-label', 'dd-brand-menu', '', 'All Brands')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Brands</button>
+                            @foreach($brands as $brand)
+                                <button type="button" onclick="selectShopDropdownOption('brand-filter', 'dd-brand-label', 'dd-brand-menu', '{{ addslashes($brand) }}', '{{ addslashes($brand) }}')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">
+                                    {{ $brand }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="relative inline-block" id="dd-section-wrapper">
+                        <select id="section-filter" class="hidden">
+                            <option value="">All Sections</option>
+                        </select>
+                        <button type="button" onclick="toggleDropdown('dd-section-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
+                            <span id="dd-section-label">All Sections</span>
+                            <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div id="dd-section-menu" class="hidden absolute left-0 top-full z-50 mt-1 min-w-[140px] rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
+                            <button type="button" onclick="selectShopDropdownOption('section-filter', 'dd-section-label', 'dd-section-menu', '', 'All Sections')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Sections</button>
+                        </div>
+                    </div>
+
+                    <button id="clear-search" onclick="document.getElementById('dd-desc-label').textContent='All Descriptions'; document.getElementById('dd-brand-label').textContent='All Brands'; document.getElementById('dd-section-label').textContent='All Sections';" class="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-[10px] transition cursor-pointer">
                         Clear
                     </button>
                 </div>
@@ -278,11 +318,12 @@
                 </div>
             @endif
         </div>
-    </div>  </div>
+    </div>
 
     <!-- Transfer from Warehouse Modal -->
-    <div id="transfer-warehouse-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center">
-        <div class="modal-panel p-8">
+    <div id="transfer-warehouse-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('transfer-warehouse-modal').classList.add('hidden')"></div>
+        <div class="relative modal-panel p-8 bg-white rounded-2xl shadow-xl max-w-2xl w-full">
             <h2 class="text-2xl font-bold text-slate-900 mb-6">Transfer from Warehouse to Shop</h2>
             <form id="transfer-warehouse-form" class="space-y-4">
                 <div class="modal-field">
@@ -341,113 +382,143 @@
     </div>
 
     <!-- Transfer Between Shelves Modal -->
-    <div id="transfer-shelves-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center">
-        <div class="modal-panel p-8">
-            <h2 class="text-2xl font-bold text-slate-900 mb-6">Transfer Between Shop Shelves</h2>
-            <form id="transfer-shelves-form" class="space-y-4">
+    <div id="transfer-shelves-modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('transfer-shelves-modal').classList.add('hidden')"></div>
+        <div class="relative modal-panel w-full max-w-lg overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
+            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div>
+                    <h2 class="text-xl font-bold text-black">Transfer Between Shop Shelves</h2>
+                    <p class="text-sm text-slate-800 font-medium">Move products between active shop shelf locations.</p>
+                </div>
+                <button type="button" onclick="document.getElementById('transfer-shelves-modal').classList.add('hidden')" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form id="transfer-shelves-form" class="px-6 py-6 space-y-5">
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="modal-field">
-                        <label class="block text-sm font-medium mb-2">Source Shelf</label>
-                        <select name="source_shelf_id" required class="w-full px-4 py-3">
+                    <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
+                        <label class="block text-sm font-semibold text-slate-900 mb-2">Source Shelf</label>
+                        <select name="source_shelf_id" required class="block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm">
                             <option value="">Select source shelf</option>
                         </select>
                     </div>
-                    <div class="modal-field">
-                        <label class="block text-sm font-medium mb-2">Destination Shelf</label>
-                        <select name="destination_shelf_id" required class="w-full px-4 py-3">
+                    <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
+                        <label class="block text-sm font-semibold text-slate-900 mb-2">Destination Shelf</label>
+                        <select name="destination_shelf_id" required class="block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm">
                             <option value="">Select destination shelf</option>
                         </select>
                     </div>
                 </div>
-                <div class="space-y-3">
-                    <label class="text-sm font-medium">Products to Transfer</label>
-                    <div id="source-shelf-products-container" class="space-y-2">
+                <div class="rounded-[28px] border border-slate-200 p-4 bg-white space-y-3">
+                    <label class="block text-sm font-semibold text-slate-900">Products to Transfer</label>
+                    <div id="source-shelf-products-container" class="space-y-2 max-h-60 overflow-y-auto">
                         <!-- Source shelf products will be loaded here -->
                     </div>
                 </div>
-                <div class="modal-actions flex justify-end gap-3">
-                    <button type="button" id="cancel-transfer-shelves" class="modal-footer-button secondary">Cancel</button>
-                    <button type="submit" class="modal-footer-button primary">Transfer Products</button>
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+                    <button type="button" id="cancel-transfer-shelves" class="rounded-[10px] bg-black/10 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-black/20 transition cursor-pointer">Cancel</button>
+                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">Transfer Products</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Return to Warehouse Modal -->
-    <div id="return-warehouse-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center">
-        <div class="modal-panel p-8">
-            <h2 class="text-2xl font-bold text-slate-900 mb-2">Return Products to Warehouse</h2>
-            <div id="return-shelf-source-label" class="mb-5 px-3 py-2 bg-slate-100 border border-slate-300 rounded-lg text-xs font-semibold text-slate-600 tracking-wide uppercase"></div>
-            <form id="return-warehouse-form">
+    <div id="return-warehouse-modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('return-warehouse-modal').classList.add('hidden')"></div>
+        <div class="relative modal-panel w-full max-w-lg overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
+            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div>
+                    <h2 class="text-xl font-bold text-black">Return Products to Warehouse</h2>
+                    <p class="text-sm text-slate-800 font-medium">Transfer inventory back from shop shelves to warehouse.</p>
+                </div>
+                <button type="button" onclick="document.getElementById('return-warehouse-modal').classList.add('hidden')" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form id="return-warehouse-form" class="px-6 py-6 space-y-5">
+                <div id="return-shelf-source-label" class="px-4 py-2.5 bg-slate-100 border border-slate-300 rounded-[12px] text-xs font-bold text-slate-700 tracking-wide uppercase"></div>
                 <input type="hidden" id="return-shelf-id" name="shelf_id">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2">Destination Warehouse Shelf</label>
-                    <select id="return-warehouse-shelf-select" name="warehouse_shelf_id" required style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; background: white; color: black; font-size: 14px;">
+                <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
+                    <label class="block text-sm font-semibold text-slate-900 mb-2">Destination Warehouse Shelf</label>
+                    <select id="return-warehouse-shelf-select" name="warehouse_shelf_id" required class="block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm">
                         <option value="">Select warehouse shelf</option>
                     </select>
                 </div>
-                <div class="space-y-3 mb-4">
-                    <label class="text-sm font-medium">Products to Return</label>
-                    <div id="return-shelf-products-container" class="space-y-2 max-h-96 overflow-y-auto">
+                <div class="rounded-[28px] border border-slate-200 p-4 bg-white space-y-3">
+                    <label class="block text-sm font-semibold text-slate-900">Products to Return</label>
+                    <div id="return-shelf-products-container" class="space-y-2 max-h-60 overflow-y-auto">
                         <!-- Shelf products will be loaded here -->
                     </div>
                 </div>
-                <div class="modal-actions flex justify-end gap-3">
-                    <button type="button" id="cancel-return-warehouse" class="modal-footer-button secondary">Cancel</button>
-                    <button type="submit" class="modal-footer-button primary">Return Products</button>
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+                    <button type="button" id="cancel-return-warehouse" class="rounded-[10px] bg-black/10 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-black/20 transition cursor-pointer">Cancel</button>
+                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">Return Products</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- History Modal -->
-    <div id="history-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center">
-        <div class="modal-panel p-8">
-            <h2 class="text-2xl font-bold text-slate-900 mb-6">Shop Inventory History</h2>
+    <div id="history-modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('history-modal').classList.add('hidden')"></div>
+        <div class="relative modal-panel w-full max-w-3xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)] flex flex-col">
+            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div>
+                    <h2 class="text-xl font-bold text-black">Shop Inventory History</h2>
+                    <p class="text-sm text-slate-800 font-medium">Audit inventory transfers, sales, and modifications.</p>
+                </div>
+                <button type="button" onclick="document.getElementById('history-modal').classList.add('hidden')" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
 
-            <!-- Date Filter -->
-            <div class="flex gap-3 mb-4">
-                <div class="flex-1">
-                    <label class="block text-xs text-gray-500 mb-1">Date Range</label>
-                    <select id="history-date-range" class="w-full px-3 py-2 border rounded-lg text-sm">
-                        <option value="">All Time</option>
-                        <option value="today">Today</option>
-                        <option value="this_week">This Week</option>
-                        <option value="this_month">This Month</option>
-                        <option value="this_year">This Year</option>
-                        <option value="custom">Custom Range</option>
-                    </select>
-                </div>
-                <div class="flex-1">
-                    <label class="block text-xs text-gray-500 mb-1">Action Type</label>
-                    <select id="history-action-type" class="w-full px-3 py-2 border rounded-lg text-sm">
-                        <option value="">All Actions</option>
-                        <option value="transfer_in">Transfer In (from Warehouse)</option>
-                        <option value="return_to_warehouse">Return to Warehouse</option>
-                        <option value="updated">Product Updated</option>
-                        <option value="pos_sale">POS Sale</option>
-                    </select>
-                </div>
-                <div id="custom-date-range" class="hidden flex gap-3 flex-1">
-                    <div class="flex-1">
-                        <label class="block text-xs text-gray-500 mb-1">From</label>
-                        <input type="date" id="history-from-date" class="w-full px-3 py-2 border rounded-lg text-sm">
+            <div class="p-6 space-y-5 flex-1 overflow-y-auto">
+                <!-- Date Filter -->
+                <div class="flex flex-wrap gap-3 p-4 rounded-[28px] border border-slate-200 bg-white">
+                    <div class="flex-1 min-w-[140px]">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Date Range</label>
+                        <select id="history-date-range" class="w-full px-3 py-2 border border-slate-300 rounded-[12px] text-sm focus:outline-none focus:ring-1 focus:ring-black/35">
+                            <option value="">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="this_week">This Week</option>
+                            <option value="this_month">This Month</option>
+                            <option value="this_year">This Year</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
                     </div>
-                    <div class="flex-1">
-                        <label class="block text-xs text-gray-500 mb-1">To</label>
-                        <input type="date" id="history-to-date" class="w-full px-3 py-2 border rounded-lg text-sm">
+                    <div class="flex-1 min-w-[140px]">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Action Type</label>
+                        <select id="history-action-type" class="w-full px-3 py-2 border border-slate-300 rounded-[12px] text-sm focus:outline-none focus:ring-1 focus:ring-black/35">
+                            <option value="">All Actions</option>
+                            <option value="transfer_in">Transfer In (from Warehouse)</option>
+                            <option value="return_to_warehouse">Return to Warehouse</option>
+                            <option value="updated">Product Updated</option>
+                            <option value="pos_sale">POS Sale</option>
+                        </select>
+                    </div>
+                    <div id="custom-date-range" class="hidden flex gap-3 flex-1 min-w-[200px]">
+                        <div class="flex-1">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">From</label>
+                            <input type="date" id="history-from-date" class="w-full px-3 py-2 border border-slate-300 rounded-[12px] text-sm focus:outline-none focus:ring-1 focus:ring-black/35">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">To</label>
+                            <input type="date" id="history-to-date" class="w-full px-3 py-2 border border-slate-300 rounded-[12px] text-sm focus:outline-none focus:ring-1 focus:ring-black/35">
+                        </div>
+                    </div>
+                    <div class="flex items-end">
+                        <button type="button" id="apply-date-filter" class="px-4 py-2 bg-[#00fff2] text-black font-bold rounded-[10px] text-sm hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">Filter</button>
                     </div>
                 </div>
-                <div class="flex items-end">
-                    <button type="button" id="apply-date-filter" class="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700">Filter</button>
+
+                <div id="history-container" class="space-y-3 max-h-96 overflow-y-auto rounded-[20px] border border-slate-200 p-4 bg-slate-50">
+                    <!-- History will be loaded here -->
                 </div>
             </div>
 
-            <div id="history-container" class="space-y-3 max-h-96 overflow-y-auto">
-                <!-- History will be loaded here -->
-            </div>
-            <div class="modal-actions flex justify-end gap-3 mt-6">
-                <button type="button" id="close-history" class="modal-footer-button secondary">Close</button>
+            <div class="flex items-center justify-end px-6 py-4 border-t border-slate-200 bg-slate-50">
+                <button type="button" id="close-history" class="rounded-[10px] bg-black/10 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-black/20 transition cursor-pointer">Close</button>
             </div>
         </div>
     </div>
@@ -561,7 +632,7 @@
                             <input type="number" step="0.01" min="0" class="product-price mt-1 block w-full px-4 py-3 text-sm" value="${product.price || ''}" placeholder="Price" />
                         </div>
                         <div class="flex items-end pb-1">
-                            <button type="button" class="remove-product-row text-sm font-semibold text-red-500 hover:text-red-700">Remove</button>
+                            <button type="button" class="remove-product-row text-sm font-semibold text-black hover:text-slate-700">Remove</button>
                         </div>
                     </div>
                 </div>
@@ -857,6 +928,39 @@
             }
         }
 
+        function toggleAddShelfLocationDropdown(e) {
+            if (e) e.stopPropagation();
+            const menu = document.getElementById('addShelfLocationDropdownMenu');
+            if (menu) menu.classList.toggle('hidden');
+        }
+
+        function selectAddShelfLocationOption(val, labelText) {
+            const selectEl = document.getElementById('add-shelf-location');
+            const labelSpan = document.getElementById('addShelfLocationSelectLabel');
+            const menu = document.getElementById('addShelfLocationDropdownMenu');
+            const newSectionInput = document.getElementById('add-shelf-new-section');
+
+            if (selectEl) {
+                selectEl.value = val;
+                selectEl.dispatchEvent(new Event('change'));
+            }
+            if (labelSpan) labelSpan.textContent = labelText;
+            if (menu) menu.classList.add('hidden');
+
+            if (val === 'ADD_NEW_SECTION') {
+                if (newSectionInput) {
+                    newSectionInput.classList.remove('hidden');
+                    newSectionInput.required = true;
+                    newSectionInput.focus();
+                }
+            } else {
+                if (newSectionInput) {
+                    newSectionInput.classList.add('hidden');
+                    newSectionInput.required = false;
+                }
+            }
+        }
+
         async function loadShopSections() {
             try {
                 const response = await fetch('/api/shop-inventory/shop-sections', {
@@ -865,43 +969,46 @@
                 const data = await response.json();
 
                 const locationSelect = document.getElementById('add-shelf-location');
-                locationSelect.innerHTML = '<option value="">Select location</option>';
+                const locationMenu = document.getElementById('addShelfLocationDropdownMenu');
+                const locationLabel = document.getElementById('addShelfLocationSelectLabel');
+
+                if (locationSelect) locationSelect.innerHTML = '<option value="">Select location</option>';
+                if (locationLabel) locationLabel.textContent = 'Select location';
+
+                let menuHtml = `<button type="button" onclick="selectAddShelfLocationOption('', 'Select location')" class="w-full text-center px-3 py-2.5 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">Select location</button>`;
 
                 if (data.success && data.sections && data.sections.length > 0) {
-                    let hasAvailable = false;
                     data.sections.forEach(section => {
-                        if (section.available > 0) {
-                            hasAvailable = true;
+                        const optText = section.available === 0 
+                            ? `${section.name} (Full - ${section.shelf_count}/${section.max} shelves)` 
+                            : `${section.name} (${section.available} available shelves - ${section.shelf_count}/${section.max})`;
+                        
+                        if (locationSelect) {
+                            const option = document.createElement('option');
+                            option.value = section.name;
+                            option.textContent = optText;
+                            if (section.available === 0) option.disabled = true;
+                            locationSelect.appendChild(option);
                         }
-                        const option = document.createElement('option');
-                        option.value = section.name;
-                        if (section.available === 0) {
-                            option.textContent = `${section.name} (Full - ${section.shelf_count}/${section.max} shelves)`;
-                            option.disabled = true;
-                        } else {
-                            option.textContent = `${section.name} (${section.available} available shelves - ${section.shelf_count}/${section.max})`;
-                        }
-                        locationSelect.appendChild(option);
-                    });
 
-                    // Add "Add Section" option if no available sections
-                    if (!hasAvailable) {
-                        const addSectionOption = document.createElement('option');
-                        addSectionOption.value = 'ADD_NEW_SECTION';
-                        addSectionOption.textContent = '+ Add New Section';
-                        addSectionOption.style.fontWeight = 'bold';
-                        addSectionOption.style.color = '#059669';
-                        locationSelect.appendChild(addSectionOption);
-                    }
+                        if (section.available > 0) {
+                            menuHtml += `<button type="button" onclick="selectAddShelfLocationOption('${section.name}', '${section.name}')" class="w-full text-center px-3 py-2.5 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">${optText}</button>`;
+                        } else {
+                            menuHtml += `<button type="button" disabled class="w-full text-center px-3 py-2.5 rounded-[8px] text-xs font-semibold text-slate-400 bg-slate-50 cursor-not-allowed">${optText}</button>`;
+                        }
+                    });
                 }
 
-                // Always add "Add Section" option at the end
-                const addSectionOption = document.createElement('option');
-                addSectionOption.value = 'ADD_NEW_SECTION';
-                addSectionOption.textContent = '+ Add New Section';
-                addSectionOption.style.fontWeight = 'bold';
-                addSectionOption.style.color = '#059669';
-                locationSelect.appendChild(addSectionOption);
+                menuHtml += `<button type="button" onclick="selectAddShelfLocationOption('ADD_NEW_SECTION', '+ Add New Section')" class="w-full text-center px-3 py-2.5 rounded-[8px] text-xs font-bold text-black hover:bg-slate-100 transition cursor-pointer">+ Add New Section</button>`;
+
+                if (locationMenu) locationMenu.innerHTML = menuHtml;
+
+                if (locationSelect) {
+                    const addSectionOption = document.createElement('option');
+                    addSectionOption.value = 'ADD_NEW_SECTION';
+                    addSectionOption.textContent = '+ Add New Section';
+                    locationSelect.appendChild(addSectionOption);
+                }
             } catch (error) {
                 console.error('Error loading shop sections:', error);
             }
@@ -913,6 +1020,33 @@
             document.getElementById('add-shelf-modal-form').reset();
         }
 
+        function toggleDropdown(menuId, e) {
+            if (e) e.stopPropagation();
+            const target = document.getElementById(menuId);
+            document.querySelectorAll('.dropdown-menu, [id$="-menu"]').forEach(m => {
+                if (m !== target) m.classList.add('hidden');
+            });
+            if (target) target.classList.toggle('hidden');
+        }
+
+        function selectShopDropdownOption(selectId, labelId, menuId, val, labelText) {
+            const selectEl = document.getElementById(selectId);
+            const labelSpan = document.getElementById(labelId);
+            const menu = document.getElementById(menuId);
+            if (selectEl) {
+                selectEl.value = val;
+                selectEl.dispatchEvent(new Event('change'));
+            }
+            if (labelSpan) labelSpan.textContent = labelText;
+            if (menu) menu.classList.add('hidden');
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.relative')) {
+                document.querySelectorAll('[id$="-menu"]').forEach(m => m.classList.add('hidden'));
+            }
+        });
+
         async function loadSectionsForFilter() {
             try {
                 const response = await fetch('/api/shop-inventory/shop-sections', {
@@ -921,15 +1055,23 @@
                 const data = await response.json();
 
                 const sectionFilter = document.getElementById('section-filter');
-                sectionFilter.innerHTML = '<option value="">All Sections</option>';
+                if (sectionFilter) sectionFilter.innerHTML = '<option value="">All Sections</option>';
 
-                if (data.success && data.sections && data.sections.length > 0) {
-                    data.sections.forEach(section => {
-                        const option = document.createElement('option');
-                        option.value = section.name;
-                        option.textContent = section.name;
-                        sectionFilter.appendChild(option);
-                    });
+                const sectionMenu = document.getElementById('dd-section-menu');
+                if (sectionMenu) {
+                    let html = `<button type="button" onclick="selectShopDropdownOption('section-filter', 'dd-section-label', 'dd-section-menu', '', 'All Sections')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Sections</button>`;
+                    if (data.success && data.sections && data.sections.length > 0) {
+                        data.sections.forEach(section => {
+                            if (sectionFilter) {
+                                const option = document.createElement('option');
+                                option.value = section.name;
+                                option.textContent = section.name;
+                                sectionFilter.appendChild(option);
+                            }
+                            html += `<button type="button" onclick="selectShopDropdownOption('section-filter', 'dd-section-label', 'dd-section-menu', '${section.name}', '${section.name}')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">${section.name}</button>`;
+                        });
+                    }
+                    sectionMenu.innerHTML = html;
                 }
             } catch (error) {
                 console.error('Error loading sections for filter:', error);
@@ -1049,11 +1191,11 @@
             }
 
             const row = document.createElement('div');
-            row.className = 'flex items-center gap-2 bg-slate-50 rounded-lg p-3';
+            row.className = 'flex items-center gap-2 bg-slate-50 rounded-[16px] border border-slate-200/80 p-3';
             row.innerHTML = `
                 <div class="flex items-center gap-1 flex-1">
                     <label class="text-xs font-semibold text-slate-600 whitespace-nowrap">PRODUCT NAME:</label>
-                    <input type="text" class="add-shelf-product-name flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Enter product name">
+                    <input type="text" class="add-shelf-product-name flex-1 px-3 py-2 border border-slate-300 rounded-[12px] text-sm bg-white focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm" placeholder="Enter product name">
                 </div>
                 <div class="flex items-center gap-1">
                     <label class="text-xs font-semibold text-slate-600 whitespace-nowrap">SKU:</label>
@@ -1061,14 +1203,14 @@
                 </div>
                 <div class="flex items-center gap-1">
                     <label class="text-xs font-semibold text-slate-600 whitespace-nowrap">QTY:</label>
-                    <input type="number" class="add-shelf-product-qty w-16 px-2 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" min="1" value="1">
+                    <input type="number" class="add-shelf-product-qty w-16 px-2 py-2 border border-slate-300 rounded-[12px] text-sm bg-white focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm" min="1" value="1">
                 </div>
                 <div class="flex items-center gap-1">
                     <label class="text-xs font-semibold text-slate-600 whitespace-nowrap">PRICE:</label>
-                    <input type="number" class="add-shelf-product-price w-20 px-2 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" min="0" step="0.01">
+                    <input type="number" class="add-shelf-product-price w-20 px-2 py-2 border border-slate-300 rounded-[12px] text-sm bg-white focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm" min="0" step="0.01">
                 </div>
-                <button type="button" onclick="this.parentElement.remove(); updateAddShelfProductButton();" class="text-red-500 hover:text-red-700 p-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button type="button" onclick="this.parentElement.remove(); updateAddShelfProductButton();" class="text-black hover:bg-black/10 p-2 rounded-[10px] transition cursor-pointer">
+                    <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
@@ -1694,102 +1836,135 @@
     <script src="/js/shop_inventory.js"></script>
 
     <!-- Add Shelf Modal -->
-    <div id="add-shelf-modal-backdrop" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center z-[100000002] px-4 py-8">
-        <div class="modal-panel p-6 max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-2xl font-semibold text-slate-900">Add Shelf</h2>
-                <button id="add-shelf-modal-close" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 transition hover:bg-slate-200">✕</button>
+    <div id="add-shelf-modal-backdrop" class="fixed inset-0 hidden items-center justify-center z-[100000002] px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeAddShelfModal()"></div>
+        <div class="relative modal-panel w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)] flex flex-col">
+            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div>
+                    <h2 class="text-xl font-bold text-black">Add Shelf</h2>
+                    <p class="text-sm text-slate-800 font-medium">Configure shelf location, capacity, and products before saving.</p>
+                </div>
+                <button id="add-shelf-modal-close" type="button" onclick="closeAddShelfModal()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
 
-            <form id="add-shelf-modal-form" class="space-y-6">
-                <div class="space-y-4">
-                    <div class="modal-field p-4">
-                        <label class="block text-sm font-semibold text-slate-800 mb-2">Shelf Name</label>
-                        <input id="add-shelf-name" type="text" class="block w-full px-4 py-3 text-sm text-slate-900 rounded-md border border-slate-300" placeholder="Enter shelf name" required />
+            <form id="add-shelf-modal-form" class="flex flex-col flex-1 overflow-hidden">
+                <div class="px-6 py-6 overflow-y-auto space-y-5 flex-1">
+                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                        <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
+                            <label class="block text-sm font-semibold text-slate-900 mb-2">Shelf Name</label>
+                            <input id="add-shelf-name" type="text" class="block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm" placeholder="Enter shelf name" required />
+                        </div>
+
+                        <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
+                            <label class="block text-sm font-semibold text-slate-900 mb-2">Location</label>
+                            <select id="add-shelf-location" class="hidden">
+                                <option value="">Select location</option>
+                            </select>
+                            <div class="relative" id="addShelfLocationDropdownWrapper">
+                                <button type="button" onclick="toggleAddShelfLocationDropdown(event)" class="w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-left text-sm font-medium text-slate-900 flex items-center justify-between gap-2 hover:border-slate-400 focus:outline-none focus:ring-1 focus:ring-black/35 transition shadow-sm cursor-pointer">
+                                    <span id="addShelfLocationSelectLabel">Select location</span>
+                                    <svg class="w-4 h-4 text-slate-500 flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                                <div id="addShelfLocationDropdownMenu" class="hidden absolute left-0 right-0 top-full z-[100000005] mt-1 rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
+                                    <button type="button" onclick="selectAddShelfLocationOption('', 'Select location')" class="w-full text-center px-3 py-2.5 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">Select location</button>
+                                </div>
+                            </div>
+                            <input type="text" id="add-shelf-new-section" class="hidden block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm mt-2" placeholder="Enter new section name" />
+                        </div>
                     </div>
 
-                    <div class="modal-field p-4">
-                        <label class="block text-sm font-semibold text-slate-800 mb-2">Location</label>
-                        <select id="add-shelf-location" class="block w-full px-4 py-3 text-sm text-slate-900 rounded-md border border-slate-300 bg-white">
-                            <option value="">Select location</option>
-                        </select>
-                        <input type="text" id="add-shelf-new-section" class="hidden block w-full px-4 py-3 text-sm text-slate-900 rounded-md border border-slate-300 mt-2" placeholder="Enter new section name" />
-                    </div>
-
-                    <div class="modal-field p-4">
-                        <label class="block text-sm font-semibold text-slate-800 mb-1">Shelf Capacity</label>
+                    <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
+                        <label class="block text-sm font-semibold text-slate-900 mb-1">Shelf Capacity</label>
                         <input id="add-shelf-capacity" type="number" min="1" value="10"
-                               class="block w-full px-4 py-3 text-sm text-slate-900 rounded-md border border-slate-300 focus:ring-emerald-500 focus:border-emerald-500"
+                               class="block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm"
                                placeholder="e.g. 10" />
-                        <p class="text-xs text-slate-400 mt-1">💡 You can increase this to allow more products per shelf. Default is 10.</p>
+                        <p class="text-xs text-slate-500 mt-2 font-medium flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-slate-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C8.8 12.16 8 10.66 8 9c0-2.21 1.79-4 4-4s4 1.79 4 4c0 1.66-.8 3.16-2.15 4.1z"/>
+                            </svg>
+                            <span>You can increase this to allow more products per shelf. Default is 10.</span>
+                        </p>
                     </div>
 
-                    <div class="modal-field p-4">
+                    <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                             <div>
-                                <p class="text-sm font-semibold text-slate-800">Products</p>
-                                <p class="text-xs text-slate-500 mt-1">Enter product name, quantity, and price. SKU will auto-generate.</p>
+                                <h3 class="text-base font-semibold text-slate-900">Products</h3>
+                                <p class="text-xs text-slate-500 mt-0.5">Enter product name, quantity, and price. SKU will auto-generate.</p>
                             </div>
-                            <button type="button" id="add-shelf-product-row" class="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">+ Add product</button>
+                            <button type="button" id="add-shelf-product-row" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer">+ Add product</button>
                         </div>
                         <div id="add-shelf-product-rows" class="grid gap-3 max-h-[540px] overflow-y-auto"></div>
                     </div>
                 </div>
 
-                <div class="modal-actions flex flex-col gap-3 sm:flex-row sm:justify-end">
-                    <button type="button" id="add-shelf-modal-cancel" class="modal-footer-button secondary">Cancel</button>
-                    <button type="submit" class="modal-footer-button primary">Save shelf</button>
+                <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
+                    <button type="button" id="add-shelf-modal-cancel" onclick="closeAddShelfModal()" class="rounded-[10px] bg-black/10 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-black/20 transition cursor-pointer">Cancel</button>
+                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">Save shelf</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Edit Shelf Modal -->
-    <div id="edit-modal-backdrop" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center z-50 px-4 py-8">
-        <div class="modal-panel p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between mb-4">
-                <h2 id="edit-modal-title" class="text-2xl font-semibold text-slate-900">Edit Shelf</h2>
-                <button id="edit-modal-close" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 transition hover:bg-slate-200">✕</button>
+    <div id="edit-modal-backdrop" class="fixed inset-0 hidden items-center justify-center z-50 px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeEditModal()"></div>
+        <div class="relative modal-panel w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)] flex flex-col">
+            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div>
+                    <h2 id="edit-modal-title" class="text-xl font-bold text-black">Edit Shelf</h2>
+                    <p class="text-sm text-slate-800 font-medium">Update shelf information and assigned products.</p>
+                </div>
+                <button id="edit-modal-close" type="button" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
 
-            <form id="edit-modal-form" class="space-y-6">
+            <form id="edit-modal-form" class="flex flex-col flex-1 overflow-hidden">
                 <input type="hidden" id="edit-shelf-id" />
 
-                <div class="space-y-4">
+                <div class="px-6 py-6 overflow-y-auto space-y-5 flex-1">
                     <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                        <div class="modal-field p-4">
-                            <label class="block text-sm font-semibold text-slate-800 mb-2">Shelf Name</label>
-                            <input id="edit-shelf-name" type="text" class="block w-full px-4 py-3 text-sm text-slate-900 rounded-md border border-slate-300 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Enter shelf name" required />
+                        <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
+                            <label class="block text-sm font-semibold text-slate-900 mb-2">Shelf Name</label>
+                            <input id="edit-shelf-name" type="text" class="block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm" placeholder="Enter shelf name" required />
                         </div>
-                        <div class="modal-field p-4">
-                            <label class="block text-sm font-semibold text-slate-800 mb-2">Location</label>
-                            <input id="edit-shelf-location" type="text" class="block w-full px-4 py-3 text-sm text-slate-900 rounded-md border border-slate-300 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Enter location" />
+                        <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
+                            <label class="block text-sm font-semibold text-slate-900 mb-2">Location</label>
+                            <input id="edit-shelf-location" type="text" class="block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm" placeholder="Enter location" />
                         </div>
                     </div>
 
-                    <div class="modal-field p-4">
-                        <label class="block text-sm font-semibold text-slate-800 mb-1">Shelf Capacity</label>
+                    <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
+                        <label class="block text-sm font-semibold text-slate-900 mb-1">Shelf Capacity</label>
                         <input id="edit-shelf-capacity" type="number" min="1" value="10"
-                               class="block w-full px-4 py-3 text-sm text-slate-900 rounded-md border border-slate-300 focus:ring-emerald-500 focus:border-emerald-500"
+                               class="block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm"
                                placeholder="e.g. 10" />
-                        <p class="text-xs text-slate-400 mt-1">💡 You can increase this to allow more products per shelf.</p>
+                        <p class="text-xs text-slate-500 mt-2 font-medium flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-slate-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C8.8 12.16 8 10.66 8 9c0-2.21 1.79-4 4-4s4 1.79 4 4c0 1.66-.8 3.16-2.15 4.1z"/>
+                            </svg>
+                            <span>You can increase this to allow more products per shelf.</span>
+                        </p>
                     </div>
 
-                    <div class="modal-field p-4">
+                    <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                             <div>
-                                <p class="text-sm font-semibold text-slate-800">Products</p>
-                                <p class="text-xs text-slate-500 mt-1">Choose existing inventory items, quantity, and price before saving.</p>
+                                <h3 class="text-base font-semibold text-slate-900">Products</h3>
+                                <p class="text-xs text-slate-500 mt-0.5">Choose existing inventory items, quantity, and price before saving.</p>
                             </div>
-                            <button type="button" id="edit-add-product-row" class="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">+ Add product</button>
+                            <button type="button" id="edit-add-product-row" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer">+ Add product</button>
                         </div>
                         <div id="edit-product-rows" class="grid gap-3 max-h-[400px] overflow-y-auto"></div>
                     </div>
                 </div>
 
-                <div class="modal-actions flex flex-col gap-3 sm:flex-row sm:justify-end">
-                    <button type="button" id="edit-modal-cancel" class="modal-footer-button secondary">Cancel</button>
-                    <button type="submit" class="modal-footer-button primary">Save Changes</button>
+                <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
+                    <button type="button" id="edit-modal-cancel" class="rounded-[10px] bg-black/10 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-black/20 transition cursor-pointer">Cancel</button>
+                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">Save Changes</button>
                 </div>
             </form>
         </div>

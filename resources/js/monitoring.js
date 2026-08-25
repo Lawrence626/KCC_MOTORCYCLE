@@ -6,6 +6,21 @@ let currentFilters = {
     restock_date: ''
 };
 let searchTimeout;
+
+function formatDate(dateStr) {
+    if (!dateStr || dateStr === '-') return '-';
+    try {
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return dateStr;
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    } catch (e) {
+        return dateStr;
+    }
+}
 let currentEditProduct = null;
 
 function setEditFieldError(fieldId, message) {
@@ -39,8 +54,27 @@ function populateEditProductForm(product) {
     document.getElementById('editUnitPrice').value = product.unit_price ?? 0;
     document.getElementById('editSupplier').value = product.supplier_name || '';
     document.getElementById('editCategory').value = product.category || '';
-    document.getElementById('editLastRestock').value = product.last_restock_date || '';
-    document.getElementById('editExpiryDate').value = product.expiry_date || '';
+    document.getElementById('editLastRestock').value = product.last_restock_date ? String(product.last_restock_date).split('T')[0] : '';
+    document.getElementById('editExpiryDate').value = product.expiry_date ? String(product.expiry_date).split('T')[0] : '';
+
+    // Sync custom category dropdown button text
+    const categoryMap = {
+        'engine_oil': 'Engine Oil',
+        'lubricants': 'Lubricants',
+        'battery': 'Battery',
+        'spark_plug': 'Spark Plug',
+        'brake_pads': 'Brake Pads',
+        'tires': 'Tires',
+        'filters': 'Filters',
+        'accessories': 'Accessories'
+    };
+    const catBtn = document.getElementById('editCategoryButton');
+    if (catBtn) {
+        const catSpan = catBtn.querySelector('span');
+        if (catSpan) {
+            catSpan.textContent = categoryMap[product.category] || product.category || 'Select Category';
+        }
+    }
     document.getElementById('editReorderLevel').value = product.reorder_level ?? 0;
     document.getElementById('editBarcode').value = product.barcode || '';
     document.getElementById('editDescription').value = product.description || '';
@@ -108,9 +142,38 @@ function closeEditProductModal() {
 }
 
 // Make function globally accessible
-window.openEditModal = function(productId) {
+window.openEditModal = function (productId) {
     openEditProductModal(productId);
 };
+
+async function archiveProduct(productId) {
+    if (!confirm('Are you sure you want to archive this product? It will be hidden from the main inventory.')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/product/${productId}/archive`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': window.AllStocks.csrfToken,
+                'Content-Type': 'application/json'
+            }
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Product archived successfully');
+            loadStats();
+            loadProducts(currentPage);
+        } else {
+            alert('Failed to archive product: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error archiving product:', error);
+        alert('Error archiving product');
+    }
+}
+window.archiveProduct = archiveProduct;
 
 // Auto-filter with debounce
 function performSearch() {
@@ -121,7 +184,7 @@ function performSearch() {
 function resetFilters() {
     const searchInput = document.getElementById('searchInput');
     if (searchInput) searchInput.value = '';
-    ['statusFilter','expiryStatusFilter','restockDateFilter'].forEach(id => {
+    ['statusFilter', 'expiryStatusFilter', 'restockDateFilter'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
@@ -134,7 +197,7 @@ function resetFilters() {
 function attachUIEvents() {
     const searchEl = document.getElementById('searchInput');
     if (searchEl) {
-        searchEl.addEventListener('input', function(e) {
+        searchEl.addEventListener('input', function (e) {
             currentFilters.search = e.target.value;
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
@@ -144,11 +207,11 @@ function attachUIEvents() {
     }
 
     const statusEl = document.getElementById('statusFilter');
-    if (statusEl) statusEl.addEventListener('change', function(e){ currentFilters.status = e.target.value; performSearch(); });
+    if (statusEl) statusEl.addEventListener('change', function (e) { currentFilters.status = e.target.value; performSearch(); });
     const expiryStatusEl = document.getElementById('expiryStatusFilter');
-    if (expiryStatusEl) expiryStatusEl.addEventListener('change', function(e){ currentFilters.expiry_status = e.target.value; performSearch(); });
+    if (expiryStatusEl) expiryStatusEl.addEventListener('change', function (e) { currentFilters.expiry_status = e.target.value; performSearch(); });
     const restockDateEl = document.getElementById('restockDateFilter');
-    if (restockDateEl) restockDateEl.addEventListener('change', function(e){ currentFilters.restock_date = e.target.value; performSearch(); });
+    if (restockDateEl) restockDateEl.addEventListener('change', function (e) { currentFilters.restock_date = e.target.value; performSearch(); });
 
     // Edit product modal events
     const closeEdit = document.getElementById('closeEditProductModal');
@@ -157,12 +220,12 @@ function attachUIEvents() {
     if (cancelEdit) cancelEdit.addEventListener('click', closeEditProductModal);
 
     const editProductModal = document.getElementById('editProductModal');
-    if (editProductModal) editProductModal.addEventListener('click', function(e) { if (e.target === this) closeEditProductModal(); });
+    if (editProductModal) editProductModal.addEventListener('click', function (e) { if (e.target === this) closeEditProductModal(); });
 
     // Edit product form submission
     const editProductForm = document.getElementById('editProductForm');
     if (editProductForm) {
-        editProductForm.addEventListener('submit', async function(e) {
+        editProductForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const productId = document.getElementById('editProductId')?.value;
@@ -260,7 +323,7 @@ function attachUIEvents() {
     // Wire select all checkbox
     const selectAllCheckbox = document.getElementById('selectAllCheckbox');
     if (selectAllCheckbox) {
-        selectAllCheckbox.addEventListener('change', function() {
+        selectAllCheckbox.addEventListener('change', function () {
             const productCheckboxes = document.querySelectorAll('.product-checkbox');
             productCheckboxes.forEach(checkbox => {
                 checkbox.checked = this.checked;
@@ -271,7 +334,7 @@ function attachUIEvents() {
     // Wire movement date filter
     const movementDateFilter = document.getElementById('movementDateFilter');
     if (movementDateFilter) {
-        movementDateFilter.addEventListener('change', function() {
+        movementDateFilter.addEventListener('change', function () {
             movementsDateFilter = this.value;
             movementsPage = 1;
             renderMovements();
@@ -281,18 +344,18 @@ function attachUIEvents() {
     // Wire movement pagination buttons
     const movementPrevBtn = document.querySelector('.movement-prev');
     const movementNextBtn = document.querySelector('.movement-next');
-    
+
     if (movementPrevBtn) {
-        movementPrevBtn.addEventListener('click', function() {
+        movementPrevBtn.addEventListener('click', function () {
             if (movementsPage > 1) {
                 movementsPage--;
                 renderMovements();
             }
         });
     }
-    
+
     if (movementNextBtn) {
-        movementNextBtn.addEventListener('click', function() {
+        movementNextBtn.addEventListener('click', function () {
             const totalPages = Math.ceil(movementsData.length / movementsPerPage);
             if (movementsPage < totalPages) {
                 movementsPage++;
@@ -354,7 +417,7 @@ async function loadMovements() {
 
         const response = await fetch(window.AllStocks.routes.apiMovements);
         const result = await response.json();
-        
+
         movementsData = result.data || [];
         renderMovements();
     } catch (error) {
@@ -367,7 +430,7 @@ function renderMovements() {
     const paginationInfo = document.getElementById('movementPaginationInfo');
     const prevBtn = document.querySelector('.movement-prev');
     const nextBtn = document.querySelector('.movement-next');
-    
+
     if (!tbody) return;
 
     // Filter by date range
@@ -378,19 +441,19 @@ function renderMovements() {
         const yesterday = new Date(now);
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayStr = yesterday.toISOString().split('T')[0];
-        
+
         const last7Days = new Date(now);
         last7Days.setDate(last7Days.getDate() - 7);
         const last7DaysStr = last7Days.toISOString().split('T')[0];
-        
+
         const last30Days = new Date(now);
         last30Days.setDate(last30Days.getDate() - 30);
         const last30DaysStr = last30Days.toISOString().split('T')[0];
 
         filteredMovements = movementsData.filter(entry => {
             const entryDate = new Date(entry.created_at).toISOString().split('T')[0];
-            
-            switch(movementsDateFilter) {
+
+            switch (movementsDateFilter) {
                 case 'today':
                     return entryDate === today;
                 case 'yesterday':
@@ -408,7 +471,7 @@ function renderMovements() {
     // Pagination
     const totalPages = Math.max(1, Math.ceil(filteredMovements.length / movementsPerPage));
     movementsPage = Math.min(Math.max(1, movementsPage), totalPages);
-    
+
     const startIndex = (movementsPage - 1) * movementsPerPage;
     const endIndex = startIndex + movementsPerPage;
     const paginatedMovements = filteredMovements.slice(startIndex, endIndex);
@@ -460,29 +523,37 @@ async function loadProducts(page = 1) {
         if (result.data && result.data.length > 0) {
             result.data.forEach(product => {
                 const row = document.createElement('tr');
+                row.className = 'hover:bg-slate-50 transition border-b border-slate-100';
                 row.innerHTML = `
-                    <td class="px-3 py-2 w-6">
+                    <td class="px-3.5 py-3 text-center w-10 align-middle">
                         <input type="checkbox" class="product-checkbox rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 cursor-pointer" data-product-id="${product.id}" />
                     </td>
-                    <td class="px-3 py-2 text-slate-900 font-medium">${product.name}</td>
-                    <td class="px-3 py-2 text-slate-600">${product.product_name || 'Uncategorized'}</td>
-                    <td class="px-3 py-2 text-slate-600">${`KCC_${(product.sku || product.name || '').replace(/[^A-Za-z0-9\-\+]/g, '')}`}</td>
-                    <td class="px-3 py-2 text-slate-600">${product.brand || '-'}</td>
-                    <td class="px-3 py-2 text-slate-600">${product.size || '-'}</td>
-                    <td class="px-3 py-2 text-slate-600">${product.color || '-'}</td>
-                    <td class="px-3 py-2 text-center font-semibold ${product.stock_quantity === 0 ? 'text-red-600' : 'text-slate-900'}">${product.stock_quantity}</td>
-                    <td class="px-3 py-2 text-right text-slate-900">₱${parseFloat(product.unit_price).toFixed(2)}</td>
-                    <td class="px-3 py-2 text-slate-600">${product.supplier_name || '-'}</td>
-                    <td class="px-3 py-2 text-slate-600">${product.last_restock_date || '-'}</td>
-                    <td class="px-3 py-2 text-slate-600">${product.expiry_date ? `${product.expiry_date} • ${product.expiry_status_label || 'Status'}` : 'Non-expiring'}</td>
-                    <td class="px-3 py-2 text-center">
-                        <a href="javascript:void(0)" onclick="event.preventDefault(); openEditModal(${product.id});" class="text-cyan-600 hover:text-cyan-700 text-xs font-medium cursor-pointer z-50 relative">Edit</a>
+                    <td class="px-3.5 py-3 text-left text-slate-900 font-medium whitespace-nowrap align-middle">${product.name}</td>
+                    <td class="px-3.5 py-3 text-left text-slate-600 whitespace-nowrap align-middle">${product.product_name || 'Uncategorized'}</td>
+                    <td class="px-3.5 py-3 text-left text-slate-600 font-mono text-[10.5px] whitespace-nowrap align-middle">${`KCC_${(product.sku || product.name || '').replace(/[^A-Za-z0-9\-\+]/g, '')}`}</td>
+                    <td class="px-3.5 py-3 text-left text-slate-600 whitespace-nowrap align-middle">${product.brand || '-'}</td>
+                    <td class="px-3.5 py-3 text-center text-slate-600 whitespace-nowrap align-middle">${product.size || '-'}</td>
+                    <td class="px-3.5 py-3 text-center text-slate-600 whitespace-nowrap align-middle">${product.color || '-'}</td>
+                    <td class="px-3.5 py-3 text-center font-semibold whitespace-nowrap align-middle ${product.stock_quantity === 0 ? 'text-red-600' : 'text-slate-900'}">${product.stock_quantity}</td>
+                    <td class="px-3.5 py-3 text-right text-slate-900 whitespace-nowrap align-middle">₱${parseFloat(product.unit_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td class="px-3.5 py-3 text-left text-slate-600 whitespace-nowrap align-middle">${product.supplier_name || '-'}</td>
+                    <td class="px-3.5 py-3 text-left text-slate-600 whitespace-nowrap align-middle">${formatDate(product.last_restock_date)}</td>
+                    <td class="px-3.5 py-3 text-left text-slate-600 whitespace-nowrap align-middle">${product.expiry_date ? `${formatDate(product.expiry_date)} • ${product.expiry_status_label || 'Status'}` : 'Non-expiring'}</td>
+                    <td class="px-3.5 py-3 text-center align-middle whitespace-nowrap text-[10px] font-medium" onclick="event.stopPropagation()">
+                        <div class="inline-flex items-center gap-1.5 justify-center">
+                            <button type="button" onclick="event.stopPropagation(); openEditModal(${product.id});" class="text-black hover:text-slate-900 inline-flex items-center p-1" title="Edit">
+                                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </button>
+                            <button type="button" onclick="event.stopPropagation(); archiveProduct(${product.id});" class="rounded-[8px] border border-slate-200 px-2 py-1 text-[10px] font-semibold transition-all bg-white text-slate-700 hover:bg-black/10">Archive</button>
+                        </div>
                     </td>
                 `;
                 tbody.appendChild(row);
             });
         } else {
-            tbody.innerHTML = '<tr><td colspan="13" class="px-3 py-8 text-center text-slate-500">No products found</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="13" class="px-4 py-8 text-center text-slate-500">No products found</td></tr>';
         }
 
         currentPage = page;
@@ -499,24 +570,29 @@ function updatePagination(pagination) {
         console.log('Pagination container not found');
         return;
     }
-    
+
     if (!pagination || !pagination.last_page) {
         console.log('Pagination data not available', pagination);
         return;
     }
-    
-    let html = `<button onclick="loadProducts(${Math.max(1, currentPage - 1)})" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">← Prev</button>`;
+
+    const totalPages = pagination.last_page;
+    let html = `<button type="button" onclick="loadProducts(${Math.max(1, currentPage - 1)})" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" ${currentPage <= 1 ? 'disabled' : ''}>← Prev</button>`;
 
     let startPage = Math.max(1, currentPage - 2);
-    let endPage = Math.min(pagination.last_page, startPage + 4);
+    let endPage = Math.min(totalPages, startPage + 4);
     if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
+    startPage = Math.max(1, startPage);
 
     for (let i = startPage; i <= endPage; i++) {
-        const btnClass = i === currentPage ? 'bg-slate-400 text-slate-900' : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50';
-        html += `<button onclick="loadProducts(${i})" class="px-2 py-1 rounded-lg text-xs font-medium ${btnClass}">${i}</button>`;
+        if (i === currentPage) {
+            html += `<button type="button" class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">${i}</button>`;
+        } else {
+            html += `<button type="button" onclick="loadProducts(${i})" class="inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50">${i}</button>`;
+        }
     }
 
-    html += `<button onclick="loadProducts(${Math.min(pagination.last_page, currentPage + 1)})" class="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">Next →</button>`;
+    html += `<button type="button" onclick="loadProducts(${Math.min(totalPages, currentPage + 1)})" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" ${currentPage >= totalPages ? 'disabled' : ''}>Next →</button>`;
 
     paginationContainer.innerHTML = html;
 

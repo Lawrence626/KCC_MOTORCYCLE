@@ -1207,23 +1207,30 @@ document.addEventListener('DOMContentLoaded', function () {
                 const locView = (loc && loc.archived) ? null : loc;
                 const slotCount = Array.isArray(locView?.products) ? locView.products.length : 0;
                 let productsHtml = '';
+                const whLetter = String.fromCharCode(65 + (warehouseIndex % 26));
+
                 for (let productSlot = 0; productSlot < PRODUCTS_PER_SHELF; productSlot += 1) {
+                    const binCode = `${whLetter}${productSlot + 1}`;
                     const product = (locView ? (locView.products[productSlot] || null) : null);
                     if (product) {
                         const priceText = (product.price || product.price === 0) ? Number(product.price).toFixed(2) : '-';
                         const displaySku = `KCC_${(product.sku || product.name || '').replace(/[^A-Za-z0-9\-\+]/g, '')}`;
+                        const productName = product.product_name || product.name || '—';
+                        const finalTitle = `${binCode} - ${productName}`;
                         productsHtml += `<div class="product-chip rounded-xl bg-emerald-50 border border-emerald-100">
                             <div class="left">
-                                <div class="name">${product.name}</div>
+                                <div class="name">${finalTitle}</div>
                                 <div class="meta">SKU: ${displaySku} • Price: ${priceText}</div>
                             </div>
                             <div class="qty">Qty: ${product.qty}</div>
                         </div>`;
                     } else {
-                        productsHtml += `<div class="product-chip opacity-50 rounded-xl px-3 py-2 text-sm text-gray-500 border border-dashed border-gray-200">Empty slot</div>`;
+                        productsHtml += `<div class="product-chip opacity-50 rounded-xl px-3 py-2 text-sm text-gray-500 border border-dashed border-gray-200">${binCode} - Empty slot</div>`;
                     }
                 }
-                const shelfTitle = locView?.name || 'Empty shelf';
+                const rawShelfName = locView?.name || 'Empty shelf';
+                const shelfNumber = slotIndex + 1;
+                const shelfTitle = rawShelfName.toLowerCase().startsWith('shelf') ? rawShelfName : `Shelf ${shelfNumber} - ${rawShelfName}`;
                 const shelfCountText = locView ? `${slotCount}/${PRODUCTS_PER_SHELF} products` : `0/${PRODUCTS_PER_SHELF} products`;
                 const addProductOption = (locView && Array.isArray(locView.products) && locView.products.length < PRODUCTS_PER_SHELF) ? '<option value="add-product">Add Product</option>' : '';
                 html += `

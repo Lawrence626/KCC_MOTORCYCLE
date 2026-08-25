@@ -268,7 +268,7 @@
             </div>
         </div>
 
-        <div class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="rounded-[10px] border border-slate-200 bg-white p-5 shadow-sm">
             <div id="userListWrapper">
             <div class="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 @php
@@ -286,12 +286,12 @@
 
                 @unless($showArchived ?? false)
                 <div class="flex flex-wrap items-center gap-2">
-                    <a href="{{ route('user.management') }}{{ $hasQ ? '?q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border border-slate-200 px-4 py-2 text-sm font-bold transition-all {{ !$hasRole ? 'bg-[#00FFF2] text-slate-900 shadow-sm' : 'bg-white text-slate-700' }}">All</a>
-                    <a href="{{ route('user.management') }}?role=admin{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border border-slate-200 px-4 py-2 text-sm font-bold transition-all {{ request('role') === 'admin' ? 'bg-[#00FFF2] text-slate-900 shadow-sm' : 'bg-white text-slate-700' }}">Administrator</a>
-                    <a href="{{ route('user.management') }}?role=cashier{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border border-slate-200 px-4 py-2 text-sm font-bold transition-all {{ request('role') === 'cashier' ? 'bg-[#00FFF2] text-slate-900 shadow-sm' : 'bg-white text-slate-700' }}">Cashier</a>
-                    <a href="{{ route('user.management') }}?role=inventory_clerk{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border border-slate-200 px-4 py-2 text-sm font-bold transition-all {{ request('role') === 'inventory_clerk' ? 'bg-[#00FFF2] text-slate-900 shadow-sm' : 'bg-white text-slate-700' }}">Inventory Clerk</a>
-                    <a href="{{ route('user.management') }}?role=warehouse_personnel{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border border-slate-200 px-4 py-2 text-sm font-bold transition-all {{ request('role') === 'warehouse_personnel' ? 'bg-[#00FFF2] text-slate-900 shadow-sm' : 'bg-white text-slate-700' }}">Warehouse</a>
-                    <a href="{{ route('user.management.archived') }}{{ $archiveQuery }}" class="rounded-[10px] border border-slate-200 px-4 py-2 text-sm font-bold transition-all bg-white text-slate-700">Archived</a>
+                    <a href="{{ route('user.management') }}{{ $hasQ ? '?q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ !$hasRole && !($showArchived ?? false) ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">All</a>
+                    <a href="{{ route('user.management') }}?role=admin{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ request('role') === 'admin' ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">Administrator</a>
+                    <a href="{{ route('user.management') }}?role=cashier{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ request('role') === 'cashier' ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">Cashier</a>
+                    <a href="{{ route('user.management') }}?role=inventory_clerk{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ request('role') === 'inventory_clerk' ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">Inventory Clerk</a>
+                    <a href="{{ route('user.management') }}?role=warehouse_personnel{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ request('role') === 'warehouse_personnel' ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">Warehouse</a>
+                    <a href="{{ route('user.management.archived') }}{{ $archiveQuery }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ ($showArchived ?? false) ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">Archived</a>
                 </div>
                 @endunless
 
@@ -317,19 +317,19 @@
                 $roles = ['admin' => 'Admin','cashier' => 'Cashier','inventory_clerk' => 'Clerk','warehouse_personnel' => 'Warehouse'];
             @endphp
 
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto rounded-[10px] border border-slate-200">
                 <table class="w-full divide-y divide-slate-200 table-auto">
-                    <thead class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-200" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+                    <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                         <tr>
-                            <th class="px-3 py-3 text-left">Name</th>
-                            <th class="px-3 py-3 text-left">Role</th>
-                            <th class="px-3 py-3 text-left">Email</th>
-                            <th class="px-3 py-3 text-left">Contact</th>
-                            <th class="px-3 py-3 text-left">Full Address</th>
-                            <th class="px-3 py-3 text-left">Age</th>
-                            <th class="px-3 py-3 text-left">Gender</th>
-                            <th class="px-3 py-3 text-left">Status</th>
-                            <th class="px-3 py-3 text-center">Actions</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Name</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Role</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Email</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Contact</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Full Address</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Age</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Gender</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Status</th>
+                            <th class="px-3 py-3 text-center font-semibold text-white">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-slate-200 text-xs">
@@ -383,7 +383,7 @@
 
                             <td class="px-2 py-2 text-center align-middle whitespace-nowrap text-[10px] font-medium">
                                 <div class="inline-flex items-center gap-1.5">
-                                <button type="button" class="text-black hover:text-slate-900 editUserBtn inline-flex items-center" data-user='@json($user)'>
+                                <button type="button" title="Edit User" class="text-black hover:text-slate-900 editUserBtn inline-flex items-center p-1 cursor-pointer" data-user='@json($user)'>
                                     <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
@@ -403,10 +403,9 @@
                         @endforelse
                     </tbody>
                 </table>
-            </div>
-
-            <div class="mt-4">
-                {{ $users->links() ?? '' }}
+                @if(method_exists($users, 'links'))
+                    {{ $users->links() }}
+                @endif
             </div>
             </div>
         </div>

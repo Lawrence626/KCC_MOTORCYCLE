@@ -10,17 +10,17 @@
 
         <div class="grid gap-3 sm:grid-cols-3">
             <div class="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm">
-                <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Open requests</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Open requests</p>
                 <p class="mt-3 text-3xl font-semibold text-slate-900">14</p>
                 <p class="mt-2 text-sm text-slate-500">Pending approval from procurement.</p>
             </div>
             <div class="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm">
-                <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Approved</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Approved</p>
                 <p class="mt-3 text-3xl font-semibold text-slate-900">7</p>
                 <p class="mt-2 text-sm text-slate-500">Ready for conversion to purchase orders.</p>
             </div>
             <div class="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm">
-                <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Rejected</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Rejected</p>
                 <p class="mt-3 text-3xl font-semibold text-slate-900">2</p>
                 <p class="mt-2 text-sm text-slate-500">Requests declined for budget or stock reasons.</p>
             </div>
@@ -62,12 +62,12 @@
 
             <div class="mt-6 overflow-hidden rounded-[10px] border border-slate-200">
                 <table class="min-w-full text-left text-sm">
-                    <thead class="bg-slate-50 text-slate-500 text-[11px] uppercase tracking-[0.18em]">
+                    <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
                         <tr>
-                            <th class="px-4 py-3">Request</th>
-                            <th class="px-4 py-3">Item</th>
-                            <th class="px-4 py-3">Department</th>
-                            <th class="px-4 py-3">Status</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">Request</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">Item</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">Department</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 text-slate-700">

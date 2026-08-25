@@ -42,7 +42,7 @@
                     </div>
                     <h3 class="mt-4 text-xl font-semibold text-black">{{ auth()->user()->name }}</h3>
                     <p class="text-sm text-gray-500 mt-1">{{ auth()->user()->email }}</p>
-                    <div class="mt-3 inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em]" style="color: #36ADA3;">
+                    <div class="mt-3 inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wider" style="color: #36ADA3;">
                         {{ auth()->user()->role === 'admin' ? 'Administrator' : ucfirst(auth()->user()->role ?? 'user') }}
                     </div>
                 </div>
@@ -66,36 +66,38 @@
             </div>
 
             <!-- Details Card -->
-            <div class="lg:col-span-2 border border-gray-200 p-6" style="border-radius: 20px; background-color: #ffffff;">
-                <div class="mb-6">
-                    <h2 class="text-xl font-semibold text-black">Personal Information</h2>
-                    <p class="text-sm text-gray-500 mt-1">Your account details and contact information</p>
+            <div class="lg:col-span-2 border border-gray-200 overflow-hidden shadow-sm" style="border-radius: 20px; background-color: #ffffff;">
+                <div class="bg-[#0f172a] border-b border-slate-800 px-6 py-5">
+                    <h2 class="text-xl font-bold text-white">Personal Information</h2>
+                    <p class="text-sm text-slate-300 mt-0.5">Your account details and contact information</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
-                        <p class="text-xs font-semibold text-slate-500">Full Name</p>
-                        <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->name }}</p>
-                    </div>
-                    <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
-                        <p class="text-xs font-semibold text-slate-500">Email Address</p>
-                        <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->email }}</p>
-                    </div>
-                    <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
-                        <p class="text-xs font-semibold text-slate-500">Contact Number</p>
-                        <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->contact ?? '-' }}</p>
-                    </div>
-                    <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
-                        <p class="text-xs font-semibold text-slate-500">Address</p>
-                        <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->address ?? '-' }}</p>
-                    </div>
-                    <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
-                        <p class="text-xs font-semibold text-slate-500">Age</p>
-                        <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->age ?? '-' }}</p>
-                    </div>
-                    <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
-                        <p class="text-xs font-semibold text-slate-500">Gender</p>
-                        <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->gender ?? '-' }}</p>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+                            <p class="text-xs font-semibold text-slate-500">Full Name</p>
+                            <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->name }}</p>
+                        </div>
+                        <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+                            <p class="text-xs font-semibold text-slate-500">Email Address</p>
+                            <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->email }}</p>
+                        </div>
+                        <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+                            <p class="text-xs font-semibold text-slate-500">Contact Number</p>
+                            <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->contact ?? '-' }}</p>
+                        </div>
+                        <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+                            <p class="text-xs font-semibold text-slate-500">Address</p>
+                            <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->address ?? '-' }}</p>
+                        </div>
+                        <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+                            <p class="text-xs font-semibold text-slate-500">Age</p>
+                            <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->age ?? '-' }}</p>
+                        </div>
+                        <div class="p-4" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+                            <p class="text-xs font-semibold text-slate-500">Gender</p>
+                            <p class="mt-2 text-base font-semibold text-black">{{ auth()->user()->gender ?? '-' }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -103,8 +105,8 @@
     </div>
 
 <!-- Edit Profile Modal (styled to match the POS "Process Payment" modal) -->
-<div id="editProfileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-md px-4 py-6">
-    <div id="editOverlay" class="absolute inset-0"></div>
+<div id="editProfileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
+    <div id="editOverlay" class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl"></div>
 
     <div id="editProfileModalPanel" class="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)] z-10 flex flex-col">
         <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">

@@ -68,7 +68,7 @@ test('it records supplier price history and calculates the change when a purchas
     expect($response->getTargetUrl())->toContain('purchase-order');
 
     $confirmRequest = new Request([
-        'warehouse_index' => 0,
+        'warehouse' => 'Warehouse A',
     ]);
     $controller->confirmReceive($confirmRequest, $purchaseOrder);
 

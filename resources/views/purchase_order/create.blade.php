@@ -35,12 +35,12 @@
         {{-- ══════════════════════════════════════════════════════════
              STEP 1 – SELECT PRODUCTS
         ════════════════════════════════════════════════════════════ --}}
-        <div class="rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-100 px-6 py-4 flex items-center gap-3" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+        <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">1</span>
                 <div>
-                    <h2 class="text-sm font-semibold text-slate-800">Select Products to Reorder</h2>
-                    <p class="text-xs text-slate-500">Choose from low-stock products. The supplier list will update automatically.</p>
+                    <h2 class="text-sm font-semibold text-white">Select Products to Reorder</h2>
+                    <p class="text-xs text-slate-300">Choose from low-stock products. The supplier list will update automatically.</p>
                 </div>
             </div>
 
@@ -93,11 +93,11 @@
                     </div>
                 </div>
 
-                <div class="overflow-hidden rounded-3xl border border-slate-200">
+                <div class="overflow-hidden rounded-[10px] border border-slate-200">
                     <table class="min-w-full text-left text-sm">
-                        <thead class="bg-slate-100 text-slate-500 text-[11px] uppercase tracking-[0.18em]" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+                        <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider border-b border-slate-200 rounded-t-[10px]" style="background-color: #0f172a;">
                             <tr>
-                                <th class="px-4 py-3">
+                                <th class="px-4 py-3 rounded-tl-[10px]">
                                     <input type="checkbox" id="select-all-products"
                                            class="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 "
                                            title="Select all" />
@@ -122,7 +122,7 @@
                                          </div>
                                      </div>
                                  </th>
-                                <th class="px-4 py-3">Unit Price (₱)</th>
+                                <th class="px-4 py-3 rounded-tr-[10px]">Unit Price (₱)</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 text-slate-700">
@@ -157,7 +157,7 @@
                                                 default         => 'bg-slate-100 text-slate-600 ring-slate-200',
                                             };
                                         @endphp
-                                        <span class="inline-flex items-center rounded-full px-2.5 py-1.5 text-xs font-medium ring-1 ring-inset {{ $movClass }}">
+                                        <span class="inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ring-inset {{ $movClass }}">
                                             {{ $movLabel }}
                                         </span>
                                     </td>
@@ -204,12 +204,12 @@
         {{-- ══════════════════════════════════════════════════════════
              STEP 2 – SELECT SUPPLIER
         ════════════════════════════════════════════════════════════ --}}
-        <div class="rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-100 px-6 py-4 flex items-center gap-3" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+        <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">2</span>
                 <div>
-                    <h2 class="text-sm font-semibold text-slate-800">Select Supplier</h2>
-                    <p class="text-xs text-slate-500">Only suppliers that can fulfill every selected product are shown.</p>
+                    <h2 class="text-sm font-semibold text-white">Select Supplier</h2>
+                    <p class="text-xs text-slate-300">Only suppliers that can fulfill every selected product are shown.</p>
                 </div>
             </div>
 
@@ -244,27 +244,27 @@
         {{-- ══════════════════════════════════════════════════════════
              STEP 3 – SUPPLIER INFORMATION
         ════════════════════════════════════════════════════════════ --}}
-        <div id="supplier-info-panel" class="hidden rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-100 px-6 py-4 flex items-center gap-3" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+        <div id="supplier-info-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">3</span>
-                <h2 class="text-sm font-semibold text-slate-800">Supplier Information</h2>
+                <h2 class="text-sm font-semibold text-white">Supplier Information</h2>
             </div>
             <div class="p-6">
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                        <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Supplier Name</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Supplier Name</p>
                         <p id="si-name" class="text-sm font-semibold text-slate-800">—</p>
                     </div>
                     <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                        <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Contact Person</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Contact Person</p>
                         <p id="si-contact" class="text-sm text-slate-700">—</p>
                     </div>
                     <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                        <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Last Purchase</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Last Purchase</p>
                         <p id="si-last-purchase" class="text-sm text-slate-700">—</p>
                     </div>
                     <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                        <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Reliability Score</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Reliability Score</p>
                         <p id="si-reliability" class="text-sm font-semibold text-slate-800">—</p>
                     </div>
                 </div>
@@ -274,12 +274,12 @@
         {{-- ══════════════════════════════════════════════════════════
              STEP 4+5+6 – PRICE HISTORY / SUMMARY / RECOMMENDATIONS
         ════════════════════════════════════════════════════════════ --}}
-        <div id="price-analysis-panel" class="hidden rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-100 px-6 py-4 flex items-center gap-3" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+        <div id="price-analysis-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">4</span>
                 <div>
-                    <h2 class="text-sm font-semibold text-slate-800">Supplier Price Analysis</h2>
-                    <p class="text-xs text-slate-500">Historical costs, trends, and purchasing recommendations per product.</p>
+                    <h2 class="text-sm font-semibold text-white">Supplier Price Analysis</h2>
+                    <p class="text-xs text-slate-300">Historical costs, trends, and purchasing recommendations per product.</p>
                 </div>
             </div>
             <div id="price-analysis-content" class="p-6 space-y-8">
@@ -290,19 +290,19 @@
         {{-- ══════════════════════════════════════════════════════════
              BONUS – SUPPLIER COMPARISON TABLE
         ════════════════════════════════════════════════════════════ --}}
-        <div id="comparison-panel" class="hidden rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-100 px-6 py-4 flex items-center gap-3" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+        <div id="comparison-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">★</span>
                 <div>
-                    <h2 class="text-sm font-semibold text-slate-800">Supplier Comparison</h2>
-                    <p class="text-xs text-slate-500">All qualified suppliers ranked by cost. Click Select to choose one.</p>
+                    <h2 class="text-sm font-semibold text-white">Supplier Comparison</h2>
+                    <p class="text-xs text-slate-300">All qualified suppliers ranked by cost. Click Select to choose one.</p>
                 </div>
             </div>
             <div class="p-6 space-y-4">
                 <div id="recommended-supplier-badge" class="hidden rounded-[10px] bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800"></div>
                 <div class="overflow-hidden rounded-3xl border border-slate-200">
                     <table class="min-w-full text-left text-sm">
-                        <thead class="bg-slate-100 text-slate-500 text-[11px] uppercase tracking-[0.18em]">
+                        <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider border-b border-slate-200" style="background-color: #0f172a;">
                             <tr>
                                 <th class="px-4 py-3">Supplier</th>
                                 <th class="px-4 py-3">Total Cost (₱)</th>
@@ -321,10 +321,10 @@
         {{-- ══════════════════════════════════════════════════════════
              ORDER DETAILS
         ════════════════════════════════════════════════════════════ --}}
-       <div class="rounded-[28px] border border-slate-200 bg-white shadow-sm overflow-hidden min-h-[510px]">
-            <div class="border-b border-slate-100 px-6 py-4 flex items-center gap-3" style="background: linear-gradient(50deg, #29d5d81e 0%);">
+       <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden min-h-[510px]">
+            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">5</span>
-                <h2 class="text-sm font-semibold text-slate-800">Order Details</h2>
+                <h2 class="text-sm font-semibold text-white">Order Details</h2>
             </div>
             <div class="p-6 grid gap-4 relative">
                 <label class="block text-sm text-slate-700 w-72">
@@ -348,7 +348,7 @@
         Cancel
     </a>
     <button type="submit"
-            class="max-w-xs inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#00fff2] px-5 py-3 text-sm font-bold text-black shadow-sm hover:bg-[#00e6da] transition-all duration-200">
+            class="max-w-xs inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#00fff2] px-5 py-3 text-sm font-semibold text-black shadow-sm hover:bg-[#00e6da] transition-all duration-200">
         Submit Purchase Order
     </button>
 </div>
@@ -692,19 +692,19 @@
             summaryGrid.className = 'grid gap-3 sm:grid-cols-2 lg:grid-cols-4';
             summaryGrid.innerHTML = `
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                    <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Current Cost</p>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Current Cost</p>
                     <p class="text-base font-bold text-slate-800">${ph.current_cost != null ? fmt(ph.current_cost) : '—'}</p>
                 </div>
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                    <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Previous Cost</p>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Previous Cost</p>
                     <p class="text-base font-bold text-slate-600">${ph.previous_cost != null ? fmt(ph.previous_cost) : '—'}</p>
                 </div>
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                    <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Price Change</p>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Price Change</p>
                     <p class="text-base ${changeColor}">${fmtP(ph.change_percentage)}</p>
                 </div>
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                    <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Trend</p>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Trend</p>
                     <p class="text-base font-semibold text-slate-700">${icon(ph.trend)} ${cap(ph.trend)}</p>
                 </div>
             `;
@@ -727,7 +727,7 @@
                 tableWrap.className = 'overflow-hidden rounded-3xl border border-slate-200';
                 tableWrap.innerHTML = `
                     <table class="min-w-full text-left text-sm">
-                        <thead class="bg-slate-100 text-slate-500 text-[11px] uppercase tracking-[0.18em]">
+                        <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider border-b border-slate-200" style="background-color: #0f172a;">
                             <tr>
                                 <th class="px-4 py-3">Purchase Date</th>
                                 <th class="px-4 py-3">Purchase Order</th>
@@ -932,10 +932,10 @@
                 const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
 
                 let dayClasses = "h-7 w-7 mx-auto flex items-center justify-center rounded-lg font-medium cursor-pointer transition-all duration-150 ";
-                if (isToday) {
+                if (isSelected) {
+                    dayClasses += "bg-[#0f172a] text-white font-bold shadow-sm";
+                } else if (isToday) {
                     dayClasses += "bg-[#00fff2] text-black font-bold shadow-sm";
-                } else if (isSelected) {
-                    dayClasses += "bg-black/10 text-slate-900 font-bold shadow-sm";
                 } else {
                     dayClasses += "text-slate-700 hover:bg-slate-100";
                 }

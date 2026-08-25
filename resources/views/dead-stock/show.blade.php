@@ -359,7 +359,7 @@
 
 {{-- ═══ SHOW PAGE DISCOUNT MODAL ═══ --}}
 <div id="showDiscountModal" class="fixed inset-0 z-[9999] hidden">
-    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeShowDiscountModal()"></div>
+    <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeShowDiscountModal()"></div>
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-emerald-50 to-white">
             <h3 class="text-lg font-bold text-slate-800">Apply Discount</h3>

@@ -163,13 +163,12 @@ function recordTransaction(invoice, date, total, paymentMethod, items) {
         },
         extraCharge: Number(document.getElementById('posExtraChargeInput')?.value || 0),
         discount: Number(document.getElementById('posDiscountInput')?.value || 0),
-        tax: 0,
+        tax: total * (12 / 112),
         amountReceived: posState.amountReceived || total,
         change: posState.change || 0,
     };
     posState.transactionHistory.unshift(transaction);
     saveTransactionHistory();
-
     // Also save to database
     saveTransactionToDatabase(invoice, total, paymentMethod, items);
 }
@@ -403,7 +402,7 @@ function renderTransactionHistory() {
             <td class="px-3 py-4 text-center text-slate-700">${transaction.items.length}</td>
             <td class="px-3 py-4 text-right text-slate-900 font-semibold">${formatCurrency(transaction.total)}</td>
             <td class="px-3 py-4 text-center">
-                <button onclick="viewTransactionInvoice('${transaction.invoice}')" class="text-emerald-600 hover:text-emerald-700 font-medium text-xs mr-2">View</button>
+                <button onclick="viewTransactionInvoice('${transaction.invoice}')" class="font-semibold text-xs mr-2" style="color: #000000;">View</button>
                 <button onclick="deleteTransaction('${transaction.invoice}')" class="text-red-600 hover:text-red-700 font-medium text-xs">Delete</button>
             </td>
         `;
@@ -614,8 +613,23 @@ function renderCart() {
     cartFooter.classList.remove('hidden');
 
     posState.cart.forEach(item => {
+        const maxStock = Number(item.stock_quantity ?? 0);
+        const isAtMaxStock = item.quantity >= maxStock;
+        const isAtMin = item.quantity <= 1;
+        const isExceeding = item.quantity > maxStock;
+        const isOutOfStock = maxStock <= 0;
+
+        let stockInfoHtml = '';
+        if (isOutOfStock) {
+            stockInfoHtml = `<div class="text-[10px] text-red-600 font-semibold mt-0.5"><span class="font-semibold text-black">STOCK:</span> 0 pcs <span class="font-bold text-red-700">(Out of Stock)</span></div>`;
+        } else if (isExceeding) {
+            stockInfoHtml = `<div class="text-[10px] text-red-600 font-semibold mt-0.5"><span class="font-semibold text-black">STOCK:</span> ${maxStock} pcs <span class="font-bold text-red-700">(Exceeds stock by ${item.quantity - maxStock}!)</span></div>`;
+        } else {
+            stockInfoHtml = `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">STOCK:</span> ${maxStock} pcs</div>`;
+        }
+
         const row = document.createElement('tr');
-        row.className = 'border-b border-slate-200';
+        row.className = `border-b border-slate-200 ${isExceeding || isOutOfStock ? 'bg-red-50/50' : ''}`;
         row.innerHTML = `
             <td class="px-3 py-3 text-slate-700 text-xs font-medium">
                 <div class="text-sm font-semibold text-slate-900 mb-0.5">${item.name}</div>
@@ -623,14 +637,14 @@ function renderCart() {
                 ${item.brand ? `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">BRAND:</span> ${item.brand}</div>` : ''}
                 ${item.compatibility ? `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">COMPATIBLE:</span> ${item.compatibility}</div>` : ''}
                 ${item.sku ? `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">SKU:</span> ${item.sku}</div>` : ''}
-                ${item.stock_quantity !== undefined ? `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">STOCK:</span> ${item.stock_quantity} pcs</div>` : ''}
+                ${stockInfoHtml}
             </td>
             <td class="px-3 py-3 text-right text-slate-700 text-xs">${formatCurrency(item.unit_price)}</td>
             <td class="px-3 py-3 text-center text-slate-700 text-xs">
-                <div class="inline-flex items-center rounded-lg border border-slate-200 overflow-hidden">
-                    <button data-action="decrement" data-id="${item.id}" class="px-2 py-1 text-slate-700 hover:bg-slate-100">−</button>
-                    <span class="px-3 text-slate-900 text-xs">${item.quantity}</span>
-                    <button data-action="increment" data-id="${item.id}" class="px-2 py-1 text-slate-700 hover:bg-slate-100">+</button>
+                <div class="inline-flex items-center rounded-lg border ${isExceeding || isOutOfStock ? 'border-red-400 ring-1 ring-red-400 bg-white' : 'border-slate-200'} overflow-hidden">
+                    <button data-action="decrement" data-id="${item.id}" ${isAtMin ? 'disabled' : ''} class="px-2 py-1 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent" title="${isAtMin ? 'Minimum quantity is 1' : 'Decrease quantity'}">−</button>
+                    <span class="px-3 text-slate-900 text-xs font-semibold ${isExceeding || isOutOfStock ? 'text-red-600' : ''}">${item.quantity}</span>
+                    <button data-action="increment" data-id="${item.id}" ${isAtMaxStock ? 'disabled' : ''} class="px-2 py-1 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent" title="${isAtMaxStock ? `Maximum stock reached (${maxStock} available)` : 'Increase quantity'}">+</button>
                 </div>
             </td>
             <td class="px-3 py-3 text-right text-slate-700 text-xs">${formatCurrency(item.unit_price * item.quantity)}</td>
@@ -651,28 +665,50 @@ function goToCart() {
 }
 
 function addProductToCart(product) {
-    if (!product || !product.id) return;
+    if (!product || !product.id) return false;
+
+    let availableStock = Number(product.stock_quantity ?? product.stock ?? 0);
+    if (isNaN(availableStock)) availableStock = 0;
+
+    const productName = product.name || product.product_name || 'Product';
+
+    if (availableStock <= 0) {
+        showNotification(`Cannot add item. ${productName} is out of stock.`, 'error');
+        return false;
+    }
 
     const existing = findCartItem(product.id);
     if (existing) {
+        existing.stock_quantity = availableStock;
+        if (existing.quantity + 1 > availableStock) {
+            showNotification(`Insufficient stock. Only ${availableStock} item(s) available.`, 'error');
+            return false;
+        }
         existing.quantity += 1;
+        showNotification(`Added ${existing.name} (Qty: ${existing.quantity})`, 'success');
     } else {
+        if (1 > availableStock) {
+            showNotification(`Insufficient stock. Only ${availableStock} item(s) available.`, 'error');
+            return false;
+        }
         posState.cart.push({
             id: product.id,
-            name: product.name || product.product_name || 'Unnamed Product',
-            sku: product.sku,
+            name: productName,
+            sku: product.sku || '',
             product_description: (product.product_description || product.category) ?? 'Uncategorized',
             brand: product.brand || '',
             compatibility: product.compatibility || '',
             category: product.category ?? 'Uncategorized',
-            stock_quantity: product.stock_quantity || 0,
+            stock_quantity: availableStock,
             unit_price: Number(product.unit_price || 0),
             quantity: 1,
         });
+        showNotification(`Added ${productName} to cart`, 'success');
     }
 
     renderCart();
     goToCart();
+    return true;
 }
 
 function removeCartItem(productId) {
@@ -683,7 +719,22 @@ function removeCartItem(productId) {
 function changeCartQuantity(productId, delta) {
     const item = findCartItem(productId);
     if (!item) return;
-    item.quantity = Math.max(1, item.quantity + delta);
+
+    const maxStock = Number(item.stock_quantity ?? 0);
+
+    if (delta > 0) {
+        if (item.quantity + delta > maxStock) {
+            showNotification(`Insufficient stock. Only ${maxStock} item(s) available.`, 'error');
+            return;
+        }
+        item.quantity += delta;
+    } else if (delta < 0) {
+        if (item.quantity <= 1) {
+            return;
+        }
+        item.quantity = Math.max(1, item.quantity + delta);
+    }
+
     renderCart();
 }
 
@@ -732,10 +783,11 @@ async function searchProducts(query = '', page = 1) {
             const card = document.createElement('div');
             card.className = 'pos-image-upload-card relative rounded-3xl border border-slate-200 bg-slate-50 p-3 flex flex-col justify-between';
             card.dataset.productId = product.id;
-            const stockQty = product.stock_quantity ?? product.stock ?? 'N/A';
+            const stockQty = Number(product.stock_quantity ?? product.stock ?? 0);
+            const isOutOfStock = stockQty <= 0;
             const productName = product.product_name || product.name || 'Unnamed Product';
             const brand = product.brand ? `${product.brand}` : '';
-            const compatibility = product.name && product.name !== productName ? product.name : '';
+            const compatibility = product.name && product.name !== productName ? product.name : (product.compatibility || '');
 
             // Calculate VAT breakdown
             const sellingPrice = Number(product.unit_price || 0);
@@ -760,7 +812,10 @@ async function searchProducts(query = '', page = 1) {
                     ${brand ? `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">BRAND:</span> ${brand}</p>` : ''}
                     ${compatibility ? `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">COMPATIBLE:</span> ${compatibility}</p>` : ''}
                     ${product.sku ? `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">SKU:</span> ${product.sku}</p>` : ''}
-                    <p class="text-[9px] text-slate-700"><span class="font-semibold text-black">STOCK:</span> ${stockQty} pcs</p>
+                    ${isOutOfStock
+                        ? `<p class="text-[9px] text-red-600 font-semibold"><span class="font-semibold text-black">STOCK:</span> 0 pcs <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-bold bg-red-100 text-red-700">Out of Stock</span></p>`
+                        : `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">STOCK:</span> ${stockQty} pcs</p>`
+                    }
                 </div>
                 <div class="flex-shrink-0 space-y-2">
                     <div class="flex items-center justify-between">
@@ -790,7 +845,10 @@ async function searchProducts(query = '', page = 1) {
                         </div>
                     </div>
                     <div class="flex justify-center">
-                        <button type="button" data-id="${product.id}" data-name="${productName}" data-sku="${product.sku || ''}" data-price="${product.unit_price || 0}" class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-[#00fff2] px-4 text-xs font-bold text-black shadow-sm hover:bg-[#00e6da] transition-all duration-200 tracking-wide">Add to Cart</button>
+                        ${isOutOfStock
+                            ? `<button type="button" disabled class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-slate-200 px-4 text-xs font-bold text-slate-400 cursor-not-allowed shadow-none tracking-wide">Out of Stock</button>`
+                            : `<button type="button" data-id="${product.id}" data-name="${productName}" data-sku="${product.sku || ''}" data-price="${product.unit_price || 0}" data-stock="${stockQty}" data-product-description="${product.product_description || product.category || ''}" data-brand="${brand}" data-compatibility="${compatibility}" data-category="${product.category || ''}" class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-[#00fff2] px-4 text-xs font-bold text-black shadow-sm hover:bg-[#00e6da] transition-all duration-200 tracking-wide">Add to Cart</button>`
+                        }
                     </div>
                 </div>
             `;
@@ -866,7 +924,10 @@ async function scanProduct() {
     if (!scanInput) return;
     const query = scanInput.value.trim();
     if (!query) {
-        if (scanFeedback) scanFeedback.textContent = 'Enter a QR code value or SKU to scan.';
+        if (scanFeedback) {
+            scanFeedback.textContent = 'Enter a QR code value or SKU to scan.';
+            scanFeedback.className = 'text-xs text-slate-500 mt-1';
+        }
         return;
     }
 
@@ -880,20 +941,50 @@ async function scanProduct() {
 
         if (json.data && json.data.length > 0) {
             const product = json.data[0];
-            addProductToCart({
+            const stock = Number(product.stock_quantity ?? product.stock ?? 0);
+            const pName = product.product_name || product.name || 'Product';
+
+            if (stock <= 0) {
+                if (scanFeedback) {
+                    scanFeedback.textContent = `Product "${pName}" is out of stock (0 pcs).`;
+                    scanFeedback.className = 'text-xs text-red-600 font-semibold mt-1';
+                }
+                showNotification(`Cannot add item. ${pName} is out of stock.`, 'error');
+                return;
+            }
+
+            const added = addProductToCart({
                 id: product.id,
-                name: product.name || product.product_name,
+                name: pName,
                 sku: product.sku || '',
-                unit_price: product.unit_price
+                product_description: product.product_description || product.category || '',
+                brand: product.brand || '',
+                compatibility: product.compatibility || '',
+                category: product.category || 'Uncategorized',
+                stock_quantity: stock,
+                unit_price: Number(product.unit_price || 0)
             });
-            scanInput.value = '';
-            if (scanFeedback) scanFeedback.textContent = `Added ${product.name} to cart.`;
+
+            if (added) {
+                scanInput.value = '';
+                if (scanFeedback) {
+                    scanFeedback.textContent = `Added ${pName} to cart.`;
+                    scanFeedback.className = 'text-xs text-green-600 font-semibold mt-1';
+                }
+            } else if (scanFeedback) {
+                scanFeedback.textContent = `Could not add ${pName} due to stock limit.`;
+                scanFeedback.className = 'text-xs text-red-600 font-semibold mt-1';
+            }
         } else if (scanFeedback) {
             scanFeedback.textContent = 'Product not found. Please try another barcode or SKU.';
+            scanFeedback.className = 'text-xs text-red-600 font-semibold mt-1';
         }
     } catch (error) {
         console.error('Scan failed', error);
-        if (scanFeedback) scanFeedback.textContent = 'Scan failed. Please try again.';
+        if (scanFeedback) {
+            scanFeedback.textContent = 'Scan failed. Please try again.';
+            scanFeedback.className = 'text-xs text-red-600 font-semibold mt-1';
+        }
     }
 }
 
@@ -937,10 +1028,84 @@ function updatePaymentMethod(value) {
     });
 }
 
-function openPaymentModal() {
+async function revalidateCartStock() {
+    if (posState.cart.length === 0) {
+        return { valid: true, items: [], errors: [] };
+    }
+
+    const payload = {
+        items: posState.cart.map(item => ({
+            id: item.id,
+            quantity: item.quantity,
+        })),
+    };
+
+    try {
+        const response = await fetch('/api/pos/validate-stock', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.message || `Validation failed (${response.status})`);
+        }
+
+        const data = await response.json();
+
+        // Update local cart item stock_quantity with latest DB values
+        if (data.items && Array.isArray(data.items)) {
+            data.items.forEach(serverItem => {
+                const cartItem = findCartItem(serverItem.id);
+                if (cartItem) {
+                    cartItem.stock_quantity = serverItem.current_stock;
+                }
+            });
+            renderCart();
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error validating cart stock:', error);
+        return {
+            valid: false,
+            errors: [error.message || 'Unable to verify stock with server.'],
+            items: [],
+        };
+    }
+}
+
+async function openPaymentModal() {
     if (posState.cart.length === 0) {
         alert('The cart is empty. Add items before proceeding to payment.');
         return;
+    }
+
+    const proceedBtn = document.getElementById('posProceedPaymentButton');
+    const originalText = proceedBtn ? proceedBtn.textContent : '';
+    if (proceedBtn) {
+        proceedBtn.disabled = true;
+        proceedBtn.textContent = 'Verifying stock...';
+    }
+
+    try {
+        const validation = await revalidateCartStock();
+        if (!validation.valid) {
+            const errorMsg = validation.errors && validation.errors.length > 0
+                ? validation.errors.join('\n')
+                : 'One or more items have insufficient stock.';
+            alert(`Cannot proceed to payment.\n\n${errorMsg}\n\nPlease adjust the cart quantities to match available stock.`);
+            return;
+        }
+    } finally {
+        if (proceedBtn) {
+            proceedBtn.disabled = false;
+            proceedBtn.textContent = originalText;
+        }
     }
 
     const itemsContainer = document.getElementById('posPaymentItems');
@@ -1515,9 +1680,15 @@ function openPrintWindow(html) {
     setTimeout(() => { printWindow.print(); }, 350);
 }
 
-function confirmPayment() {
+async function confirmPayment() {
+    const confirmBtn = document.getElementById('posPaymentModalConfirm');
+    const originalText = confirmBtn ? confirmBtn.textContent : 'Confirm Payment';
+    if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'Processing...';
+    }
+
     updatePaymentMethod(document.querySelector('input[name="posPaymentModalMethod"]:checked')?.value || posState.paymentMethod);
-    closePaymentModal();
 
     const invoiceNumber = document.getElementById('posPaymentInvoice')?.textContent || 'INV-000000';
     const now = new Date();
@@ -1536,51 +1707,119 @@ function confirmPayment() {
     // Included VAT = Total × (12 / 112)
     const tax = transactionTotal * (12 / 112);
 
-    const items = posState.cart.map(item => ({ id: item.id, name: item.name, sku: item.sku || '', qty: item.quantity, price: item.unit_price }));
+    const items = posState.cart.map(item => ({
+        id: item.id,
+        name: item.name,
+        sku: item.sku || '',
+        qty: item.quantity,
+        price: item.unit_price,
+    }));
 
-    posState.lastReceipt = {
-        invoiceNumber,
-        date: now.toISOString(),
-        items,
-        subtotal,
-        servicesTotal,
-        extra,
-        discount,
-        tax,
-        total: transactionTotal,
-        paymentMethod: posState.paymentMethod,
+    // Prepare items for backend storage & atomic stock deduction
+    const transactionItems = posState.cart.map(item => ({
+        id: item.id,
+        name: item.name,
+        sku: item.sku || '',
+        compatibility: item.compatibility || '',
+        quantity: item.quantity,
+        unit_price: item.unit_price,
+        category: item.category || 'Uncategorized',
+    }));
+
+    const payload = {
+        invoice_number: invoiceNumber,
+        items: transactionItems,
+        subtotal: subtotal,
+        services_total: servicesTotal,
+        extra_charge: extra,
+        discount: discount,
+        tax: tax,
+        total_amount: transactionTotal,
+        payment_method: posState.paymentMethod === 'qr' ? 'qr' : 'cash',
     };
 
-    recordTransaction(
-        invoiceNumber,
-        now.toISOString(),
-        transactionTotal,
-        posState.paymentMethod,
-        items
-    );
-    renderTransactionHistory();
-    populateReceipt();
+    try {
+        const response = await fetch('/api/pos/transactions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+            },
+            body: JSON.stringify(payload),
+        });
 
-    if (posState.paymentMethod === 'qr') {
-        showQRPaymentModal(transactionTotal);
-    } else {
-        const receiptDetails = document.getElementById('receiptInvoiceDetails');
-        const viewInvoiceButton = document.getElementById('posViewInvoiceButton');
-        const printButton = document.getElementById('posPrintReceiptButton');
-        if (receiptDetails) receiptDetails.classList.add('hidden');
-        if (viewInvoiceButton) viewInvoiceButton.classList.remove('hidden');
-        if (printButton) printButton.classList.add('hidden');
-        showReceiptOverlay();
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok || !data.success) {
+            const errorMsg = data.message || 'Transaction failed. Please check stock availability.';
+            alert(`Payment Failed: Insufficient Stock or System Error\n\n${errorMsg}`);
+            // Re-validate cart and refresh products so cashier sees current stocks
+            await revalidateCartStock();
+            searchProducts(posState.productSearchQuery, posState.productPage);
+            return;
+        }
+
+        closePaymentModal();
+
+        posState.lastReceipt = {
+            invoiceNumber,
+            date: now.toISOString(),
+            items,
+            subtotal,
+            servicesTotal,
+            extra,
+            discount,
+            tax,
+            total: transactionTotal,
+            paymentMethod: posState.paymentMethod,
+        };
+
+        recordTransaction(
+            invoiceNumber,
+            now.toISOString(),
+            transactionTotal,
+            posState.paymentMethod,
+            items
+        );
+
+        renderTransactionHistory();
+        populateReceipt();
+
+        if (posState.paymentMethod === 'qr') {
+            showQRPaymentModal(transactionTotal);
+        } else {
+            const receiptDetails = document.getElementById('receiptInvoiceDetails');
+            const viewInvoiceButton = document.getElementById('posViewInvoiceButton');
+            const printButton = document.getElementById('posPrintReceiptButton');
+            if (receiptDetails) receiptDetails.classList.add('hidden');
+            if (viewInvoiceButton) viewInvoiceButton.classList.remove('hidden');
+            if (printButton) printButton.classList.add('hidden');
+            showReceiptOverlay();
+        }
+
+        document.querySelectorAll('.pos-service-checkbox').forEach(el => { el.checked = false; });
+        posState.selectedServices.clear();
+        const extraInp = document.getElementById('posExtraChargeInput');
+        if (extraInp) extraInp.value = '0';
+        const discInp = document.getElementById('posDiscountInput');
+        if (discInp) discInp.value = '0';
+        const scanFeedback = document.getElementById('posScanFeedback');
+        if (scanFeedback) scanFeedback.textContent = '';
+        updateTotals();
+        clearCart();
+
+        // Refresh product grid to show updated stock counts
+        searchProducts(posState.productSearchQuery, posState.productPage);
+
+    } catch (error) {
+        console.error('Error processing transaction:', error);
+        alert(`Transaction Error: ${error.message || 'Unable to connect to server.'}`);
+    } finally {
+        if (confirmBtn) {
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = originalText;
+        }
     }
-
-    document.querySelectorAll('.pos-service-checkbox').forEach(el => { el.checked = false; });
-    posState.selectedServices.clear();
-    document.getElementById('posExtraChargeInput').value = '0';
-    document.getElementById('posDiscountInput').value = '0';
-    const scanFeedback = document.getElementById('posScanFeedback');
-    if (scanFeedback) scanFeedback.textContent = '';
-    updateTotals();
-    clearCart();
 }
 
 function viewInvoice() {
@@ -1639,13 +1878,32 @@ function setupPosEvents() {
     document.getElementById('posProductGrid')?.addEventListener('click', event => {
         const button = event.target.closest('.pos-add-card');
         if (button) {
+            if (button.disabled) {
+                showNotification('Product is out of stock', 'error');
+                return;
+            }
             const productId = Number(button.dataset.id);
             const name = button.dataset.name;
             const sku = button.dataset.sku;
             const unitPrice = parseFloat(button.dataset.price) || 0;
+            const stockQty = Number(button.dataset.stock ?? 0);
+            const productDescription = button.dataset.productDescription || '';
+            const brand = button.dataset.brand || '';
+            const compatibility = button.dataset.compatibility || '';
+            const category = button.dataset.category || '';
 
             if (!productId) return;
-            addProductToCart({ id: productId, name, sku, unit_price: unitPrice });
+            addProductToCart({
+                id: productId,
+                name,
+                sku,
+                unit_price: unitPrice,
+                stock_quantity: stockQty,
+                product_description: productDescription,
+                brand,
+                compatibility,
+                category
+            });
             return;
         }
 
@@ -2284,8 +2542,23 @@ async function handleScannedCode(code) {
         console.log('Found product:', product);
 
         if (product) {
-            addProductToCart(product);
-            showNotification(`Added: ${product.name}`);
+            const stock = Number(product.stock_quantity ?? product.stock ?? 0);
+            const pName = product.product_name || product.name || 'Product';
+            if (stock <= 0) {
+                showNotification(`Cannot add item. ${pName} is out of stock.`, 'error');
+                return;
+            }
+            addProductToCart({
+                id: product.id,
+                name: pName,
+                sku: product.sku || '',
+                product_description: product.product_description || product.category || '',
+                brand: product.brand || '',
+                compatibility: product.compatibility || '',
+                category: product.category || 'Uncategorized',
+                stock_quantity: stock,
+                unit_price: Number(product.unit_price || 0)
+            });
         } else {
             showNotification(`Product not found: ${searchCode}`, 'error');
         }
@@ -2313,13 +2586,31 @@ function playScanNotification() {
 
 function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 px-4 py-2 rounded-lg text-sm font-medium z-50 ${type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-        }`;
+    notification.className = 'fixed top-4 right-8 z-50 rounded-[10px] border p-4 text-sm font-medium shadow-lg transition-all duration-300';
+    if (type === 'success') {
+        notification.style.backgroundColor = '#e6fffe';
+        notification.style.borderColor = '#00fff2';
+        notification.style.borderWidth = '1px';
+        notification.style.borderStyle = 'solid';
+        notification.style.color = '#0f172a';
+        notification.style.borderRadius = '10px';
+        notification.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+    } else {
+        notification.style.backgroundColor = '#fff1f2';
+        notification.style.borderColor = '#fecdd3';
+        notification.style.borderWidth = '1px';
+        notification.style.borderStyle = 'solid';
+        notification.style.color = '#9f1239';
+        notification.style.borderRadius = '10px';
+        notification.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+    }
     notification.textContent = message;
     document.body.appendChild(notification);
 
     setTimeout(() => {
-        notification.remove();
+        notification.style.opacity = '0';
+        notification.style.transition = 'opacity 0.5s ease';
+        setTimeout(() => notification.remove(), 500);
     }, 3000);
 }
 

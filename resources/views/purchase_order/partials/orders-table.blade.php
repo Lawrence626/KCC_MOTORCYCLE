@@ -7,15 +7,15 @@
 
 <div class="mt-6 overflow-hidden rounded-[10px] border border-slate-200">
     <table class="min-w-full text-left text-sm">
-        <thead class="bg-slate-50 text-slate-500 text-[11px] uppercase tracking-[0.18em]">
+        <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
             <tr>
-                <th class="px-4 py-3">Order</th>
-                <th class="px-4 py-3">Supplier</th>
-                <th class="px-4 py-3">{{ $dateLabel }}</th>
-                <th class="px-4 py-3">Est. Delivery</th>
-                <th class="px-4 py-3">Status</th>
+                <th class="px-4 py-3 text-left font-semibold text-white">Order</th>
+                <th class="px-4 py-3 text-left font-semibold text-white">Supplier</th>
+                <th class="px-4 py-3 text-left font-semibold text-white">{{ $dateLabel }}</th>
+                <th class="px-4 py-3 text-left font-semibold text-white">Est. Delivery</th>
+                <th class="px-4 py-3 text-left font-semibold text-white">Status</th>
                 @if($showAction)
-                    <th class="px-4 py-3">Action</th>
+                    <th class="px-4 py-3 text-left font-semibold text-white">Action</th>
                 @endif
             </tr>
         </thead>
@@ -37,11 +37,11 @@
                     $dateValue = match($dateType) {
                         'received' => optional($order->completed_at)->format('M j') ?? optional($order->updated_at)->format('M j'),
                         'created' => optional($order->created_at)->format('M j'),
-                        default => optional($order->expected_delivery_date)->format('M j') ?? 'TBD',
+                        default => optional($order->estimated_delivery_date ?? $order->expected_delivery_date)->format('M j') ?? 'Not yet provided',
                     };
 
                     // Estimated delivery date logic
-                    $estDate = $order->estimated_delivery_date;
+                    $estDate = $order->estimated_delivery_date ?? $order->expected_delivery_date;
                     $isOrderCompleted = in_array($order->status, ['completed', 'archived']);
                     $estDaysRemaining = $estDate ? (int) now()->startOfDay()->diffInDays($estDate->startOfDay(), false) : null;
 
