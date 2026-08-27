@@ -238,13 +238,13 @@
                         </svg>
                     </button>
                     <div id="syncStatusFilterDropdown" class="hidden absolute top-full right-0 z-[30] mt-1 w-full min-w-[160px] max-h-[220px] overflow-y-auto rounded-[12px] border border-slate-200 bg-white shadow-xl p-1 space-y-0.5">
-                        <button type="button" onclick="selectSyncStatus('', 'All Sync Status')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">All Sync Status</button>
-                        <button type="button" onclick="selectSyncStatus('pending_sync', 'Pending Sync')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Pending Sync</button>
-                        <button type="button" onclick="selectSyncStatus('exported', 'Exported')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Exported</button>
-                        <button type="button" onclick="selectSyncStatus('imported', 'Imported')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Imported</button>
-                        <button type="button" onclick="selectSyncStatus('synchronized', 'Synchronized')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Synchronized</button>
-                        <button type="button" onclick="selectSyncStatus('duplicate', 'Duplicate')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Duplicate</button>
-                        <button type="button" onclick="selectSyncStatus('failed', 'Failed')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Failed</button>
+                        <button type="button" onclick="selectSyncStatus('', 'All Sync Status')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">All Sync Status</button>
+                        <button type="button" onclick="selectSyncStatus('pending_sync', 'Pending Sync')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Pending Sync</button>
+                        <button type="button" onclick="selectSyncStatus('exported', 'Exported')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Exported</button>
+                        <button type="button" onclick="selectSyncStatus('imported', 'Imported')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Imported</button>
+                        <button type="button" onclick="selectSyncStatus('synchronized', 'Synchronized')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Synchronized</button>
+                        <button type="button" onclick="selectSyncStatus('duplicate', 'Duplicate')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Duplicate</button>
+                        <button type="button" onclick="selectSyncStatus('failed', 'Failed')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Failed</button>
                     </div>
                 </div>
             </div>

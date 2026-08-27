@@ -13,7 +13,7 @@
         $isCashier = auth()->check() && auth()->user()->role === 'cashier';
         $isInventoryClerk = auth()->check() && auth()->user()->role === 'inventory_clerk';
         $isWarehousePersonnel = auth()->check() && auth()->user()->role === 'warehouse_personnel';
-        $hasTopNavbar = $isCashier || $isInventoryClerk || $isWarehousePersonnel;
+        $hasTopNavbar = false;
     @endphp
     <div class="flex h-full relative">
         @if(!$hasTopNavbar)
@@ -34,11 +34,11 @@
         @endif
 
         <!-- Main Content -->
-        <div class="flex-1 min-w-0 flex flex-col {{ $hasTopNavbar ? 'md:ml-0 bg-white' : 'md:ml-[270px]' }} relative z-40 h-full">
+        <div class="flex-1 min-w-0 flex flex-col {{ $hasTopNavbar ? 'md:ml-0 bg-white' : 'md:ml-[270px] bg-white rounded-tl-[12px] rounded-bl-[12px]' }} relative z-40 h-full overflow-hidden">
             @if(!$hasTopNavbar)
                 <!-- Header Container - Optional if a header slot is provided -->
                 @if(!empty($header))
-            <div id="dashboardHeader" class="flex-shrink-0 bg-white border border-slate-300 border-b-0 px-5 py-2 sticky top-0 z-10 transition-all duration-200 rounded-tl-[10px] rounded-tr-none shadow-none">
+            <div id="dashboardHeader" class="flex-shrink-0 bg-white border-b border-slate-200 px-5 py-2 sticky top-0 z-10 transition-all duration-200 shadow-none rounded-tl-[12px]">
                 @auth
                     <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                         <div class="flex-1">
@@ -46,7 +46,7 @@
                         </div>
                         <div class="flex items-center gap-3 md:mt-2 mt-2">
                             <div class="relative inline-flex items-center z-50">
-                                <button id="headerNotificationButton" type="button" class="relative inline-flex h-9 w-9 items-center justify-center border border-slate-700 text-white transition focus:outline-none" style="border-radius: 20px; background-color: #0f0f0f;" aria-label="Notifications">
+                                <button id="headerNotificationButton" type="button" class="relative inline-flex h-9 w-9 items-center justify-center border border-slate-700 text-white transition focus:outline-none cursor-pointer" style="border-radius: 20px; background-color: #0f0f0f;" aria-label="Notifications">
                                     <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a6 6 0 00-6 6v4.586l-1.707 1.707A1 1 0 005 16h14a1 1 0 00.707-1.707L18 12.586V8a6 6 0 00-6-6zm0 18a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 20z"/></svg>
                                     <span id="headerNotificationBadge" class="absolute -top-1 -right-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-rose-600 px-1.5 text-[10px] font-semibold text-white hidden">0</span>
                                 </button>
@@ -66,7 +66,7 @@
                                 </div>
                             </div>
                             <div class="relative inline-flex items-center z-50">
-                                <button id="headerProfileButton" type="button" class="inline-flex h-9 items-center gap-2 border border-slate-700 px-3 text-white transition focus:outline-none invisible" style="border-radius: 20px; background-color: #0f0f0f;">
+                                <button id="headerProfileButton" type="button" class="inline-flex h-9 items-center gap-2 border border-slate-700 px-3 text-white transition focus:outline-none cursor-pointer" style="border-radius: 20px; background-color: #0f0f0f;">
                                     <span class="w-5.5 h-5.5 rounded-full bg-cyan-500 text-white grid place-items-center overflow-hidden text-sm font-semibold">
                                         @if(auth()->user()->avatar)
                                             <img src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover" />
@@ -74,7 +74,7 @@
                                             {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
                                         @endif
                                     </span>
-                                    <span class="hidden sm:inline-block text-[14px] font-medium text-white">{{ auth()->user()->name ?? 'Admin' }}</span>
+                                    <span class="hidden sm:inline-block text-[14px] font-medium text-white">{{ auth()->user()->name ?? 'User' }}</span>
                                     <svg id="headerProfileArrow" class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M7 10l5 5 5-5H7z" />
                                     </svg>
@@ -138,7 +138,7 @@
                 $flush = $flush ?? false;
                 $stretch = $stretch ?? true;
             @endphp
-            <div id="mainScrollArea" class="flex-1 min-w-0 min-h-0 overflow-y-auto relative flex flex-col z-40 {{ $hasTopNavbar ? 'bg-white pb-6' : 'pb-6' }}">
+            <div id="mainScrollArea" class="flex-1 min-w-0 min-h-0 overflow-y-auto relative flex flex-col z-40 bg-white rounded-bl-[12px]">
                 @if($hasTopNavbar)
                     @include('partials.cashier-navbar')
                 @endif
@@ -147,7 +147,7 @@
                     @if($flush)
                         {{ $slot }}
                     @else
-                        <div class="bg-white {{ $hasTopNavbar ? 'w-full flex-1 px-4 sm:px-8 py-4 sm:py-6 space-y-8' : 'border border-slate-300 border-t-0 shadow-sm rounded-[10px] px-8 py-6' }} overflow-hidden flex-1 min-w-0 min-h-0 {{ $stretch ? 'flex flex-col' : '' }}">
+                        <div class="bg-white w-full flex-1 px-4 sm:px-8 py-4 sm:py-6 space-y-8 overflow-hidden min-w-0 min-h-0 {{ $stretch ? 'flex flex-col' : '' }}">
                             <div class="space-y-8 min-w-0 {{ $stretch ? 'flex-1' : 'h-full' }}">
                                 {{ $slot }}
                             </div>

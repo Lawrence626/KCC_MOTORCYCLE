@@ -7,7 +7,8 @@
                     <p class="text-gray-600 text-base mt-1">Overview of sales, inventory and performance insights</p>
                 </div>
                 <div class="flex flex-col gap-1 sm:flex-row sm:items-center pr-4">
-                    @if(!auth()->check() || (auth()->user()->role !== 'cashier' && auth()->user()->role !== 'inventory_clerk' && auth()->user()->role !== 'warehouse_personnel'))
+                    @if(auth()->check())
+                        @if(!in_array(auth()->user()->role, ['cashier', 'warehouse_personnel']))
                         <div class="relative" id="notification-bell-wrapper">
                             <button
                                 type="button"
@@ -59,6 +60,7 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
                         <div class="relative inline-flex items-center gap-1.5 rounded-[20px] px-3 py-2 text-left">
                         <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-black grid place-items-center text-lg font-semibold overflow-hidden">
                             {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}

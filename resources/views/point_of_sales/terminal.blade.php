@@ -895,7 +895,7 @@
                 wrapper.insertBefore(button, select);
 
                 const panel = document.createElement('div');
-                panel.className = 'custom-select-panel hidden absolute left-0 top-full z-50 mt-2 rounded-[18px] border border-slate-100 bg-white p-2 shadow-[0_16px_40px_rgba(0,0,0,0.12)]';
+                panel.className = 'custom-select-panel hidden absolute left-0 top-full z-50 mt-1 rounded-[12px] border border-slate-700/80 bg-[#0f172a] p-1.5 shadow-2xl text-white';
                 panel.style.width = button.offsetWidth + 'px';
                 wrapper.appendChild(panel);
 
@@ -909,10 +909,10 @@
                         item.type = 'button';
                         item.dataset.value = opt.value;
                         const isSelected = opt.value === select.value;
-                        item.className = 'custom-select-item w-full rounded-xl px-3 py-1.5 text-center text-xs transition-colors duration-100 ' +
+                        item.className = 'custom-select-item w-full rounded-[8px] px-3 py-1.5 text-center text-xs transition-colors duration-100 ' +
                             (isSelected
-                                ? 'bg-slate-100 font-semibold text-slate-900'
-                                : 'text-slate-700 hover:bg-slate-100');
+                                ? 'bg-slate-800 font-bold text-white'
+                                : 'text-slate-200 hover:text-white hover:bg-slate-800');
                         item.textContent = opt.textContent;
                         item.addEventListener('click', (e) => {
                             e.stopPropagation();

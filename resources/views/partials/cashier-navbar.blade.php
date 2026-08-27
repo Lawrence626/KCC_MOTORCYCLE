@@ -1,24 +1,25 @@
 <!-- Cashier Top Full-Width Navigation Header (Full Screen Width Edge-to-Edge) -->
-<div id="cashierNavbarWrapper" class="sticky top-0 z-50 w-full transition-all duration-300 transform translate-y-0 opacity-100">
-    <div class="w-full text-white shadow-2xl border-b border-slate-800 px-4 sm:px-8 py-2.5 flex items-center justify-between transition-all duration-200" style="background: linear-gradient(90deg, #000000, #2b2b2b);">
-    <!-- Left: Brand Logo -->
-    <div class="flex items-center gap-3">
-        <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 group">
-            <img src="{{ asset('images/Logo.png') }}" alt="KCC Logo" class="h-18 sm:h-20 w-auto object-contain transition-transform group-hover:scale-105" />
+<div id="cashierNavbarWrapper" class="w-full z-50">
+    <div class="w-full text-slate-800 px-4 sm:px-8 py-2.5 flex items-center justify-between relative min-h-[64px]">
+    <!-- Left: Brand Logo (Separated on Left Side) -->
+    <div class="flex items-center">
+        <a href="{{ route('dashboard') }}" class="flex items-center group">
+            <img src="{{ asset('images/Logo.png') }}?v={{ time() }}" alt="KCC Logo" class="h-14 sm:h-16 w-auto object-contain transition-transform group-hover:scale-105" />
         </a>
     </div>
 
-    <!-- Center: Navigation Tabs (Unified Dark Pill Container) -->
+    <!-- Center: Navigation Tabs (Pill Container Centered in Middle) -->
     @php
         $isPosActive = request()->routeIs('pos.terminal') || request()->routeIs('replacing.items') || request()->is('pos*') || request()->is('replacing*') || request()->is('replacing-items*');
         $isInvActive = request()->routeIs('inventory.monitoring') || request()->routeIs('allstocks') || request()->routeIs('product.categorization') || request()->routeIs('item.disposal') || request()->routeIs('reverse-logistics') || request()->is('inventory*') || request()->is('product*');
         $isAnalyticsActive = request()->routeIs('sales.analytics') || request()->routeIs('pricing.module') || request()->routeIs('overstocking.report') || request()->routeIs('out.of.stock') || request()->routeIs('dss.dead-stock*');
     @endphp
-    <nav class="hidden md:flex items-center gap-1.5 bg-[#141414] border border-slate-700/60 rounded-full p-1 px-2 shadow-inner">
+    <nav class="hidden md:flex items-center gap-1.5 border border-slate-700/60 rounded-full p-1 px-2 shadow-md mx-auto whitespace-nowrap flex-shrink-0" style="background: linear-gradient(90deg, #000000, #2b2b2b);">
+
         <!-- Dashboard -->
         <a href="{{ route('dashboard') }}" 
            @class([
-               'rounded-full px-5 py-2 text-sm transition-all duration-200 flex items-center gap-2',
+               'rounded-full px-5 py-2 text-sm transition-all duration-200 flex items-center gap-2 whitespace-nowrap flex-shrink-0',
                'bg-[#00ddd2] text-black font-semibold shadow-md' => request()->routeIs('dashboard'),
                'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium' => !request()->routeIs('dashboard')
            ])>
@@ -38,7 +39,7 @@
                     id="posDropdownBtn"
                     onclick="togglePosDropdown(event)"
                     @class([
-                        'rounded-full px-5 py-2 text-sm transition-all duration-200 flex items-center gap-2 cursor-pointer',
+                        'rounded-full px-5 py-2 text-sm transition-all duration-200 flex items-center gap-2 cursor-pointer whitespace-nowrap flex-shrink-0',
                         'bg-[#00ddd2] text-black font-semibold shadow-md' => $isPosActive,
                         'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium' => !$isPosActive
                     ])>
@@ -88,7 +89,7 @@
                     id="invDropdownBtn"
                     onclick="toggleInvDropdown(event)"
                     @class([
-                        'rounded-full px-5 py-2 text-sm transition-all duration-200 flex items-center gap-2 cursor-pointer',
+                        'rounded-full px-5 py-2 text-sm transition-all duration-200 flex items-center gap-2 cursor-pointer whitespace-nowrap flex-shrink-0',
                         'bg-[#00ddd2] text-black font-semibold shadow-md' => $isInvActive,
                         'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium' => !$isInvActive
                     ])>
@@ -320,20 +321,21 @@
         @endif
     </nav>
 
-    <!-- Right: Quick Actions (Notification & Profile Dropdown Design) -->
-    <div class="flex items-center gap-3">
+    <!-- Right: Quick Actions (Profile Dropdown & Notification Bell) -->
+    <div class="flex items-center gap-3 md:absolute right-4 sm:right-8">
 
-        <!-- Notification Bell Trigger (Connected to Main Notification System) -->
+        <!-- Notification Bell Trigger (Dark Capsule Background Matching Buttons) -->
         @if(auth()->check() && (auth()->user()->role === 'inventory_clerk' || auth()->user()->role === 'admin'))
         <div class="relative inline-flex items-center z-50" id="notification-bell-wrapper">
             <button
                 type="button"
                 id="notification-bell-btn"
-                class="relative inline-flex h-9 w-9 items-center justify-center text-white hover:text-slate-300 hover:bg-slate-800/50 rounded-xl transition focus:outline-none cursor-pointer border-none bg-transparent"
+                class="relative inline-flex h-[38px] w-[38px] items-center justify-center text-slate-300 hover:text-white rounded-full border border-slate-700/60 shadow-md transition focus:outline-none cursor-pointer"
+                style="background: linear-gradient(90deg, #000000, #2b2b2b);"
                 aria-label="Notifications"
                 onclick="toggleNotificationPanel(event)"
             >
-                <svg class="w-5.5 h-5.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 text-slate-300 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
                 </svg>
                 <span
@@ -379,10 +381,10 @@
         </div>
         @endif
 
-        <!-- Profile Dropdown Trigger -->
+        <!-- Profile Dropdown Trigger (Dark Capsule Background Matching Buttons) -->
         <div class="relative inline-flex items-center text-left">
-            <button type="button" id="dashboardProfileButton" class="inline-flex items-center gap-2 px-2 py-1 rounded-xl text-left bg-transparent hover:bg-slate-800/50 transition border-none focus:outline-none cursor-pointer group" aria-label="Open profile menu">
-                <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-black grid place-items-center text-sm font-semibold overflow-hidden">
+            <button type="button" id="dashboardProfileButton" class="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full border border-slate-700/60 text-left shadow-md transition focus:outline-none cursor-pointer group" style="background: linear-gradient(90deg, #000000, #2b2b2b);" aria-label="Open profile menu">
+                <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white text-slate-800 grid place-items-center text-xs font-semibold overflow-hidden border border-slate-300">
                     @if(auth()->user()->avatar)
                         <img src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover" />
                     @else
@@ -391,53 +393,59 @@
                 </span>
                 <div class="hidden sm:flex flex-col leading-tight text-left">
                     <span class="text-sm font-semibold text-white max-w-[120px] truncate">{{ auth()->user()->name ?? 'Cashier' }}</span>
-                    <span class="text-xs text-slate-400 max-w-[130px] truncate">{{ auth()->user()->email ?? '' }}</span>
+                    <span class="text-[11px] text-slate-200 max-w-[130px] truncate">{{ auth()->user()->email ?? '' }}</span>
                 </div>
-                <svg id="dashboardProfileArrow" class="w-5 h-5 text-white transition-colors duration-200 group-hover:text-slate-300" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5H7z"/></svg>
+                <svg id="dashboardProfileArrow" class="w-4 h-4 text-slate-400 transition-colors duration-200 group-hover:text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5H7z"/></svg>
             </button>
 
-            {{-- Original Default Profile Dropdown Card (White Design) --}}
-            <div id="dashboardProfileDropdown" class="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-65 min-h-[100px] rounded-[15px] bg-white border border-slate-200 shadow-2xl z-50 hidden opacity-0 transform scale-95 transition-all duration-200 origin-top" style="color: #0f0f0f;">
-                <div class="px-4 py-4 border-b border-slate-100">
+            {{-- Profile Dropdown Card (Dark Theme matching Navigation Buttons) --}}
+            <div id="dashboardProfileDropdown" class="absolute right-0 top-full mt-2.5 w-68 rounded-[18px] border border-slate-700/70 shadow-2xl shadow-black/80 z-[9999] hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right overflow-hidden" style="background: linear-gradient(135deg, #0a0a0c 0%, #1f2229 100%); color: #ffffff;">
+                
+                <!-- User Info Header -->
+                <div class="px-4.5 py-4 border-b border-slate-800/80 bg-slate-950/40">
                     <div class="flex items-center gap-3">
-                        <span class="w-12 h-12 rounded-full bg-slate-200 text-slate-800 grid place-items-center overflow-hidden text-lg font-semibold">
+                        <span class="w-11 h-11 rounded-full bg-white text-slate-800 grid place-items-center overflow-hidden text-base font-semibold border border-slate-300 shadow-inner flex-shrink-0">
                             @if(auth()->user()->avatar)
                                 <img src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover" />
                             @else
-                                {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
+                                {{ strtoupper(substr(auth()->user()->name ?? 'C', 0, 1)) }}
                             @endif
                         </span>
-                        <div>
-                            <div class="text-[13px] font-semibold text-slate-900">{{ auth()->user()->name ?? 'Cashier' }}</div>
-                            <div class="text-[12px] text-slate-500">{{ auth()->user()->email ?? '' }}</div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-[14px] font-semibold text-white truncate">{{ auth()->user()->name ?? 'Cashier' }}</div>
+                            <div class="text-[11px] text-slate-300 truncate mt-0.5">{{ auth()->user()->email ?? '' }}</div>
                         </div>
                     </div>
                     <div class="mt-3">
-                        <span class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-[#36ADA3]">
+                        <span class="inline-flex items-center rounded-full border border-[#00ddd2]/30 bg-[#00ddd2]/10 px-2.5 py-0.5 text-[11px] font-semibold tracking-wider text-[#00ddd2] uppercase">
                             {{ ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'user')) }}
                         </span>
                     </div>
                 </div>
-                <div class="flex flex-col gap-1 px-2 py-2">
-                    <a href="{{ route('profile.show') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 transition">
-                        <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-100 text-slate-500">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9 9 0 1118.879 6.196 9 9 0 015.12 17.804z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+
+                <!-- Action Links -->
+                <div class="flex flex-col gap-1 p-2">
+                    <a href="{{ route('profile.show') }}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-200 hover:text-white hover:bg-slate-800/70 transition-all duration-150 group">
+                        <span class="w-7 h-7 grid place-items-center rounded-lg bg-slate-900/80 text-slate-400 group-hover:text-[#00ddd2] group-hover:bg-slate-800 transition-colors border border-slate-800">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9 9 0 1118.879 6.196 9 9 0 015.12 17.804z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         </span>
-                        <span>View Profile</span>
+                        <span class="font-medium">View Profile</span>
                     </a>
-                    <a href="{{ route('settings.general') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 transition">
-                        <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-100 text-slate-500">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+
+                    <a href="{{ route('settings.general') }}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-200 hover:text-white hover:bg-slate-800/70 transition-all duration-150 group">
+                        <span class="w-7 h-7 grid place-items-center rounded-lg bg-slate-900/80 text-slate-400 group-hover:text-[#00ddd2] group-hover:bg-slate-800 transition-colors border border-slate-800">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         </span>
-                        <span>Settings</span>
+                        <span class="font-medium">Settings</span>
                     </a>
+
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
-                        <button type="submit" class="flex w-full items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 transition">
-                            <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-100 text-slate-500">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <button type="submit" class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-200 hover:text-white hover:bg-slate-800/70 transition-all duration-150 group cursor-pointer">
+                            <span class="w-7 h-7 grid place-items-center rounded-lg bg-slate-900/80 text-slate-400 group-hover:text-[#00ddd2] group-hover:bg-slate-800 transition-colors border border-slate-800">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                             </span>
-                            <span>Logout</span>
+                            <span class="font-medium">Logout</span>
                         </button>
                     </form>
                 </div>
@@ -445,7 +453,7 @@
         </div>
 
         <!-- Mobile Menu Toggle Button -->
-        <button id="cashier-mobile-toggle" type="button" class="md:hidden w-9 h-9 rounded-full bg-slate-800 text-slate-200 flex items-center justify-center focus:outline-none cursor-pointer">
+        <button id="cashier-mobile-toggle" type="button" class="md:hidden w-9 h-9 rounded-full bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 flex items-center justify-center focus:outline-none cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
@@ -669,38 +677,5 @@
                 cashierMobileMenu.classList.toggle('hidden');
             });
         }
-
-        // Smart Autohide Navbar on Scroll Down, Show on Scroll Up
-        const mainScroll = document.getElementById('mainScrollArea');
-        const navbarWrapper = document.getElementById('cashierNavbarWrapper');
-        if (!mainScroll || !navbarWrapper) return;
-
-        let lastScrollTop = 0;
-        const threshold = 12;
-
-        mainScroll.addEventListener('scroll', function() {
-            const currentScroll = mainScroll.scrollTop;
-
-            if (currentScroll <= 40) {
-                navbarWrapper.classList.remove('-translate-y-full', 'opacity-0', 'pointer-events-none');
-                navbarWrapper.classList.add('translate-y-0', 'opacity-100');
-                lastScrollTop = currentScroll;
-                return;
-            }
-
-            if (Math.abs(currentScroll - lastScrollTop) < threshold) return;
-
-            if (currentScroll > lastScrollTop) {
-                // Scroll DOWN -> Hide (Slide OUT)
-                navbarWrapper.classList.remove('translate-y-0', 'opacity-100');
-                navbarWrapper.classList.add('-translate-y-full', 'opacity-0', 'pointer-events-none');
-            } else {
-                // Scroll UP -> Show (Slide IN)
-                navbarWrapper.classList.remove('-translate-y-full', 'opacity-0', 'pointer-events-none');
-                navbarWrapper.classList.add('translate-y-0', 'opacity-100');
-            }
-
-            lastScrollTop = currentScroll;
-        }, { passive: true });
     });
 </script>

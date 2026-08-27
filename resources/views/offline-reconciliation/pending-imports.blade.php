@@ -56,10 +56,10 @@
                         </svg>
                     </button>
                     <div id="pendingStatusFilterDropdown" class="hidden absolute top-full right-0 z-[30] mt-1 w-full min-w-[140px] rounded-[12px] border border-slate-200 bg-white shadow-xl p-1 space-y-0.5">
-                        <button type="button" onclick="selectPendingStatus('', 'All Status')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">All Status</button>
-                        <button type="button" onclick="selectPendingStatus('pending', 'Pending')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Pending</button>
-                        <button type="button" onclick="selectPendingStatus('approved', 'Approved')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Approved</button>
-                        <button type="button" onclick="selectPendingStatus('rejected', 'Rejected')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Rejected</button>
+                        <button type="button" onclick="selectPendingStatus('', 'All Status')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">All Status</button>
+                        <button type="button" onclick="selectPendingStatus('pending', 'Pending')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Pending</button>
+                        <button type="button" onclick="selectPendingStatus('approved', 'Approved')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Approved</button>
+                        <button type="button" onclick="selectPendingStatus('rejected', 'Rejected')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Rejected</button>
                     </div>
                 </div>
             </div>

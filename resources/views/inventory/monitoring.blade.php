@@ -250,18 +250,18 @@
                 <div class="flex items-center gap-2">
                     <div class="relative" data-dropdown-wrapper="movementDateFilter">
                         <input type="hidden" id="movementDateFilter" value="" />
-                        <button type="button" id="movementDateFilterButton" onclick="toggleDropdown('movementDateFilterDropdown')" class="rounded-[10px] border border-white/20 bg-white/10 px-3 py-1.5 text-xs text-white flex items-center justify-between gap-2 min-w-[130px] hover:bg-white/15 focus:outline-none transition">
+                        <button type="button" id="movementDateFilterButton" onclick="toggleDropdown('movementDateFilterDropdown')" class="rounded-[10px] border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white flex items-center justify-between gap-2 min-w-[130px] hover:bg-slate-700 focus:outline-none focus:ring-1 focus:ring-[#00fff2] transition shadow-sm">
                             <span>All Time</span>
-                            <svg class="w-3.5 h-3.5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                             </svg>
                         </button>
-                        <div id="movementDateFilterDropdown" class="dropdown-menu hidden absolute top-full right-0 z-[99999] mt-1 w-full rounded-[10px] border border-slate-300 bg-white shadow-xl p-1.5">
-                            <button type="button" onclick="selectDropdownOption('movementDateFilter', '', 'All Time', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">All Time</button>
-                            <button type="button" onclick="selectDropdownOption('movementDateFilter', 'today', 'Today', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Today</button>
-                            <button type="button" onclick="selectDropdownOption('movementDateFilter', 'yesterday', 'Yesterday', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Yesterday</button>
-                            <button type="button" onclick="selectDropdownOption('movementDateFilter', 'last_7_days', 'Last 7 Days', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Last 7 Days</button>
-                            <button type="button" onclick="selectDropdownOption('movementDateFilter', 'last_30_days', 'Last 30 Days', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Last 30 Days</button>
+                        <div id="movementDateFilterDropdown" class="hidden absolute top-full left-0 right-0 z-[99999] mt-1 w-full rounded-[12px] border border-slate-700/80 bg-[#0f172a] shadow-2xl p-1.5 text-white">
+                            <button type="button" onclick="selectDropdownOption('movementDateFilter', '', 'All Time', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-200 hover:text-white hover:bg-slate-800 rounded-[8px] transition-colors">All Time</button>
+                            <button type="button" onclick="selectDropdownOption('movementDateFilter', 'today', 'Today', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-200 hover:text-white hover:bg-slate-800 rounded-[8px] transition-colors">Today</button>
+                            <button type="button" onclick="selectDropdownOption('movementDateFilter', 'yesterday', 'Yesterday', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-200 hover:text-white hover:bg-slate-800 rounded-[8px] transition-colors">Yesterday</button>
+                            <button type="button" onclick="selectDropdownOption('movementDateFilter', 'last_7_days', 'Last 7 Days', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-200 hover:text-white hover:bg-slate-800 rounded-[8px] transition-colors">Last 7 Days</button>
+                            <button type="button" onclick="selectDropdownOption('movementDateFilter', 'last_30_days', 'Last 30 Days', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-200 hover:text-white hover:bg-slate-800 rounded-[8px] transition-colors">Last 30 Days</button>
                         </div>
                     </div>
                     <button id="refreshMovementsBtn" class="rounded-full border border-[#00fff2]/40 bg-[#00fff2] px-3 py-1 text-xs font-semibold text-black hover:bg-[#00e6da] transition">Refresh</button>

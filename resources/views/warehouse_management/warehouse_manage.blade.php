@@ -324,14 +324,14 @@
                                 <option value="">Actions</option>
                                 <option value="archive-warehouse">Archive Warehouse</option>
                             </select>
-                            <button type="button" onclick="toggleDropdown('wh-actions-menu-{{ $wh['id'] }}', event)" class="px-3.5 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-700 bg-slate-800 text-white hover:bg-slate-700 cursor-pointer focus:outline-none transition shadow-sm flex items-center gap-2">
+                            <button type="button" onclick="toggleDropdown('wh-actions-menu-{{ $wh['id'] }}', event)" class="px-3.5 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-700 bg-slate-800 text-white hover:bg-slate-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#00fff2] transition shadow-sm flex items-center gap-2">
                                 <span>Actions</span>
                                 <svg class="w-3.5 h-3.5 text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                             </button>
-                            <div id="wh-actions-menu-{{ $wh['id'] }}" class="hidden absolute right-0 top-full z-50 mt-1 w-44 rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
-                                <button type="button" onclick="triggerWarehouseAction('{{ $wh['id'] }}', 'archive-warehouse'); toggleDropdown('wh-actions-menu-{{ $wh['id'] }}', event);" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-rose-700 hover:bg-rose-50 transition cursor-pointer flex items-center justify-center gap-2">
-                                    <svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
-                                    Archive Warehouse
+                            <div id="wh-actions-menu-{{ $wh['id'] }}" class="hidden absolute right-0 top-full z-50 mt-1.5 w-max min-w-[170px] rounded-[12px] border border-slate-700/80 bg-[#0f172a] shadow-2xl p-1.5 space-y-0.5 text-white">
+                                <button type="button" onclick="triggerWarehouseAction('{{ $wh['id'] }}', 'archive-warehouse'); toggleDropdown('wh-actions-menu-{{ $wh['id'] }}', event);" class="w-full text-left px-3.5 py-2 rounded-[8px] text-xs font-semibold text-white hover:bg-slate-800 transition cursor-pointer flex items-center gap-2.5 whitespace-nowrap">
+                                    <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                                    <span>Archive Warehouse</span>
                                 </button>
                             </div>
                         </div>

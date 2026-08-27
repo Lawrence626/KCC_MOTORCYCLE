@@ -516,22 +516,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function highlightParentButton(group) {
+    function updateGroupState(group) {
         const button = group.querySelector('.sidebar-group-toggle');
         const arrow = group.querySelector('.sidebar-arrow');
         if (!button) return;
 
-        button.classList.remove('text-slate-300', 'border-transparent');
-        button.classList.add('bg-cyan-500/5', 'text-cyan-400', 'border-cyan-400');
+        const isOpen = group.classList.contains('open');
+        const isActive = hasActiveSubmodule(group);
 
-        if (arrow) {
-            arrow.classList.remove('text-slate-400');
-            arrow.classList.add('text-cyan-400');
+        if (isOpen || isActive) {
+            button.classList.remove('text-slate-300', 'border-transparent');
+            button.classList.add('bg-cyan-500/5', 'text-cyan-400', 'border-cyan-400');
+            if (arrow) {
+                arrow.classList.remove('text-slate-400');
+                arrow.classList.add('text-cyan-400');
+            }
+        } else {
+            button.classList.remove('bg-cyan-500/5', 'text-cyan-400', 'border-cyan-400');
+            button.classList.add('text-slate-300', 'border-transparent');
+            if (arrow) {
+                arrow.classList.remove('text-cyan-400');
+                arrow.classList.add('text-slate-400');
+            }
         }
-    }
-
-    function closeAllMenus() {
-        allGroups.forEach(g => g.classList.remove('open'));
     }
 
     function hasActiveSubmodule(group) {
@@ -541,9 +548,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     allGroups.forEach(group => {
         if (hasActiveSubmodule(group)) {
-            highlightParentButton(group);
             group.classList.add('open');
         }
+        updateGroupState(group);
     });
 
     allGroups.forEach(group => {
@@ -554,48 +561,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         button.addEventListener('click', function(event) {
             event.preventDefault();
-            const isOpen = group.classList.contains('open');
-
-            clearAllHighlights();
-            clearDirectNavHighlights();
-            closeAllMenus();
-
-            allGroups.forEach(g => {
-                if (hasActiveSubmodule(g)) {
-                    highlightParentButton(g);
-                }
-            });
-
-            if (!isOpen) {
-                group.classList.add('open');
-                highlightParentButton(group);
-            }
-
-            document.querySelectorAll('.sidebar-group-content .sidebar-nav-item.active').forEach(activeItem => {
-                activeItem.classList.remove('active');
-            });
-        });
-    });
-
-    const allSubmodules = document.querySelectorAll('.sidebar-group-content .sidebar-nav-item');
-    allSubmodules.forEach(item => {
-        item.addEventListener('click', function() {
-            allSubmodules.forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
-
-            const parentGroup = this.closest('.group');
-            if (parentGroup) {
-                clearAllHighlights();
-                clearDirectNavHighlights();
-                highlightParentButton(parentGroup);
-            }
-        });
-    });
-
-    allDirectNavItems.forEach(item => {
-        item.addEventListener('click', function() {
-            clearAllHighlights();
-            closeAllMenus();
+            group.classList.toggle('open');
+            updateGroupState(group);
         });
     });
 });
