@@ -10,51 +10,51 @@
 
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            <div onclick="openItemsByStatus('all')" class="border border-gray-200 p-4 cursor-pointer hover:border-[#00fff2] transition" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div onclick="openItemsByStatus('All')" class="border border-gray-200 p-4 bg-white shadow-sm cursor-pointer hover:border-[#6EC1D1] transition" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Items Identified</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ $stats['total'] }}</p>
                             <p class="text-gray-500 text-xs mt-1 font-medium">Total flagged items</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div onclick="openItemsByStatus('Pending')" class="border border-gray-200 p-4 cursor-pointer hover:border-[#00fff2] transition" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div onclick="openItemsByStatus('Pending')" class="border border-gray-200 p-4 bg-white shadow-sm cursor-pointer hover:border-[#6EC1D1] transition" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Pending Review</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ $stats['pending'] }}</p>
                             <p class="text-gray-500 text-xs mt-1 font-medium">Awaiting disposal check</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div onclick="openItemsByStatus('Approved')" class="border border-gray-200 p-4 cursor-pointer hover:border-[#00fff2] transition" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div onclick="openItemsByStatus('Approved')" class="border border-gray-200 p-4 bg-white shadow-sm cursor-pointer hover:border-[#6EC1D1] transition" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Approved Disposal</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ $stats['approved'] }}</p>
                             <p class="text-gray-500 text-xs mt-1 font-medium">Ready for removal</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                         </svg>
                     </div>
@@ -86,9 +86,9 @@
                                 </svg>
                             </button>
                             <div id="statusFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[999] mt-2 w-full rounded-[12px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
-                                <button type="button" onclick="selectStatusOption('all', 'All Status', event)" class="w-full px-4 py-2 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">All Status</button>
-                                <button type="button" onclick="selectStatusOption('Pending', 'Pending Review', event)" class="w-full px-4 py-2 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Pending Review</button>
-                                <button type="button" onclick="selectStatusOption('Approved', 'Approved', event)" class="w-full px-4 py-2 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Approved</button>
+                                <button type="button" onclick="selectStatusOption('all', 'All Status', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">All Status</button>
+                                <button type="button" onclick="selectStatusOption('Pending', 'Pending Review', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Pending Review</button>
+                                <button type="button" onclick="selectStatusOption('Approved', 'Approved', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Approved</button>
                             </div>
                         </div>
                         <input type="text" id="searchInput" placeholder="Search items..." value="{{ request('search') }}" class="px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm h-10 w-64" />
@@ -158,7 +158,7 @@
                                         @if($product->disposal_status === 'Pending')
                                             <span onclick="openItemModal({{ $product->id }})" class="cursor-pointer inline-flex items-center rounded-full bg-[#105f68] px-2.5 py-0.5 text-[11px] font-semibold text-white hover:bg-[#0d4f57]">Pending Review</span>
                                         @elseif($product->disposal_status === 'Approved')
-                                            <span onclick="openItemModal({{ $product->id }})" class="cursor-pointer inline-flex items-center rounded-full bg-[#00fff2] px-2.5 py-0.5 text-[11px] font-semibold text-black hover:bg-[#00e6da]">Approved</span>
+                                            <span onclick="openItemModal({{ $product->id }})" class="cursor-pointer inline-flex items-center rounded-full bg-[#6EC1D1] px-2.5 py-0.5 text-[11px] font-semibold text-black hover:bg-[#59b2c2]">Approved</span>
                                         @elseif($product->disposal_status === 'Disposed')
                                             <span class="inline-flex items-center rounded-full bg-[#0f172a] px-2.5 py-0.5 text-[11px] font-semibold text-white">Disposed</span>
                                         @else
@@ -239,10 +239,10 @@
     <div id="itemModal" class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 py-4">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('itemModal').classList.add('hidden')"></div>
         <div class="relative w-full max-w-2xl lg:max-w-3xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Item Details</h2>
-                    <p class="text-sm text-slate-800 font-medium">View complete item information</p>
+                    <p class="text-sm text-slate-900 font-medium">View complete item information</p>
                 </div>
                 <button onclick="document.getElementById('itemModal').classList.add('hidden')" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -296,7 +296,7 @@
                             </div>
                             <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
                                 product.disposal_status === 'Pending' ? 'bg-[#105f68] text-white' : 
-                                product.disposal_status === 'Approved' ? 'bg-[#00fff2] text-black' : 
+                                product.disposal_status === 'Approved' ? 'bg-[#6EC1D1] text-black' : 
                                 'bg-slate-200 text-slate-700'
                             }">${product.disposal_status || 'None'}</span>
                         </div>

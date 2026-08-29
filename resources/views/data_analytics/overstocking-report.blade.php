@@ -38,51 +38,51 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Overstock SKUs</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ number_format($overstockSkuCount) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Products stocked above reorder levels.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M20 2H4c-1.1 0-2 .9-2 2v3.01c0 .72.38 1.36.96 1.72L3 20c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2l.04-11.27c.58-.36.96-1 .96-1.72V4c0-1.1-.9-2-2-2zM9 4h6v2H9V4zm10 16H5l-.03-10h14.06L19 20z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Excess Stock Units</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ number_format($totalExcessUnits) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Total units available beyond reorder point.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-6 h-6 text-[#145a66]" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.38 5.74zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Tied-up Capital Value</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">₱{{ number_format($totalOverstockValue ?? 0, 2) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Estimated cost value of excess units in stock.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
                         </svg>
                     </div>
@@ -146,7 +146,7 @@
                 </div>
                 <div class="mt-4 space-y-2 flex-1 overflow-y-auto max-h-[340px] pr-1 custom-scrollbar">
                     @forelse($categoryBreakdown as $category => $value)
-                        <div class="rounded-[14px] border border-slate-100 p-3" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                        <div class="rounded-[14px] border border-slate-100 p-3" style="background: linear-gradient(50deg, #ffffff 0%, rgba(110, 193, 209, 0.18) 50%);">
                             <div class="flex items-center justify-between gap-3">
                                 <div>
                                     <p class="font-semibold text-slate-900 text-xs">{{ $category ?: 'Uncategorized' }}</p>
@@ -156,7 +156,7 @@
                             </div>
                         </div>
                     @empty
-                        <div class="rounded-[14px] border border-slate-100 p-3 text-xs text-slate-500" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">No category overstock data available.</div>
+                        <div class="rounded-[14px] border border-slate-100 p-3 text-xs text-slate-500" style="background: linear-gradient(50deg, #ffffff 0%, rgba(110, 193, 209, 0.18) 50%);">No category overstock data available.</div>
                     @endforelse
                 </div>
             </div>

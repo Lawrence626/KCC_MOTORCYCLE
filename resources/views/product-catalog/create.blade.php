@@ -60,7 +60,7 @@
                                     </select>
                                     <button type="button" 
                                             id="addNewProductDescBtn"
-                                            class="shrink-0 h-10 px-4 rounded-[12px] bg-[#00fff2] text-slate-900 text-xs font-bold hover:bg-[#00e6da] transition shadow-sm inline-flex items-center justify-center text-center leading-none whitespace-nowrap gap-1">
+                                            class="shrink-0 h-10 px-4 rounded-[12px] bg-[#6EC1D1] text-slate-900 text-xs font-bold hover:bg-[#59b2c2] transition shadow-sm inline-flex items-center justify-center text-center leading-none whitespace-nowrap gap-1">
                                         <span class="text-sm font-black">+</span><span>New</span>
                                     </button>
                                 </div>
@@ -240,7 +240,7 @@
                                                         <input type="checkbox" 
                                                                name="motorcycle_models[]" 
                                                                value="{{ $model->id }}" 
-                                                               class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]">
+                                                               class="rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1]">
                                                         <span class="text-xs text-slate-700">{{ $model->full_name }}</span>
                                                     </label>
                                                 @endforeach
@@ -274,7 +274,7 @@
                     <a href="{{ route('product-catalog.index') }}" class="rounded-[10px] bg-black/10 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-black/20 transition">
                         Cancel
                     </a>
-                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-4 py-2 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#00e6da] transition">
+                    <button type="submit" class="rounded-[10px] bg-[#6EC1D1] px-4 py-2 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition">
                         Save Product
                     </button>
                 </div>
@@ -287,10 +287,10 @@
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" id="closeProductDescModalBackdrop"></div>
         <div class="relative w-full max-w-md bg-white rounded-[28px] border border-slate-200 shadow-[0_30px_80px_rgba(15,23,42,0.18)] overflow-hidden transform transition-all z-10">
             <!-- Header (matching Add User Modal style) -->
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h3 class="text-xl font-bold text-black">Add New Product Description</h3>
-                    <p class="text-sm text-slate-800 font-medium mt-0.5">Enter description name and default brand.</p>
+                    <p class="text-sm text-slate-900 font-medium mt-0.5">Enter description name and default brand.</p>
                 </div>
                 <button type="button" id="closeProductDescModal" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -320,7 +320,7 @@
                     <button type="button" id="cancelProductDesc" class="rounded-[10px] bg-black/10 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-black/20 transition flex-1">
                         Cancel
                     </button>
-                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-4 py-2 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#00e6da] transition flex-1">
+                    <button type="submit" class="rounded-[10px] bg-[#6EC1D1] px-4 py-2 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition flex-1">
                         Add Description
                     </button>
                 </div>

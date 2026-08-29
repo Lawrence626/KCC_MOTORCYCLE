@@ -434,8 +434,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: comparisonChart.datasets.map((dataset, index) => ({
                     label: dataset.label,
                     data: dataset.data,
-                    backgroundColor: '#0dd3c9ff',
-                    borderColor: '#0dd3c9ff',
+                    backgroundColor: '#6EC1D1',
+                    borderColor: '#59b2c2',
                     borderWidth: 1,
                     borderRadius: 6,
                 })),
@@ -449,7 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         backgroundColor: '#1a1a1a',
                         titleColor: '#ffffff',
                         bodyColor: '#ffffff',
-                        borderColor: '#00D9FF',
+                        borderColor: '#6EC1D1',
                         borderWidth: 1,
                         padding: 10,
                         displayColors: false,
@@ -569,8 +569,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // x/y axis — ang binago lang ay ang kulay ng linya/fill at ang
     // pagkamakinis ng curve (rounded peaks/valleys).
     // ═══════════════════════════════════════════════════════════════
-    const SALES_CHART_CYAN = '#00D9FF'; // pangunahing linya (matches dashboard icon cyan)
-    const SALES_CHART_CYAN_SOFT = '#00FFF2'; // pantulong na kulay para sa gradient highlight
+    const SALES_CHART_CYAN = '#6EC1D1'; // pangunahing linya (matches dashboard icon cyan)
+    const SALES_CHART_CYAN_SOFT = '#6EC1D1'; // pantulong na kulay para sa gradient highlight
 
     const renderSalesChart = (salesChart) => {
         const canvas = document.getElementById('salesChart');

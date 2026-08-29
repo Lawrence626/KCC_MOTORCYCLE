@@ -17,25 +17,25 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Average Unit Price</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">₱{{ number_format($averageUnitPrice, 2) }}</p>
                             <p class="text-gray-500 text-xs mt-1 font-medium">Average current price for active inventory items.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
                     <div class="flex-1 overflow-hidden">
                         <p class="text-black text-xs font-semibold">Most Expensive SKU</p>
                         <div class="mt-1">
@@ -49,16 +49,16 @@
                             </p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
                     <div class="flex-1 overflow-hidden">
                         <p class="text-black text-xs font-semibold">Cheapest SKU</p>
                         <div class="mt-1">
@@ -72,8 +72,8 @@
                             </p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M16 18l2.29-2.29-4.88-4.88-4 4L2 7.41 3.41 6l6 6 4-4 6.3 6.29L22 12v6z"/>
                         </svg>
                     </div>
@@ -156,20 +156,20 @@
                             </svg>
                         </button>
                         <div id="costChangeFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 right-0 z-[60] mt-1.5 w-full rounded-[12px] border border-slate-200 bg-white shadow-2xl p-1.5 space-y-0.5">
-                            <button type="button" onclick="selectCostChangeOption('', 'All')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">All</button>
-                            <button type="button" onclick="selectCostChangeOption('none', 'No Change')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">No Change</button>
-                            <button type="button" onclick="selectCostChangeOption('up', 'Increased Cost')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">Increased Cost</button>
-                            <button type="button" onclick="selectCostChangeOption('down', 'Decreased Cost')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">Decreased Cost</button>
+                            <button type="button" onclick="selectCostChangeOption('', 'All')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">All</button>
+                            <button type="button" onclick="selectCostChangeOption('none', 'No Change')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">No Change</button>
+                            <button type="button" onclick="selectCostChangeOption('up', 'Increased Cost')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">Increased Cost</button>
+                            <button type="button" onclick="selectCostChangeOption('down', 'Decreased Cost')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">Decreased Cost</button>
                         </div>
                     </div>
                     <button
                         type="button"
                         onclick="supplierFilterSubmit()"
-                        class="inline-flex items-center justify-center rounded-[12px] bg-[#0f172a] px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-slate-800 transition"
+                        class="inline-flex items-center justify-center rounded-[12px] bg-[#0f172a] px-4 py-[11px] text-xs font-semibold text-white shadow-sm hover:bg-slate-800 transition"
                     >Search</button>
                     @if(request('search') || request('cost_change'))
                         <a href="{{ strtok(request()->fullUrl(), '?') }}"
-                           class="inline-flex items-center justify-center rounded-[12px] border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm hover:bg-slate-50 transition"
+                           class="inline-flex items-center justify-center rounded-[12px] border border-slate-300 bg-white px-3 py-[11px] text-xs font-semibold text-slate-600 shadow-sm hover:bg-slate-50 transition"
                            title="Clear filters">✕ Clear</a>
                     @endif
                 </form>

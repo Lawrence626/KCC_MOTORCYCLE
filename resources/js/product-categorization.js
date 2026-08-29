@@ -148,10 +148,11 @@ function renderTable() {
     tbody.innerHTML = active.map(product => `
         <tr class="hover:bg-slate-50">
             <td class="px-4 py-3">
-                <input type="checkbox" class="product-checkbox rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]" value="${product.id}" ${selectedIds.includes(product.id) ? 'checked' : ''}>
+                <input type="checkbox" class="product-checkbox rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1]" value="${product.id}" ${selectedIds.includes(product.id) ? 'checked' : ''}>
             </td>
-            <td class="px-4 py-3 font-semibold text-slate-900">${product.name}</td>
-            <td class="px-4 py-3 text-slate-600"><span class="px-2.5 py-0.5 rounded-full bg-[#105f68] text-[#00fff2] text-[11px] font-semibold">${product.category}</span></td>
+            <td class="px-4 py-3 font-medium text-slate-900">${product.sku || 'N/A'}</td>
+            <td class="px-4 py-3 font-semibold text-slate-900">${product.product_description || product.name || 'Unnamed Product'}</td>
+            <td class="px-4 py-3 text-slate-600"><span class="px-2.5 py-0.5 rounded-full bg-[rgba(110,193,209,0.18)] border border-[#a2deea] text-[#145a66] text-[11px] font-semibold">${product.category}</span></td>
             <td class="px-4 py-3 text-slate-600 font-mono text-xs">${product.sku}</td>
             <td class="px-4 py-3 text-slate-600 text-xs">${product.warehouse || '-'}</td>
             <td class="px-4 py-3 text-slate-600"><div class="flex flex-wrap gap-1">${product.models.map(m => `<span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded text-xs">${m}</span>`).join('')}</div></td>
@@ -343,8 +344,9 @@ function renderDeleteListTable() {
             <td class="px-4 py-2">
                 <input type="checkbox" class="delete-checkbox rounded border-slate-300 text-red-500 focus:ring-red-400" value="${product.id}" ${deleteSelectedIds.includes(product.id) ? 'checked' : ''}>
             </td>
-            <td class="px-4 py-2 font-medium text-slate-900">${product.name}</td>
-            <td class="px-4 py-2 text-slate-600"><span class="px-2.5 py-0.5 rounded-full bg-[#105f68] text-[#00fff2] text-[11px] font-semibold">${product.category}</span></td>
+            <td class="px-4 py-2 font-medium text-slate-900">${product.sku || 'N/A'}</td>
+            <td class="px-4 py-2 text-slate-800">${product.product_description || product.name || 'Unnamed Product'}</td>
+            <td class="px-4 py-2 text-slate-600"><span class="px-2.5 py-0.5 rounded-full bg-[rgba(110,193,209,0.18)] border border-[#a2deea] text-[#145a66] text-[11px] font-semibold">${product.category}</span></td>
             <td class="px-4 py-2 text-slate-600 font-mono text-xs">${product.sku}</td>
         </tr>
     `).join('');

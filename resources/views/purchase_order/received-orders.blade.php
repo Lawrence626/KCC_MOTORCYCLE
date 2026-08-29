@@ -25,56 +25,56 @@
                     </svg>
                     Mobile Scanner
                 </button>
-                <button class="inline-flex items-center gap-2 rounded-[10px] border border-[#00fff2]/40 bg-[#00fff2] px-4 py-2 text-sm font-semibold text-black shadow-sm hover:bg-[#00e6da] focus:outline-none transition-all duration-200">Confirm Receipt</button>
+                <button class="inline-flex items-center gap-2 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-4 py-2 text-sm font-semibold text-black shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200">Confirm Receipt</button>
             </div>
         </div>
 
         <div class="grid gap-4 sm:grid-cols-3">
-            <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Delivered today</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ number_format($deliveredToday) }}</p>
                             <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Orders received and logged today.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5 text-black" viewBox="0 0 20 20" fill="currentColor">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Pending confirmation</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ number_format($pendingConfirmation) }}</p>
                             <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Awaiting goods inspection or paperwork.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5 text-black" viewBox="0 0 20 20" fill="currentColor">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Issues found</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ number_format($issuesFound) }}</p>
                             <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Discrepancies requiring follow-up.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="currentColor">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" viewBox="0 0 24 24" fill="currentColor">
                             <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
                         </svg>
                     </div>
@@ -114,9 +114,9 @@
                         </svg>
                     </button>
                     <div id="receivedOrdersStatusDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-300 bg-white shadow-xl p-3 space-y-1">
-                        <button type="button" onclick="selectDropdown(event, 'receivedOrdersStatusInput', '', 'receivedOrdersStatusButton', 'All status', 'receivedOrdersStatusDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-center text-sm {{ empty($status) ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">All status</button>
+                        <button type="button" onclick="selectDropdown(event, 'receivedOrdersStatusInput', '', 'receivedOrdersStatusButton', 'All status', 'receivedOrdersStatusDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-left text-sm {{ empty($status) ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">All status</button>
                         @foreach(['completed' => 'Completed', 'partially received' => 'Partially Received'] as $value => $label)
-                            <button type="button" onclick="selectDropdown(event, 'receivedOrdersStatusInput', '{{ $value }}', 'receivedOrdersStatusButton', '{{ $label }}', 'receivedOrdersStatusDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-center text-sm {{ ($status ?? '') === $value ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
+                            <button type="button" onclick="selectDropdown(event, 'receivedOrdersStatusInput', '{{ $value }}', 'receivedOrdersStatusButton', '{{ $label }}', 'receivedOrdersStatusDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-left text-sm {{ ($status ?? '') === $value ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
                         @endforeach
                     </div>
                 </label>
@@ -138,9 +138,9 @@
                         </svg>
                     </button>
                     <div id="receivedOrdersWarehouseDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-300 bg-white shadow-xl p-3 space-y-1">
-                        <button type="button" onclick="selectDropdown(event, 'receivedOrdersWarehouseInput', '', 'receivedOrdersWarehouseButton', 'All warehouses', 'receivedOrdersWarehouseDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-center text-sm {{ empty($warehouse) ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">All warehouses</button>
+                        <button type="button" onclick="selectDropdown(event, 'receivedOrdersWarehouseInput', '', 'receivedOrdersWarehouseButton', 'All warehouses', 'receivedOrdersWarehouseDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-left text-sm {{ empty($warehouse) ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">All warehouses</button>
                         @foreach(['Shop' => 'Shop (Main Store)', 'Warehouse A' => 'Warehouse A', 'Warehouse B' => 'Warehouse B', 'Warehouse C' => 'Warehouse C'] as $value => $label)
-                            <button type="button" onclick="selectDropdown(event, 'receivedOrdersWarehouseInput', '{{ $value }}', 'receivedOrdersWarehouseButton', '{{ $label }}', 'receivedOrdersWarehouseDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-center text-sm {{ ($warehouse ?? '') === $value ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
+                            <button type="button" onclick="selectDropdown(event, 'receivedOrdersWarehouseInput', '{{ $value }}', 'receivedOrdersWarehouseButton', '{{ $label }}', 'receivedOrdersWarehouseDropdown', 'receivedOrdersForm')" class="w-full px-4 py-2.5 text-left text-sm {{ ($warehouse ?? '') === $value ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
                         @endforeach
                     </div>
                 </label>
@@ -256,10 +256,10 @@
     <div id="ro-qr-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 py-6" style="display: none;">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('ro-qr-modal').style.display='none'"></div>
         <div class="relative w-full max-w-2xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Generate QR Codes</h2>
-                    <p class="text-sm text-slate-800 font-medium">Enter product names to generate QR codes.</p>
+                    <p class="text-sm text-slate-900 font-medium">Enter product names to generate QR codes.</p>
                 </div>
                 <button onclick="document.getElementById('ro-qr-modal').style.display='none'" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -309,10 +309,10 @@
 
                 <!-- Action Buttons -->
                 <div class="flex gap-3">
-                    <button onclick="roGenerateAllQR()" class="flex-1 rounded-[10px] bg-[#00fff2] px-4 py-3 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300">
+                    <button onclick="roGenerateAllQR()" class="flex-1 rounded-[10px] bg-[#6EC1D1] px-4 py-3 text-sm font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300">
                         Generate All QR Codes
                     </button>
-                    <button onclick="roPrintAllQR()" class="flex-1 rounded-[10px] bg-[#00fff2] px-4 py-3 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300">
+                    <button onclick="roPrintAllQR()" class="flex-1 rounded-[10px] bg-[#6EC1D1] px-4 py-3 text-sm font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300">
                         Print All QR Codes
                     </button>
                 </div>
@@ -324,10 +324,10 @@
     <div id="ro-new-stock-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 py-6" style="display: none;">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="roCloseNewStockModal()"></div>
         <div class="relative w-full max-w-lg overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">New Stock Details</h2>
-                    <p class="text-sm text-slate-800 font-medium">Enter product details for warehouse.</p>
+                    <p class="text-sm text-slate-900 font-medium">Enter product details for warehouse.</p>
                 </div>
                 <button onclick="roCloseNewStockModal()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -373,7 +373,7 @@
 
                 <div class="flex gap-3">
                     <button onclick="roCloseNewStockModal()" class="flex-1 rounded-[10px] bg-black/10 px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-black/20">Cancel</button>
-                    <button onclick="roSaveNewStock()" class="flex-1 rounded-[10px] bg-[#00fff2] px-4 py-3 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300">Save & Add to Warehouse</button>
+                    <button onclick="roSaveNewStock()" class="flex-1 rounded-[10px] bg-[#6EC1D1] px-4 py-3 text-sm font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300">Save & Add to Warehouse</button>
                 </div>
             </div>
         </div>
@@ -383,10 +383,10 @@
     <div id="ro-scan-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 py-6" style="display: none;">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="roCloseScanner()"></div>
         <div class="relative w-full max-w-[500px] overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">QR Code Scanner</h2>
-                    <p class="text-sm text-slate-800 font-medium">Scan QR codes to add products.</p>
+                    <p class="text-sm text-slate-900 font-medium">Scan QR codes to add products.</p>
                 </div>
                 <button onclick="roCloseScanner()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -421,7 +421,7 @@
                 <!-- Action Buttons -->
                 <div class="flex justify-end gap-3 mt-6">
                     <button onclick="roCloseScanner()" class="rounded-[10px] bg-black/10 px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-black/20">Cancel</button>
-                    <button onclick="roProceedToDetails()" class="rounded-[10px] bg-[#00fff2] px-4 py-3 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300" id="ro-proceed-btn" disabled>Proceed to Details</button>
+                    <button onclick="roProceedToDetails()" class="rounded-[10px] bg-[#6EC1D1] px-4 py-3 text-sm font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300" id="ro-proceed-btn" disabled>Proceed to Details</button>
                 </div>
             </div>
         </div>
@@ -868,7 +868,7 @@
                     qrCard.innerHTML = `
                         <div class="flex items-start gap-4">
                             <div id="ro-qr-code-${index}" class="w-24 h-24 flex items-center justify-center bg-white"></div>
-                            <div class="flex-1">
+                            <div class="flex-1 min-w-0">
                                 <h3 class="font-semibold text-slate-900 text-sm">${product.name}</h3>
                                 <p class="text-xs text-slate-600">SKU: ${product.sku}</p>
                                 <p class="text-xs text-slate-600">Restock: ${document.getElementById('ro-qr-restock-date').value}</p>

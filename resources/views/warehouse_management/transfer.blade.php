@@ -41,7 +41,7 @@
     <div class="space-y-6">
         <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
-        <div class="flex items-start justify-between">
+        <div class="flex items-start justify-between gap-2">
             <div>
                 <h1 class="text-3xl font-extrabold text-slate-900">Transfer Products</h1>
                 <p class="mt-2 text-sm text-gray-500">Move products from <strong class="text-emerald-600">{{ is_array($shelf) ? ($shelf['name'] ?? 'Unknown') : ($shelf->name ?? 'Unknown') }}</strong> to another shelf</p>
@@ -144,7 +144,7 @@
                         @foreach($availableShelves as $shelf)
                             <label class="shelf-option flex items-center gap-3 p-4 rounded-xl cursor-pointer">
                                 <input type="radio" name="destination_slot" value="{{ $shelf['slot_index'] }}" class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 focus:ring-offset-0" required />
-                                <div class="flex-1">
+                                <div class="flex-1 min-w-0">
                                     <p class="text-sm font-semibold text-slate-900">{{ $shelf['name'] }}</p>
                                     <p class="text-xs text-slate-500 mt-1">
                                         {{ $shelf['current_occupancy'] }} / {{ $shelfCapacity }} occupied

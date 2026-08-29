@@ -19,7 +19,7 @@
             <div class="flex flex-wrap items-center gap-2 pr-4">
                 <form action="{{ route('dss.dead-stock.recalculate') }}" method="POST" class="inline">
                     @csrf
-                    <button type="submit" class="inline-flex items-center gap-2 rounded-[10px] border border-[#00fff2]/40 bg-[#00fff2] px-4 py-2 text-sm font-semibold text-black shadow-sm hover:bg-[#00e6da] focus:outline-none transition-all duration-200" onclick="this.innerHTML='<svg class=\'w-4 h-4 animate-spin\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15\'/></svg> <span>Analyzing...</span>'; this.disabled=true; this.closest('form').submit();">
+                    <button type="submit" class="inline-flex items-center gap-2 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-4 py-2 text-sm font-semibold text-black shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200" onclick="this.innerHTML='<svg class=\'w-4 h-4 animate-spin\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15\'/></svg> <span>Analyzing...</span>'; this.disabled=true; this.closest('form').submit();">
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                         <span>Recalculate Analysis</span>
                     </button>
@@ -48,17 +48,17 @@
         {{-- ═══ KPI CARDS ═══ --}}
         <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
             {{-- Total Items --}}
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Total Items</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ $totalDeadStocks }}</p>
-                            <p class="text-gray-500 text-xs mt-1 font-medium">Identified items</p>
+                            <p class="text-gray-500 text-[11px] mt-1 font-medium truncate">Identified items</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
                         </svg>
                     </div>
@@ -66,17 +66,17 @@
             </div>
 
             {{-- Value at Risk --}}
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Value at Risk</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">₱{{ number_format($totalValue, 0) }}</p>
-                            <p class="text-gray-500 text-xs mt-1 font-medium">Total capital locked</p>
+                            <p class="text-gray-500 text-[11px] mt-1 font-medium truncate">Total capital locked</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
                         </svg>
                     </div>
@@ -84,13 +84,13 @@
             </div>
 
             {{-- Critical --}}
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Critical</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ $countByPriority['Critical'] ?? 0 }}</p>
-                            <p class="text-red-600 text-xs mt-1 font-medium">Urgent resolution</p>
+                            <p class="text-red-600 text-[11px] mt-1 font-medium truncate">Urgent resolution</p>
                         </div>
                     </div>
                     <div class="flex items-center justify-center flex-shrink-0 ml-2 pt-1">
@@ -100,13 +100,13 @@
             </div>
 
             {{-- High --}}
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">High</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ $countByPriority['High'] ?? 0 }}</p>
-                            <p class="text-orange-600 text-xs mt-1 font-medium">High concern</p>
+                            <p class="text-orange-600 text-[11px] mt-1 font-medium truncate">High concern</p>
                         </div>
                     </div>
                     <div class="flex items-center justify-center flex-shrink-0 ml-2 pt-1">
@@ -116,13 +116,13 @@
             </div>
 
             {{-- Medium --}}
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Medium</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ $countByPriority['Medium'] ?? 0 }}</p>
-                            <p class="text-amber-600 text-xs mt-1 font-medium">Moderate concern</p>
+                            <p class="text-amber-600 text-[11px] mt-1 font-medium truncate">Moderate concern</p>
                         </div>
                     </div>
                     <div class="flex items-center justify-center flex-shrink-0 ml-2 pt-1">
@@ -132,13 +132,13 @@
             </div>
 
             {{-- Low --}}
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Low</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ $countByPriority['Low'] ?? 0 }}</p>
-                            <p class="text-blue-600 text-xs mt-1 font-medium">Low concern</p>
+                            <p class="text-blue-600 text-[11px] mt-1 font-medium truncate">Low concern</p>
                         </div>
                     </div>
                     <div class="flex items-center justify-center flex-shrink-0 ml-2 pt-1">
@@ -152,7 +152,7 @@
         @if($atRiskProducts->isNotEmpty())
         <div class="bg-white rounded-[20px] border border-slate-200 shadow-sm overflow-hidden mb-2">
             <div class="px-4 py-3 bg-[#0f172a] border-b border-slate-200 flex items-center gap-2 text-white">
-                <svg class="w-4 h-4 text-[#00fff2]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <svg class="w-4 h-4 text-[#6EC1D1]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                 <h3 class="text-xs font-semibold text-white">Approaching Dead Stock Threshold ({{ $atRiskProducts->count() }})</h3>
             </div>
             <div class="overflow-x-auto">
@@ -205,11 +205,11 @@
                             <svg class="w-4 h-4 text-slate-500 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6"/></svg>
                         </button>
                         <div id="priorityFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-1 w-full min-w-[130px] rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
-                            <button type="button" onclick="selectDeadStockFilter('priorityFilter', '', 'All Priorities', 'priorityFilterDisplay', 'priorityFilterDropdown')" class="w-full text-center px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">All Priorities</button>
-                            <button type="button" onclick="selectDeadStockFilter('priorityFilter', 'Critical', 'Critical', 'priorityFilterDisplay', 'priorityFilterDropdown')" class="w-full text-center px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Critical</button>
-                            <button type="button" onclick="selectDeadStockFilter('priorityFilter', 'High', 'High', 'priorityFilterDisplay', 'priorityFilterDropdown')" class="w-full text-center px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">High</button>
-                            <button type="button" onclick="selectDeadStockFilter('priorityFilter', 'Medium', 'Medium', 'priorityFilterDisplay', 'priorityFilterDropdown')" class="w-full text-center px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Medium</button>
-                            <button type="button" onclick="selectDeadStockFilter('priorityFilter', 'Low', 'Low', 'priorityFilterDisplay', 'priorityFilterDropdown')" class="w-full text-center px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Low</button>
+                            <button type="button" onclick="selectDeadStockFilter('priorityFilter', '', 'All Priorities', 'priorityFilterDisplay', 'priorityFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">All Priorities</button>
+                            <button type="button" onclick="selectDeadStockFilter('priorityFilter', 'Critical', 'Critical', 'priorityFilterDisplay', 'priorityFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Critical</button>
+                            <button type="button" onclick="selectDeadStockFilter('priorityFilter', 'High', 'High', 'priorityFilterDisplay', 'priorityFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">High</button>
+                            <button type="button" onclick="selectDeadStockFilter('priorityFilter', 'Medium', 'Medium', 'priorityFilterDisplay', 'priorityFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Medium</button>
+                            <button type="button" onclick="selectDeadStockFilter('priorityFilter', 'Low', 'Low', 'priorityFilterDisplay', 'priorityFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Low</button>
                         </div>
                     </div>
 
@@ -228,10 +228,10 @@
                             <svg class="w-4 h-4 text-slate-500 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6"/></svg>
                         </button>
                         <div id="sortFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-1 w-full min-w-[150px] rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
-                            <button type="button" onclick="selectDeadStockFilter('sortFilter', 'days_without_sale', 'Longest Unsold', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-center px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Longest Unsold</button>
-                            <button type="button" onclick="selectDeadStockFilter('sortFilter', 'stock_value', 'Highest Value', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-center px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Highest Value</button>
-                            <button type="button" onclick="selectDeadStockFilter('sortFilter', 'current_stock', 'Highest Stock', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-center px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Highest Stock</button>
-                            <button type="button" onclick="selectDeadStockFilter('sortFilter', 'last_sold_date', 'Last Sold', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-center px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Last Sold</button>
+                            <button type="button" onclick="selectDeadStockFilter('sortFilter', 'days_without_sale', 'Longest Unsold', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Longest Unsold</button>
+                            <button type="button" onclick="selectDeadStockFilter('sortFilter', 'stock_value', 'Highest Value', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Highest Value</button>
+                            <button type="button" onclick="selectDeadStockFilter('sortFilter', 'current_stock', 'Highest Stock', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Highest Stock</button>
+                            <button type="button" onclick="selectDeadStockFilter('sortFilter', 'last_sold_date', 'Last Sold', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Last Sold</button>
                         </div>
                     </div>
 

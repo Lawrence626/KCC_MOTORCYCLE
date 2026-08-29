@@ -29,10 +29,10 @@
         <div id="archiveModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
             <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="toggleArchiveList()"></div>
             <div class="relative w-full max-w-2xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
-                <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                     <div>
                         <h3 class="text-xl font-bold text-black">Archived Orders</h3>
-                        <p class="text-sm text-slate-800 font-medium">Previously archived purchase orders.</p>
+                        <p class="text-sm text-slate-900 font-medium">Previously archived purchase orders.</p>
                     </div>
                     <button onclick="toggleArchiveList()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,7 +68,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                     <h2 class="text-sm font-bold text-slate-900">Create Purchase Order (Offline)</h2>
                     <div class="flex items-center gap-2">
-                        <button type="submit" class="inline-flex items-center gap-2 rounded-[10px] border border-[#00fff2]/40 bg-[#00fff2] px-4 py-2 text-sm font-semibold text-black shadow-sm hover:bg-[#00e6da] focus:outline-none transition-all duration-200 cursor-pointer">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-4 py-2 text-sm font-semibold text-black shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200 cursor-pointer">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
                             </svg>
@@ -157,28 +157,28 @@
 
         <!-- Quick Stats -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-            <div class="rounded-[20px] border border-slate-200 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Local Orders</p>
                 <div class="mt-1">
                     <p id="local-count" class="text-2xl font-bold text-amber-600">0</p>
                     <p class="text-slate-500 text-[10px] leading-tight mt-1 font-medium">Saved locally</p>
                 </div>
             </div>
-            <div class="rounded-[20px] border border-slate-200 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Pending Sync</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-amber-600">{{ $purchaseOrders->where('sync_status', 'pending_sync')->count() }}</p>
                     <p class="text-slate-500 text-[10px] leading-tight mt-1 font-medium">Database orders</p>
                 </div>
             </div>
-            <div class="rounded-[20px] border border-slate-200 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Exported</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-blue-600">{{ $purchaseOrders->where('sync_status', 'exported')->count() }}</p>
                     <p class="text-slate-500 text-[10px] leading-tight mt-1 font-medium">Ready for import</p>
                 </div>
             </div>
-            <div class="rounded-[20px] border border-slate-200 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Synchronized</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-green-600">{{ $purchaseOrders->where('sync_status', 'synchronized')->count() }}</p>
@@ -238,13 +238,13 @@
                         </svg>
                     </button>
                     <div id="syncStatusFilterDropdown" class="hidden absolute top-full right-0 z-[30] mt-1 w-full min-w-[160px] max-h-[220px] overflow-y-auto rounded-[12px] border border-slate-200 bg-white shadow-xl p-1 space-y-0.5">
-                        <button type="button" onclick="selectSyncStatus('', 'All Sync Status')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">All Sync Status</button>
-                        <button type="button" onclick="selectSyncStatus('pending_sync', 'Pending Sync')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Pending Sync</button>
-                        <button type="button" onclick="selectSyncStatus('exported', 'Exported')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Exported</button>
-                        <button type="button" onclick="selectSyncStatus('imported', 'Imported')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Imported</button>
-                        <button type="button" onclick="selectSyncStatus('synchronized', 'Synchronized')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Synchronized</button>
-                        <button type="button" onclick="selectSyncStatus('duplicate', 'Duplicate')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Duplicate</button>
-                        <button type="button" onclick="selectSyncStatus('failed', 'Failed')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Failed</button>
+                        <button type="button" onclick="selectSyncStatus('', 'All Sync Status')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">All Sync Status</button>
+                        <button type="button" onclick="selectSyncStatus('pending_sync', 'Pending Sync')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Pending Sync</button>
+                        <button type="button" onclick="selectSyncStatus('exported', 'Exported')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Exported</button>
+                        <button type="button" onclick="selectSyncStatus('imported', 'Imported')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Imported</button>
+                        <button type="button" onclick="selectSyncStatus('synchronized', 'Synchronized')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Synchronized</button>
+                        <button type="button" onclick="selectSyncStatus('duplicate', 'Duplicate')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Duplicate</button>
+                        <button type="button" onclick="selectSyncStatus('failed', 'Failed')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Failed</button>
                     </div>
                 </div>
             </div>
@@ -801,7 +801,7 @@
                     if (isSelected) {
                         dayClasses += "bg-[#0f172a] text-white font-bold shadow-sm";
                     } else if (isToday) {
-                        dayClasses += "bg-[#00fff2] text-black font-bold shadow-sm";
+                        dayClasses += "bg-[#6EC1D1] text-black font-bold shadow-sm";
                     } else {
                         dayClasses += "text-slate-700 hover:bg-slate-100";
                     }
@@ -889,7 +889,7 @@
                     const isSel = selectedDate && selectedDate.getFullYear() === year && selectedDate.getMonth() === idx;
                     let mClasses = "py-1.5 rounded-lg text-center font-semibold cursor-pointer transition-all duration-150 ";
                     if (isSel) {
-                        mClasses += "bg-[#00fff2] text-black font-bold shadow-md";
+                        mClasses += "bg-[#6EC1D1] text-black font-bold shadow-md";
                     } else {
                         mClasses += "text-slate-700 hover:bg-slate-100";
                     }

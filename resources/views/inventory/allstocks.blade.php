@@ -28,7 +28,7 @@
                 <p class="text-sm text-slate-500 mt-1">Complete inventory overview with stock availability and warehouse information.</p>
             </div>
             <div class="flex items-center gap-2">
-                <button id="addStockBtn" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#00fff2] text-slate-900 text-sm font-semibold hover:bg-[#00e6da] transition shadow-sm">
+                <button id="addStockBtn" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#6EC1D1] text-slate-900 text-sm font-semibold hover:bg-[#59b2c2] transition shadow-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                     <span>Add Stock</span>
                 </button>
@@ -38,9 +38,9 @@
                         <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div id="moreActionsMenu" class="dropdown-menu hidden absolute left-0 right-0 top-full z-[50] mt-1 w-full min-w-full rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
-                        <button id="generateQrBtn" type="button" onclick="document.getElementById('moreActionsMenu').classList.add('hidden')" class="w-full px-2 py-1.5 text-center text-[11px] text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-semibold cursor-pointer">Generate QR Codes</button>
-                        <button id="exportBtn" type="button" onclick="document.getElementById('moreActionsMenu').classList.add('hidden')" class="w-full px-2 py-1.5 text-center text-[11px] text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-semibold cursor-pointer">Export Inventory</button>
-                        <a href="{{ route('archived') }}" onclick="document.getElementById('moreActionsMenu').classList.add('hidden')" class="block w-full px-2 py-1.5 text-center text-[11px] text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-semibold cursor-pointer">Archived Items</a>
+                        <button id="generateQrBtn" type="button" onclick="document.getElementById('moreActionsMenu').classList.add('hidden')" class="w-full px-2 py-1.5 text-left text-[11px] text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-semibold cursor-pointer">Generate QR Codes</button>
+                        <button id="exportBtn" type="button" onclick="document.getElementById('moreActionsMenu').classList.add('hidden')" class="w-full px-2 py-1.5 text-left text-[11px] text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-semibold cursor-pointer">Export Inventory</button>
+                        <a href="{{ route('archived') }}" onclick="document.getElementById('moreActionsMenu').classList.add('hidden')" class="block w-full px-2 py-1.5 text-left text-[11px] text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-semibold cursor-pointer">Archived Items</a>
                     </div>
                 </div>
             </div>
@@ -48,77 +48,77 @@
 
         <!-- KPI Cards -->
         <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Total Products</p>
                         <div class="mt-1">
                             <p id="stat-total-products" class="text-2xl font-bold text-black">--</p>
                             <p class="text-gray-500 text-xs mt-1 font-medium">Total loaded products</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-4.5 h-4.5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Inventory Value</p>
                         <div class="mt-1">
                             <p id="stat-total-value" class="text-2xl font-bold text-black">--</p>
                             <p class="text-gray-500 text-xs mt-1 font-medium">Total inventory worth</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Low Stock</p>
                         <div class="mt-1">
                             <p id="stat-low-stock" class="text-2xl font-bold text-black">--</p>
                             <p class="text-gray-500 text-xs mt-1 font-medium">Items below safe level</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M16 18l2.29-2.29-4.88-4.88-4 4L2 7.41 3.41 6l6 6 4-4 6.3 6.29L22 12v6z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Expiring Soon</p>
                         <div class="mt-1">
                             <p id="stat-expiring-soon" class="text-2xl font-bold text-black">--</p>
                             <p class="text-gray-500 text-xs mt-1 font-medium">Within 30 days</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M4.47 21h15.06c1.54 0 2.5-1.67 1.73-3L13.73 4.99c-.77-1.33-2.69-1.33-3.46 0L2.74 18c-.77 1.33.19 3 1.73 3zM13 18h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Warehouse Dist.</p>
                         <div class="mt-1">
                             <p id="stat-warehouse-dist" class="text-2xl font-bold text-black">--</p>
@@ -130,8 +130,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
                         </svg>
                     </div>
@@ -160,11 +160,11 @@
                             </svg>
                         </button>
                         <div id="warehouseFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[999] mt-2 w-full rounded-[12px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
-                            <button type="button" onclick="selectDropdownOption('warehouseFilter', '', 'All Locations', 'warehouseFilterDropdown', event)" class="w-full px-4 py-2 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">All Locations</button>
-                            <button type="button" onclick="selectDropdownOption('warehouseFilter', 'Shop', 'Shop', 'warehouseFilterDropdown', event)" class="w-full px-4 py-2 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Shop</button>
-                            <button type="button" onclick="selectDropdownOption('warehouseFilter', 'Warehouse A', 'Warehouse A', 'warehouseFilterDropdown', event)" class="w-full px-4 py-2 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Warehouse A</button>
-                            <button type="button" onclick="selectDropdownOption('warehouseFilter', 'Warehouse B', 'Warehouse B', 'warehouseFilterDropdown', event)" class="w-full px-4 py-2 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Warehouse B</button>
-                            <button type="button" onclick="selectDropdownOption('warehouseFilter', 'Warehouse C', 'Warehouse C', 'warehouseFilterDropdown', event)" class="w-full px-4 py-2 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Warehouse C</button>
+                            <button type="button" onclick="selectDropdownOption('warehouseFilter', '', 'All Locations', 'warehouseFilterDropdown', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">All Locations</button>
+                            <button type="button" onclick="selectDropdownOption('warehouseFilter', 'Shop', 'Shop', 'warehouseFilterDropdown', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Shop</button>
+                            <button type="button" onclick="selectDropdownOption('warehouseFilter', 'Warehouse A', 'Warehouse A', 'warehouseFilterDropdown', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Warehouse A</button>
+                            <button type="button" onclick="selectDropdownOption('warehouseFilter', 'Warehouse B', 'Warehouse B', 'warehouseFilterDropdown', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Warehouse B</button>
+                            <button type="button" onclick="selectDropdownOption('warehouseFilter', 'Warehouse C', 'Warehouse C', 'warehouseFilterDropdown', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Warehouse C</button>
                         </div>
                     </div>
                     
@@ -232,10 +232,10 @@
                             </svg>
                         </button>
                         <div id="statusFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[999] mt-2 w-full min-w-full rounded-[12px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
-                            <button type="button" onclick="selectDropdownOption('statusFilter', '', 'All Status', 'statusFilterDropdown', event)" class="w-full px-3 py-2 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition whitespace-nowrap">All Status</button>
-                            <button type="button" onclick="selectDropdownOption('statusFilter', 'active', 'Available', 'statusFilterDropdown', event)" class="w-full px-3 py-2 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition whitespace-nowrap">Available</button>
-                            <button type="button" onclick="selectDropdownOption('statusFilter', 'low', 'Low Stock', 'statusFilterDropdown', event)" class="w-full px-3 py-2 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition whitespace-nowrap">Low Stock</button>
-                            <button type="button" onclick="selectDropdownOption('statusFilter', 'out', 'Out of Stock', 'statusFilterDropdown', event)" class="w-full px-3 py-2 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition whitespace-nowrap">Out of Stock</button>
+                            <button type="button" onclick="selectDropdownOption('statusFilter', '', 'All Status', 'statusFilterDropdown', event)" class="w-full px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition whitespace-nowrap">All Status</button>
+                            <button type="button" onclick="selectDropdownOption('statusFilter', 'active', 'Available', 'statusFilterDropdown', event)" class="w-full px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition whitespace-nowrap">Available</button>
+                            <button type="button" onclick="selectDropdownOption('statusFilter', 'low', 'Low Stock', 'statusFilterDropdown', event)" class="w-full px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition whitespace-nowrap">Low Stock</button>
+                            <button type="button" onclick="selectDropdownOption('statusFilter', 'out', 'Out of Stock', 'statusFilterDropdown', event)" class="w-full px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition whitespace-nowrap">Out of Stock</button>
                         </div>
                     </div>
 
@@ -292,11 +292,11 @@
         </div>
 
         <!-- Bulk Actions Toolbar -->
-        <div id="bulkActionsToolbar" class="hidden bg-[#00fff2]/10 border border-[#00fff2]/30 rounded-xl p-4 shadow-sm">
+        <div id="bulkActionsToolbar" class="hidden bg-[#6EC1D1]/15 border border-[#6EC1D1]/40 rounded-xl p-4 shadow-sm">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <span class="text-sm font-medium text-[#105f68]"><span id="selectedCount">0</span> products selected</span>
-                    <button onclick="clearSelection()" class="text-sm text-[#105f68] hover:text-[#0f172a]">Clear selection</button>
+                    <span class="text-sm font-medium text-[#145a66]"><span id="selectedCount">0</span> products selected</span>
+                    <button onclick="clearSelection()" class="text-sm text-[#145a66] hover:text-[#0f172a]">Clear selection</button>
                 </div>
                 <div class="flex flex-wrap gap-2">
                     <button class="px-4 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition">
@@ -322,7 +322,7 @@
                     <thead class="bg-[#0f172a] border-b border-slate-200 sticky-header text-xs uppercase tracking-wider rounded-t-[10px]">
                         <tr>
                             <th class="px-4 py-3 font-semibold sticky-first-col bg-[#0f172a] w-10 text-white rounded-tl-[10px]">
-                                <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2] cursor-pointer">
+                                <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1] cursor-pointer">
                             </th>
                             <th class="px-4 py-3 font-semibold text-white">Product</th>
                             <th class="px-4 py-3 font-semibold text-white">Category</th>
@@ -353,10 +353,10 @@
     <div id="addStockModal" class="fixed inset-0 z-[100000] hidden flex items-center justify-center px-4 py-4">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" id="closeAddStockModalBackdrop"></div>
         <div class="relative w-full max-w-2xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Add Stock</h2>
-                    <p class="text-sm text-slate-800 font-medium">Update your inventory with new stock.</p>
+                    <p class="text-sm text-slate-900 font-medium">Update your inventory with new stock.</p>
                 </div>
                 <button type="button" id="closeAddStockModal" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -411,7 +411,7 @@
                     <!-- Action Buttons -->
                     <div class="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
                         <button type="button" id="cancelAddStock" class="inline-flex items-center justify-center rounded-[10px] border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm hover:bg-black/10 transition-all duration-200">Cancel</button>
-                        <button type="submit" id="submitAddStock" class="inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#00FFF2] px-4 py-2.5 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#00D9CC] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button type="submit" id="submitAddStock" class="inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#6EC1D1] px-4 py-2.5 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                             Add Stock
                         </button>
@@ -427,10 +427,10 @@
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('editProductModal').classList.add('hidden')"></div>
         <div class="relative w-full max-w-3xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[95vh] overflow-y-auto z-10">
             <!-- Header -->
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Edit Product</h2>
-                    <p class="text-sm text-slate-800 font-medium">Update all product details.</p>
+                    <p class="text-sm text-slate-900 font-medium">Update all product details.</p>
                 </div>
                 <button type="button" id="closeEditProductModal" onclick="document.getElementById('editProductModal').classList.add('hidden')" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -555,7 +555,7 @@
                     <!-- Action Buttons -->
                     <div class="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
                         <button type="button" id="cancelEditProduct" onclick="document.getElementById('editProductModal').classList.add('hidden')" class="inline-flex items-center justify-center rounded-[10px] border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm hover:bg-black/10 transition-all duration-200 cursor-pointer">Cancel</button>
-                        <button type="submit" id="submitEditProduct" class="inline-flex items-center justify-center rounded-[10px] bg-[#00FFF2] px-4 py-2.5 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#00D9CC] transition-all duration-200 cursor-pointer">Save Changes</button>
+                        <button type="submit" id="submitEditProduct" class="inline-flex items-center justify-center rounded-[10px] bg-[#6EC1D1] px-4 py-2.5 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all duration-200 cursor-pointer">Save Changes</button>
                     </div>
                 </form>
             </div>
@@ -581,7 +581,7 @@
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" id="closeProductDescOverlay" onclick="document.getElementById('addProductDescModal').classList.add('hidden')"></div>
         <div class="relative w-full max-w-md overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] z-10">
             <!-- Header -->
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h3 class="text-xl font-bold text-black">Add New Product Description</h3>
                 </div>
@@ -615,7 +615,7 @@
                     <button type="button" id="cancelProductDesc" class="flex-1 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-sm hover:bg-black/10 transition-all cursor-pointer">
                         Cancel
                     </button>
-                    <button type="submit" class="flex-1 rounded-[10px] bg-[#00fff2] px-4 py-2 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#00e6da] transition-all cursor-pointer">
+                    <button type="submit" class="flex-1 rounded-[10px] bg-[#6EC1D1] px-4 py-2 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all cursor-pointer">
                         Add Description
                     </button>
                 </div>
@@ -696,10 +696,10 @@
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('viewDetailsModal').classList.add('hidden')"></div>
         <div class="relative w-full max-w-2xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto z-10">
             <!-- Header -->
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black" id="vdProductTitle">Product Details</h2>
-                    <p class="text-sm text-slate-800 font-medium">View detailed product specifications.</p>
+                    <p class="text-sm text-slate-900 font-medium">View detailed product specifications.</p>
                 </div>
                 <button type="button" onclick="document.getElementById('viewDetailsModal').classList.add('hidden')" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -888,7 +888,7 @@
                     if (isSelected) {
                         dayClasses += "bg-[#0f172a] text-white font-bold shadow-xs";
                     } else if (isToday) {
-                        dayClasses += "bg-[#00fff2] text-black font-bold shadow-xs";
+                        dayClasses += "bg-[#6EC1D1] text-black font-bold shadow-xs";
                     } else {
                         dayClasses += "text-slate-700 hover:bg-slate-100";
                     }
@@ -976,7 +976,7 @@
                     const isSel = selectedDate && selectedDate.getFullYear() === year && selectedDate.getMonth() === idx;
                     let mClasses = "py-1 rounded text-center font-semibold cursor-pointer transition-all duration-150 ";
                     if (isSel) {
-                        mClasses += "bg-[#00fff2] text-black font-bold shadow-sm";
+                        mClasses += "bg-[#6EC1D1] text-black font-bold shadow-sm";
                     } else {
                         mClasses += "text-slate-700 hover:bg-slate-100";
                     }
@@ -1046,3 +1046,4 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     @vite('resources/js/allstocks.js')
 </x-layouts.app>
+

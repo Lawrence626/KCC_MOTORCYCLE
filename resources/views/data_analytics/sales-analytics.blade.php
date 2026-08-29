@@ -71,68 +71,68 @@
             </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5">
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Inventory Value</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">₱{{ number_format($quickStats['total_inventory_value'], 2) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Current value of stocked items across active inventory.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Average Unit Price</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">₱{{ number_format($quickStats['average_unit_price'], 2) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Average per-unit price for products currently in stock.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Units In Stock</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ number_format($quickStats['total_units_in_stock']) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Total quantity of items currently available for sale.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Healthy SKUs</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ number_format($quickStats['healthy_skus']) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">SKUs with stock above reorder threshold and ready to sell.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                             <polyline points="22 4 12 14.01 9 11.01" />
                         </svg>
@@ -140,34 +140,34 @@
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Low Stock SKUs</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ number_format($quickStats['low_stock_skus']) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Items at or below reorder level that need replenishment soon.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M4.47 21h15.06c1.54 0 2.5-1.67 1.73-3L13.73 4.99c-.77-1.33-2.69-1.33-3.46 0L2.74 18c-.77 1.33.19 3 1.73 3zM13 18h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Out Of Stock SKUs</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ number_format($quickStats['out_of_stock_skus']) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Products currently unavailable that need immediate restock.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm5.31-3.1L6.1 5.69C7.45 4.63 9.15 4 12 4c4.42 0 8 3.58 8 8 0 1.85-.63 3.55-1.69 4.9z"/>
                         </svg>
                     </div>
@@ -219,7 +219,7 @@
                     <div id="categoryLegend" class="@if(empty($categoryBreakdown['labels'])) w-full flex items-center justify-center py-12 text-center col-span-full @else max-h-48 overflow-y-auto pr-1 space-y-2 text-sm my-auto @endif">
                         @if(!empty($categoryBreakdown['labels']))
                             @php
-                                $legendColors = ['bg-[#0dd3c9]','bg-cyan-400','bg-emerald-500','bg-amber-500','bg-sky-500','bg-rose-500','bg-violet-500','bg-lime-500','bg-fuchsia-500','bg-orange-500'];
+                                $legendColors = ['bg-[#6EC1D1]','bg-[#59b2c2]','bg-emerald-500','bg-amber-500','bg-sky-500','bg-rose-500','bg-violet-500','bg-lime-500','bg-fuchsia-500','bg-orange-500'];
                             @endphp
                             @foreach($categoryBreakdown['labels'] as $index => $label)
                                 <div class="flex items-center gap-3 rounded-[12px] border border-slate-200 bg-slate-50 p-2.5">
@@ -636,7 +636,7 @@
             .flatpickr-day.startRange.prevMonthDay,
             .flatpickr-day.selected.nextMonthDay,
             .flatpickr-day.startRange.nextMonthDay {
-                background: #00fff2 !important;
+                background: #6EC1D1 !important;
                 color: #000000 !important;
                 border-radius: 8px !important;
                 box-shadow: none !important;
@@ -663,7 +663,7 @@
                 box-shadow: none !important;
             }
             .flatpickr-day.startRange.endRange {
-                background: #00fff2 !important;
+                background: #6EC1D1 !important;
                 color: #000000 !important;
                 box-shadow: none !important;
             }
@@ -674,9 +674,9 @@
                 font-weight: 600 !important;
             }
             .flatpickr-day.today.startRange {
-                background: #00fff2 !important;
+                background: #6EC1D1 !important;
                 color: #000000 !important;
-                border: 1px solid #00fff2 !important;
+                border: 1px solid #6EC1D1 !important;
             }
             .flatpickr-day.today.endRange {
                 background: #0f172a !important;
@@ -684,7 +684,7 @@
                 border: 1px solid #0f172a !important;
             }
             .flatpickr-day.today.inRange {
-                background: rgba(0, 255, 242, 0.15) !important;
+                background: rgba(110, 193, 209, 0.18) !important;
                 color: #0f172a !important;
                 border: 1px solid #cbd5e1 !important;
             }
@@ -710,14 +710,14 @@
             }
 
             .sales-range-btn.active {
-                background-color: #00fff2 !important;
+                background-color: #6EC1D1 !important;
                 color: #000000 !important;
                 font-weight: 700 !important;
                 border-color: transparent !important;
             }
 
             .sales-range-btn.active:hover {
-                background-color: #00e6da !important;
+                background-color: #59b2c2 !important;
                 color: #000000 !important;
             }
         </style>
@@ -845,9 +845,9 @@
                 if (ctx2d) {
                     const h = salesTrendCtx.height || salesTrendCtx.clientHeight || 300;
                     trendGradient = ctx2d.createLinearGradient(0, 0, 0, h);
-                    trendGradient.addColorStop(0, 'rgba(0, 217, 255, 0.65)');
-                    trendGradient.addColorStop(0.5, 'rgba(0, 217, 255, 0.35)');
-                    trendGradient.addColorStop(1, 'rgba(0, 217, 255, 0.12)');
+                    trendGradient.addColorStop(0, 'rgba(110, 193, 209, 0.65)');
+                    trendGradient.addColorStop(0.5, 'rgba(110, 193, 209, 0.35)');
+                    trendGradient.addColorStop(1, 'rgba(110, 193, 209, 0.08)');
                 }
             }
 
@@ -858,16 +858,16 @@
                     datasets: [{
                         label: 'Revenue',
                         data: salesTrendData.monthly.values,
-                        borderColor: '#00D9FF',
-                        backgroundColor: trendGradient || 'rgba(0, 217, 255, 0.25)',
+                        borderColor: '#6EC1D1',
+                        backgroundColor: trendGradient || 'rgba(110, 193, 209, 0.25)',
                         borderWidth: 2.5,
                         fill: true,
                         tension: 0.55,
                         cubicInterpolationMode: 'monotone',
                         pointRadius: 0,
                         pointHoverRadius: 5,
-                        pointBackgroundColor: '#00D9FF',
-                        pointHoverBackgroundColor: '#00D9FF',
+                        pointBackgroundColor: '#6EC1D1',
+                        pointHoverBackgroundColor: '#6EC1D1',
                         pointHoverBorderColor: '#ffffff',
                         pointHoverBorderWidth: 2,
                     }]
@@ -930,8 +930,8 @@
             // ═══════════════════════════════════════════
             // CATEGORY CHART (initial render from server)
             // ═══════════════════════════════════════════
-            const chartColors = ['#0dd3c9', '#00D9FF', '#00fff2', '#34d399', '#f59e0b', '#8b5cf6', '#ec4899', '#f97316'];
-            const legendColorClasses = ['bg-[#0dd3c9]','bg-cyan-400','bg-emerald-500','bg-amber-500','bg-sky-500','bg-rose-500','bg-violet-500','bg-lime-500','bg-fuchsia-500','bg-orange-500'];
+            const chartColors = ['#6EC1D1', '#59b2c2', '#a2deea', '#34d399', '#f59e0b', '#8b5cf6', '#ec4899', '#f97316'];
+            const legendColorClasses = ['bg-[#6EC1D1]','bg-[#59b2c2]','bg-emerald-500','bg-amber-500','bg-sky-500','bg-rose-500','bg-violet-500','bg-lime-500','bg-fuchsia-500','bg-orange-500'];
             let categoryChartInstance = null;
 
             const initCategoryChart = (labels, values) => {

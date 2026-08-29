@@ -41,7 +41,7 @@
             <div id="dashboardHeader" class="flex-shrink-0 bg-white border-b border-slate-200 px-5 py-2 sticky top-0 z-10 transition-all duration-200 shadow-none rounded-tl-[12px]">
                 @auth
                     <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                        <div class="flex-1">
+                        <div class="flex-1 min-w-0">
                             {{ $header }}
                         </div>
                         <div class="flex items-center gap-3 md:mt-2 mt-2">

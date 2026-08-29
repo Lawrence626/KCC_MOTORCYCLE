@@ -20,28 +20,28 @@
 
         <!-- Export Stats -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <div class="rounded-[20px] border border-slate-200 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Pending POs</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-amber-600">{{ $pendingPurchaseOrders }}</p>
                     <p class="text-slate-500 text-[10px] leading-tight mt-1 font-medium">Purchase orders to export</p>
                 </div>
             </div>
-            <div class="rounded-[20px] border border-slate-200 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Pending Movements</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-amber-600">{{ $pendingInventoryMovements }}</p>
                     <p class="text-slate-500 text-[10px] leading-tight mt-1 font-medium">Inventory movements to export</p>
                 </div>
             </div>
-            <div class="rounded-[20px] border border-slate-200 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Exported POs</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-blue-600">{{ $exportedPurchaseOrders }}</p>
                     <p class="text-slate-500 text-[10px] leading-tight mt-1 font-medium">Already exported</p>
                 </div>
             </div>
-            <div class="rounded-[20px] border border-slate-200 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Exported Movements</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-blue-600">{{ $exportedInventoryMovements }}</p>
@@ -57,7 +57,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                     <h2 class="text-sm font-bold text-slate-900">Export Configuration</h2>
                     <div class="flex items-center gap-2">
-                        <button type="submit" formaction="{{ route('offline.export.excel') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-[#00fff2]/40 bg-[#00fff2] px-4 py-2 text-sm font-semibold text-black shadow-sm hover:bg-[#00e6da] focus:outline-none transition-all duration-200 cursor-pointer">
+                        <button type="submit" formaction="{{ route('offline.export.excel') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-4 py-2 text-sm font-semibold text-black shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200 cursor-pointer">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                             </svg>

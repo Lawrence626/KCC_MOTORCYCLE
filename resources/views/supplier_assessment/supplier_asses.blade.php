@@ -7,7 +7,7 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-3">
-                <button id="openSupplierModal" class="inline-flex items-center gap-2 rounded-[10px] bg-[#00FFF2] px-4 py-2 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#00D9CC] transition-all duration-200">
+                <button id="openSupplierModal" class="inline-flex items-center gap-2 rounded-[10px] bg-[#6EC1D1] px-4 py-2 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all duration-200">
                     <svg class="h-4 w-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
@@ -23,7 +23,7 @@
         </div>
 
         @if(session('success'))
-            <div id="success-toast" class="fixed top-4 right-8 z-50 rounded-[10px] border border-[#00fff2] bg-[#e6fffe] p-4 text-sm font-medium text-slate-900 shadow-lg">
+            <div id="success-toast" class="fixed top-4 right-8 z-50 rounded-[10px] border border-[#6EC1D1] bg-teal-50 p-4 text-sm font-medium text-slate-900 shadow-lg">
                 {{ session('success') }}
             </div>
             <script>
@@ -49,51 +49,51 @@
         @endif
 
         <div class="grid gap-4 sm:grid-cols-3">
-            <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Active Suppliers</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ number_format($quickStats['activeSuppliers']) }}</p>
                             <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Currently active supplier records.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="currentColor">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Tracked Products</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ number_format($quickStats['trackedProducts']) }}</p>
                             <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Total products linked across suppliers.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="currentColor">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Stock Inventory Value</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">&#8369;{{ number_format($quickStats['stockValue'], 2) }}</p>
                             <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Combined value of supplier stock.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="currentColor">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05 1.18 1.91 2.53 1.91 1.29 0 2.13-.59 2.13-1.61 0-1.11-1.02-1.55-2.74-2.02-2.09-.56-3.72-1.35-3.72-3.47 0-1.89 1.45-3.09 3.11-3.43V4h2.67v1.93c1.61.32 2.82 1.43 2.92 3.16h-1.92c-.09-.91-.89-1.63-2.18-1.63-1.12 0-1.86.52-1.86 1.41 0 .96.89 1.38 2.49 1.84 2.19.62 3.97 1.46 3.97 3.65 0 2.01-1.52 3.23-3.32 3.73z"/>
                         </svg>
                     </div>
@@ -113,9 +113,9 @@
                         <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/>
                         </svg>
-                        <input id="supplierSearch" type="search" placeholder="Search supplier, contact, email..." class="w-full rounded-[10px] border border-slate-700 bg-slate-800/90 pl-10 pr-4 py-2 text-xs text-white placeholder:text-slate-300 focus:outline-none focus:ring-1 focus:ring-[#00fff2]" />
+                        <input id="supplierSearch" type="search" placeholder="Search supplier, contact, email..." class="w-full rounded-[10px] border border-slate-700 bg-slate-800/90 pl-10 pr-4 py-2 text-xs text-white placeholder:text-slate-300 focus:outline-none focus:ring-1 focus:ring-[#6EC1D1]" />
                     </div>
-                    <span id="supplierListCount" class="rounded-[10px] bg-[#00FFF2] px-3 py-2 text-xs font-bold text-slate-900 shadow-sm whitespace-nowrap">{{ number_format($supplierSummaries->count()) }} shown</span>
+                    <span id="supplierListCount" class="rounded-[10px] bg-[#6EC1D1] px-3 py-2 text-xs font-bold text-slate-900 shadow-sm whitespace-nowrap">{{ number_format($supplierSummaries->count()) }} shown</span>
                 </div>
             </div>
 
@@ -138,22 +138,22 @@
                 <!-- Section Header Bar (matching All Stocks design) -->
                 <div class="bg-[#0f172a] px-6 py-5 border-b border-slate-800 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between rounded-t-[15px]">
                     <div>
-                        <p class="text-xs uppercase tracking-wider font-semibold text-[#00fff2]">Supplier overview</p>
+                        <p class="text-xs uppercase tracking-wider font-semibold text-[#6EC1D1]">Supplier overview</p>
                         <h2 id="detailSupplierName" class="mt-0.5 text-2xl md:text-3xl font-bold text-white"></h2>
                         <p id="detailSupplierNotes" class="mt-1 text-xs text-slate-300"></p>
                         <p id="detailSupplierAddress" class="mt-1 text-xs text-slate-400"></p>
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
                         <div class="rounded-[8px] bg-slate-800/90 px-3 py-1.5 border border-slate-700">
-                            <p class="text-[10px] uppercase tracking-wider text-[#00fff2] font-semibold leading-tight">Role</p>
+                            <p class="text-[10px] uppercase tracking-wider text-[#6EC1D1] font-semibold leading-tight">Role</p>
                             <p id="detailSupplierPosition" class="mt-0.5 font-semibold text-white text-[11px] leading-tight"></p>
                         </div>
                         <div class="rounded-[8px] bg-slate-800/90 px-3 py-1.5 border border-slate-700">
-                            <p class="text-[10px] uppercase tracking-wider text-[#00fff2] font-semibold leading-tight">Primary Contact</p>
+                            <p class="text-[10px] uppercase tracking-wider text-[#6EC1D1] font-semibold leading-tight">Primary Contact</p>
                             <p id="detailSupplierContact" class="mt-0.5 font-medium text-white text-[11px] leading-tight"></p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button id="detailEditSupplierButton" type="button" class="inline-flex items-center gap-1.5 rounded-[8px] bg-[#00FFF2] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#00D9CC] transition-all duration-200">
+                            <button id="detailEditSupplierButton" type="button" class="inline-flex items-center gap-1.5 rounded-[8px] bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all duration-200">
                                 <svg class="h-3.5 w-3.5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                 Edit
                             </button>
@@ -168,70 +168,66 @@
                 <div class="p-6 pt-0 space-y-6">
 
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                        <div class="flex items-start justify-between">
-                            <div class="flex-1">
+                    <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="flex-1 min-w-0">
                                 <p class="text-black text-xs font-semibold">Performance Score</p>
                                 <div class="mt-1">
                                     <p id="detailPerformanceScore" class="text-2xl font-bold text-black"></p>
                                     <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Overall vendor rating score.</p>
                                 </div>
                             </div>
-                            <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                                <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="currentColor">
+                            <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                                <svg class="w-5 h-5 text-[#145a66]" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
                                 </svg>
                             </div>
                         </div>
                     </div>
-                    <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                        <div class="flex items-start justify-between">
-                            <div class="flex-1">
+                    <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="flex-1 min-w-0">
                                 <p class="text-black text-xs font-semibold">On-Time Delivery</p>
                                 <div class="mt-1">
                                     <p id="detailOnTimeRate" class="text-2xl font-bold text-black"></p>
                                     <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Punctual shipment rate.</p>
                                 </div>
                             </div>
-                            <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                                <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="#000000" stroke="#000000" stroke-width="1">
-                                    <rect x="9" y="1.5" width="6" height="2" rx="1"/>
-                                    <line x1="17" y1="4" x2="19.5" y2="6.5" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
-                                    <circle cx="12" cy="14" r="8"/>
-                                    <line x1="12" y1="14" x2="12" y2="10" stroke="#00fff2" stroke-width="1.5" stroke-linecap="round"/>
+                            <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                                <svg class="w-5 h-5 text-[#145a66]" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="8.5"/>
+                                    <polyline points="12 7 12 12 15.5 14.5"/>
                                 </svg>
                             </div>
                         </div>
                     </div>
-                    <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                        <div class="flex items-start justify-between">
-                            <div class="flex-1">
+                    <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="flex-1 min-w-0">
                                 <p class="text-black text-xs font-semibold">Order Completion</p>
                                 <div class="mt-1">
                                     <p id="detailCompletionRate" class="text-2xl font-bold text-black"></p>
                                     <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Fulfilled orders without issues.</p>
                                 </div>
                             </div>
-                            <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                                <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="#000000">
+                            <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                                <svg class="w-5 h-5 text-[#145a66]" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M7 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2.18a3 3 0 0 0-5.64 0H7zm5 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2zM7 9h10v1.5H7V9zm0 3h10v1.5H7V12zm0 3h6v1.5H7V15z"/>
-                                    <circle cx="17" cy="17" r="5.5" fill="#00fff2"/>
-                                    <path d="M17 22a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm-2.2-5.1 1.4-1.4 1 1 2.2-2.2 1.4 1.4-3.6 3.6-2.4-2.4z" fill="#000000"/>
                                 </svg>
                             </div>
                         </div>
                     </div>
-                    <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                        <div class="flex items-start justify-between">
-                            <div class="flex-1">
+                    <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="flex-1 min-w-0">
                                 <p class="text-black text-xs font-semibold">Total Products</p>
                                 <div class="mt-1">
                                     <p id="detailProductCount" class="text-2xl font-bold text-black"></p>
                                     <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Supplied catalog items.</p>
                                 </div>
                             </div>
-                            <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                                <svg class="w-5 h-5 text-black" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                                <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                     <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
                                 </svg>
                             </div>
@@ -265,7 +261,7 @@
                                         <span id="detailOnTimeText">0%</span>
                                     </div>
                                     <div class="h-2.5 overflow-hidden rounded-full bg-slate-200">
-                                        <div id="detailOnTimeBar" class="h-full rounded-full bg-[#00FFF2]" style="width: 0%"></div>
+                                        <div id="detailOnTimeBar" class="h-full rounded-full bg-[#6EC1D1]" style="width: 0%"></div>
                                     </div>
                                 </div>
                                 <div>
@@ -312,10 +308,10 @@
         <div id="supplierModal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-4">
             <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" data-action="close-modal"></div>
             <div class="relative w-full max-w-2xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
-                <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                     <div>
                         <h2 id="supplierModalTitle" class="text-xl font-bold text-black">Add supplier</h2>
-                        <p id="supplierModalSubtitle" class="text-sm text-slate-800 font-medium">Create a supplier record and link products automatically.</p>
+                        <p id="supplierModalSubtitle" class="text-sm text-slate-900 font-medium">Create a supplier record and link products automatically.</p>
                     </div>
                     <button type="button" id="closeSupplierModal" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -369,7 +365,7 @@
 
                     <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
                         <button type="button" id="cancelSupplierModal" class="rounded-[10px] border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all">Cancel</button>
-                        <button type="submit" id="supplierModalSubmit" class="rounded-[10px] bg-[#00FFF2] px-5 py-2.5 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#00D9CC] transition-all">Save supplier</button>
+                        <button type="submit" id="supplierModalSubmit" class="rounded-[10px] bg-[#6EC1D1] px-5 py-2.5 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all">Save supplier</button>
                     </div>
                 </form>
             </div>
@@ -378,10 +374,10 @@
         <div id="productsModal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-4">
             <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" data-action="close-modal"></div>
             <div class="relative w-full max-w-4xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
-                <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                     <div>
                         <h2 id="productsModalTitle" class="text-xl font-bold text-black">Supplier products</h2>
-                        <p id="productsModalSubtitle" class="text-sm text-slate-800 font-medium">Review the products, pricing, and stock linked to this supplier.</p>
+                        <p id="productsModalSubtitle" class="text-sm text-slate-900 font-medium">Review the products, pricing, and stock linked to this supplier.</p>
                     </div>
                     <button type="button" id="closeProductsModal" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -491,7 +487,7 @@
 
                 function showToast(message, type = 'success') {
                     const toast = document.createElement('div');
-                    toast.className = `fixed top-4 right-4 z-50 rounded-[10px] border p-4 text-sm font-medium shadow-lg transition-opacity duration-500 ${type === 'success' ? 'border-[#00fff2] bg-[#e6fffe] text-slate-900' : 'border-rose-200 bg-rose-50 text-rose-800'}`;
+                    toast.className = `fixed top-4 right-4 z-50 rounded-[10px] border p-4 text-sm font-medium shadow-lg transition-opacity duration-500 ${type === 'success' ? 'border-[#6EC1D1] bg-teal-50 text-slate-900' : 'border-rose-200 bg-rose-50 text-rose-800'}`;
                     toast.textContent = message;
                     document.body.appendChild(toast);
 
@@ -569,11 +565,11 @@
                                 <span class="rounded-[8px] bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600 whitespace-nowrap border border-slate-200">${supplier.contact_position || 'Supplier'}</span>
                             </div>
                             <div class="mt-3 grid gap-2 sm:grid-cols-2">
-                                <div class="rounded-[10px] border border-slate-100 p-2 text-xs text-slate-600" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                                <div class="rounded-[10px] border border-slate-100 p-2 text-xs text-slate-600" style="background: linear-gradient(50deg, #ffffff 0%, rgba(110, 193, 209, 0.12) 50%);">
                                     <p class="font-bold text-slate-900 text-xs">${supplier.product_count ?? 0}</p>
                                     <p class="text-[11px]">Products</p>
                                 </div>
-                                <div class="rounded-[10px] border border-slate-100 p-2 text-xs text-slate-600" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+                                <div class="rounded-[10px] border border-slate-100 p-2 text-xs text-slate-600" style="background: linear-gradient(50deg, #ffffff 0%, rgba(110, 193, 209, 0.12) 50%);">
                                     <p class="font-bold text-slate-900 text-xs">${supplier.performance_score ?? 0}</p>
                                     <p class="text-[11px]">Performance</p>
                                 </div>
@@ -582,7 +578,7 @@
                         supplierList.appendChild(card);
                     });
 
-                    supplierListCount.textContent = `${visibleCount} shown`; // class already cyan via HTML, no re-render needed
+                    supplierListCount.textContent = `${visibleCount} shown`;
 
                     // Render pagination
                     if (totalPages > 1) {
@@ -593,7 +589,7 @@
                             <div class="flex items-center gap-1.5 flex-wrap justify-center">
                                 <button data-page="${currentPage - 1}" class="pagination-btn px-2.5 py-1 text-xs rounded-[8px] border border-slate-200 transition-all ${currentPage === 1 ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-700 bg-white hover:bg-slate-100'}" ${currentPage === 1 ? 'disabled' : ''}>Prev</button>
                                 ${Array.from({length: totalPages}, (_, i) => i + 1).map(page => `
-                                    <button data-page="${page}" class="pagination-btn px-2.5 py-1 text-xs rounded-[8px] transition-all ${page === currentPage ? 'font-bold text-slate-900 bg-[#00FFF2] border border-slate-200 shadow-sm' : 'text-slate-700 border border-slate-200 bg-white hover:bg-slate-100'}">${page}</button>
+                                    <button data-page="${page}" class="pagination-btn px-2.5 py-1 text-xs rounded-[8px] transition-all ${page === currentPage ? 'font-bold text-slate-900 bg-[#6EC1D1] border border-slate-200 shadow-sm' : 'text-slate-700 border border-slate-200 bg-white hover:bg-slate-100'}">${page}</button>
                                 `).join('')}
                                 <button data-page="${currentPage + 1}" class="pagination-btn px-2.5 py-1 text-xs rounded-[8px] border border-slate-200 transition-all ${currentPage === totalPages ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-700 bg-white hover:bg-slate-100'}" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
                             </div>
@@ -751,7 +747,7 @@
                                 <div class="flex items-center gap-1.5 flex-wrap justify-center">
                                     <button type="button" onclick="window.changeProductPage(${currentProductPage - 1})" ${currentProductPage === 1 ? 'disabled' : ''} class="px-2.5 py-1 text-xs rounded-[8px] border border-slate-200 transition-all ${currentProductPage === 1 ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-700 bg-white hover:bg-slate-100'}">Prev</button>
                                     ${Array.from({length: totalProductPages}, (_, i) => i + 1).map(page => `
-                                        <button type="button" onclick="window.changeProductPage(${page})" class="px-2.5 py-1 text-xs rounded-[8px] transition-all ${page === currentProductPage ? 'font-bold text-slate-900 bg-[#00FFF2] border border-slate-200 shadow-sm' : 'text-slate-700 border border-slate-200 bg-white hover:bg-slate-100'}">${page}</button>
+                                        <button type="button" onclick="window.changeProductPage(${page})" class="px-2.5 py-1 text-xs rounded-[8px] transition-all ${page === currentProductPage ? 'font-bold text-slate-900 bg-[#6EC1D1] border border-slate-200 shadow-sm' : 'text-slate-700 border border-slate-200 bg-white hover:bg-slate-100'}">${page}</button>
                                     `).join('')}
                                     <button type="button" onclick="window.changeProductPage(${currentProductPage + 1})" ${currentProductPage === totalProductPages ? 'disabled' : ''} class="px-2.5 py-1 text-xs rounded-[8px] border border-slate-200 transition-all ${currentProductPage === totalProductPages ? 'disabled' : ''} ${currentProductPage === totalProductPages ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-700 bg-white hover:bg-slate-100'}">Next</button>
                                 </div>

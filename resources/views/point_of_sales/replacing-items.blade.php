@@ -10,7 +10,7 @@
 
         <!-- Controls Section -->
         <div class="flex items-center gap-3 w-full">
-            <button onclick="openNewReplacementModal()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-[#00FFF2] text-slate-900 rounded-[10px] font-bold text-sm border-2 border-slate-200 hover:bg-[#00D9CC] transition-all">
+            <button onclick="openNewReplacementModal()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-[#6EC1D1] text-slate-900 rounded-[10px] font-bold text-sm border-2 border-slate-200 hover:bg-[#59b2c2] transition-all">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
@@ -35,10 +35,10 @@
                         <span id="statusLabel">All Status</span>
                     </button>
                     <div id="statusDropdown" class="hidden absolute top-full mt-2 -right-0 w-40 bg-white border border-slate-300 rounded-lg shadow-xl z-50 p-3 space-y-1">
-                        <button type="button" onclick="selectStatus('All Status')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">All Status</button>
-                        <button type="button" onclick="selectStatus('Pending')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Pending</button>
-                        <button type="button" onclick="selectStatus('Approved')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Approved</button>
-                        <button type="button" onclick="selectStatus('Completed')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Completed</button>
+                        <button type="button" onclick="selectStatus('All Status')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">All Status</button>
+                        <button type="button" onclick="selectStatus('Pending')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Pending</button>
+                        <button type="button" onclick="selectStatus('Approved')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Approved</button>
+                        <button type="button" onclick="selectStatus('Completed')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Completed</button>
                     </div>
                 </div>
                 <!-- Date Filter -->
@@ -49,11 +49,11 @@
                     </button>
                     <input type="hidden" id="dateFilter" value="today" />
                     <div id="dateDropdown" class="hidden absolute top-full mt-2 -right-0 w-40 bg-white border border-slate-300 rounded-lg shadow-xl z-50 p-3 space-y-1">
-                        <button type="button" onclick="selectDateFilter('today', 'Today')" class="w-full px-4 py-2 text-center text-sm bg-black/10 text-slate-900 font-semibold rounded-[10px]">Today</button>
-                        <button type="button" onclick="selectDateFilter('this_week', 'This Week')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">This Week</button>
-                        <button type="button" onclick="selectDateFilter('this_month', 'This Month')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">This Month</button>
-                        <button type="button" onclick="selectDateFilter('last_month', 'Last Month')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Last Month</button>
-                        <button type="button" onclick="selectDateFilter('custom', 'Custom Range')" class="w-full px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Custom Range</button>
+                        <button type="button" onclick="selectDateFilter('today', 'Today')" class="w-full px-4 py-2 text-left text-sm bg-black/10 text-slate-900 font-semibold rounded-[10px]">Today</button>
+                        <button type="button" onclick="selectDateFilter('this_week', 'This Week')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">This Week</button>
+                        <button type="button" onclick="selectDateFilter('this_month', 'This Month')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">This Month</button>
+                        <button type="button" onclick="selectDateFilter('last_month', 'Last Month')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Last Month</button>
+                        <button type="button" onclick="selectDateFilter('custom', 'Custom Range')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Custom Range</button>
                     </div>
                 </div>
             </div>
@@ -179,7 +179,7 @@
     <div id="newReplacementModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeNewReplacementModal()"></div>
         <div class="relative bg-white rounded-[28px] shadow-[0_30px_100px_rgba(15,23,42,0.18)] max-w-2xl w-full overflow-hidden">
-            <div class="flex items-center justify-between px-8 py-5 border-b border-transparent bg-[#00FFF2] rounded-t-[28px]">
+            <div class="flex items-center justify-between px-8 py-5 border-b border-transparent bg-[#6EC1D1] rounded-t-[28px]">
                 <h2 class="text-2xl font-semibold text-slate-900">New Replacement</h2>
                 <button onclick="closeNewReplacementModal()" class="text-slate-900 transition-colors p-2 rounded-[10px] hover:bg-black/10">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -269,7 +269,7 @@
             <!-- Modal Actions -->
             <div class="px-8 py-5 border-t border-slate-200 flex gap-3 justify-end bg-slate-50 rounded-b-[10px]">
                 <button onclick="closeNewReplacementModal()" class="px-6 py-3 rounded-[10px] border border-slate-300 bg-white text-slate-900 font-semibold text-sm hover:bg-black/10 transition-all">Cancel</button>
-                <button onclick="submitNewReplacement()" class="px-6 py-3 rounded-[10px] bg-[#00FFF2] text-slate-900 font-semibold text-sm border-2 border-slate-200 hover:bg-[#00D9CC] transition-all shadow-lg shadow-slate-900/10">Create Replacement</button>
+                <button onclick="submitNewReplacement()" class="px-6 py-3 rounded-[10px] bg-[#6EC1D1] text-slate-900 font-semibold text-sm border-2 border-slate-200 hover:bg-[#59b2c2] transition-all shadow-lg shadow-slate-900/10">Create Replacement</button>
             </div>
         </div>
     </div>

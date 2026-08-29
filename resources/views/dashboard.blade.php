@@ -120,23 +120,25 @@
             </div>
         </div>
 
-
+        @php
+            $canSeeDeadStock = auth()->user() && in_array(auth()->user()->role, ['admin', 'inventory_clerk']);
+        @endphp
 
         <!-- Stats Grid -->
         <div class="w-full">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 {{ $canSeeDeadStock ? 'lg:grid-cols-3 xl:grid-cols-5' : 'lg:grid-cols-4' }} gap-5">
                 <!-- Total Sales -->
-                 <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-black text-sm font-semibold">Total Sales</p>
+                 <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-black text-sm font-semibold truncate">Total Sales</p>
                             <div class="mt-1">
-                                <p id="salesValue" class="text-3xl font-bold text-black">—</p>
-                                <p id="salesComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
+                                <p id="salesValue" class="text-3xl font-bold text-black truncate">—</p>
+                                <p id="salesComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
                             </div>
                         </div>
-                        <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                            <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                            <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                 <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
                             </svg>
                         </div>
@@ -144,17 +146,17 @@
                 </div>
 
                 <!-- Total Transaction -->
-               <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-black text-sm font-semibold" style="color: #000000;">Total Transaction</p>
+               <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-black text-sm font-semibold truncate" style="color: #000000;">Total Transaction</p>
                             <div class="mt-1">
-                                <p id="transactionsValue" class="text-3xl font-bold" style="color: #000000;">—</p>
-                                <p id="transactionsComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
+                                <p id="transactionsValue" class="text-3xl font-bold truncate" style="color: #000000;">—</p>
+                                <p id="transactionsComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
                             </div>
                         </div>
-                        <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                            <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                            <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                 <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/>
                             </svg>
                         </div>
@@ -162,17 +164,17 @@
                 </div>
 
                 <!-- Total Profit -->
-                <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-black text-sm font-semibold" style="color: #000000;">Total Profit</p>
+                <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-black text-sm font-semibold truncate" style="color: #000000;">Total Profit</p>
                             <div class="mt-1">
-                                <p id="profitValue" class="text-3xl font-bold" style="color: #000000;">—</p>
-                                <p id="profitComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
+                                <p id="profitValue" class="text-3xl font-bold truncate" style="color: #000000;">—</p>
+                                <p id="profitComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
                             </div>
                         </div>
-                        <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                            <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                            <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                 <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
                             </svg>
                         </div>
@@ -180,28 +182,85 @@
                 </div>
 
                 <!-- Total Item Sold -->
-                 <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-black text-sm font-semibold" style="color: #000000;">Total Item Sold</p>
+                 <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-black text-sm font-semibold truncate" style="color: #000000;">Total Item Sold</p>
                             <div class="mt-1">
-                                <p id="itemsSoldValue" class="text-3xl font-bold" style="color: #030303;">—</p>
-                                <p id="itemsSoldComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
+                                <p id="itemsSoldValue" class="text-3xl font-bold truncate" style="color: #030303;">—</p>
+                                <p id="itemsSoldComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
                             </div>
                         </div>
-                        <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                            <svg class="w-4 h-4" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                            <svg class="w-4 h-4 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                 <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                             </svg>
                         </div>
                     </div>
                 </div>
+
+                @if($canSeeDeadStock)
+                <!-- Dead Stock Card -->
+                <a href="{{ route('dss.dead-stock.index') }}" class="border border-gray-200 p-4 bg-white shadow-sm block hover:shadow-md hover:ring-2 hover:ring-[#6EC1D1] hover:border-[#6EC1D1] transition cursor-pointer group" style="border-radius: 20px;">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-black text-sm font-semibold truncate">Dead Stock</p>
+                            <div class="mt-1">
+                                <p id="deadStockCardItems" class="text-3xl font-bold text-black truncate">—</p>
+                                <p id="deadStockCardValue" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
+                            </div>
+                        </div>
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                            <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 3.172a2 2 0 0 1 1.732 1l8 13.856A2 2 0 0 1 20 21H4a2 2 0 0 1-1.732-3l8-13.856a2 2 0 0 1 1.732-1zM11 9v4h2V9h-2zm0 6v2h2v-2h-2z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+                @endif
             </div>
         </div>
 
-        {{-- ═══ DEAD STOCK ALERT WIDGET ═══ --}}
+        {{-- ═══ DEAD STOCK ALERT WIDGET & STAT CARD SCRIPT ═══ --}}
+        <script>
+        (function() {
+            fetch('{{ route("api.dss.dashboard-stats") }}')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.total > 0) {
+                        const widget = document.getElementById('deadStockAlertWidget');
+                        if (widget) {
+                            widget.classList.remove('hidden');
+                            document.getElementById('deadStockAlertMsg').textContent =
+                                data.total + ' product' + (data.total > 1 ? 's have' : ' has') + ' not been sold for more than ' + (data.thresholdDays || 90) + ' days.';
+                            const prioritiesEl = document.getElementById('deadStockAlertPriorities');
+                            const pColors = {Critical:'bg-red-100 text-red-700',High:'bg-orange-100 text-orange-700',Medium:'bg-amber-100 text-amber-700',Low:'bg-blue-100 text-blue-700'};
+                            let html = '';
+                            ['Critical','High','Medium','Low'].forEach(p => {
+                                const count = data.countByPriority[p] || 0;
+                                if (count > 0) {
+                                    html += '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ' + pColors[p] + '">' + p + ': ' + count + '</span>';
+                                }
+                            });
+                            if (data.totalValue > 0) {
+                                html += '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">₱' + Number(data.totalValue).toLocaleString('en-PH', {minimumFractionDigits:2}) + ' at risk</span>';
+                            }
+                            prioritiesEl.innerHTML = html;
+                        }
+                    }
+                    
+                    // Update small card
+                    const dsItems = document.getElementById('deadStockCardItems');
+                    if (dsItems) dsItems.textContent = (data.total || 0) + ' Items';
+                    const dsValue = document.getElementById('deadStockCardValue');
+                    if (dsValue) dsValue.textContent = 'Value at Risk: ₱' + Number(data.totalValue || 0).toLocaleString('en-PH', {minimumFractionDigits:2});
+                })
+                .catch(() => {});
+        })();
+        </script>
+
         @if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk'))
-        <div id="deadStockAlertWidget" class="hidden">
+        <div id="deadStockAlertWidget" class="hidden mt-5">
             <div class="border border-rose-200 bg-gradient-to-r from-rose-50 via-white to-rose-50 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3" style="border-radius: 20px;">
                 <div class="flex items-start gap-3">
                     <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 rounded-full bg-rose-100">
@@ -219,40 +278,6 @@
                 </a>
             </div>
         </div>
-        <script>
-        (function() {
-            fetch('{{ route("api.dss.dashboard-stats") }}')
-                .then(r => r.json())
-                .then(data => {
-                    if (data.total > 0) {
-                        const widget = document.getElementById('deadStockAlertWidget');
-                        widget.classList.remove('hidden');
-                        document.getElementById('deadStockAlertMsg').textContent =
-                            data.total + ' product' + (data.total > 1 ? 's have' : ' has') + ' not been sold for more than ' + (data.thresholdDays || 90) + ' days.';
-                        const prioritiesEl = document.getElementById('deadStockAlertPriorities');
-                        const pColors = {Critical:'bg-red-100 text-red-700',High:'bg-orange-100 text-orange-700',Medium:'bg-amber-100 text-amber-700',Low:'bg-blue-100 text-blue-700'};
-                        let html = '';
-                        ['Critical','High','Medium','Low'].forEach(p => {
-                            const count = data.countByPriority[p] || 0;
-                            if (count > 0) {
-                                html += '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ' + pColors[p] + '">' + p + ': ' + count + '</span>';
-                            }
-                        });
-                        if (data.totalValue > 0) {
-                            html += '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">₱' + Number(data.totalValue).toLocaleString('en-PH', {minimumFractionDigits:2}) + ' at risk</span>';
-                        }
-                        prioritiesEl.innerHTML = html;
-                    }
-                    
-                    // Update small card
-                    const dsItems = document.getElementById('deadStockCardItems');
-                    if (dsItems) dsItems.textContent = (data.total || 0) + ' Items';
-                    const dsValue = document.getElementById('deadStockCardValue');
-                    if (dsValue) dsValue.textContent = 'Value at Risk: ₱' + Number(data.totalValue || 0).toLocaleString('en-PH', {minimumFractionDigits:2});
-                })
-                .catch(() => {});
-        })();
-        </script>
         @endif
 
         <!-- Charts Row -->
@@ -319,7 +344,7 @@
  
                         <!-- Total Products (top of the stack) -->
                         <div class="inv-row flex items-center gap-2 px-3 py-3" style="border-radius: 20px; background-color: #ffffffff; position: relative; z-index: 40;">
-                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #00fff2ff;">
+                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #6EC1D1;">
                                 <svg class="absolute inset-0 m-auto" style="width: 14px; height: 14px; transform: translate(-0.5px, 0.5px);" fill="none" stroke="#000000ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <path d="M21 8l-9-5-9 5 9 5 9-5z"></path>
                                     <path d="M3 8v8l9 5 9-5V8"></path>
@@ -331,7 +356,7 @@
  
                         <!-- Low Stock Items -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 0px;background-color: #ffffff;; position: relative; z-index: 30 ; margin-top: -10px; padding-top: 20px; padding-bottom: 12px;">
-                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #00fff2ff;">
+                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #6EC1D1;">
                                 <svg class="absolute inset-0 m-auto" style="width: 14px; height: 14px; transform: translate(-0.5px, 0.5px);" fill="none" stroke="#000000ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <path d="M12 9v4"></path>
                                     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
@@ -344,7 +369,7 @@
  
                         <!-- Out of Stock Items -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 0px;background-color: #ffffff;; position: relative; z-index: 20; margin-top: -10px; padding-top: 20px; padding-bottom: 12px; ">
-                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #00fff2ff;">
+                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #6EC1D1;">
                                 <svg class="absolute inset-0 m-auto" style="width: 14px; height: 14px; transform: translate(-0.5px, 0.5px);" fill="none" stroke="#000000ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <circle cx="12" cy="12" r="9"></circle>
                                     <line x1="9" y1="9" x2="15" y2="15"></line>
@@ -357,7 +382,7 @@
  
                         <!-- In Stock Items (bottom of the stack) -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 20px; background-color: #ffffff; position: relative; z-index: 10; margin-top: -10px; padding-top: 20px; padding-bottom: 12px;">
-                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #00fff2ff;">
+                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #6EC1D1;">
                                 <svg class="absolute inset-0 m-auto" style="width: 14px; height: 14px; transform: translate(-0.5px, 0.5px);" fill="none" stroke="#000000ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <circle cx="12" cy="12" r="9"></circle>
                                     <polyline points="8 12 11 15 16 9"></polyline>
@@ -408,10 +433,10 @@
         <div id="all-notifications-modal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeAllNotificationsModal()"></div>
             <div class="relative bg-white rounded-[28px] border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]">
-                <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                     <div>
                         <h3 class="text-xl font-bold text-black">All Inventory Notifications</h3>
-                        <p class="text-sm text-slate-800 font-medium">History of low stock and out of stock alerts.</p>
+                        <p class="text-sm text-slate-900 font-medium">History of low stock and out of stock alerts.</p>
                     </div>
                     <button type="button" onclick="closeAllNotificationsModal()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -596,7 +621,7 @@
     justify-content: space-between;
     align-items: flex-start;
     padding: 18px 22px;
-    background-color: #00fff2;
+    background-color: #6EC1D1;
     border-radius: 16px 16px 0 0;
     flex-shrink: 0;
 }
@@ -661,14 +686,14 @@
         }
 
         .sales-range-btn.active {
-            background-color: #00fff2ff !important;
+            background-color: #6EC1D1 !important;
             color: #000000ff !important;
             font-weight: 700 !important;
             border-color: transparent !important;
         }
 
         .sales-range-btn.active:hover {
-            background-color: #00e6da !important;
+            background-color: #59b2c2 !important;
             color: #000000ff !important;
         }
         
@@ -725,7 +750,7 @@
             height: 2px;
             transition: width linear;
         }
-        .inv-toast.toast-warning .toast-progress { background: #00fff2; }
+        .inv-toast.toast-warning .toast-progress { background: #6EC1D1; }
         .inv-toast.toast-critical .toast-progress { background: #0aada5; }
         .inv-toast-icon {
             width: 32px; height: 32px; border-radius: 8px;
@@ -743,9 +768,9 @@
             line-height: 1;
         }
         .inv-toast-btn-order {
-            background: #00fff2; color: #000;
+            background: #6EC1D1; color: #000;
         }
-        .inv-toast-btn-order:hover { background: #00e6da; }
+        .inv-toast-btn-order:hover { background: #59b2c2; }
         .inv-toast-btn-dismiss {
             background: #f9fafb; color: #4b5563; border-color: #e5e7eb;
         }
@@ -776,11 +801,11 @@
             display: inline-flex; align-items: center; justify-content: center;
             padding: 4px 10px; border-radius: 6px;
             font-size: 11px; font-weight: 500;
-            background: #00fff2; color: #000; border: 1px solid #00fff2;
+            background: #6EC1D1; color: #000; border: 1px solid #6EC1D1;
             transition: all 0.15s ease;
             text-decoration: none;
         }
-        .notif-btn:hover { background: #00e6da; border-color: #00e6da; color: #000; }
+        .notif-btn:hover { background: #59b2c2; border-color: #59b2c2; color: #000; }
     </style>
 
 @push('scripts')
@@ -1594,7 +1619,7 @@
                             '</div>' +
                         '</div>' +
                         (n.status !== 'resolved'
-                            ? '<a href="' + escHtml(n.order_url || '/purchase-order/create') + '" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[#00fff2] text-black text-xs font-medium hover:bg-[#00e6da] transition-colors">Order Now</a>'
+                            ? '<a href="' + escHtml(n.order_url || '/purchase-order/create') + '" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[#6EC1D1] text-black text-xs font-medium hover:bg-[#59b2c2] transition-colors">Order Now</a>'
                             : '<span class="inline-flex items-center gap-1 text-xs font-medium text-emerald-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Resolved</span>'
                         ) +
                     '</div>';

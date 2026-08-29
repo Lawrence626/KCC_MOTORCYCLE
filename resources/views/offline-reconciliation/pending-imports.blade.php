@@ -20,21 +20,21 @@
 
         <!-- Stats -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div class="rounded-[20px] border border-slate-200 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Pending Review</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-amber-600">{{ $pendingImports->where('status', 'pending')->count() }}</p>
                     <p class="text-slate-500 text-[10px] leading-tight mt-1 font-medium">Awaiting approval</p>
                 </div>
             </div>
-            <div class="rounded-[20px] border border-slate-200 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Approved</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-green-600">{{ $pendingImports->where('status', 'approved')->count() }}</p>
                     <p class="text-slate-500 text-[10px] leading-tight mt-1 font-medium">Successfully synced</p>
                 </div>
             </div>
-            <div class="rounded-[20px] border border-slate-200 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Rejected</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-red-600">{{ $pendingImports->where('status', 'rejected')->count() }}</p>
@@ -56,10 +56,10 @@
                         </svg>
                     </button>
                     <div id="pendingStatusFilterDropdown" class="hidden absolute top-full right-0 z-[30] mt-1 w-full min-w-[140px] rounded-[12px] border border-slate-200 bg-white shadow-xl p-1 space-y-0.5">
-                        <button type="button" onclick="selectPendingStatus('', 'All Status')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">All Status</button>
-                        <button type="button" onclick="selectPendingStatus('pending', 'Pending')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Pending</button>
-                        <button type="button" onclick="selectPendingStatus('approved', 'Approved')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Approved</button>
-                        <button type="button" onclick="selectPendingStatus('rejected', 'Rejected')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Rejected</button>
+                        <button type="button" onclick="selectPendingStatus('', 'All Status')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">All Status</button>
+                        <button type="button" onclick="selectPendingStatus('pending', 'Pending')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Pending</button>
+                        <button type="button" onclick="selectPendingStatus('approved', 'Approved')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Approved</button>
+                        <button type="button" onclick="selectPendingStatus('rejected', 'Rejected')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Rejected</button>
                     </div>
                 </div>
             </div>

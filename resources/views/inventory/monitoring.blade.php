@@ -9,77 +9,77 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Total Products</p>
                         <div class="mt-1">
                             <p id="stat-total-products" class="text-2xl font-bold text-black">--</p>
                             <p class="text-gray-500 text-xs mt-1 font-medium">Total loaded products</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="text-[#145a66]" style="width: 1.125rem; height: 1.125rem;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Inventory Value</p>
                         <div class="mt-1">
                             <p id="stat-total-value" class="text-2xl font-bold text-black">--</p>
                             <p class="text-gray-500 text-xs mt-1 font-medium">Total inventory worth</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Low Stock</p>
                         <div class="mt-1">
                             <p id="stat-low-stock" class="text-2xl font-bold text-black">--</p>
                             <p class="text-gray-500 text-xs mt-1 font-medium">Items below safe level</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M16 18l2.29-2.29-4.88-4.88-4 4L2 7.41 3.41 6l6 6 4-4 6.3 6.29L22 12v6z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Expiring Soon</p>
                         <div class="mt-1">
                             <p id="stat-expiring-soon" class="text-2xl font-bold text-black">--</p>
                             <p class="text-gray-500 text-xs mt-1 font-medium">Within 30 days</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M4.47 21h15.06c1.54 0 2.5-1.67 1.73-3L13.73 4.99c-.77-1.33-2.69-1.33-3.46 0L2.74 18c-.77 1.33.19 3 1.73 3zM13 18h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Warehouse Dist.</p>
                         <div class="mt-1">
                             <p id="stat-warehouse-dist" class="text-2xl font-bold text-black">--</p>
@@ -95,8 +95,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
                         </svg>
                     </div>
@@ -120,10 +120,10 @@
                         </svg>
                     </button>
                     <div id="statusFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[20] mt-2 w-full rounded-[12px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
-                        <button type="button" onclick="selectDropdownOption('statusFilter', '', 'All Stock Status', 'statusFilterDropdown')" class="w-full px-4 py-2.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">All Stock Status</button>
-                        <button type="button" onclick="selectDropdownOption('statusFilter', 'active', 'Active', 'statusFilterDropdown')" class="w-full px-4 py-2.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">Active</button>
-                        <button type="button" onclick="selectDropdownOption('statusFilter', 'low', 'Low Stock', 'statusFilterDropdown')" class="w-full px-4 py-2.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">Low Stock</button>
-                        <button type="button" onclick="selectDropdownOption('statusFilter', 'out', 'Out of Stock', 'statusFilterDropdown')" class="w-full px-4 py-2.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">Out of Stock</button>
+                        <button type="button" onclick="selectDropdownOption('statusFilter', '', 'All Stock Status', 'statusFilterDropdown')" class="w-full px-4 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">All Stock Status</button>
+                        <button type="button" onclick="selectDropdownOption('statusFilter', 'active', 'Active', 'statusFilterDropdown')" class="w-full px-4 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">Active</button>
+                        <button type="button" onclick="selectDropdownOption('statusFilter', 'low', 'Low Stock', 'statusFilterDropdown')" class="w-full px-4 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">Low Stock</button>
+                        <button type="button" onclick="selectDropdownOption('statusFilter', 'out', 'Out of Stock', 'statusFilterDropdown')" class="w-full px-4 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">Out of Stock</button>
                     </div>
                 </div>
 
@@ -136,10 +136,10 @@
                         </svg>
                     </button>
                     <div id="expiryStatusFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[20] mt-2 w-full rounded-[12px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
-                        <button type="button" onclick="selectDropdownOption('expiryStatusFilter', '', 'All Expiry Status', 'expiryStatusFilterDropdown')" class="w-full px-4 py-2.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">All Expiry Status</button>
-                        <button type="button" onclick="selectDropdownOption('expiryStatusFilter', 'non_expiring', 'Non-expiring', 'expiryStatusFilterDropdown')" class="w-full px-4 py-2.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">Non-expiring</button>
-                        <button type="button" onclick="selectDropdownOption('expiryStatusFilter', 'expiring', 'Expiring Soon', 'expiryStatusFilterDropdown')" class="w-full px-4 py-2.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">Expiring Soon</button>
-                        <button type="button" onclick="selectDropdownOption('expiryStatusFilter', 'expired', 'Expired', 'expiryStatusFilterDropdown')" class="w-full px-4 py-2.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">Expired</button>
+                        <button type="button" onclick="selectDropdownOption('expiryStatusFilter', '', 'All Expiry Status', 'expiryStatusFilterDropdown')" class="w-full px-4 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">All Expiry Status</button>
+                        <button type="button" onclick="selectDropdownOption('expiryStatusFilter', 'non_expiring', 'Non-expiring', 'expiryStatusFilterDropdown')" class="w-full px-4 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">Non-expiring</button>
+                        <button type="button" onclick="selectDropdownOption('expiryStatusFilter', 'expiring', 'Expiring Soon', 'expiryStatusFilterDropdown')" class="w-full px-4 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">Expiring Soon</button>
+                        <button type="button" onclick="selectDropdownOption('expiryStatusFilter', 'expired', 'Expired', 'expiryStatusFilterDropdown')" class="w-full px-4 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">Expired</button>
                     </div>
                 </div>
 
@@ -155,7 +155,7 @@
                     <thead class="border-b border-slate-200 bg-[#0f172a] rounded-t-[10px] text-[10px] uppercase tracking-wider text-white">
                         <tr>
                             <th class="px-3.5 py-3 text-center font-semibold text-white w-10 rounded-tl-[10px]">
-                                <input type="checkbox" id="selectAllCheckbox" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2] cursor-pointer" />
+                                <input type="checkbox" id="selectAllCheckbox" class="rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1] cursor-pointer" />
                             </th>
                             <th class="px-3.5 py-3 text-left font-semibold text-white whitespace-nowrap">Motorcycle Compatibility</th>
                             <th class="px-3.5 py-3 text-left font-semibold text-white whitespace-nowrap">Product Name</th>
@@ -210,7 +210,7 @@
                         <span class="text-slate-600">Expired/Action</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="inline-flex items-center rounded-full bg-[#00fff2] px-2 py-0.5 text-[11px] font-semibold text-black">Low</span>
+                        <span class="inline-flex items-center rounded-full bg-[#6EC1D1] px-2 py-0.5 text-[11px] font-semibold text-black">Low</span>
                         <span class="text-slate-600">Low stock</span>
                     </div>
                 </div>
@@ -242,40 +242,40 @@
         </div>
 
         <div class="mt-4 rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="flex items-center justify-between border-b border-slate-200 bg-[#0f172a] rounded-t-[15px] px-4 py-4 text-white">
+            <div class="flex items-center justify-between border-b border-slate-200 bg-white rounded-t-[15px] px-4 py-4">
                 <div>
-                    <h2 class="text-sm font-semibold text-white">Recent Inventory Movements</h2>
-                    <p class="mt-1 text-xs text-slate-200">Latest stock changes, restocks, and price updates.</p>
+                    <h2 class="text-sm font-bold text-slate-900">Recent Inventory Movements</h2>
+                    <p class="mt-0.5 text-xs text-slate-500">Latest stock changes, restocks, and price updates.</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <div class="relative" data-dropdown-wrapper="movementDateFilter">
                         <input type="hidden" id="movementDateFilter" value="" />
-                        <button type="button" id="movementDateFilterButton" onclick="toggleDropdown('movementDateFilterDropdown')" class="rounded-[10px] border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white flex items-center justify-between gap-2 min-w-[130px] hover:bg-slate-700 focus:outline-none focus:ring-1 focus:ring-[#00fff2] transition shadow-sm">
+                        <button type="button" id="movementDateFilterButton" onclick="toggleDropdown('movementDateFilterDropdown')" class="rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 flex items-center justify-between gap-2 min-w-[130px] hover:border-slate-400 focus:outline-none transition shadow-sm">
                             <span>All Time</span>
-                            <svg class="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                             </svg>
                         </button>
-                        <div id="movementDateFilterDropdown" class="hidden absolute top-full left-0 right-0 z-[99999] mt-1 w-full rounded-[12px] border border-slate-700/80 bg-[#0f172a] shadow-2xl p-1.5 text-white">
-                            <button type="button" onclick="selectDropdownOption('movementDateFilter', '', 'All Time', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-200 hover:text-white hover:bg-slate-800 rounded-[8px] transition-colors">All Time</button>
-                            <button type="button" onclick="selectDropdownOption('movementDateFilter', 'today', 'Today', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-200 hover:text-white hover:bg-slate-800 rounded-[8px] transition-colors">Today</button>
-                            <button type="button" onclick="selectDropdownOption('movementDateFilter', 'yesterday', 'Yesterday', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-200 hover:text-white hover:bg-slate-800 rounded-[8px] transition-colors">Yesterday</button>
-                            <button type="button" onclick="selectDropdownOption('movementDateFilter', 'last_7_days', 'Last 7 Days', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-200 hover:text-white hover:bg-slate-800 rounded-[8px] transition-colors">Last 7 Days</button>
-                            <button type="button" onclick="selectDropdownOption('movementDateFilter', 'last_30_days', 'Last 30 Days', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-200 hover:text-white hover:bg-slate-800 rounded-[8px] transition-colors">Last 30 Days</button>
+                        <div id="movementDateFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 right-0 z-[99999] mt-1 w-full rounded-[12px] border border-slate-200 bg-white shadow-xl p-1.5 text-slate-900 space-y-0.5">
+                            <button type="button" onclick="selectDropdownOption('movementDateFilter', '', 'All Time', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition">All Time</button>
+                            <button type="button" onclick="selectDropdownOption('movementDateFilter', 'today', 'Today', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition">Today</button>
+                            <button type="button" onclick="selectDropdownOption('movementDateFilter', 'yesterday', 'Yesterday', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition">Yesterday</button>
+                            <button type="button" onclick="selectDropdownOption('movementDateFilter', 'last_7_days', 'Last 7 Days', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition">Last 7 Days</button>
+                            <button type="button" onclick="selectDropdownOption('movementDateFilter', 'last_30_days', 'Last 30 Days', 'movementDateFilterDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition">Last 30 Days</button>
                         </div>
                     </div>
-                    <button id="refreshMovementsBtn" class="rounded-full border border-[#00fff2]/40 bg-[#00fff2] px-3 py-1 text-xs font-semibold text-black hover:bg-[#00e6da] transition">Refresh</button>
+                    <button id="refreshMovementsBtn" class="rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-black hover:bg-[#59b2c2] transition shadow-sm cursor-pointer inline-flex items-center justify-center min-w-[130px]">Refresh</button>
                 </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-xs text-left divide-y divide-slate-200">
-                    <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-700 border-b border-slate-200">
+                    <thead class="bg-[#0f172a] text-xs font-semibold uppercase tracking-wider text-white border-b border-slate-200">
                         <tr>
-                            <th class="px-3 py-3 text-left font-semibold text-slate-700">Date</th>
-                            <th class="px-3 py-3 text-left font-semibold text-slate-700">Product</th>
-                            <th class="px-3 py-3 text-left font-semibold text-slate-700">Type</th>
-                            <th class="px-3 py-3 text-center font-semibold text-slate-700">Qty</th>
-                            <th class="px-3 py-3 text-left font-semibold text-slate-700">Details</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Date</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Product</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Type</th>
+                            <th class="px-3 py-3 text-center font-semibold text-white">Qty</th>
+                            <th class="px-3 py-3 text-left font-semibold text-white">Details</th>
                         </tr>
                     </thead>
                     <tbody id="movementFeed" class="bg-white">
@@ -303,10 +303,10 @@
     <div id="editProductModal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center px-4 py-4">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="const modal=document.getElementById('editProductModal'); if(modal){ modal.classList.add('hidden'); modal.style.display='none'; }"></div>
         <div class="relative w-full max-w-3xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[95vh] overflow-y-auto">
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Edit Product</h2>
-                    <p class="text-sm text-slate-800 font-medium">Update all product details.</p>
+                    <p class="text-sm text-slate-900 font-medium">Update all product details.</p>
                 </div>
                 <button type="button" id="closeEditProductModal" onclick="event.preventDefault(); event.stopPropagation(); const modal=document.getElementById('editProductModal'); if(modal){ modal.classList.add('hidden'); modal.style.display='none'; }" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -362,15 +362,15 @@
                                 </svg>
                             </button>
                             <div id="editCategoryDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[99999] mt-1 w-full rounded-[10px] border border-slate-300 bg-white shadow-xl p-1.5 max-h-[200px] overflow-y-auto">
-                                <button type="button" onclick="selectDropdownOption('editCategory', '', 'Select category', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Select category</button>
-                                <button type="button" onclick="selectDropdownOption('editCategory', 'engine_oil', 'Engine Oil', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Engine Oil</button>
-                                <button type="button" onclick="selectDropdownOption('editCategory', 'lubricants', 'Lubricants', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Lubricants</button>
-                                <button type="button" onclick="selectDropdownOption('editCategory', 'battery', 'Battery', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Battery</button>
-                                <button type="button" onclick="selectDropdownOption('editCategory', 'spark_plug', 'Spark Plug', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Spark Plug</button>
-                                <button type="button" onclick="selectDropdownOption('editCategory', 'brake_pads', 'Brake Pads', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Brake Pads</button>
-                                <button type="button" onclick="selectDropdownOption('editCategory', 'tires', 'Tires', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Tires</button>
-                                <button type="button" onclick="selectDropdownOption('editCategory', 'filters', 'Filters', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Filters</button>
-                                <button type="button" onclick="selectDropdownOption('editCategory', 'accessories', 'Accessories', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Accessories</button>
+                                <button type="button" onclick="selectDropdownOption('editCategory', '', 'Select category', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Select category</button>
+                                <button type="button" onclick="selectDropdownOption('editCategory', 'engine_oil', 'Engine Oil', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Engine Oil</button>
+                                <button type="button" onclick="selectDropdownOption('editCategory', 'lubricants', 'Lubricants', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Lubricants</button>
+                                <button type="button" onclick="selectDropdownOption('editCategory', 'battery', 'Battery', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Battery</button>
+                                <button type="button" onclick="selectDropdownOption('editCategory', 'spark_plug', 'Spark Plug', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Spark Plug</button>
+                                <button type="button" onclick="selectDropdownOption('editCategory', 'brake_pads', 'Brake Pads', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Brake Pads</button>
+                                <button type="button" onclick="selectDropdownOption('editCategory', 'tires', 'Tires', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Tires</button>
+                                <button type="button" onclick="selectDropdownOption('editCategory', 'filters', 'Filters', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Filters</button>
+                                <button type="button" onclick="selectDropdownOption('editCategory', 'accessories', 'Accessories', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Accessories</button>
                             </div>
                         </div>
                         <div class="space-y-1">
@@ -396,7 +396,7 @@
                     </div>
                     <div class="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
                         <button type="button" id="cancelEditProduct" onclick="event.preventDefault(); event.stopPropagation(); const modal=document.getElementById('editProductModal'); if(modal){ modal.classList.add('hidden'); modal.style.display='none'; }" class="inline-flex items-center justify-center rounded-[10px] border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm hover:bg-black/10 transition-all duration-200 cursor-pointer">Cancel</button>
-                        <button type="submit" class="inline-flex items-center justify-center rounded-[10px] bg-[#00FFF2] px-4 py-2.5 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#00D9CC] transition-all duration-200 cursor-pointer">Save Changes</button>
+                        <button type="submit" class="inline-flex items-center justify-center rounded-[10px] bg-[#6EC1D1] px-4 py-2.5 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all duration-200 cursor-pointer">Save Changes</button>
                     </div>
                 </form>
             </div>
@@ -585,7 +585,7 @@
                     if (isSelected) {
                         dayClasses += "bg-[#0f172a] text-white font-bold shadow-sm";
                     } else if (isToday) {
-                        dayClasses += "bg-[#00fff2] text-black font-bold shadow-sm";
+                        dayClasses += "bg-[#6EC1D1] text-black font-bold shadow-sm";
                     } else {
                         dayClasses += "text-slate-700 hover:bg-slate-100";
                     }
@@ -673,7 +673,7 @@
                     const isSel = selectedDate && selectedDate.getFullYear() === year && selectedDate.getMonth() === idx;
                     let mClasses = "py-1.5 rounded-lg text-center font-semibold cursor-pointer transition-all duration-150 ";
                     if (isSel) {
-                        mClasses += "bg-[#00fff2] text-black font-bold shadow-md";
+                        mClasses += "bg-[#6EC1D1] text-black font-bold shadow-md";
                     } else {
                         mClasses += "text-slate-700 hover:bg-slate-100";
                     }
@@ -745,3 +745,4 @@
     </script>
     @vite('resources/js/monitoring.js')
 </x-layouts.app>
+
