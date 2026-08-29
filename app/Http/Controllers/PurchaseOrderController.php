@@ -61,17 +61,19 @@ class PurchaseOrderController extends Controller
             ->paginate(10, ['*'], 'back_orders_page')
             ->withQueryString();
 
-        $replacementBackOrders = DefectiveReturnRequest::with(['purchaseOrder', 'product'])
-            ->where('resolution', 'Replacement')
-            ->whereIn('status', ['Replacement Approved', 'Awaiting Replacement'])
-            ->when($request->query('back_orders_supplier'), fn ($q, $s) => $q->where('supplier_name', $s))
-            ->when($request->query('back_orders_search'), fn ($q, $s) => $q->where(function ($q) use ($s) {
-                $q->where('product_name', 'like', "%{$s}%")
-                    ->orWhere('replacement_order_number', 'like', "%{$s}%")
-                    ->orWhere('supplier_name', 'like', "%{$s}%");
-            }))
-            ->latest()
-            ->get();
+        $replacementBackOrders = \Illuminate\Support\Facades\Schema::hasTable('defective_return_requests')
+            ? DefectiveReturnRequest::with(['purchaseOrder', 'product'])
+                ->where('resolution', 'Replacement')
+                ->whereIn('status', ['Replacement Approved', 'Awaiting Replacement'])
+                ->when($request->query('back_orders_supplier'), fn ($q, $s) => $q->where('supplier_name', $s))
+                ->when($request->query('back_orders_search'), fn ($q, $s) => $q->where(function ($q) use ($s) {
+                    $q->where('product_name', 'like', "%{$s}%")
+                        ->orWhere('replacement_order_number', 'like', "%{$s}%")
+                        ->orWhere('supplier_name', 'like', "%{$s}%");
+                }))
+                ->latest()
+                ->get()
+            : collect();
 
         $receivedOrders = $this->filteredPurchaseOrders($request, ['completed', 'partially received'], 'received')
             ->latest()

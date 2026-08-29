@@ -3,8 +3,8 @@
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 px-2 py-1">
             <div>
-                <h1 class="text-3xl font-bold text-slate-900">Product Categorization</h1>
-                <p class="text-sm text-slate-500 mt-1">Add, update, and delete product categories. Set SKU (QR code) and filter compatibility for each motorcycle.</p>
+                <h1 class="text-4xl font-bold text-slate-900">Product Categorization</h1>
+                <p class="text-base text-slate-500 mt-1">Add, update, and delete product categories. Set SKU (QR code) and filter compatibility for each motorcycle.</p>
             </div>
             <div class="flex items-center gap-3 flex-wrap">
                 <!-- Bulk Actions Toolbar -->
@@ -24,7 +24,7 @@
                     <span id="trashBadge" class="absolute -top-1.5 -right-1.5 items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs font-bold" style="display:none">0</span>
                 </button>
                 <button id="openDeleteList" class="px-4 py-2 rounded-lg border border-red-200 bg-white text-red-600 text-sm font-semibold hover:bg-red-50 transition shadow-sm">Delete List</button>
-                <button id="openAddProduct" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#00fff2] text-slate-900 text-sm font-semibold hover:bg-[#00e6da] transition shadow-sm">
+                <button id="openAddProduct" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#6EC1D1] text-slate-900 text-sm font-semibold hover:bg-[#59b2c2] transition shadow-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                     <span>Add Product</span>
                 </button>
@@ -34,8 +34,8 @@
         <!-- Filter Section -->
         <div class="rounded-[10px] border border-slate-200 bg-white p-3 shadow-sm">
             <div class="flex items-center gap-3">
-                <div class="flex-1">
-                    <input type="text" id="searchInput" placeholder="Search by brand, product description, or SKU..." class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent">
+                <div class="flex-1 min-w-0">
+                    <input type="text" id="searchInput" placeholder="Search by brand, product description, or SKU..." class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] focus:border-transparent">
                 </div>
                 <button id="clearFilterBtn" class="px-3.5 py-2 rounded-[12px] border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
                     Clear Filter
@@ -50,7 +50,7 @@
                     <thead class="bg-[#0f172a] border-b border-slate-200 sticky-header text-[10px] uppercase tracking-wider rounded-t-[10px] text-white">
                         <tr>
                             <th class="px-3.5 py-3 font-semibold text-center text-white w-10 rounded-tl-[10px]">
-                                <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2] cursor-pointer">
+                                <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1] cursor-pointer">
                             </th>
                             <th class="px-3.5 py-3 font-semibold text-left text-white">Brand</th>
                             <th class="px-3.5 py-3 font-semibold text-left text-white">Product Description</th>
@@ -90,11 +90,11 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="text-xs font-semibold text-slate-700">Product Name (Brand)</label>
-                        <input type="text" id="productName" placeholder="e.g., APIDO" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 bg-white text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300 mt-1" required />
+                        <input type="text" id="productName" placeholder="e.g., APIDO" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 bg-white text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#6EC1D1] focus:ring-1 focus:ring-[#6EC1D1]/20 hover:border-slate-300 mt-1" required />
                     </div>
                     <div>
                         <label class="text-xs font-semibold text-slate-700">Product Description (Category)</label>
-                        <select id="productCategory" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 bg-white text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300 mt-1" required>
+                        <select id="productCategory" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 bg-white text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#6EC1D1] focus:ring-1 focus:ring-[#6EC1D1]/20 hover:border-slate-300 mt-1" required>
                             <option value="">Select category</option>
                             <option value="PIPE">PIPE</option>
                             <option value="SHOCK">SHOCK</option>
@@ -109,30 +109,30 @@
                     </div>
                     <div class="col-span-2">
                         <label class="text-xs font-semibold text-slate-700">SKU / QR Code</label>
-                        <input type="text" id="productSku" placeholder="e.g., PIPE-APIDO" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 bg-white text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300 mt-1" required />
+                        <input type="text" id="productSku" placeholder="e.g., PIPE-APIDO" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 bg-white text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#6EC1D1] focus:ring-1 focus:ring-[#6EC1D1]/20 hover:border-slate-300 mt-1" required />
                     </div>
                     <div>
                         <label class="text-xs font-semibold text-slate-700">Reorder Level</label>
-                        <input type="number" id="productReorderLevel" min="0" value="10" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 bg-white text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300 mt-1" />
+                        <input type="number" id="productReorderLevel" min="0" value="10" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 bg-white text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#6EC1D1] focus:ring-1 focus:ring-[#6EC1D1]/20 hover:border-slate-300 mt-1" />
                     </div>
                     <div class="col-span-2">
                         <label class="text-xs font-semibold text-slate-700 mb-2 block">Compatible Motorcycle Models</label>
                         <div id="motorcycleList" class="space-y-2 max-h-40 overflow-y-auto border border-slate-200 rounded-lg p-3 bg-slate-50">
                             <!-- Motorcycle checkboxes will load here -->
                             <label class="flex items-center gap-2">
-                                <input type="checkbox" value="CB150" class="motorcycle-checkbox rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]" />
+                                <input type="checkbox" value="CB150" class="motorcycle-checkbox rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1]" />
                                 <span class="text-xs text-slate-800">CB150</span>
                             </label>
                             <label class="flex items-center gap-2">
-                                <input type="checkbox" value="Wave110" class="motorcycle-checkbox rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]" />
+                                <input type="checkbox" value="Wave110" class="motorcycle-checkbox rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1]" />
                                 <span class="text-xs text-slate-800">Wave 110</span>
                             </label>
                             <label class="flex items-center gap-2">
-                                <input type="checkbox" value="ADV160" class="motorcycle-checkbox rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]" />
+                                <input type="checkbox" value="ADV160" class="motorcycle-checkbox rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1]" />
                                 <span class="text-xs text-slate-800">ADV 160</span>
                             </label>
                             <label class="flex items-center gap-2">
-                                <input type="checkbox" value="XRE300" class="motorcycle-checkbox rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]" />
+                                <input type="checkbox" value="XRE300" class="motorcycle-checkbox rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1]" />
                                 <span class="text-xs text-slate-800">XRE 300</span>
                             </label>
                         </div>
@@ -140,7 +140,7 @@
                 </div>
 
                 <div class="mt-6 flex items-center gap-3">
-                    <button type="submit" class="px-5 py-2 rounded-lg bg-[#00fff2] text-xs font-semibold text-black hover:bg-[#00e6da] transition shadow-sm">Save Product</button>
+                    <button type="submit" class="px-5 py-2 rounded-lg bg-[#6EC1D1] text-xs font-semibold text-black hover:bg-[#59b2c2] transition shadow-sm">Save Product</button>
                     <button type="button" id="cancelProductModal" class="px-5 py-2 rounded-lg border-2 border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">Cancel</button>
                     <button type="button" id="deleteProductBtn" class="ml-auto px-4 py-2 rounded-lg border border-red-200 text-xs font-semibold text-red-600 hover:bg-red-50 hidden">Move to Trash</button>
                 </div>
@@ -166,7 +166,7 @@
                         <thead class="bg-[#0f172a] border-b border-slate-200 sticky top-0 text-xs uppercase tracking-wider text-white">
                             <tr>
                                 <th class="px-4 py-3 text-left font-semibold text-white w-10">
-                                    <input type="checkbox" id="selectAllDelete" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]">
+                                    <input type="checkbox" id="selectAllDelete" class="rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1]">
                                 </th>
                                 <th class="px-4 py-3 text-left font-semibold text-white">Brand</th>
                                 <th class="px-4 py-3 text-left font-semibold text-white">Category</th>
@@ -195,13 +195,13 @@
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeTrashModal()"></div>
         <div class="relative w-full max-w-2xl bg-white rounded-[28px] border border-slate-200 shadow-[0_30px_80px_rgba(15,23,42,0.18)] overflow-hidden transform transition-all z-10">
             <!-- Header (matching Add User Modal style) -->
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h3 class="text-xl font-bold text-black flex items-center gap-2">
                         Trash
-                        <span class="text-sm font-medium text-slate-800">(<span id="trashCount">0</span> items)</span>
+                        <span class="text-sm font-medium text-slate-900">(<span id="trashCount">0</span> items)</span>
                     </h3>
-                    <p class="text-sm text-slate-800 font-medium mt-0.5">Restore items or permanently delete them.</p>
+                    <p class="text-sm text-slate-900 font-medium mt-0.5">Restore items or permanently delete them.</p>
                 </div>
                 <button id="closeTrashModal" type="button" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -215,7 +215,7 @@
                         <thead class="bg-[#0f172a] border-b border-slate-800 sticky top-0 text-xs uppercase tracking-wider text-white">
                             <tr>
                                 <th class="px-4 py-3 text-left font-semibold text-white w-10">
-                                    <input type="checkbox" id="selectAllTrash" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]">
+                                    <input type="checkbox" id="selectAllTrash" class="rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1]">
                                 </th>
                                 <th class="px-4 py-3 text-left font-semibold text-white">Brand</th>
                                 <th class="px-4 py-3 text-left font-semibold text-white">Category</th>
@@ -234,7 +234,7 @@
                     <div class="flex items-center gap-3">
                         <button onclick="closeTrashModal()" class="rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition">Close</button>
                         <button id="restoreSelectedBtn"
-                            class="rounded-[10px] bg-[#00fff2] px-4 py-2 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#00e6da] transition disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1.5"
+                            class="rounded-[10px] bg-[#6EC1D1] px-4 py-2 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1.5"
                             disabled>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
                             Restore Selected

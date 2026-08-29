@@ -20,28 +20,28 @@
 
         <!-- Quick Stats -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-            <div class="rounded-[20px] border border-slate-200 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Pending Sync</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-amber-600">{{ $movements->where('sync_status', 'pending_sync')->count() }}</p>
                     <p class="text-slate-500 text-[10px] leading-tight mt-1 font-medium">Awaiting export</p>
                 </div>
             </div>
-            <div class="rounded-[20px] border border-slate-200 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Exported</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-blue-600">{{ $movements->where('sync_status', 'exported')->count() }}</p>
                     <p class="text-slate-500 text-[10px] leading-tight mt-1 font-medium">Ready for import</p>
                 </div>
             </div>
-            <div class="rounded-[20px] border border-slate-200 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Synchronized</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-green-600">{{ $movements->where('sync_status', 'synchronized')->count() }}</p>
                     <p class="text-slate-500 text-[10px] leading-tight mt-1 font-medium">Successfully synced</p>
                 </div>
             </div>
-            <div class="rounded-[20px] border border-slate-200 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Failed</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-red-600">{{ $movements->where('sync_status', 'failed')->count() }}</p>

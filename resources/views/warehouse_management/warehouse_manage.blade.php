@@ -102,7 +102,7 @@
             </div>
             <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap pr-4">
                 <button id="add-shelf-button" type="button" onclick="openAddShelfModal()"
-                        class="inline-flex items-center gap-2 rounded-[10px] border border-[#00fff2]/40 bg-[#00fff2] px-3 py-2 text-sm font-bold text-black shadow-sm hover:bg-[#00e6da] focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
+                        class="inline-flex items-center gap-2 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-2 text-sm font-bold text-black shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
                     + Add Shelf
                 </button>
                 <button id="add-warehouse-button" type="button" onclick="openAddWarehouseModal()"
@@ -144,7 +144,7 @@
                         </button>
                         <div id="dd-warehouse-menu" class="hidden absolute left-0 top-full z-50 mt-1 min-w-[140px] rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
                             @foreach($warehouses as $wh)
-                                <button type="button" onclick="selectDropdownOption('warehouse-selector', 'dd-warehouse-label', 'dd-warehouse-menu', '{{ $wh['id'] }}', '{{ addslashes($wh['name']) }}')" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">
+                                <button type="button" onclick="selectDropdownOption('warehouse-selector', 'dd-warehouse-label', 'dd-warehouse-menu', '{{ $wh['id'] }}', '{{ addslashes($wh['name']) }}')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">
                                     {{ $wh['name'] }}
                                 </button>
                             @endforeach
@@ -226,7 +226,7 @@
         <div class="grid gap-4 mt-0">
 
         {{-- ── Pending Warehouse Assignment panel (collapsible) ── --}}
-        <div id="pending-arrivals-panel" class="rounded-[20px] border border-slate-200 border-l-[5px] border-l-[#00fff2] shadow-sm overflow-hidden" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+        <div id="pending-arrivals-panel" class="rounded-[20px] border border-slate-200 border-l-[5px] border-l-[#6EC1D1] shadow-sm overflow-hidden" style="background: linear-gradient(50deg, #ffffff 0%, rgba(110, 193, 209, 0.12) 50%);">
             {{-- Header / toggle bar --}}
             <button
                 type="button"
@@ -235,7 +235,7 @@
                 aria-expanded="{{ count($pendingArrivals) > 0 ? 'true' : 'false' }}"
             >
                 <div class="flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#00fff2] text-black border border-slate-300/60 shadow-sm flex-shrink-0">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#6EC1D1] text-black border border-slate-300/60 shadow-sm flex-shrink-0">
                         <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.707.293h3.172a1 1 0 01.707-.293l2.414-2.414a1 1 0 01.707-.293H20"/>
                         </svg>
@@ -280,7 +280,7 @@
                                 <td class="px-4 py-3 text-center">
                                     <button
                                         type="button"
-                                        class="assign-arrival-btn inline-flex items-center gap-1.5 rounded-[10px] bg-[#00fff2] px-3 py-1.5 text-xs font-semibold text-black hover:bg-[#00e6da] transition shadow-sm cursor-pointer"
+                                        class="assign-arrival-btn inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-3 py-1.5 text-xs font-semibold text-black hover:bg-[#59b2c2] transition shadow-sm cursor-pointer"
                                         data-id="{{ $arrival['id'] }}"
                                         data-name="{{ $arrival['product_name'] }}"
                                         data-qty="{{ $arrival['quantity'] }}"
@@ -313,7 +313,7 @@
                 <div class="rounded-[15px] border border-slate-200 bg-white overflow-hidden shadow-sm wh-card" data-id="{{ $wh['id'] }}" style="display:none;">
                     <div class="flex items-center justify-between bg-[#0f172a] px-5 py-3.5 border-b border-slate-800">
                         <div class="flex items-center gap-3">
-                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[#00fff2] text-black font-bold text-sm shadow-sm">{{ strtoupper(substr($wh['code'], -1)) }}</div>
+                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[#6EC1D1] text-black font-bold text-sm shadow-sm">{{ strtoupper(substr($wh['code'], -1)) }}</div>
                             <div>
                                 <div class="text-sm font-bold text-white tracking-wide">{{ $wh['name'] }}</div>
                                 <div class="text-[11px] text-slate-300">Code: {{ $wh['code'] }}</div>
@@ -324,14 +324,14 @@
                                 <option value="">Actions</option>
                                 <option value="archive-warehouse">Archive Warehouse</option>
                             </select>
-                            <button type="button" onclick="toggleDropdown('wh-actions-menu-{{ $wh['id'] }}', event)" class="px-3.5 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-700 bg-slate-800 text-white hover:bg-slate-700 cursor-pointer focus:outline-none transition shadow-sm flex items-center gap-2">
+                            <button type="button" onclick="toggleDropdown('wh-actions-menu-{{ $wh['id'] }}', event)" class="px-3.5 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-700 bg-slate-800 text-white hover:bg-slate-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#6EC1D1] transition shadow-sm flex items-center gap-2">
                                 <span>Actions</span>
                                 <svg class="w-3.5 h-3.5 text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                             </button>
-                            <div id="wh-actions-menu-{{ $wh['id'] }}" class="hidden absolute right-0 top-full z-50 mt-1 w-44 rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
-                                <button type="button" onclick="triggerWarehouseAction('{{ $wh['id'] }}', 'archive-warehouse'); toggleDropdown('wh-actions-menu-{{ $wh['id'] }}', event);" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-rose-700 hover:bg-rose-50 transition cursor-pointer flex items-center justify-center gap-2">
-                                    <svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
-                                    Archive Warehouse
+                            <div id="wh-actions-menu-{{ $wh['id'] }}" class="hidden absolute right-0 top-full z-50 mt-1.5 w-max min-w-[170px] rounded-[12px] border border-slate-700/80 bg-[#0f172a] shadow-2xl p-1.5 space-y-0.5 text-white">
+                                <button type="button" onclick="triggerWarehouseAction('{{ $wh['id'] }}', 'archive-warehouse'); toggleDropdown('wh-actions-menu-{{ $wh['id'] }}', event);" class="w-full text-left px-3.5 py-2 rounded-[8px] text-xs font-semibold text-white hover:bg-slate-800 transition cursor-pointer flex items-center gap-2.5 whitespace-nowrap">
+                                    <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                                    <span>Archive Warehouse</span>
                                 </button>
                             </div>
                         </div>
@@ -502,7 +502,7 @@
                         <p class="text-sm font-semibold text-slate-900">${item.name || 'Unnamed Shelf'}</p>
                         <p class="text-xs text-slate-500 mt-0.5">${item.warehouseName} • ${item.products ? item.products.length : 0} items</p>
                     </div>
-                    <button type="button" onclick="restoreArchivedShelf('${item.slot_index}', '${item.warehouseId}')" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#00fff2] px-3 py-1.5 text-xs font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">
+                    <button type="button" onclick="restoreArchivedShelf('${item.slot_index}', '${item.warehouseId}')" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300 transition cursor-pointer">
                         Restore
                     </button>
                 </div>
@@ -607,10 +607,10 @@
     <div id="modal-backdrop" class="fixed inset-0 z-[100000002] hidden items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeShelfModal()"></div>
         <div class="relative modal-panel w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)] flex flex-col">
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 id="modal-title" class="text-xl font-bold text-black">Add Shelf</h2>
-                    <p class="text-sm text-slate-800 font-medium">Configure shelf location, capacity, and products before saving.</p>
+                    <p class="text-sm text-slate-900 font-medium">Configure shelf location, capacity, and products before saving.</p>
                 </div>
                 <button id="modal-close" type="button" onclick="closeShelfModal()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -638,7 +638,7 @@
                                 </button>
                                 <div id="modalWarehouseDropdownMenu" class="hidden absolute left-0 right-0 top-full z-50 mt-1 rounded-[12px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
                                     @foreach($warehouses as $index => $wh)
-                                        <button type="button" onclick="selectModalWarehouseOption('{{ $index }}', '{{ addslashes($wh['name']) }}')" class="w-full text-center px-3 py-2.5 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">{{ $wh['name'] }}</button>
+                                        <button type="button" onclick="selectModalWarehouseOption('{{ $index }}', '{{ addslashes($wh['name']) }}')" class="w-full text-left px-3 py-2.5 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">{{ $wh['name'] }}</button>
                                     @endforeach
                                 </div>
                             </div>
@@ -675,7 +675,7 @@
 
                 <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
                     <button type="button" id="modal-cancel" onclick="closeShelfModal()" class="rounded-[10px] bg-black/10 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-black/20 transition cursor-pointer">Cancel</button>
-                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">Save shelf</button>
+                    <button type="submit" class="rounded-[10px] bg-[#6EC1D1] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300 transition cursor-pointer">Save shelf</button>
                 </div>
             </form>
         </div>
@@ -684,10 +684,10 @@
     <div id="archived-backdrop" class="fixed inset-0 z-[100000002] hidden items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeArchivedShelvesModal()"></div>
         <div class="relative modal-panel w-full max-w-2xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)] flex flex-col">
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Archived Shelves</h2>
-                    <p class="text-sm text-slate-800 font-medium">View and restore archived shelf locations.</p>
+                    <p class="text-sm text-slate-900 font-medium">View and restore archived shelf locations.</p>
                 </div>
                 <button id="archived-close" type="button" onclick="closeArchivedShelvesModal()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -880,7 +880,7 @@
 
             <div class="flex flex-col md:flex-row p-6 gap-6">
                 <!-- Scanner Section -->
-                <div class="flex-1">
+                <div class="flex-1 min-w-0">
                     <div id="wm-scanner-reader" class="w-full bg-black rounded-xl overflow-hidden min-h-[400px]"></div>
                     <div id="wm-scanner-status" class="text-center text-sm text-slate-600 mt-2">Position QR code within the frame</div>
                 </div>
@@ -918,10 +918,10 @@
     <div id="add-warehouse-modal" class="fixed inset-0 z-[100000002] hidden items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('add-warehouse-modal').classList.add('hidden')"></div>
         <div class="relative modal-panel w-full max-w-md overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Add New Warehouse</h2>
-                    <p class="text-sm text-slate-800 font-medium">Create a new storage location facility.</p>
+                    <p class="text-sm text-slate-900 font-medium">Create a new storage location facility.</p>
                 </div>
                 <button type="button" onclick="document.getElementById('add-warehouse-modal').classList.add('hidden')" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -934,7 +934,7 @@
                 </div>
                 <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
                     <button type="button" id="cancel-add-warehouse" class="rounded-[10px] bg-black/10 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-black/20 transition cursor-pointer">Cancel</button>
-                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">Create Warehouse</button>
+                    <button type="submit" class="rounded-[10px] bg-[#6EC1D1] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300 transition cursor-pointer">Create Warehouse</button>
                 </div>
             </form>
         </div>
@@ -944,10 +944,10 @@
     <div id="transfer-shelf-modal" class="fixed inset-0 z-[100000002] hidden items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('transfer-shelf-modal').classList.add('hidden')"></div>
         <div class="relative modal-panel w-full max-w-md overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Transfer Shelf</h2>
-                    <p class="text-sm text-slate-800 font-medium">Relocate shelf to another warehouse.</p>
+                    <p class="text-sm text-slate-900 font-medium">Relocate shelf to another warehouse.</p>
                 </div>
                 <button type="button" onclick="document.getElementById('transfer-shelf-modal').classList.add('hidden')" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -968,7 +968,7 @@
                 </div>
                 <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
                     <button type="button" id="cancel-transfer-shelf" class="rounded-[10px] bg-black/10 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-black/20 transition cursor-pointer">Cancel</button>
-                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">Transfer Shelf</button>
+                    <button type="submit" class="rounded-[10px] bg-[#6EC1D1] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300 transition cursor-pointer">Transfer Shelf</button>
                 </div>
             </form>
         </div>
@@ -978,10 +978,10 @@
     <div id="assign-arrival-modal" class="fixed inset-0 z-[100000003] hidden items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('assign-arrival-modal').classList.add('hidden')"></div>
         <div class="relative modal-panel w-full max-w-md overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Assign Stock Arrival</h2>
-                    <p class="text-sm text-slate-800 font-medium">Assign arrived inventory to destination warehouse.</p>
+                    <p class="text-sm text-slate-900 font-medium">Assign arrived inventory to destination warehouse.</p>
                 </div>
                 <button type="button" id="close-assign-arrival" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -1018,7 +1018,7 @@
 
                 <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
                     <button type="button" id="cancel-assign-arrival" class="rounded-[10px] bg-black/10 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-black/20 transition cursor-pointer flex-1">Cancel</button>
-                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer flex-1">Confirm Assignment</button>
+                    <button type="submit" class="rounded-[10px] bg-[#6EC1D1] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300 transition cursor-pointer flex-1">Confirm Assignment</button>
                 </div>
             </form>
         </div>

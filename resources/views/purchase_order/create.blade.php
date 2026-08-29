@@ -38,7 +38,7 @@
         ════════════════════════════════════════════════════════════ --}}
         <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">1</span>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">1</span>
                 <div>
                     <h2 class="text-sm font-semibold text-white">Select Products to Reorder</h2>
                     <p class="text-xs text-slate-300">Choose from low-stock products. The supplier list will update automatically.</p>
@@ -87,7 +87,7 @@
                             </button>
                             <div id="movementFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
                                 @foreach($filters as $key => $label)
-                                    <button type="button" onclick="selectMovementFilter(event, '{{ $key }}', '{{ $label }}')" class="w-full px-4 py-2.5 text-center text-sm {{ ($currentFilter ?? 'all') === $key ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
+                                    <button type="button" onclick="selectMovementFilter(event, '{{ $key }}', '{{ $label }}')" class="w-full px-4 py-2.5 text-left text-sm {{ ($currentFilter ?? 'all') === $key ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
                                 @endforeach
                             </div>
                         </div>
@@ -152,7 +152,7 @@
         ════════════════════════════════════════════════════════════ --}}
         <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">2</span>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">2</span>
                 <div>
                     <h2 class="text-sm font-semibold text-white">Select Supplier</h2>
                     <p class="text-xs text-slate-300">Only suppliers that can fulfill every selected product are shown.</p>
@@ -204,7 +204,7 @@
         ════════════════════════════════════════════════════════════ --}}
         <div id="supplier-info-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">3</span>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">3</span>
                 <h2 class="text-sm font-semibold text-white">Supplier Information</h2>
             </div>
             <div class="p-6">
@@ -234,7 +234,7 @@
         ════════════════════════════════════════════════════════════ --}}
         <div id="price-analysis-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">4</span>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">4</span>
                 <div>
                     <h2 class="text-sm font-semibold text-white">Supplier Price Analysis</h2>
                     <p class="text-xs text-slate-300">Historical costs, trends, and purchasing recommendations per product.</p>
@@ -250,7 +250,7 @@
         ════════════════════════════════════════════════════════════ --}}
         <div id="comparison-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">★</span>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">★</span>
                 <div>
                     <h2 class="text-sm font-semibold text-white">Supplier Comparison</h2>
                     <p class="text-xs text-slate-300">All qualified suppliers ranked by cost. Click Select to choose one.</p>
@@ -283,7 +283,7 @@
                 Cancel
             </a>
             <button type="submit"
-                    class="max-w-xs inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#00fff2] px-5 py-3 text-sm font-semibold text-black shadow-sm hover:bg-[#00e6da] transition-all duration-200">
+                    class="max-w-xs inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#6EC1D1] px-5 py-3 text-sm font-semibold text-black shadow-sm hover:bg-[#59b2c2] transition-all duration-200">
                 Submit Purchase Order
             </button>
         </div>
@@ -1150,8 +1150,6 @@
         updateSelectAllCheckboxState();
     }
     onProductSelectionChange();
-
-
 
 })();
 </script>

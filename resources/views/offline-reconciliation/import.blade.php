@@ -25,24 +25,36 @@
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                     <h2 class="text-sm font-bold text-slate-900">Upload File</h2>
                     <div class="flex items-center gap-2">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-900 bg-[#0f172a] px-4 py-2 text-sm font-medium text-[#6EC1D1] shadow-sm hover:bg-slate-800 focus:outline-none transition-all duration-200 cursor-pointer">
+                            <svg class="h-4 w-4 text-[#6EC1D1]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                            </svg>
+                            <span>Import Data</span>
+                        </button>
                         <button type="button" onclick="validateFile()" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer">
                             <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                             <span>Validate First</span>
                         </button>
-                        <button type="submit" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-900 bg-[#0f172a] px-4 py-2 text-sm font-medium text-[#00fff2] shadow-sm hover:bg-slate-800 focus:outline-none transition-all duration-200 cursor-pointer">
-                            <svg class="h-4 w-4 text-[#00fff2]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
-                            </svg>
-                            <span>Import Data</span>
-                        </button>
                     </div>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1.5">Select File</label>
-                    <input type="file" name="file" accept=".csv,.xlsx,.xls" class="w-full px-3 py-[11px] rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:border-slate-400 transition shadow-sm" required>
-                    <p class="text-[10px] text-slate-500 mt-1">Supported formats: CSV, Excel (.xlsx, .xls)</p>
+                    <label for="fileUploadInput" id="uploadDropZone" class="flex flex-col items-center justify-center w-full rounded-[12px] border-2 border-dashed border-slate-300 bg-slate-50 cursor-pointer hover:border-[#6EC1D1] hover:bg-[rgba(110,193,209,0.05)] transition-all duration-200 py-8 px-4 group">
+                        <div class="flex flex-col items-center gap-2 pointer-events-none">
+                            <div class="w-12 h-12 flex items-center justify-center rounded-full bg-[rgba(110,193,209,0.15)] group-hover:bg-[rgba(110,193,209,0.25)] transition-colors">
+                                <svg class="w-6 h-6 text-[#145a66]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                                </svg>
+                            </div>
+                            <div class="text-center">
+                                <p id="uploadFileName" class="text-sm font-semibold text-slate-700">Click to browse or drag & drop</p>
+                                <p class="text-[11px] text-slate-400 mt-0.5">Supported formats: CSV, Excel (.xlsx, .xls)</p>
+                            </div>
+                        </div>
+                        <input id="fileUploadInput" type="file" name="file" accept=".csv,.xlsx,.xls" class="hidden" required onchange="updateFileName(this)">
+                    </label>
                 </div>
             </form>
         </div>
@@ -310,6 +322,44 @@
             })
             .catch(error => {
                 alert('Error validating file: ' + error.message);
+            });
+        }
+
+        function updateFileName(input) {
+            const label = document.getElementById('uploadFileName');
+            const zone = document.getElementById('uploadDropZone');
+            if (input.files && input.files[0]) {
+                label.textContent = input.files[0].name;
+                label.classList.add('text-[#145a66]');
+                label.classList.remove('text-slate-700');
+                zone.classList.add('border-[#6EC1D1]', 'bg-[rgba(110,193,209,0.05)]');
+                zone.classList.remove('border-slate-300');
+            } else {
+                label.textContent = 'Click to browse or drag & drop';
+                label.classList.remove('text-[#145a66]');
+                label.classList.add('text-slate-700');
+                zone.classList.remove('border-[#6EC1D1]', 'bg-[rgba(110,193,209,0.05)]');
+                zone.classList.add('border-slate-300');
+            }
+        }
+
+        // Drag and drop support
+        const dropZone = document.getElementById('uploadDropZone');
+        if (dropZone) {
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('border-[#6EC1D1]', 'bg-[rgba(110,193,209,0.08)]');
+            });
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('bg-[rgba(110,193,209,0.08)]');
+            });
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const fileInput = document.getElementById('fileUploadInput');
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    updateFileName(fileInput);
+                }
             });
         }
     </script>

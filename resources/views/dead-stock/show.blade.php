@@ -208,7 +208,7 @@
                 @endphp
                 <div class="px-5 py-4">
                     <div class="flex items-start justify-between gap-3">
-                        <div class="flex-1">
+                        <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 mb-1.5">
                                 <span class="text-lg">{{ $style['icon'] }}</span>
                                 <h4 class="text-sm font-bold text-slate-800">{{ $rec->getTypeLabel() }}</h4>

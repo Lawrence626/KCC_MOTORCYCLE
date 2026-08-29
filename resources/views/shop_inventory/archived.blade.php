@@ -46,7 +46,7 @@
             <div class="grid gap-6 mt-4">
                 @foreach($archivedShelves as $shelf)
                 <div class="si-card rounded-lg p-4 shadow-sm">
-                    <div class="flex items-start justify-between">
+                    <div class="flex items-start justify-between gap-2">
                         <div>
                             <div class="flex items-center space-x-3">
                                 <div class="w-10 h-10 rounded-md flex items-center justify-center text-white font-semibold bg-gray-400 text-sm">{{ strtoupper(substr($shelf->name, -1)) }}</div>
@@ -57,7 +57,7 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button onclick="restoreShelf({{ $shelf->id }})" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#00fff2] px-4 py-2 text-xs font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">
+                            <button onclick="restoreShelf({{ $shelf->id }})" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-4 py-2 text-xs font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300 transition cursor-pointer">
                                 Restore
                             </button>
                             <button onclick="deleteShelf({{ $shelf->id }})" class="inline-flex items-center gap-1.5 rounded-[10px] bg-rose-50 border border-rose-200/80 px-4 py-2 text-xs font-bold text-rose-700 hover:bg-rose-100 transition cursor-pointer">

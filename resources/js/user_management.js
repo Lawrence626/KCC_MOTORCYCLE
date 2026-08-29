@@ -18,11 +18,13 @@
     const editCancelBtn = document.getElementById('cancelEditUser');
     const editName = document.getElementById('edit_name');
     const editEmail = document.getElementById('edit_email');
-    const editRole = document.getElementById('edit_role');
+    const editRoleInput = document.getElementById('edit_role_input');
+    const editRoleDisplay = document.getElementById('edit_role_display');
     const editContact = document.getElementById('edit_contact');
     const editAddress = document.getElementById('edit_address');
     const editAge = document.getElementById('edit_age');
-    const editGender = document.getElementById('edit_gender');
+    const editGenderInput = document.getElementById('edit_gender_input');
+    const editGenderDisplay = document.getElementById('edit_gender_display');
     const editPassword = document.getElementById('edit_password');
 
     const addPasswordInput = document.getElementById('add_password');
@@ -308,6 +310,13 @@
     }
 
     // === Edit User Management ===
+    const roleLabels = {
+        'admin': 'Administrator',
+        'cashier': 'Cashier',
+        'inventory_clerk': 'Inventory Clerk',
+        'warehouse_personnel': 'Warehouse Personnel'
+    };
+
     function attachEditButtons() {
         document.querySelectorAll('.editUserBtn').forEach(function(button) {
             button.removeEventListener('click', handleEditButtonClick);
@@ -315,23 +324,83 @@
         });
     }
 
-    function handleEditButtonClick() {
-        const user = JSON.parse(this.getAttribute('data-user'));
+    function handleEditButtonClick(e) {
+        if (e) e.preventDefault();
+        const targetBtn = (this && this.closest) ? this.closest('.editUserBtn') : (e && e.target ? e.target.closest('.editUserBtn') : null);
+        if (!targetBtn) return;
+
+        const rawData = targetBtn.getAttribute('data-user');
+        if (!rawData) return;
+
+        let user = null;
+        try {
+            user = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+        } catch (err) {
+            console.error('Error parsing user data:', err);
+            return;
+        }
         if (!user) return;
 
         // Store user ID on form for submission
-        editForm.dataset.userId = user.id;
-        editName.value = user.name || '';
-        editEmail.value = user.email || '';
-        editRole.value = user.role || 'admin';
-        editContact.value = user.contact || '';
-        editAddress.value = user.address || '';
-        editAge.value = user.age || '';
-        editGender.value = user.gender || '';
-        editPassword.value = '';
+        if (editForm) editForm.dataset.userId = user.id;
+        if (editName) editName.value = user.name || '';
+        if (editEmail) editEmail.value = user.email || '';
+
+        const roleVal = user.role || 'admin';
+        if (editRoleInput) editRoleInput.value = roleVal;
+        if (editRoleDisplay) editRoleDisplay.textContent = roleLabels[roleVal] || roleVal;
+
+        const roleDropdown = document.getElementById('edit_role_dropdown');
+        if (roleDropdown) {
+            roleDropdown.querySelectorAll('button').forEach(b => {
+                const isMatch = b.getAttribute('onclick')?.includes(`'${roleVal}'`);
+                if (isMatch) {
+                    b.classList.remove('text-slate-700', 'hover:bg-slate-100');
+                    b.classList.add('font-semibold', 'text-slate-900', 'bg-black/10');
+                } else {
+                    b.classList.remove('font-semibold', 'text-slate-900', 'bg-black/10');
+                    b.classList.add('text-slate-700', 'hover:bg-slate-100');
+                }
+            });
+        }
+
+        if (editContact) editContact.value = user.contact || '';
+        if (editAddress) editAddress.value = user.address || '';
+        if (editAge) editAge.value = user.age || '';
+
+        const genderVal = user.gender || '';
+        if (editGenderInput) editGenderInput.value = genderVal;
+        if (editGenderDisplay) editGenderDisplay.textContent = genderVal || '--';
+
+        const genderDropdown = document.getElementById('edit_gender_dropdown');
+        if (genderDropdown) {
+            genderDropdown.querySelectorAll('button').forEach(b => {
+                const isMatch = b.getAttribute('onclick')?.includes(`'${genderVal}'`);
+                if (isMatch) {
+                    b.classList.remove('text-slate-700', 'hover:bg-slate-100');
+                    b.classList.add('font-semibold', 'text-slate-900', 'bg-black/10');
+                } else {
+                    b.classList.remove('font-semibold', 'text-slate-900', 'bg-black/10');
+                    b.classList.add('text-slate-700', 'hover:bg-slate-100');
+                }
+            });
+        }
+
+        if (editPassword) editPassword.value = '';
+        const confirmWrapper = document.getElementById('edit_password_confirm_wrapper');
+        if (confirmWrapper) confirmWrapper.style.display = 'none';
+        const editPasswordConfirm = document.getElementById('edit_password_confirm');
+        if (editPasswordConfirm) editPasswordConfirm.value = '';
 
         openEditModal();
     }
+
+    document.addEventListener('click', function(e) {
+        const editBtn = e.target.closest('.editUserBtn');
+        if (editBtn) {
+            handleEditButtonClick.call(editBtn, e);
+        }
+    });
 
     // === User List Management ===
     function refreshBindings() {
@@ -401,7 +470,7 @@
 
     function attachPaginationListener() {
         if (!userListWrapper) return;
-        userListWrapper.querySelectorAll('.pagination a').forEach(function(link) {
+        userListWrapper.querySelectorAll('[role="navigation"] a, nav a, .pagination a').forEach(function(link) {
             link.removeEventListener('click', handlePaginationClick);
             link.addEventListener('click', handlePaginationClick);
         });

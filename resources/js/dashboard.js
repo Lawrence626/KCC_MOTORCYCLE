@@ -549,8 +549,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // x/y axis — ang binago lang ay ang kulay ng linya/fill at ang
     // pagkamakinis ng curve (rounded peaks/valleys).
     // ═══════════════════════════════════════════════════════════════
-    const SALES_CHART_CYAN = '#00D9FF'; // pangunahing linya (matches dashboard icon cyan)
-    const SALES_CHART_CYAN_SOFT = '#00FFF2'; // pantulong na kulay para sa gradient highlight
+    const SALES_CHART_CYAN = '#6EC1D1'; // pangunahing linya (matches dashboard icon cyan)
+    const SALES_CHART_CYAN_SOFT = '#6EC1D1'; // pantulong na kulay para sa gradient highlight
 
     const renderSalesChart = (salesChart) => {
         const canvas = document.getElementById('salesChart');

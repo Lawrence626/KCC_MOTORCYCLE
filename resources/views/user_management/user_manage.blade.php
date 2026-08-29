@@ -13,12 +13,25 @@
                         </svg>
                         Back to Active
                     </a>
+                @else
+                    <button id="openAddUserModal" class="inline-flex items-center gap-2 rounded-[10px] bg-[#6EC1D1] px-4 py-2.5 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all duration-200">
+                        <svg class="h-4 w-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Add User
+                    </button>
+                    <a href="{{ route('user.management.archived') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200">
+                        <svg class="h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                        </svg>
+                        Archived
+                    </a>
                 @endif
             </div>
         </div>
 
         @if(session('success'))
-            <div id="pageSuccessAlert" class="rounded-[10px] border border-[#00fff2] bg-[#e6fffe] p-4 text-sm font-medium text-slate-900 shadow-sm">
+            <div id="pageSuccessAlert" class="rounded-[10px] border border-[#6EC1D1] bg-teal-50 p-4 text-sm font-medium text-slate-900 shadow-sm">
                 {{ session('success') }}
             </div>
         @endif
@@ -33,10 +46,10 @@
         <div id="addUserModal" class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 py-4">
             <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" data-action="close-modal"></div>
             <div class="relative w-full max-w-3xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
-                <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                     <div>
                         <h2 class="text-xl font-bold text-black">Add User</h2>
-                        <p class="text-sm text-slate-800 font-medium">Create new user account and assign role.</p>
+                        <p class="text-sm text-slate-900 font-medium">Create new user account and assign role.</p>
                     </div>
                     <button type="button" id="closeAddUserModal" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -64,10 +77,10 @@
                                     </svg>
                                 </button>
                                 <div id="userRoleDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-300 bg-white shadow-xl p-3 space-y-1">
-                                    <button type="button" onclick="selectDropdown(event, 'userRoleInput', 'admin', 'userRoleButton', 'Administrator', 'userRoleDropdown')" class="w-full px-4 py-2.5 text-center text-sm {{ old('role', 'admin') === 'admin' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Administrator</button>
-                                    <button type="button" onclick="selectDropdown(event, 'userRoleInput', 'cashier', 'userRoleButton', 'Cashier', 'userRoleDropdown')" class="w-full px-4 py-2.5 text-center text-sm {{ old('role', 'admin') === 'cashier' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Cashier</button>
-                                    <button type="button" onclick="selectDropdown(event, 'userRoleInput', 'inventory_clerk', 'userRoleButton', 'Inventory Clerk', 'userRoleDropdown')" class="w-full px-4 py-2.5 text-center text-sm {{ old('role', 'admin') === 'inventory_clerk' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Inventory Clerk</button>
-                                    <button type="button" onclick="selectDropdown(event, 'userRoleInput', 'warehouse_personnel', 'userRoleButton', 'Warehouse Personnel', 'userRoleDropdown')" class="w-full px-4 py-2.5 text-center text-sm {{ old('role', 'admin') === 'warehouse_personnel' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Warehouse Personnel</button>
+                                    <button type="button" onclick="selectDropdown(event, 'userRoleInput', 'admin', 'userRoleButton', 'Administrator', 'userRoleDropdown')" class="w-full px-4 py-2.5 text-left text-sm {{ old('role', 'admin') === 'admin' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Administrator</button>
+                                    <button type="button" onclick="selectDropdown(event, 'userRoleInput', 'cashier', 'userRoleButton', 'Cashier', 'userRoleDropdown')" class="w-full px-4 py-2.5 text-left text-sm {{ old('role', 'admin') === 'cashier' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Cashier</button>
+                                    <button type="button" onclick="selectDropdown(event, 'userRoleInput', 'inventory_clerk', 'userRoleButton', 'Inventory Clerk', 'userRoleDropdown')" class="w-full px-4 py-2.5 text-left text-sm {{ old('role', 'admin') === 'inventory_clerk' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Inventory Clerk</button>
+                                    <button type="button" onclick="selectDropdown(event, 'userRoleInput', 'warehouse_personnel', 'userRoleButton', 'Warehouse Personnel', 'userRoleDropdown')" class="w-full px-4 py-2.5 text-left text-sm {{ old('role', 'admin') === 'warehouse_personnel' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Warehouse Personnel</button>
                                 </div>
                             </div>
                             <div class="space-y-1">
@@ -92,9 +105,9 @@
                                     </svg>
                                 </button>
                                 <div id="userGenderDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-300 bg-white shadow-xl p-3 space-y-1">
-                                    <button type="button" onclick="selectDropdown(event, 'userGenderInput', 'Male', 'userGenderButton', 'Male', 'userGenderDropdown')" class="w-full px-4 py-2.5 text-center text-sm {{ old('gender', '') === 'Male' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Male</button>
-                                    <button type="button" onclick="selectDropdown(event, 'userGenderInput', 'Female', 'userGenderButton', 'Female', 'userGenderDropdown')" class="w-full px-4 py-2.5 text-center text-sm {{ old('gender', '') === 'Female' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Female</button>
-                                    <button type="button" onclick="selectDropdown(event, 'userGenderInput', 'Other', 'userGenderButton', 'Other', 'userGenderDropdown')" class="w-full px-4 py-2.5 text-center text-sm {{ old('gender', '') === 'Other' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Other</button>
+                                    <button type="button" onclick="selectDropdown(event, 'userGenderInput', 'Male', 'userGenderButton', 'Male', 'userGenderDropdown')" class="w-full px-4 py-2.5 text-left text-sm {{ old('gender', '') === 'Male' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Male</button>
+                                    <button type="button" onclick="selectDropdown(event, 'userGenderInput', 'Female', 'userGenderButton', 'Female', 'userGenderDropdown')" class="w-full px-4 py-2.5 text-left text-sm {{ old('gender', '') === 'Female' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Female</button>
+                                    <button type="button" onclick="selectDropdown(event, 'userGenderInput', 'Other', 'userGenderButton', 'Other', 'userGenderDropdown')" class="w-full px-4 py-2.5 text-left text-sm {{ old('gender', '') === 'Other' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Other</button>
                                 </div>
                             </div>
                             <div class="sm:col-span-2 space-y-1">
@@ -142,7 +155,7 @@
                         </div>
                         <div class="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-end">
                             <button type="button" id="cancelAddUser" class="inline-flex items-center justify-center rounded-[10px] border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm hover:bg-black/10 transition-all duration-200">Cancel</button>
-                            <button type="submit" id="addUserSubmitBtn" class="inline-flex items-center justify-center rounded-[10px] bg-[#00FFF2] px-4 py-2.5 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#00D9CC] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">Create User</button>
+                            <button type="submit" id="addUserSubmitBtn" class="inline-flex items-center justify-center rounded-[10px] bg-[#6EC1D1] px-4 py-2.5 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">Create User</button>
                         </div>
                     </form>
                 </div>
@@ -153,10 +166,10 @@
         <div id="editUserModal" class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 py-4">
             <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" data-action="close-modal"></div>
             <div class="relative w-full max-w-3xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
-                <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                     <div>
                         <h2 class="text-xl font-bold text-black">Edit User</h2>
-                        <p class="text-sm text-slate-800 font-medium">Update user details and role.</p>
+                        <p class="text-sm text-slate-900 font-medium">Update user details and role.</p>
                     </div>
                     <button type="button" id="closeEditUserModal" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -185,10 +198,10 @@
                                     </svg>
                                 </button>
                                 <div id="edit_role_dropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-300 bg-white shadow-xl p-3 space-y-1">
-                                    <button type="button" onclick="selectDropdown(event, 'edit_role_input', 'admin', 'edit_role_button', 'Administrator', 'edit_role_dropdown')" class="w-full px-4 py-2.5 text-center text-sm font-semibold text-slate-900 bg-black/10 rounded-[10px]">Administrator</button>
-                                    <button type="button" onclick="selectDropdown(event, 'edit_role_input', 'cashier', 'edit_role_button', 'Cashier', 'edit_role_dropdown')" class="w-full px-4 py-2.5 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Cashier</button>
-                                    <button type="button" onclick="selectDropdown(event, 'edit_role_input', 'inventory_clerk', 'edit_role_button', 'Inventory Clerk', 'edit_role_dropdown')" class="w-full px-4 py-2.5 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Inventory Clerk</button>
-                                    <button type="button" onclick="selectDropdown(event, 'edit_role_input', 'warehouse_personnel', 'edit_role_button', 'Warehouse Personnel', 'edit_role_dropdown')" class="w-full px-4 py-2.5 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Warehouse Personnel</button>
+                                    <button type="button" onclick="selectDropdown(event, 'edit_role_input', 'admin', 'edit_role_button', 'Administrator', 'edit_role_dropdown')" class="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-900 bg-black/10 rounded-[10px]">Administrator</button>
+                                    <button type="button" onclick="selectDropdown(event, 'edit_role_input', 'cashier', 'edit_role_button', 'Cashier', 'edit_role_dropdown')" class="w-full px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Cashier</button>
+                                    <button type="button" onclick="selectDropdown(event, 'edit_role_input', 'inventory_clerk', 'edit_role_button', 'Inventory Clerk', 'edit_role_dropdown')" class="w-full px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Inventory Clerk</button>
+                                    <button type="button" onclick="selectDropdown(event, 'edit_role_input', 'warehouse_personnel', 'edit_role_button', 'Warehouse Personnel', 'edit_role_dropdown')" class="w-full px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Warehouse Personnel</button>
                                 </div>
                             </div>
                             <div class="space-y-1">
@@ -213,9 +226,9 @@
                                     </svg>
                                 </button>
                                 <div id="edit_gender_dropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-300 bg-white shadow-xl p-3 space-y-1">
-                                    <button type="button" onclick="selectDropdown(event, 'edit_gender_input', 'Male', 'edit_gender_button', 'Male', 'edit_gender_dropdown')" class="w-full px-4 py-2.5 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Male</button>
-                                    <button type="button" onclick="selectDropdown(event, 'edit_gender_input', 'Female', 'edit_gender_button', 'Female', 'edit_gender_dropdown')" class="w-full px-4 py-2.5 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Female</button>
-                                    <button type="button" onclick="selectDropdown(event, 'edit_gender_input', 'Other', 'edit_gender_button', 'Other', 'edit_gender_dropdown')" class="w-full px-4 py-2.5 text-center text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Other</button>
+                                    <button type="button" onclick="selectDropdown(event, 'edit_gender_input', 'Male', 'edit_gender_button', 'Male', 'edit_gender_dropdown')" class="w-full px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Male</button>
+                                    <button type="button" onclick="selectDropdown(event, 'edit_gender_input', 'Female', 'edit_gender_button', 'Female', 'edit_gender_dropdown')" class="w-full px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Female</button>
+                                    <button type="button" onclick="selectDropdown(event, 'edit_gender_input', 'Other', 'edit_gender_button', 'Other', 'edit_gender_dropdown')" class="w-full px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]">Other</button>
                                 </div>
                             </div>
                             <div class="sm:col-span-2 space-y-1">
@@ -261,7 +274,7 @@
                         </div>
                         <div class="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-end">
                             <button type="button" id="cancelEditUser" class="inline-flex items-center justify-center rounded-[10px] border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm hover:bg-black/10 transition-all duration-200">Cancel</button>
-                            <button type="submit" class="inline-flex items-center justify-center rounded-[10px] bg-[#00FFF2] px-4 py-2.5 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#00D9CC] transition-all duration-200">Save Changes</button>
+                            <button type="submit" class="inline-flex items-center justify-center rounded-[10px] bg-[#6EC1D1] px-4 py-2.5 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all duration-200">Save Changes</button>
                         </div>
                     </form>
                 </div>
@@ -291,7 +304,6 @@
                     <a href="{{ route('user.management') }}?role=cashier{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ request('role') === 'cashier' ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">Cashier</a>
                     <a href="{{ route('user.management') }}?role=inventory_clerk{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ request('role') === 'inventory_clerk' ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">Inventory Clerk</a>
                     <a href="{{ route('user.management') }}?role=warehouse_personnel{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ request('role') === 'warehouse_personnel' ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">Warehouse</a>
-                    <a href="{{ route('user.management.archived') }}{{ $archiveQuery }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ ($showArchived ?? false) ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">Archived</a>
                 </div>
                 @endunless
 
@@ -302,14 +314,6 @@
                         @endif
                         <input id="userSearchInput" type="search" name="q" value="{{ request('q') }}" placeholder="Search user" class="rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 w-72 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" autocomplete="off" />
                     </form>
-                    @if(!($showArchived ?? false))
-                        <button id="openAddUserModal" class="inline-flex items-center gap-2 rounded-[10px] bg-[#00FFF2] px-4 py-2.5 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#00D9CC] transition-all duration-200">
-                            <svg class="h-4 w-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                            </svg>
-                            Add User
-                        </button>
-                    @endif
                 </div>
             </div>
 
@@ -375,7 +379,7 @@
 
                             <td class="px-2 py-2 align-top whitespace-nowrap">
                                 @if($user->is_active ?? true)
-                                    <span class="inline-flex items-center rounded-[8px] bg-[#e6fffe] border border-[#00fff2] px-1.5 py-0.5 text-[10px] font-semibold text-slate-900">Active</span>
+                                    <span class="inline-flex items-center rounded-[8px] bg-[rgba(110,193,209,0.18)] border border-[#a2deea] px-1.5 py-0.5 text-[10px] font-semibold text-slate-900">Active</span>
                                 @else
                                     <span class="inline-flex items-center rounded-[8px] bg-slate-100 border border-slate-200 px-1.5 py-0.5 text-[10px] font-semibold text-slate-700">Inactive</span>
                                 @endif
@@ -383,7 +387,7 @@
 
                             <td class="px-2 py-2 text-center align-middle whitespace-nowrap text-[10px] font-medium">
                                 <div class="inline-flex items-center gap-1.5">
-                                <button type="button" class="text-black hover:text-slate-900 editUserBtn inline-flex items-center" data-user='@json($user)'>
+                                <button type="button" title="Edit User" class="text-black hover:text-slate-900 editUserBtn inline-flex items-center p-1 cursor-pointer" data-user='@json($user)'>
                                     <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
@@ -403,10 +407,9 @@
                         @endforelse
                     </tbody>
                 </table>
-            </div>
-
-            <div class="mt-4">
-                {{ $users->links() ?? '' }}
+                @if(method_exists($users, 'links'))
+                    {{ $users->links() }}
+                @endif
             </div>
             </div>
         </div>
@@ -457,7 +460,7 @@
                 const opt = document.createElement('button');
                 opt.type = 'button';
                 opt.textContent = label;
-                opt.className = 'w-full px-2 py-1 text-center text-[10px] rounded-[8px] ' +
+                opt.className = 'w-full px-2 py-1 text-left text-[10px] rounded-[8px] ' +
                     (current === value ? 'font-semibold text-slate-900 bg-gray-200' : 'text-slate-700 hover:bg-slate-100');
                 opt.addEventListener('click', function (e) {
                     e.preventDefault();
