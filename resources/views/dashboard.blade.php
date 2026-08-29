@@ -283,6 +283,7 @@
                         <button type="button" data-range="daily" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Day</button>
                         <button type="button" data-range="weekly" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Week</button>
                         <button type="button" data-range="monthly" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition active">Month</button>
+                        <button type="button" data-range="yearly" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Year</button>
                     </div>
                 </div>
 
@@ -407,11 +408,34 @@
                 </div>
             </div>
 
-            <!-- Monthly Sales Comparison -->
-            <div id="comparisonCard" class="lg:col-span-1 border border-gray-200 p-3 flex flex-col" style="border-radius: 20px; background color: #ffffff;">
-                <h2 class="text-sm font-bold text-black mb-2" style="font-family: 'Poppins', sans-serif;">Monthly Sales Comparison</h2>
-                <div class="w-full flex-1 overflow-hidden" style="max-width: 100%; min-height: 0;">
-                    <canvas id="barChart" class="w-full h-full" style="max-width: 100%; display: block;"></canvas>
+            <!-- Fast & Slow Moving Items -->
+            <div id="fastSlowMovingCard" class="lg:col-span-1 border border-gray-200 p-3.5 flex flex-col justify-between" style="border-radius: 20px; background-color: #ffffff;">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-sm font-bold text-black" style="font-family: 'Poppins', sans-serif;">Fast &amp; Slow Moving Items</h2>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 flex-1 min-h-0">
+                    <!-- Left Column: Fast Moving Items -->
+                    <div class="flex flex-col min-w-0 pr-2 border-r border-gray-100">
+                        <div class="flex items-center gap-1.5 mb-1.5 pb-1 border-b border-gray-100">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 truncate">Fast Moving</span>
+                        </div>
+                        <div id="fastMovingList" class="flex flex-col gap-1 overflow-y-auto flex-1 min-h-0">
+                            <div class="text-[11px] text-gray-400 my-auto text-center py-4">Loading…</div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Slow Moving Items -->
+                    <div class="flex flex-col min-w-0 pl-1">
+                        <div class="flex items-center gap-1.5 mb-1.5 pb-1 border-b border-gray-100">
+                            <span class="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-700 truncate">Slow Moving</span>
+                        </div>
+                        <div id="slowMovingList" class="flex flex-col gap-1 overflow-y-auto flex-1 min-h-0">
+                            <div class="text-[11px] text-gray-400 my-auto text-center py-4">Loading…</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -486,7 +510,7 @@
         }
 
         /* ---- Card Heights Sync ---- */
-        #inventoryCard, #topSellingWidget, #comparisonCard {
+        #inventoryCard, #topSellingWidget, #comparisonCard, #fastSlowMovingCard {
             height: 270px !important;
             max-height: 270px;
             box-sizing: border-box;
@@ -1144,7 +1168,9 @@
                             renderMetric(data.metrics?.items_sold, 'itemsSold');
                             renderSalesChart(data.sales_chart);
                             renderCategoryChart(data.category_chart);
-                            renderComparisonChart(data.comparison_chart);
+                            if (typeof window.renderFastSlowMoving === 'function') {
+                                window.renderFastSlowMoving(data.fast_moving, data.slow_moving);
+                            }
                             renderTopItems(data.top_items);
                             renderInventory(data.inventory);
                         });

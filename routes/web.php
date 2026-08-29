@@ -106,6 +106,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('api/product-descriptions', [App\Http\Controllers\StockImportController::class, 'getProductDescriptions'])->name('api.product-descriptions');
     Route::get('api/products/archived', [App\Http\Controllers\StockImportController::class, 'getArchivedProducts'])->name('api.products.archived');
     Route::get('api/products/{id}', [App\Http\Controllers\StockImportController::class, 'getProduct'])->name('api.product.show');
+    Route::get('api/suppliers', [App\Http\Controllers\StockImportController::class, 'getSuppliers'])->name('api.suppliers');
     Route::get('api/inventory/location-quantities/{product_id}', [App\Http\Controllers\StockImportController::class, 'getLocationQuantities'])->name('api.inventory.location-quantities');
     Route::get('api/stats', [App\Http\Controllers\StockImportController::class, 'getStats'])->name('api.stats');
     Route::get('api/movements', [App\Http\Controllers\StockImportController::class, 'getMovements'])->name('api.movements');

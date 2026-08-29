@@ -10,6 +10,10 @@
         ];
 
         $salesTrend = $salesTrend ?? [
+            'yearly' => [
+                'labels' => ['2022', '2023', '2024', '2025', '2026'],
+                'values' => [0, 0, 0, 0, 0],
+            ],
             'monthly' => [
                 'labels' => ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
                 'values' => [0, 0, 11800, 14200, 16800, 18400],
@@ -34,7 +38,8 @@
         $categoryBreakdown['formatted'] = $categoryBreakdown['formatted'] ?? array_map(fn($value) => '₱' . number_format((float) $value, 2), $categoryBreakdown['values'] ?? []);
         $categoryBreakdown['shares'] = $categoryBreakdown['shares'] ?? array_fill(0, count($categoryBreakdown['labels'] ?? []), 0);
 
-
+        $fastMoving = $fastMoving ?? [];
+        $slowMoving = $slowMoving ?? [];
 
         $topProducts = $topProducts ?? [
             ['rank' => 1, 'name' => 'Akrapovic Exhaust', 'category' => 'Exhausts', 'qty' => 132, 'revenue' => '₱15,840'],
@@ -191,6 +196,7 @@
                         <button type="button" data-range="daily" class="sales-trend-range-btn sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Daily</button>
                         <button type="button" data-range="weekly" class="sales-trend-range-btn sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Weekly</button>
                         <button type="button" data-range="monthly" class="sales-trend-range-btn sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition active">Monthly</button>
+                        <button type="button" data-range="yearly" class="sales-trend-range-btn sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Yearly</button>
                     </div>
                 </div>
 
@@ -730,6 +736,10 @@
             const posSalesStorageKey = 'posTransactionHistory';
 
             const defaultSalesTrendData = {
+                yearly: {
+                    labels: ['2022', '2023', '2024', '2025', '2026'],
+                    values: [0, 0, 0, 0, 0],
+                },
                 monthly: {
                     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
                     values: [0, 0, 0, 0, 0, 0],
@@ -772,6 +782,14 @@
                 }
 
                 const now = new Date();
+                const yearlyLabels = [];
+                const yearlyValues = [];
+                for (let index = 4; index >= 0; index -= 1) {
+                    const yr = now.getFullYear() - index;
+                    yearlyLabels.push(String(yr));
+                    yearlyValues.push(0);
+                }
+
                 const monthlyLabels = [];
                 const monthlyValues = [];
                 for (let index = 5; index >= 0; index -= 1) {
@@ -798,6 +816,12 @@
                     const diffMs = date.getTime() - weekStart.getTime();
                     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
+                    const yearLabel = String(date.getFullYear());
+                    const yearIndex = yearlyLabels.indexOf(yearLabel);
+                    if (yearIndex !== -1) {
+                        yearlyValues[yearIndex] += total;
+                    }
+
                     const monthLabel = date.toLocaleString('en-US', { month: 'short' });
                     const monthIndex = monthlyLabels.indexOf(monthLabel);
                     if (monthIndex !== -1) {
@@ -817,6 +841,7 @@
                 });
 
                 return {
+                    yearly: { labels: yearlyLabels, values: yearlyValues.map((value) => Number(value.toFixed(2))) },
                     monthly: { labels: monthlyLabels, values: monthlyValues.map((value) => Number(value.toFixed(2))) },
                     weekly: { labels: weeklyLabels, values: weeklyValues.map((value) => Number(value.toFixed(2))) },
                     daily: { labels: dailyLabels, values: dailyValues.map((value) => Number(value.toFixed(2))) },
@@ -826,11 +851,13 @@
             const serverSalesTrend = @json($salesTrend ?? null);
             const salesTrendData = (() => {
                 const localData = buildTrendData();
-                const serverData = serverSalesTrend && serverSalesTrend.monthly && Array.isArray(serverSalesTrend.monthly.values)
+                const serverData = serverSalesTrend
+                    && serverSalesTrend.yearly && Array.isArray(serverSalesTrend.yearly.values)
+                    && serverSalesTrend.monthly && Array.isArray(serverSalesTrend.monthly.values)
                     && serverSalesTrend.weekly && Array.isArray(serverSalesTrend.weekly.values)
                     && serverSalesTrend.daily && Array.isArray(serverSalesTrend.daily.values)
                     ? serverSalesTrend
-                    : null;
+                    : (serverSalesTrend && serverSalesTrend.monthly && Array.isArray(serverSalesTrend.monthly.values) ? serverSalesTrend : null);
 
                 if (serverData) {
                     return serverData;

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\InventoryMovement;
 use App\Models\Product;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -842,11 +843,40 @@ class StockImportController extends Controller
     }
 
     /**
+     * Get all active suppliers.
+     */
+    public function getSuppliers()
+    {
+        $suppliers = Supplier::orderBy('name')
+            ->where(function ($query) {
+                $query->where('status', 'active')->orWhereNull('status');
+            })
+            ->get(['id', 'name']);
+
+        if ($suppliers->isEmpty()) {
+            $suppliers = Supplier::orderBy('name')->get(['id', 'name']);
+        }
+
+        return response()->json([
+            'success' => true,
+            'suppliers' => $suppliers,
+        ], 200);
+    }
+
+    /**
      * Get a single product for the edit modal.
      */
     public function getProduct($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::with('suppliers:id,name')->findOrFail($id);
+
+        if ($product->suppliers->isEmpty() && !empty($product->supplier_name)) {
+            $supplierNames = array_map('trim', explode(',', $product->supplier_name));
+            $matchedSuppliers = Supplier::whereIn('name', $supplierNames)->get(['id', 'name']);
+            if ($matchedSuppliers->isNotEmpty()) {
+                $product->setRelation('suppliers', $matchedSuppliers);
+            }
+        }
 
         return response()->json([
             'success' => true,
@@ -872,6 +902,8 @@ class StockImportController extends Controller
                 'stock_quantity' => 'sometimes|required|integer|min:0',
                 'unit_price' => 'sometimes|required|numeric|min:0',
                 'supplier_name' => 'sometimes|nullable|string|max:255',
+                'supplier_ids' => 'sometimes|nullable|array',
+                'supplier_ids.*' => 'integer|exists:suppliers,id',
                 'category' => 'sometimes|nullable|string|max:255',
                 'last_restock_date' => 'sometimes|nullable|date',
                 'expiry_date' => 'sometimes|nullable|date',
@@ -931,35 +963,64 @@ class StockImportController extends Controller
                 }
             }
 
-            if (empty($payload)) {
+            $suppliersChanged = false;
+            if ($request->exists('supplier_ids')) {
+                $rawSupplierIds = $request->input('supplier_ids', []);
+                $supplierIds = is_array($rawSupplierIds)
+                    ? array_values(array_filter(array_map('intval', $rawSupplierIds)))
+                    : [];
+
+                $currentSupplierIds = $product->suppliers()->pluck('suppliers.id')->map(fn ($id) => (int) $id)->toArray();
+                sort($currentSupplierIds);
+                $newSupplierIds = $supplierIds;
+                sort($newSupplierIds);
+
+                if ($currentSupplierIds !== $newSupplierIds) {
+                    $suppliersChanged = true;
+                    $product->suppliers()->sync($supplierIds);
+
+                    $selectedSupplierNames = Supplier::whereIn('id', $supplierIds)
+                        ->orderBy('name')
+                        ->pluck('name')
+                        ->implode(', ');
+
+                    $product->supplier_name = $selectedSupplierNames ?: null;
+                    $product->save();
+                    unset($payload['supplier_name']);
+                }
+            }
+
+            if (empty($payload) && !$suppliersChanged) {
                 return response()->json([
                     'success' => true,
                     'message' => 'No changes detected.',
-                    'product' => $product,
+                    'product' => $product->load('suppliers:id,name'),
                 ], 200);
             }
 
-            $previousPrice = $product->unit_price;
-            $product->fill($payload);
-            $product->save();
+            if (!empty($payload)) {
+                $previousPrice = $product->unit_price;
+                $product->fill($payload);
+                $product->save();
 
-            if (array_key_exists('unit_price', $payload) && $previousPrice !== $product->unit_price) {
-                InventoryMovement::create([
-                    'product_id' => $product->id,
-                    'type' => 'price_update',
-                    'quantity_change' => 0,
-                    'unit_price' => $product->unit_price,
-                    'notes' => "Price updated from ₱{$previousPrice} to ₱{$product->unit_price}",
-                    'metadata' => [
-                        'old_price' => $previousPrice,
-                    ],
-                ]);
+                if (array_key_exists('unit_price', $payload) && $previousPrice !== $product->unit_price) {
+                    InventoryMovement::create([
+                        'product_id' => $product->id,
+                        'type' => 'price_update',
+                        'quantity_change' => 0,
+                        'unit_price' => $product->unit_price,
+                        'notes' => "Price updated from ₱{$previousPrice} to ₱{$product->unit_price}",
+                        'metadata' => [
+                            'old_price' => $previousPrice,
+                        ],
+                    ]);
+                }
             }
 
             return response()->json([
                 'success' => true,
                 'message' => 'Product updated successfully.',
-                'product' => $product,
+                'product' => $product->load('suppliers:id,name'),
             ], 200);
 
         } catch (\Illuminate\Validation\ValidationException $e) {

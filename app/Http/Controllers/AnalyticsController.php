@@ -302,6 +302,17 @@ class AnalyticsController extends Controller
     {
         $now = now();
 
+        $yearlyLabels = [];
+        $yearlyValues = [];
+        for ($i = 4; $i >= 0; $i--) {
+            $year = $now->copy()->subYears($i);
+            $yearlyLabels[] = $year->format('Y');
+            $yearlyValues[] = (float) POSTransaction::query()
+                ->completed()
+                ->whereBetween('completed_at', [$year->copy()->startOfYear(), $year->copy()->endOfYear()])
+                ->sum('total_amount');
+        }
+
         $monthlyLabels = [];
         $monthlyValues = [];
         for ($i = 5; $i >= 0; $i--) {
@@ -338,6 +349,7 @@ class AnalyticsController extends Controller
         }
 
         return [
+            'yearly' => ['labels' => $yearlyLabels, 'values' => $yearlyValues],
             'monthly' => ['labels' => $monthlyLabels, 'values' => $monthlyValues],
             'weekly' => ['labels' => $weeklyLabels, 'values' => $weeklyValues],
             'daily' => ['labels' => $dailyLabels, 'values' => $dailyValues],

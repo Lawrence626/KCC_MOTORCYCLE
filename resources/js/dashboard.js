@@ -412,68 +412,48 @@ document.addEventListener('DOMContentLoaded', () => {
         rangeLabelEl.textContent = value || '📅 No range available';
     };
 
-    const renderComparisonChart = (comparisonChart) => {
-        const canvas = document.getElementById('barChart');
-        if (!canvas) {
+    const escapeHtml = (s) => String(s || '').replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+    }[c]));
+
+    const renderProductRankList = (containerEl, items, emptyText) => {
+        if (!containerEl) {
             return;
         }
 
-        if (window.dashboardComparisonChart) {
-            window.dashboardComparisonChart.destroy();
-        }
-
-        if (!comparisonChart?.labels?.length || !comparisonChart?.datasets?.length) {
+        if (!items || !items.length) {
+            containerEl.innerHTML = `<div class="text-[11px] text-gray-400 my-auto text-center py-4">${emptyText}</div>`;
             return;
         }
 
-        const ctx = canvas.getContext('2d');
-        window.dashboardComparisonChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: comparisonChart.labels,
-                datasets: comparisonChart.datasets.map((dataset, index) => ({
-                    label: dataset.label,
-                    data: dataset.data,
-                    backgroundColor: '#0dd3c9ff',
-                    borderColor: '#0dd3c9ff',
-                    borderWidth: 1,
-                    borderRadius: 6,
-                })),
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'top', labels: { font: { size: 11 } } },
-                    tooltip: {
-                        backgroundColor: '#1a1a1a',
-                        titleColor: '#ffffff',
-                        bodyColor: '#ffffff',
-                        borderColor: '#00D9FF',
-                        borderWidth: 1,
-                        padding: 10,
-                        displayColors: false,
-                        titleFont: { size: 11, weight: 'bold' },
-                        bodyFont: { size: 12, weight: '500' },
-                        callbacks: {
-                            label: (context) => currency.format(context.parsed.y),
-                        },
-                    },
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: 'rgba(107,114,128,0.12)' },
-                        ticks: { color: '#374151', callback: (value) => currency.format(value) },
-                    },
-                    x: {
-                        grid: { color: 'rgba(107,114,128,0.08)' },
-                        ticks: { color: '#374151' },
-                    },
-                },
-            },
-        });
+        containerEl.innerHTML = items.slice(0, 5).map((item, index) => {
+            const rank = item.rank || (index + 1);
+            const name = escapeHtml(item.name || 'Unknown Product');
+            const sku = escapeHtml(item.sku || 'N/A');
+
+            return `
+                <div class="flex items-start gap-1.5 py-0.5 min-w-0">
+                    <span class="text-[10px] font-bold text-gray-400 w-4.5 flex-shrink-0 pt-0.5">#${rank}</span>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-[11px] font-semibold text-gray-900 truncate leading-tight" title="${name}">${name}</p>
+                        <p class="text-[9px] text-gray-500 truncate font-mono tracking-tight leading-tight">${sku}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
     };
+
+    const renderFastSlowMoving = (fastMoving, slowMoving) => {
+        const fastContainer = document.getElementById('fastMovingList');
+        const slowContainer = document.getElementById('slowMovingList');
+        renderProductRankList(fastContainer, fastMoving, 'No sales recorded');
+        renderProductRankList(slowContainer, slowMoving, 'No sales recorded');
+    };
+    window.renderFastSlowMoving = renderFastSlowMoving;
 
     const renderTopItems = (items) => {
         const body = document.getElementById('topItemsTableBody');
@@ -686,7 +666,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderSalesChart(data.sales_chart);
                 setRangeLabel(data.range_label);
                 renderCategoryChart(data.category_chart);
-                renderComparisonChart(data.comparison_chart);
+                renderFastSlowMoving(data.fast_moving, data.slow_moving);
                 renderTopItems(data.top_items);
                 renderInventory(data.inventory);
                 renderLowStockNotifications(data.low_stock_notifications || []);
