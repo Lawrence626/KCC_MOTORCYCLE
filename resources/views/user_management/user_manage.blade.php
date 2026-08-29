@@ -13,6 +13,19 @@
                         </svg>
                         Back to Active
                     </a>
+                @else
+                    <button id="openAddUserModal" class="inline-flex items-center gap-2 rounded-[10px] bg-[#6EC1D1] px-4 py-2.5 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all duration-200">
+                        <svg class="h-4 w-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Add User
+                    </button>
+                    <a href="{{ route('user.management.archived') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200">
+                        <svg class="h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                        </svg>
+                        Archived
+                    </a>
                 @endif
             </div>
         </div>
@@ -291,7 +304,6 @@
                     <a href="{{ route('user.management') }}?role=cashier{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ request('role') === 'cashier' ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">Cashier</a>
                     <a href="{{ route('user.management') }}?role=inventory_clerk{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ request('role') === 'inventory_clerk' ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">Inventory Clerk</a>
                     <a href="{{ route('user.management') }}?role=warehouse_personnel{{ $hasQ ? '&q=' . urlencode(request('q')) : '' }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ request('role') === 'warehouse_personnel' ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">Warehouse</a>
-                    <a href="{{ route('user.management.archived') }}{{ $archiveQuery }}" class="rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all {{ ($showArchived ?? false) ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">Archived</a>
                 </div>
                 @endunless
 
@@ -302,14 +314,6 @@
                         @endif
                         <input id="userSearchInput" type="search" name="q" value="{{ request('q') }}" placeholder="Search user" class="rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 w-72 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" autocomplete="off" />
                     </form>
-                    @if(!($showArchived ?? false))
-                        <button id="openAddUserModal" class="inline-flex items-center gap-2 rounded-[10px] bg-[#6EC1D1] px-4 py-2.5 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all duration-200">
-                            <svg class="h-4 w-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                            </svg>
-                            Add User
-                        </button>
-                    @endif
                 </div>
             </div>
 
