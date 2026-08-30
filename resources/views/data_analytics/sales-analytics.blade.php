@@ -10,6 +10,10 @@
         ];
 
         $salesTrend = $salesTrend ?? [
+            'yearly' => [
+                'labels' => ['2022', '2023', '2024', '2025', '2026'],
+                'values' => [0, 0, 0, 0, 0],
+            ],
             'monthly' => [
                 'labels' => ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
                 'values' => [0, 0, 11800, 14200, 16800, 18400],
@@ -34,7 +38,8 @@
         $categoryBreakdown['formatted'] = $categoryBreakdown['formatted'] ?? array_map(fn($value) => '₱' . number_format((float) $value, 2), $categoryBreakdown['values'] ?? []);
         $categoryBreakdown['shares'] = $categoryBreakdown['shares'] ?? array_fill(0, count($categoryBreakdown['labels'] ?? []), 0);
 
-
+        $fastMoving = $fastMoving ?? [];
+        $slowMoving = $slowMoving ?? [];
 
         $topProducts = $topProducts ?? [
             ['rank' => 1, 'name' => 'Akrapovic Exhaust', 'category' => 'Exhausts', 'qty' => 132, 'revenue' => '₱15,840'],
@@ -81,7 +86,7 @@
                         </div>
                     </div>
                     <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                        <svg class="w-4.5 h-4.5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
                         </svg>
                     </div>
@@ -98,7 +103,7 @@
                         </div>
                     </div>
                     <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                        <svg class="w-4.5 h-4.5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
                         </svg>
                     </div>
@@ -115,7 +120,7 @@
                         </div>
                     </div>
                     <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                        <svg class="w-4 h-4 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                        <svg class="w-4.5 h-4.5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                         </svg>
                     </div>
@@ -132,7 +137,7 @@
                         </div>
                     </div>
                     <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                        <svg class="w-5 h-5 text-[#145a66]" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <svg class="w-4.5 h-4.5 text-[#145a66]" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                             <polyline points="22 4 12 14.01 9 11.01" />
                         </svg>
@@ -150,7 +155,7 @@
                         </div>
                     </div>
                     <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4.5 h-4.5 text-[#145a66]" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M4.47 21h15.06c1.54 0 2.5-1.67 1.73-3L13.73 4.99c-.77-1.33-2.69-1.33-3.46 0L2.74 18c-.77 1.33.19 3 1.73 3zM13 18h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
                         </svg>
                     </div>
@@ -167,7 +172,7 @@
                         </div>
                     </div>
                     <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <svg class="w-4.5 h-4.5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm5.31-3.1L6.1 5.69C7.45 4.63 9.15 4 12 4c4.42 0 8 3.58 8 8 0 1.85-.63 3.55-1.69 4.9z"/>
                         </svg>
                     </div>
@@ -191,6 +196,7 @@
                         <button type="button" data-range="daily" class="sales-trend-range-btn sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Daily</button>
                         <button type="button" data-range="weekly" class="sales-trend-range-btn sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Weekly</button>
                         <button type="button" data-range="monthly" class="sales-trend-range-btn sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition active">Monthly</button>
+                        <button type="button" data-range="yearly" class="sales-trend-range-btn sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Yearly</button>
                     </div>
                 </div>
 
@@ -422,6 +428,17 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <style>
+            #globalDateRange {
+                border-color: #cbd5e1 !important;
+            }
+            #globalDateRange:hover,
+            #globalDateRange.active,
+            #globalDateRange:focus {
+                border-color: #94a3b8 !important;
+                box-shadow: none !important;
+                outline: none !important;
+            }
+
             /* Senior UI/UX Datepicker Customization */
             .flatpickr-calendar {
                 background: #ffffff;
@@ -668,20 +685,20 @@
                 box-shadow: none !important;
             }
             .flatpickr-day.today {
-                border: 1px solid #cbd5e1 !important;
-                background: #ffffff !important;
-                color: #334155 !important;
+                border: none !important;
+                background: rgba(0, 0, 0, 0.10) !important;
+                color: #000000 !important;
                 font-weight: 600 !important;
             }
             .flatpickr-day.today.startRange {
                 background: #6EC1D1 !important;
                 color: #000000 !important;
-                border: 1px solid #6EC1D1 !important;
+                border: none !important;
             }
             .flatpickr-day.today.endRange {
                 background: #0f172a !important;
                 color: #ffffff !important;
-                border: 1px solid #0f172a !important;
+                border: none !important;
             }
             .flatpickr-day.today.inRange {
                 background: rgba(110, 193, 209, 0.18) !important;
@@ -730,6 +747,10 @@
             const posSalesStorageKey = 'posTransactionHistory';
 
             const defaultSalesTrendData = {
+                yearly: {
+                    labels: ['2022', '2023', '2024', '2025', '2026'],
+                    values: [0, 0, 0, 0, 0],
+                },
                 monthly: {
                     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
                     values: [0, 0, 0, 0, 0, 0],
@@ -772,6 +793,14 @@
                 }
 
                 const now = new Date();
+                const yearlyLabels = [];
+                const yearlyValues = [];
+                for (let index = 4; index >= 0; index -= 1) {
+                    const yr = now.getFullYear() - index;
+                    yearlyLabels.push(String(yr));
+                    yearlyValues.push(0);
+                }
+
                 const monthlyLabels = [];
                 const monthlyValues = [];
                 for (let index = 5; index >= 0; index -= 1) {
@@ -798,6 +827,12 @@
                     const diffMs = date.getTime() - weekStart.getTime();
                     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
+                    const yearLabel = String(date.getFullYear());
+                    const yearIndex = yearlyLabels.indexOf(yearLabel);
+                    if (yearIndex !== -1) {
+                        yearlyValues[yearIndex] += total;
+                    }
+
                     const monthLabel = date.toLocaleString('en-US', { month: 'short' });
                     const monthIndex = monthlyLabels.indexOf(monthLabel);
                     if (monthIndex !== -1) {
@@ -817,6 +852,7 @@
                 });
 
                 return {
+                    yearly: { labels: yearlyLabels, values: yearlyValues.map((value) => Number(value.toFixed(2))) },
                     monthly: { labels: monthlyLabels, values: monthlyValues.map((value) => Number(value.toFixed(2))) },
                     weekly: { labels: weeklyLabels, values: weeklyValues.map((value) => Number(value.toFixed(2))) },
                     daily: { labels: dailyLabels, values: dailyValues.map((value) => Number(value.toFixed(2))) },
@@ -826,11 +862,13 @@
             const serverSalesTrend = @json($salesTrend ?? null);
             const salesTrendData = (() => {
                 const localData = buildTrendData();
-                const serverData = serverSalesTrend && serverSalesTrend.monthly && Array.isArray(serverSalesTrend.monthly.values)
+                const serverData = serverSalesTrend
+                    && serverSalesTrend.yearly && Array.isArray(serverSalesTrend.yearly.values)
+                    && serverSalesTrend.monthly && Array.isArray(serverSalesTrend.monthly.values)
                     && serverSalesTrend.weekly && Array.isArray(serverSalesTrend.weekly.values)
                     && serverSalesTrend.daily && Array.isArray(serverSalesTrend.daily.values)
                     ? serverSalesTrend
-                    : null;
+                    : (serverSalesTrend && serverSalesTrend.monthly && Array.isArray(serverSalesTrend.monthly.values) ? serverSalesTrend : null);
 
                 if (serverData) {
                     return serverData;
@@ -1219,6 +1257,20 @@
                     onOpen: (selectedDates, dateStr, instance) => {
                         if (instance.calendarContainer && dateInput) {
                             instance.calendarContainer.style.setProperty('width', dateInput.offsetWidth + 'px', 'important');
+                        }
+                        dateInput.classList.add('active');
+                        const icon = dateInput.parentNode.querySelector('svg');
+                        if (icon) {
+                            icon.classList.remove('text-slate-400');
+                            icon.classList.add('text-slate-600');
+                        }
+                    },
+                    onClose: (selectedDates, dateStr, instance) => {
+                        dateInput.classList.remove('active');
+                        const icon = dateInput.parentNode.querySelector('svg');
+                        if (icon) {
+                            icon.classList.remove('text-slate-600');
+                            icon.classList.add('text-slate-400');
                         }
                     },
                     onChange: (selectedDates) => {

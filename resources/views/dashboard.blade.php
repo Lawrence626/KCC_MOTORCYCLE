@@ -22,7 +22,8 @@
                                 </svg>
                                 <span
                                     id="notification-badge"
-                                    class="absolute -top-0.5 -right-0.5 hidden min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-[10px] bg-red-500 text-[10px] font-bold text-white leading-none"
+                                    class="absolute -top-0.5 -right-0.5 hidden rounded-full bg-red-500 text-[10px] font-bold text-white text-center"
+                                    style="min-width: 18px; height: 18px; padding: 0 4px; display: none; align-items: center; justify-content: center; line-height: 1; text-align: center;"
                                 ></span>
                             </button>
 
@@ -35,7 +36,7 @@
                                 <div class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b border-slate-800 rounded-t-xl bg-[#0f172a]" style="background-color: #0f172a;">
                                     <div class="flex items-center gap-2">
                                         <span class="text-sm font-bold text-white">Notifications</span>
-                                        <span id="notif-center-unread-badge" class="hidden inline-flex items-center rounded-[10px] px-2 py-0.5 text-[10px] font-medium text-white" style="background-color: #ef4444;">0</span>
+                                        <span id="notif-center-unread-badge" class="hidden inline-flex items-center justify-center rounded-full text-[11px] font-bold text-white text-center" style="background-color: #ef4444; width: 20px; height: 20px; padding: 0; display: none; align-items: center; justify-content: center; line-height: 1; text-align: center; border-radius: 50%; box-sizing: border-box;">0</span>
                                     </div>
                                     <div class="flex items-center gap-3">
                                         <button
@@ -294,6 +295,7 @@
                         <button type="button" data-range="daily" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Day</button>
                         <button type="button" data-range="weekly" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Week</button>
                         <button type="button" data-range="monthly" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition active">Month</button>
+                        <button type="button" data-range="yearly" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Year</button>
                     </div>
                 </div>
 
@@ -344,8 +346,8 @@
 
                         <!-- Total Products (top of the stack) -->
                         <div class="inv-row flex items-center gap-2 px-3 py-3" style="border-radius: 20px; background-color: #ffffffff; position: relative; z-index: 40;">
-                            <div class="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center" style="background-color: #6EC1D1;">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <div class="w-7 h-7 rounded-[10px] flex-shrink-0 flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="#145a66" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <path d="M21 8l-9-5-9 5 9 5 9-5z"></path>
                                     <path d="M3 8v8l9 5 9-5V8"></path>
                                 </svg>
@@ -356,11 +358,11 @@
 
                         <!-- Low Stock Items -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 0px;background-color: #ffffff;; position: relative; z-index: 30 ; margin-top: -10px; padding-top: 20px; padding-bottom: 12px;">
-                            <div class="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center" style="background-color: #6EC1D1;">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <path d="M12 9v4"></path>
-                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                                    <path d="M12 17h.01"></path>
+                            <div class="w-7 h-7 rounded-[10px] flex-shrink-0 flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="#d97706" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="9"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
                                 </svg>
                             </div>
                             <span class="text-black text-xs font-semibold flex-1">Low Stock Items</span>
@@ -369,11 +371,11 @@
 
                         <!-- Out of Stock Items -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 0px;background-color: #ffffff;; position: relative; z-index: 20; margin-top: -10px; padding-top: 20px; padding-bottom: 12px; ">
-                            <div class="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center" style="background-color: #6EC1D1;">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <circle cx="12" cy="12" r="9"></circle>
-                                    <line x1="9" y1="9" x2="15" y2="15"></line>
-                                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                            <div class="w-7 h-7 rounded-[10px] flex-shrink-0 flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="#dc2626" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <path d="M12 9v4"></path>
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                    <path d="M12 17h.01"></path>
                                 </svg>
                             </div>
                             <span class="text-black text-xs font-semibold flex-1">Out of Stock Items</span>
@@ -382,8 +384,8 @@
 
                         <!-- In Stock Items (bottom of the stack) -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 20px; background-color: #ffffff; position: relative; z-index: 10; margin-top: -10px; padding-top: 20px; padding-bottom: 12px;">
-                            <div class="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center" style="background-color: #6EC1D1;">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <div class="w-7 h-7 rounded-[10px] flex-shrink-0 flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="#059669" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <circle cx="12" cy="12" r="9"></circle>
                                     <polyline points="8 12 11 15 16 9"></polyline>
                                 </svg>
@@ -398,7 +400,7 @@
             <!-- Top Selling Item (slideshow widget) -->
             <div id="topSellingWidget" class="lg:col-span-1 bg-[#ffffff] border border-gray-200 p-3" style="border-radius: 20px;">
                 <div class="flex items-center justify-between mb-2">
-                    <h2 class="text-sm font-bold text-gray-900" style="font-family: 'Poppins', sans-serif;">Top Selling Items</h2>
+                    <h2 class="text-sm font-bold text-black" style="font-family: 'Poppins', sans-serif; font-weight: 700;">Top Selling Items</h2>
                         <button id="topSellingOpenBtn" type="button" aria-label="Open top selling" class="inline-flex items-center justify-center rounded-full" style="width:32px; height:32px;">
                             <svg class="w-4 h-4 top-selling-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l10-10"/><path d="M7 7h10v10"/></svg>
                         </button>
@@ -418,16 +420,39 @@
                 </div>
             </div>
 
-            <!-- Monthly Sales Comparison -->
-            <div id="comparisonCard" class="lg:col-span-1 border border-gray-200 p-3 flex flex-col" style="border-radius: 20px; background color: #ffffff;">
-                <h2 class="text-sm font-bold text-black mb-2" style="font-family: 'Poppins', sans-serif;">Monthly Sales Comparison</h2>
-                <div class="w-full flex-1 overflow-hidden" style="max-width: 100%; min-height: 0;">
-                    <canvas id="barChart" class="w-full h-full" style="max-width: 100%; display: block;"></canvas>
+            <!-- Fast & Slow Moving Items -->
+            <div id="fastSlowMovingCard" class="lg:col-span-1 border border-gray-200 p-3.5 flex flex-col justify-between" style="border-radius: 20px; background-color: #ffffff;">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-sm font-bold text-black" style="font-family: 'Poppins', sans-serif; font-weight: 700;">Fast &amp; Slow Moving Items</h2>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 flex-1 min-h-0">
+                    <!-- Left Column: Fast Moving Items -->
+                    <div class="flex flex-col min-w-0 pr-2 border-r border-gray-100">
+                        <div class="flex items-center gap-1.5 mb-1.5 pb-1 border-b border-gray-100">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 truncate">Fast Moving</span>
+                        </div>
+                        <div id="fastMovingList" class="flex flex-col gap-1 overflow-y-auto flex-1 min-h-0">
+                            <div class="text-[11px] text-gray-400 my-auto text-center py-4">Loading…</div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Slow Moving Items -->
+                    <div class="flex flex-col min-w-0 pl-1">
+                        <div class="flex items-center gap-1.5 mb-1.5 pb-1 border-b border-gray-100">
+                            <span class="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-700 truncate">Slow Moving</span>
+                        </div>
+                        <div id="slowMovingList" class="flex flex-col gap-1 overflow-y-auto flex-1 min-h-0">
+                            <div class="text-[11px] text-gray-400 my-auto text-center py-4">Loading…</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
         <!-- ═══ Toast Notifications Container ═══ -->
-        <div id="inventory-toast-container" class="fixed top-20 right-6 z-[40] flex flex-col gap-3 pointer-events-none" style="max-width: 360px; width: 100%;"></div>
+        <div id="inventory-toast-container" class="fixed top-22 right-6 z-[40] flex flex-col gap-3 pointer-events-none" style="max-width: 360px; width: 100%;"></div>
 
         <!-- ═══ View All Notifications Modal ═══ -->
         <div id="all-notifications-modal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4">
@@ -497,7 +522,7 @@
         }
 
         /* ---- Card Heights Sync ---- */
-        #inventoryCard, #topSellingWidget, #comparisonCard {
+        #inventoryCard, #topSellingWidget, #comparisonCard, #fastSlowMovingCard {
             height: 270px !important;
             max-height: 270px;
             box-sizing: border-box;
@@ -757,8 +782,8 @@
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0; font-size: 16px;
         }
-        .inv-toast.toast-warning .inv-toast-icon { background: #fef3c7; color: #d97706; }
-        .inv-toast.toast-critical .inv-toast-icon { background: #fee2e2; color: #dc2626; }
+        .inv-toast.toast-warning .inv-toast-icon { background: rgba(110, 193, 209, 0.18); color: #d97706; }
+        .inv-toast.toast-critical .inv-toast-icon { background: rgba(110, 193, 209, 0.18); color: #dc2626; }
         .inv-toast-btn {
             display: inline-flex; align-items: center; justify-content: center; gap: 4px;
             padding: 6px 12px; border-radius: 6px;
@@ -786,9 +811,9 @@
         }
         .notif-item:hover { background-color: transparent; }
         .notif-item-unread {
-            background-color: #fefce8;
+            background-color: transparent;
         }
-        .notif-item-unread:hover { background-color: #fefce8; }
+        .notif-item-unread:hover { background-color: #f8fafc; }
         
         .notif-status-dot {
             width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
@@ -1155,7 +1180,9 @@
                             renderMetric(data.metrics?.items_sold, 'itemsSold');
                             renderSalesChart(data.sales_chart);
                             renderCategoryChart(data.category_chart);
-                            renderComparisonChart(data.comparison_chart);
+                            if (typeof window.renderFastSlowMoving === 'function') {
+                                window.renderFastSlowMoving(data.fast_moving, data.slow_moving);
+                            }
                             renderTopItems(data.top_items);
                             renderInventory(data.inventory);
                         });
@@ -1277,8 +1304,8 @@
             var isCritical = alert.notification_type === 'out_of_stock';
             var toastClass = isCritical ? 'toast-critical' : 'toast-warning';
             var iconSVG = isCritical 
-                ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
-                : '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
+                : '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
             var title = isCritical ? 'Out of Stock' : 'Low Stock';
             
             var toast = document.createElement('div');
@@ -1291,14 +1318,14 @@
                     '</div>' +
                     '<div class="flex-1 min-w-0 pt-0.5">' +
                         '<div class="flex items-center justify-between mb-0.5">' +
-                            '<p class="text-[10px] font-bold ' + (isCritical ? 'text-red-600' : 'text-amber-600') + ' uppercase tracking-wider">' + title + '</p>' +
-                            '<span class="text-[10px] text-slate-400">Just now</span>' +
+                            '<p class="text-[10px] font-bold text-slate-700 uppercase tracking-wider">' + title + '</p>' +
+                            '<span class="text-[10px] font-bold text-slate-900">Just now</span>' +
                         '</div>' +
                         '<p class="text-sm font-semibold text-slate-900 truncate leading-tight mb-1">' + escHtml(alert.product_name) + '</p>' +
                         '<div class="flex items-center gap-2 text-xs text-slate-500 mb-3">' +
                             '<span>SKU: ' + escHtml(alert.sku) + '</span>' +
                             '<span>&middot;</span>' +
-                            '<span class="font-medium ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + (isCritical ? '0 left' : alert.current_stock + ' remaining') + '</span>' +
+                            '<span class="font-medium text-slate-600">' + (isCritical ? '0 left' : alert.current_stock + ' remaining') + '</span>' +
                         '</div>' +
                         '<div class="flex items-center gap-2">' +
                             '<button type="button" class="inv-toast-btn inv-toast-btn-dismiss" data-toast-dismiss="' + alert.id + '">' +
@@ -1421,16 +1448,38 @@
                 if (unreadCount > 0) {
                     badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
                     badge.classList.remove('hidden');
+                    badge.style.display = 'inline-flex';
+                    badge.style.alignItems = 'center';
+                    badge.style.justifyContent = 'center';
+                    if (unreadCount > 9) {
+                        badge.style.width = 'auto';
+                        badge.style.padding = '0 5px';
+                    } else {
+                        badge.style.width = '18px';
+                        badge.style.padding = '0';
+                    }
                 } else {
                     badge.classList.add('hidden');
+                    badge.style.display = 'none';
                 }
             }
             if (centerBadge) {
                 if (unreadCount > 0) {
-                    centerBadge.textContent = unreadCount + ' new';
+                    centerBadge.textContent = unreadCount;
                     centerBadge.classList.remove('hidden');
+                    centerBadge.style.display = 'inline-flex';
+                    centerBadge.style.alignItems = 'center';
+                    centerBadge.style.justifyContent = 'center';
+                    if (unreadCount > 9) {
+                        centerBadge.style.width = 'auto';
+                        centerBadge.style.padding = '0 6px';
+                    } else {
+                        centerBadge.style.width = '20px';
+                        centerBadge.style.padding = '0';
+                    }
                 } else {
                     centerBadge.classList.add('hidden');
+                    centerBadge.style.display = 'none';
                 }
             }
 
@@ -1444,8 +1493,8 @@
             notifications.forEach(function(n) {
                 var isCritical = n.notification_type === 'out_of_stock';
                 var iconSVG = isCritical 
-                    ? '<svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
-                    : '<svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                    ? '<svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
+                    : '<svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
                 var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
                 var statusClass = 'notif-item notif-item-' + n.status;
                 var ago = timeAgo(n.created_at);
@@ -1458,23 +1507,23 @@
 
                 item.innerHTML =
                     '<div class="flex items-start gap-3">' +
-                        '<div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ' + (isCritical ? 'bg-red-50' : 'bg-amber-50') + '">' +
+                        '<div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">' +
                             iconSVG +
                         '</div>' +
                         '<div class="flex-1 min-w-0">' +
                             '<div class="flex items-center justify-between mb-0.5">' +
                                 '<div class="flex items-center gap-1.5">' +
-                                    '<span class="text-[10px] font-bold uppercase tracking-wider ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + typeLabel + '</span>' +
+                                    '<span class="text-[10px] font-bold uppercase tracking-wider text-slate-700">' + typeLabel + '</span>' +
                                     (n.status === 'unread' ? '<span class="notif-status-dot unread"></span>' : '') +
                                 '</div>' +
-                                '<span class="text-[10px] text-slate-400">' + escHtml(ago) + '</span>' +
+                                '<span class="text-[10px] ' + (n.status === 'unread' ? 'font-bold text-slate-900' : 'text-slate-400') + '">' + escHtml(ago) + '</span>' +
                             '</div>' +
                             '<p class="text-[13px] font-semibold text-slate-900 truncate mb-1">' + escHtml(n.product_name) + '</p>' +
                             '<div class="flex items-center justify-between">' +
                                 '<div class="flex items-center gap-1.5 text-[11px] text-slate-500 whitespace-nowrap">' +
                                     '<span class="truncate max-w-[80px]">' + escHtml(shortSku) + '</span>' +
                                     '<span>&middot;</span>' +
-                                    '<span class="font-medium whitespace-nowrap ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + stockText + '</span>' +
+                                    '<span class="font-medium whitespace-nowrap text-slate-600">' + stockText + '</span>' +
                                 '</div>' +
                                 (n.status !== 'resolved'
                                     ? '<a href="' + escHtml(n.order_url || '/purchase-order/create') + '" class="notif-btn flex-shrink-0" onclick="event.stopPropagation();">Order</a>'
@@ -1510,6 +1559,14 @@
         }
 
         function markAllNotificationsRead() {
+            // Immediately hide all badges
+            var bellBadge = document.getElementById('notification-badge');
+            var centerBadge = document.getElementById('notif-center-unread-badge');
+            var headerBadge = document.getElementById('headerNotificationBadge');
+            if (bellBadge) { bellBadge.classList.add('hidden'); bellBadge.style.display = 'none'; }
+            if (centerBadge) { centerBadge.classList.add('hidden'); centerBadge.style.display = 'none'; }
+            if (headerBadge) { headerBadge.classList.add('hidden'); headerBadge.style.display = 'none'; }
+
             fetch('/api/inventory-notifications/mark-all-read', {
                 method: 'POST',
                 headers: {
@@ -1519,7 +1576,10 @@
                     'Accept': 'application/json',
                 },
             })
-            .then(function() { loadNotificationCenter(); })
+            .then(function() {
+                loadNotificationCenter();
+                if (typeof loadHeaderNotifications === 'function') loadHeaderNotifications();
+            })
             .catch(function(err) {
                 console.error('Mark all read failed:', err);
                 // Fallback: mark individually
@@ -1536,7 +1596,10 @@
                         });
                     }));
                 })
-                .then(function() { loadNotificationCenter(); });
+                .then(function() {
+                    loadNotificationCenter();
+                    if (typeof loadHeaderNotifications === 'function') loadHeaderNotifications();
+                });
             });
         }
 
@@ -1592,8 +1655,8 @@
                 list.innerHTML = notifications.map(function(n) {
                     var isCritical = n.notification_type === 'out_of_stock';
                     var iconSVG = isCritical 
-                        ? '<svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
-                        : '<svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                        ? '<svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
+                        : '<svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
                     var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
                     var ago = timeAgo(n.created_at);
                     var stockText = isCritical ? '0 left' : n.current_stock + ' remaining';
@@ -1601,21 +1664,21 @@
 
                     return '<div class="' + statusClass + ' p-4 rounded-xl border border-slate-100 flex items-start justify-between gap-4 transition-colors">' +
                         '<div class="flex items-start gap-4">' +
-                            '<div class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ' + (isCritical ? 'bg-red-50' : 'bg-amber-50') + '">' +
+                            '<div class="flex-shrink-0 w-10 h-10 rounded-[10px] flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">' +
                                 iconSVG +
                             '</div>' +
                             '<div>' +
                                 '<div class="flex items-center gap-2 mb-0.5">' +
-                                    '<span class="text-[10px] font-bold uppercase tracking-wider ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + typeLabel + '</span>' +
+                                    '<span class="text-[10px] font-bold uppercase tracking-wider text-slate-700">' + typeLabel + '</span>' +
                                     (n.status === 'unread' ? '<span class="notif-status-dot unread"></span>' : '') +
                                 '</div>' +
                                 '<p class="text-[14px] font-semibold text-slate-900 mt-1">' + escHtml(n.product_name) + '</p>' +
                                 '<div class="flex items-center gap-2 mt-1">' +
                                     '<span class="text-xs text-slate-500">SKU: ' + escHtml(n.sku) + '</span>' +
                                     '<span class="text-slate-400">&middot;</span>' +
-                                    '<span class="text-xs font-medium ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + stockText + '</span>' +
+                                    '<span class="text-xs font-medium text-slate-600">' + stockText + '</span>' +
                                 '</div>' +
-                                '<p class="text-[11px] text-slate-400 mt-1.5">' + escHtml(ago) + '</p>' +
+                                '<p class="text-[11px] ' + (n.status === 'unread' ? 'font-bold text-slate-900' : 'text-slate-400') + ' mt-1.5">' + escHtml(ago) + '</p>' +
                             '</div>' +
                         '</div>' +
                         (n.status !== 'resolved'

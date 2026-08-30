@@ -562,7 +562,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
         button.addEventListener('click', function(event) {
             event.preventDefault();
-            group.classList.toggle('open');
+            const willOpen = !group.classList.contains('open');
+
+            // Close all other groups (single accordion open state)
+            allGroups.forEach(otherGroup => {
+                if (otherGroup !== group) {
+                    otherGroup.classList.remove('open');
+                    updateGroupState(otherGroup);
+                }
+            });
+
+            if (willOpen) {
+                group.classList.add('open');
+            } else {
+                group.classList.remove('open');
+            }
             updateGroupState(group);
         });
     });

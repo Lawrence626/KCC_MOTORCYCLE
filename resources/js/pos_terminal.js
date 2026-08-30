@@ -1080,6 +1080,9 @@ async function revalidateCartStock() {
 }
 
 async function openPaymentModal() {
+    // Dismiss any visible "Added to cart" toast notifications
+    dismissAllNotifications();
+
     if (posState.cart.length === 0) {
         alert('The cart is empty. Add items before proceeding to payment.');
         return;
@@ -2586,7 +2589,7 @@ function playScanNotification() {
 
 function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
-    notification.className = 'fixed top-4 right-8 z-50 rounded-[10px] border p-4 text-sm font-medium shadow-lg transition-all duration-300';
+    notification.className = 'pos-toast-notification fixed top-4 right-8 z-50 rounded-[10px] border p-4 text-sm font-medium shadow-lg transition-all duration-300';
     if (type === 'success') {
         notification.style.backgroundColor = '#e6fffe';
         notification.style.borderColor = '#6EC1D1';
@@ -2612,6 +2615,14 @@ function showNotification(message, type = 'success') {
         notification.style.transition = 'opacity 0.5s ease';
         setTimeout(() => notification.remove(), 500);
     }, 3000);
+}
+
+function dismissAllNotifications() {
+    document.querySelectorAll('.pos-toast-notification').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => el.remove(), 300);
+    });
 }
 
 window.addEventListener('DOMContentLoaded', initializePos);

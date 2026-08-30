@@ -308,38 +308,38 @@
                 </div>
             </div>
 
-            <div id="retail-price-container" class="rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm overflow-hidden">
+            <div id="retail-price-container" class="rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm overflow-hidden flex flex-col justify-between h-full">
                 <div>
                     <h2 class="text-base font-semibold text-slate-900">Retail Price Update</h2>
                     <p class="text-xs text-slate-500 mt-1">Track recent unit price revisions across inventory.</p>
-                </div>
-                <div class="mt-4 overflow-x-auto rounded-[10px] border border-slate-200">
-                    <table class="min-w-full text-left text-xs text-slate-700">
-                        <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
-                            <tr>
-                                <th class="px-4 py-3 text-left font-semibold text-white">Product</th>
-                                <th class="px-4 py-3 text-left font-semibold text-white">Old</th>
-                                <th class="px-4 py-3 text-left font-semibold text-white">New</th>
-                                <th class="px-4 py-3 text-left font-semibold text-white">Date</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-200 bg-white">
-                            @forelse($priceUpdates as $update)
-                                <tr class="hover:bg-slate-50 transition">
-                                    <td class="px-4 py-3 font-semibold text-slate-900">{{ $update->product->name ?? 'Unknown' }}</td>
-                                    <td class="px-4 py-3 text-slate-600">{{ data_get($update, 'metadata.old_price') ? '₱' . number_format(data_get($update, 'metadata.old_price'), 2) : '—' }}</td>
-                                    <td class="px-4 py-3 text-slate-900">₱{{ number_format((float) $update->unit_price, 2) }}</td>
-                                    <td class="px-4 py-3 text-slate-500">{{ $update->created_at->format('M d, Y') }}</td>
-                                </tr>
-                            @empty
+                    <div class="mt-4 overflow-x-auto rounded-[10px] border border-slate-200">
+                        <table class="min-w-full text-left text-xs text-slate-700">
+                            <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                                 <tr>
-                                    <td colspan="4" class="px-4 py-6 text-center text-slate-500">No recent pricing updates available.</td>
+                                    <th class="px-4 py-3 text-left font-semibold text-white">Product</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-white">Old</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-white">New</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-white">Date</th>
                                 </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 bg-white">
+                                @forelse($priceUpdates as $update)
+                                    <tr class="hover:bg-slate-50 transition">
+                                        <td class="px-4 py-3 font-semibold text-slate-900">{{ $update->product->name ?? 'Unknown' }}</td>
+                                        <td class="px-4 py-3 text-slate-600">{{ data_get($update, 'metadata.old_price') ? '₱' . number_format(data_get($update, 'metadata.old_price'), 2) : '—' }}</td>
+                                        <td class="px-4 py-3 text-slate-900">₱{{ number_format((float) $update->unit_price, 2) }}</td>
+                                        <td class="px-4 py-3 text-slate-500">{{ $update->created_at->format('M d, Y') }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="px-4 py-6 text-center text-slate-500">No recent pricing updates available.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="mt-4 px-4">
+                <div class="mt-auto pt-3 -mx-4 -mb-4">
                     {{ $priceUpdates->links() }}
                 </div>
             </div>

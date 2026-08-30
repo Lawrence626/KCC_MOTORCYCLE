@@ -48,7 +48,7 @@
                             <div class="relative inline-flex items-center z-50">
                                 <button id="headerNotificationButton" type="button" class="relative inline-flex h-9 w-9 items-center justify-center border border-slate-700 text-white transition focus:outline-none cursor-pointer" style="border-radius: 20px; background-color: #0f0f0f;" aria-label="Notifications">
                                     <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a6 6 0 00-6 6v4.586l-1.707 1.707A1 1 0 005 16h14a1 1 0 00.707-1.707L18 12.586V8a6 6 0 00-6-6zm0 18a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 20z"/></svg>
-                                    <span id="headerNotificationBadge" class="absolute -top-1 -right-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-rose-600 px-1.5 text-[10px] font-semibold text-white hidden">0</span>
+                                    <span id="headerNotificationBadge" class="absolute -top-1 -right-1 hidden rounded-full bg-rose-600 text-[10px] font-bold text-white text-center" style="min-width: 18px; height: 18px; padding: 0 4px; display: none; align-items: center; justify-content: center; line-height: 1; text-align: center;">0</span>
                                 </button>
                                 <div id="headerNotificationDropdown" class="absolute right-0 top-full z-[99999] mt-2 w-[24rem] overflow-hidden rounded-[15px] border border-slate-700/60 bg-gradient-to-b from-[#0b0c10] to-[#20232a] shadow-2xl shadow-black/40 hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right">
                                     <div class="px-4 py-4 border-b border-slate-800 bg-[#0f172a]" style="background-color: #0f172a;">
@@ -348,8 +348,10 @@
                     if (unreadCount > 0) {
                         badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
                         badge.classList.remove('hidden');
+                        badge.style.display = 'inline-flex';
                     } else {
                         badge.classList.add('hidden');
+                        badge.style.display = 'none';
                     }
                 }
 
@@ -365,7 +367,7 @@
                     var ago = _timeAgo(n.created_at);
                     var stockText = isCritical ? '0 remaining' : (n.current_stock || 0) + ' remaining';
                     var isUnread = n.status === 'unread';
-                    var bgClass = isUnread ? 'bg-blue-500/5' : (n.status === 'resolved' ? 'opacity-60' : '');
+                    var bgClass = isUnread ? '' : (n.status === 'resolved' ? 'opacity-60' : '');
                     var resolvedMark = n.status === 'resolved'
                         ? '<span class="text-[10px] text-emerald-400 font-medium">✓ Resolved</span>'
                         : '';
@@ -375,18 +377,18 @@
 
                     return '<div class="border-b border-slate-800/40 px-4 py-3 last:border-b-0 ' + bgClass + '" data-header-notif-id="' + n.id + '">' +
                         '<div class="flex items-start gap-3">' +
-                            '<div class="mt-0.5 flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center" style="background:' + (isCritical ? 'rgba(239,68,68,0.15)' : 'rgba(249,115,22,0.15)') + ';">' +
+                            '<div class="mt-0.5 flex-shrink-0 w-8 h-8 rounded-[10px] flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">' +
                                 '<span style="font-size:14px;">' + emoji + '</span>' +
                             '</div>' +
                             '<div class="flex-1 min-w-0">' +
                                 '<div class="flex items-center justify-between">' +
-                                    '<span class="text-[9px] font-bold uppercase tracking-wider ' + (isCritical ? 'text-red-400' : 'text-orange-400') + '">' + typeLabel + '</span>' +
+                                    '<span class="text-[9px] font-bold uppercase tracking-wider text-slate-700">' + typeLabel + '</span>' +
                                     (isUnread ? '<span class="w-2 h-2 rounded-full bg-blue-400 flex-shrink-0"></span>' : '') +
                                 '</div>' +
                                 '<p class="text-[13px] font-semibold text-white mt-0.5 truncate">' + (n.product_name || 'Product') + '</p>' +
                                 '<p class="text-[10px] text-slate-400 mt-0.5">SKU: ' + (n.sku || '') + ' · ' + stockText + '</p>' +
                                 '<div class="flex items-center justify-between mt-2">' +
-                                    '<span class="text-[10px] text-slate-500">' + ago + '</span>' +
+                                    '<span class="text-[10px] ' + (isUnread ? 'font-bold text-white' : 'text-slate-500') + '">' + ago + '</span>' +
                                     orderBtn +
                                 '</div>' +
                             '</div>' +
@@ -413,9 +415,15 @@
             .then(function(r) { return r.json(); })
             .then(function(data) {
                 var badge = document.getElementById('headerNotificationBadge');
-                if (badge && data.unread_count > 0) {
-                    badge.textContent = data.unread_count > 9 ? '9+' : data.unread_count;
-                    badge.classList.remove('hidden');
+                if (badge) {
+                    if (data.unread_count > 0) {
+                        badge.textContent = data.unread_count > 9 ? '9+' : data.unread_count;
+                        badge.classList.remove('hidden');
+                        badge.style.display = 'inline-flex';
+                    } else {
+                        badge.classList.add('hidden');
+                        badge.style.display = 'none';
+                    }
                 }
             })
             .catch(function() {});
@@ -508,10 +516,21 @@
                 }
                 if (centerBadge) {
                     if (unreadCount > 0) {
-                        centerBadge.textContent = unreadCount + ' new';
+                        centerBadge.textContent = unreadCount;
                         centerBadge.classList.remove('hidden');
+                        centerBadge.style.display = 'inline-flex';
+                        centerBadge.style.alignItems = 'center';
+                        centerBadge.style.justifyContent = 'center';
+                        if (unreadCount > 9) {
+                            centerBadge.style.width = 'auto';
+                            centerBadge.style.padding = '0 6px';
+                        } else {
+                            centerBadge.style.width = '20px';
+                            centerBadge.style.padding = '0';
+                        }
                     } else {
                         centerBadge.classList.add('hidden');
+                        centerBadge.style.display = 'none';
                     }
                 }
 
@@ -525,8 +544,8 @@
                 notifications.forEach(function(n) {
                     var isCritical = n.notification_type === 'out_of_stock';
                     var iconSVG = isCritical 
-                        ? '<svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
-                        : '<svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                        ? '<svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
+                        : '<svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
                     var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
                     var statusClass = 'notif-item notif-item-' + n.status;
                     var ago = window.timeAgo(n.created_at);
@@ -539,13 +558,13 @@
 
                     item.innerHTML =
                         '<div class="flex items-start gap-3">' +
-                            '<div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ' + (isCritical ? 'bg-red-50' : 'bg-amber-50') + '">' +
+                            '<div class="flex-shrink-0 w-8 h-8 rounded-[10px] flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">' +
                                 iconSVG +
                             '</div>' +
                             '<div class="flex-1 min-w-0">' +
                                 '<div class="flex items-center justify-between mb-0.5">' +
                                     '<div class="flex items-center gap-1.5">' +
-                                        '<span class="text-[10px] font-bold uppercase tracking-wider ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + typeLabel + '</span>' +
+                                        '<span class="text-[10px] font-bold uppercase tracking-wider text-slate-700">' + typeLabel + '</span>' +
                                         (n.status === 'unread' ? '<span class="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>' : '') +
                                     '</div>' +
                                     '<span class="text-[10px] text-slate-400">' + window.escHtml(ago) + '</span>' +
@@ -555,7 +574,7 @@
                                     '<div class="flex items-center gap-1.5 text-[11px] text-slate-500 whitespace-nowrap">' +
                                         '<span class="truncate max-w-[80px]">' + window.escHtml(shortSku) + '</span>' +
                                         '<span>&middot;</span>' +
-                                        '<span class="font-medium whitespace-nowrap ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + stockText + '</span>' +
+                                        '<span class="font-medium whitespace-nowrap text-slate-600">' + stockText + '</span>' +
                                     '</div>' +
                                     (n.status !== 'resolved'
                                         ? '<a href="' + window.escHtml(n.order_url || '/purchase-order/create') + '" class="px-2.5 py-1 rounded bg-[#00ddd2] text-black text-[11px] font-semibold hover:bg-[#00c7bc] transition-colors flex-shrink-0" onclick="event.stopPropagation();">Order</a>'

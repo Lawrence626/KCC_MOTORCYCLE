@@ -123,6 +123,15 @@ class PurchaseOrderController extends Controller
                 }
             });
 
+        $search = trim((string) $request->query('search', ''));
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('product_name', 'like', "%{$search}%")
+                  ->orWhere('name', 'like', "%{$search}%")
+                  ->orWhere('sku', 'like', "%{$search}%");
+            });
+        }
+
         // Get all products matching the query
         $allProducts = $query->get();
         $recentSales = $this->getRecentProductSales(30);
@@ -131,7 +140,7 @@ class PurchaseOrderController extends Controller
         $allProducts->transform(function ($product) use ($recentSales) {
             $soldLast30Days = $recentSales[$product->id] ?? 0;
             $product->sales_count = $soldLast30Days;
-            $product->movement_category = $this->getProductMovementCategory($soldLast30Days);
+            $product->movement_category = $this->getProductMovementCategory($soldLast30Days, $product->id);
             return $product;
         });
 
@@ -155,7 +164,7 @@ class PurchaseOrderController extends Controller
         $filteredProducts = $preselected->concat($others);
 
         // Manually paginate the filtered collection
-        $page = $request->query('page', 1);
+        $page = (int) $request->query('page', 1);
         $perPage = 8;
         $offset = ($page - 1) * $perPage;
         $paginatedProducts = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -165,6 +174,21 @@ class PurchaseOrderController extends Controller
             $page,
             ['path' => $request->url(), 'query' => $request->query()]
         );
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'table_html' => view('purchase_order.partials.product-rows', [
+                    'lowStockProducts' => $paginatedProducts,
+                    'selectedProductIds' => $selectedProductIds,
+                ])->render(),
+                'pagination_html' => $paginatedProducts->links()->render(),
+                'total' => $paginatedProducts->total(),
+                'first_item' => $paginatedProducts->firstItem() ?? 0,
+                'last_item' => $paginatedProducts->lastItem() ?? 0,
+                'current_page' => $paginatedProducts->currentPage(),
+                'last_page' => $paginatedProducts->lastPage(),
+            ]);
+        }
 
         return view('purchase_order.create', [
             'lowStockProducts' => $paginatedProducts,
@@ -205,15 +229,15 @@ class PurchaseOrderController extends Controller
         return $productSales;
     }
 
-    private function getProductMovementCategory(int $salesCount): string
+    private function getProductMovementCategory(int $salesCount, ?int $productId = null): string
     {
-        // For testing purposes, assign random categories if no sales data
+        // For testing purposes, assign deterministic categories if no sales data
         // More balanced distribution: 50% fast_moving, 30% slow_moving, 20% special_order
         if ($salesCount === 0) {
-            $random = rand(1, 10);
-            if ($random <= 5) {
+            $seed = $productId ? (abs(crc32((string) $productId)) % 10) + 1 : 1;
+            if ($seed <= 5) {
                 return 'fast_moving';
-            } elseif ($random <= 8) {
+            } elseif ($seed <= 8) {
                 return 'slow_moving';
             }
             return 'special_order';

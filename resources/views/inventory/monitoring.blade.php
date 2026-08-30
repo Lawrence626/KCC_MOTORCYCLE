@@ -348,9 +348,21 @@
                             <label class="block text-xs font-medium text-slate-700">Unit Price</label>
                             <input name="unit_price" id="editUnitPrice" type="number" step="0.01" required class="w-full rounded-[10px] border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 shadow-sm hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
                         </div>
-                        <div class="space-y-1">
-                            <label class="block text-xs font-medium text-slate-700">Supplier</label>
-                            <input name="supplier_name" id="editSupplier" class="w-full rounded-[10px] border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 shadow-sm hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
+                        <!-- Suppliers Multi-Select Dropdown -->
+                        <div class="space-y-1 relative z-[105]" data-dropdown-wrapper="editSuppliers">
+                            <label class="block text-xs font-medium text-slate-700">Suppliers</label>
+                            <input type="hidden" name="supplier_name" id="editSupplier" value="" />
+                            <button type="button" id="editSuppliersButton" class="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-left text-xs text-slate-900 flex items-center justify-between hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm h-9 cursor-pointer transition">
+                                <span id="editSuppliersDisplay" class="truncate text-slate-400">Select suppliers...</span>
+                                <svg id="editSuppliersArrow" class="w-4 h-4 text-slate-500 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div id="editSuppliersDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[105] mt-1.5 w-full rounded-[12px] border border-slate-200 bg-white shadow-xl p-2 space-y-1 max-h-56 overflow-y-auto">
+                                <div id="editSuppliersList" class="space-y-0.5">
+                                    <!-- Supplier checkboxes dynamically loaded here -->
+                                </div>
+                            </div>
                         </div>
                         <div class="space-y-1 relative" data-dropdown-wrapper="editProductCategory">
                             <label class="block text-xs font-medium text-slate-700">Category</label>
@@ -403,11 +415,24 @@
         </div>
     </div>
 
+    @php
+        $activeSuppliersList = \App\Models\Supplier::orderBy('name')
+            ->where(function ($query) {
+                $query->where('status', 'active')->orWhereNull('status');
+            })
+            ->get(['id', 'name']);
+        if ($activeSuppliersList->isEmpty()) {
+            $activeSuppliersList = \App\Models\Supplier::orderBy('name')->get(['id', 'name']);
+        }
+    @endphp
+
     <script>
         window.AllStocks = {
+            suppliers: @json($activeSuppliersList),
             routes: {
                 apiProducts: '{{ route("api.products") }}',
                 apiProductShowBase: '{{ url("api/products") }}',
+                apiSuppliers: '{{ route("api.suppliers") }}',
                 apiStats: '{{ route("api.stats") }}',
                 apiMovements: '{{ route("api.movements") }}',
                 apiUpdatePriceBase: '{{ url("api/product") }}',

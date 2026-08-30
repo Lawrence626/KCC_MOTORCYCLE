@@ -88,7 +88,7 @@
                     <label class="block text-sm text-slate-700 relative" data-dropdown-wrapper="receivedRange">
                         <span class="sr-only">Received range</span>
                         <input type="hidden" name="received_range" id="receivedRangeInput" value="{{ $receivedRange }}" />
-                        <button type="button" id="receivedRangeButton" onclick="toggleDropdown('receivedRangeDropdown')" class="w-full min-w-[110px] px-2.5 py-1.5 rounded-[10px] border border-[#a2deea] text-xs font-bold text-[#145a66] flex items-center justify-between gap-1.5 transition cursor-pointer focus:outline-none shadow-sm" style="background-color: rgba(110, 193, 209, 0.18);">
+                        <button type="button" id="receivedRangeButton" onclick="toggleDropdown('receivedRangeDropdown')" class="w-full min-w-[110px] px-2.5 py-1.5 rounded-[10px] text-xs font-bold text-[#145a66] flex items-center justify-between gap-1.5 transition cursor-pointer focus:outline-none focus:ring-0 shadow-sm" style="background-color: rgba(110, 193, 209, 0.18); border: none;">
                             <svg class="h-4 w-4 text-[#145a66] flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
                             </svg>
@@ -99,7 +99,7 @@
                         </button>
                         <div id="receivedRangeDropdown" class="dropdown-menu hidden absolute top-full left-0 right-0 w-full z-50 mt-1.5 rounded-[10px] border border-slate-200 bg-white shadow-xl p-1 space-y-0.5">
                             @foreach(['daily' => 'Daily', 'weekly' => 'Weekly', 'monthly' => 'Monthly', 'yearly' => 'Yearly'] as $value => $label)
-                                <button type="button" onclick="selectDropdown(event, 'receivedRangeInput', '{{ $value }}', 'receivedRangeButton', '{{ $label }}', 'receivedRangeDropdown', 'receivedRangeForm')" class="w-full px-2 py-1 text-left text-xs {{ $receivedRange === $value ? 'font-semibold text-slate-900 bg-gray-200' : 'text-slate-700 hover:bg-slate-100' }} rounded-[6px]">{{ $label }}</button>
+                                <button type="button" onclick="selectDropdown(event, 'receivedRangeInput', '{{ $value }}', 'receivedRangeButton', '{{ $label }}', 'receivedRangeDropdown', 'receivedRangeForm')" class="w-full px-2 py-1 text-center text-xs {{ $receivedRange === $value ? 'font-semibold text-slate-900 bg-gray-200' : 'text-slate-700 hover:bg-slate-100' }} rounded-[6px]">{{ $label }}</button>
                             @endforeach
                         </div>
                     </label>
@@ -467,17 +467,20 @@
         showOrderTab(activeTab);
     </script>
     <style>
-        #receivedRangeButton,
+        #receivedRangeButton {
+            background-color: rgba(110, 193, 209, 0.18) !important;
+            border: 1px solid transparent !important;
+            box-shadow: none !important;
+            outline: none !important;
+            transition: all 0.2s ease !important;
+            -webkit-tap-highlight-color: transparent !important;
+        }
         #receivedRangeButton:hover,
         #receivedRangeButton:focus,
         #receivedRangeButton:active,
-        #receivedRangeButton:focus-visible,
-        #receivedRangeButton:visited {
-            background-color: rgba(110, 193, 209, 0.18) !important;
-            border-color: #a2deea !important;
+        #receivedRangeButton:focus-visible {
+            border-color: #6EC1D1 !important;
             box-shadow: none !important;
-            outline: none !important;
-            -webkit-tap-highlight-color: transparent !important;
         }
     </style>
 </x-layouts.app>
