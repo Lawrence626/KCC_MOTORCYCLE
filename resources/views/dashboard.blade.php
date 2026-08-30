@@ -341,11 +341,11 @@
                     </div>
  
                     <div class="inv-stack" style="position: relative;">
- 
+
                         <!-- Total Products (top of the stack) -->
                         <div class="inv-row flex items-center gap-2 px-3 py-3" style="border-radius: 20px; background-color: #ffffffff; position: relative; z-index: 40;">
-                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #6EC1D1;">
-                                <svg class="absolute inset-0 m-auto" style="width: 14px; height: 14px; transform: translate(-0.5px, 0.5px);" fill="none" stroke="#000000ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <div class="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center" style="background-color: #6EC1D1;">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <path d="M21 8l-9-5-9 5 9 5 9-5z"></path>
                                     <path d="M3 8v8l9 5 9-5V8"></path>
                                 </svg>
@@ -353,11 +353,11 @@
                             <span class="text-black text-xs font-semibold flex-1">Total Products</span>
                             <span id="totalProductsValue" class="text-black text-xs font-bold">—</span>
                         </div>
- 
+
                         <!-- Low Stock Items -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 0px;background-color: #ffffff;; position: relative; z-index: 30 ; margin-top: -10px; padding-top: 20px; padding-bottom: 12px;">
-                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #6EC1D1;">
-                                <svg class="absolute inset-0 m-auto" style="width: 14px; height: 14px; transform: translate(-0.5px, 0.5px);" fill="none" stroke="#000000ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <div class="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center" style="background-color: #6EC1D1;">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <path d="M12 9v4"></path>
                                     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
                                     <path d="M12 17h.01"></path>
@@ -366,24 +366,24 @@
                             <span class="text-black text-xs font-semibold flex-1">Low Stock Items</span>
                             <span id="lowStockValue" class="text-black text-xs font-bold">—</span>
                         </div>
- 
+
                         <!-- Out of Stock Items -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 0px;background-color: #ffffff;; position: relative; z-index: 20; margin-top: -10px; padding-top: 20px; padding-bottom: 12px; ">
-                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #6EC1D1;">
-                                <svg class="absolute inset-0 m-auto" style="width: 14px; height: 14px; transform: translate(-0.5px, 0.5px);" fill="none" stroke="#000000ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <div class="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center" style="background-color: #6EC1D1;">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <circle cx="12" cy="12" r="9"></circle>
                                     <line x1="9" y1="9" x2="15" y2="15"></line>
                                     <line x1="15" y1="9" x2="9" y2="15"></line>
-                                </svg>  
+                                </svg>
                             </div>
                             <span class="text-black text-xs font-semibold flex-1">Out of Stock Items</span>
                             <span id="outOfStockValue" class="text-black text-xs font-bold">—</span>
                         </div>
- 
+
                         <!-- In Stock Items (bottom of the stack) -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 20px; background-color: #ffffff; position: relative; z-index: 10; margin-top: -10px; padding-top: 20px; padding-bottom: 12px;">
-                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #6EC1D1;">
-                                <svg class="absolute inset-0 m-auto" style="width: 14px; height: 14px; transform: translate(-0.5px, 0.5px);" fill="none" stroke="#000000ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <div class="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center" style="background-color: #6EC1D1;">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <circle cx="12" cy="12" r="9"></circle>
                                     <polyline points="8 12 11 15 16 9"></polyline>
                                 </svg>
