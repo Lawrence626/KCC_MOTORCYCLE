@@ -63,10 +63,10 @@
                         @endif
                         <div class="relative inline-flex items-center gap-1.5 rounded-[20px] px-3 py-2 text-left">
                         <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-black grid place-items-center text-lg font-semibold overflow-hidden">
-                            {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
+                            {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
                         </span>
                         <div class="flex flex-col leading-tight">
-                            <span class="text-sm font-semibold text-black">{{ auth()->user()->name ?? 'Admin' }}</span>
+                            <span class="text-sm font-semibold text-black">{{ auth()->user()->name ?? 'User' }}</span>
                             <span class="text-xs text-gray-500">{{ auth()->user()->email ?? '' }}</span>
                         </div>
                         <button type="button" id="dashboardProfileButton" class="inline-flex h-7 w-7 items-center justify-center rounded-[12px] bg-transparent text-[#0f0f0f] transition-colors duration-200 focus:outline-none hover:bg-transparent focus:bg-transparent active:bg-transparent hover:text-slate-400 border-none" style="background: transparent !important; border: none !important; box-shadow: none !important;" aria-label="Open profile menu">
@@ -80,7 +80,7 @@
                                         {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
                                     </span>
                                     <div>
-                                        <div class="text-[13px] font-semibold text-slate-900">{{ auth()->user()->name ?? 'Admin' }}</div>
+                                        <div class="text-[13px] font-semibold text-slate-900">{{ auth()->user()->name ?? 'User' }}</div>
                                         <div class="text-[12px] text-slate-500">{{ auth()->user()->email ?? '' }}</div>
                                     </div>
                                 </div>

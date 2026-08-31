@@ -124,7 +124,7 @@
         </div>
         @endif
 
-        @if(auth()->user() && auth()->user()->role === 'admin')
+        @if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk'))
         @php
             $isPoActive = request()->routeIs('order.*') || request()->routeIs('purchase.requests') || request()->routeIs('received.orders');
         @endphp
@@ -152,7 +152,7 @@
         </div>
         @endif
 
-        @if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk'))
+        @if(auth()->user() && auth()->user()->role === 'admin')
         @php
             $isAnalyticsActive = request()->routeIs('sales.analytics') || request()->routeIs('pricing.module') || request()->routeIs('overstocking.report') || request()->routeIs('out.of.stock') || request()->routeIs('dss.dead-stock*');
         @endphp
@@ -175,6 +175,34 @@
                 <a href="{{ route('pricing.module') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('pricing.module'), 'text-slate-400' => !request()->routeIs('pricing.module')])>
                     <span>Pricing Module</span>
                 </a>
+                <a href="{{ route('overstocking.report') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('overstocking.report'), 'text-slate-400' => !request()->routeIs('overstocking.report')])>
+                    <span>Overstocking Report</span>
+                </a>
+                <a href="{{ route('out.of.stock') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('out.of.stock'), 'text-slate-400' => !request()->routeIs('out.of.stock')])>
+                    <span>Out of Stock Report</span>
+                </a>
+                <a href="{{ route('dss.dead-stock.index') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('dss.dead-stock*'), 'text-slate-400' => !request()->routeIs('dss.dead-stock*')])>
+                    <span>Dead Stock Analysis</span>
+                </a>
+            </div>
+        </div>
+        @elseif(auth()->user() && auth()->user()->role === 'inventory_clerk')
+        @php
+            $isInventoryAnalyticsActive = request()->routeIs('overstocking.report') || request()->routeIs('out.of.stock') || request()->routeIs('dss.dead-stock*');
+        @endphp
+        <div class="group space-y-1 @if($isInventoryAnalyticsActive) open @endif">
+            <button type="button" @class(['sidebar-group-toggle w-full flex items-center justify-between gap-3 pl-6 pr-4 py-2.5 text-sm font-medium cursor-pointer text-slate-300 border-l-[3px] border-transparent'])>
+                <span class="flex items-center gap-3">
+                    <svg class="w-4.5 h-4.5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75ZM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 0 1-1.875-1.875V8.625ZM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 0 1 3 19.875v-6.75Z" />
+                    </svg>
+                    <span>Inventory Analytics</span>
+                </span>
+                <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-0 flex-shrink-0 arrow-left-4" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 10l6 6 6-6H6z" />
+                </svg>
+            </button>
+            <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-[#6EC1D1]/40 space-y-0.5 mt-1">
                 <a href="{{ route('overstocking.report') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('overstocking.report'), 'text-slate-400' => !request()->routeIs('overstocking.report')])>
                     <span>Overstocking Report</span>
                 </a>
@@ -564,6 +592,10 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
             group.classList.toggle('open');
             updateGroupState(group);
+        });
+    });
+});
+</script>
         });
     });
 });

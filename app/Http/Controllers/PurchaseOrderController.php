@@ -412,12 +412,19 @@ class PurchaseOrderController extends Controller
         $totalAmount = $selectedProducts->sum('total_price');
         $orderNumber = 'PO-' . now()->format('YmdHis') . '-' . Str::upper(Str::random(4));
 
-        $purchaseOrder = DB::transaction(function () use ($supplier, $validated, $selectedProducts, $totalAmount, $orderNumber) {
+        $user = auth()->user();
+        $isAdmin = $user && $user->role === 'admin';
+        $initialStatus = $isAdmin ? 'approved' : 'pending approval';
+
+        $purchaseOrder = DB::transaction(function () use ($supplier, $validated, $selectedProducts, $totalAmount, $orderNumber, $user, $isAdmin, $initialStatus) {
             $purchaseOrder = PurchaseOrder::create([
                 'order_number'            => $orderNumber,
                 'supplier_id'             => $supplier->id,
                 'supplier_name'           => $supplier->name,
-                'status'                  => 'pending approval',
+                'user_id'                 => $user?->id,
+                'created_by_role'         => $user?->role ?? ($isAdmin ? 'admin' : 'inventory_clerk'),
+                'status'                  => $initialStatus,
+                'approved_at'             => $isAdmin ? now() : null,
                 'expected_delivery_date'  => $validated['expected_delivery_date'] ?? null,
                 'notes'                   => $validated['notes'] ?? null,
                 'total_amount'            => $totalAmount,
@@ -439,6 +446,10 @@ class PurchaseOrderController extends Controller
 
             return $purchaseOrder;
         });
+
+        if ($isAdmin) {
+            return redirect()->route('order.show', $purchaseOrder)->with('success', 'Purchase order created successfully and is ready to send to supplier.');
+        }
 
         $this->notifyAdminsOfNewPurchaseOrder($purchaseOrder);
 
@@ -712,14 +723,17 @@ class PurchaseOrderController extends Controller
         return redirect()->route('order.show', $purchaseOrder)->with('success', 'Purchase order approved.');
     }
 
-    public function reject(PurchaseOrder $purchaseOrder)
+    public function reject(Request $request, PurchaseOrder $purchaseOrder)
     {
         if (!in_array($purchaseOrder->status, ['pending approval', 'approved'])) {
             return redirect()->route('order.show', $purchaseOrder)->with('warning', 'Only pending approval or approved orders can be rejected.');
         }
 
         $purchaseOrder->update([
-            'status' => 'rejected',
+            'status'           => 'rejected',
+            'rejected_at'      => now(),
+            'rejected_by'      => auth()->id(),
+            'rejection_reason' => $request->input('rejection_reason'),
         ]);
 
         return redirect()->route('order.show', $purchaseOrder)->with('success', 'Purchase order rejected.');

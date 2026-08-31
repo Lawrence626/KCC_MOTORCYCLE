@@ -161,25 +161,27 @@
                     </p>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    @if($purchaseOrder->status === 'pending approval')
-                        <form method="POST" action="{{ route('order.approve', $purchaseOrder) }}">
-                            @csrf
-                            <button type="submit" class="rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-700">Approve</button>
-                        </form>
-                        <form method="POST" action="{{ route('order.reject', $purchaseOrder) }}">
-                            @csrf
-                            <button type="submit" class="rounded-2xl border border-rose-200 bg-white px-4 py-3 text-sm font-semibold text-rose-700 hover:bg-rose-50">Reject</button>
-                        </form>
-                    @elseif($purchaseOrder->status === 'approved')
-                        <form method="POST" action="{{ route('order.send', $purchaseOrder) }}">
-                            @csrf
-                            <button type="submit" class="rounded-2xl bg-cyan-600 px-4 py-3 text-sm font-semibold text-white hover:bg-cyan-700">Send to Supplier</button>
-                        </form>
-                    @elseif($purchaseOrder->status === 'sent to supplier')
-                        <form method="POST" action="{{ route('order.in_transit', $purchaseOrder) }}">
-                            @csrf
-                            <button type="submit" class="rounded-2xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white hover:bg-sky-700">Mark In Transit</button>
-                        </form>
+                    @if(auth()->user() && auth()->user()->role === 'admin')
+                        @if($purchaseOrder->status === 'pending approval' && $purchaseOrder->created_by_role !== 'admin')
+                            <form method="POST" action="{{ route('order.approve', $purchaseOrder) }}">
+                                @csrf
+                                <button type="submit" class="rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-700">Approve</button>
+                            </form>
+                            <form method="POST" action="{{ route('order.reject', $purchaseOrder) }}">
+                                @csrf
+                                <button type="submit" class="rounded-2xl border border-rose-200 bg-white px-4 py-3 text-sm font-semibold text-rose-700 hover:bg-rose-50">Reject</button>
+                            </form>
+                        @elseif($purchaseOrder->status === 'approved')
+                            <form method="POST" action="{{ route('order.send', $purchaseOrder) }}">
+                                @csrf
+                                <button type="submit" class="rounded-2xl bg-cyan-600 px-4 py-3 text-sm font-semibold text-white hover:bg-cyan-700">Send to Supplier</button>
+                            </form>
+                        @elseif($purchaseOrder->status === 'sent to supplier')
+                            <form method="POST" action="{{ route('order.in_transit', $purchaseOrder) }}">
+                                @csrf
+                                <button type="submit" class="rounded-2xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white hover:bg-sky-700">Mark In Transit</button>
+                            </form>
+                        @endif
                     @endif
                 </div>
             </div>

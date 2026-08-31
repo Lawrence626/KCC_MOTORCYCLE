@@ -91,7 +91,7 @@
                                                 @endif
                                             </span>
                                             <div>
-                                                <div class="text-[13px] font-semibold text-white">{{ auth()->user()->name ?? 'Admin' }}</div>
+                                                <div class="text-[13px] font-semibold text-white">{{ auth()->user()->name ?? 'User' }}</div>
                                                 <div class="text-[12px] text-slate-400">{{ auth()->user()->email ?? '' }}</div>
                                             </div>
                                         </div>

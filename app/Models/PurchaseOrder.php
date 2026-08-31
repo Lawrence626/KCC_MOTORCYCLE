@@ -11,13 +11,18 @@ class PurchaseOrder extends Model
         'order_number',
         'supplier_id',
         'supplier_name',
+        'user_id',
+        'created_by_role',
         'status',
         'sync_status',
         'expected_delivery_date',
         'estimated_delivery_date',
         'notes',
+        'rejection_reason',
         'total_amount',
         'approved_at',
+        'rejected_at',
+        'rejected_by',
         'sent_to_supplier_at',
         'in_transit_at',
         'completed_at',
@@ -27,6 +32,7 @@ class PurchaseOrder extends Model
         'expected_delivery_date' => 'date',
         'estimated_delivery_date' => 'date',
         'approved_at' => 'datetime',
+        'rejected_at' => 'datetime',
         'sent_to_supplier_at' => 'datetime',
         'in_transit_at' => 'datetime',
         'completed_at' => 'datetime',
@@ -62,5 +68,15 @@ class PurchaseOrder extends Model
     public function defectiveReturnRequests()
     {
         return $this->hasMany(DefectiveReturnRequest::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function rejectedByUser()
+    {
+        return $this->belongsTo(User::class, 'rejected_by');
     }
 }

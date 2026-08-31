@@ -158,18 +158,22 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('api/reverse-logistics/{id}', [App\Http\Controllers\ReverseLogisticsController::class, 'destroy'])->name('api.reverse-logistics.destroy');
     });
 
-    // Data Analytics Routes - Sales analytics for Cashier and Warehouse, all for others
-    Route::middleware('role:admin,cashier,inventory_clerk,warehouse_personnel')->group(function () {
+    // Data Analytics Routes - Sales analytics for Admin, Cashier, and Warehouse only (NOT inventory clerk)
+    Route::middleware('role:admin,cashier,warehouse_personnel')->group(function () {
         Route::get('analytics/sales', [AnalyticsController::class, 'sales'])->name('sales.analytics');
         Route::get('api/analytics/sales-widgets', [AnalyticsController::class, 'salesFilteredWidgets'])->name('api.analytics.sales_widgets');
         Route::get('analytics/sales/export', [AnalyticsController::class, 'exportSales'])->name('analytics.sales.export');
     });
 
-    // Other analytics routes - Admin and Inventory Clerk only
-    Route::middleware('role:admin,inventory_clerk')->group(function () {
+    // Pricing Module - Admin only
+    Route::middleware('role:admin')->group(function () {
         Route::get('analytics/pricing', [AnalyticsController::class, 'pricing'])->name('pricing.module');
         Route::post('analytics/pricing/dismiss/{id}', [AnalyticsController::class, 'dismissAlert'])->name('pricing.dismiss');
         Route::get('analytics/pricing/export', [AnalyticsController::class, 'exportPricing'])->name('analytics.pricing.export');
+    });
+
+    // Inventory analytics routes - Admin and Inventory Clerk
+    Route::middleware('role:admin,inventory_clerk')->group(function () {
         Route::get('analytics/overstocking', [AnalyticsController::class, 'overstocking'])->name('overstocking.report');
         Route::get('analytics/overstocking/export', [AnalyticsController::class, 'exportOverstocking'])->name('analytics.overstocking.export');
         Route::get('analytics/out-of-stock', [AnalyticsController::class, 'outOfStock'])->name('out.of.stock');
