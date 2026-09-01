@@ -362,7 +362,9 @@
 
                 list.innerHTML = notifications.map(function(n) {
                     var isCritical = n.notification_type === 'out_of_stock';
-                    var emoji = isCritical ? '🔴' : '🟠';
+                    var iconSVG = isCritical 
+                        ? '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="#dc2626"></path><line x1="12" y1="9" x2="12" y2="13" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16.5" r="1.1" fill="#ffffff"></circle></svg>'
+                        : '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" fill="#d97706"></circle><line x1="12" y1="7.5" x2="12" y2="12.5" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16" r="1.1" fill="#ffffff"></circle></svg>';
                     var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
                     var ago = _timeAgo(n.created_at);
                     var stockText = isCritical ? '0 remaining' : (n.current_stock || 0) + ' remaining';
@@ -378,7 +380,7 @@
                     return '<div class="border-b border-slate-800/40 px-4 py-3 last:border-b-0 ' + bgClass + '" data-header-notif-id="' + n.id + '">' +
                         '<div class="flex items-start gap-3">' +
                             '<div class="mt-0.5 flex-shrink-0 w-8 h-8 rounded-[10px] flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">' +
-                                '<span style="font-size:14px;">' + emoji + '</span>' +
+                                iconSVG +
                             '</div>' +
                             '<div class="flex-1 min-w-0">' +
                                 '<div class="flex items-center justify-between">' +
@@ -544,8 +546,8 @@
                 notifications.forEach(function(n) {
                     var isCritical = n.notification_type === 'out_of_stock';
                     var iconSVG = isCritical 
-                        ? '<svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
-                        : '<svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                        ? '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="#dc2626"></path><line x1="12" y1="9" x2="12" y2="13" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16.5" r="1.1" fill="#ffffff"></circle></svg>'
+                        : '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" fill="#d97706"></circle><line x1="12" y1="7.5" x2="12" y2="12.5" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16" r="1.1" fill="#ffffff"></circle></svg>';
                     var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
                     var statusClass = 'notif-item notif-item-' + n.status;
                     var ago = window.timeAgo(n.created_at);

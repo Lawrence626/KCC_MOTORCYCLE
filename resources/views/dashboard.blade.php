@@ -139,7 +139,7 @@
                             </div>
                         </div>
                         <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                            <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <svg class="text-[#145a66]" style="width: 1.125rem; height: 1.125rem;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                 <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
                             </svg>
                         </div>
@@ -157,7 +157,7 @@
                             </div>
                         </div>
                         <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                            <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <svg class="text-[#145a66]" style="width: 1.125rem; height: 1.125rem;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                 <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/>
                             </svg>
                         </div>
@@ -175,7 +175,7 @@
                             </div>
                         </div>
                         <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                            <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <svg class="text-[#145a66]" style="width: 1.125rem; height: 1.125rem;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                 <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
                             </svg>
                         </div>
@@ -193,7 +193,7 @@
                             </div>
                         </div>
                         <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                            <svg class="w-4 h-4 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <svg class="w-4.5 h-4.5 text-[#145a66]" style="width: 1.125rem; height: 1.125rem;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                 <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                             </svg>
                         </div>
@@ -212,7 +212,7 @@
                             </div>
                         </div>
                         <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                            <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4.5 h-4.5 text-[#145a66]" style="width: 1.125rem; height: 1.125rem;" fill="currentColor" viewBox="0 0 24 24">
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M12 3.172a2 2 0 0 1 1.732 1l8 13.856A2 2 0 0 1 20 21H4a2 2 0 0 1-1.732-3l8-13.856a2 2 0 0 1 1.732-1zM11 9v4h2V9h-2zm0 6v2h2v-2h-2z"/>
                             </svg>
                         </div>
@@ -347,9 +347,11 @@
                         <!-- Total Products (top of the stack) -->
                         <div class="inv-row flex items-center gap-2 px-3 py-3" style="border-radius: 20px; background-color: #ffffffff; position: relative; z-index: 40;">
                             <div class="w-7 h-7 rounded-[10px] flex-shrink-0 flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="#145a66" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <path d="M21 8l-9-5-9 5 9 5 9-5z"></path>
-                                    <path d="M3 8v8l9 5 9-5V8"></path>
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 8l-9-5-9 5 9 5 9-5z" fill="#145a66" stroke="#145a66" stroke-width="1"></path>
+                                    <path d="M3 8v8l9 5 9-5V8" fill="#145a66" stroke="#145a66" stroke-width="1"></path>
+                                    <path d="M3 8l9 5 9-5" stroke="#ffffff" stroke-width="1.4"></path>
+                                    <path d="M12 13v8" stroke="#ffffff" stroke-width="1.4"></path>
                                 </svg>
                             </div>
                             <span class="text-black text-xs font-semibold flex-1">Total Products</span>
@@ -359,10 +361,10 @@
                         <!-- Low Stock Items -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 0px;background-color: #ffffff;; position: relative; z-index: 30 ; margin-top: -10px; padding-top: 20px; padding-bottom: 12px;">
                             <div class="w-7 h-7 rounded-[10px] flex-shrink-0 flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="#d97706" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <circle cx="12" cy="12" r="9"></circle>
-                                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="9.5" fill="#d97706"></circle>
+                                    <line x1="12" y1="7.5" x2="12" y2="12.5" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line>
+                                    <circle cx="12" cy="16" r="1.1" fill="#ffffff"></circle>
                                 </svg>
                             </div>
                             <span class="text-black text-xs font-semibold flex-1">Low Stock Items</span>
@@ -372,10 +374,10 @@
                         <!-- Out of Stock Items -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 0px;background-color: #ffffff;; position: relative; z-index: 20; margin-top: -10px; padding-top: 20px; padding-bottom: 12px; ">
                             <div class="w-7 h-7 rounded-[10px] flex-shrink-0 flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="#dc2626" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <path d="M12 9v4"></path>
-                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                                    <path d="M12 17h.01"></path>
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="#dc2626"></path>
+                                    <line x1="12" y1="9" x2="12" y2="13" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line>
+                                    <circle cx="12" cy="16.5" r="1.1" fill="#ffffff"></circle>
                                 </svg>
                             </div>
                             <span class="text-black text-xs font-semibold flex-1">Out of Stock Items</span>
@@ -385,9 +387,9 @@
                         <!-- In Stock Items (bottom of the stack) -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 20px; background-color: #ffffff; position: relative; z-index: 10; margin-top: -10px; padding-top: 20px; padding-bottom: 12px;">
                             <div class="w-7 h-7 rounded-[10px] flex-shrink-0 flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="#059669" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <circle cx="12" cy="12" r="9"></circle>
-                                    <polyline points="8 12 11 15 16 9"></polyline>
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="9.5" fill="#059669"></circle>
+                                    <polyline points="8 12 11 15 16 9" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline>
                                 </svg>
                             </div>
                             <span class="text-black text-xs font-semibold flex-1">In Stock Items</span>
@@ -480,9 +482,11 @@
         <!-- Floating Low Stock Toast Banner (Pest test requirement) -->
         <div id="dashboardLowStockBanner" class="hidden fixed right-4 top-24 z-[100] max-w-sm rounded-2xl border border-amber-200 bg-white p-4 shadow-2xl transition-all duration-300" role="status">
             <div class="flex items-start justify-between gap-3">
-                <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-amber-50">
-                    <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+                <div class="flex-shrink-0 w-8 h-8 rounded-[10px] flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="9.5" fill="#d97706"></circle>
+                        <line x1="12" y1="7.5" x2="12" y2="12.5" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line>
+                        <circle cx="12" cy="16" r="1.1" fill="#ffffff"></circle>
                     </svg>
                 </div>
                 <div class="flex-1 min-w-0">
@@ -1304,8 +1308,8 @@
             var isCritical = alert.notification_type === 'out_of_stock';
             var toastClass = isCritical ? 'toast-critical' : 'toast-warning';
             var iconSVG = isCritical 
-                ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
-                : '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                ? '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="#dc2626"></path><line x1="12" y1="9" x2="12" y2="13" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16.5" r="1.1" fill="#ffffff"></circle></svg>'
+                : '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" fill="#d97706"></circle><line x1="12" y1="7.5" x2="12" y2="12.5" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16" r="1.1" fill="#ffffff"></circle></svg>';
             var title = isCritical ? 'Out of Stock' : 'Low Stock';
             
             var toast = document.createElement('div');
@@ -1493,8 +1497,8 @@
             notifications.forEach(function(n) {
                 var isCritical = n.notification_type === 'out_of_stock';
                 var iconSVG = isCritical 
-                    ? '<svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
-                    : '<svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                    ? '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="#dc2626"></path><line x1="12" y1="9" x2="12" y2="13" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16.5" r="1.1" fill="#ffffff"></circle></svg>'
+                    : '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" fill="#d97706"></circle><line x1="12" y1="7.5" x2="12" y2="12.5" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16" r="1.1" fill="#ffffff"></circle></svg>';
                 var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
                 var statusClass = 'notif-item notif-item-' + n.status;
                 var ago = timeAgo(n.created_at);
@@ -1655,8 +1659,8 @@
                 list.innerHTML = notifications.map(function(n) {
                     var isCritical = n.notification_type === 'out_of_stock';
                     var iconSVG = isCritical 
-                        ? '<svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
-                        : '<svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                        ? '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="#dc2626"></path><line x1="12" y1="9" x2="12" y2="13" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16.5" r="1.1" fill="#ffffff"></circle></svg>'
+                        : '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" fill="#d97706"></circle><line x1="12" y1="7.5" x2="12" y2="12.5" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16" r="1.1" fill="#ffffff"></circle></svg>';
                     var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
                     var ago = timeAgo(n.created_at);
                     var stockText = isCritical ? '0 left' : n.current_stock + ' remaining';
