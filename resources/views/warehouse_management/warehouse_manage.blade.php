@@ -942,14 +942,14 @@
 
     <!-- Transfer Shelf Modal -->
     <div id="transfer-shelf-modal" class="fixed inset-0 z-[100000002] hidden items-center justify-center px-4 py-6">
-        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('transfer-shelf-modal').classList.add('hidden')"></div>
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('transfer-shelf-modal').classList.add('hidden');document.getElementById('transfer-shelf-modal').classList.remove('flex');"></div>
         <div class="relative modal-panel w-full max-w-md overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
             <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Transfer Shelf</h2>
                     <p class="text-sm text-slate-800 font-medium">Relocate shelf to another warehouse.</p>
                 </div>
-                <button type="button" onclick="document.getElementById('transfer-shelf-modal').classList.add('hidden')" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
+                <button type="button" onclick="document.getElementById('transfer-shelf-modal').classList.add('hidden');document.getElementById('transfer-shelf-modal').classList.remove('flex');" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>

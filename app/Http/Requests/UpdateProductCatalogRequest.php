@@ -40,7 +40,8 @@ class UpdateProductCatalogRequest extends FormRequest
             'color' => 'nullable|string|max:50',
             'stock_quantity' => 'nullable|integer|min:0',
             'reorder_level' => 'nullable|integer|min:0',
-            'warehouse' => 'nullable|string|max:255',
+            'warehouse' => 'required|string|max:255',
+            'is_general' => 'nullable|boolean',
             'motorcycle_models' => 'nullable|string|array',
             'status' => 'required|in:Active,Inactive',
         ];
@@ -69,8 +70,9 @@ class UpdateProductCatalogRequest extends FormRequest
         return [
             'product_name.required' => 'Product name is required.',
             'brand.required' => 'Brand is required.',
-            'product_description.required' => 'Product description is required.',
-            'product_description.exists' => 'Selected product description does not exist.',
+            'warehouse.required' => 'Warehouse is required.',
+            'product_description.required' => 'Product category is required.',
+            'product_description.exists' => 'Selected product category does not exist.',
             'sku.required' => 'SKU is required.',
             'sku.unique' => 'SKU must be unique.',
             'status.required' => 'Status is required.',

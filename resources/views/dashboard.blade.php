@@ -87,7 +87,7 @@
                                     </div>
                                     <div class="mt-3">
                                         <span class="inline-flex items-center rounded-full border border-gray-600/30 bg-gray-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style="color: #32FFFD;">
-                                            {{ ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'user')) }}
+                                            {{ (auth()->user()->role ?? 'user') === 'admin' ? 'Administrator' : ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'user')) }}
                                         </span>
                                     </div>
                                 </div>

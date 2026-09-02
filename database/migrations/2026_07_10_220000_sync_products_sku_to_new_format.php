@@ -9,14 +9,20 @@ return new class extends Migration
     public function up(): void
     {
         // ── 1. Temporarily drop the unique index on products.sku ─────────────
-        Schema::table('products', function ($table) {
-            if (Schema::hasIndex('products', 'products_sku_unique')) {
-                $table->dropUnique('products_sku_unique');
+        if (DB::getDriverName() !== 'sqlite') {
+            try {
+                Schema::table('products', function ($table) {
+                    if (Schema::hasIndex('products', 'products_sku_unique')) {
+                        $table->dropUnique('products_sku_unique');
+                    }
+                    if (Schema::hasIndex('products', 'products_sku_warehouse_unique')) {
+                        $table->dropUnique('products_sku_warehouse_unique');
+                    }
+                });
+            } catch (\Throwable $e) {
+                // Safe to ignore if index does not exist
             }
-            if (Schema::hasIndex('products', 'products_sku_warehouse_unique')) {
-                $table->dropUnique('products_sku_warehouse_unique');
-            }
-        });
+        }
 
         // ── 2. Build the catalog map: (desc||brand) → [new_sku_001, 002, …] ──
         $catalogRows = DB::table('product_catalog')

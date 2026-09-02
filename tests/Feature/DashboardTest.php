@@ -153,15 +153,16 @@ it('allows otp login to reach the dashboard when the user is not yet email verif
         'email_verified_at' => null,
     ]);
 
-    Session::put('login.otp', [
-        'user_id' => $user->id,
+    \Illuminate\Support\Facades\Cache::put('login_otp_' . hash('sha256', strtolower(trim($user->email))), [
+        'user_id'  => $user->id,
+        'code'     => '123456',
+        'remember' => false,
+    ], now()->addMinutes(10));
+
+    $verifyResponse = $this->postJson(route('login.otp.verify'), [
         'email' => $user->email,
         'code' => '123456',
-        'expires_at' => now()->addMinutes(10)->timestamp,
-        'remember' => false,
     ]);
-
-    $verifyResponse = $this->postJson(route('login.otp.verify'), ['code' => '123456']);
 
     $verifyResponse->assertOk()
         ->assertJsonPath('redirectUrl', route('dashboard'));

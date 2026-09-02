@@ -103,7 +103,7 @@
                         @foreach($shelfProducts as $product)
                             <div class="product-chip">
                                 <div class="left">
-                                    <span class="name">Product Description: {{ $product['description'] ?? $product['name'] }}</span>
+                                    <span class="name">Product Category: {{ $product['description'] ?? $product['name'] }}</span>
                                     <span class="meta">SKU: {{ $product['sku'] }}</span>
                                 </div>
                                 <div class="flex items-center gap-3">

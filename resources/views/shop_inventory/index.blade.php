@@ -605,7 +605,7 @@
                 <div class="space-y-2">
                     <div class="grid gap-3 md:grid-cols-3">
                         <div>
-                            <label class="block text-xs font-medium text-slate-700">Product Description</label>
+                            <label class="block text-xs font-medium text-slate-700">Product Category</label>
                             <input type="text" class="product-desc mt-1 block w-full px-4 py-3 text-sm" value="${product.description || ''}" placeholder="e.g. CALIPER" />
                         </div>
                         <div>

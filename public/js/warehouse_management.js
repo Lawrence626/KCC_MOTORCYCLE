@@ -213,6 +213,104 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('modal-close').addEventListener('click', closeModal);
     document.getElementById('modal-cancel').addEventListener('click', closeModal);
     document.getElementById('modal-form').addEventListener('submit', handleModalSave);
+
+    // --- Transfer Shelf Modal ---
+    const transferShelfModal = document.getElementById('transfer-shelf-modal');
+    const cancelTransferShelfBtn = document.getElementById('cancel-transfer-shelf');
+    const transferShelfForm = document.getElementById('transfer-shelf-form');
+
+    function closeTransferShelfModal() {
+        if (transferShelfModal) {
+            transferShelfModal.classList.add('hidden');
+            transferShelfModal.classList.remove('flex');
+        }
+    }
+
+    if (cancelTransferShelfBtn) {
+        cancelTransferShelfBtn.addEventListener('click', closeTransferShelfModal);
+    }
+
+    if (transferShelfForm) {
+        transferShelfForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const sourceWarehouseId = parseInt(document.getElementById('transfer-source-warehouse-id').value, 10);
+            const slotIndex = parseInt(document.getElementById('transfer-slot-index').value, 10);
+            const destinationWarehouseId = parseInt(document.getElementById('transfer-destination-warehouse').value, 10);
+
+            if (!destinationWarehouseId) {
+                showToast('Please select a destination warehouse.', 'error');
+                return;
+            }
+
+            const submitBtn = transferShelfForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Transferring…';
+
+            try {
+                const response = await fetch('/warehouse-management/transfer-shelf', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    },
+                    body: JSON.stringify({
+                        source_warehouse_id: sourceWarehouseId,
+                        destination_warehouse_id: destinationWarehouseId,
+                        slot_index: slotIndex,
+                    }),
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    showToast(result.message || 'Transfer failed.', 'error');
+                    return;
+                }
+
+                // Remove shelf from the source warehouse in local JS state
+                const srcWarehouseIdx = warehouses.findIndex(w => w.id === sourceWarehouseId);
+                const destWarehouseIdx = warehouses.findIndex(w => w.id === destinationWarehouseId);
+
+                if (srcWarehouseIdx !== -1) {
+                    const srcWarehouse = warehouses[srcWarehouseIdx];
+                    const shelfToMove = findShelfBySlotIndex(srcWarehouse, slotIndex);
+
+                    if (shelfToMove && destWarehouseIdx !== -1) {
+                        // Add to destination warehouse local state
+                        const destWarehouse = warehouses[destWarehouseIdx];
+                        const newSlot = result.new_slot_index ?? (Math.max(0, ...destWarehouse.locations.map(l => l.slot_index || 0)) + 1);
+                        destWarehouse.locations.push({ ...shelfToMove, slot_index: newSlot });
+                        dedupeWarehouseLocations(destWarehouse);
+                    }
+
+                    // Remove from source warehouse local state
+                    srcWarehouse.locations = srcWarehouse.locations.filter(l => l.slot_index !== slotIndex);
+
+                    // Re-render source warehouse if currently visible
+                    const currentWarehouse = getCurrentWarehouseIndex();
+                    if (currentWarehouse === srcWarehouseIdx) {
+                        warehousePage[srcWarehouseIdx] = Math.max(0, warehousePage[srcWarehouseIdx] - 1);
+                        renderWarehousePage(srcWarehouseIdx, warehousePage[srcWarehouseIdx]);
+                        updateWarehouseStats(srcWarehouseIdx);
+                    }
+                }
+
+                const destName = document.getElementById('transfer-destination-warehouse').selectedOptions[0]?.textContent || 'destination';
+                showToast(`Shelf transferred to ${destName} successfully.`, 'success');
+                closeTransferShelfModal();
+
+            } catch (err) {
+                console.error('Transfer shelf error:', err);
+                showToast('An error occurred during transfer.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+    }
     const addShelfButton = document.getElementById('add-shelf-button');
     const viewArchivedButton = document.getElementById('view-archived-shelves');
     const archivedBackdrop = document.getElementById('archived-backdrop');
@@ -1001,7 +1099,6 @@ document.addEventListener('DOMContentLoaded', function () {
     window.wmScanPrevPage = wmScanPrevPage;
     window.wmScanNextPage = wmScanNextPage;
 
-
     // Archived pagination variables
     let archivedItems = [];
     let archivedPage = 0;
@@ -1336,10 +1433,12 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <span>Actions</span>
                                     <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </button>
-                                <div id="shelf-action-menu-${warehouseIndex}-${slotIndex}" class="shelf-action-menu hidden absolute right-0 top-full z-50 mt-1 w-40 rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
+                                <div id="shelf-action-menu-${warehouseIndex}-${slotIndex}" class="shelf-action-menu hidden absolute right-0 top-full z-50 mt-1 w-44 rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
                                     ${locView ? `
                                         ${locView.products && locView.products.length < PRODUCTS_PER_SHELF ? `<button type="button" onclick="handleShelfAction('${warehouseIndex}', '${slotIndex}', 'add-product')" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 transition cursor-pointer">+ Add Product</button>` : ''}
+                                        <button type="button" onclick="handleShelfAction('${warehouseIndex}', '${slotIndex}', 'transfer-products')" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 transition cursor-pointer">Transfer Products</button>
                                         <button type="button" onclick="handleShelfAction('${warehouseIndex}', '${slotIndex}', 'edit-shelf')" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 transition cursor-pointer">Edit Shelf</button>
+                                        <button type="button" onclick="handleShelfAction('${warehouseIndex}', '${slotIndex}', 'transfer-shelf')" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 transition cursor-pointer">Transfer Shelf</button>
                                         <button type="button" onclick="handleShelfAction('${warehouseIndex}', '${slotIndex}', 'archive-shelf')" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-rose-600 hover:bg-rose-50 transition cursor-pointer">Archive Shelf</button>
                                     ` : `
                                         <button type="button" onclick="handleShelfAction('${warehouseIndex}', '${slotIndex}', 'add-shelf')" class="w-full text-center px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 transition cursor-pointer">+ Add Shelf</button>
@@ -1368,15 +1467,17 @@ document.addEventListener('DOMContentLoaded', function () {
             nextButton.className = 'next-page rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition';
         }
 
-        const showingInfoContainer = card.querySelector('.showing-info');
+        const warehouseCard = document.querySelector(`.wh-card[data-id="${warehouse.id}"]`);
+        const totalItems = shelfSlots.length;
+
+        const showingInfoContainer = warehouseCard ? warehouseCard.querySelector('.showing-info') : null;
         if (showingInfoContainer) {
-            const totalItems = totalSlots;
-            const startItem = totalSlots > 0 ? (warehousePage[warehouseIndex] * itemsPerPage) + 1 : 0;
-            const endItem = Math.min((warehousePage[warehouseIndex] + 1) * itemsPerPage, totalSlots);
-            showingInfoContainer.textContent = `Showing ${startItem} - ${endItem} of ${totalItems} items`;
+            const startItem = totalItems > 0 ? (warehousePage[warehouseIndex] * SHELVES_PER_PAGE) + 1 : 0;
+            const endItem = Math.min((warehousePage[warehouseIndex] + 1) * SHELVES_PER_PAGE, totalItems);
+            showingInfoContainer.textContent = `Showing ${startItem} - ${endItem} of ${totalItems} shelves`;
         }
 
-        const pageNumbersContainer = card.querySelector('.page-numbers');
+        const pageNumbersContainer = warehouseCard ? warehouseCard.querySelector('.page-numbers') : null;
         if (pageNumbersContainer) {
             let numsHtml = '';
             for (let p = 1; p <= totalPages; p++) {
@@ -1446,6 +1547,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.handleShelfAction = function (warehouseIndex, slotIndex, action) {
         const sIdx = parseInt(slotIndex, 10);
+        const wIdx = parseInt(warehouseIndex, 10);
         const menuId = `shelf-action-menu-${warehouseIndex}-${slotIndex}`;
         const menu = document.getElementById(menuId);
         if (menu) menu.classList.add('hidden');
@@ -1460,6 +1562,47 @@ document.addEventListener('DOMContentLoaded', function () {
             archiveShelf(sIdx);
         } else if (action === 'delete-shelf') {
             deleteShelf(sIdx);
+        } else if (action === 'transfer-products') {
+            // Navigate to the transfer page for this shelf
+            const warehouse = warehouses[wIdx];
+            if (warehouse) {
+                window.location.href = `/warehouse/transfer/${warehouse.id}/${sIdx}`;
+            }
+        } else if (action === 'transfer-shelf') {
+            // Open the Transfer Shelf modal
+            const warehouse = warehouses[wIdx];
+            if (!warehouse) return;
+            const shelf = findShelfBySlotIndex(warehouse, sIdx);
+            const shelfName = shelf ? shelf.name : `Shelf ${sIdx + 1}`;
+
+            // Populate the modal
+            const modal = document.getElementById('transfer-shelf-modal');
+            const sourceWhInput = document.getElementById('transfer-source-warehouse-id');
+            const slotInput = document.getElementById('transfer-slot-index');
+            const currentShelfInput = document.getElementById('transfer-current-shelf');
+            const destSelect = document.getElementById('transfer-destination-warehouse');
+
+            if (!modal) return;
+
+            if (sourceWhInput) sourceWhInput.value = warehouse.id;
+            if (slotInput) slotInput.value = sIdx;
+            if (currentShelfInput) currentShelfInput.value = `${shelfName} (${warehouse.name})`;
+
+            // Populate destination warehouse options (exclude current warehouse)
+            if (destSelect) {
+                destSelect.innerHTML = '<option value="">Select destination warehouse</option>';
+                warehouses.forEach((wh, idx) => {
+                    if (wh.id !== warehouse.id) {
+                        const opt = document.createElement('option');
+                        opt.value = wh.id;
+                        opt.textContent = wh.name;
+                        destSelect.appendChild(opt);
+                    }
+                });
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
     };
 

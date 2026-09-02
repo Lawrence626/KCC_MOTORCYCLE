@@ -36,6 +36,20 @@
                             {{ $header }}
                         </div>
                         <div class="flex items-center gap-3 md:mt-2 mt-2">
+                            <!-- Theme Toggle Button -->
+                            <div class="relative inline-flex items-center z-50">
+                                <button id="headerThemeToggle" type="button" class="relative inline-flex h-9 w-9 items-center justify-center border border-slate-700 text-white transition hover:border-cyan-500 focus:outline-none" style="border-radius: 20px; background-color: #0f0f0f;" aria-label="Toggle Dark Mode" title="Toggle theme">
+                                    <!-- Sun Icon (shows in dark mode) -->
+                                    <svg id="themeIconSun" class="w-5 h-5 text-amber-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    </svg>
+                                    <!-- Moon Icon (shows in light mode) -->
+                                    <svg id="themeIconMoon" class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                                    </svg>
+                                </button>
+                            </div>
+
                             <div class="relative inline-flex items-center z-50">
                                 <button id="headerNotificationButton" type="button" class="relative inline-flex h-9 w-9 items-center justify-center border border-slate-700 text-white transition focus:outline-none" style="border-radius: 20px; background-color: #0f0f0f;" aria-label="Notifications">
                                     <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a6 6 0 00-6 6v4.586l-1.707 1.707A1 1 0 005 16h14a1 1 0 00.707-1.707L18 12.586V8a6 6 0 00-6-6zm0 18a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 20z"/></svg>
@@ -60,7 +74,7 @@
                                 <button id="headerProfileButton" type="button" class="inline-flex h-9 items-center gap-2 border border-slate-700 px-3 text-white transition focus:outline-none" style="border-radius: 20px; background-color: #0f0f0f;">
                                     <span class="w-5.5 h-5.5 rounded-full bg-cyan-500 text-white grid place-items-center overflow-hidden text-sm font-semibold">
                                         @if(auth()->user()->avatar)
-                                            <img src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover" />
+                                            <img src="{{ asset('storage/' . auth()->user()->avatar) }}?v={{ auth()->user()->updated_at?->timestamp }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover" />
                                         @else
                                             {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
                                         @endif
@@ -76,7 +90,7 @@
                                         <div class="flex items-center gap-3">
                                             <span class="w-12 h-12 rounded-full bg-cyan-500 text-white grid place-items-center overflow-hidden text-lg font-semibold">
                                                 @if(auth()->user()->avatar)
-                                                    <img src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover" />
+                                                    <img src="{{ asset('storage/' . auth()->user()->avatar) }}?v={{ auth()->user()->updated_at?->timestamp }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover" />
                                                 @else
                                                     {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
                                                 @endif
@@ -87,8 +101,8 @@
                                             </div>
                                         </div>
                                         <div class="mt-3">
-                                            <span class="inline-flex items-center rounded-full border border-cyan-500/20 bg-cyan-500/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-cyan-300">
-                                                {{ ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'user')) }}
+                                                <span class="inline-flex items-center rounded-full border border-cyan-500/20 bg-cyan-500/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-cyan-300">
+                                                {{ (auth()->user()->role ?? 'user') === 'admin' ? 'Administrator' : ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'user')) }}
                                             </span>
                                         </div>
                                     </div>
@@ -105,6 +119,17 @@
                                             </span>
                                             <span>Settings</span>
                                         </a>
+                                        <button type="button" onclick="window.toggleTheme()" class="flex w-full items-center justify-between rounded-[10px] px-2.5 py-2.5 text-sm text-slate-100 hover:bg-slate-800 transition">
+                                            <div class="flex items-center gap-3">
+                                                <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-950 text-slate-300">
+                                                    <svg id="dropdownThemeIcon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                                                    </svg>
+                                                </span>
+                                                <span id="dropdownThemeLabel">Dark Mode</span>
+                                            </div>
+                                            <span id="dropdownThemeStatus" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-medium">Off</span>
+                                        </button>
                                         <form action="{{ route('logout') }}" method="POST">
                                             @csrf
                                             <button type="submit" class="flex w-full items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm text-rose-300 hover:bg-slate-800 transition">
@@ -148,148 +173,155 @@
     @include('partials.admin-purchase-order-toasts')
 
     <script>
-        const menuToggle = document.getElementById('mobile-menu-toggle');
-        const sidebarWrapper = document.getElementById('sidebar-wrapper');
-        const overlay = document.getElementById('mobile-overlay');
+        (function() {
+            const menuToggle = document.getElementById('mobile-menu-toggle');
+            const sidebarWrapper = document.getElementById('sidebar-wrapper');
+            const mobileOverlay = document.getElementById('mobile-overlay');
 
-        // Toggle sidebar on mobile
-        menuToggle.addEventListener('click', function() {
-            sidebarWrapper.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
-        });
+            // Toggle sidebar on mobile
+            if (menuToggle && sidebarWrapper && mobileOverlay) {
+                menuToggle.addEventListener('click', function() {
+                    sidebarWrapper.classList.toggle('-translate-x-full');
+                    mobileOverlay.classList.toggle('hidden');
+                });
 
-        // Close sidebar when clicking overlay
-        overlay.addEventListener('click', function() {
-            sidebarWrapper.classList.add('-translate-x-full');
-            overlay.classList.add('hidden');
-        });
+                // Close sidebar when clicking overlay
+                mobileOverlay.addEventListener('click', function() {
+                    sidebarWrapper.classList.add('-translate-x-full');
+                    mobileOverlay.classList.add('hidden');
+                });
 
-        // Close sidebar when clicking a link
-        const links = sidebarWrapper.querySelectorAll('a');
-        links.forEach(link => {
-            link.addEventListener('click', function() {
-                sidebarWrapper.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
-            });
-        });
-
-        // Header profile dropdown
-        const headerProfileButton = document.getElementById('headerProfileButton');
-        const headerProfileDropdown = document.getElementById('headerProfileDropdown');
-        const headerProfileArrow = document.getElementById('headerProfileArrow');
-        const headerNotificationButton = document.getElementById('headerNotificationButton');
-        const headerNotificationDropdown = document.getElementById('headerNotificationDropdown');
-        const headerNotificationClose = document.getElementById('headerNotificationClose');
-        const dashboardHeader = document.getElementById('dashboardHeader');
-        const mainScrollArea = document.getElementById('mainScrollArea');
-        const topScrollFade = document.getElementById('topScrollFade');
-        const dashboardProfileButton = document.getElementById('dashboardProfileButton');
-        const dashboardProfileDropdown = document.getElementById('dashboardProfileDropdown');
-        const dashboardProfileArrow = document.getElementById('dashboardProfileArrow');
-
-        function closeProfileDropdown() {
-            headerProfileDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
-            headerProfileDropdown.classList.remove('block', 'opacity-100', 'scale-100');
-            headerProfileArrow.classList.remove('text-cyan-400');
-            headerProfileArrow.classList.add('text-white');
-            headerProfileButton.blur();
-        }
-
-        function openProfileDropdown() {
-            headerProfileDropdown.classList.remove('hidden', 'opacity-0', 'scale-95');
-            headerProfileDropdown.classList.add('block', 'opacity-100', 'scale-100');
-            headerProfileArrow.classList.remove('text-white');
-            headerProfileArrow.classList.add('text-cyan-400');
-        }
-
-        function closeNotificationDropdown() {
-            headerNotificationDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
-            headerNotificationDropdown.classList.remove('block', 'opacity-100', 'scale-100');
-            headerNotificationButton.blur();
-        }
-
-        function openNotificationDropdown() {
-            headerNotificationDropdown.classList.remove('hidden', 'opacity-0', 'scale-95');
-            headerNotificationDropdown.classList.add('block', 'opacity-100', 'scale-100');
-        }
-
-        if (headerProfileButton && headerProfileDropdown && headerProfileArrow) {
-            headerProfileDropdown.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-
-            headerProfileButton.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const isOpen = !headerProfileDropdown.classList.contains('hidden');
-                if (isOpen) {
-                    closeProfileDropdown();
-                } else {
-                    openProfileDropdown();
-                }
-            });
-
-            window.addEventListener('click', function(e) {
-                if (!headerProfileDropdown.contains(e.target) && !headerProfileButton.contains(e.target)) {
-                    closeProfileDropdown();
-                }
-            });
-        }
-
-        if (headerNotificationButton && headerNotificationDropdown) {
-            headerNotificationDropdown.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-
-            headerNotificationButton.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const isOpen = !headerNotificationDropdown.classList.contains('hidden');
-                if (isOpen) {
-                    closeNotificationDropdown();
-                } else {
-                    openNotificationDropdown();
-                }
-            });
-
-            if (headerNotificationClose) {
-                headerNotificationClose.addEventListener('click', function() {
-                    closeNotificationDropdown();
+                // Close sidebar when clicking a link
+                const links = sidebarWrapper.querySelectorAll('a');
+                links.forEach(link => {
+                    link.addEventListener('click', function() {
+                        sidebarWrapper.classList.add('-translate-x-full');
+                        mobileOverlay.classList.add('hidden');
+                    });
                 });
             }
 
-            window.addEventListener('click', function(e) {
-                if (!headerNotificationDropdown.contains(e.target) && !headerNotificationButton.contains(e.target)) {
-                    closeNotificationDropdown();
+            // Header profile dropdown
+            const headerProfileButton = document.getElementById('headerProfileButton');
+            const headerProfileDropdown = document.getElementById('headerProfileDropdown');
+            const headerProfileArrow = document.getElementById('headerProfileArrow');
+            const headerNotificationButton = document.getElementById('headerNotificationButton');
+            const headerNotificationDropdown = document.getElementById('headerNotificationDropdown');
+            const headerNotificationClose = document.getElementById('headerNotificationClose');
+            const dashboardProfileButton = document.getElementById('dashboardProfileButton');
+            const dashboardProfileDropdown = document.getElementById('dashboardProfileDropdown');
+            const dashboardProfileArrow = document.getElementById('dashboardProfileArrow');
+
+            function closeProfileDropdown() {
+                if (!headerProfileDropdown) return;
+                headerProfileDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
+                headerProfileDropdown.classList.remove('block', 'opacity-100', 'scale-100');
+                if (headerProfileArrow) {
+                    headerProfileArrow.classList.remove('text-cyan-400');
+                    headerProfileArrow.classList.add('text-white');
                 }
-            });
-        }
+                if (headerProfileButton) headerProfileButton.blur();
+            }
 
-        // Floating profile dropdown handlers
-
-        // Dashboard profile dropdown handlers
-        if (dashboardProfileButton && dashboardProfileDropdown && dashboardProfileArrow) {
-            dashboardProfileDropdown.addEventListener('click', function(e) { e.stopPropagation(); });
-
-            dashboardProfileButton.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const isOpen = !dashboardProfileDropdown.classList.contains('hidden');
-                if (isOpen) {
-                    dashboardProfileDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
-                    dashboardProfileDropdown.classList.remove('block', 'opacity-100', 'scale-100');
-                    dashboardProfileButton.blur();
-                } else {
-                    dashboardProfileDropdown.classList.remove('hidden', 'opacity-0', 'scale-95');
-                    dashboardProfileDropdown.classList.add('block', 'opacity-100', 'scale-100');
+            function openProfileDropdown() {
+                if (!headerProfileDropdown) return;
+                headerProfileDropdown.classList.remove('hidden', 'opacity-0', 'scale-95');
+                headerProfileDropdown.classList.add('block', 'opacity-100', 'scale-100');
+                if (headerProfileArrow) {
+                    headerProfileArrow.classList.remove('text-white');
+                    headerProfileArrow.classList.add('text-cyan-400');
                 }
-            });
+            }
 
-            window.addEventListener('click', function(e) {
-                if (!dashboardProfileDropdown.contains(e.target) && !dashboardProfileButton.contains(e.target)) {
-                    dashboardProfileDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
-                    dashboardProfileDropdown.classList.remove('block', 'opacity-100', 'scale-100');
-                    dashboardProfileButton.blur();
+            function closeNotificationDropdown() {
+                if (!headerNotificationDropdown) return;
+                headerNotificationDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
+                headerNotificationDropdown.classList.remove('block', 'opacity-100', 'scale-100');
+                if (headerNotificationButton) headerNotificationButton.blur();
+            }
+
+            function openNotificationDropdown() {
+                if (!headerNotificationDropdown) return;
+                headerNotificationDropdown.classList.remove('hidden', 'opacity-0', 'scale-95');
+                headerNotificationDropdown.classList.add('block', 'opacity-100', 'scale-100');
+            }
+
+            if (headerProfileButton && headerProfileDropdown) {
+                headerProfileDropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+
+                headerProfileButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = !headerProfileDropdown.classList.contains('hidden');
+                    if (isOpen) {
+                        closeProfileDropdown();
+                    } else {
+                        openProfileDropdown();
+                    }
+                });
+
+                window.addEventListener('click', function(e) {
+                    if (!headerProfileDropdown.contains(e.target) && !headerProfileButton.contains(e.target)) {
+                        closeProfileDropdown();
+                    }
+                });
+            }
+
+            if (headerNotificationButton && headerNotificationDropdown) {
+                headerNotificationDropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+
+                headerNotificationButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = !headerNotificationDropdown.classList.contains('hidden');
+                    if (isOpen) {
+                        closeNotificationDropdown();
+                    } else {
+                        openNotificationDropdown();
+                    }
+                });
+
+                if (headerNotificationClose) {
+                    headerNotificationClose.addEventListener('click', function() {
+                        closeNotificationDropdown();
+                    });
                 }
-            });
-        }
+
+                window.addEventListener('click', function(e) {
+                    if (!headerNotificationDropdown.contains(e.target) && !headerNotificationButton.contains(e.target)) {
+                        closeNotificationDropdown();
+                    }
+                });
+            }
+
+            // Dashboard profile dropdown handlers
+            if (dashboardProfileButton && dashboardProfileDropdown) {
+                dashboardProfileDropdown.addEventListener('click', function(e) { e.stopPropagation(); });
+
+                dashboardProfileButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = !dashboardProfileDropdown.classList.contains('hidden');
+                    if (isOpen) {
+                        dashboardProfileDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
+                        dashboardProfileDropdown.classList.remove('block', 'opacity-100', 'scale-100');
+                        dashboardProfileButton.blur();
+                    } else {
+                        dashboardProfileDropdown.classList.remove('hidden', 'opacity-0', 'scale-95');
+                        dashboardProfileDropdown.classList.add('block', 'opacity-100', 'scale-100');
+                    }
+                });
+
+                window.addEventListener('click', function(e) {
+                    if (!dashboardProfileDropdown.contains(e.target) && !dashboardProfileButton.contains(e.target)) {
+                        dashboardProfileDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
+                        dashboardProfileDropdown.classList.remove('block', 'opacity-100', 'scale-100');
+                        dashboardProfileButton.blur();
+                    }
+                });
+            }
+        })();
     </script>
 
     <script>
@@ -434,6 +466,86 @@
             if (document.body) {
                 modalObserver.observe(document.body, { childList: true, subtree: true });
             }
+        })();
+
+        // Global Theme Management
+        (function() {
+            function updateThemeUI(isDark) {
+                const sunIcon = document.getElementById('themeIconSun');
+                const moonIcon = document.getElementById('themeIconMoon');
+                const dropdownStatus = document.getElementById('dropdownThemeStatus');
+                const dropdownLabel = document.getElementById('dropdownThemeLabel');
+                const dropdownIcon = document.getElementById('dropdownThemeIcon');
+
+                if (sunIcon && moonIcon) {
+                    if (isDark) {
+                        sunIcon.classList.remove('hidden');
+                        moonIcon.classList.add('hidden');
+                    } else {
+                        sunIcon.classList.add('hidden');
+                        moonIcon.classList.remove('hidden');
+                    }
+                }
+
+                if (dropdownStatus) {
+                    dropdownStatus.textContent = isDark ? 'On' : 'Off';
+                    dropdownStatus.className = isDark 
+                        ? 'text-xs px-2 py-0.5 rounded-full bg-cyan-950/80 text-cyan-400 font-medium border border-cyan-500/30' 
+                        : 'text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-medium';
+                }
+                if (dropdownLabel) {
+                    dropdownLabel.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+                }
+                if (dropdownIcon) {
+                    dropdownIcon.innerHTML = isDark
+                        ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />'
+                        : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />';
+                }
+            }
+
+            window.toggleTheme = function() {
+                const isDark = document.documentElement.classList.contains('dark');
+                const newTheme = isDark ? 'light' : 'dark';
+                if (newTheme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+                try {
+                    localStorage.setItem('theme', newTheme);
+                } catch (e) {}
+                updateThemeUI(newTheme === 'dark');
+                window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: newTheme } }));
+            };
+
+            window.setTheme = function(theme) {
+                let isDark = false;
+                if (theme === 'system') {
+                    try { localStorage.removeItem('theme'); } catch(e) {}
+                    isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                } else {
+                    try { localStorage.setItem('theme', theme); } catch(e) {}
+                    isDark = (theme === 'dark');
+                }
+
+                if (isDark) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+                updateThemeUI(isDark);
+                window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: isDark ? 'dark' : 'light' } }));
+            };
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const isDark = document.documentElement.classList.contains('dark');
+                updateThemeUI(isDark);
+
+                const btn = document.getElementById('headerThemeToggle');
+                if (btn) {
+                    btn.addEventListener('click', window.toggleTheme);
+                }
+            });
         })();
     </script>
 

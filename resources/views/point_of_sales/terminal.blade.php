@@ -48,14 +48,14 @@
                             <label class="text-xs font-semibold text-white whitespace-nowrap">Filter by:</label>
                             <div class="relative">
                                 <select id="posCategorySelect" class="hidden">
-                                    <option value="All">All Product Description</option>
-                                    <!-- Categories will be loaded dynamically from product descriptions -->
+                                    <option value="All">All Categories</option>
+                                    <!-- Categories will be loaded dynamically from product categories -->
                                 </select>
                             </div>
                             <div class="relative">
                                 <select id="posBrandSelect" class="hidden">
                                     <option value="All">All Brands</option>
-                                    <!-- Brands will be loaded dynamically based on selected product description -->
+                                    <!-- Brands will be loaded dynamically based on selected product category -->
                                 </select>
                             </div>
                         </div>
@@ -234,23 +234,68 @@
                     <div class="rounded-[28px] border border-slate-200 p-4">
                         <h3 class="text-base font-semibold text-slate-900 mb-3">Payment Method</h3>
                         <div class="grid gap-3">
-                            <label class="inline-flex items-center gap-3 rounded-[10px] border border-slate-200 px-4 py-3 cursor-pointer hover:border-slate-400">
+                            <label class="inline-flex items-center gap-3 rounded-[10px] border border-slate-200 px-4 py-3 cursor-pointer hover:border-slate-400 has-[:checked]:border-[#00fff2] has-[:checked]:bg-[#00fff2]/10 transition">
                                 <input type="radio" name="posPaymentModalMethod" value="cash" class="h-4 w-4 text-[#105f68] rounded-[10px] focus:ring-[#105f68]" checked />
                                 <span class="font-medium text-slate-900">Cash</span>
                             </label>
-                            <div class="flex items-center gap-3 rounded-[10px] border border-slate-200 px-4 py-3 hover:border-slate-400">
+                            <label class="inline-flex items-center gap-3 rounded-[10px] border border-slate-200 px-4 py-3 cursor-pointer hover:border-slate-400 has-[:checked]:border-[#00fff2] has-[:checked]:bg-[#00fff2]/10 transition">
                                 <input type="radio" name="posPaymentModalMethod" value="qr" class="h-4 w-4 text-[#105f68] rounded-[10px] focus:ring-[#105f68]" />
                                 <span class="font-medium text-slate-900">QR PH</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Cash Tendered & Change Auto-Calculation -->
+                    <div id="posCashPaymentDetails" class="rounded-[28px] border border-slate-200 bg-slate-50/70 p-4 space-y-3.5">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-bold text-slate-900">Cash Received & Change</h3>
+                            <span class="text-[11px] font-semibold text-[#105f68] bg-[#00fff2]/20 px-2 py-0.5 rounded-full">Auto-calculate</span>
+                        </div>
+
+                        <!-- Amount Paid / Tendered Input -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">Amount Paid by Customer <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">₱</span>
+                                <input type="number" 
+                                       id="posAmountTenderedInput" 
+                                       step="any" 
+                                       min="0" 
+                                       placeholder="0.00"
+                                       class="w-full pl-8 pr-3.5 py-2.5 rounded-[12px] border-2 border-slate-300 bg-white text-base font-bold text-slate-900 focus:outline-none focus:border-[#00fff2] focus:ring-2 focus:ring-[#00fff2]/30 transition shadow-sm" />
+                            </div>
+                        </div>
+
+                        <!-- Quick Cash Suggestions -->
+                        <div>
+                            <span class="text-[11px] font-semibold text-slate-500 block mb-1.5">Quick Cash:</span>
+                            <div id="posQuickCashPills" class="flex flex-wrap gap-1.5">
+                                <button type="button" class="pos-quick-cash-pill px-2.5 py-1 rounded-[8px] bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 hover:border-cyan-300 transition shadow-xs" data-mode="exact">Exact</button>
+                                <button type="button" class="pos-quick-cash-pill px-2.5 py-1 rounded-[8px] bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 hover:border-cyan-300 transition shadow-xs" data-amount="100">₱100</button>
+                                <button type="button" class="pos-quick-cash-pill px-2.5 py-1 rounded-[8px] bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 hover:border-cyan-300 transition shadow-xs" data-amount="200">₱200</button>
+                                <button type="button" class="pos-quick-cash-pill px-2.5 py-1 rounded-[8px] bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 hover:border-cyan-300 transition shadow-xs" data-amount="500">₱500</button>
+                                <button type="button" class="pos-quick-cash-pill px-2.5 py-1 rounded-[8px] bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 hover:border-cyan-300 transition shadow-xs" data-amount="1000">₱1,000</button>
+                                <button type="button" class="pos-quick-cash-pill px-2.5 py-1 rounded-[8px] bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 hover:border-cyan-300 transition shadow-xs" data-amount="1500">₱1,500</button>
+                                <button type="button" class="pos-quick-cash-pill px-2.5 py-1 rounded-[8px] bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 hover:border-cyan-300 transition shadow-xs" data-amount="2000">₱2,000</button>
+                            </div>
+                        </div>
+
+                        <!-- Change Box -->
+                        <div id="posChangeDisplayBox" class="rounded-[16px] border border-slate-200 bg-white p-3.5 transition-all">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-600">Change (Sukli)</span>
+                                <span id="posChangeDisplayAmount" class="text-lg font-extrabold text-emerald-600">₱0.00</span>
+                            </div>
+                            <div id="posInsufficientWarning" class="hidden mt-1.5 text-[11px] font-semibold text-red-500 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                <span id="posInsufficientText">Insufficient amount</span>
                             </div>
                         </div>
                     </div>
-                    <div class="rounded-[28px] border border-slate-200 p-4">
-                        <h3 class="text-base font-semibold text-slate-900 mb-3">Notes</h3>
-                        <p class="text-sm text-slate-500">Confirm the transaction after verifying the total, services, and charges.</p>
-                    </div>
+
                     <div class="flex gap-3">
                         <button id="posPaymentModalCancel" class="flex-1 rounded-[10px] bg-black/10 px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-black/20">Cancel</button>
-                        <button id="posPaymentModalConfirm" class="flex-1 rounded-[10px] bg-[#00fff2] px-4 py-3 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300">Confirm Payment</button>
+                        <button id="posPaymentModalConfirm" class="flex-1 rounded-[10px] bg-[#00fff2] px-4 py-3 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition shadow-sm">Confirm Payment</button>
                     </div>
                 </div>
             </div>
@@ -278,14 +323,18 @@
                     </button>
                 </div>
                 <div class="px-6 py-6">
-                    <div class="grid gap-4 sm:grid-cols-2 mb-6">
+                    <div class="grid gap-4 sm:grid-cols-3 mb-6">
                         <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                            <p class="text-sm text-slate-500">Paid Amount</p>
-                            <p id="receiptPaid" class="mt-2 text-xl font-semibold text-slate-900">₱0.00</p>
+                            <p class="text-xs font-semibold text-slate-500">Amount Paid</p>
+                            <p id="receiptPaid" class="mt-2 text-xl font-bold text-slate-900">₱0.00</p>
+                        </div>
+                        <div class="rounded-3xl border border-slate-200 bg-emerald-50/70 p-4">
+                            <p class="text-xs font-semibold text-emerald-700">Change (Sukli)</p>
+                            <p id="receiptChange" class="mt-2 text-xl font-bold text-emerald-700">₱0.00</p>
                         </div>
                         <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                            <p class="text-sm text-slate-500">Payment Method</p>
-                            <p id="receiptPaymentMethod" class="mt-2 text-xl font-semibold text-slate-900">Cash</p>
+                            <p class="text-xs font-semibold text-slate-500">Payment Method</p>
+                            <p id="receiptPaymentMethod" class="mt-2 text-xl font-bold text-slate-900">Cash</p>
                         </div>
                     </div>
                     <div id="receiptInvoiceDetails" class="hidden">
@@ -973,7 +1022,7 @@
                 updateButtonLabel();
             }
 
-            setupCustomSelectDropdown('posCategorySelect', 'All Product Description');
+            setupCustomSelectDropdown('posCategorySelect', 'All Categories');
             setupCustomSelectDropdown('posBrandSelect', 'All Brands');
         });
     </script>

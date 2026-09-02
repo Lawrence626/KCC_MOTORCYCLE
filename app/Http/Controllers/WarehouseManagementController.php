@@ -679,24 +679,30 @@ class WarehouseManagementController extends Controller
 
             // Create inventory movement records
             foreach ($transfers as $transfer) {
-                // Try to find the actual product by SKU to get real product_id
-                $product = \App\Models\ProductCatalog::where('sku', $transfer['sku'])->first();
-                $actualProductId = $product ? $product->id : null;
+                // Look up the Product (not ProductCatalog) — inventory_movements.product_id FK references products.id
+                $product = \App\Models\Product::whereHas('productCatalog', function ($q) use ($transfer) {
+                    $q->where('sku', $transfer['sku']);
+                })->first();
 
-                // Only create inventory movement if we have a valid product_id
-                if ($actualProductId) {
+                // Fallback: try matching directly on products.sku
+                if (!$product) {
+                    $product = \App\Models\Product::where('sku', $transfer['sku'])->first();
+                }
+
+                // Only create inventory movement if we have a valid products.id
+                if ($product) {
                     InventoryMovement::create([
-                        'product_id' => $actualProductId,
-                        'type' => 'transfer',
+                        'product_id'      => $product->id,
+                        'type'            => 'transfer',
                         'quantity_change' => -$transfer['transfer_qty'],
-                        'unit_price' => $transfer['unit_price'],
-                        'supplier_name' => 'Shelf Transfer',
-                        'notes' => "Transferred from {$sourceShelf->name} to {$destinationShelf->name}",
-                        'metadata' => [
-                            'source' => 'warehouse_management',
-                            'source_shelf' => $sourceShelf->name,
+                        'unit_price'      => $transfer['unit_price'],
+                        'supplier_name'   => 'Shelf Transfer',
+                        'notes'           => "Transferred from {$sourceShelf->name} to {$destinationShelf->name}",
+                        'metadata'        => [
+                            'source'            => 'warehouse_management',
+                            'source_shelf'      => $sourceShelf->name,
                             'destination_shelf' => $destinationShelf->name,
-                            'warehouse_id' => $warehouseId,
+                            'warehouse_id'      => $warehouseId,
                         ],
                     ]);
                 }

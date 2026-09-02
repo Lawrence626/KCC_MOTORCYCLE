@@ -13,19 +13,29 @@
 
         {{-- Flash messages --}}
         @if(session('success'))
-            <div class="flex items-center gap-3 rounded-[14px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
-                <svg class="h-5 w-5 flex-shrink-0 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                {{ session('success') }}
+            <div id="profileSuccessAlert" class="flex items-center justify-between gap-3 rounded-[14px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800 transition-all duration-500">
+                <div class="flex items-center gap-3">
+                    <svg class="h-5 w-5 flex-shrink-0 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>{{ session('success') }}</span>
+                </div>
+                <button type="button" onclick="dismissAlert('profileSuccessAlert')" class="text-emerald-600 hover:text-emerald-900 transition p-1 rounded-md flex-shrink-0" aria-label="Close">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
         @endif
         @if($errors->any())
-            <div class="rounded-[14px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-                <p class="font-semibold mb-1">Please fix the following errors:</p>
-                <ul class="list-disc list-inside space-y-0.5">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+            <div id="profileErrorAlert" class="flex items-start justify-between gap-3 rounded-[14px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 transition-all duration-500">
+                <div>
+                    <p class="font-semibold mb-1">Please fix the following errors:</p>
+                    <ul class="list-disc list-inside space-y-0.5">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                <button type="button" onclick="dismissAlert('profileErrorAlert')" class="text-red-600 hover:text-red-900 transition p-1 rounded-md flex-shrink-0" aria-label="Close">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
         @endif
 
@@ -55,6 +65,27 @@
                     <div class="flex items-center justify-between p-3" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
                         <span class="text-sm text-gray-500">Account Status</span>
                         <span class="text-sm font-semibold" style="color: #0aada5;">Active</span>
+                    </div>
+                    <!-- Theme Mode Field -->
+                    <div class="p-3" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-gray-500">Theme Appearance</span>
+                            <span id="profileThemeBadge" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">Light</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mt-1">
+                            <button type="button" onclick="window.setTheme('light')" id="profileThemeLightBtn" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border text-xs font-semibold transition cursor-pointer">
+                                <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                                <span>LIGHT</span>
+                            </button>
+                            <button type="button" onclick="window.setTheme('dark')" id="profileThemeDarkBtn" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border text-xs font-semibold transition cursor-pointer">
+                                <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                                </svg>
+                                <span>DARK</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -195,11 +226,37 @@
                         <div class="grid gap-3">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-500 mb-1.5">New Password</label>
-                                <input name="password" type="password" class="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35" placeholder="Leave blank to keep current" />
+                                <div class="relative">
+                                    <input id="editNewPassword" name="password" type="password"
+                                        class="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2.5 pr-10 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35"
+                                        placeholder="Leave blank to keep current" />
+                                    <button type="button" onclick="togglePasswordVisibility('editNewPassword', 'eyeIconNew')"
+                                        class="absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 hover:text-slate-700 transition" tabindex="-1">
+                                        <svg id="eyeIconNew" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-500 mb-1.5">Confirm Password</label>
-                                <input name="password_confirmation" type="password" class="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35" placeholder="Leave blank to keep current" />
+                                <div class="relative">
+                                    <input id="editConfirmPassword" name="password_confirmation" type="password"
+                                        class="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2.5 pr-10 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35"
+                                        placeholder="Confirm your new password" />
+                                    <button type="button" onclick="togglePasswordVisibility('editConfirmPassword', 'eyeIconConfirm')"
+                                        class="absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 hover:text-slate-700 transition" tabindex="-1">
+                                        <svg id="eyeIconConfirm" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -226,50 +283,85 @@
     }
 </style>
 <script>
-    // Modal open/close
-    const openBtn = document.getElementById('openEditProfile');
-    const openBtnMobile = document.getElementById('openEditProfileMobile');
-    const modal = document.getElementById('editProfileModal');
-    const closeBtn = document.getElementById('closeEditProfile');
-    const cancelBtn = document.getElementById('cancelEditProfile');
-    const overlay = document.getElementById('editOverlay');
-
-    function openModal(){
-        modal.classList.remove('hidden');
-        document.body.classList.add('overflow-hidden');
-        const first = modal.querySelector('input[name="name"]');
-        if (first) first.focus();
-    }
-    function closeModal(){
-        modal.classList.add('hidden');
-        document.body.classList.remove('overflow-hidden');
+    // Dismiss alert banner with smooth fade out
+    function dismissAlert(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(-6px)';
+        setTimeout(() => {
+            el.remove();
+        }, 500);
     }
 
-    if (openBtn) openBtn.addEventListener('click', openModal);
-    if (openBtnMobile) openBtnMobile.addEventListener('click', openModal);
-    if (closeBtn) closeBtn.addEventListener('click', closeModal);
-    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
-    if (overlay) overlay.addEventListener('click', closeModal);
+    // Auto dismiss success alert after 4 seconds
+    setTimeout(() => {
+        dismissAlert('profileSuccessAlert');
+    }, 4000);
 
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeModal();
-    });
+    // Toggle password visibility (eye icon)
+    function togglePasswordVisibility(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon  = document.getElementById(iconId);
+        if (!input || !icon) return;
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        // Swap to eye-slash when visible, eye when hidden
+        icon.innerHTML = isHidden
+            ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.956 9.956 0 012.293-3.95M6.228 6.228A9.956 9.956 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.956 9.956 0 01-4.43 5.328M3 3l18 18"/>
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>`
+            : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`;
+    }
 
-    // avatar preview for both profile and modal
-    document.querySelectorAll('input[type=file][name=avatar]').forEach(input => {
-        input.addEventListener('change', function(e){
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(ev){
-                const large = document.getElementById('avatarLarge');
-                const preview = document.getElementById('avatarPreview');
-                if (large) large.innerHTML = `<img src="${ev.target.result}" class="object-cover w-full h-full" />`;
-                if (preview) preview.innerHTML = `<img src="${ev.target.result}" class="object-cover w-full h-full" />`;
-            }
-            reader.readAsDataURL(file);
+    // Modal open/close and avatar preview
+    (function() {
+        const openBtn = document.getElementById('openEditProfile');
+        const openBtnMobile = document.getElementById('openEditProfileMobile');
+        const modal = document.getElementById('editProfileModal');
+        const closeBtn = document.getElementById('closeEditProfile');
+        const cancelBtn = document.getElementById('cancelEditProfile');
+        const editOverlay = document.getElementById('editOverlay');
+
+        function openModal(){
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            const first = modal.querySelector('input[name="name"]');
+            if (first) first.focus();
+        }
+        function closeModal(){
+            if (!modal) return;
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        if (openBtn) openBtn.addEventListener('click', openModal);
+        if (openBtnMobile) openBtnMobile.addEventListener('click', openModal);
+        if (closeBtn) closeBtn.addEventListener('click', closeModal);
+        if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+        if (editOverlay) editOverlay.addEventListener('click', closeModal);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
         });
-    });
+
+        // avatar preview for both profile and modal
+        document.querySelectorAll('input[type=file][name=avatar]').forEach(input => {
+            input.addEventListener('change', function(e){
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(ev){
+                    const large = document.getElementById('avatarLarge');
+                    const preview = document.getElementById('avatarPreview');
+                    if (large) large.innerHTML = `<img src="${ev.target.result}" class="object-cover w-full h-full" />`;
+                    if (preview) preview.innerHTML = `<img src="${ev.target.result}" class="object-cover w-full h-full" />`;
+                }
+                reader.readAsDataURL(file);
+            });
+        });
+    })();
 
     // Gender dropdown (styled to match the Received Orders filter dropdowns)
     function positionEditProfileDropdown(id) {
@@ -320,5 +412,33 @@
             if (dd) dd.classList.add('hidden');
         }
     });
+
+    function syncProfileThemeButtons() {
+        const isDark = document.documentElement.classList.contains('dark');
+        const lightBtn = document.getElementById('profileThemeLightBtn');
+        const darkBtn = document.getElementById('profileThemeDarkBtn');
+        const badge = document.getElementById('profileThemeBadge');
+
+        if (badge) {
+            badge.textContent = isDark ? 'Dark Mode' : 'Light Mode';
+            badge.className = isDark
+                ? 'text-xs font-semibold px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-500/30'
+                : 'text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200';
+        }
+
+        if (lightBtn && darkBtn) {
+            if (isDark) {
+                darkBtn.className = 'flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border-2 border-cyan-500 bg-cyan-500/20 text-cyan-300 text-xs font-bold shadow-sm transition cursor-pointer';
+                lightBtn.className = 'flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-slate-700 bg-slate-800/60 text-slate-400 hover:text-slate-200 text-xs font-semibold transition cursor-pointer';
+            } else {
+                lightBtn.className = 'flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border-2 border-amber-500 bg-amber-500/10 text-amber-800 text-xs font-bold shadow-sm transition cursor-pointer';
+                darkBtn.className = 'flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-500 hover:text-slate-800 text-xs font-semibold transition cursor-pointer';
+            }
+        }
+    }
+
+    window.addEventListener('themeChanged', syncProfileThemeButtons);
+    document.addEventListener('DOMContentLoaded', syncProfileThemeButtons);
+    setTimeout(syncProfileThemeButtons, 100);
 </script>
 </x-layouts.app>

@@ -82,11 +82,11 @@
                         </select>
                     </div>
                     <div>
-                        <label class="text-xs text-slate-600 font-semibold mb-1 block">Product Description</label>
+                        <label class="text-xs text-slate-600 font-semibold mb-1 block">Product Category</label>
                         <select name="product_description"
                                 id="productDescriptionFilter"
                                 class="w-full h-10 px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm">
-                            <option value="">All Descriptions</option>
+                            <option value="">All Categories</option>
                             @foreach($productDescriptions as $description)
                                 <option value="{{ $description->name }}"
                                         data-brands="{{ json_encode($description->brands) }}"
@@ -141,7 +141,7 @@
                                 <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2] cursor-pointer">
                             </th>
                             <th class="px-3.5 py-3 font-semibold text-left text-white">Locations</th>
-                            <th class="px-3.5 py-3 font-semibold text-left text-white">Product Description</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Product Category</th>
                             <th class="px-3.5 py-3 font-semibold text-left text-white">Brand</th>
                             <th class="px-3.5 py-3 font-semibold text-left text-white">SKU</th>
                             <th class="px-3.5 py-3 font-semibold text-center text-white">Size</th>
@@ -193,8 +193,8 @@
                                                 @if($product->motorcycleModels->count() > 3)
                                                     <span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded text-xs">+{{ $product->motorcycleModels->count() - 3 }} more</span>
                                                 @endif
-                                            @elseif(!$product->product_name)
-                                                <span class="text-xs text-slate-400">No compatibility</span>
+                                            @else
+                                                <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-xs font-semibold">Universal / General</span>
                                             @endif
                                         </div>
                                     </td>
@@ -419,7 +419,7 @@
             }
 
             setupCustomSelectDropdown('warehouseFilter', 'All Locations');
-            setupCustomSelectDropdown('productDescriptionFilter', 'All Descriptions');
+            setupCustomSelectDropdown('productDescriptionFilter', 'All Categories');
             setupCustomSelectDropdown('brandFilter', 'All Brands');
             setupCustomSelectDropdown('sizeFilter', 'All Sizes');
 

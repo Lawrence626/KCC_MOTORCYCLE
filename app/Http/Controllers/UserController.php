@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -177,7 +178,8 @@ class UserController extends Controller
             'password.confirmed' => 'The password confirmation does not match.',
         ]);
 
-        // Remove file object from $data — we store the path string manually below
+        // ALWAYS remove avatar from $data immediately — it may contain an UploadedFile
+        // object which, if passed to update(), gets cast to the raw Windows temp path.
         unset($data['avatar']);
 
         // Only update password when explicitly provided
@@ -185,16 +187,56 @@ class UserController extends Controller
             unset($data['password']);
         }
 
-        // Store the avatar and add the path to $data only when a valid file exists.
-        // Never touch the DB avatar column when no new file is uploaded.
+        // Store the avatar and add the STORAGE path string to $data.
+        // Only runs when a valid file was actually uploaded.
         if ($hasValidAvatar) {
             try {
-                $path = $request->file('avatar')->store('avatars', 'public');
-                if ($path !== false && $path !== null && $path !== '') {
-                    $data['avatar'] = $path;
+                $file = $request->file('avatar');
+
+                // Determine extension safely
+                $extension = strtolower($file->getClientOriginalExtension());
+                if ($extension === '') {
+                    $mimeMap = [
+                        'image/jpeg' => 'jpg',
+                        'image/jpg'  => 'jpg',
+                        'image/png'  => 'png',
+                        'image/gif'  => 'gif',
+                        'image/webp' => 'webp',
+                    ];
+                    $mime      = $file->getMimeType() ?? '';
+                    $extension = $mimeMap[$mime] ?? ($file->extension() ?: 'jpg');
+                }
+
+                $filename = 'avatar_' . $user->id . '_' . time() . '.' . $extension;
+
+                // Ensure directory exists
+                Storage::disk('public')->makeDirectory('avatars');
+
+                // Read file content safely across platforms (handling Windows realpath returning false)
+                $tempPath = $file->getRealPath() ?: $file->getPathname();
+                $contents = false;
+
+                if (!empty($tempPath) && file_exists($tempPath)) {
+                    $contents = @file_get_contents($tempPath);
+                }
+
+                if ($contents === false || $contents === null) {
+                    $contents = $file->getContent();
+                }
+
+                if ($contents !== false && $contents !== null) {
+                    $stored = Storage::disk('public')->put('avatars/' . $filename, $contents);
+                    if ($stored) {
+                        // Delete previous avatar file if exists
+                        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                            Storage::disk('public')->delete($user->avatar);
+                        }
+                        $data['avatar'] = 'avatars/' . $filename;
+                    }
                 }
             } catch (\Throwable $e) {
-                // Storage failed — skip avatar update, leave existing photo intact
+                // Storage failed — leave existing photo intact
+                \Illuminate\Support\Facades\Log::error('Avatar upload failed: ' . $e->getMessage());
             }
         }
 
