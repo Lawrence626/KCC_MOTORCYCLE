@@ -4,8 +4,8 @@
             --brand: #0f172a;
             --brand-soft: #e2e8f0;
             --brand-dark: #020617;
-            --accent-cyan: #00fff2;
-            --accent-cyan-hover: #00e6da;
+            --accent-cyan: #6EC1D1;
+            --accent-cyan-hover: #59b2c2;
             --card-bg: #ffffff;
             --surface: #f8fafc;
             --muted: #64748b;
@@ -45,13 +45,13 @@
         .remove-product-row:hover { color: #b91c1c; }
         .modal-actions { border-top: 1px solid #e2e8f0; padding-top: 0.75rem; }
         .modal-footer-button { border-radius: 10px; padding: 0.4rem 0.9rem; font-size: 0.75rem; font-weight: 600; transition: all 0.15s ease; }
-        .modal-footer-button.primary { background: #00fff2; color: #000; border: 1px solid rgba(0, 255, 242, 0.4); }
-        .modal-footer-button.primary:hover { background: #00e6da; }
+        .modal-footer-button.primary { background: #6EC1D1; color: #000; border: 1px solid rgba(110, 193, 209, 0.4); }
+        .modal-footer-button.primary:hover { background: #59b2c2; }
         .modal-footer-button.secondary { background: #ffffff; color: #334155; border: 1px solid #cbd5e1; }
         .modal-footer-button.secondary:hover { background: #f8fafc; }
         .toast-container { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 60; display: flex; flex-direction: column; gap: 0.75rem; pointer-events: none; width: max-content; min-width: 280px; }
         .toast { pointer-events: auto; display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; background: #0f172a; color: #fff; border-radius: 12px; box-shadow: 0 10px 25px rgba(15,23,42,0.18); padding: 0.6rem 0.85rem; font-size: 0.8rem; animation: toast-in 0.22s ease forwards; }
-        .toast.success { background: #0f172a; border-left: 4px solid #00fff2; }
+        .toast.success { background: #0f172a; border-left: 4px solid #6EC1D1; }
         .toast.error { background: #ef4444; }
         .toast button { background: transparent; border: none; color: rgba(255,255,255,0.95); cursor: pointer; font-size: 0.9rem; line-height: 1; padding: 0; }
         @keyframes toast-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -73,7 +73,7 @@
                 <p class="text-xs text-slate-500 mt-1">Track and manage products across shop shelves for POS sales</p>
             </div>
             <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap pr-4 relative z-[100000001]">
-                <button id="add-shelf-button" type="button" class="inline-flex items-center gap-2 rounded-[10px] border border-[#00fff2]/40 bg-[#00fff2] px-3 py-2 text-sm font-bold text-black shadow-sm hover:bg-[#00e6da] focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap" onclick="openAddShelfModal()">
+                <button id="add-shelf-button" type="button" class="inline-flex items-center gap-2 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-2 text-sm font-bold text-black shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap" onclick="openAddShelfModal()">
                     + Add Shelf
                 </button>
                 <button id="transfer-from-warehouse" type="button" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-900 bg-[#0f172a] px-3 py-2 text-sm font-bold text-white shadow-sm hover:bg-slate-800 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
@@ -99,34 +99,34 @@
 
         <!-- Metrics Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Total Shop Products</p>
                         <div class="mt-1">
                             <p id="total-products" class="text-2xl font-bold text-black">{{ number_format($totalProducts ?? 0) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Items allocated across active shop shelves.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Total Shop Shelves</p>
                         <div class="mt-1">
                             <p id="total-shelves" class="text-2xl font-bold text-black">{{ number_format($totalShelves ?? 0) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Active retail display shelves in shop.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                             <polyline points="22 4 12 14.01 9 11.01" />
                         </svg>
@@ -147,7 +147,7 @@
                 <div class="flex flex-wrap items-center justify-end gap-2 w-full lg:w-auto">
                     <div class="relative inline-block" id="dd-desc-wrapper">
                         <select id="product-description-filter" class="hidden">
-                            <option value="">All Descriptions</option>
+                            <option value="">All Categories</option>
                             @php
                                 $descriptions = \App\Models\ProductDescription::where('is_active', true)->orderBy('name')->get();
                                 foreach($descriptions as $desc):
@@ -156,11 +156,11 @@
                             @php endforeach; @endphp
                         </select>
                         <button type="button" onclick="toggleDropdown('dd-desc-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
-                            <span id="dd-desc-label">All Descriptions</span>
+                            <span id="dd-desc-label">All Categories</span>
                             <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                         <div id="dd-desc-menu" class="hidden absolute left-0 top-full z-50 mt-1 min-w-[160px] rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
-                            <button type="button" onclick="selectShopDropdownOption('product-description-filter', 'dd-desc-label', 'dd-desc-menu', '', 'All Descriptions')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Descriptions</button>
+                            <button type="button" onclick="selectShopDropdownOption('product-description-filter', 'dd-desc-label', 'dd-desc-menu', '', 'All Descriptions')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Categories</button>
                             @foreach($descriptions as $desc)
                                 <button type="button" onclick="selectShopDropdownOption('product-description-filter', 'dd-desc-label', 'dd-desc-menu', '{{ addslashes($desc->name) }}', '{{ addslashes($desc->name) }}')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">
                                     {{ $desc->name }}
@@ -238,14 +238,14 @@
                             <div class="map-unit shelf-card">
                                 <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-200/60">
                                     <div class="flex items-center gap-2.5">
-                                        <div class="flex h-7 w-7 items-center justify-center rounded-[8px] bg-[#00fff2] text-black text-xs font-bold shadow-sm">{{ strtoupper(substr($shelf->name, -1)) }}</div>
+                                        <div class="flex h-7 w-7 items-center justify-center rounded-[8px] bg-[#6EC1D1] text-black text-xs font-bold shadow-sm">{{ strtoupper(substr($shelf->name, -1)) }}</div>
                                         <div>
                                             <div class="text-xs font-bold text-slate-900 shelf-name">{{ $shelf->name }}</div>
                                             <div class="text-[10px] text-slate-500 shelf-location">{{ $shelf->location ?? 'No location' }}</div>
                                         </div>
                                     </div>
                                     <div>
-                                        <select class="action-select text-xs text-slate-700 px-2.5 py-1 border border-slate-300 rounded-[10px] bg-white hover:bg-slate-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#00fff2]" onchange="handleShelfAction(this, {{ $shelf->id }})">
+                                        <select class="action-select text-xs text-slate-700 px-2.5 py-1 border border-slate-300 rounded-[10px] bg-white hover:bg-slate-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#6EC1D1]" onchange="handleShelfAction(this, {{ $shelf->id }})">
                                             <option value="">Actions</option>
                                             <option value="edit-shelf">Edit Shelf</option>
                                             <option value="transfer-products">Transfer Products</option>
@@ -337,19 +337,19 @@
 
                     <!-- Shelf and Product Selection -->
                     <div class="flex gap-3">
-                        <div class="flex-1">
+                        <div class="flex-1 min-w-0">
                             <label class="block text-xs text-gray-500 mb-1">Warehouse</label>
                             <select id="warehouse-select" class="w-full px-3 py-2 border rounded-lg text-sm">
                                 <option value="">Select warehouse</option>
                             </select>
                         </div>
-                        <div class="flex-1">
+                        <div class="flex-1 min-w-0">
                             <label class="block text-xs text-gray-500 mb-1">Warehouse Shelf</label>
                             <select id="warehouse-shelf-select" class="w-full px-3 py-2 border rounded-lg text-sm" disabled>
                                 <option value="">Select shelf</option>
                             </select>
                         </div>
-                        <div class="flex-1">
+                        <div class="flex-1 min-w-0">
                             <label class="block text-xs text-gray-500 mb-1">Product</label>
                             <select id="warehouse-product-select" class="w-full px-3 py-2 border rounded-lg text-sm" disabled>
                                 <option value="">Select product</option>
@@ -385,10 +385,10 @@
     <div id="transfer-shelves-modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('transfer-shelves-modal').classList.add('hidden')"></div>
         <div class="relative modal-panel w-full max-w-lg overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Transfer Between Shop Shelves</h2>
-                    <p class="text-sm text-slate-800 font-medium">Move products between active shop shelf locations.</p>
+                    <p class="text-sm text-slate-900 font-medium">Move products between active shop shelf locations.</p>
                 </div>
                 <button type="button" onclick="document.getElementById('transfer-shelves-modal').classList.add('hidden')" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -417,7 +417,7 @@
                 </div>
                 <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
                     <button type="button" id="cancel-transfer-shelves" class="rounded-[10px] bg-black/10 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-black/20 transition cursor-pointer">Cancel</button>
-                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">Transfer Products</button>
+                    <button type="submit" class="rounded-[10px] bg-[#6EC1D1] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300 transition cursor-pointer">Transfer Products</button>
                 </div>
             </form>
         </div>
@@ -427,10 +427,10 @@
     <div id="return-warehouse-modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('return-warehouse-modal').classList.add('hidden')"></div>
         <div class="relative modal-panel w-full max-w-lg overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Return Products to Warehouse</h2>
-                    <p class="text-sm text-slate-800 font-medium">Transfer inventory back from shop shelves to warehouse.</p>
+                    <p class="text-sm text-slate-900 font-medium">Transfer inventory back from shop shelves to warehouse.</p>
                 </div>
                 <button type="button" onclick="document.getElementById('return-warehouse-modal').classList.add('hidden')" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -453,7 +453,7 @@
                 </div>
                 <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
                     <button type="button" id="cancel-return-warehouse" class="rounded-[10px] bg-black/10 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-black/20 transition cursor-pointer">Cancel</button>
-                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">Return Products</button>
+                    <button type="submit" class="rounded-[10px] bg-[#6EC1D1] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300 transition cursor-pointer">Return Products</button>
                 </div>
             </form>
         </div>
@@ -463,10 +463,10 @@
     <div id="history-modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('history-modal').classList.add('hidden')"></div>
         <div class="relative modal-panel w-full max-w-3xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)] flex flex-col">
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Shop Inventory History</h2>
-                    <p class="text-sm text-slate-800 font-medium">Audit inventory transfers, sales, and modifications.</p>
+                    <p class="text-sm text-slate-900 font-medium">Audit inventory transfers, sales, and modifications.</p>
                 </div>
                 <button type="button" onclick="document.getElementById('history-modal').classList.add('hidden')" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -498,17 +498,17 @@
                         </select>
                     </div>
                     <div id="custom-date-range" class="hidden flex gap-3 flex-1 min-w-[200px]">
-                        <div class="flex-1">
+                        <div class="flex-1 min-w-0">
                             <label class="block text-xs font-semibold text-slate-600 mb-1">From</label>
                             <input type="date" id="history-from-date" class="w-full px-3 py-2 border border-slate-300 rounded-[12px] text-sm focus:outline-none focus:ring-1 focus:ring-black/35">
                         </div>
-                        <div class="flex-1">
+                        <div class="flex-1 min-w-0">
                             <label class="block text-xs font-semibold text-slate-600 mb-1">To</label>
                             <input type="date" id="history-to-date" class="w-full px-3 py-2 border border-slate-300 rounded-[12px] text-sm focus:outline-none focus:ring-1 focus:ring-black/35">
                         </div>
                     </div>
                     <div class="flex items-end">
-                        <button type="button" id="apply-date-filter" class="px-4 py-2 bg-[#00fff2] text-black font-bold rounded-[10px] text-sm hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">Filter</button>
+                        <button type="button" id="apply-date-filter" class="px-4 py-2 bg-[#6EC1D1] text-black font-bold rounded-[10px] text-sm hover:bg-[#59b2c2] ring-1 ring-slate-300 transition cursor-pointer">Filter</button>
                     </div>
                 </div>
 
@@ -975,7 +975,7 @@
                 if (locationSelect) locationSelect.innerHTML = '<option value="">Select location</option>';
                 if (locationLabel) locationLabel.textContent = 'Select location';
 
-                let menuHtml = `<button type="button" onclick="selectAddShelfLocationOption('', 'Select location')" class="w-full text-center px-3 py-2.5 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">Select location</button>`;
+                let menuHtml = `<button type="button" onclick="selectAddShelfLocationOption('', 'Select location')" class="w-full text-left px-3 py-2.5 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">Select location</button>`;
 
                 if (data.success && data.sections && data.sections.length > 0) {
                     data.sections.forEach(section => {
@@ -992,14 +992,14 @@
                         }
 
                         if (section.available > 0) {
-                            menuHtml += `<button type="button" onclick="selectAddShelfLocationOption('${section.name}', '${section.name}')" class="w-full text-center px-3 py-2.5 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">${optText}</button>`;
+                            menuHtml += `<button type="button" onclick="selectAddShelfLocationOption('${section.name}', '${section.name}')" class="w-full text-left px-3 py-2.5 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">${optText}</button>`;
                         } else {
-                            menuHtml += `<button type="button" disabled class="w-full text-center px-3 py-2.5 rounded-[8px] text-xs font-semibold text-slate-400 bg-slate-50 cursor-not-allowed">${optText}</button>`;
+                            menuHtml += `<button type="button" disabled class="w-full text-left px-3 py-2.5 rounded-[8px] text-xs font-semibold text-slate-400 bg-slate-50 cursor-not-allowed">${optText}</button>`;
                         }
                     });
                 }
 
-                menuHtml += `<button type="button" onclick="selectAddShelfLocationOption('ADD_NEW_SECTION', '+ Add New Section')" class="w-full text-center px-3 py-2.5 rounded-[8px] text-xs font-bold text-black hover:bg-slate-100 transition cursor-pointer">+ Add New Section</button>`;
+                menuHtml += `<button type="button" onclick="selectAddShelfLocationOption('ADD_NEW_SECTION', '+ Add New Section')" class="w-full text-left px-3 py-2.5 rounded-[8px] text-xs font-bold text-black hover:bg-slate-100 transition cursor-pointer">+ Add New Section</button>`;
 
                 if (locationMenu) locationMenu.innerHTML = menuHtml;
 
@@ -1614,7 +1614,7 @@
                 const productRow = document.createElement('div');
                 productRow.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg';
                 productRow.innerHTML = `
-                    <div class="flex-1">
+                    <div class="flex-1 min-w-0">
                         <p class="font-medium text-sm">${product.name}</p>
                         <p class="text-xs text-gray-500">SKU: ${product.sku} | Qty: ${product.quantity}</p>
                     </div>
@@ -1744,8 +1744,8 @@
                         const historyItem = document.createElement('div');
                         historyItem.className = 'p-4 bg-gray-50 rounded-lg';
                         historyItem.innerHTML = `
-                            <div class="flex items-start justify-between">
-                                <div class="flex-1">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-2 mb-2">
                                         <span class="px-2 py-1 rounded text-xs font-medium ${colorClass}">${actionLabel}</span>
                                         <span class="text-xs text-gray-500">${new Date(item.created_at).toLocaleString()}</span>
@@ -1839,10 +1839,10 @@
     <div id="add-shelf-modal-backdrop" class="fixed inset-0 hidden items-center justify-center z-[100000002] px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeAddShelfModal()"></div>
         <div class="relative modal-panel w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)] flex flex-col">
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Add Shelf</h2>
-                    <p class="text-sm text-slate-800 font-medium">Configure shelf location, capacity, and products before saving.</p>
+                    <p class="text-sm text-slate-900 font-medium">Configure shelf location, capacity, and products before saving.</p>
                 </div>
                 <button id="add-shelf-modal-close" type="button" onclick="closeAddShelfModal()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -1868,7 +1868,7 @@
                                     <svg class="w-4 h-4 text-slate-500 flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </button>
                                 <div id="addShelfLocationDropdownMenu" class="hidden absolute left-0 right-0 top-full z-[100000005] mt-1 rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
-                                    <button type="button" onclick="selectAddShelfLocationOption('', 'Select location')" class="w-full text-center px-3 py-2.5 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">Select location</button>
+                                    <button type="button" onclick="selectAddShelfLocationOption('', 'Select location')" class="w-full text-left px-3 py-2.5 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">Select location</button>
                                 </div>
                             </div>
                             <input type="text" id="add-shelf-new-section" class="hidden block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm mt-2" placeholder="Enter new section name" />
@@ -1902,7 +1902,7 @@
 
                 <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
                     <button type="button" id="add-shelf-modal-cancel" onclick="closeAddShelfModal()" class="rounded-[10px] bg-black/10 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-black/20 transition cursor-pointer">Cancel</button>
-                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">Save shelf</button>
+                    <button type="submit" class="rounded-[10px] bg-[#6EC1D1] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300 transition cursor-pointer">Save shelf</button>
                 </div>
             </form>
         </div>
@@ -1912,10 +1912,10 @@
     <div id="edit-modal-backdrop" class="fixed inset-0 hidden items-center justify-center z-50 px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeEditModal()"></div>
         <div class="relative modal-panel w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)] flex flex-col">
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 id="edit-modal-title" class="text-xl font-bold text-black">Edit Shelf</h2>
-                    <p class="text-sm text-slate-800 font-medium">Update shelf information and assigned products.</p>
+                    <p class="text-sm text-slate-900 font-medium">Update shelf information and assigned products.</p>
                 </div>
                 <button id="edit-modal-close" type="button" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -1964,7 +1964,7 @@
 
                 <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
                     <button type="button" id="edit-modal-cancel" class="rounded-[10px] bg-black/10 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-black/20 transition cursor-pointer">Cancel</button>
-                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 transition cursor-pointer">Save Changes</button>
+                    <button type="submit" class="rounded-[10px] bg-[#6EC1D1] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300 transition cursor-pointer">Save Changes</button>
                 </div>
             </form>
         </div>

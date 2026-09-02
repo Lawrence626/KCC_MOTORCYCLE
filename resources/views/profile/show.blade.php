@@ -90,7 +90,7 @@
                 </div>
 
                 <div class="mt-6">
-                    <button id="openEditProfile" type="button" class="w-full px-4 py-3 text-sm font-semibold text-black transition" style="border-radius: 15px; background-color: #00fff2ff;" onmouseover="this.style.backgroundColor='#00e6da'" onmouseout="this.style.backgroundColor='#00fff2ff'">
+                    <button id="openEditProfile" type="button" class="w-full px-4 py-3 text-sm font-semibold text-black transition" style="border-radius: 15px; background-color: #6EC1D1;" onmouseover="this.style.backgroundColor='#59b2c2'" onmouseout="this.style.backgroundColor='#6EC1D1'">
                         Edit Profile
                     </button>
                 </div>
@@ -140,10 +140,10 @@
     <div id="editOverlay" class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl"></div>
 
     <div id="editProfileModalPanel" class="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)] z-10 flex flex-col">
-        <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+        <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
             <div>
                 <h2 class="text-xl font-bold text-black">Edit Profile</h2>
-                <p class="text-sm text-slate-800 font-medium">Update your personal information and profile picture.</p>
+                <p class="text-sm text-slate-900 font-medium">Update your personal information and profile picture.</p>
             </div>
             <button id="closeEditProfile" type="button" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -202,9 +202,9 @@
                                 </button>
                                 <div id="editProfileGenderDropdown" class="dropdown-menu hidden fixed z-[9999] rounded-[10px] border border-slate-200 bg-white shadow-lg p-1.5 space-y-0.5">
                                     @foreach(['Male' => 'Male', 'Female' => 'Female'] as $value => $label)
-                                        <button type="button" onclick="selectEditProfileDropdown(event, 'editProfileGenderInput', '{{ $value }}', 'editProfileGenderButton', '{{ $label }}', 'editProfileGenderDropdown')" class="w-full px-3 py-1.5 text-center text-xs {{ $currentGender === $value ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[8px]">{{ $label }}</button>
+                                        <button type="button" onclick="selectEditProfileDropdown(event, 'editProfileGenderInput', '{{ $value }}', 'editProfileGenderButton', '{{ $label }}', 'editProfileGenderDropdown')" class="w-full px-3 py-1.5 text-left text-xs {{ $currentGender === $value ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[8px]">{{ $label }}</button>
                                     @endforeach
-                                    <button type="button" onclick="selectEditProfileDropdown(event, 'editProfileGenderInput', '', 'editProfileGenderButton', 'Other', 'editProfileGenderDropdown')" class="w-full px-3 py-1.5 text-center text-xs {{ empty($currentGender) ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[8px]">Other</button>
+                                    <button type="button" onclick="selectEditProfileDropdown(event, 'editProfileGenderInput', '', 'editProfileGenderButton', 'Other', 'editProfileGenderDropdown')" class="w-full px-3 py-1.5 text-left text-xs {{ empty($currentGender) ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[8px]">Other</button>
                                 </div>
                             </div>
                             <div>
@@ -268,7 +268,7 @@
 
                     <div class="flex gap-3">
                         <button type="button" id="cancelEditProfile" class="flex-1 rounded-[10px] bg-black/10 px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-black/20">Cancel</button>
-                        <button type="submit" class="flex-1 rounded-[10px] bg-[#00fff2] px-4 py-3 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300">Save Changes</button>
+                        <button type="submit" class="flex-1 rounded-[10px] bg-[#6EC1D1] px-4 py-3 text-sm font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300">Save Changes</button>
                     </div>
                 </div>
             </div>

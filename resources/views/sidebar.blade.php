@@ -42,20 +42,20 @@
                     <path d="M6 10l6 6 6-6H6z" />
                 </svg>
             </button>
-            <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-cyan-400/40 space-y-0.5 mt-1">
-                <a href="{{ route('inventory.monitoring') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('inventory.monitoring'), 'text-slate-400' => !request()->routeIs('inventory.monitoring')])>
+            <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-[#6EC1D1]/40 space-y-0.5 mt-1">
+                <a href="{{ route('inventory.monitoring') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('inventory.monitoring'), 'text-slate-400' => !request()->routeIs('inventory.monitoring')])>
                     <span>Inventory Monitoring</span>
                 </a>
-                <a href="{{ route('allstocks') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('allstocks'), 'text-slate-400' => !request()->routeIs('allstocks')])>
+                <a href="{{ route('allstocks') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('allstocks'), 'text-slate-400' => !request()->routeIs('allstocks')])>
                     <span>All Stocks</span>
                 </a>
-                <a href="{{ route('product.categorization') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('product.categorization'), 'text-slate-400' => !request()->routeIs('product.categorization')])>
+                <a href="{{ route('product.categorization') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('product.categorization'), 'text-slate-400' => !request()->routeIs('product.categorization')])>
                     <span>Product Categorization</span>
                 </a>
-                <a href="{{ route('item.disposal') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('item.disposal'), 'text-slate-400' => !request()->routeIs('item.disposal')])>
+                <a href="{{ route('item.disposal') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('item.disposal'), 'text-slate-400' => !request()->routeIs('item.disposal')])>
                     <span>Item Disposal List</span>
                 </a>
-                <a href="{{ route('reverse-logistics') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('reverse-logistics'), 'text-slate-400' => !request()->routeIs('reverse-logistics')])>
+                <a href="{{ route('reverse-logistics') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('reverse-logistics'), 'text-slate-400' => !request()->routeIs('reverse-logistics')])>
                     <span>Reverse Logistics</span>
                 </a>
             </div>
@@ -81,16 +81,16 @@
                     <path d="M6 10l6 6 6-6H6z" />
                 </svg>
             </button>
-            <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-cyan-400/40 space-y-0.5 mt-1">
-                <a href="{{ route('inventory.monitoring') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('inventory.monitoring'), 'text-slate-400' => !request()->routeIs('inventory.monitoring')])>
+            <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-[#6EC1D1]/40 space-y-0.5 mt-1">
+                <a href="{{ route('inventory.monitoring') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('inventory.monitoring'), 'text-slate-400' => !request()->routeIs('inventory.monitoring')])>
                     <span>Inventory Monitoring</span>
                 </a>
                 @if(auth()->user()->role === 'warehouse_personnel')
-                <a href="{{ route('allstocks') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('allstocks'), 'text-slate-400' => !request()->routeIs('allstocks')])>
+                <a href="{{ route('allstocks') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('allstocks'), 'text-slate-400' => !request()->routeIs('allstocks')])>
                     <span>All Stocks</span>
                 </a>
                 @endif
-                <a href="{{ route('product.categorization') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('product.categorization'), 'text-slate-400' => !request()->routeIs('product.categorization')])>
+                <a href="{{ route('product.categorization') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('product.categorization'), 'text-slate-400' => !request()->routeIs('product.categorization')])>
                     <span>Product Categorization</span>
                 </a>
             </div>
@@ -113,11 +113,11 @@
                     <path d="M6 10l6 6 6-6H6z" />
                 </svg>
             </button>
-            <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-cyan-400/40 space-y-0.5 mt-1">
-                <a href="{{ route('pos.terminal') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('pos.terminal'), 'text-slate-400' => !request()->routeIs('pos.terminal')])>
+            <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-[#6EC1D1]/40 space-y-0.5 mt-1">
+                <a href="{{ route('pos.terminal') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('pos.terminal'), 'text-slate-400' => !request()->routeIs('pos.terminal')])>
                     <span>POS Terminal</span>
                 </a>
-                <a href="{{ route('replacing.items') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('replacing.items'), 'text-slate-400' => !request()->routeIs('replacing.items')])>
+                <a href="{{ route('replacing.items') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('replacing.items'), 'text-slate-400' => !request()->routeIs('replacing.items')])>
                     <span>Records of Replacing Items</span>
                 </a>
             </div>
@@ -141,11 +141,11 @@
                     <path d="M6 10l6 6 6-6H6z" />
                 </svg>
             </button>
-            <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-cyan-400/40 space-y-0.5 mt-1">
-                <a href="{{ route('order.management') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('order.*'), 'text-slate-400' => !request()->routeIs('order.*')])>
+            <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-[#6EC1D1]/40 space-y-0.5 mt-1">
+                <a href="{{ route('order.management') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('order.*'), 'text-slate-400' => !request()->routeIs('order.*')])>
                     <span>Order Management</span>
                 </a>
-                <a href="{{ route('received.orders') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('received.orders'), 'text-slate-400' => !request()->routeIs('received.orders')])>
+                <a href="{{ route('received.orders') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('received.orders'), 'text-slate-400' => !request()->routeIs('received.orders')])>
                     <span>Received Orders</span>
                 </a>
             </div>
@@ -168,20 +168,20 @@
                     <path d="M6 10l6 6 6-6H6z" />
                 </svg>
             </button>
-            <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-cyan-400/40 space-y-0.5 mt-1">
-                <a href="{{ route('sales.analytics') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('sales.analytics'), 'text-slate-400' => !request()->routeIs('sales.analytics')])>
+            <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-[#6EC1D1]/40 space-y-0.5 mt-1">
+                <a href="{{ route('sales.analytics') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('sales.analytics'), 'text-slate-400' => !request()->routeIs('sales.analytics')])>
                     <span>Sales Analytics</span>
                 </a>
-                <a href="{{ route('pricing.module') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('pricing.module'), 'text-slate-400' => !request()->routeIs('pricing.module')])>
+                <a href="{{ route('pricing.module') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('pricing.module'), 'text-slate-400' => !request()->routeIs('pricing.module')])>
                     <span>Pricing Module</span>
                 </a>
-                <a href="{{ route('overstocking.report') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('overstocking.report'), 'text-slate-400' => !request()->routeIs('overstocking.report')])>
+                <a href="{{ route('overstocking.report') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('overstocking.report'), 'text-slate-400' => !request()->routeIs('overstocking.report')])>
                     <span>Overstocking Report</span>
                 </a>
-                <a href="{{ route('out.of.stock') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('out.of.stock'), 'text-slate-400' => !request()->routeIs('out.of.stock')])>
+                <a href="{{ route('out.of.stock') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('out.of.stock'), 'text-slate-400' => !request()->routeIs('out.of.stock')])>
                     <span>Out of Stock Report</span>
                 </a>
-                <a href="{{ route('dss.dead-stock.index') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-cyan-300 font-semibold' => request()->routeIs('dss.dead-stock*'), 'text-slate-400' => !request()->routeIs('dss.dead-stock*')])>
+                <a href="{{ route('dss.dead-stock.index') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('dss.dead-stock*'), 'text-slate-400' => !request()->routeIs('dss.dead-stock*')])>
                     <span>Dead Stock Analysis</span>
                 </a>
             </div>
@@ -351,16 +351,16 @@
         font-weight: 600;
     }
 
-    /* Arrow: points up by default, animates to point down when submenu is open.
+    /* Arrow: points down by default, animates to point up when submenu is open.
        FIX: dinagdagan ng color transition (parehong 0.5s/easing) para
        sabay ring mag-color-change ang arrow kasabay ng box wipe. */
     .sidebar-arrow {
         transition: transform 0.25s ease, color 0.5s cubic-bezier(0.65, 0, 0.35, 1);
-        transform: rotate(180deg);
+        transform: rotate(0deg);
     }
 
     .group.open .sidebar-arrow {
-        transform: rotate(0deg);
+        transform: rotate(180deg);
     }
 
     /* ============================================
@@ -426,6 +426,7 @@
        not needed) */
     .sidebar-nav-item.bg-cyan-500\/5::before,
     .sidebar-group-toggle.bg-cyan-500\/5::before,
+    .sidebar-group-content .sidebar-nav-item.text-\[\#6EC1D1\]::before,
     .sidebar-group-content .sidebar-nav-item.text-cyan-300::before {
         display: none;
     }
@@ -467,7 +468,7 @@
         left: 12px;
         right: 18px;
         border-radius: 16px;
-        background: #00ddd2;
+        background: #6EC1D1;
         transform: scaleX(1);
         transform-origin: left;
         animation: wipeInRight 0.5s cubic-bezier(0.65, 0, 0.35, 1);
@@ -516,34 +517,41 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function highlightParentButton(group) {
+    function updateGroupState(group) {
         const button = group.querySelector('.sidebar-group-toggle');
         const arrow = group.querySelector('.sidebar-arrow');
         if (!button) return;
 
-        button.classList.remove('text-slate-300', 'border-transparent');
-        button.classList.add('bg-cyan-500/5', 'text-cyan-400', 'border-cyan-400');
+        const isOpen = group.classList.contains('open');
+        const isActive = hasActiveSubmodule(group);
 
-        if (arrow) {
-            arrow.classList.remove('text-slate-400');
-            arrow.classList.add('text-cyan-400');
+        if (isOpen || isActive) {
+            button.classList.remove('text-slate-300', 'border-transparent');
+            button.classList.add('bg-cyan-500/5', 'text-cyan-400', 'border-cyan-400');
+            if (arrow) {
+                arrow.classList.remove('text-slate-400');
+                arrow.classList.add('text-cyan-400');
+            }
+        } else {
+            button.classList.remove('bg-cyan-500/5', 'text-cyan-400', 'border-cyan-400');
+            button.classList.add('text-slate-300', 'border-transparent');
+            if (arrow) {
+                arrow.classList.remove('text-cyan-400');
+                arrow.classList.add('text-slate-400');
+            }
         }
     }
 
-    function closeAllMenus() {
-        allGroups.forEach(g => g.classList.remove('open'));
-    }
-
     function hasActiveSubmodule(group) {
-        const activeSubmodule = group.querySelector('.sidebar-group-content .sidebar-nav-item.text-cyan-300, .sidebar-group-content .sidebar-nav-item.font-semibold');
+        const activeSubmodule = group.querySelector('.sidebar-group-content .sidebar-nav-item.text-\\[\\#6EC1D1\\], .sidebar-group-content .sidebar-nav-item.text-cyan-300, .sidebar-group-content .sidebar-nav-item.font-semibold');
         return activeSubmodule !== null;
     }
 
     allGroups.forEach(group => {
         if (hasActiveSubmodule(group)) {
-            highlightParentButton(group);
             group.classList.add('open');
         }
+        updateGroupState(group);
     });
 
     allGroups.forEach(group => {
@@ -554,48 +562,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
         button.addEventListener('click', function(event) {
             event.preventDefault();
-            const isOpen = group.classList.contains('open');
+            const willOpen = !group.classList.contains('open');
 
-            clearAllHighlights();
-            clearDirectNavHighlights();
-            closeAllMenus();
-
-            allGroups.forEach(g => {
-                if (hasActiveSubmodule(g)) {
-                    highlightParentButton(g);
+            // Close all other groups (single accordion open state)
+            allGroups.forEach(otherGroup => {
+                if (otherGroup !== group) {
+                    otherGroup.classList.remove('open');
+                    updateGroupState(otherGroup);
                 }
             });
 
-            if (!isOpen) {
+            if (willOpen) {
                 group.classList.add('open');
-                highlightParentButton(group);
+            } else {
+                group.classList.remove('open');
             }
-
-            document.querySelectorAll('.sidebar-group-content .sidebar-nav-item.active').forEach(activeItem => {
-                activeItem.classList.remove('active');
-            });
-        });
-    });
-
-    const allSubmodules = document.querySelectorAll('.sidebar-group-content .sidebar-nav-item');
-    allSubmodules.forEach(item => {
-        item.addEventListener('click', function() {
-            allSubmodules.forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
-
-            const parentGroup = this.closest('.group');
-            if (parentGroup) {
-                clearAllHighlights();
-                clearDirectNavHighlights();
-                highlightParentButton(parentGroup);
-            }
-        });
-    });
-
-    allDirectNavItems.forEach(item => {
-        item.addEventListener('click', function() {
-            clearAllHighlights();
-            closeAllMenus();
+            updateGroupState(group);
         });
     });
 });

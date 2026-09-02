@@ -26,7 +26,7 @@
     <div class="space-y-6">
         <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
-        <div class="flex items-start justify-between">
+        <div class="flex items-start justify-between gap-2">
             <div>
                 <h1 class="text-3xl font-extrabold text-slate-900">Archived Warehouses</h1>
                 <p class="mt-2 text-sm text-gray-500">Manage and restore archived warehouses.</p>
@@ -45,7 +45,7 @@
             <div class="grid gap-6 mt-4">
                 @foreach($archivedWarehouses as $warehouse)
                 <div class="wm-card rounded-lg p-4 shadow-sm">
-                    <div class="flex items-start justify-between">
+                    <div class="flex items-start justify-between gap-2">
                         <div>
                             <div class="flex items-center space-x-3">
                                 <div class="w-12 h-12 rounded-md flex items-center justify-center text-white font-semibold bg-gradient-to-r from-orange-500 to-orange-600">

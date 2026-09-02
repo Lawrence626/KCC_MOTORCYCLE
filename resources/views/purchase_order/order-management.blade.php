@@ -38,17 +38,17 @@
             </div>
         </div>
 <div class="grid gap-4 sm:grid-cols-3">
-    <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-        <div class="flex items-start justify-between">
-            <div class="flex-1">
+    <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+        <div class="flex items-start justify-between gap-2">
+            <div class="flex-1 min-w-0">
                 <p class="text-black text-xs font-semibold">Total orders</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-black">{{ number_format($totalOrders) }}</p>
                     <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">All purchase orders created so far.</p>
                 </div>
             </div>
-            <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="currentColor">
+            <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                <svg class="w-5 h-5 text-[#145a66]" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M8 2a1 1 0 0 0-1 1v1H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7.101A6.5 6.5 0 0 1 12 18.5 6.5 6.5 0 0 1 18.5 12c.352 0 .696.027 1.032.08A2 2 0 0 0 20 10V6a2 2 0 0 0-2-2h-1V3a1 1 0 1 0-2 0v1H9V3a1 1 0 0 0-1-1Zm-2 9h6a1 1 0 1 1 0 2H6a1 1 0 1 1 0-2Zm0-4h10a1 1 0 1 1 0 2H6a1 1 0 1 1 0-2Zm0 8h4.5a1 1 0 1 1 0 2H6a1 1 0 1 1 0-2Z"/>
                     <path d="M18.5 13.5a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm2.78 3.72-3.25 3.25a.75.75 0 0 1-1.06 0l-1.25-1.25a.75.75 0 1 1 1.06-1.06l.72.72 2.72-2.72a.75.75 0 1 1 1.06 1.06Z"/>
                 </svg>
@@ -56,26 +56,26 @@
         </div>
     </div>
 
-    <div class="border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-        <div class="flex items-start justify-between">
-            <div class="flex-1">
+    <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+        <div class="flex items-start justify-between gap-2">
+            <div class="flex-1 min-w-0">
                 <p class="text-black text-xs font-semibold">In transit value</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-black">&#8369;{{ number_format($inTransitTotal, 2) }}</p>
                     <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Total value of orders currently in transit.</p>
                 </div>
             </div>
-            <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                <svg class="w-5 h-5 text-black" viewBox="0 0 20 20" fill="currentColor">
+            <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                <svg class="w-5 h-5 text-[#145a66]" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M3.375 4.25A2.125 2.125 0 0 0 1.25 6.375v8.75c0 .966.66 1.777 1.55 2.006a2.626 2.626 0 0 0 5.153-.256h4.11a2.626 2.626 0 0 0 5.13.256A2.001 2.001 0 0 0 18.75 15v-2.62a2 2 0 0 0-.386-1.185l-2.309-3.148A2 2 0 0 0 14.44 7.25H13V6.375A2.125 2.125 0 0 0 10.875 4.25h-7.5ZM13 8.75h1.44l1.965 2.677A.5.5 0 0 1 16 12H13V8.75ZM5.375 14.375a1.125 1.125 0 1 1 0 2.25 1.125 1.125 0 0 1 0-2.25Zm9.25 0a1.125 1.125 0 1 1 0 2.25 1.125 1.125 0 0 1 0-2.25Z" />
                 </svg>
             </div>
         </div>
     </div>
 
-    <div class="relative border border-gray-200 p-4 shadow-sm" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-        <div class="flex items-start justify-between">
-            <div class="flex-1">
+    <div class="relative border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+        <div class="flex items-start justify-between gap-2">
+            <div class="flex-1 min-w-0">
                 <p class="text-black text-xs font-semibold">Received {{ $receivedLabel }}</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-black">{{ number_format($receivedCount) }}</p>
@@ -88,12 +88,12 @@
                     <label class="block text-sm text-slate-700 relative" data-dropdown-wrapper="receivedRange">
                         <span class="sr-only">Received range</span>
                         <input type="hidden" name="received_range" id="receivedRangeInput" value="{{ $receivedRange }}" />
-                        <button type="button" id="receivedRangeButton" onclick="toggleDropdown('receivedRangeDropdown')" class="w-full min-w-[110px] px-2.5 py-1.5 rounded-[10px] border border-slate-300 bg-[#00fff2] text-xs font-bold text-slate-900 flex items-center justify-between gap-1.5 hover:border-[#00fff2] hover:shadow-md transition cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#00fff2] shadow-sm">
-                            <svg class="h-4 w-4 text-black flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <button type="button" id="receivedRangeButton" onclick="toggleDropdown('receivedRangeDropdown')" class="w-full min-w-[110px] px-2.5 py-1.5 rounded-[10px] text-xs font-bold text-[#145a66] flex items-center justify-between gap-1.5 transition cursor-pointer focus:outline-none focus:ring-0 shadow-sm" style="background-color: rgba(110, 193, 209, 0.18); border: none;">
+                            <svg class="h-4 w-4 text-[#145a66] flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
                             </svg>
                             <span>{{ ucfirst($receivedRange) }}</span>
-                            <svg class="w-3.5 h-3.5 text-slate-700 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-3.5 h-3.5 text-[#145a66] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                             </svg>
                         </button>
@@ -113,12 +113,12 @@
             <!-- Section Header Bar (matching All Stocks design) -->
             <div id="orderTabs" class="bg-[#0f172a] px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-slate-800 rounded-t-[15px]">
                 <div class="flex flex-wrap items-center gap-2">
-                    <button class="tab-btn rounded-[10px] bg-[#00FFF2] px-4 py-2 text-xs font-bold text-slate-900 shadow-sm transition-all" data-tab="orders">Purchase Orders</button>
+                    <button class="tab-btn rounded-[10px] bg-[#6EC1D1] px-4 py-2 text-xs font-bold text-slate-900 shadow-sm transition-all" data-tab="orders">Purchase Orders</button>
                     <button class="tab-btn rounded-[10px] border border-slate-700 bg-slate-800/80 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-all" data-tab="back_orders">Back Orders</button>
                     <button class="tab-btn rounded-[10px] border border-slate-700 bg-slate-800/80 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-all" data-tab="received">Received Orders</button>
                     <button class="tab-btn rounded-[10px] border border-slate-700 bg-slate-800/80 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-all" data-tab="cancelled">Cancelled Orders</button>
                 </div>
-                <a href="{{ route('order.create') }}" class="inline-flex items-center gap-2 rounded-[10px] bg-[#00FFF2] px-4 py-2 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#00D9CC] transition-all flex-shrink-0">
+                <a href="{{ route('order.create') }}" class="inline-flex items-center gap-2 rounded-[10px] bg-[#6EC1D1] px-4 py-2 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all flex-shrink-0">
                     <svg class="w-4 h-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -149,9 +149,9 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                             </svg>
                         </button>
-                        <div id="ordersStatusDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
+                        <div id="ordersStatusDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[9999] mt-1.5 w-full max-h-48 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-2xl p-2 space-y-1">
                             @foreach(['all status' => 'All Status', 'pending approval' => 'Pending Approval', 'approved' => 'Approved', 'sent to supplier' => 'Sent To Supplier', 'in transit' => 'In Transit'] as $value => $label)
-                                <button type="button" onclick="selectDropdown(event, 'ordersStatusInput', '{{ $value }}', 'ordersStatusButton', '{{ $label }}', 'ordersStatusDropdown', 'ordersForm')" class="w-full px-4 py-2.5 text-center text-sm {{ request('orders_status') === $value ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
+                                <button type="button" onclick="selectDropdown(event, 'ordersStatusInput', '{{ $value }}', 'ordersStatusButton', '{{ $label }}', 'ordersStatusDropdown', 'ordersForm')" class="w-full px-4 py-2 text-left text-sm {{ request('orders_status') === $value ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
                             @endforeach
                         </div>
                     </label>
@@ -164,10 +164,10 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                             </svg>
                         </button>
-                        <div id="ordersSupplierDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
-                            <button type="button" onclick="selectDropdown(event, 'ordersSupplierInput', '', 'ordersSupplierButton', 'All suppliers', 'ordersSupplierDropdown', 'ordersForm')" class="w-full px-4 py-2.5 text-center text-sm {{ empty(request('orders_supplier')) ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">All suppliers</button>
+                        <div id="ordersSupplierDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[9999] mt-1.5 w-full max-h-48 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-2xl p-2 space-y-1">
+                            <button type="button" onclick="selectDropdown(event, 'ordersSupplierInput', '', 'ordersSupplierButton', 'All suppliers', 'ordersSupplierDropdown', 'ordersForm')" class="w-full px-4 py-2.5 text-left text-sm {{ empty(request('orders_supplier')) ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">All suppliers</button>
                             @foreach($suppliers as $supplier)
-                                <button type="button" onclick="selectDropdown(event, 'ordersSupplierInput', '{{ $supplier->name }}', 'ordersSupplierButton', '{{ $supplier->name }}', 'ordersSupplierDropdown', 'ordersForm')" class="w-full px-4 py-2.5 text-center text-sm {{ request('orders_supplier') === $supplier->name ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $supplier->name }}</button>
+                                <button type="button" onclick="selectDropdown(event, 'ordersSupplierInput', '{{ $supplier->name }}', 'ordersSupplierButton', '{{ $supplier->name }}', 'ordersSupplierDropdown', 'ordersForm')" class="w-full px-4 py-2.5 text-left text-sm {{ request('orders_supplier') === $supplier->name ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $supplier->name }}</button>
                             @endforeach
                         </div>
                     </label>
@@ -204,9 +204,9 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                             </svg>
                         </button>
-                        <div id="backOrdersStatusDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
+                        <div id="backOrdersStatusDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[9999] mt-1.5 w-full max-h-48 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-2xl p-2 space-y-1">
                             @foreach($backOrdersStatuses as $value => $label)
-                                <button type="button" onclick="selectDropdown(event, 'backOrdersStatusInput', '{{ $value }}', 'backOrdersStatusButton', '{{ $label }}', 'backOrdersStatusDropdown', 'backOrdersForm')" class="w-full px-4 py-2.5 text-center text-sm {{ request('back_orders_status') === $value ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
+                                <button type="button" onclick="selectDropdown(event, 'backOrdersStatusInput', '{{ $value }}', 'backOrdersStatusButton', '{{ $label }}', 'backOrdersStatusDropdown', 'backOrdersForm')" class="w-full px-4 py-2 text-left text-sm {{ request('back_orders_status') === $value ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
                             @endforeach
                         </div>
                     </label>
@@ -219,10 +219,10 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                             </svg>
                         </button>
-                        <div id="backOrdersSupplierDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
-                            <button type="button" onclick="selectDropdown(event, 'backOrdersSupplierInput', '', 'backOrdersSupplierButton', 'All suppliers', 'backOrdersSupplierDropdown', 'backOrdersForm')" class="w-full px-4 py-2.5 text-center text-sm {{ empty(request('back_orders_supplier')) ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">All suppliers</button>
+                        <div id="backOrdersSupplierDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[9999] mt-1.5 w-full max-h-48 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-2xl p-2 space-y-1">
+                            <button type="button" onclick="selectDropdown(event, 'backOrdersSupplierInput', '', 'backOrdersSupplierButton', 'All suppliers', 'backOrdersSupplierDropdown', 'backOrdersForm')" class="w-full px-4 py-2.5 text-left text-sm {{ empty(request('back_orders_supplier')) ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">All suppliers</button>
                             @foreach($suppliers as $supplier)
-                                <button type="button" onclick="selectDropdown(event, 'backOrdersSupplierInput', '{{ $supplier->name }}', 'backOrdersSupplierButton', '{{ $supplier->name }}', 'backOrdersSupplierDropdown', 'backOrdersForm')" class="w-full px-4 py-2.5 text-center text-sm {{ request('back_orders_supplier') === $supplier->name ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $supplier->name }}</button>
+                                <button type="button" onclick="selectDropdown(event, 'backOrdersSupplierInput', '{{ $supplier->name }}', 'backOrdersSupplierButton', '{{ $supplier->name }}', 'backOrdersSupplierDropdown', 'backOrdersForm')" class="w-full px-4 py-2.5 text-left text-sm {{ request('back_orders_supplier') === $supplier->name ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $supplier->name }}</button>
                             @endforeach
                         </div>
                     </label>
@@ -260,9 +260,9 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                             </svg>
                         </button>
-                        <div id="receivedStatusDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
+                        <div id="receivedStatusDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[9999] mt-1.5 w-full max-h-48 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-2xl p-2 space-y-1">
                             @foreach($receivedStatuses as $value => $label)
-                                <button type="button" onclick="selectDropdown(event, 'receivedStatusInput', '{{ $value }}', 'receivedStatusButton', '{{ $label }}', 'receivedStatusDropdown', 'receivedForm')" class="w-full px-4 py-2.5 text-center text-sm {{ request('received_status') === $value ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
+                                <button type="button" onclick="selectDropdown(event, 'receivedStatusInput', '{{ $value }}', 'receivedStatusButton', '{{ $label }}', 'receivedStatusDropdown', 'receivedForm')" class="w-full px-4 py-2 text-left text-sm {{ request('received_status') === $value ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
                             @endforeach
                         </div>
                     </label>
@@ -275,10 +275,10 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                             </svg>
                         </button>
-                        <div id="receivedSupplierDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
-                            <button type="button" onclick="selectDropdown(event, 'receivedSupplierInput', '', 'receivedSupplierButton', 'All suppliers', 'receivedSupplierDropdown', 'receivedForm')" class="w-full px-4 py-2.5 text-center text-sm {{ empty(request('received_supplier')) ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">All suppliers</button>
+                        <div id="receivedSupplierDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[9999] mt-1.5 w-full max-h-48 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-2xl p-2 space-y-1">
+                            <button type="button" onclick="selectDropdown(event, 'receivedSupplierInput', '', 'receivedSupplierButton', 'All suppliers', 'receivedSupplierDropdown', 'receivedForm')" class="w-full px-4 py-2.5 text-left text-sm {{ empty(request('received_supplier')) ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">All suppliers</button>
                             @foreach($suppliers as $supplier)
-                                <button type="button" onclick="selectDropdown(event, 'receivedSupplierInput', '{{ $supplier->name }}', 'receivedSupplierButton', '{{ $supplier->name }}', 'receivedSupplierDropdown', 'receivedForm')" class="w-full px-4 py-2.5 text-center text-sm {{ request('received_supplier') === $supplier->name ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $supplier->name }}</button>
+                                <button type="button" onclick="selectDropdown(event, 'receivedSupplierInput', '{{ $supplier->name }}', 'receivedSupplierButton', '{{ $supplier->name }}', 'receivedSupplierDropdown', 'receivedForm')" class="w-full px-4 py-2.5 text-left text-sm {{ request('received_supplier') === $supplier->name ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $supplier->name }}</button>
                             @endforeach
                         </div>
                     </label>
@@ -316,9 +316,9 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                             </svg>
                         </button>
-                        <div id="cancelledStatusDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
+                        <div id="cancelledStatusDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[9999] mt-1.5 w-full max-h-48 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-2xl p-2 space-y-1">
                             @foreach($cancelledStatuses as $value => $label)
-                                <button type="button" onclick="selectDropdown(event, 'cancelledStatusInput', '{{ $value }}', 'cancelledStatusButton', '{{ $label }}', 'cancelledStatusDropdown', 'cancelledForm')" class="w-full px-4 py-2.5 text-center text-sm {{ request('cancelled_status') === $value ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
+                                <button type="button" onclick="selectDropdown(event, 'cancelledStatusInput', '{{ $value }}', 'cancelledStatusButton', '{{ $label }}', 'cancelledStatusDropdown', 'cancelledForm')" class="w-full px-4 py-2 text-left text-sm {{ request('cancelled_status') === $value ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
                             @endforeach
                         </div>
                     </label>
@@ -331,10 +331,10 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                             </svg>
                         </button>
-                        <div id="cancelledSupplierDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
-                            <button type="button" onclick="selectDropdown(event, 'cancelledSupplierInput', '', 'cancelledSupplierButton', 'All suppliers', 'cancelledSupplierDropdown', 'cancelledForm')" class="w-full px-4 py-2.5 text-center text-sm {{ empty(request('cancelled_supplier')) ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">All suppliers</button>
+                        <div id="cancelledSupplierDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[9999] mt-1.5 w-full max-h-48 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-2xl p-2 space-y-1">
+                            <button type="button" onclick="selectDropdown(event, 'cancelledSupplierInput', '', 'cancelledSupplierButton', 'All suppliers', 'cancelledSupplierDropdown', 'cancelledForm')" class="w-full px-4 py-2.5 text-left text-sm {{ empty(request('cancelled_supplier')) ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">All suppliers</button>
                             @foreach($suppliers as $supplier)
-                                <button type="button" onclick="selectDropdown(event, 'cancelledSupplierInput', '{{ $supplier->name }}', 'cancelledSupplierButton', '{{ $supplier->name }}', 'cancelledSupplierDropdown', 'cancelledForm')" class="w-full px-4 py-2.5 text-center text-sm {{ request('cancelled_supplier') === $supplier->name ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $supplier->name }}</button>
+                                <button type="button" onclick="selectDropdown(event, 'cancelledSupplierInput', '{{ $supplier->name }}', 'cancelledSupplierButton', '{{ $supplier->name }}', 'cancelledSupplierDropdown', 'cancelledForm')" class="w-full px-4 py-2.5 text-left text-sm {{ request('cancelled_supplier') === $supplier->name ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $supplier->name }}</button>
                             @endforeach
                         </div>
                     </label>
@@ -350,7 +350,7 @@
 
         function showOrderTab(tabName) {
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-[#00FFF2]', 'text-slate-900', 'shadow-sm', 'font-bold');
+                btn.classList.remove('bg-[#6EC1D1]', 'text-slate-900', 'shadow-sm', 'font-bold');
                 btn.classList.add('border', 'border-slate-700', 'bg-slate-800/80', 'text-slate-300', 'hover:bg-slate-700', 'hover:text-white', 'font-semibold');
             });
             document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
@@ -360,7 +360,7 @@
 
             if (button) {
                 button.classList.remove('border', 'border-slate-700', 'bg-slate-800/80', 'text-slate-300', 'hover:bg-slate-700', 'hover:text-white', 'font-semibold');
-                button.classList.add('bg-[#00FFF2]', 'text-slate-900', 'shadow-sm', 'font-bold');
+                button.classList.add('bg-[#6EC1D1]', 'text-slate-900', 'shadow-sm', 'font-bold');
             }
             if (content) {
                 content.classList.remove('hidden');
@@ -369,12 +369,20 @@
 
         function resetDropdownButtonStyles() {
             document.querySelectorAll('[id$="Button"]').forEach(btn => {
+                if (btn.id === 'receivedRangeButton') {
+                    btn.style.backgroundColor = 'rgba(110, 193, 209, 0.18)';
+                    btn.style.borderColor = '#a2deea';
+                    return;
+                }
                 btn.style.borderColor = '';
                 btn.style.borderWidth = '';
                 btn.style.boxShadow = '';
                 btn.style.backgroundColor = '';
                 const chevron = btn.querySelector('.w-4.h-4');
                 if (chevron) chevron.style.color = '';
+            });
+            document.querySelectorAll('[data-dropdown-wrapper]').forEach(w => {
+                w.style.zIndex = '';
             });
         }
 
@@ -384,14 +392,21 @@
             const button = document.getElementById(id.replace('Dropdown', 'Button'));
 
             allDropdowns.forEach(d => {
-                if (d.id !== id) d.classList.add('hidden');
+                if (d.id !== id) {
+                    d.classList.add('hidden');
+                    const wrapper = d.closest('[data-dropdown-wrapper]');
+                    if (wrapper) wrapper.style.zIndex = '';
+                }
             });
 
             resetDropdownButtonStyles();
 
             if (dropdown.classList.contains('hidden')) {
                 dropdown.classList.remove('hidden');
-                if (button) {
+                const wrapper = dropdown.closest('[data-dropdown-wrapper]');
+                if (wrapper) wrapper.style.zIndex = '9999';
+
+                if (button && button.id !== 'receivedRangeButton') {
                     button.style.borderColor = 'rgba(0, 0, 0, 0.35)';
                     button.style.borderWidth = '1px';
                     button.style.boxShadow = 'none';
@@ -401,6 +416,8 @@
                 }
             } else {
                 dropdown.classList.add('hidden');
+                const wrapper = dropdown.closest('[data-dropdown-wrapper]');
+                if (wrapper) wrapper.style.zIndex = '';
             }
         }
 
@@ -412,19 +429,33 @@
 
             document.getElementById(inputId).value = value;
             document.getElementById(buttonId).querySelector('span').textContent = label;
-            document.getElementById(dropdownId).classList.add('hidden');
+            const dropdown = document.getElementById(dropdownId);
+            if (dropdown) {
+                dropdown.classList.add('hidden');
+                const wrapper = dropdown.closest('[data-dropdown-wrapper]');
+                if (wrapper) wrapper.style.zIndex = '';
+            }
             const button = document.getElementById(buttonId);
             if (button) {
-                button.style.borderColor = '';
-                button.style.borderWidth = '';
-                button.style.boxShadow = '';
+                if (buttonId === 'receivedRangeButton') {
+                    button.style.backgroundColor = 'rgba(110, 193, 209, 0.18)';
+                    button.style.borderColor = '#a2deea';
+                } else {
+                    button.style.borderColor = '';
+                    button.style.borderWidth = '';
+                    button.style.boxShadow = '';
+                }
             }
             document.getElementById(formId).submit();
         }
 
         document.addEventListener('click', function(event) {
             if (!event.target.closest('.dropdown-menu') && !event.target.closest('[onclick^="toggleDropdown"]')) {
-                document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.add('hidden'));
+                document.querySelectorAll('.dropdown-menu').forEach(d => {
+                    d.classList.add('hidden');
+                    const wrapper = d.closest('[data-dropdown-wrapper]');
+                    if (wrapper) wrapper.style.zIndex = '';
+                });
                 resetDropdownButtonStyles();
             }
         });
@@ -435,4 +466,21 @@
 
         showOrderTab(activeTab);
     </script>
+    <style>
+        #receivedRangeButton {
+            background-color: rgba(110, 193, 209, 0.18) !important;
+            border: 1px solid transparent !important;
+            box-shadow: none !important;
+            outline: none !important;
+            transition: all 0.2s ease !important;
+            -webkit-tap-highlight-color: transparent !important;
+        }
+        #receivedRangeButton:hover,
+        #receivedRangeButton:focus,
+        #receivedRangeButton:active,
+        #receivedRangeButton:focus-visible {
+            border-color: #6EC1D1 !important;
+            box-shadow: none !important;
+        }
+    </style>
 </x-layouts.app>

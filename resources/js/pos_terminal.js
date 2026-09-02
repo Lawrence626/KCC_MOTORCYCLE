@@ -813,9 +813,9 @@ async function searchProducts(query = '', page = 1) {
                     ${compatibility ? `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">COMPATIBLE:</span> ${compatibility}</p>` : ''}
                     ${product.sku ? `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">SKU:</span> ${product.sku}</p>` : ''}
                     ${isOutOfStock
-                        ? `<p class="text-[9px] text-red-600 font-semibold"><span class="font-semibold text-black">STOCK:</span> 0 pcs <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-bold bg-red-100 text-red-700">Out of Stock</span></p>`
-                        : `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">STOCK:</span> ${stockQty} pcs</p>`
-                    }
+                    ? `<p class="text-[9px] text-red-600 font-semibold"><span class="font-semibold text-black">STOCK:</span> 0 pcs <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-bold bg-red-100 text-red-700">Out of Stock</span></p>`
+                    : `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">STOCK:</span> ${stockQty} pcs</p>`
+                }
                 </div>
                 <div class="flex-shrink-0 space-y-2">
                     <div class="flex items-center justify-between">
@@ -846,9 +846,9 @@ async function searchProducts(query = '', page = 1) {
                     </div>
                     <div class="flex justify-center">
                         ${isOutOfStock
-                            ? `<button type="button" disabled class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-slate-200 px-4 text-xs font-bold text-slate-400 cursor-not-allowed shadow-none tracking-wide">Out of Stock</button>`
-                            : `<button type="button" data-id="${product.id}" data-name="${productName}" data-sku="${product.sku || ''}" data-price="${product.unit_price || 0}" data-stock="${stockQty}" data-product-description="${product.product_description || product.category || ''}" data-brand="${brand}" data-compatibility="${compatibility}" data-category="${product.category || ''}" class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-[#00fff2] px-4 text-xs font-bold text-black shadow-sm hover:bg-[#00e6da] transition-all duration-200 tracking-wide">Add to Cart</button>`
-                        }
+                    ? `<button type="button" disabled class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-slate-200 px-4 text-xs font-bold text-slate-400 cursor-not-allowed shadow-none tracking-wide">Out of Stock</button>`
+                    : `<button type="button" data-id="${product.id}" data-name="${productName}" data-sku="${product.sku || ''}" data-price="${product.unit_price || 0}" data-stock="${stockQty}" data-product-description="${product.product_description || product.category || ''}" data-brand="${brand}" data-compatibility="${compatibility}" data-category="${product.category || ''}" class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-[#6EC1D1] px-4 text-xs font-bold text-black shadow-sm hover:bg-[#59b2c2] transition-all duration-200 tracking-wide">Add to Cart</button>`
+                }
                     </div>
                 </div>
             `;
@@ -1133,6 +1133,9 @@ function updateChangeCalculation() {
 }
 
 async function openPaymentModal() {
+    // Dismiss any visible "Added to cart" toast notifications
+    dismissAllNotifications();
+
     if (posState.cart.length === 0) {
         alert('The cart is empty. Add items before proceeding to payment.');
         return;
@@ -2718,10 +2721,10 @@ function playScanNotification() {
 
 function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
-    notification.className = 'fixed top-4 right-8 z-50 rounded-[10px] border p-4 text-sm font-medium shadow-lg transition-all duration-300';
+    notification.className = 'pos-toast-notification fixed top-4 right-8 z-50 rounded-[10px] border p-4 text-sm font-medium shadow-lg transition-all duration-300';
     if (type === 'success') {
         notification.style.backgroundColor = '#e6fffe';
-        notification.style.borderColor = '#00fff2';
+        notification.style.borderColor = '#6EC1D1';
         notification.style.borderWidth = '1px';
         notification.style.borderStyle = 'solid';
         notification.style.color = '#0f172a';
@@ -2744,6 +2747,14 @@ function showNotification(message, type = 'success') {
         notification.style.transition = 'opacity 0.5s ease';
         setTimeout(() => notification.remove(), 500);
     }, 3000);
+}
+
+function dismissAllNotifications() {
+    document.querySelectorAll('.pos-toast-notification').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => el.remove(), 300);
+    });
 }
 
 if (document.readyState === 'loading') {

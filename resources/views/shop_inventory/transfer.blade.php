@@ -38,7 +38,7 @@
     <div class="space-y-6">
         <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
-        <div class="flex items-start justify-between">
+        <div class="flex items-start justify-between gap-2">
             <div>
                 <h1 class="text-3xl font-extrabold text-slate-900">Transfer Products</h1>
                 <p class="mt-2 text-sm text-gray-500">Move products from <strong class="text-emerald-600">{{ is_array($shelf) ? $shelf['name'] : $shelf->name }}</strong> to another shelf</p>
@@ -89,7 +89,7 @@
                         <div class="product-row-card flex items-center justify-between p-3">
                             <div class="flex items-center gap-3">
                                 <input type="checkbox" id="product-{{ $productIndex }}" class="transfer-checkbox h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 focus:ring-offset-0" data-product-id="{{ $product['product_id'] }}" />
-                                <div class="flex-1">
+                                <div class="flex-1 min-w-0">
                                     <p class="text-sm font-semibold text-slate-900">Product Category: {{ $product['description'] ?? $product['name'] }}</p>
                                     <p class="text-xs text-slate-500">SKU: {{ $product['sku'] }}</p>
                                 </div>
@@ -130,7 +130,7 @@
                         @foreach($availableShelves as $availableShelf)
                         <label class="shelf-option flex items-center gap-3 p-4 rounded-xl cursor-pointer">
                             <input type="radio" name="destination_shelf" value="{{ $availableShelf['id'] }}" class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 focus:ring-offset-0" required />
-                            <div class="flex-1">
+                            <div class="flex-1 min-w-0">
                                 <p class="text-sm font-semibold text-slate-900">{{ $availableShelf['name'] }}</p>
                                 <p class="text-xs text-slate-500 mt-1">
                                     {{ $availableShelf['current_occupancy'] }} / {{ $shelfCapacity }} occupied

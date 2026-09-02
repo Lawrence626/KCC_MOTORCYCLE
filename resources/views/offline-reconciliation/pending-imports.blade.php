@@ -20,21 +20,21 @@
 
         <!-- Stats -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div class="rounded-[20px] border border-slate-200 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Pending Review</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-amber-600">{{ $pendingImports->where('status', 'pending')->count() }}</p>
                     <p class="text-slate-500 text-[10px] leading-tight mt-1 font-medium">Awaiting approval</p>
                 </div>
             </div>
-            <div class="rounded-[20px] border border-slate-200 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Approved</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-green-600">{{ $pendingImports->where('status', 'approved')->count() }}</p>
                     <p class="text-slate-500 text-[10px] leading-tight mt-1 font-medium">Successfully synced</p>
                 </div>
             </div>
-            <div class="rounded-[20px] border border-slate-200 p-4 shadow-sm" style="background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Rejected</p>
                 <div class="mt-1">
                     <p class="text-2xl font-bold text-red-600">{{ $pendingImports->where('status', 'rejected')->count() }}</p>

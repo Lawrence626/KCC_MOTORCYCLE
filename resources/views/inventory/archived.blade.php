@@ -18,8 +18,8 @@
                         </svg>
                     </button>
                     <div id="backNavigationDropdown" class="dropdown-menu hidden absolute top-full right-0 z-[999] mt-1.5 w-48 rounded-[12px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-1">
-                        <a href="{{ route('allstocks') }}" class="block text-center px-3 py-2 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition">Back to All Stocks</a>
-                        <a href="{{ route('pos.terminal') }}" class="block text-center px-3 py-2 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition">Back to POS</a>
+                        <a href="{{ route('allstocks') }}" class="block text-left px-3 py-2 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition">Back to All Stocks</a>
+                        <a href="{{ route('pos.terminal') }}" class="block text-left px-3 py-2 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition">Back to POS</a>
                     </div>
                 </div>
             </div>
@@ -27,26 +27,26 @@
 
         <!-- Quick Stats -->
         <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-            <div class="border border-slate-200 rounded-[28px] p-5 shadow-sm flex items-start justify-between gap-3" style="border-radius: 28px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="border border-slate-200 p-5 bg-white shadow-sm flex items-start justify-between gap-3" style="border-radius: 28px;">
                 <div>
                     <p class="text-sm text-slate-600 font-medium mb-1">Archived Items</p>
                     <p id="archivedCount" class="text-2xl font-bold text-slate-900">0</p>
                     <p class="text-sm text-slate-500 mt-1">Total archived</p>
                 </div>
-                <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40">
+                <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[rgba(110,193,209,0.18)] text-[#145a66]">
                     <!-- Cube Icon (represents inventory items) -->
                     <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
                         <path fill-rule="evenodd" d="M12.378 1.602a.75.75 0 00-.756 0L3 6.632l9 5.25 9-5.25-8.622-5.03zM21.75 7.93l-9 5.25v9.344l8.628-5.032a.75.75 0 00.372-.648V7.93zM11.25 22.523v-9.344l-9-5.25v8.914c0 .267.141.514.372.648l8.628 5.032z" clip-rule="evenodd" />
                     </svg>
                 </span>
             </div>
-            <div class="border border-slate-200 rounded-[28px] p-5 shadow-sm flex items-start justify-between gap-3" style="border-radius: 28px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="border border-slate-200 p-5 bg-white shadow-sm flex items-start justify-between gap-3" style="border-radius: 28px;">
                 <div>
                     <p class="text-sm text-slate-600 font-medium mb-1">Archive Value</p>
                     <p id="archiveValue" class="text-2xl font-bold text-slate-900">₱0</p>
                     <p class="text-sm text-slate-500 mt-1">Total value</p>
                 </div>
-                <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40">
+                <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[rgba(110,193,209,0.18)] text-[#145a66]">
                     <!-- Credit Card Icon (represents monetary value) -->
                     <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M4.5 3.75a3 3 0 00-3 3v.75h21v-.75a3 3 0 00-3-3h-15z" />
@@ -54,13 +54,13 @@
                     </svg>
                 </span>
             </div>
-            <div class="border border-slate-200 rounded-[28px] p-5 shadow-sm flex items-start justify-between gap-3" style="border-radius: 28px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
+            <div class="border border-slate-200 p-5 bg-white shadow-sm flex items-start justify-between gap-3" style="border-radius: 28px;">
                 <div>
                     <p class="text-sm text-slate-600 font-medium mb-1">Avg Price</p>
                     <p id="avgPrice" class="text-2xl font-bold text-slate-900">₱0</p>
                     <p class="text-sm text-slate-500 mt-1">Per item</p>
                 </div>
-                <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#00fff2] text-black shadow-md shadow-[#00fff2]/40">
+                <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[rgba(110,193,209,0.18)] text-[#145a66]">
                     <!-- Bar Chart Icon (represents average / stats) -->
                     <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
                         <path fill-rule="evenodd" d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z" clip-rule="evenodd" />
@@ -134,10 +134,10 @@
                             </svg>
                         </button>
                         <div id="perPageDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[9999] mt-1 w-full min-w-[60px] rounded-[10px] border border-slate-200 bg-white shadow-xl p-1 space-y-0.5">
-                            <button type="button" onclick="selectPerPage(10)" class="w-full text-center px-2 py-1 rounded-md text-xs font-semibold text-slate-900 bg-black/10 transition">10</button>
-                            <button type="button" onclick="selectPerPage(25)" class="w-full text-center px-2 py-1 rounded-md text-xs font-medium text-slate-700 hover:bg-slate-100 transition">25</button>
-                            <button type="button" onclick="selectPerPage(50)" class="w-full text-center px-2 py-1 rounded-md text-xs font-medium text-slate-700 hover:bg-slate-100 transition">50</button>
-                            <button type="button" onclick="selectPerPage(100)" class="w-full text-center px-2 py-1 rounded-md text-xs font-medium text-slate-700 hover:bg-slate-100 transition">100</button>
+                            <button type="button" onclick="selectPerPage(10)" class="w-full text-left px-2 py-1 rounded-md text-xs font-semibold text-slate-900 bg-black/10 transition">10</button>
+                            <button type="button" onclick="selectPerPage(25)" class="w-full text-left px-2 py-1 rounded-md text-xs font-medium text-slate-700 hover:bg-slate-100 transition">25</button>
+                            <button type="button" onclick="selectPerPage(50)" class="w-full text-left px-2 py-1 rounded-md text-xs font-medium text-slate-700 hover:bg-slate-100 transition">50</button>
+                            <button type="button" onclick="selectPerPage(100)" class="w-full text-left px-2 py-1 rounded-md text-xs font-medium text-slate-700 hover:bg-slate-100 transition">100</button>
                         </div>
                     </div>
                     <span id="showingText">of 0 items</span>
@@ -367,9 +367,9 @@
             if (dropdown) {
                 dropdown.querySelectorAll('button').forEach(btn => {
                     if (btn.textContent.trim() === String(val)) {
-                        btn.className = 'w-full text-center px-2 py-1 rounded-md text-xs font-semibold text-slate-900 bg-black/10 transition';
+                        btn.className = 'w-full text-left px-2 py-1 rounded-md text-xs font-semibold text-slate-900 bg-black/10 transition';
                     } else {
-                        btn.className = 'w-full text-center px-2 py-1 rounded-md text-xs font-medium text-slate-700 hover:bg-slate-100 transition';
+                        btn.className = 'w-full text-left px-2 py-1 rounded-md text-xs font-medium text-slate-700 hover:bg-slate-100 transition';
                     }
                 });
                 dropdown.classList.add('hidden');

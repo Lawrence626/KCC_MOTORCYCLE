@@ -9,7 +9,7 @@
 
         <!-- Page Header -->
         <div class="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm">
-            <div class="flex items-start justify-between">
+            <div class="flex items-start justify-between gap-2">
                 <div>
                     <h1 class="text-2xl font-bold text-slate-900">{{ $productCatalog->product_description }}</h1>
                     @if($productCatalog->product_name)
@@ -62,7 +62,7 @@
                                 <div class="bg-slate-50 rounded-[12px] p-3 border border-slate-100">
                                     <dt class="text-slate-500 font-medium mb-0.5">Stock Quantity</dt>
                                     <dd>
-                                        <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#00fff2] text-black">{{ $productCatalog->stock_quantity ?? 0 }}</span>
+                                        <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#6EC1D1] text-black">{{ $productCatalog->stock_quantity ?? 0 }}</span>
                                     </dd>
                                 </div>
                                 <div class="bg-slate-50 rounded-[12px] p-3 border border-slate-100">
@@ -178,7 +178,7 @@
 
             <!-- Actions Footer -->
             <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center gap-3">
-                <a href="{{ route('product-catalog.edit', $productCatalog) }}" class="px-5 py-2 rounded-full bg-[#00fff2] text-black text-xs font-semibold hover:bg-[#00e6da] transition shadow-sm">
+                <a href="{{ route('product-catalog.edit', $productCatalog) }}" class="px-5 py-2 rounded-full bg-[#6EC1D1] text-black text-xs font-semibold hover:bg-[#59b2c2] transition shadow-sm">
                     Edit Product
                 </a>
                 <form action="{{ route('product-catalog.destroy', $productCatalog) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this product?');">

@@ -172,7 +172,7 @@
                                            id="skuInput"
                                            value="{{ old('sku', $productCatalog->sku) }}" 
                                            placeholder="Auto-generated or enter manually" 
-                                           class="flex-1 px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2] focus:border-transparent font-mono transition" 
+                                           class="flex-1 px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] focus:border-transparent font-mono transition" 
                                            required>
                                     <button type="button" 
                                             id="generateSkuBtn"
@@ -354,7 +354,7 @@
                     <a href="{{ route('product-catalog.index') }}" class="rounded-[10px] bg-black/10 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-black/20 transition">
                         Cancel
                     </a>
-                    <button type="submit" class="rounded-[10px] bg-[#00fff2] px-4 py-2 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#00e6da] transition">
+                    <button type="submit" class="rounded-[10px] bg-[#6EC1D1] px-4 py-2 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition">
                         Update Product
                     </button>
                 </div>

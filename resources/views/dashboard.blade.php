@@ -3,12 +3,12 @@
        
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div class="pl-3 lg:pl-2">
-                    <h1 class="text-3xl font-bold text-slate-900">Dashboard</h1>
-                    <p class="text-gray-600 text-sm mt-1">Overview of sales, inventory and performance insights</p>
+                    <h1 class="text-4xl font-bold text-slate-900">Dashboard</h1>
+                    <p class="text-gray-600 text-base mt-1">Overview of sales, inventory and performance insights</p>
                 </div>
                 <div class="flex flex-col gap-1 sm:flex-row sm:items-center pr-4">
-                    
-                   
+                    @if(auth()->check())
+                        @if(!in_array(auth()->user()->role, ['cashier', 'warehouse_personnel']))
                         <div class="relative" id="notification-bell-wrapper">
                             <button
                                 type="button"
@@ -22,7 +22,8 @@
                                 </svg>
                                 <span
                                     id="notification-badge"
-                                    class="absolute -top-0.5 -right-0.5 hidden min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-[10px] bg-red-500 text-[10px] font-bold text-white leading-none"
+                                    class="absolute -top-0.5 -right-0.5 hidden rounded-full bg-red-500 text-[10px] font-bold text-white text-center"
+                                    style="min-width: 18px; height: 18px; padding: 0 4px; display: none; align-items: center; justify-content: center; line-height: 1; text-align: center;"
                                 ></span>
                             </button>
 
@@ -35,7 +36,7 @@
                                 <div class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b border-slate-800 rounded-t-xl bg-[#0f172a]" style="background-color: #0f172a;">
                                     <div class="flex items-center gap-2">
                                         <span class="text-sm font-bold text-white">Notifications</span>
-                                        <span id="notif-center-unread-badge" class="hidden inline-flex items-center rounded-[10px] px-2 py-0.5 text-[10px] font-medium text-white" style="background-color: #ef4444;">0</span>
+                                        <span id="notif-center-unread-badge" class="hidden inline-flex items-center justify-center rounded-full text-[11px] font-bold text-white text-center" style="background-color: #ef4444; width: 20px; height: 20px; padding: 0; display: none; align-items: center; justify-content: center; line-height: 1; text-align: center; border-radius: 50%; box-sizing: border-box;">0</span>
                                     </div>
                                     <div class="flex items-center gap-3">
                                         <button
@@ -60,18 +61,17 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="relative">
-                            <button type="button" id="dashboardProfileButton" class="relative inline-flex items-center gap-1.5 rounded-[20px] px-3 py-2 text-left focus:outline-none hover:bg-slate-100 transition-colors">
-                                <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-black grid place-items-center text-lg font-semibold overflow-hidden">
-                                    {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
-                                </span>
-                                <div class="flex flex-col leading-tight pr-2">
-                                    <span class="text-sm font-semibold text-black">{{ auth()->user()->name ?? 'Admin' }}</span>
-                                    <span class="text-xs text-gray-500">{{ auth()->user()->email ?? '' }}</span>
-                                </div>
-                                <div class="inline-flex h-7 w-7 items-center justify-center rounded-[12px] bg-transparent text-[#0f0f0f] transition-colors duration-200" aria-hidden="true">
-                                    <svg id="dashboardProfileArrow" class="w-5 h-5 text-current transition-colors duration-200" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5H7z"/></svg>
-                                </div>
+                        @endif
+                        <div class="relative inline-flex items-center gap-1.5 rounded-[20px] px-3 py-2 text-left">
+                            <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-black grid place-items-center text-lg font-semibold overflow-hidden">
+                                {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
+                            </span>
+                            <div class="flex flex-col leading-tight">
+                                <span class="text-sm font-semibold text-black">{{ auth()->user()->name ?? 'Admin' }}</span>
+                                <span class="text-xs text-gray-500">{{ auth()->user()->email ?? '' }}</span>
+                            </div>
+                            <button type="button" id="dashboardProfileButton" class="inline-flex h-7 w-7 items-center justify-center rounded-[12px] bg-transparent text-[#0f0f0f] transition-colors duration-200 focus:outline-none hover:bg-transparent focus:bg-transparent active:bg-transparent hover:text-slate-400 border-none cursor-pointer" style="background: transparent !important; border: none !important; box-shadow: none !important;" aria-label="Open profile menu">
+                                <svg id="dashboardProfileArrow" class="w-5 h-5 text-current transition-colors duration-200" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5H7z"/></svg>
                             </button>
 
                             <div id="dashboardProfileDropdown" class="absolute right-0 top-full mt-2 w-65 min-h-[100px] rounded-[15px] bg-[#0f0f0f] shadow-2xl shadow-black/20 z-50 hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right" style="color: #ffffff;">
@@ -117,27 +117,30 @@
                             </div>
                         </div>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>
 
-
+        @php
+            $canSeeDeadStock = auth()->user() && in_array(auth()->user()->role, ['admin', 'inventory_clerk']);
+        @endphp
 
         <!-- Stats Grid -->
         <div class="w-full">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 {{ $canSeeDeadStock ? 'lg:grid-cols-3 xl:grid-cols-5' : 'lg:grid-cols-4' }} gap-5">
                 <!-- Total Sales -->
-                 <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-black text-xs font-semibold">Total Sales</p>
+                 <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-black text-sm font-semibold truncate">Total Sales</p>
                             <div class="mt-1">
-                                <p id="salesValue" class="text-2xl font-bold text-black">—</p>
-                                <p id="salesComparison" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
+                                <p id="salesValue" class="text-3xl font-bold text-black truncate">—</p>
+                                <p id="salesComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
                             </div>
                         </div>
-                        <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                            <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                            <svg class="text-[#145a66]" style="width: 1.125rem; height: 1.125rem;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                 <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
                             </svg>
                         </div>
@@ -145,17 +148,17 @@
                 </div>
 
                 <!-- Total Transaction -->
-               <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-black text-xs font-semibold" style="color: #000000;">Total Transaction</p>
+               <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-black text-sm font-semibold truncate" style="color: #000000;">Total Transaction</p>
                             <div class="mt-1">
-                                <p id="transactionsValue" class="text-2xl font-bold" style="color: #000000;">—</p>
-                                <p id="transactionsComparison" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
+                                <p id="transactionsValue" class="text-3xl font-bold truncate" style="color: #000000;">—</p>
+                                <p id="transactionsComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
                             </div>
                         </div>
-                        <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                            <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                            <svg class="text-[#145a66]" style="width: 1.125rem; height: 1.125rem;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                 <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/>
                             </svg>
                         </div>
@@ -163,17 +166,17 @@
                 </div>
 
                 <!-- Total Profit -->
-                <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-black text-xs font-semibold" style="color: #000000;">Total Profit</p>
+                <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-black text-sm font-semibold truncate" style="color: #000000;">Total Profit</p>
                             <div class="mt-1">
-                                <p id="profitValue" class="text-2xl font-bold" style="color: #000000;">—</p>
-                                <p id="profitComparison" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
+                                <p id="profitValue" class="text-3xl font-bold truncate" style="color: #000000;">—</p>
+                                <p id="profitComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
                             </div>
                         </div>
-                        <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                            <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                            <svg class="text-[#145a66]" style="width: 1.125rem; height: 1.125rem;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                 <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
                             </svg>
                         </div>
@@ -181,44 +184,85 @@
                 </div>
 
                 <!-- Total Item Sold -->
-                 <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-black text-xs font-semibold" style="color: #000000;">Total Item Sold</p>
+                 <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-black text-sm font-semibold truncate" style="color: #000000;">Total Item Sold</p>
                             <div class="mt-1">
-                                <p id="itemsSoldValue" class="text-2xl font-bold" style="color: #030303;">—</p>
-                                <p id="itemsSoldComparison" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Loading…</p>
+                                <p id="itemsSoldValue" class="text-3xl font-bold truncate" style="color: #030303;">—</p>
+                                <p id="itemsSoldComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
                             </div>
                         </div>
-                        <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                            <svg class="w-4 h-4" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                            <svg class="w-4.5 h-4.5 text-[#145a66]" style="width: 1.125rem; height: 1.125rem;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                                 <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                             </svg>
                         </div>
                     </div>
                 </div>
 
-                <!-- Dead Stock Alert Card -->
-                <a href="{{ route('dss.dead-stock.index') }}" class="block border border-gray-200 p-4 hover:border-[#00fff2] hover:shadow-md transition cursor-pointer group" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-black text-xs font-semibold">Dead Stock</p>
+                @if($canSeeDeadStock)
+                <!-- Dead Stock Card -->
+                <a href="{{ route('dss.dead-stock.index') }}" class="border border-gray-200 p-4 bg-white shadow-sm block hover:shadow-md hover:ring-2 hover:ring-[#6EC1D1] hover:border-[#6EC1D1] transition cursor-pointer group" style="border-radius: 20px;">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-black text-sm font-semibold truncate">Dead Stock</p>
                             <div class="mt-1">
-                                <p id="deadStockCardItems" class="text-2xl font-bold text-black">0 Items</p>
-                                <p id="deadStockCardValue" class="text-gray-500 text-[10px] leading-tight mt-1 font-medium whitespace-nowrap">Value at Risk: ₱0</p>
+                                <p id="deadStockCardItems" class="text-3xl font-bold text-black truncate">—</p>
+                                <p id="deadStockCardValue" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
                             </div>
                         </div>
-                        <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                            <svg class="w-4.5 h-4.5 text-black" fill="currentColor" viewBox="0 0 24 24" style="transform: translateY(-1px);"><path d="M4.47 21h15.06c1.54 0 2.5-1.67 1.73-3L13.73 4.99c-.77-1.33-2.69-1.33-3.46 0L2.74 18c-.77 1.33.19 3 1.73 3zM13 18h-2v-2h2v2zm0-4h-2v-4h2v4z" style="color: #000000ff;"/></svg>
+                        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                            <svg class="w-4.5 h-4.5 text-[#145a66]" style="width: 1.125rem; height: 1.125rem;" fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 3.172a2 2 0 0 1 1.732 1l8 13.856A2 2 0 0 1 20 21H4a2 2 0 0 1-1.732-3l8-13.856a2 2 0 0 1 1.732-1zM11 9v4h2V9h-2zm0 6v2h2v-2h-2z"/>
+                            </svg>
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
         </div>
 
-        {{-- ═══ DEAD STOCK ALERT WIDGET ═══ --}}
+        {{-- ═══ DEAD STOCK ALERT WIDGET & STAT CARD SCRIPT ═══ --}}
+        <script>
+        (function() {
+            fetch('{{ route("api.dss.dashboard-stats") }}')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.total > 0) {
+                        const widget = document.getElementById('deadStockAlertWidget');
+                        if (widget) {
+                            widget.classList.remove('hidden');
+                            document.getElementById('deadStockAlertMsg').textContent =
+                                data.total + ' product' + (data.total > 1 ? 's have' : ' has') + ' not been sold for more than ' + (data.thresholdDays || 90) + ' days.';
+                            const prioritiesEl = document.getElementById('deadStockAlertPriorities');
+                            const pColors = {Critical:'bg-red-100 text-red-700',High:'bg-orange-100 text-orange-700',Medium:'bg-amber-100 text-amber-700',Low:'bg-blue-100 text-blue-700'};
+                            let html = '';
+                            ['Critical','High','Medium','Low'].forEach(p => {
+                                const count = data.countByPriority[p] || 0;
+                                if (count > 0) {
+                                    html += '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ' + pColors[p] + '">' + p + ': ' + count + '</span>';
+                                }
+                            });
+                            if (data.totalValue > 0) {
+                                html += '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">₱' + Number(data.totalValue).toLocaleString('en-PH', {minimumFractionDigits:2}) + ' at risk</span>';
+                            }
+                            prioritiesEl.innerHTML = html;
+                        }
+                    }
+                    
+                    // Update small card
+                    const dsItems = document.getElementById('deadStockCardItems');
+                    if (dsItems) dsItems.textContent = (data.total || 0) + ' Items';
+                    const dsValue = document.getElementById('deadStockCardValue');
+                    if (dsValue) dsValue.textContent = 'Value at Risk: ₱' + Number(data.totalValue || 0).toLocaleString('en-PH', {minimumFractionDigits:2});
+                })
+                .catch(() => {});
+        })();
+        </script>
+
         @if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk'))
-        <div id="deadStockAlertWidget" class="hidden">
+        <div id="deadStockAlertWidget" class="hidden mt-5">
             <div class="border border-rose-200 bg-gradient-to-r from-rose-50 via-white to-rose-50 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3" style="border-radius: 20px;">
                 <div class="flex items-start gap-3">
                     <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 rounded-full bg-rose-100">
@@ -236,40 +280,6 @@
                 </a>
             </div>
         </div>
-        <script>
-        (function() {
-            fetch('{{ route("api.dss.dashboard-stats") }}')
-                .then(r => r.json())
-                .then(data => {
-                    if (data.total > 0) {
-                        const widget = document.getElementById('deadStockAlertWidget');
-                        widget.classList.remove('hidden');
-                        document.getElementById('deadStockAlertMsg').textContent =
-                            data.total + ' product' + (data.total > 1 ? 's have' : ' has') + ' not been sold for more than ' + (data.thresholdDays || 90) + ' days.';
-                        const prioritiesEl = document.getElementById('deadStockAlertPriorities');
-                        const pColors = {Critical:'bg-red-100 text-red-700',High:'bg-orange-100 text-orange-700',Medium:'bg-amber-100 text-amber-700',Low:'bg-blue-100 text-blue-700'};
-                        let html = '';
-                        ['Critical','High','Medium','Low'].forEach(p => {
-                            const count = data.countByPriority[p] || 0;
-                            if (count > 0) {
-                                html += '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ' + pColors[p] + '">' + p + ': ' + count + '</span>';
-                            }
-                        });
-                        if (data.totalValue > 0) {
-                            html += '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">₱' + Number(data.totalValue).toLocaleString('en-PH', {minimumFractionDigits:2}) + ' at risk</span>';
-                        }
-                        prioritiesEl.innerHTML = html;
-                    }
-                    
-                    // Update small card
-                    const dsItems = document.getElementById('deadStockCardItems');
-                    if (dsItems) dsItems.textContent = (data.total || 0) + ' Items';
-                    const dsValue = document.getElementById('deadStockCardValue');
-                    if (dsValue) dsValue.textContent = 'Value at Risk: ₱' + Number(data.totalValue || 0).toLocaleString('en-PH', {minimumFractionDigits:2});
-                })
-                .catch(() => {});
-        })();
-        </script>
         @endif
 
         <!-- Charts Row -->
@@ -286,6 +296,7 @@
                         <button type="button" data-range="daily" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Day</button>
                         <button type="button" data-range="weekly" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Week</button>
                         <button type="button" data-range="monthly" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition active">Month</button>
+                        <button type="button" data-range="yearly" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Year</button>
                     </div>
                 </div>
 
@@ -333,51 +344,53 @@
                     </div>
  
                     <div class="inv-stack" style="position: relative;">
- 
+
                         <!-- Total Products (top of the stack) -->
                         <div class="inv-row flex items-center gap-2 px-3 py-3" style="border-radius: 20px; background-color: #ffffffff; position: relative; z-index: 40;">
-                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #00fff2ff;">
-                                <svg class="absolute inset-0 m-auto" style="width: 14px; height: 14px; transform: translate(-0.5px, 0.5px);" fill="none" stroke="#000000ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <path d="M21 8l-9-5-9 5 9 5 9-5z"></path>
-                                    <path d="M3 8v8l9 5 9-5V8"></path>
+                            <div class="w-7 h-7 rounded-[10px] flex-shrink-0 flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 8l-9-5-9 5 9 5 9-5z" fill="#145a66" stroke="#145a66" stroke-width="1"></path>
+                                    <path d="M3 8v8l9 5 9-5V8" fill="#145a66" stroke="#145a66" stroke-width="1"></path>
+                                    <path d="M3 8l9 5 9-5" stroke="#ffffff" stroke-width="1.4"></path>
+                                    <path d="M12 13v8" stroke="#ffffff" stroke-width="1.4"></path>
                                 </svg>
                             </div>
                             <span class="text-black text-xs font-semibold flex-1">Total Products</span>
                             <span id="totalProductsValue" class="text-black text-xs font-bold">—</span>
                         </div>
- 
+
                         <!-- Low Stock Items -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 0px;background-color: #ffffff;; position: relative; z-index: 30 ; margin-top: -10px; padding-top: 20px; padding-bottom: 12px;">
-                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #00fff2ff;">
-                                <svg class="absolute inset-0 m-auto" style="width: 14px; height: 14px; transform: translate(-0.5px, 0.5px);" fill="none" stroke="#000000ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <path d="M12 9v4"></path>
-                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                                    <path d="M12 17h.01"></path>
+                            <div class="w-7 h-7 rounded-[10px] flex-shrink-0 flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="9.5" fill="#d97706"></circle>
+                                    <line x1="12" y1="7.5" x2="12" y2="12.5" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line>
+                                    <circle cx="12" cy="16" r="1.1" fill="#ffffff"></circle>
                                 </svg>
                             </div>
                             <span class="text-black text-xs font-semibold flex-1">Low Stock Items</span>
                             <span id="lowStockValue" class="text-black text-xs font-bold">—</span>
                         </div>
- 
+
                         <!-- Out of Stock Items -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 0px;background-color: #ffffff;; position: relative; z-index: 20; margin-top: -10px; padding-top: 20px; padding-bottom: 12px; ">
-                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #00fff2ff;">
-                                <svg class="absolute inset-0 m-auto" style="width: 14px; height: 14px; transform: translate(-0.5px, 0.5px);" fill="none" stroke="#000000ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <circle cx="12" cy="12" r="9"></circle>
-                                    <line x1="9" y1="9" x2="15" y2="15"></line>
-                                    <line x1="15" y1="9" x2="9" y2="15"></line>
-                                </svg>  
+                            <div class="w-7 h-7 rounded-[10px] flex-shrink-0 flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="#dc2626"></path>
+                                    <line x1="12" y1="9" x2="12" y2="13" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line>
+                                    <circle cx="12" cy="16.5" r="1.1" fill="#ffffff"></circle>
+                                </svg>
                             </div>
                             <span class="text-black text-xs font-semibold flex-1">Out of Stock Items</span>
                             <span id="outOfStockValue" class="text-black text-xs font-bold">—</span>
                         </div>
- 
+
                         <!-- In Stock Items (bottom of the stack) -->
                         <div class="inv-row flex items-center gap-2 px-3" style="border-radius: 20px; background-color: #ffffff; position: relative; z-index: 10; margin-top: -10px; padding-top: 20px; padding-bottom: 12px;">
-                            <div class="w-7 h-7 rounded-full flex-shrink-0 relative" style="background-color: #00fff2ff;">
-                                <svg class="absolute inset-0 m-auto" style="width: 14px; height: 14px; transform: translate(-0.5px, 0.5px);" fill="none" stroke="#000000ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <circle cx="12" cy="12" r="9"></circle>
-                                    <polyline points="8 12 11 15 16 9"></polyline>
+                            <div class="w-7 h-7 rounded-[10px] flex-shrink-0 flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="9.5" fill="#059669"></circle>
+                                    <polyline points="8 12 11 15 16 9" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline>
                                 </svg>
                             </div>
                             <span class="text-black text-xs font-semibold flex-1">In Stock Items</span>
@@ -390,7 +403,7 @@
             <!-- Top Selling Item (slideshow widget) -->
             <div id="topSellingWidget" class="lg:col-span-1 bg-[#ffffff] border border-gray-200 p-3" style="border-radius: 20px;">
                 <div class="flex items-center justify-between mb-2">
-                    <h2 class="text-sm font-bold text-gray-900" style="font-family: 'Poppins', sans-serif;">Top Selling Items</h2>
+                    <h2 class="text-sm font-bold text-black" style="font-family: 'Poppins', sans-serif; font-weight: 700;">Top Selling Items</h2>
                         <button id="topSellingOpenBtn" type="button" aria-label="Open top selling" class="inline-flex items-center justify-center rounded-full" style="width:32px; height:32px;">
                             <svg class="w-4 h-4 top-selling-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l10-10"/><path d="M7 7h10v10"/></svg>
                         </button>
@@ -410,25 +423,48 @@
                 </div>
             </div>
 
-            <!-- Monthly Sales Comparison -->
-            <div id="comparisonCard" class="lg:col-span-1 border border-gray-200 p-3 flex flex-col" style="border-radius: 20px; background color: #ffffff;">
-                <h2 class="text-sm font-bold text-black mb-2" style="font-family: 'Poppins', sans-serif;">Monthly Sales Comparison</h2>
-                <div class="w-full flex-1 overflow-hidden" style="max-width: 100%; min-height: 0;">
-                    <canvas id="barChart" class="w-full h-full" style="max-width: 100%; display: block;"></canvas>
+            <!-- Fast & Slow Moving Items -->
+            <div id="fastSlowMovingCard" class="lg:col-span-1 border border-gray-200 p-3.5 flex flex-col justify-between" style="border-radius: 20px; background-color: #ffffff;">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-sm font-bold text-black" style="font-family: 'Poppins', sans-serif; font-weight: 700;">Fast &amp; Slow Moving Items</h2>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 flex-1 min-h-0">
+                    <!-- Left Column: Fast Moving Items -->
+                    <div class="flex flex-col min-w-0 pr-2 border-r border-gray-100">
+                        <div class="flex items-center gap-1.5 mb-1.5 pb-1 border-b border-gray-100">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 truncate">Fast Moving</span>
+                        </div>
+                        <div id="fastMovingList" class="flex flex-col gap-1 overflow-y-auto flex-1 min-h-0">
+                            <div class="text-[11px] text-gray-400 my-auto text-center py-4">Loading…</div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Slow Moving Items -->
+                    <div class="flex flex-col min-w-0 pl-1">
+                        <div class="flex items-center gap-1.5 mb-1.5 pb-1 border-b border-gray-100">
+                            <span class="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-700 truncate">Slow Moving</span>
+                        </div>
+                        <div id="slowMovingList" class="flex flex-col gap-1 overflow-y-auto flex-1 min-h-0">
+                            <div class="text-[11px] text-gray-400 my-auto text-center py-4">Loading…</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
         <!-- ═══ Toast Notifications Container ═══ -->
-        <div id="inventory-toast-container" class="fixed top-20 right-6 z-[40] flex flex-col gap-3 pointer-events-none" style="max-width: 360px; width: 100%;"></div>
+        <div id="inventory-toast-container" class="fixed top-22 right-6 z-[40] flex flex-col gap-3 pointer-events-none" style="max-width: 360px; width: 100%;"></div>
 
         <!-- ═══ View All Notifications Modal ═══ -->
         <div id="all-notifications-modal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeAllNotificationsModal()"></div>
             <div class="relative bg-white rounded-[28px] border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]">
-                <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                     <div>
                         <h3 class="text-xl font-bold text-black">All Inventory Notifications</h3>
-                        <p class="text-sm text-slate-800 font-medium">History of low stock and out of stock alerts.</p>
+                        <p class="text-sm text-slate-900 font-medium">History of low stock and out of stock alerts.</p>
                     </div>
                     <button type="button" onclick="closeAllNotificationsModal()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -447,9 +483,11 @@
         <!-- Floating Low Stock Toast Banner (Pest test requirement) -->
         <div id="dashboardLowStockBanner" class="hidden fixed right-4 top-24 z-[100] max-w-sm rounded-2xl border border-amber-200 bg-white p-4 shadow-2xl transition-all duration-300" role="status">
             <div class="flex items-start justify-between gap-3">
-                <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-amber-50">
-                    <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+                <div class="flex-shrink-0 w-8 h-8 rounded-[10px] flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="9.5" fill="#d97706"></circle>
+                        <line x1="12" y1="7.5" x2="12" y2="12.5" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line>
+                        <circle cx="12" cy="16" r="1.1" fill="#ffffff"></circle>
                     </svg>
                 </div>
                 <div class="flex-1 min-w-0">
@@ -489,7 +527,7 @@
         }
 
         /* ---- Card Heights Sync ---- */
-        #inventoryCard, #topSellingWidget, #comparisonCard {
+        #inventoryCard, #topSellingWidget, #comparisonCard, #fastSlowMovingCard {
             height: 270px !important;
             max-height: 270px;
             box-sizing: border-box;
@@ -613,7 +651,7 @@
     justify-content: space-between;
     align-items: flex-start;
     padding: 18px 22px;
-    background-color: #00fff2;
+    background-color: #6EC1D1;
     border-radius: 16px 16px 0 0;
     flex-shrink: 0;
 }
@@ -678,14 +716,14 @@
         }
 
         .sales-range-btn.active {
-            background-color: #00fff2ff !important;
+            background-color: #6EC1D1 !important;
             color: #000000ff !important;
             font-weight: 700 !important;
             border-color: transparent !important;
         }
 
         .sales-range-btn.active:hover {
-            background-color: #00e6da !important;
+            background-color: #59b2c2 !important;
             color: #000000ff !important;
         }
         
@@ -742,15 +780,15 @@
             height: 2px;
             transition: width linear;
         }
-        .inv-toast.toast-warning .toast-progress { background: #00fff2; }
+        .inv-toast.toast-warning .toast-progress { background: #6EC1D1; }
         .inv-toast.toast-critical .toast-progress { background: #0aada5; }
         .inv-toast-icon {
             width: 32px; height: 32px; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0; font-size: 16px;
         }
-        .inv-toast.toast-warning .inv-toast-icon { background: #fef3c7; color: #d97706; }
-        .inv-toast.toast-critical .inv-toast-icon { background: #fee2e2; color: #dc2626; }
+        .inv-toast.toast-warning .inv-toast-icon { background: rgba(110, 193, 209, 0.18); color: #d97706; }
+        .inv-toast.toast-critical .inv-toast-icon { background: rgba(110, 193, 209, 0.18); color: #dc2626; }
         .inv-toast-btn {
             display: inline-flex; align-items: center; justify-content: center; gap: 4px;
             padding: 6px 12px; border-radius: 6px;
@@ -760,9 +798,9 @@
             line-height: 1;
         }
         .inv-toast-btn-order {
-            background: #00fff2; color: #000;
+            background: #6EC1D1; color: #000;
         }
-        .inv-toast-btn-order:hover { background: #00e6da; }
+        .inv-toast-btn-order:hover { background: #59b2c2; }
         .inv-toast-btn-dismiss {
             background: #f9fafb; color: #4b5563; border-color: #e5e7eb;
         }
@@ -778,9 +816,9 @@
         }
         .notif-item:hover { background-color: transparent; }
         .notif-item-unread {
-            background-color: #fefce8;
+            background-color: transparent;
         }
-        .notif-item-unread:hover { background-color: #fefce8; }
+        .notif-item-unread:hover { background-color: #f8fafc; }
         
         .notif-status-dot {
             width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
@@ -793,11 +831,11 @@
             display: inline-flex; align-items: center; justify-content: center;
             padding: 4px 10px; border-radius: 6px;
             font-size: 11px; font-weight: 500;
-            background: #00fff2; color: #000; border: 1px solid #00fff2;
+            background: #6EC1D1; color: #000; border: 1px solid #6EC1D1;
             transition: all 0.15s ease;
             text-decoration: none;
         }
-        .notif-btn:hover { background: #00e6da; border-color: #00e6da; color: #000; }
+        .notif-btn:hover { background: #59b2c2; border-color: #59b2c2; color: #000; }
     </style>
 
 @push('scripts')
@@ -1147,7 +1185,9 @@
                             renderMetric(data.metrics?.items_sold, 'itemsSold');
                             renderSalesChart(data.sales_chart);
                             renderCategoryChart(data.category_chart);
-                            renderComparisonChart(data.comparison_chart);
+                            if (typeof window.renderFastSlowMoving === 'function') {
+                                window.renderFastSlowMoving(data.fast_moving, data.slow_moving);
+                            }
                             renderTopItems(data.top_items);
                             renderInventory(data.inventory);
                         });
@@ -1269,8 +1309,8 @@
             var isCritical = alert.notification_type === 'out_of_stock';
             var toastClass = isCritical ? 'toast-critical' : 'toast-warning';
             var iconSVG = isCritical 
-                ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
-                : '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                ? '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="#dc2626"></path><line x1="12" y1="9" x2="12" y2="13" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16.5" r="1.1" fill="#ffffff"></circle></svg>'
+                : '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" fill="#d97706"></circle><line x1="12" y1="7.5" x2="12" y2="12.5" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16" r="1.1" fill="#ffffff"></circle></svg>';
             var title = isCritical ? 'Out of Stock' : 'Low Stock';
             
             var toast = document.createElement('div');
@@ -1283,14 +1323,14 @@
                     '</div>' +
                     '<div class="flex-1 min-w-0 pt-0.5">' +
                         '<div class="flex items-center justify-between mb-0.5">' +
-                            '<p class="text-[10px] font-bold ' + (isCritical ? 'text-red-600' : 'text-amber-600') + ' uppercase tracking-wider">' + title + '</p>' +
-                            '<span class="text-[10px] text-slate-400">Just now</span>' +
+                            '<p class="text-[10px] font-bold text-slate-700 uppercase tracking-wider">' + title + '</p>' +
+                            '<span class="text-[10px] font-bold text-slate-900">Just now</span>' +
                         '</div>' +
                         '<p class="text-sm font-semibold text-slate-900 truncate leading-tight mb-1">' + escHtml(alert.product_name) + '</p>' +
                         '<div class="flex items-center gap-2 text-xs text-slate-500 mb-3">' +
                             '<span>SKU: ' + escHtml(alert.sku) + '</span>' +
                             '<span>&middot;</span>' +
-                            '<span class="font-medium ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + (isCritical ? '0 left' : alert.current_stock + ' remaining') + '</span>' +
+                            '<span class="font-medium text-slate-600">' + (isCritical ? '0 left' : alert.current_stock + ' remaining') + '</span>' +
                         '</div>' +
                         '<div class="flex items-center gap-2">' +
                             '<button type="button" class="inv-toast-btn inv-toast-btn-dismiss" data-toast-dismiss="' + alert.id + '">' +
@@ -1413,16 +1453,38 @@
                 if (unreadCount > 0) {
                     badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
                     badge.classList.remove('hidden');
+                    badge.style.display = 'inline-flex';
+                    badge.style.alignItems = 'center';
+                    badge.style.justifyContent = 'center';
+                    if (unreadCount > 9) {
+                        badge.style.width = 'auto';
+                        badge.style.padding = '0 5px';
+                    } else {
+                        badge.style.width = '18px';
+                        badge.style.padding = '0';
+                    }
                 } else {
                     badge.classList.add('hidden');
+                    badge.style.display = 'none';
                 }
             }
             if (centerBadge) {
                 if (unreadCount > 0) {
-                    centerBadge.textContent = unreadCount + ' new';
+                    centerBadge.textContent = unreadCount;
                     centerBadge.classList.remove('hidden');
+                    centerBadge.style.display = 'inline-flex';
+                    centerBadge.style.alignItems = 'center';
+                    centerBadge.style.justifyContent = 'center';
+                    if (unreadCount > 9) {
+                        centerBadge.style.width = 'auto';
+                        centerBadge.style.padding = '0 6px';
+                    } else {
+                        centerBadge.style.width = '20px';
+                        centerBadge.style.padding = '0';
+                    }
                 } else {
                     centerBadge.classList.add('hidden');
+                    centerBadge.style.display = 'none';
                 }
             }
 
@@ -1436,8 +1498,8 @@
             notifications.forEach(function(n) {
                 var isCritical = n.notification_type === 'out_of_stock';
                 var iconSVG = isCritical 
-                    ? '<svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
-                    : '<svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                    ? '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="#dc2626"></path><line x1="12" y1="9" x2="12" y2="13" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16.5" r="1.1" fill="#ffffff"></circle></svg>'
+                    : '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" fill="#d97706"></circle><line x1="12" y1="7.5" x2="12" y2="12.5" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16" r="1.1" fill="#ffffff"></circle></svg>';
                 var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
                 var statusClass = 'notif-item notif-item-' + n.status;
                 var ago = timeAgo(n.created_at);
@@ -1450,23 +1512,23 @@
 
                 item.innerHTML =
                     '<div class="flex items-start gap-3">' +
-                        '<div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ' + (isCritical ? 'bg-red-50' : 'bg-amber-50') + '">' +
+                        '<div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">' +
                             iconSVG +
                         '</div>' +
                         '<div class="flex-1 min-w-0">' +
                             '<div class="flex items-center justify-between mb-0.5">' +
                                 '<div class="flex items-center gap-1.5">' +
-                                    '<span class="text-[10px] font-bold uppercase tracking-wider ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + typeLabel + '</span>' +
+                                    '<span class="text-[10px] font-bold uppercase tracking-wider text-slate-700">' + typeLabel + '</span>' +
                                     (n.status === 'unread' ? '<span class="notif-status-dot unread"></span>' : '') +
                                 '</div>' +
-                                '<span class="text-[10px] text-slate-400">' + escHtml(ago) + '</span>' +
+                                '<span class="text-[10px] ' + (n.status === 'unread' ? 'font-bold text-slate-900' : 'text-slate-400') + '">' + escHtml(ago) + '</span>' +
                             '</div>' +
                             '<p class="text-[13px] font-semibold text-slate-900 truncate mb-1">' + escHtml(n.product_name) + '</p>' +
                             '<div class="flex items-center justify-between">' +
                                 '<div class="flex items-center gap-1.5 text-[11px] text-slate-500 whitespace-nowrap">' +
                                     '<span class="truncate max-w-[80px]">' + escHtml(shortSku) + '</span>' +
                                     '<span>&middot;</span>' +
-                                    '<span class="font-medium whitespace-nowrap ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + stockText + '</span>' +
+                                    '<span class="font-medium whitespace-nowrap text-slate-600">' + stockText + '</span>' +
                                 '</div>' +
                                 (n.status !== 'resolved'
                                     ? '<a href="' + escHtml(n.order_url || '/purchase-order/create') + '" class="notif-btn flex-shrink-0" onclick="event.stopPropagation();">Order</a>'
@@ -1502,6 +1564,14 @@
         }
 
         function markAllNotificationsRead() {
+            // Immediately hide all badges
+            var bellBadge = document.getElementById('notification-badge');
+            var centerBadge = document.getElementById('notif-center-unread-badge');
+            var headerBadge = document.getElementById('headerNotificationBadge');
+            if (bellBadge) { bellBadge.classList.add('hidden'); bellBadge.style.display = 'none'; }
+            if (centerBadge) { centerBadge.classList.add('hidden'); centerBadge.style.display = 'none'; }
+            if (headerBadge) { headerBadge.classList.add('hidden'); headerBadge.style.display = 'none'; }
+
             fetch('/api/inventory-notifications/mark-all-read', {
                 method: 'POST',
                 headers: {
@@ -1511,7 +1581,10 @@
                     'Accept': 'application/json',
                 },
             })
-            .then(function() { loadNotificationCenter(); })
+            .then(function() {
+                loadNotificationCenter();
+                if (typeof loadHeaderNotifications === 'function') loadHeaderNotifications();
+            })
             .catch(function(err) {
                 console.error('Mark all read failed:', err);
                 // Fallback: mark individually
@@ -1528,7 +1601,10 @@
                         });
                     }));
                 })
-                .then(function() { loadNotificationCenter(); });
+                .then(function() {
+                    loadNotificationCenter();
+                    if (typeof loadHeaderNotifications === 'function') loadHeaderNotifications();
+                });
             });
         }
 
@@ -1584,8 +1660,8 @@
                 list.innerHTML = notifications.map(function(n) {
                     var isCritical = n.notification_type === 'out_of_stock';
                     var iconSVG = isCritical 
-                        ? '<svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
-                        : '<svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                        ? '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="#dc2626"></path><line x1="12" y1="9" x2="12" y2="13" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16.5" r="1.1" fill="#ffffff"></circle></svg>'
+                        : '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" fill="#d97706"></circle><line x1="12" y1="7.5" x2="12" y2="12.5" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16" r="1.1" fill="#ffffff"></circle></svg>';
                     var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
                     var ago = timeAgo(n.created_at);
                     var stockText = isCritical ? '0 left' : n.current_stock + ' remaining';
@@ -1593,25 +1669,25 @@
 
                     return '<div class="' + statusClass + ' p-4 rounded-xl border border-slate-100 flex items-start justify-between gap-4 transition-colors">' +
                         '<div class="flex items-start gap-4">' +
-                            '<div class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ' + (isCritical ? 'bg-red-50' : 'bg-amber-50') + '">' +
+                            '<div class="flex-shrink-0 w-10 h-10 rounded-[10px] flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">' +
                                 iconSVG +
                             '</div>' +
                             '<div>' +
                                 '<div class="flex items-center gap-2 mb-0.5">' +
-                                    '<span class="text-[10px] font-bold uppercase tracking-wider ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + typeLabel + '</span>' +
+                                    '<span class="text-[10px] font-bold uppercase tracking-wider text-slate-700">' + typeLabel + '</span>' +
                                     (n.status === 'unread' ? '<span class="notif-status-dot unread"></span>' : '') +
                                 '</div>' +
                                 '<p class="text-[14px] font-semibold text-slate-900 mt-1">' + escHtml(n.product_name) + '</p>' +
                                 '<div class="flex items-center gap-2 mt-1">' +
                                     '<span class="text-xs text-slate-500">SKU: ' + escHtml(n.sku) + '</span>' +
                                     '<span class="text-slate-400">&middot;</span>' +
-                                    '<span class="text-xs font-medium ' + (isCritical ? 'text-red-600' : 'text-amber-600') + '">' + stockText + '</span>' +
+                                    '<span class="text-xs font-medium text-slate-600">' + stockText + '</span>' +
                                 '</div>' +
-                                '<p class="text-[11px] text-slate-400 mt-1.5">' + escHtml(ago) + '</p>' +
+                                '<p class="text-[11px] ' + (n.status === 'unread' ? 'font-bold text-slate-900' : 'text-slate-400') + ' mt-1.5">' + escHtml(ago) + '</p>' +
                             '</div>' +
                         '</div>' +
                         (n.status !== 'resolved'
-                            ? '<a href="' + escHtml(n.order_url || '/purchase-order/create') + '" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[#00fff2] text-black text-xs font-medium hover:bg-[#00e6da] transition-colors">Order Now</a>'
+                            ? '<a href="' + escHtml(n.order_url || '/purchase-order/create') + '" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[#6EC1D1] text-black text-xs font-medium hover:bg-[#59b2c2] transition-colors">Order Now</a>'
                             : '<span class="inline-flex items-center gap-1 text-xs font-medium text-emerald-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Resolved</span>'
                         ) +
                     '</div>';

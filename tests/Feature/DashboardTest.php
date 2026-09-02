@@ -239,4 +239,94 @@ it('automatically sets product category from product_name or name when uncategor
     expect($p2->category)->toBe('Accessories');
 });
 
+it('includes yearly sales trend data and renders the Year button on the dashboard', function () {
+    $user = User::factory()->create([
+        'name' => 'Yearly Test User',
+        'email' => 'yearly_user@example.com',
+    ]);
+
+    $response = $this->actingAs($user)->getJson(route('dashboard.data'));
+
+    $response->assertOk()
+        ->assertJsonStructure([
+            'sales_chart' => [
+                'yearly' => ['labels', 'values'],
+                'monthly' => ['labels', 'values'],
+                'weekly' => ['labels', 'values'],
+                'daily' => ['labels', 'values'],
+            ],
+        ]);
+
+    $viewResponse = $this->actingAs($user)->get(route('dashboard'));
+    $viewResponse->assertOk()
+        ->assertSee('data-range="yearly"', false)
+        ->assertSee('Year', false);
+});
+
+it('returns fast and slow moving items ranked by quantity and renders the card', function () {
+    $user = User::factory()->create([
+        'name' => 'Rankings User',
+        'email' => 'rankings_user@example.com',
+    ]);
+
+    $pFast = \App\Models\Product::create([
+        'name' => 'Fast Helmet',
+        'sku' => 'HELM-001',
+        'category' => 'Helmets',
+        'unit_price' => 1000,
+        'stock_quantity' => 50,
+        'reorder_level' => 10,
+    ]);
+
+    $pSlow = \App\Models\Product::create([
+        'name' => 'Slow Tire',
+        'sku' => 'TIRE-002',
+        'category' => 'Tires',
+        'unit_price' => 500,
+        'stock_quantity' => 20,
+        'reorder_level' => 5,
+    ]);
+
+    POSTransaction::create([
+        'invoice_number' => 'INV-FAST-01',
+        'transaction_number' => 'POS-FAST-01',
+        'user_id' => $user->id,
+        'cashier_name' => $user->name,
+        'items' => [
+            ['id' => $pFast->id, 'name' => $pFast->name, 'sku' => $pFast->sku, 'quantity' => 10, 'unit_price' => 1000, 'cost_price' => 600],
+            ['id' => $pSlow->id, 'name' => $pSlow->name, 'sku' => $pSlow->sku, 'quantity' => 2, 'unit_price' => 500, 'cost_price' => 300],
+        ],
+        'subtotal' => 11000,
+        'services_total' => 0,
+        'extra_charge' => 0,
+        'discount' => 0,
+        'tax' => 0,
+        'total_amount' => 11000,
+        'payment_method' => 'cash',
+        'status' => 'completed',
+        'completed_at' => now(),
+    ]);
+
+    $response = $this->actingAs($user)->getJson(route('dashboard.data'));
+
+    $response->assertOk()
+        ->assertJsonStructure([
+            'fast_moving' => [['rank', 'name', 'sku', 'quantity']],
+            'slow_moving' => [['rank', 'name', 'sku', 'quantity']],
+        ])
+        ->assertJsonPath('fast_moving.0.name', 'Fast Helmet')
+        ->assertJsonPath('fast_moving.0.quantity', 10)
+        ->assertJsonPath('slow_moving.0.name', 'Slow Tire')
+        ->assertJsonPath('slow_moving.0.quantity', 2);
+
+    $viewResponse = $this->actingAs($user)->get(route('dashboard'));
+    $viewResponse->assertOk()
+        ->assertSee('Fast &amp; Slow Moving Items', false)
+        ->assertSee('id="fastSlowMovingCard"', false)
+        ->assertSee('id="fastMovingList"', false)
+        ->assertSee('id="slowMovingList"', false);
+});
+
+
+
 
