@@ -1,5 +1,5 @@
 <x-layouts.app :title="__('Dashboard')">
-    <div id="dashboard-root" data-dashboard-url="{{ route('dashboard.data') }}" data-refresh-interval="15000" class="space-y-6">
+    <div id="dashboard-root" data-dashboard-url="{{ route('dashboard.data') }}" data-refresh-interval="15000" class="space-y-1.5">
        
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div class="pl-3 lg:pl-2">
@@ -126,8 +126,8 @@
         @endphp
 
         <!-- Stats Grid -->
-        <div class="w-full">
-            <div class="grid grid-cols-1 sm:grid-cols-2 {{ $canSeeDeadStock ? 'lg:grid-cols-3 xl:grid-cols-5' : 'lg:grid-cols-4' }} gap-5">
+        <div class="w-full -mt-2.5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 {{ $canSeeDeadStock ? 'lg:grid-cols-3 xl:grid-cols-5' : 'lg:grid-cols-4' }} gap-x-5 gap-y-3">
                 <!-- Total Sales -->
                  <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
                     <div class="flex items-start justify-between gap-2">
@@ -282,7 +282,7 @@
         @endif
 
         <!-- Charts Row -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-3 -mt-3">
             <!-- Sales Overview Chart -->
             <div id="salesOverviewCard" class="lg:col-span-2 border border-slate-200 relative overflow-hidden rounded-[15px] bg-white shadow-sm" style="min-height: 240px; box-sizing: border-box; border-radius: 15px;">
 
@@ -291,16 +291,36 @@
                     <div class="flex items-center gap-2">
                        <h2 id="salesOverviewTitle" class="font-bold tracking-wide text-white text-lg">Sales Overview</h2>
                     </div>
-                    <div class="flex gap-2">
-                        <button type="button" data-range="daily" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Day</button>
-                        <button type="button" data-range="weekly" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Week</button>
-                        <button type="button" data-range="monthly" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition active">Month</button>
-                        <button type="button" data-range="yearly" class="sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Year</button>
+                    {{-- Sales range dropdown card --}}
+                    <div class="relative" id="salesRangeWrapper">
+                        <button type="button" id="salesRangeDropdownBtn"
+                            onclick="toggleSalesRangeDropdown(event)"
+                            class="inline-flex items-center gap-2 rounded-[10px] border border-[#59b2c2] bg-[#6EC1D1] px-3 py-1.5 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all duration-200 min-w-[110px] justify-between">
+                            <span id="salesRangeLabel">Monthly</span>
+                            <svg id="salesRangeChevron" class="w-3.5 h-3.5 text-slate-900 transition-transform duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 9l6 6 6-6" />
+                            </svg>
+                        </button>
+                        <div id="salesRangeDropdown"
+                            class="hidden absolute top-full right-0 z-50 mt-1.5 w-full rounded-[12px] border border-slate-700 bg-[#0f172a] shadow-2xl overflow-hidden">
+                            <div class="p-1">
+                                {{-- Hidden buttons keep the existing JS (.sales-range-btn + data-range) working --}}
+                                <button type="button" data-range="daily"   class="sales-range-btn hidden"></button>
+                                <button type="button" data-range="weekly"  class="sales-range-btn hidden"></button>
+                                <button type="button" data-range="monthly" class="sales-range-btn hidden active"></button>
+                                <button type="button" data-range="yearly"  class="sales-range-btn hidden"></button>
+
+                                <button type="button" onclick="pickSalesRange('daily',   'Daily')"   id="salesRangeOpt-daily"   class="sales-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white">Daily</button>
+                                <button type="button" onclick="pickSalesRange('weekly',  'Weekly')"  id="salesRangeOpt-weekly"  class="sales-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white">Weekly</button>
+                                <button type="button" onclick="pickSalesRange('monthly', 'Monthly')" id="salesRangeOpt-monthly" class="sales-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left bg-slate-700 text-white">Monthly</button>
+                                <button type="button" onclick="pickSalesRange('yearly',  'Yearly')"  id="salesRangeOpt-yearly"  class="sales-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white">Yearly</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Body (chart) -->
-                <div id="salesOverviewBody" class="relative w-full p-4" style="height:360px;">
+                <div id="salesOverviewBody" class="relative w-full p-2.5 pb-1" style="height:360px;">
                     <canvas id="salesChart"></canvas>
                 </div>
             </div>
@@ -332,7 +352,7 @@
         </div>
 
         <!-- Tables Row -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-3 -mt-3">
 
             <!-- Inventory Levels (compact card, stacked/overlapping rows, no popup) -->
          <div id="inventoryCardWrap" class="relative">
@@ -434,7 +454,7 @@
                     <div class="flex flex-col min-w-0 pr-2 border-r border-gray-100">
                         <div class="flex items-center gap-1.5 mb-1.5 pb-1 border-b border-gray-100">
                             <span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 truncate">Fast Moving</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-800 truncate">Fast Moving</span>
                         </div>
                         <div id="fastMovingList" class="flex flex-col gap-1 overflow-y-auto flex-1 min-h-0">
                             <div class="text-[11px] text-gray-400 my-auto text-center py-4">Loading…</div>
@@ -445,7 +465,7 @@
                     <div class="flex flex-col min-w-0 pl-1">
                         <div class="flex items-center gap-1.5 mb-1.5 pb-1 border-b border-gray-100">
                             <span class="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></span>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-700 truncate">Slow Moving</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-800 truncate">Slow Moving</span>
                         </div>
                         <div id="slowMovingList" class="flex flex-col gap-1 overflow-y-auto flex-1 min-h-0">
                             <div class="text-[11px] text-gray-400 my-auto text-center py-4">Loading…</div>
@@ -1726,6 +1746,14 @@
                 profileDropdown.classList.add('opacity-0', 'scale-95');
             }
 
+            // Close sales range dropdown if open
+            var salesRangeDd = document.getElementById('salesRangeDropdown');
+            var salesRangeChevron = document.getElementById('salesRangeChevron');
+            if (salesRangeDd && !salesRangeDd.classList.contains('hidden')) {
+                salesRangeDd.classList.add('hidden');
+                if (salesRangeChevron) salesRangeChevron.style.transform = '';
+            }
+
             // Dismiss all toast notifications
             var toastContainer = document.getElementById('inventory-toast-container');
             if (toastContainer) {
@@ -1823,6 +1851,12 @@
             var notifPanel = document.getElementById('notification-panel');
             if (notifPanel && !notifPanel.classList.contains('hidden')) {
                 notifPanel.classList.add('hidden');
+            }
+            var salesRangeDd = document.getElementById('salesRangeDropdown');
+            var salesRangeChevron = document.getElementById('salesRangeChevron');
+            if (salesRangeDd && !salesRangeDd.classList.contains('hidden')) {
+                salesRangeDd.classList.add('hidden');
+                if (salesRangeChevron) salesRangeChevron.style.transform = '';
             }
             var toastContainer = document.getElementById('inventory-toast-container');
             if (toastContainer) {

@@ -192,11 +192,31 @@
                             <p class="text-xs text-slate-400 mt-0.5">Revenue progression across the selected date range.</p>
                         </div>
                     </div>
-                    <div class="flex gap-2">
-                        <button type="button" data-range="daily" class="sales-trend-range-btn sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Daily</button>
-                        <button type="button" data-range="weekly" class="sales-trend-range-btn sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Weekly</button>
-                        <button type="button" data-range="monthly" class="sales-trend-range-btn sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition active">Monthly</button>
-                        <button type="button" data-range="yearly" class="sales-trend-range-btn sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Yearly</button>
+                    {{-- Sales trend range dropdown card --}}
+                    <div class="relative" id="salesTrendRangeWrapper">
+                        <button type="button" id="salesTrendRangeDropdownBtn"
+                            onclick="toggleSalesTrendRangeDropdown(event)"
+                            class="inline-flex items-center gap-2 rounded-[10px] border border-[#59b2c2] bg-[#6EC1D1] px-3 py-1.5 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all duration-200 min-w-[110px] justify-between">
+                            <span id="salesTrendRangeLabel">Monthly</span>
+                            <svg id="salesTrendRangeChevron" class="w-3.5 h-3.5 text-slate-900 transition-transform duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 9l6 6 6-6" />
+                            </svg>
+                        </button>
+                        <div id="salesTrendRangeDropdown"
+                            class="hidden absolute top-full right-0 z-50 mt-1.5 w-full rounded-[12px] border border-slate-700 bg-[#0f172a] shadow-2xl overflow-hidden">
+                            <div class="p-1">
+                                {{-- Hidden buttons keep the existing JS (.sales-trend-range-btn + data-range) working --}}
+                                <button type="button" data-range="daily"   class="sales-trend-range-btn sales-range-btn hidden"></button>
+                                <button type="button" data-range="weekly"  class="sales-trend-range-btn sales-range-btn hidden"></button>
+                                <button type="button" data-range="monthly" class="sales-trend-range-btn sales-range-btn hidden active"></button>
+                                <button type="button" data-range="yearly"  class="sales-trend-range-btn sales-range-btn hidden"></button>
+
+                                <button type="button" onclick="pickSalesTrendRange('daily',   'Daily')"   id="salesTrendRangeOpt-daily"   class="sales-trend-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white">Daily</button>
+                                <button type="button" onclick="pickSalesTrendRange('weekly',  'Weekly')"  id="salesTrendRangeOpt-weekly"  class="sales-trend-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white">Weekly</button>
+                                <button type="button" onclick="pickSalesTrendRange('monthly', 'Monthly')" id="salesTrendRangeOpt-monthly" class="sales-trend-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left bg-slate-700 text-white">Monthly</button>
+                                <button type="button" onclick="pickSalesTrendRange('yearly',  'Yearly')"  id="salesTrendRangeOpt-yearly"  class="sales-trend-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white">Yearly</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -971,7 +991,22 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
-                        tooltip: { mode: 'index', intersect: false }
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: '#1a1a1a',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#6EC1D1',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            titleFont: { size: 11, weight: 'bold' },
+                            bodyFont: { size: 13, weight: 'bold' },
+                            callbacks: {
+                                label: (context) => '₱' + Number(context.parsed.y || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+                            },
+                        },
                     },
                     scales: {
                         x: {
@@ -995,10 +1030,27 @@
                 salesTrendChart = new Chart(salesTrendCtx, salesTrendChartConfig);
             }
 
+            const SALES_TREND_RANGE_LABELS = { daily: 'Daily', weekly: 'Weekly', monthly: 'Monthly', yearly: 'Yearly' };
+
             const setActiveSalesTrendButton = (activeRange) => {
                 salesTrendRangeButtons.forEach((button) => {
                     const isActive = button.dataset.range === activeRange;
                     button.classList.toggle('active', isActive);
+                });
+
+                // sync dropdown trigger label
+                const label = document.getElementById('salesTrendRangeLabel');
+                if (label) label.textContent = SALES_TREND_RANGE_LABELS[activeRange] || activeRange;
+
+                // sync dropdown option highlights
+                ['daily', 'weekly', 'monthly', 'yearly'].forEach((r) => {
+                    const opt = document.getElementById('salesTrendRangeOpt-' + r);
+                    if (!opt) return;
+                    if (r === activeRange) {
+                        opt.className = 'sales-trend-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left bg-slate-700 text-white';
+                    } else {
+                        opt.className = 'sales-trend-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white';
+                    }
                 });
             };
 
@@ -1017,6 +1069,35 @@
                 button.addEventListener('click', () => {
                     updateSalesTrendChart(button.dataset.range);
                 });
+            });
+
+            // ── Sales Trend Range Dropdown helpers ──
+            window.toggleSalesTrendRangeDropdown = function (e) {
+                if (e) e.stopPropagation();
+                const dd = document.getElementById('salesTrendRangeDropdown');
+                const chevron = document.getElementById('salesTrendRangeChevron');
+                if (!dd) return;
+                const isHidden = dd.classList.contains('hidden');
+                dd.classList.toggle('hidden', !isHidden);
+                if (chevron) chevron.style.transform = isHidden ? 'rotate(180deg)' : '';
+            };
+
+            window.pickSalesTrendRange = function (range, labelText) {
+                const dd = document.getElementById('salesTrendRangeDropdown');
+                const chevron = document.getElementById('salesTrendRangeChevron');
+                if (dd) dd.classList.add('hidden');
+                if (chevron) chevron.style.transform = '';
+                updateSalesTrendChart(range);
+            };
+
+            document.addEventListener('click', function (e) {
+                const wrapper = document.getElementById('salesTrendRangeWrapper');
+                if (wrapper && !wrapper.contains(e.target)) {
+                    const dd = document.getElementById('salesTrendRangeDropdown');
+                    const chevron = document.getElementById('salesTrendRangeChevron');
+                    if (dd) dd.classList.add('hidden');
+                    if (chevron) chevron.style.transform = '';
+                }
             });
 
             setActiveSalesTrendButton('monthly');

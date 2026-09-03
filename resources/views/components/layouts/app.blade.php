@@ -303,6 +303,31 @@
             dashboardProfileButton.addEventListener('click', function(e) {
                 e.stopPropagation();
                 dismissAllNotifications();
+
+                // Close Sales Range dropdown if open
+                const salesRangeDd = document.getElementById('salesRangeDropdown');
+                const salesRangeChevron = document.getElementById('salesRangeChevron');
+                if (salesRangeDd && !salesRangeDd.classList.contains('hidden')) {
+                    salesRangeDd.classList.add('hidden');
+                    if (salesRangeChevron) salesRangeChevron.style.transform = '';
+                }
+
+                // Close Sales Trend dropdown (in sales analytics) if open
+                const salesTrendDd = document.getElementById('salesTrendRangeDropdown');
+                const salesTrendChevron = document.getElementById('salesTrendRangeChevron');
+                if (salesTrendDd && !salesTrendDd.classList.contains('hidden')) {
+                    salesTrendDd.classList.add('hidden');
+                    if (salesTrendChevron) salesTrendChevron.style.transform = '';
+                }
+
+                // Close Order Tab dropdown (in order management) if open
+                const orderTabDd = document.getElementById('orderTabDropdown');
+                const orderTabChevron = document.getElementById('orderTabChevron');
+                if (orderTabDd && !orderTabDd.classList.contains('hidden')) {
+                    orderTabDd.classList.add('hidden');
+                    if (orderTabChevron) orderTabChevron.style.transform = '';
+                }
+
                 const isOpen = !dashboardProfileDropdown.classList.contains('hidden');
                 if (isOpen) {
                     dashboardProfileDropdown.classList.add('hidden', 'opacity-0', 'scale-95');

@@ -557,11 +557,29 @@ document.addEventListener('DOMContentLoaded', () => {
         if (inStockModal) inStockModal.textContent = inStockText;
     };
 
+    const SALES_RANGE_LABELS = { daily: 'Daily', weekly: 'Weekly', monthly: 'Monthly', yearly: 'Yearly' };
+
     const setActiveSalesRange = (range) => {
+        // keep hidden proxy buttons in sync (needed by existing chart logic)
         salesRangeButtons.forEach((button) => {
             const isActive = button.dataset.range === range;
             button.classList.toggle('active', isActive);
             button.style.backgroundColor = '';
+        });
+
+        // sync dropdown trigger label
+        const label = document.getElementById('salesRangeLabel');
+        if (label) label.textContent = SALES_RANGE_LABELS[range] || range;
+
+        // sync dropdown option highlights
+        ['daily', 'weekly', 'monthly', 'yearly'].forEach((r) => {
+            const opt = document.getElementById('salesRangeOpt-' + r);
+            if (!opt) return;
+            if (r === range) {
+                opt.className = 'sales-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left bg-slate-700 text-white';
+            } else {
+                opt.className = 'sales-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white';
+            }
         });
     };
 
@@ -620,9 +638,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // hindi agad nawawala papunta sa ibaba, para mas makapal ang
         // highlight sa ilalim ng curve.
         const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        gradient.addColorStop(0, 'rgba(0, 217, 255, 0.65)');
-        gradient.addColorStop(0.5, 'rgba(0, 217, 255, 0.35)');
-        gradient.addColorStop(1, 'rgba(0, 217, 255, 0.12)');
+        gradient.addColorStop(0, 'rgba(110, 193, 209, 0.65)');
+        gradient.addColorStop(0.5, 'rgba(110, 193, 209, 0.35)');
+        gradient.addColorStop(1, 'rgba(110, 193, 209, 0.08)');
 
         window.dashboardSalesChart = new Chart(ctx, {
             type: 'line',
@@ -653,7 +671,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: { top: 40, bottom: 0, left: 0, right: 0 },
+                    padding: { top: 25, bottom: 0, left: 0, right: 0 },
                 },
                 plugins: {
                     legend: { display: false },
@@ -726,6 +744,57 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', () => {
             updateSalesChart(button.dataset.range);
         });
+    });
+
+    // ── Sales Range Dropdown helpers (called from Blade onclick attrs) ───────
+    window.toggleSalesRangeDropdown = function (e) {
+        if (e) e.stopPropagation();
+
+        // Close profile dropdown if open
+        const profileDropdown = document.getElementById('dashboardProfileDropdown');
+        if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
+            profileDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
+            profileDropdown.classList.remove('block', 'opacity-100', 'scale-100');
+        }
+
+        // Close notification panel if open
+        const notifPanel = document.getElementById('notification-panel');
+        if (notifPanel && !notifPanel.classList.contains('hidden')) {
+            notifPanel.classList.add('hidden');
+        }
+
+        const dd = document.getElementById('salesRangeDropdown');
+        const chevron = document.getElementById('salesRangeChevron');
+        const btn = document.getElementById('salesRangeDropdownBtn');
+        if (!dd) return;
+        const isHidden = dd.classList.contains('hidden');
+        dd.classList.toggle('hidden', !isHidden);
+        if (chevron) chevron.style.transform = isHidden ? 'rotate(180deg)' : '';
+    };
+
+    window.pickSalesRange = function (range, labelText) {
+        // close dropdown
+        const dd = document.getElementById('salesRangeDropdown');
+        const chevron = document.getElementById('salesRangeChevron');
+        const btn = document.getElementById('salesRangeDropdownBtn');
+        if (dd) dd.classList.add('hidden');
+        if (chevron) chevron.style.transform = '';
+
+        // update chart (this also calls setActiveSalesRange internally)
+        updateSalesChart(range);
+    };
+
+    // close on outside click
+    document.addEventListener('click', function (e) {
+        const wrapper = document.getElementById('salesRangeWrapper');
+        if (wrapper && !wrapper.contains(e.target)) {
+            const dd = document.getElementById('salesRangeDropdown');
+            const chevron = document.getElementById('salesRangeChevron');
+            const btn = document.getElementById('salesRangeDropdownBtn');
+            if (dd) dd.classList.add('hidden');
+            if (chevron) chevron.style.transform = '';
+
+        }
     });
 
     if (notificationButton && notificationDropdown) {

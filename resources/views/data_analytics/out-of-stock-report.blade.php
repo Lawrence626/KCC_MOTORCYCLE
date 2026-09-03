@@ -76,7 +76,7 @@
                         <h2 class="text-base font-semibold text-slate-900">Out of stock products</h2>
                         <p class="text-xs text-slate-500 mt-1">Products that need immediate restocking.</p>
                     </div>
-                    <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-red-700">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-800">
                         <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>
                         Critical
                     </span>
@@ -142,7 +142,7 @@
                         <h2 class="text-base font-semibold text-slate-900">Low stock products</h2>
                         <p class="text-xs text-slate-500 mt-1">Products at or below reorder levels.</p>
                     </div>
-                    <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-700">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-800">
                         <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                         Review
                     </span>
