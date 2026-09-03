@@ -289,7 +289,8 @@ class PurchaseOrderController extends Controller
         $status = $request->query($prefix . '_status');
         $supplier = $request->query($prefix . '_supplier');
 
-        return PurchaseOrder::whereIn('status', $statuses)
+        return PurchaseOrder::with(['items.product'])
+            ->whereIn('status', $statuses)
             ->when($status && in_array($status, $statuses, true), fn ($query) => $query->where('status', $status))
             ->when($supplier, fn ($query, $supplier) => $query->where('supplier_name', $supplier))
             ->when($search, fn ($query, $search) => $query->where(function ($query) use ($search) {
@@ -304,7 +305,7 @@ class PurchaseOrderController extends Controller
         $supplier = $request->query('back_orders_supplier');
 
         return PurchaseOrderItem::query()
-            ->with('purchaseOrder')
+            ->with(['purchaseOrder', 'product'])
             ->whereColumn('received_quantity', '<', 'quantity')
             ->whereHas('purchaseOrder', function ($query) use ($supplier) {
                 $query->whereNotIn('status', ['rejected', 'cancelled'])
@@ -339,7 +340,8 @@ class PurchaseOrderController extends Controller
         $issuesFound = PurchaseOrder::where('status', 'rejected')
             ->count();
 
-        $orders = PurchaseOrder::whereIn('status', $receivedStatuses)
+        $orders = PurchaseOrder::with(['items.product'])
+            ->whereIn('status', $receivedStatuses)
             ->when($status && in_array($status, $receivedStatuses, true), fn ($query) => $query->where('status', $status))
             ->when($search, fn ($query, $search) => $query->where(function ($query) use ($search) {
                 $query->where('order_number', 'like', "%{$search}%")

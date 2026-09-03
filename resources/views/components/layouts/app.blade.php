@@ -45,6 +45,7 @@
                             {{ $header }}
                         </div>
                         <div class="flex items-center gap-3 md:mt-2 mt-2">
+                            @if(auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk'))
                             <div class="relative inline-flex items-center z-50">
                                 <button id="headerNotificationButton" type="button" class="relative inline-flex h-9 w-9 items-center justify-center border border-slate-700 text-white transition focus:outline-none cursor-pointer" style="border-radius: 20px; background-color: #0f0f0f;" aria-label="Notifications">
                                     <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a6 6 0 00-6 6v4.586l-1.707 1.707A1 1 0 005 16h14a1 1 0 00.707-1.707L18 12.586V8a6 6 0 00-6-6zm0 18a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 20z"/></svg>
@@ -65,6 +66,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @endif
                             <div class="relative inline-flex items-center z-50">
                                 <button id="headerProfileButton" type="button" class="inline-flex h-9 items-center gap-2 border border-slate-700 px-3 text-white transition focus:outline-none cursor-pointer" style="border-radius: 20px; background-color: #0f0f0f;">
                                     <span class="w-5.5 h-5.5 rounded-full bg-cyan-500 text-white grid place-items-center overflow-hidden text-sm font-semibold">
@@ -202,6 +204,18 @@
         const dashboardProfileDropdown = document.getElementById('dashboardProfileDropdown');
         const dashboardProfileArrow = document.getElementById('dashboardProfileArrow');
 
+        function dismissAllNotifications() {
+            var notifDropdown = document.getElementById('headerNotificationDropdown');
+            if (notifDropdown) closeNotificationDropdown();
+            var notifPanel = document.getElementById('notification-panel');
+            if (notifPanel) notifPanel.classList.add('hidden');
+            var toastContainer = document.getElementById('inventory-toast-container');
+            if (toastContainer) toastContainer.innerHTML = '';
+            document.querySelectorAll('[data-toast-notification]').forEach(function(t) {
+                t.remove();
+            });
+        }
+
         function closeProfileDropdown() {
             headerProfileDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
             headerProfileDropdown.classList.remove('block', 'opacity-100', 'scale-100');
@@ -211,6 +225,7 @@
         }
 
         function openProfileDropdown() {
+            dismissAllNotifications();
             headerProfileDropdown.classList.remove('hidden', 'opacity-0', 'scale-95');
             headerProfileDropdown.classList.add('block', 'opacity-100', 'scale-100');
             headerProfileArrow.classList.remove('text-white');
@@ -218,12 +233,14 @@
         }
 
         function closeNotificationDropdown() {
+            if (!headerNotificationDropdown) return;
             headerNotificationDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
             headerNotificationDropdown.classList.remove('block', 'opacity-100', 'scale-100');
-            headerNotificationButton.blur();
+            if (headerNotificationButton) headerNotificationButton.blur();
         }
 
         function openNotificationDropdown() {
+            if (!headerNotificationDropdown) return;
             headerNotificationDropdown.classList.remove('hidden', 'opacity-0', 'scale-95');
             headerNotificationDropdown.classList.add('block', 'opacity-100', 'scale-100');
         }
@@ -235,6 +252,7 @@
 
             headerProfileButton.addEventListener('click', function(e) {
                 e.stopPropagation();
+                dismissAllNotifications();
                 const isOpen = !headerProfileDropdown.classList.contains('hidden');
                 if (isOpen) {
                     closeProfileDropdown();
@@ -278,14 +296,13 @@
             });
         }
 
-        // Floating profile dropdown handlers
-
         // Dashboard profile dropdown handlers
-        if (dashboardProfileButton && dashboardProfileDropdown && dashboardProfileArrow) {
+        if (dashboardProfileButton && dashboardProfileDropdown) {
             dashboardProfileDropdown.addEventListener('click', function(e) { e.stopPropagation(); });
 
             dashboardProfileButton.addEventListener('click', function(e) {
                 e.stopPropagation();
+                dismissAllNotifications();
                 const isOpen = !dashboardProfileDropdown.classList.contains('hidden');
                 if (isOpen) {
                     dashboardProfileDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
@@ -329,6 +346,9 @@
             }
 
             function loadHeaderNotifications() {
+                var userRole = @json(auth()->user()->role ?? '');
+                if (userRole !== 'admin' && userRole !== 'inventory_clerk') return;
+
                 fetch('/api/inventory-notifications?limit=20', {
                     headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
                 })

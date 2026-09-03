@@ -45,7 +45,7 @@
         <!-- Add User Modal -->
         <div id="addUserModal" class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 py-4">
             <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" data-action="close-modal"></div>
-            <div class="relative w-full max-w-3xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
+            <div class="relative w-full max-w-3xl overflow-hidden rounded-[28px] bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
                 <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                     <div>
                         <h2 class="text-xl font-bold text-black">Add User</h2>
@@ -165,7 +165,7 @@
         <!-- Edit User Modal -->
         <div id="editUserModal" class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 py-4">
             <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" data-action="close-modal"></div>
-            <div class="relative w-full max-w-3xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
+            <div class="relative w-full max-w-3xl overflow-hidden rounded-[28px] bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
                 <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                     <div>
                         <h2 class="text-xl font-bold text-black">Edit User</h2>

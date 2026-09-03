@@ -426,6 +426,7 @@
             <div id="fastSlowMovingCard" class="lg:col-span-1 border border-gray-200 p-3.5 flex flex-col justify-between" style="border-radius: 20px; background-color: #ffffff;">
                 <div class="flex items-center justify-between mb-2">
                     <h2 class="text-sm font-bold text-black" style="font-family: 'Poppins', sans-serif; font-weight: 700;">Fast &amp; Slow Moving Items</h2>
+                    <button type="button" id="viewAllFastSlowBtn" onclick="openFastSlowModal()" class="text-[10px] font-semibold text-[#105f68] hover:text-[#0d4f56] hover:underline transition-colors cursor-pointer">View All</button>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3 flex-1 min-h-0">
@@ -449,6 +450,98 @@
                         <div id="slowMovingList" class="flex flex-col gap-1 overflow-y-auto flex-1 min-h-0">
                             <div class="text-[11px] text-gray-400 my-auto text-center py-4">Loading…</div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ Top Selling Items Modal ═══ -->
+            <div id="topItemsModal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4">
+                <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeTopItemsModal()"></div>
+                <div class="relative bg-white rounded-[28px] shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[85vh] z-10">
+                    <!-- Modal Header -->
+                    <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
+                        <div>
+                            <h3 class="text-xl font-bold text-black">Top Selling Items</h3>
+                            <p class="text-sm text-slate-900 font-medium">Ranking of best performing products by revenue and quantity.</p>
+                        </div>
+                        <button type="button" onclick="closeTopItemsModal()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Modal Content -->
+                    <div class="overflow-y-auto flex-1 p-0">
+                        <table class="w-full text-left text-xs text-slate-700">
+                            <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white sticky top-0 z-10">
+                                <tr>
+                                    <th class="px-4 py-3 text-center font-semibold w-16">Rank</th>
+                                    <th class="px-4 py-3 text-left font-semibold">Product</th>
+                                    <th class="px-4 py-3 text-left font-semibold w-28">Category</th>
+                                    <th class="px-4 py-3 text-left font-semibold w-24">Qty Sold</th>
+                                    <th class="px-4 py-3 text-left font-semibold w-28">Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topItemsModalBody" class="divide-y divide-slate-200 bg-white">
+                                <!-- Loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+                        <span id="topItemsModalItemCount" class="text-xs text-slate-500">0 items</span>
+                        <button type="button" onclick="closeTopItemsModal()" class="rounded-[10px] bg-black/10 px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-black/20 cursor-pointer">Close</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ Fast & Slow Moving View All Modal ═══ -->
+            <div id="fast-slow-modal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4">
+                <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeFastSlowModal()"></div>
+                <div class="relative bg-white rounded-[28px] shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[85vh]">
+                    <!-- Modal Header -->
+                    <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
+                        <div>
+                            <h3 class="text-xl font-bold text-black">Fast & Slow Moving Items</h3>
+                            <p class="text-sm text-slate-900 font-medium">Complete list of all product movement data.</p>
+                        </div>
+                        <button type="button" onclick="closeFastSlowModal()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Modal Tab Buttons -->
+                    <div class="flex items-center gap-2 bg-slate-50 px-6">
+                        <button type="button" id="fsModalTabFast" onclick="switchFastSlowModalTab('fast')" class="px-4 py-3 text-sm font-semibold text-emerald-700 transition cursor-pointer">
+                            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 mr-1.5"></span>Fast Moving
+                        </button>
+                        <button type="button" id="fsModalTabSlow" onclick="switchFastSlowModalTab('slow')" class="px-4 py-3 text-sm font-semibold text-slate-500 hover:text-slate-700 transition cursor-pointer">
+                            <span class="inline-block w-2 h-2 rounded-full bg-amber-500 mr-1.5"></span>Slow Moving
+                        </button>
+                    </div>
+
+                    <!-- Modal Content -->
+                    <div class="overflow-y-auto flex-1 p-0">
+                        <table class="w-full text-left text-xs text-slate-700">
+                            <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white sticky top-0 z-10">
+                                <tr>
+                                    <th class="px-4 py-3 text-left font-semibold w-12">#</th>
+                                    <th class="px-4 py-3 text-left font-semibold">Product</th>
+                                    <th class="px-4 py-3 text-left font-semibold w-28">Category</th>
+                                    <th class="px-4 py-3 text-left font-semibold w-24">Qty Sold</th>
+                                    <th class="px-4 py-3 text-left font-semibold w-28" id="fsModalRevenueCol">Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fsModalTableBody" class="divide-y divide-slate-200 bg-white">
+                                <!-- Loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+                        <span id="fsModalItemCount" class="text-xs text-slate-500">0 items</span>
+                        <button type="button" onclick="closeFastSlowModal()" class="rounded-[10px] bg-black/10 px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-black/20">Close</button>
                     </div>
                 </div>
             </div>
@@ -667,17 +760,22 @@
     font-size: 0.8rem;
 }
 #topItemsModal .modal-body {
-    padding: 20px;
+    padding: 0;
     overflow: auto;
 }
 #topItemsModal table thead th {
-    color: #464545;
+    background-color: #0f172a !important;
+    color: #ffffff !important;
     font-weight: 600;
-    border-bottom: 1px solid rgba(0,0,0,0.20);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 12px 16px;
+    border-bottom: 1px solid #334155;
 }
 #topItemsModal table tbody td {
-    color: #6b7280;
-    border-bottom: 1px solid rgba(107,114,128,0.20);
+    color: #0f172a;
+    border-bottom: 1px solid #f1f5f9;
 }
 #topItemsModal #closeTopItemsModal {
     background-color: transparent !important;
@@ -879,6 +977,35 @@
                 showInfo();
             }
 
+            function resolveItemImage(it, localImages){
+                if (!it) return null;
+                if (it.image_url || it.image) return it.image_url || it.image;
+                localImages = localImages || loadLocalImages();
+                const pid = it.product_id ?? it.id ?? null;
+                const keyCandidates = [];
+                if (pid !== null && pid !== undefined) {
+                    keyCandidates.push(pid);
+                    keyCandidates.push(String(pid));
+                }
+                if (it.sku) keyCandidates.push(it.sku);
+                if (it.name) keyCandidates.push(it.name);
+
+                for (const k of keyCandidates) {
+                    if (k in localImages && localImages[k]) return localImages[k];
+                }
+
+                const keys = Object.keys(localImages);
+                if (it.sku) {
+                    const matchSku = keys.find(k => k.toLowerCase() === String(it.sku).toLowerCase());
+                    if (matchSku) return localImages[matchSku];
+                }
+                if (it.name) {
+                    const matchName = keys.find(k => k.toLowerCase() === String(it.name).toLowerCase());
+                    if (matchName) return localImages[matchName];
+                }
+                return null;
+            }
+
             function renderSlides(){
                 if (!track) return;
                 track.innerHTML = '';
@@ -890,23 +1017,9 @@
                     slide.className = 'top-slide' + (i === 0 ? ' is-active' : '');
 
                     const img = document.createElement('img');
-                    // try localStorage image by product_id first
-                    const pid = it.product_id ?? it.id ?? null;
-                    const keyCandidates = [];
-                    if (pid !== null && pid !== undefined) {
-                        keyCandidates.push(pid);
-                        keyCandidates.push(String(pid));
-                    }
-                    if (it.name) keyCandidates.push(it.name);
-
-                    let found = null;
-                    for (const k of keyCandidates) {
-                        if (k in localImages) { found = localImages[k]; break; }
-                    }
+                    const found = resolveItemImage(it, localImages);
                     if (found) {
                         img.src = found;
-                    } else if (it.image_url || it.image) {
-                        img.src = it.image_url || it.image;
                     } else {
                         img.src = '/images/placeholder.png';
                     }
@@ -955,69 +1068,57 @@
             }).catch(()=>{ placeholder.textContent = 'Failed to load'; });
 
          function openTopItemsModal(list){
-    let modal = document.getElementById('topItemsModal');
-    if (!modal) {
-        modal = document.createElement('div'); modal.id = 'topItemsModal';
-        // Fixed + centered on the whole dashboard screen (not off to the side)
-        modal.style.position = 'fixed';
-        modal.style.inset = '0';
-        modal.style.display = 'flex';
-        modal.style.alignItems = 'center';
-        modal.style.justifyContent = 'center';
-        modal.style.zIndex = '1200';
-        modal.innerHTML = `
-            <div class="modal-overlay-bg" style="position:absolute;inset:0;"></div>
-            <div class="modal-panel" style="position:relative;max-width:900px;width:95%;max-height:80%;margin:auto;">
-                <div class="modal-header">
-                    <div>
-                        <h3>Top Selling Items</h3>
-                        <p>Ranking of best performing products by revenue and quantity.</p>
-                    </div>
-                    <button id="closeTopItemsModal">×</button>
-                </div>
-                <div class="modal-body">
-                    <table style="width:100%;border-collapse:collapse">
-                        <thead>
-                            <tr style="text-align:left">
-                                <th style="padding:8px">Rank</th>
-                                <th style="padding:8px">Item</th>
-                                <th style="padding:8px">SKU</th>
-                                <th style="padding:8px">Category</th>
-                                <th style="padding:8px">Qty</th>
-                                <th style="padding:8px">Revenue</th>
-                            </tr>
-                        </thead>
-                        <tbody id="topItemsModalBody"></tbody>
-                    </table>
-                </div>
-            </div>`;
-        document.body.appendChild(modal);
+            const modal = document.getElementById('topItemsModal');
+            if (!modal) return;
+            
+            const localImages = loadLocalImages();
+            const body = document.getElementById('topItemsModalBody');
+            if (body) {
+                body.innerHTML = '';
+                const items = list || [];
+                const itemCountEl = document.getElementById('topItemsModalItemCount');
+                if (itemCountEl) itemCountEl.textContent = `${items.length} items`;
 
-        const doClose = () => closeTopItemsModal(modal);
-        modal.querySelector('#closeTopItemsModal').addEventListener('click', doClose);
-        modal.querySelector('.modal-panel').addEventListener('click', (e)=>{ e.stopPropagation(); });
-        modal.addEventListener('click', doClose);
-    }
+                items.forEach((it, i) => {
+                    const imageUrl = resolveItemImage(it, localImages);
+                    const imgHtml = imageUrl
+                        ? `<div class="w-8 h-8 rounded-[6px] bg-slate-100 flex-shrink-0 overflow-hidden border border-slate-200/80 bg-cover bg-center" style="background-image:url('${imageUrl}');"></div>`
+                        : `<div class="w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`;
 
-    const body = modal.querySelector('#topItemsModalBody'); body.innerHTML = '';
-    (list||[]).forEach((it, i)=>{
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td style="padding:8px">${i+1}</td><td style="padding:8px">${escapeHtml(it.name)}</td><td style="padding:8px;font-family:monospace;font-size:12px;color:#4b5563;">${escapeHtml(it.sku || '—')}</td><td style="padding:8px">${escapeHtml(it.category||'')}</td><td style="padding:8px">${it.qty ?? it.quantity ?? ''}</td><td style="padding:8px">${it.revenue ? (new Intl.NumberFormat('en-PH',{style:'currency',currency:'PHP'}).format(it.revenue)):''}</td>`;
-        body.appendChild(tr);
-    });
+                    const name = escapeHtml(it.name || 'Unknown Product');
+                    const sku = escapeHtml(it.sku || 'N/A');
+                    const category = escapeHtml(it.category || 'General');
+                    const qty = it.qty ?? it.quantity ?? 0;
+                    const revenue = it.revenue ? (new Intl.NumberFormat('en-PH',{style:'currency',currency:'PHP'}).format(Number(it.revenue) || 0)) : '₱0.00';
 
-    // trigger the open (fade-in + scale) transition
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => modal.classList.add('is-open'));
-    });
-}
-            // Nice close effect: fade + scale out, then remove from DOM
-            function closeTopItemsModal(modal){
-                modal.classList.remove('is-open');
-                window.setTimeout(() => {
-                    if (modal && modal.parentNode) modal.parentNode.removeChild(modal);
-                }, 280);
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-50 transition';
+                    tr.innerHTML = `
+                        <td class="px-4 py-3 text-slate-700 font-bold text-xs text-center">${i+1}</td>
+                        <td class="px-4 py-3">
+                            <div class="flex items-center gap-3">
+                                ${imgHtml}
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-xs">${name}</div>
+                                    <div class="text-[11px] text-slate-400 font-mono mt-0.5">${sku}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-slate-600 text-xs">${category}</td>
+                        <td class="px-4 py-3 text-slate-900 font-semibold text-xs">${qty}</td>
+                        <td class="px-4 py-3 text-slate-900 font-semibold text-xs">${revenue}</td>
+                    `;
+                    body.appendChild(tr);
+                });
             }
+            modal.classList.remove('hidden');
+        }
+
+        function closeTopItemsModal(){
+            const modal = document.getElementById('topItemsModal');
+            if (modal) modal.classList.add('hidden');
+        }
+        window.closeTopItemsModal = closeTopItemsModal;
 
             function escapeHtml(s){ return String(s||'').replace(/[&<>\"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
         });
@@ -1185,7 +1286,7 @@
                             renderSalesChart(data.sales_chart);
                             renderCategoryChart(data.category_chart);
                             if (typeof window.renderFastSlowMoving === 'function') {
-                                window.renderFastSlowMoving(data.fast_moving, data.slow_moving);
+                                window.renderFastSlowMoving(data.fast_moving, data.slow_moving, data.all_fast_moving, data.all_slow_moving);
                             }
                             renderTopItems(data.top_items);
                             renderInventory(data.inventory);
@@ -1281,6 +1382,9 @@
         // ── TOAST NOTIFICATIONS ──────────────────────────────────────
         // ══════════════════════════════════════════════════════════════
         function showInventoryToasts(alerts) {
+            var currentUserRole = @json(auth()->user()->role ?? '');
+            if (currentUserRole === 'cashier' || currentUserRole === 'warehouse_personnel') return;
+
             var container = document.getElementById('inventory-toast-container');
             if (!container) return;
 
@@ -1430,6 +1534,9 @@
         // ── NOTIFICATION CENTER (Bell Icon) ──────────────────────────
         // ══════════════════════════════════════════════════════════════
         function loadNotificationCenter() {
+            var currentUserRole = @json(auth()->user()->role ?? '');
+            if (currentUserRole === 'cashier' || currentUserRole === 'warehouse_personnel') return;
+
             fetch('/api/inventory-notifications?limit=30', {
                 headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
             })
@@ -1711,16 +1818,130 @@
             }
         });
 
-        // Close notification panel when profile button is clicked
+        // Close notification panel & dismiss all toast alerts when profile button is clicked
         document.getElementById('dashboardProfileButton')?.addEventListener('click', function() {
             var notifPanel = document.getElementById('notification-panel');
             if (notifPanel && !notifPanel.classList.contains('hidden')) {
                 notifPanel.classList.add('hidden');
             }
+            var toastContainer = document.getElementById('inventory-toast-container');
+            if (toastContainer) {
+                toastContainer.innerHTML = '';
+            }
+            document.querySelectorAll('[data-toast-notification]').forEach(function(t) {
+                t.remove();
+            });
         });
 
         // Initial load
         loadNotificationCenter();
+
+        // ══════════════════════════════════════════════════════════════
+        // ── FAST & SLOW MOVING VIEW ALL MODAL ────────────────────────
+        // ══════════════════════════════════════════════════════════════
+        var _fsModalCurrentTab = 'fast';
+
+        function openFastSlowModal() {
+            var modal = document.getElementById('fast-slow-modal');
+            if (modal) modal.classList.remove('hidden');
+            switchFastSlowModalTab(_fsModalCurrentTab || 'fast');
+        }
+        window.openFastSlowModal = openFastSlowModal;
+
+        function closeFastSlowModal() {
+            var modal = document.getElementById('fast-slow-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+        window.closeFastSlowModal = closeFastSlowModal;
+
+        function switchFastSlowModalTab(tab) {
+            _fsModalCurrentTab = tab;
+            var fastTab = document.getElementById('fsModalTabFast');
+            var slowTab = document.getElementById('fsModalTabSlow');
+            var revenueCol = document.getElementById('fsModalRevenueCol');
+
+            var allFast = window._fsModalAllFast || [];
+            var allSlow = window._fsModalAllSlow || [];
+
+            if (tab === 'fast') {
+                if (fastTab) fastTab.className = 'px-4 py-3 text-sm font-semibold text-emerald-700 transition cursor-pointer';
+                if (slowTab) slowTab.className = 'px-4 py-3 text-sm font-semibold text-slate-500 hover:text-slate-700 transition cursor-pointer';
+                if (revenueCol) revenueCol.style.display = '';
+                renderFastSlowModalTable(allFast, true);
+            } else {
+                if (fastTab) fastTab.className = 'px-4 py-3 text-sm font-semibold text-slate-500 hover:text-slate-700 transition cursor-pointer';
+                if (slowTab) slowTab.className = 'px-4 py-3 text-sm font-semibold text-amber-700 transition cursor-pointer';
+                if (revenueCol) revenueCol.style.display = 'none';
+                renderFastSlowModalTable(allSlow, false);
+            }
+        }
+        window.switchFastSlowModalTab = switchFastSlowModalTab;
+
+        function getFsModalProductImage(item) {
+            if (!item) return null;
+            if (item.image) return item.image;
+            try {
+                var stored = localStorage.getItem('posProductImages');
+                if (stored) {
+                    var images = JSON.parse(stored);
+                    var productId = item.id || item.product_id;
+                    if (productId && images[productId]) return images[productId];
+                    if (item.sku && images[item.sku]) return images[item.sku];
+                    if (item.name && images[item.name]) return images[item.name];
+
+                    var keys = Object.keys(images);
+                    if (item.sku) {
+                        var matchSku = keys.find(function(k) { return k.toLowerCase() === String(item.sku).toLowerCase(); });
+                        if (matchSku) return images[matchSku];
+                    }
+                    if (item.name) {
+                        var matchName = keys.find(function(k) { return k.toLowerCase() === String(item.name).toLowerCase(); });
+                        if (matchName) return images[matchName];
+                    }
+                }
+            } catch (e) {}
+            return null;
+        }
+
+        function renderFastSlowModalTable(items, showRevenue) {
+            var tbody = document.getElementById('fsModalTableBody');
+            var countEl = document.getElementById('fsModalItemCount');
+            if (!tbody) return;
+
+            if (!items || !items.length) {
+                tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">No data available</td></tr>';
+                if (countEl) countEl.textContent = '0 items';
+                return;
+            }
+
+            var currency = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' });
+
+            tbody.innerHTML = items.map(function(item) {
+                var imageUrl = getFsModalProductImage(item);
+                var imgHtml = imageUrl
+                    ? '<div class="w-8 h-8 rounded-[6px] bg-slate-100 flex-shrink-0 overflow-hidden border border-slate-200/80 bg-cover bg-center" style="background-image: url(\'' + imageUrl + '\');"></div>'
+                    : '<div class="w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>';
+
+                var name = (item.name || 'Unknown Product').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                var sku = (item.sku || 'N/A').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                var category = (item.category || 'General').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                var revenueCell = showRevenue
+                    ? '<td class="px-4 py-2.5 text-left text-slate-900 font-medium">' + currency.format(Number(item.revenue) || 0) + '</td>'
+                    : '<td class="px-4 py-2.5 text-left" style="display:none;"></td>';
+
+                return '<tr class="hover:bg-slate-50 transition">' +
+                    '<td class="px-4 py-2.5 text-left font-bold text-slate-400">' + (item.rank || '#') + '</td>' +
+                    '<td class="px-4 py-2.5 text-left"><div class="flex items-center gap-2.5">' + imgHtml +
+                    '<div><div class="font-medium text-slate-900">' + name + '</div>' +
+                    '<div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">' + sku + '</div></div></div></td>' +
+                    '<td class="px-4 py-2.5 text-left text-slate-600">' + category + '</td>' +
+                    '<td class="px-4 py-2.5 text-left text-slate-900">' + (item.quantity || 0) + '</td>' +
+                    revenueCell +
+                    '</tr>';
+            }).join('');
+
+            if (countEl) countEl.textContent = items.length + ' item' + (items.length !== 1 ? 's' : '');
+        }
     </script>
 @endpush
 </x-layouts.app>

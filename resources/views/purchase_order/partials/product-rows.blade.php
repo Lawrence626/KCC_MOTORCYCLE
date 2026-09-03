@@ -16,7 +16,19 @@
             <input type="hidden" name="products[{{ $idx }}][product_name]" value="{{ $product->product_name ?? $product->name }}" />
             <input type="hidden" name="products[{{ $idx }}][sku]" value="{{ $product->sku }}" />
         </td>
-        <td class="px-4 py-3 font-medium text-slate-800">{{ $product->product_name ?? $product->name }}</td>
+        <td class="px-4 py-3 font-medium text-slate-800">
+            <div class="flex items-center gap-2.5">
+                <div class="po-product-img-thumb w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300"
+                     data-id="{{ $product->id }}"
+                     data-sku="{{ $product->sku }}"
+                     data-name="{{ $product->product_name ?? $product->name }}">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </div>
+                <div class="min-w-0">
+                    <div class="truncate font-medium text-slate-800">{{ $product->product_name ?? $product->name }}</div>
+                </div>
+            </div>
+        </td>
         <td class="px-4 py-3">
             @php
                 $mov = $product->movement_category ?? 'special_order';

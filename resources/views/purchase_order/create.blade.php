@@ -614,6 +614,7 @@
 
             if (productTableBody && data.table_html !== undefined) {
                 productTableBody.innerHTML = data.table_html;
+                resolvePoProductImages();
             }
 
             const paginationContainer = $el('pagination-container');
@@ -1127,6 +1128,45 @@
         $el('price-analysis-panel').classList.add('hidden');
     }
 
+    // ── Resolve Product Images from LocalStorage ────────────────────────────
+    function resolvePoProductImages() {
+        try {
+            const stored = localStorage.getItem('posProductImages');
+            if (!stored) return;
+            const images = JSON.parse(stored);
+            const keys = Object.keys(images);
+
+            document.querySelectorAll('.po-product-img-thumb').forEach(container => {
+                const id = container.dataset.id;
+                const sku = container.dataset.sku;
+                const name = container.dataset.name;
+
+                let imgUrl = null;
+                if (id && images[id]) imgUrl = images[id];
+                else if (sku && images[sku]) imgUrl = images[sku];
+                else if (name && images[name]) imgUrl = images[name];
+                else {
+                    if (sku) {
+                        const matchSku = keys.find(k => k.toLowerCase() === String(sku).toLowerCase());
+                        if (matchSku) imgUrl = images[matchSku];
+                    }
+                    if (!imgUrl && name) {
+                        const matchName = keys.find(k => k.toLowerCase() === String(name).toLowerCase());
+                        if (matchName) imgUrl = images[matchName];
+                    }
+                }
+
+                if (imgUrl) {
+                    container.innerHTML = '';
+                    container.className = 'po-product-img-thumb w-8 h-8 rounded-[6px] bg-slate-100 border border-slate-200/80 flex-shrink-0 bg-cover bg-center';
+                    container.style.backgroundImage = `url('${imgUrl}')`;
+                }
+            });
+        } catch(e) {
+            console.error('Error resolving PO product images:', e);
+        }
+    }
+
     // ── Boot: trigger initial state ───────────────────────────────────────────
     if (productTableBody) {
         const rows = productTableBody.querySelectorAll('.product-row');
@@ -1150,6 +1190,7 @@
         updateSelectAllCheckboxState();
     }
     onProductSelectionChange();
+    resolvePoProductImages();
 
 })();
 </script>

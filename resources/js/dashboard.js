@@ -420,6 +420,34 @@ document.addEventListener('DOMContentLoaded', () => {
         "'": '&#39;',
     }[c]));
 
+    const getSavedProductImage = (item) => {
+        if (!item) return null;
+        if (item.image) return item.image;
+        try {
+            const stored = localStorage.getItem('posProductImages');
+            if (stored) {
+                const images = JSON.parse(stored);
+                const productId = item.id || item.product_id;
+                if (productId && images[productId]) return images[productId];
+                if (item.sku && images[item.sku]) return images[item.sku];
+                if (item.name && images[item.name]) return images[item.name];
+
+                const keys = Object.keys(images);
+                if (item.sku) {
+                    const matchSku = keys.find((k) => k.toLowerCase() === String(item.sku).toLowerCase());
+                    if (matchSku) return images[matchSku];
+                }
+                if (item.name) {
+                    const matchName = keys.find((k) => k.toLowerCase() === String(item.name).toLowerCase());
+                    if (matchName) return images[matchName];
+                }
+            }
+        } catch (e) {
+            console.error('Error reading posProductImages from localStorage:', e);
+        }
+        return null;
+    };
+
     const renderProductRankList = (containerEl, items, emptyText) => {
         if (!containerEl) {
             return;
@@ -434,10 +462,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const rank = item.rank || (index + 1);
             const name = escapeHtml(item.name || 'Unknown Product');
             const sku = escapeHtml(item.sku || 'N/A');
+            const imageUrl = getSavedProductImage(item);
+
+            const imageContainer = imageUrl
+                ? `<div class="w-9 h-9 rounded-[8px] bg-slate-100 flex-shrink-0 overflow-hidden border border-slate-200/80 bg-cover bg-center" style="background-image: url('${imageUrl}');" title="${name}"></div>`
+                : `<div class="w-9 h-9 rounded-[8px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-400">
+                        <svg class="w-4 h-4 text-slate-400 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                   </div>`;
 
             return `
-                <div class="flex items-start gap-1.5 py-0.5 min-w-0">
-                    <span class="text-[10px] font-bold text-gray-400 w-4.5 flex-shrink-0 pt-0.5">#${rank}</span>
+                <div class="flex items-center gap-2 py-1 border-b border-slate-100/70 last:border-0 min-w-0">
+                    <span class="text-[10px] font-bold text-gray-400 w-4 flex-shrink-0 text-center">#${rank}</span>
+                    ${imageContainer}
                     <div class="min-w-0 flex-1">
                         <p class="text-[11px] font-semibold text-gray-900 truncate leading-tight" title="${name}">${name}</p>
                         <p class="text-[9px] text-gray-500 truncate font-mono tracking-tight leading-tight">${sku}</p>
@@ -447,11 +485,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }).join('');
     };
 
-    const renderFastSlowMoving = (fastMoving, slowMoving) => {
+    const renderFastSlowMoving = (fastMoving, slowMoving, allFast, allSlow) => {
         const fastContainer = document.getElementById('fastMovingList');
         const slowContainer = document.getElementById('slowMovingList');
         renderProductRankList(fastContainer, fastMoving, 'No sales recorded');
         renderProductRankList(slowContainer, slowMoving, 'No sales recorded');
+
+        window._fsModalAllFast = (allFast && allFast.length) ? allFast : (fastMoving || []);
+        window._fsModalAllSlow = (allSlow && allSlow.length) ? allSlow : (slowMoving || []);
     };
     window.renderFastSlowMoving = renderFastSlowMoving;
 
@@ -666,7 +707,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderSalesChart(data.sales_chart);
                 setRangeLabel(data.range_label);
                 renderCategoryChart(data.category_chart);
-                renderFastSlowMoving(data.fast_moving, data.slow_moving);
+                renderFastSlowMoving(data.fast_moving, data.slow_moving, data.all_fast_moving, data.all_slow_moving);
                 renderTopItems(data.top_items);
                 renderInventory(data.inventory);
                 renderLowStockNotifications(data.low_stock_notifications || []);

@@ -37,7 +37,6 @@ function getLocationSummary(product) {
     const uniqueLocations = [...new Set(locations)];
     return uniqueLocations.map(wh => getWarehouseBadge(wh)).join(', ');
 }
-
 function setEditFieldError(fieldId, message) {
     const field = document.getElementById(fieldId);
     if (!field) return;

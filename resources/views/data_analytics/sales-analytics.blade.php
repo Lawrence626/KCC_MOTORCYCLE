@@ -225,11 +225,42 @@
                     <div id="categoryLegend" class="@if(empty($categoryBreakdown['labels'])) w-full flex items-center justify-center py-12 text-center col-span-full @else max-h-48 overflow-y-auto pr-1 space-y-2 text-sm my-auto @endif">
                         @if(!empty($categoryBreakdown['labels']))
                             @php
-                                $legendColors = ['bg-[#6EC1D1]','bg-[#59b2c2]','bg-emerald-500','bg-amber-500','bg-sky-500','bg-rose-500','bg-violet-500','bg-lime-500','bg-fuchsia-500','bg-orange-500'];
+                                $categoryColorMap = [
+                                    'exhaust' => '#00f700',
+                                    'pipe' => '#00f700',
+                                    'helmets' => '#da0e0e',
+                                    'helmet' => '#da0e0e',
+                                    'tires' => '#f1a204',
+                                    'tire' => '#f1a204',
+                                    'tire hugger' => '#f1a204',
+                                    'brakes' => '#5541ec',
+                                    'brake' => '#5541ec',
+                                    'brake pads' => '#5541ec',
+                                    'oils' => '#0948be',
+                                    'oil' => '#0948be',
+                                    'engine oil' => '#0948be',
+                                    'lubricants' => '#0948be',
+                                    'batteries' => '#e93071',
+                                    'battery' => '#e93071',
+                                    'accessories' => '#45AAF2',
+                                    'shock' => '#8b5cf6',
+                                    'swing arm' => '#10b981',
+                                    'engine support' => '#f97316',
+                                    'side mirror' => '#06b6d4',
+                                    'monorack frame' => '#64748b',
+                                    'quick throttle' => '#ec4899',
+                                    'spark plug' => '#eab308',
+                                    'filters' => '#14b8a6',
+                                ];
+                                $defaultPalette = ['#45AAF2', '#00f700', '#da0e0e', '#f1a204', '#5541ec', '#0948be', '#e93071', '#8b5cf6', '#10b981', '#f97316', '#06b6d4', '#ec4899'];
                             @endphp
                             @foreach($categoryBreakdown['labels'] as $index => $label)
+                                @php
+                                    $normalized = strtolower(trim($label));
+                                    $dotColor = $categoryColorMap[$normalized] ?? $defaultPalette[$index % count($defaultPalette)];
+                                @endphp
                                 <div class="flex items-center gap-3 rounded-[12px] border border-slate-200 bg-slate-50 p-2.5">
-                                    <span class="h-2.5 w-2.5 rounded-full {{ $legendColors[$index % count($legendColors)] }}"></span>
+                                    <span class="h-2.5 w-2.5 rounded-full flex-shrink-0" style="background-color: {{ $dotColor }};"></span>
                                     <div>
                                         <p class="font-semibold text-slate-900 text-xs">{{ $label }}</p>
                                         <p class="text-slate-500 text-[11px]">
@@ -287,8 +318,15 @@
                                     <tr class="hover:bg-slate-50 transition">
                                         <td class="px-4 py-2.5 text-center font-semibold text-slate-900 w-16 whitespace-nowrap">{{ $product['rank'] }}</td>
                                         <td class="px-4 py-2.5 text-left">
-                                            <div class="font-medium text-slate-900">{{ $product['name'] }}</div>
-                                            <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">{{ $product['sku'] ?? 'N/A' }}</div>
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                </div>
+                                                <div>
+                                                    <div class="font-medium text-slate-900">{{ $product['name'] }}</div>
+                                                    <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">{{ $product['sku'] ?? 'N/A' }}</div>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="px-4 py-2.5 text-left text-slate-600 w-44 whitespace-nowrap">{{ $product['category'] }}</td>
                                         <td class="px-4 py-2.5 text-center text-slate-900 w-32 whitespace-nowrap">{{ $product['qty'] }}</td>
@@ -319,6 +357,7 @@
                         <table class="w-full text-left text-xs text-slate-700">
                             <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                                 <tr>
+                                    <th class="px-4 py-3 text-center font-semibold text-white w-16 whitespace-nowrap">Rank</th>
                                     <th class="px-4 py-3 text-left font-semibold text-white">Product</th>
                                     <th class="px-4 py-3 text-center font-semibold text-white w-40 whitespace-nowrap">Quantity Sold</th>
                                     <th class="px-4 py-3 text-right font-semibold text-white w-36 whitespace-nowrap">Revenue</th>
@@ -327,16 +366,24 @@
                             <tbody class="divide-y divide-slate-200 bg-white" id="fastMovingProductsBody">
                                 @forelse(collect($fastMoving)->take(5) as $product)
                                     <tr class="hover:bg-slate-50 transition">
+                                        <td class="px-4 py-2.5 text-center font-semibold text-slate-900 w-16 whitespace-nowrap">{{ $product['rank'] ?? $loop->iteration }}</td>
                                         <td class="px-4 py-2.5 text-left">
-                                            <div class="font-medium text-slate-900">{{ $product['name'] }}</div>
-                                            <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">{{ $product['sku'] ?? 'N/A' }}</div>
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                </div>
+                                                <div>
+                                                    <div class="font-medium text-slate-900">{{ $product['name'] }}</div>
+                                                    <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">{{ $product['sku'] ?? 'N/A' }}</div>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="px-4 py-2.5 text-center text-slate-900 w-40 whitespace-nowrap">{{ $product['qty'] }}</td>
                                         <td class="px-4 py-2.5 text-right font-semibold text-slate-900 w-36 whitespace-nowrap">{{ $product['revenue'] }}</td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="3" class="px-4 py-4 text-center text-slate-500">No sales data available</td>
+                                        <td colspan="4" class="px-4 py-4 text-center text-slate-500">No sales data available</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -359,6 +406,7 @@
                         <table class="w-full text-left text-xs text-slate-700">
                             <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                                 <tr>
+                                    <th class="px-4 py-3 text-center font-semibold text-white w-16 whitespace-nowrap">Rank</th>
                                     <th class="px-4 py-3 text-left font-semibold text-white">Product</th>
                                     <th class="px-4 py-3 text-left font-semibold text-white w-36 whitespace-nowrap">Quantity Sold</th>
                                 </tr>
@@ -366,15 +414,23 @@
                             <tbody class="divide-y divide-slate-200 bg-white" id="slowMovingProductsBody">
                                 @forelse(collect($slowMoving)->take(5) as $product)
                                     <tr class="hover:bg-slate-50 transition">
+                                        <td class="px-4 py-2.5 text-center font-semibold text-slate-900 w-16 whitespace-nowrap">{{ $product['rank'] ?? $loop->iteration }}</td>
                                         <td class="px-4 py-2.5 text-left">
-                                            <div class="font-medium text-slate-900">{{ $product['name'] }}</div>
-                                            <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">{{ $product['sku'] ?? 'N/A' }}</div>
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                </div>
+                                                <div>
+                                                    <div class="font-medium text-slate-900">{{ $product['name'] }}</div>
+                                                    <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">{{ $product['sku'] ?? 'N/A' }}</div>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="px-4 py-2.5 text-left text-slate-900 w-36 whitespace-nowrap">{{ $product['qty'] }}</td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="2" class="px-4 py-4 text-center text-slate-500">No sales data available</td>
+                                        <td colspan="3" class="px-4 py-4 text-center text-slate-500">No sales data available</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -968,8 +1024,41 @@
             // ═══════════════════════════════════════════
             // CATEGORY CHART (initial render from server)
             // ═══════════════════════════════════════════
-            const chartColors = ['#6EC1D1', '#59b2c2', '#a2deea', '#34d399', '#f59e0b', '#8b5cf6', '#ec4899', '#f97316'];
-            const legendColorClasses = ['bg-[#6EC1D1]','bg-[#59b2c2]','bg-emerald-500','bg-amber-500','bg-sky-500','bg-rose-500','bg-violet-500','bg-lime-500','bg-fuchsia-500','bg-orange-500'];
+            const categoryColorMap = {
+                'exhaust': '#00f700',
+                'pipe': '#00f700',
+                'helmets': '#da0e0e',
+                'helmet': '#da0e0e',
+                'tires': '#f1a204',
+                'tire': '#f1a204',
+                'tire hugger': '#f1a204',
+                'brakes': '#5541ec',
+                'brake': '#5541ec',
+                'brake pads': '#5541ec',
+                'oils': '#0948be',
+                'oil': '#0948be',
+                'engine oil': '#0948be',
+                'lubricants': '#0948be',
+                'batteries': '#e93071',
+                'battery': '#e93071',
+                'accessories': '#45AAF2',
+                'shock': '#8b5cf6',
+                'swing arm': '#10b981',
+                'engine support': '#f97316',
+                'side mirror': '#06b6d4',
+                'monorack frame': '#64748b',
+                'quick throttle': '#ec4899',
+                'spark plug': '#eab308',
+                'filters': '#14b8a6',
+            };
+            const fallbackCategoryColors = ['#45AAF2', '#00f700', '#da0e0e', '#f1a204', '#5541ec', '#0948be', '#e93071', '#8b5cf6', '#10b981', '#f97316', '#06b6d4', '#ec4899'];
+
+            const getCategoryColor = (label, index = 0) => {
+                if (!label) return fallbackCategoryColors[index % fallbackCategoryColors.length];
+                const key = String(label).trim().toLowerCase();
+                return categoryColorMap[key] || fallbackCategoryColors[index % fallbackCategoryColors.length];
+            };
+
             let categoryChartInstance = null;
 
             const initCategoryChart = (labels, values) => {
@@ -983,7 +1072,7 @@
 
                 if (!labels.length) return;
 
-                const backgroundColors = labels.map((_, index) => chartColors[index % chartColors.length]);
+                const backgroundColors = labels.map((label, index) => getCategoryColor(label, index));
                 categoryChartInstance = new Chart(categoryCtx, {
                     type: 'doughnut',
                     data: {
@@ -1061,10 +1150,10 @@
                 if (chartWrapper) chartWrapper.classList.remove('hidden');
                 legend.className = 'space-y-2 text-sm my-auto';
                 legend.innerHTML = labels.map((label, index) => {
-                    const colorClass = legendColorClasses[index % legendColorClasses.length];
+                    const dotColor = getCategoryColor(label, index);
                     return `
                         <div class="flex items-center gap-3 rounded-[12px] border border-slate-200 bg-slate-50 p-2.5">
-                            <span class="h-2.5 w-2.5 rounded-full ${colorClass}"></span>
+                            <span class="h-2.5 w-2.5 rounded-full flex-shrink-0" style="background-color: ${dotColor};"></span>
                             <div>
                                 <p class="font-semibold text-slate-900 text-xs">${label}</p>
                                 <p class="text-slate-500 text-[11px]">${formatted[index] || '—'} • ${shares[index] || 0}%</p>
@@ -1126,27 +1215,67 @@
                 controlsHtml += `<button type="button" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" ${currentPage >= totalPages ? 'disabled' : ''} onclick="goToProductPage('${tab}', ${currentPage + 1})">Next →</button>`;
 
                 controls.innerHTML = controlsHtml;
-                return { pageItems };
+                return { start, end, pageItems };
             }
+
+            const getAnalyticsProductImage = (p) => {
+                if (!p) return null;
+                if (p.image) return p.image;
+                try {
+                    const stored = localStorage.getItem('posProductImages');
+                    if (stored) {
+                        const images = JSON.parse(stored);
+                        const productId = p.id || p.product_id;
+                        if (productId && images[productId]) return images[productId];
+                        if (p.sku && images[p.sku]) return images[p.sku];
+                        if (p.name && images[p.name]) return images[p.name];
+
+                        const keys = Object.keys(images);
+                        if (p.sku) {
+                            const matchSku = keys.find(k => k.toLowerCase() === String(p.sku).toLowerCase());
+                            if (matchSku) return images[matchSku];
+                        }
+                        if (p.name) {
+                            const matchName = keys.find(k => k.toLowerCase() === String(p.name).toLowerCase());
+                            if (matchName) return images[matchName];
+                        }
+                    }
+                } catch (e) {}
+                return null;
+            };
+
+            const renderProductImageHtml = (p) => {
+                const imageUrl = getAnalyticsProductImage(p);
+                return imageUrl
+                    ? `<div class="w-8 h-8 rounded-[6px] bg-slate-100 flex-shrink-0 overflow-hidden border border-slate-200/80 bg-cover bg-center" style="background-image: url('${imageUrl}');"></div>`
+                    : `<div class="w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                       </div>`;
+            };
 
             const renderTopProducts = (products) => {
                 topProductsData = products || [];
                 const tbody = document.getElementById('topProductsBody');
                 if (!tbody) return;
 
-                const { pageItems } = updateTabPagination('top', topProductsData, 'topProductsPageInfo', 'topProductsPaginationControls', 'products');
+                const { pageItems, start } = updateTabPagination('top', topProductsData, 'topProductsPageInfo', 'topProductsPaginationControls', 'products');
 
                 if (!pageItems.length) {
                     tbody.innerHTML = emptyStateRow(5, 'No sales data available for the selected date range.');
                     return;
                 }
 
-                tbody.innerHTML = pageItems.map(p => `
+                tbody.innerHTML = pageItems.map((p, idx) => `
                     <tr class="hover:bg-slate-50 transition">
-                        <td class="px-4 py-2.5 text-center font-semibold text-slate-900 w-16 whitespace-nowrap">${p.rank}</td>
+                        <td class="px-4 py-2.5 text-center font-semibold text-slate-900 w-16 whitespace-nowrap">${p.rank || (start + idx + 1)}</td>
                         <td class="px-4 py-2.5 text-left">
-                            <div class="font-medium text-slate-900">${p.name}</div>
-                            <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">${p.sku || 'N/A'}</div>
+                            <div class="flex items-center gap-2.5">
+                                ${renderProductImageHtml(p)}
+                                <div>
+                                    <div class="font-medium text-slate-900">${p.name}</div>
+                                    <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">${p.sku || 'N/A'}</div>
+                                </div>
+                            </div>
                         </td>
                         <td class="px-4 py-2.5 text-left text-slate-600 w-44 whitespace-nowrap">${p.category}</td>
                         <td class="px-4 py-2.5 text-center text-slate-900 w-32 whitespace-nowrap">${p.qty}</td>
@@ -1160,18 +1289,24 @@
                 const tbody = document.getElementById('fastMovingProductsBody');
                 if (!tbody) return;
 
-                const { pageItems } = updateTabPagination('fast', fastMovingData, 'fastMovingPageInfo', 'fastMovingPaginationControls', 'products');
+                const { pageItems, start } = updateTabPagination('fast', fastMovingData, 'fastMovingPageInfo', 'fastMovingPaginationControls', 'products');
 
                 if (!pageItems.length) {
-                    tbody.innerHTML = emptyStateRow(3, 'No sales data available for the selected date range.');
+                    tbody.innerHTML = emptyStateRow(4, 'No sales data available for the selected date range.');
                     return;
                 }
 
-                tbody.innerHTML = pageItems.map(p => `
+                tbody.innerHTML = pageItems.map((p, idx) => `
                     <tr class="hover:bg-slate-50 transition">
+                        <td class="px-4 py-2.5 text-center font-semibold text-slate-900 w-16 whitespace-nowrap">${p.rank || (start + idx + 1)}</td>
                         <td class="px-4 py-2.5 text-left">
-                            <div class="font-medium text-slate-900">${p.name}</div>
-                            <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">${p.sku || 'N/A'}</div>
+                            <div class="flex items-center gap-2.5">
+                                ${renderProductImageHtml(p)}
+                                <div>
+                                    <div class="font-medium text-slate-900">${p.name}</div>
+                                    <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">${p.sku || 'N/A'}</div>
+                                </div>
+                            </div>
                         </td>
                         <td class="px-4 py-2.5 text-center text-slate-900 w-40 whitespace-nowrap">${p.qty}</td>
                         <td class="px-4 py-2.5 text-right font-semibold text-slate-900 w-36 whitespace-nowrap">${p.revenue}</td>
@@ -1184,23 +1319,34 @@
                 const tbody = document.getElementById('slowMovingProductsBody');
                 if (!tbody) return;
 
-                const { pageItems } = updateTabPagination('slow', slowMovingData, 'slowMovingPageInfo', 'slowMovingPaginationControls', 'products');
+                const { pageItems, start } = updateTabPagination('slow', slowMovingData, 'slowMovingPageInfo', 'slowMovingPaginationControls', 'products');
 
                 if (!pageItems.length) {
-                    tbody.innerHTML = emptyStateRow(2, 'No sales data available for the selected date range.');
+                    tbody.innerHTML = emptyStateRow(3, 'No sales data available for the selected date range.');
                     return;
                 }
 
-                tbody.innerHTML = pageItems.map(p => `
+                tbody.innerHTML = pageItems.map((p, idx) => `
                     <tr class="hover:bg-slate-50 transition">
+                        <td class="px-4 py-2.5 text-center font-semibold text-slate-900 w-16 whitespace-nowrap">${p.rank || (start + idx + 1)}</td>
                         <td class="px-4 py-2.5 text-left">
-                            <div class="font-medium text-slate-900">${p.name}</div>
-                            <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">${p.sku || 'N/A'}</div>
+                            <div class="flex items-center gap-2.5">
+                                ${renderProductImageHtml(p)}
+                                <div>
+                                    <div class="font-medium text-slate-900">${p.name}</div>
+                                    <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">${p.sku || 'N/A'}</div>
+                                </div>
+                            </div>
                         </td>
                         <td class="px-4 py-2.5 text-left text-slate-900 w-36 whitespace-nowrap">${p.qty}</td>
                     </tr>
                 `).join('');
             };
+
+            // Render with images on initial load
+            renderTopProducts(topProductsData);
+            renderFastMoving(fastMovingData);
+            renderSlowMoving(slowMovingData);
 
             const fetchFilteredWidgets = async (startDate, endDate) => {
                 showLoadingOverlays();

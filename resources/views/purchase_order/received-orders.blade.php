@@ -159,7 +159,28 @@
                     <tbody class="divide-y divide-slate-200 text-slate-700">
                         @forelse($orders as $order)
                             <tr class="hover:bg-slate-50">
-                                <td class="px-4 py-3 font-semibold">{{ $order->order_number }}</td>
+                                <td class="px-4 py-3 font-semibold">
+                                    @php
+                                        $firstItem = $order->items->first();
+                                        $itemCount = $order->items->count();
+                                    @endphp
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="po-received-img-thumb w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300"
+                                             data-id="{{ $firstItem?->product_id ?? '' }}"
+                                             data-sku="{{ $firstItem?->sku ?? ($firstItem?->product?->sku ?? '') }}"
+                                             data-name="{{ $firstItem?->product_name ?? ($firstItem?->product?->name ?? '') }}">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <div class="text-slate-900 font-semibold truncate">{{ $order->order_number }}</div>
+                                            @if($firstItem)
+                                                <div class="text-[10px] text-slate-400 font-normal truncate">
+                                                    {{ $firstItem->product_name }}{{ $itemCount > 1 ? ' +' . ($itemCount - 1) . ' more' : '' }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </td>
                                 <td class="px-4 py-3">{{ $order->supplier_name }}</td>
                                 <td class="px-4 py-3">{{ optional($order->updated_at)->format('M j, Y') }}</td>
                                 <td class="px-4 py-3">
@@ -1034,6 +1055,46 @@
                     alert('Error opening print dialog');
                 }
             }
+
+            function resolvePoReceivedImages() {
+                try {
+                    const stored = localStorage.getItem('posProductImages');
+                    if (!stored) return;
+                    const images = JSON.parse(stored);
+                    const keys = Object.keys(images);
+
+                    document.querySelectorAll('.po-received-img-thumb').forEach(container => {
+                        const id = container.dataset.id;
+                        const sku = container.dataset.sku;
+                        const name = container.dataset.name;
+
+                        let imgUrl = null;
+                        if (id && images[id]) imgUrl = images[id];
+                        else if (sku && images[sku]) imgUrl = images[sku];
+                        else if (name && images[name]) imgUrl = images[name];
+                        else {
+                            if (sku) {
+                                const matchSku = keys.find(k => k.toLowerCase() === String(sku).toLowerCase());
+                                if (matchSku) imgUrl = images[matchSku];
+                            }
+                            if (!imgUrl && name) {
+                                const matchName = keys.find(k => k.toLowerCase() === String(name).toLowerCase());
+                                if (matchName) imgUrl = images[matchName];
+                            }
+                        }
+
+                        if (imgUrl) {
+                            container.innerHTML = '';
+                            container.className = 'po-received-img-thumb w-8 h-8 rounded-[6px] bg-slate-100 border border-slate-200/80 flex-shrink-0 bg-cover bg-center';
+                            container.style.backgroundImage = `url('${imgUrl}')`;
+                        }
+                    });
+                } catch(e) {
+                    console.error('Error resolving received order product images:', e);
+                }
+            }
+
+            resolvePoReceivedImages();
 
             // Expose functions globally
             window.roAddProductRow = roAddProductRow;

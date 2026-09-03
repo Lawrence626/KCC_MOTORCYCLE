@@ -144,25 +144,34 @@ class DashboardController extends Controller
 
         $topItems = $groupedSoldItems->sortByDesc('quantity')->take(5)->values();
 
-        $fastMoving = $groupedSoldItems->sortByDesc('quantity')->take(5)->values()->map(function ($item, $index) {
+        $allFastMoving = $groupedSoldItems->sortByDesc('quantity')->values()->map(function ($item, $index) {
             return [
                 'rank' => $index + 1,
+                'id' => $item['product_id'] ?? null,
                 'product_id' => $item['product_id'] ?? null,
                 'name' => $item['name'],
                 'sku' => $item['sku'] ?: 'N/A',
+                'category' => $item['category'] ?? 'General',
                 'quantity' => (int) $item['quantity'],
+                'revenue' => (float) $item['revenue'],
             ];
         })->all();
 
-        $slowMoving = $groupedSoldItems->sortBy('quantity')->take(5)->values()->map(function ($item, $index) {
+        $allSlowMoving = $groupedSoldItems->sortBy('quantity')->values()->map(function ($item, $index) {
             return [
                 'rank' => $index + 1,
+                'id' => $item['product_id'] ?? null,
                 'product_id' => $item['product_id'] ?? null,
                 'name' => $item['name'],
                 'sku' => $item['sku'] ?: 'N/A',
+                'category' => $item['category'] ?? 'General',
                 'quantity' => (int) $item['quantity'],
+                'revenue' => (float) $item['revenue'],
             ];
         })->all();
+
+        $fastMoving = array_slice($allFastMoving, 0, 5);
+        $slowMoving = array_slice($allSlowMoving, 0, 5);
 
         $inventory = [
             'total_products' => Product::query()->where('is_archived', false)->count(),
@@ -210,6 +219,8 @@ class DashboardController extends Controller
             ],
             'fast_moving' => $fastMoving,
             'slow_moving' => $slowMoving,
+            'all_fast_moving' => $allFastMoving,
+            'all_slow_moving' => $allSlowMoving,
             'top_items' => $topItems->map(function ($item, $index) {
                 return [
                     'rank' => $index + 1,

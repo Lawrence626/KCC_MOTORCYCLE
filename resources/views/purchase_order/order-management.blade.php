@@ -461,10 +461,52 @@
         });
 
         document.querySelectorAll('.tab-btn').forEach(button => {
-            button.addEventListener('click', () => showOrderTab(button.dataset.tab));
+            button.addEventListener('click', () => {
+                showOrderTab(button.dataset.tab);
+                setTimeout(resolvePoOrderImages, 50);
+            });
         });
 
+        function resolvePoOrderImages() {
+            try {
+                const stored = localStorage.getItem('posProductImages');
+                if (!stored) return;
+                const images = JSON.parse(stored);
+                const keys = Object.keys(images);
+
+                document.querySelectorAll('.po-order-img-thumb').forEach(container => {
+                    const id = container.dataset.id;
+                    const sku = container.dataset.sku;
+                    const name = container.dataset.name;
+
+                    let imgUrl = null;
+                    if (id && images[id]) imgUrl = images[id];
+                    else if (sku && images[sku]) imgUrl = images[sku];
+                    else if (name && images[name]) imgUrl = images[name];
+                    else {
+                        if (sku) {
+                            const matchSku = keys.find(k => k.toLowerCase() === String(sku).toLowerCase());
+                            if (matchSku) imgUrl = images[matchSku];
+                        }
+                        if (!imgUrl && name) {
+                            const matchName = keys.find(k => k.toLowerCase() === String(name).toLowerCase());
+                            if (matchName) imgUrl = images[matchName];
+                        }
+                    }
+
+                    if (imgUrl) {
+                        container.innerHTML = '';
+                        container.className = 'po-order-img-thumb w-8 h-8 rounded-[6px] bg-slate-100 border border-slate-200/80 flex-shrink-0 bg-cover bg-center';
+                        container.style.backgroundImage = `url('${imgUrl}')`;
+                    }
+                });
+            } catch(e) {
+                console.error('Error resolving order product images:', e);
+            }
+        }
+
         showOrderTab(activeTab);
+        resolvePoOrderImages();
     </script>
     <style>
         #receivedRangeButton {
