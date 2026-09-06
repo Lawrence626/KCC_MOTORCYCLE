@@ -133,17 +133,17 @@
                     </button>
                     <div id="orderTabDropdown"
                         class="hidden absolute top-full left-0 z-50 mt-1.5 w-full rounded-[12px] border border-slate-700 bg-[#0f172a] shadow-2xl overflow-hidden">
-                        <div class="p-1">
+                        <div class="p-1 space-y-0.5">
                             {{-- Hidden proxy buttons for compatibility --}}
                             <button type="button" data-tab="orders" class="tab-btn hidden"></button>
                             <button type="button" data-tab="back_orders" class="tab-btn hidden"></button>
                             <button type="button" data-tab="received" class="tab-btn hidden"></button>
                             <button type="button" data-tab="cancelled" class="tab-btn hidden"></button>
 
-                            <button type="button" onclick="selectOrderTab('orders', 'Purchase Orders')" id="orderTabOpt-orders" class="order-tab-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left {{ ($activeTab ?? 'orders') === 'orders' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white' }}">Purchase Orders</button>
-                            <button type="button" onclick="selectOrderTab('back_orders', 'Back Orders')" id="orderTabOpt-back_orders" class="order-tab-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left {{ ($activeTab ?? '') === 'back_orders' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white' }}">Back Orders</button>
-                            <button type="button" onclick="selectOrderTab('received', 'Received Orders')" id="orderTabOpt-received" class="order-tab-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left {{ ($activeTab ?? '') === 'received' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white' }}">Received Orders</button>
-                            <button type="button" onclick="selectOrderTab('cancelled', 'Cancelled Orders')" id="orderTabOpt-cancelled" class="order-tab-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left {{ ($activeTab ?? '') === 'cancelled' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white' }}">Cancelled Orders</button>
+                            <button type="button" onclick="selectOrderTab('orders', 'Purchase Orders')" id="orderTabOpt-orders" class="order-tab-dd-opt w-full px-3 py-1 text-sm font-normal rounded-[8px] transition-colors text-left cursor-pointer {{ ($activeTab ?? 'orders') === 'orders' ? 'bg-slate-700 text-white font-semibold' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">Purchase Orders</button>
+                            <button type="button" onclick="selectOrderTab('back_orders', 'Back Orders')" id="orderTabOpt-back_orders" class="order-tab-dd-opt w-full px-3 py-1 text-sm font-normal rounded-[8px] transition-colors text-left cursor-pointer {{ ($activeTab ?? '') === 'back_orders' ? 'bg-slate-700 text-white font-semibold' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">Back Orders</button>
+                            <button type="button" onclick="selectOrderTab('received', 'Received Orders')" id="orderTabOpt-received" class="order-tab-dd-opt w-full px-3 py-1 text-sm font-normal rounded-[8px] transition-colors text-left cursor-pointer {{ ($activeTab ?? '') === 'received' ? 'bg-slate-700 text-white font-semibold' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">Received Orders</button>
+                            <button type="button" onclick="selectOrderTab('cancelled', 'Cancelled Orders')" id="orderTabOpt-cancelled" class="order-tab-dd-opt w-full px-3 py-1 text-sm font-normal rounded-[8px] transition-colors text-left cursor-pointer {{ ($activeTab ?? '') === 'cancelled' ? 'bg-slate-700 text-white font-semibold' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">Cancelled Orders</button>
                         </div>
                     </div>
                 </div>
@@ -402,9 +402,9 @@
                 const opt = document.getElementById('orderTabOpt-' + key);
                 if (!opt) return;
                 if (key === tabKey) {
-                    opt.className = 'order-tab-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left bg-slate-700 text-white';
+                    opt.className = 'order-tab-dd-opt w-full px-3 py-1 text-sm font-semibold rounded-[8px] transition-colors text-left bg-slate-700 text-white cursor-pointer';
                 } else {
-                    opt.className = 'order-tab-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white';
+                    opt.className = 'order-tab-dd-opt w-full px-3 py-1 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer';
                 }
             });
         }

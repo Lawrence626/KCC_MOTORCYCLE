@@ -156,16 +156,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     const CATEGORY_DEFS = [
-        { name: 'Exhaust', color: '#00f700ff' },      // coral red
-        { name: 'Helmets', color: '#da0e0eff' },      // theme teal (matches dashboard accent)
-        { name: 'Tires', color: '#f1a204ff' },        // warm amber/yellow
-        { name: 'Brakes', color: '#5541ecff' },       // violet/purple
-        { name: 'Oils', color: '#0948beff' },         // turquoise
+        { name: 'Exhaust', color: '#00f700ff' },      // green
+        { name: 'Helmets', color: '#da0e0eff' },      // red
+        { name: 'Tires', color: '#f1a204ff' },        // amber
+        { name: 'Brakes', color: '#5541ecff' },       // violet
+        { name: 'Oils', color: '#0948beff' },         // blue
         { name: 'Batteries', color: '#e93071ff' },    // pink
         { name: 'Accessories', color: '#45AAF2' },  // sky blue
     ];
-    const INACTIVE_DOT_COLOR = '#7e7e7e8c'; // muted/gray — kapag walang benta ang category sa araw na 'yon
-    const EMPTY_RING_COLOR = '#7e7e7e8c'; // flat gray track kapag walang laman/sales
+    const INACTIVE_DOT_COLOR = '#7e7e7e8c';
+    const EMPTY_RING_COLOR = '#e2e8f0'; // clean light gray track when empty
 
     const setMetric = (element, value, prefix = '') => {
         if (!element) {
@@ -316,20 +316,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const colors = isEmpty ? [EMPTY_RING_COLOR] : categoryColors;
 
         const ctx = canvas.getContext('2d');
+        const activeCount = chartValues.filter(v => v > 0).length;
+        const hasMultiple = !isEmpty && activeCount > 1;
+
         window.dashboardCategoryChart = new Chart(ctx, {
             type: 'doughnut',
-            // Walang glow plugin dito — flat/segmented na itsura lang, gaya ng reference image.
+            // Flat segmented doughnut with white separation gaps
             plugins: [],
             data: {
                 labels: chartLabels,
                 datasets: [{
                     data: chartValues,
                     backgroundColor: colors,
-                    borderColor: 'transparent',
-                    borderWidth: 0,
-                    hoverBorderColor: 'transparent',
-                    hoverBorderWidth: 0,
-                    // Walang rounded ends para tuloy-tuloy/solid ang buong circle.
+                    borderColor: hasMultiple ? '#ffffff' : 'transparent',
+                    borderWidth: hasMultiple ? 2.5 : 0,
+                    hoverBorderColor: hasMultiple ? '#ffffff' : 'transparent',
+                    hoverBorderWidth: hasMultiple ? 2.5 : 0,
                     borderRadius: 0,
                     hoverOffset: 0,
                 }],
@@ -338,11 +340,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 responsive: true,
                 maintainAspectRatio: false,
                 cutout: '62%',
-                // Walang gaps sa pagitan ng segments — buong/solid na circle.
-                spacing: 0,
+                spacing: hasMultiple ? 1 : 0,
                 circumference: 360,
                 rotation: -90,
                 layout: { padding: 0 },
+                onHover: (event, elements) => {
+                    const overlay = document.getElementById('categoryCenterOverlay');
+                    if (overlay) {
+                        overlay.style.opacity = (elements && elements.length > 0) ? '0' : '1';
+                    }
+                },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
@@ -350,20 +357,54 @@ document.addEventListener('DOMContentLoaded', () => {
                         backgroundColor: '#1a1a1a',
                         titleColor: '#ffffff',
                         bodyColor: '#ffffff',
-                        borderColor: '#36ADA3',
-                        borderWidth: 1,
-                        padding: 5,
+                        borderColor: (context) => {
+                            const dataPoints = context.tooltip?.dataPoints;
+                            if (dataPoints && dataPoints.length > 0) {
+                                const dp = dataPoints[0];
+                                const colors = dp.dataset?.backgroundColor;
+                                if (Array.isArray(colors)) {
+                                    return colors[dp.dataIndex] || '#00f700';
+                                }
+                                if (typeof colors === 'string') {
+                                    return colors;
+                                }
+                            }
+                            return '#00f700';
+                        },
+                        borderWidth: 0.8,
+                        padding: 6,
                         titleFont: { size: 11 },
                         bodyFont: { size: 11 },
-                        displayColors: false,
+                        displayColors: true,
+                        boxWidth: 10,
+                        boxHeight: 10,
+                        boxPadding: 6,
+                        usePointStyle: false,
                         callbacks: {
                             title: () => '',
                             label: (context) => `${context.label}: ${currency.format(context.parsed)}`,
+                            labelColor: (context) => {
+                                const color = (context.dataset.backgroundColor && context.dataset.backgroundColor[context.dataIndex]) || '#00f700';
+                                return {
+                                    borderColor: color,
+                                    backgroundColor: color,
+                                    borderWidth: 0,
+                                    borderRadius: 2,
+                                };
+                            },
                         },
                     },
                 },
             },
         });
+
+        if (!canvas.dataset.hasLeaveListener) {
+            canvas.dataset.hasLeaveListener = 'true';
+            canvas.addEventListener('mouseleave', () => {
+                const overlay = document.getElementById('categoryCenterOverlay');
+                if (overlay) overlay.style.opacity = '1';
+            });
+        }
 
         const activeFlags = chartValues.map((value) => value > 0);
         window.dashboardCategoryChart.$activeFlags = isEmpty ? [false] : activeFlags;
@@ -448,7 +489,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     };
 
-    const renderProductRankList = (containerEl, items, emptyText) => {
+    const renderProductRankList = (containerEl, items, emptyText, isSlow = false) => {
         if (!containerEl) {
             return;
         }
@@ -458,27 +499,33 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        containerEl.innerHTML = items.slice(0, 5).map((item, index) => {
+        containerEl.innerHTML = items.slice(0, 4).map((item, index) => {
             const rank = item.rank || (index + 1);
             const name = escapeHtml(item.name || 'Unknown Product');
             const sku = escapeHtml(item.sku || 'N/A');
+            const qty = Number(item.qty || item.quantity || 0);
             const imageUrl = getSavedProductImage(item);
+            const badgeCls = 'bg-slate-100 text-slate-700';
 
             const imageContainer = imageUrl
-                ? `<div class="w-9 h-9 rounded-[8px] bg-slate-100 flex-shrink-0 overflow-hidden border border-slate-200/80 bg-cover bg-center" style="background-image: url('${imageUrl}');" title="${name}"></div>`
-                : `<div class="w-9 h-9 rounded-[8px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-400">
-                        <svg class="w-4 h-4 text-slate-400 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                ? `<div class="w-8 h-8 rounded-[7px] bg-white flex-shrink-0 overflow-hidden border border-slate-200/70 bg-cover bg-center" style="background-image: url('${imageUrl}');" title="${name}"></div>`
+                : `<div class="w-8 h-8 rounded-[7px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-400">
+                        <svg class="w-3.5 h-3.5 text-slate-400 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
                    </div>`;
 
             return `
-                <div class="flex items-center gap-2 py-1 border-b border-slate-100/70 last:border-0 min-w-0">
-                    <span class="text-[10px] font-bold text-gray-400 w-4 flex-shrink-0 text-center">#${rank}</span>
+                <div class="flex items-center gap-1.5 py-1 border-b border-slate-100/70 last:border-0 min-w-0">
+                    <span class="px-1.5 py-0.5 rounded-[5px] ${badgeCls} font-bold text-[9px] flex-shrink-0 text-center">#${rank}</span>
                     ${imageContainer}
                     <div class="min-w-0 flex-1">
-                        <p class="text-[11px] font-semibold text-gray-900 truncate leading-tight" title="${name}">${name}</p>
-                        <p class="text-[9px] text-gray-500 truncate font-mono tracking-tight leading-tight">${sku}</p>
+                        <p class="text-[10.5px] font-bold text-slate-900 truncate uppercase leading-tight" title="${name}">${name}</p>
+                        <p class="text-[8.5px] text-slate-400 truncate font-mono tracking-tight leading-tight">${sku}</p>
+                    </div>
+                    <div class="text-right flex-shrink-0 pl-1">
+                        <span class="text-[11px] font-bold text-black block leading-tight">${qty}</span>
+                        <span class="text-[7.5px] text-slate-400 block leading-tight">units</span>
                     </div>
                 </div>
             `;
@@ -488,8 +535,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderFastSlowMoving = (fastMoving, slowMoving, allFast, allSlow) => {
         const fastContainer = document.getElementById('fastMovingList');
         const slowContainer = document.getElementById('slowMovingList');
-        renderProductRankList(fastContainer, fastMoving, 'No sales recorded');
-        renderProductRankList(slowContainer, slowMoving, 'No sales recorded');
+        renderProductRankList(fastContainer, fastMoving, 'No sales recorded', false);
+        renderProductRankList(slowContainer, slowMoving, 'No sales recorded', true);
 
         window._fsModalAllFast = (allFast && allFast.length) ? allFast : (fastMoving || []);
         window._fsModalAllSlow = (allSlow && allSlow.length) ? allSlow : (slowMoving || []);
@@ -523,38 +570,147 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     };
 
+    let inventoryChartInstance = null;
+
     const renderInventory = (inventory) => {
         if (!inventory) {
             return;
         }
 
-        // Row values (sa loob ng dark Inventory Levels container)
+        const total = Number(inventory.total_products || 0);
+        const inStock = Number(inventory.in_stock || 0);
+        const lowStock = Number(inventory.low_stock || 0);
+        const outOfStock = Number(inventory.out_of_stock || 0);
+
+        const inStockPct = total > 0 ? Math.round((inStock / total) * 100) : 0;
+        const lowStockPct = total > 0 ? Math.round((lowStock / total) * 100) : 0;
+        const outOfStockPct = total > 0 ? Math.round((outOfStock / total) * 100) : 0;
+
+        // Total products center number
         const totalProducts = document.getElementById('totalProductsValue');
-        const lowStock = document.getElementById('lowStockValue');
-        const outOfStock = document.getElementById('outOfStockValue');
-        const inStock = document.getElementById('inStockValue');
+        if (totalProducts) totalProducts.textContent = total.toLocaleString('en-PH');
 
-        // Modal values (sa loob ng pop-up na lumalabas kapag na-click ang
-        // arrow button — dinidissolve ang rows tapos lumalabas ito sa gitna)
-        const totalProductsModal = document.getElementById('totalProductsModalValue');
-        const lowStockModal = document.getElementById('lowStockModalValue');
-        const outOfStockModal = document.getElementById('outOfStockModalValue');
-        const inStockModal = document.getElementById('inStockModalValue');
+        // Top 3-column summary counts and percentages
+        const inStockTopCount = document.getElementById('inStockTopCount');
+        const inStockTopPct = document.getElementById('inStockTopPct');
+        const lowStockTopCount = document.getElementById('lowStockTopCount');
+        const lowStockTopPct = document.getElementById('lowStockTopPct');
+        const outOfStockTopCount = document.getElementById('outOfStockTopCount');
+        const outOfStockTopPct = document.getElementById('outOfStockTopPct');
 
-        const totalProductsText = inventory.total_products?.toLocaleString('en-PH') ?? '0';
-        const lowStockText = inventory.low_stock?.toLocaleString('en-PH') ?? '0';
-        const outOfStockText = inventory.out_of_stock?.toLocaleString('en-PH') ?? '0';
-        const inStockText = inventory.in_stock?.toLocaleString('en-PH') ?? '0';
+        if (inStockTopCount) inStockTopCount.textContent = inStock.toLocaleString('en-PH');
+        if (inStockTopPct) inStockTopPct.textContent = `(${inStockPct}%)`;
+        if (lowStockTopCount) lowStockTopCount.textContent = lowStock.toLocaleString('en-PH');
+        if (lowStockTopPct) lowStockTopPct.textContent = `(${lowStockPct}%)`;
+        if (outOfStockTopCount) outOfStockTopCount.textContent = outOfStock.toLocaleString('en-PH');
+        if (outOfStockTopPct) outOfStockTopPct.textContent = `(${outOfStockPct}%)`;
 
-        if (totalProducts) totalProducts.textContent = totalProductsText;
-        if (lowStock) lowStock.textContent = lowStockText;
-        if (outOfStock) outOfStock.textContent = outOfStockText;
-        if (inStock) inStock.textContent = inStockText;
+        // Middle progress bars & numbers
+        const inStockEl = document.getElementById('inStockValue');
+        const inStockPercentEl = document.getElementById('inStockPercent');
+        const inStockBar = document.getElementById('inStockProgressBar');
 
-        if (totalProductsModal) totalProductsModal.textContent = totalProductsText;
-        if (lowStockModal) lowStockModal.textContent = lowStockText;
-        if (outOfStockModal) outOfStockModal.textContent = outOfStockText;
-        if (inStockModal) inStockModal.textContent = inStockText;
+        const lowStockEl = document.getElementById('lowStockValue');
+        const lowStockPercentEl = document.getElementById('lowStockPercent');
+        const lowStockBar = document.getElementById('lowStockProgressBar');
+
+        const outOfStockEl = document.getElementById('outOfStockValue');
+        const outOfStockPercentEl = document.getElementById('outOfStockPercent');
+        const outOfStockBar = document.getElementById('outOfStockProgressBar');
+
+        if (inStockEl) inStockEl.textContent = inStock.toLocaleString('en-PH');
+        if (inStockPercentEl) inStockPercentEl.textContent = `(${inStockPct}%)`;
+        if (inStockBar) inStockBar.style.width = `${inStockPct}%`;
+
+        if (lowStockEl) lowStockEl.textContent = lowStock.toLocaleString('en-PH');
+        if (lowStockPercentEl) lowStockPercentEl.textContent = `(${lowStockPct}%)`;
+        if (lowStockBar) lowStockBar.style.width = `${lowStockPct}%`;
+
+        if (outOfStockEl) outOfStockEl.textContent = outOfStock.toLocaleString('en-PH');
+        if (outOfStockPercentEl) outOfStockPercentEl.textContent = `(${outOfStockPct}%)`;
+        if (outOfStockBar) outOfStockBar.style.width = `${outOfStockPct}%`;
+
+        // Restocking alert banner
+        const restockCountEl = document.getElementById('restockItemCount');
+        const restockTextEl = document.getElementById('inventoryRestockAlertText');
+        const needsRestockCount = outOfStock > 0 ? outOfStock : (lowStock > 0 ? lowStock : 0);
+
+        if (restockCountEl) restockCountEl.textContent = needsRestockCount.toLocaleString('en-PH');
+        if (restockTextEl) {
+            if (outOfStock > 0) {
+                restockTextEl.innerHTML = `<span id="restockItemCount">${outOfStock.toLocaleString('en-PH')}</span> items need restocking`;
+            } else if (lowStock > 0) {
+                restockTextEl.innerHTML = `<span id="restockItemCount">${lowStock.toLocaleString('en-PH')}</span> items low in stock`;
+            } else {
+                restockTextEl.textContent = 'All items adequately stocked';
+            }
+        }
+
+        // Inventory Doughnut Chart
+        const invCanvas = document.getElementById('inventoryChart');
+        if (invCanvas && typeof Chart !== 'undefined') {
+            const healthyStock = Math.max(0, inStock - lowStock);
+            const chartData = (total === 0) ? [1] : [healthyStock, lowStock, outOfStock];
+            const chartColors = (total === 0) ? ['#e2e8f0'] : ['#10b981', '#f59e0b', '#ef4444'];
+            const hasMultiple = total > 0 && chartData.filter(v => v > 0).length > 1;
+
+            if (inventoryChartInstance) {
+                inventoryChartInstance.data.datasets[0].data = chartData;
+                inventoryChartInstance.data.datasets[0].backgroundColor = chartColors;
+                inventoryChartInstance.data.datasets[0].borderColor = hasMultiple ? '#ffffff' : 'transparent';
+                inventoryChartInstance.data.datasets[0].borderWidth = hasMultiple ? 2 : 0;
+                inventoryChartInstance.data.datasets[0].spacing = hasMultiple ? 1 : 0;
+                inventoryChartInstance.options.plugins.tooltip.enabled = total > 0;
+                inventoryChartInstance.update();
+            } else {
+                const ctx = invCanvas.getContext('2d');
+                inventoryChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['In Stock', 'Low Stock', 'Out of Stock'],
+                        datasets: [{
+                            data: chartData,
+                            backgroundColor: chartColors,
+                            borderColor: hasMultiple ? '#ffffff' : 'transparent',
+                            borderWidth: hasMultiple ? 2 : 0,
+                            borderRadius: 0,
+                            hoverOffset: 0,
+                        }],
+                    },
+                    options: {
+                        responsive: false,
+                        maintainAspectRatio: false,
+                        cutout: '74%',
+                        spacing: hasMultiple ? 1 : 0,
+                        circumference: 360,
+                        rotation: -90,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                enabled: total > 0,
+                                backgroundColor: '#1a1a1a',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                borderColor: (context) => {
+                                    const dp = context.tooltip?.dataPoints?.[0];
+                                    return dp?.dataset?.backgroundColor?.[dp.dataIndex] || '#10b981';
+                                },
+                                borderWidth: 0.8,
+                                padding: 5,
+                                displayColors: true,
+                                boxWidth: 8,
+                                boxHeight: 8,
+                                usePointStyle: false,
+                                callbacks: {
+                                    title: () => '',
+                                    label: (context) => `${context.label}: ${Number(context.parsed || 0).toLocaleString('en-PH')}`,
+                                },
+                            },
+                        },
+                    },
+                });
+            }
+        }
     };
 
     const SALES_RANGE_LABELS = { daily: 'Daily', weekly: 'Weekly', monthly: 'Monthly', yearly: 'Yearly' };
@@ -576,9 +732,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const opt = document.getElementById('salesRangeOpt-' + r);
             if (!opt) return;
             if (r === range) {
-                opt.className = 'sales-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left bg-slate-700 text-white';
+                opt.className = 'sales-range-dd-opt w-full px-3 py-1 text-sm font-semibold rounded-[8px] transition-colors text-left bg-slate-700 text-white cursor-pointer';
             } else {
-                opt.className = 'sales-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white';
+                opt.className = 'sales-range-dd-opt w-full px-3 py-1 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer';
             }
         });
     };

@@ -204,17 +204,17 @@
                         </button>
                         <div id="salesTrendRangeDropdown"
                             class="hidden absolute top-full right-0 z-50 mt-1.5 w-full rounded-[12px] border border-slate-700 bg-[#0f172a] shadow-2xl overflow-hidden">
-                            <div class="p-1">
+                            <div class="p-1 space-y-0.5">
                                 {{-- Hidden buttons keep the existing JS (.sales-trend-range-btn + data-range) working --}}
                                 <button type="button" data-range="daily"   class="sales-trend-range-btn sales-range-btn hidden"></button>
                                 <button type="button" data-range="weekly"  class="sales-trend-range-btn sales-range-btn hidden"></button>
                                 <button type="button" data-range="monthly" class="sales-trend-range-btn sales-range-btn hidden active"></button>
                                 <button type="button" data-range="yearly"  class="sales-trend-range-btn sales-range-btn hidden"></button>
 
-                                <button type="button" onclick="pickSalesTrendRange('daily',   'Daily')"   id="salesTrendRangeOpt-daily"   class="sales-trend-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white">Daily</button>
-                                <button type="button" onclick="pickSalesTrendRange('weekly',  'Weekly')"  id="salesTrendRangeOpt-weekly"  class="sales-trend-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white">Weekly</button>
-                                <button type="button" onclick="pickSalesTrendRange('monthly', 'Monthly')" id="salesTrendRangeOpt-monthly" class="sales-trend-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left bg-slate-700 text-white">Monthly</button>
-                                <button type="button" onclick="pickSalesTrendRange('yearly',  'Yearly')"  id="salesTrendRangeOpt-yearly"  class="sales-trend-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white">Yearly</button>
+                                <button type="button" onclick="pickSalesTrendRange('daily',   'Daily')"   id="salesTrendRangeOpt-daily"   class="sales-trend-range-dd-opt w-full px-3 py-1 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer">Daily</button>
+                                <button type="button" onclick="pickSalesTrendRange('weekly',  'Weekly')"  id="salesTrendRangeOpt-weekly"  class="sales-trend-range-dd-opt w-full px-3 py-1 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer">Weekly</button>
+                                <button type="button" onclick="pickSalesTrendRange('monthly', 'Monthly')" id="salesTrendRangeOpt-monthly" class="sales-trend-range-dd-opt w-full px-3 py-1 text-sm font-semibold rounded-[8px] transition-colors text-left bg-slate-700 text-white cursor-pointer">Monthly</button>
+                                <button type="button" onclick="pickSalesTrendRange('yearly',  'Yearly')"  id="salesTrendRangeOpt-yearly"  class="sales-trend-range-dd-opt w-full px-3 py-1 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer">Yearly</button>
                             </div>
                         </div>
                     </div>
@@ -238,60 +238,133 @@
                     </div>
                     <span class="text-xs font-semibold uppercase tracking-wider text-[#105f68]">Revenue</span>
                 </div>
-                <div class="my-auto grid gap-3 lg:grid-cols-[1fr_auto] items-center justify-center w-full" id="categoryContentGrid">
-                    <div id="categoryChartWrapper" class="h-48 w-full flex items-center justify-center @if(empty($categoryBreakdown['labels'])) hidden @endif">
+                <div class="my-auto grid gap-3 lg:grid-cols-[auto_1fr] items-center justify-center w-full" id="categoryContentGrid">
+                    <div id="categoryChartWrapper" style="position: relative; width: 150px; height: 150px; max-width: 150px; max-height: 150px;" class="flex items-center justify-center shrink-0 mx-auto">
                         <canvas id="categoryChart" class="max-h-full max-w-full"></canvas>
-                    </div>
-                    <div id="categoryLegend" class="@if(empty($categoryBreakdown['labels'])) w-full flex items-center justify-center py-12 text-center col-span-full @else max-h-48 overflow-y-auto pr-1 space-y-2 text-sm my-auto @endif">
-                        @if(!empty($categoryBreakdown['labels']))
+                        <div id="categoryCenterOverlay" style="
+                            position: absolute; inset: 0;
+                            display: flex; flex-direction: column;
+                            align-items: center; justify-content: center;
+                            text-align: center;
+                            pointer-events: none;
+                            padding-top: 14px;
+                            transition: opacity 0.15s ease-in-out;">
                             @php
-                                $categoryColorMap = [
-                                    'exhaust' => '#00f700',
-                                    'pipe' => '#00f700',
-                                    'helmets' => '#da0e0e',
-                                    'helmet' => '#da0e0e',
-                                    'tires' => '#f1a204',
-                                    'tire' => '#f1a204',
-                                    'tire hugger' => '#f1a204',
-                                    'brakes' => '#5541ec',
-                                    'brake' => '#5541ec',
-                                    'brake pads' => '#5541ec',
-                                    'oils' => '#0948be',
-                                    'oil' => '#0948be',
-                                    'engine oil' => '#0948be',
-                                    'lubricants' => '#0948be',
-                                    'batteries' => '#e93071',
-                                    'battery' => '#e93071',
-                                    'accessories' => '#45AAF2',
-                                    'shock' => '#8b5cf6',
-                                    'swing arm' => '#10b981',
-                                    'engine support' => '#f97316',
-                                    'side mirror' => '#06b6d4',
-                                    'monorack frame' => '#64748b',
-                                    'quick throttle' => '#ec4899',
-                                    'spark plug' => '#eab308',
-                                    'filters' => '#14b8a6',
-                                ];
-                                $defaultPalette = ['#45AAF2', '#00f700', '#da0e0e', '#f1a204', '#5541ec', '#0948be', '#e93071', '#8b5cf6', '#10b981', '#f97316', '#06b6d4', '#ec4899'];
+                                $initialCatTotal = array_sum($categoryBreakdown['values'] ?? []);
                             @endphp
-                            @foreach($categoryBreakdown['labels'] as $index => $label)
-                                @php
-                                    $normalized = strtolower(trim($label));
-                                    $dotColor = $categoryColorMap[$normalized] ?? $defaultPalette[$index % count($defaultPalette)];
-                                @endphp
-                                <div class="flex items-center gap-3 rounded-[12px] border border-slate-200 bg-slate-50 p-2.5">
-                                    <span class="h-2.5 w-2.5 rounded-full flex-shrink-0" style="background-color: {{ $dotColor }};"></span>
-                                    <div>
-                                        <p class="font-semibold text-slate-900 text-xs">{{ $label }}</p>
-                                        <p class="text-slate-500 text-[11px]">
-                                            {{ data_get($categoryBreakdown, 'formatted.' . $index, '—') }} • {{ data_get($categoryBreakdown, 'shares.' . $index, 0) }}%
+                            <span id="categoryCenterValue" style="color: #000000; font-weight: 700; font-size: 14px; line-height: 1.1;">{{ $initialCatTotal > 0 ? ('₱' . number_format($initialCatTotal, 2)) : '0' }}</span>
+                            <span id="categoryCenterCaption" style="color: rgba(0,0,0,0.6); font-size: 9px; margin-top: 3px;">{{ $initialCatTotal > 0 ? 'Total Sales' : 'No sales in period' }}</span>
+                        </div>
+                    </div>
+                    <div id="categoryLegend" class="max-h-52 overflow-y-auto pr-1 space-y-1.5 text-sm my-auto w-full max-w-[160px] mx-auto">
+                        @php
+                            $predefinedCategoryDefs = [
+                                ['name' => 'Exhaust', 'color' => '#00f700'],
+                                ['name' => 'Helmets', 'color' => '#da0e0e'],
+                                ['name' => 'Tires', 'color' => '#f1a204'],
+                                ['name' => 'Brakes', 'color' => '#5541ec'],
+                                ['name' => 'Oils', 'color' => '#0948be'],
+                                ['name' => 'Batteries', 'color' => '#e93071'],
+                                ['name' => 'Accessories', 'color' => '#45AAF2'],
+                            ];
+
+                            $categoryColorMap = [
+                                'exhaust' => '#00f700',
+                                'exhausts' => '#00f700',
+                                'pipe' => '#00f700',
+                                'helmets' => '#da0e0e',
+                                'helmet' => '#da0e0e',
+                                'tires' => '#f1a204',
+                                'tire' => '#f1a204',
+                                'tire hugger' => '#f1a204',
+                                'brakes' => '#5541ec',
+                                'brake' => '#5541ec',
+                                'brake pads' => '#5541ec',
+                                'oils' => '#0948be',
+                                'oil' => '#0948be',
+                                'engine oil' => '#0948be',
+                                'lubricants' => '#0948be',
+                                'batteries' => '#e93071',
+                                'battery' => '#e93071',
+                                'accessories' => '#45AAF2',
+                                'shock' => '#8b5cf6',
+                                'swing arm' => '#10b981',
+                                'engine support' => '#f97316',
+                                'side mirror' => '#06b6d4',
+                                'monorack frame' => '#64748b',
+                                'quick throttle' => '#ec4899',
+                                'spark plug' => '#eab308',
+                                'filters' => '#14b8a6',
+                            ];
+                            $defaultPalette = ['#45AAF2', '#00f700', '#da0e0e', '#f1a204', '#5541ec', '#0948be', '#e93071', '#8b5cf6', '#10b981', '#f97316', '#06b6d4', '#ec4899'];
+
+                            $incomingCategoryData = [];
+                            foreach (($categoryBreakdown['labels'] ?? []) as $index => $lbl) {
+                                $val = (float) data_get($categoryBreakdown, 'values.' . $index, 0);
+                                $normKey = strtolower(trim($lbl));
+                                $singularKey = rtrim($normKey, 's');
+                                $incomingCategoryData[$normKey] = [
+                                    'label' => $lbl,
+                                    'value' => $val,
+                                    'formatted' => data_get($categoryBreakdown, 'formatted.' . $index, '₱' . number_format($val, 2)),
+                                    'share' => data_get($categoryBreakdown, 'shares.' . $index, 0),
+                                ];
+                                if ($singularKey !== $normKey) {
+                                    $incomingCategoryData[$singularKey] = $incomingCategoryData[$normKey];
+                                }
+                            }
+
+                            $allDisplayCategories = [];
+                            $matchedKeys = [];
+
+                            foreach ($predefinedCategoryDefs as $def) {
+                                $key = strtolower(trim($def['name']));
+                                $singularKey = rtrim($key, 's');
+                                $matched = $incomingCategoryData[$key] ?? $incomingCategoryData[$singularKey] ?? null;
+                                if ($matched) {
+                                    $matchedKeys[strtolower(trim($matched['label']))] = true;
+                                    $matchedKeys[$key] = true;
+                                    $matchedKeys[$singularKey] = true;
+                                }
+                                $allDisplayCategories[] = [
+                                    'name' => $def['name'],
+                                    'color' => $def['color'],
+                                    'has_value' => $matched && $matched['value'] > 0,
+                                    'formatted' => $matched ? $matched['formatted'] : '',
+                                    'share' => $matched ? $matched['share'] : 0,
+                                ];
+                            }
+
+                            $extraPaletteIdx = 0;
+                            foreach (($categoryBreakdown['labels'] ?? []) as $index => $lbl) {
+                                $normKey = strtolower(trim($lbl));
+                                if (!isset($matchedKeys[$normKey])) {
+                                    $val = (float) data_get($categoryBreakdown, 'values.' . $index, 0);
+                                    $dotColor = $categoryColorMap[$normKey] ?? $defaultPalette[$extraPaletteIdx % count($defaultPalette)];
+                                    $extraPaletteIdx++;
+                                    $allDisplayCategories[] = [
+                                        'name' => $lbl,
+                                        'color' => $dotColor,
+                                        'has_value' => $val > 0,
+                                        'formatted' => data_get($categoryBreakdown, 'formatted.' . $index, '₱' . number_format($val, 2)),
+                                        'share' => data_get($categoryBreakdown, 'shares.' . $index, 0),
+                                    ];
+                                }
+                            }
+                        @endphp
+                        @foreach($allDisplayCategories as $catItem)
+                            <div class="flex items-center gap-2 rounded-[9px] border border-slate-200 bg-slate-50 px-2.5 py-1.5 w-full">
+                                <span class="h-2 w-2 rounded-full flex-shrink-0" style="background-color: {{ $catItem['color'] }};"></span>
+                                <div class="min-w-0 flex-1">
+                                    <p class="font-semibold text-slate-900 text-xs truncate leading-tight">{{ $catItem['name'] }}</p>
+                                    @if($catItem['has_value'])
+                                        <p class="text-slate-500 text-[10px] leading-tight truncate mt-0.5">
+                                            {{ $catItem['formatted'] }} • {{ $catItem['share'] }}%
                                         </p>
-                                    </div>
+                                    @endif
                                 </div>
-                            @endforeach
-                        @else
-                            <p class="text-sm text-slate-400 font-medium">No sales data available for the selected date range.</p>
-                        @endif
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -1047,9 +1120,9 @@
                     const opt = document.getElementById('salesTrendRangeOpt-' + r);
                     if (!opt) return;
                     if (r === activeRange) {
-                        opt.className = 'sales-trend-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left bg-slate-700 text-white';
+                        opt.className = 'sales-trend-range-dd-opt w-full px-3 py-1 text-sm font-semibold rounded-[8px] transition-colors text-left bg-slate-700 text-white cursor-pointer';
                     } else {
-                        opt.className = 'sales-trend-range-dd-opt w-full px-3 py-1.5 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white';
+                        opt.className = 'sales-trend-range-dd-opt w-full px-3 py-1 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer';
                     }
                 });
             };
@@ -1105,8 +1178,19 @@
             // ═══════════════════════════════════════════
             // CATEGORY CHART (initial render from server)
             // ═══════════════════════════════════════════
+            const CATEGORY_DEFS = [
+                { name: 'Exhaust', color: '#00f700' },
+                { name: 'Helmets', color: '#da0e0e' },
+                { name: 'Tires', color: '#f1a204' },
+                { name: 'Brakes', color: '#5541ec' },
+                { name: 'Oils', color: '#0948be' },
+                { name: 'Batteries', color: '#e93071' },
+                { name: 'Accessories', color: '#45AAF2' },
+            ];
+
             const categoryColorMap = {
                 'exhaust': '#00f700',
+                'exhausts': '#00f700',
                 'pipe': '#00f700',
                 'helmets': '#da0e0e',
                 'helmet': '#da0e0e',
@@ -1142,7 +1226,7 @@
 
             let categoryChartInstance = null;
 
-            const initCategoryChart = (labels, values) => {
+            const initCategoryChart = (labels = [], values = []) => {
                 const categoryCtx = document.getElementById('categoryChart');
                 if (!categoryCtx) return;
 
@@ -1151,39 +1235,126 @@
                     categoryChartInstance = null;
                 }
 
-                if (!labels.length) return;
+                // Filter out non-positive/empty values for the actual chart slices
+                const validData = [];
+                (labels || []).forEach((label, idx) => {
+                    const val = Number(values[idx] || 0);
+                    if (val > 0) {
+                        validData.push({
+                            label: label,
+                            value: val,
+                            color: getCategoryColor(label, idx)
+                        });
+                    }
+                });
 
-                const backgroundColors = labels.map((label, index) => getCategoryColor(label, index));
+                const total = (values || []).reduce((sum, v) => sum + Number(v || 0), 0);
+                const isEmpty = validData.length === 0;
+                const activeCount = validData.length;
+                const hasMultiple = !isEmpty && activeCount > 1;
+
+                const EMPTY_RING_COLOR = '#E5E7EB';
+                const chartLabels = isEmpty ? ['No data'] : validData.map(d => d.label);
+                const chartValues = isEmpty ? [1] : validData.map(d => d.value);
+                const chartColors = isEmpty ? [EMPTY_RING_COLOR] : validData.map(d => d.color);
+
                 categoryChartInstance = new Chart(categoryCtx, {
                     type: 'doughnut',
+                    plugins: [],
                     data: {
-                        labels: labels,
+                        labels: chartLabels,
                         datasets: [{
-                            data: values,
-                            backgroundColor: backgroundColors,
-                            borderColor: '#ffffff',
-                            borderWidth: 2,
+                            data: chartValues,
+                            backgroundColor: chartColors,
+                            borderColor: hasMultiple ? '#ffffff' : 'transparent',
+                            borderWidth: hasMultiple ? 2.5 : 0,
+                            hoverBorderColor: hasMultiple ? '#ffffff' : 'transparent',
+                            hoverBorderWidth: hasMultiple ? 2.5 : 0,
+                            borderRadius: 0,
+                            hoverOffset: 0,
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        cutout: '62%',
+                        spacing: hasMultiple ? 1 : 0,
+                        circumference: 360,
+                        rotation: -90,
+                        layout: { padding: 0 },
+                        onHover: (event, elements) => {
+                            const overlay = document.getElementById('categoryCenterOverlay');
+                            if (overlay) {
+                                overlay.style.opacity = (elements && elements.length > 0) ? '0' : '1';
+                            }
+                        },
                         plugins: {
                             legend: { display: false },
                             tooltip: {
+                                enabled: !isEmpty,
+                                backgroundColor: '#1a1a1a',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                borderColor: (context) => {
+                                    const dataPoints = context.tooltip?.dataPoints;
+                                    if (dataPoints && dataPoints.length > 0) {
+                                        const dp = dataPoints[0];
+                                        const colors = dp.dataset?.backgroundColor;
+                                        if (Array.isArray(colors)) {
+                                            return colors[dp.dataIndex] || '#00f700';
+                                        }
+                                        if (typeof colors === 'string') {
+                                            return colors;
+                                        }
+                                    }
+                                    return '#00f700';
+                                },
+                                borderWidth: 0.8,
+                                padding: 6,
+                                titleFont: { size: 11 },
+                                bodyFont: { size: 11 },
+                                displayColors: true,
+                                boxWidth: 10,
+                                boxHeight: 10,
+                                boxPadding: 6,
+                                usePointStyle: false,
                                 callbacks: {
+                                    title: () => '',
                                     label: (context) => {
                                         const value = context.parsed || 0;
-                                        const total = context.dataset.data.reduce((sum, item) => sum + Number(item || 0), 0);
-                                        const percent = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-                                        return `${context.label}: ₱${Number(value).toLocaleString()} (${percent}%)`;
-                                    }
+                                        return `${context.label}: ₱${Number(value).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                                    },
+                                    labelColor: (context) => {
+                                        const color = (context.dataset.backgroundColor && context.dataset.backgroundColor[context.dataIndex]) || '#00f700';
+                                        return {
+                                            borderColor: color,
+                                            backgroundColor: color,
+                                            borderWidth: 0,
+                                            borderRadius: 2,
+                                        };
+                                    },
                                 }
                             }
-                        },
-                        cutout: '65%'
+                        }
                     }
                 });
+
+                if (!categoryCtx.dataset.hasLeaveListener) {
+                    categoryCtx.dataset.hasLeaveListener = 'true';
+                    categoryCtx.addEventListener('mouseleave', () => {
+                        const overlay = document.getElementById('categoryCenterOverlay');
+                        if (overlay) overlay.style.opacity = '1';
+                    });
+                }
+
+                const centerValueEl = document.getElementById('categoryCenterValue');
+                const centerCaptionEl = document.getElementById('categoryCenterCaption');
+                if (centerValueEl) {
+                    centerValueEl.textContent = isEmpty ? '0' : '₱' + Number(total).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                }
+                if (centerCaptionEl) {
+                    centerCaptionEl.textContent = isEmpty ? 'No sales in period' : 'Total Sales';
+                }
             };
 
             // Initial category chart from server data
@@ -1216,28 +1387,71 @@
             const emptyStateRow = (colspan, message) =>
                 `<tr><td colspan="${colspan}" class="px-3 py-6 text-center text-slate-400 text-sm">${message}</td></tr>`;
 
-            const renderCategoryLegend = (labels, formatted, shares) => {
+            const renderCategoryLegend = (labels = [], formatted = [], shares = []) => {
                 const legend = document.getElementById('categoryLegend');
-                const chartWrapper = document.getElementById('categoryChartWrapper');
                 if (!legend) return;
 
-                if (!labels.length) {
-                    if (chartWrapper) chartWrapper.classList.add('hidden');
-                    legend.className = 'w-full flex items-center justify-center py-12 text-center col-span-full';
-                    legend.innerHTML = '<p class="text-sm text-slate-400 font-medium">No sales data available for the selected date range.</p>';
-                    return;
-                }
+                const incomingMap = {};
+                (labels || []).forEach((label, index) => {
+                    const key = String(label).trim().toLowerCase();
+                    const singularKey = key.endsWith('s') ? key.slice(0, -1) : key;
+                    const item = {
+                        label: label,
+                        formatted: formatted[index] || '',
+                        share: shares[index] || 0,
+                        hasValue: true
+                    };
+                    incomingMap[key] = item;
+                    if (singularKey !== key) {
+                        incomingMap[singularKey] = item;
+                    }
+                });
 
-                if (chartWrapper) chartWrapper.classList.remove('hidden');
-                legend.className = 'space-y-2 text-sm my-auto';
-                legend.innerHTML = labels.map((label, index) => {
-                    const dotColor = getCategoryColor(label, index);
+                const allCategories = [];
+                const matchedKeys = {};
+
+                CATEGORY_DEFS.forEach(cat => {
+                    const key = cat.name.toLowerCase();
+                    const singularKey = key.endsWith('s') ? key.slice(0, -1) : key;
+                    const matched = incomingMap[key] || incomingMap[singularKey] || null;
+                    if (matched) {
+                        matchedKeys[matched.label.toLowerCase()] = true;
+                        matchedKeys[key] = true;
+                        matchedKeys[singularKey] = true;
+                    }
+                    allCategories.push({
+                        name: cat.name,
+                        color: cat.color,
+                        hasValue: !!matched,
+                        formatted: matched ? matched.formatted : '',
+                        share: matched ? matched.share : 0
+                    });
+                });
+
+                let extraIndex = 0;
+                (labels || []).forEach((lbl, idx) => {
+                    const key = String(lbl).trim().toLowerCase();
+                    if (!matchedKeys[key]) {
+                        const color = categoryColorMap[key] || fallbackCategoryColors[extraIndex % fallbackCategoryColors.length];
+                        extraIndex++;
+                        allCategories.push({
+                            name: lbl,
+                            color: color,
+                            hasValue: true,
+                            formatted: formatted[idx] || '',
+                            share: shares[idx] || 0
+                        });
+                    }
+                });
+
+                legend.className = 'max-h-52 overflow-y-auto pr-1 space-y-1.5 text-sm my-auto w-full max-w-[160px] mx-auto';
+                legend.innerHTML = allCategories.map((cat) => {
                     return `
-                        <div class="flex items-center gap-3 rounded-[12px] border border-slate-200 bg-slate-50 p-2.5">
-                            <span class="h-2.5 w-2.5 rounded-full flex-shrink-0" style="background-color: ${dotColor};"></span>
-                            <div>
-                                <p class="font-semibold text-slate-900 text-xs">${label}</p>
-                                <p class="text-slate-500 text-[11px]">${formatted[index] || '—'} • ${shares[index] || 0}%</p>
+                        <div class="flex items-center gap-2 rounded-[9px] border border-slate-200 bg-slate-50 px-2.5 py-1.5 w-full">
+                            <span class="h-2 w-2 rounded-full flex-shrink-0" style="background-color: ${cat.color};"></span>
+                            <div class="min-w-0 flex-1">
+                                <p class="font-semibold text-slate-900 text-xs truncate leading-tight">${cat.name}</p>
+                                ${cat.hasValue ? `<p class="text-slate-500 text-[10px] leading-tight truncate mt-0.5">${cat.formatted} • ${cat.share}%</p>` : ''}
                             </div>
                         </div>
                     `;
