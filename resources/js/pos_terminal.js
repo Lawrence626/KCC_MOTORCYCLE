@@ -64,7 +64,8 @@ function renderCategoryDropdown() {
 
     select.innerHTML = posState.categories.map(category => {
         const isSelected = category === posState.selectedCategory;
-        return `<option value="${category}" ${isSelected ? 'selected' : ''}>${category}</option>`;
+        const label = (category === 'All' || category === 'all') ? 'All Categories' : category;
+        return `<option value="${category}" ${isSelected ? 'selected' : ''}>${label}</option>`;
     }).join('');
 
     // Add event listener
@@ -101,7 +102,8 @@ function updateBrandDropdown() {
 
     select.innerHTML = brands.map(brand => {
         const isSelected = brand === posState.selectedBrand;
-        return `<option value="${brand}" ${isSelected ? 'selected' : ''}>${brand}</option>`;
+        const label = (brand === 'All' || brand === 'all') ? 'All Brands' : brand;
+        return `<option value="${brand}" ${isSelected ? 'selected' : ''}>${label}</option>`;
     }).join('');
 
     // Add event listener

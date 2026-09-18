@@ -978,7 +978,11 @@
 
                 function updateButtonLabel() {
                     const selectedOption = select.options[select.selectedIndex];
-                    labelSpan.textContent = selectedOption ? selectedOption.textContent : (placeholder || '');
+                    let text = selectedOption ? selectedOption.textContent.trim() : (placeholder || '');
+                    if (text === 'All') {
+                        text = placeholder || 'All';
+                    }
+                    labelSpan.textContent = text;
                 }
 
                 function openPanel() {

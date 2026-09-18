@@ -69,32 +69,6 @@
                 </div>
             </div>
 
-            <!-- Test Inventory Movement -->
-            <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
-                <h2 class="text-sm font-semibold text-slate-900 mb-3">Test Inventory Movement</h2>
-                <div class="space-y-3">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-700 mb-1">Product Name</label>
-                        <input type="text" id="test-movement-product" value="Test Product" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-700 mb-1">Movement Type</label>
-                        <select id="test-movement-type" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm">
-                            <option value="sale">Sale</option>
-                            <option value="return">Return</option>
-                            <option value="adjustment">Adjustment</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-700 mb-1">Quantity Change</label>
-                        <input type="number" id="test-quantity-change" value="-1" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm">
-                    </div>
-                    <button onclick="testInventoryMovement()" class="w-full px-4 py-2 rounded-lg bg-orange-500 text-white text-sm font-medium hover:bg-orange-600 transition">
-                        Save Test Movement
-                    </button>
-                </div>
-            </div>
-
             <!-- Sync Controls -->
             <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
                 <h2 class="text-sm font-semibold text-slate-900 mb-3">Sync Controls</h2>
@@ -115,7 +89,7 @@
         <!-- Pending Data Display -->
         <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
             <h2 class="text-sm font-semibold text-slate-900 mb-3">Pending Data Summary</h2>
-            <div class="grid grid-cols-3 gap-4">
+            <div class="grid grid-cols-2 gap-4">
                 <div class="p-3 bg-blue-50 rounded-lg">
                     <p class="text-xs text-blue-600">Pending Transactions</p>
                     <p id="pending-transactions-count" class="text-2xl font-bold text-blue-700">0</p>
@@ -123,10 +97,6 @@
                 <div class="p-3 bg-purple-50 rounded-lg">
                     <p class="text-xs text-purple-600">Pending Purchase Orders</p>
                     <p id="pending-purchase-orders-count" class="text-2xl font-bold text-purple-700">0</p>
-                </div>
-                <div class="p-3 bg-orange-50 rounded-lg">
-                    <p class="text-xs text-orange-600">Pending Inventory Movements</p>
-                    <p id="pending-inventory-movements-count" class="text-2xl font-bold text-orange-700">0</p>
                 </div>
             </div>
         </div>
@@ -176,36 +146,21 @@
             updatePendingCounts();
         }
 
-        function testInventoryMovement() {
-            const product = document.getElementById('test-movement-product').value;
-            const type = document.getElementById('test-movement-type').value;
-            const quantityChange = parseInt(document.getElementById('test-quantity-change').value);
-
-            const movement = {
-                product_name: product,
-                type: type,
-                quantity_change: quantityChange
-            };
-
-            const id = window.offlineManager.saveInventoryMovementLocally(movement);
-            alert('Inventory movement saved locally! ID: ' + id);
-            updatePendingCounts();
-        }
-
         function updatePendingCounts() {
-            document.getElementById('pending-transactions-count').textContent = 
-                window.offlineManager.pendingTransactions.length;
-            document.getElementById('pending-purchase-orders-count').textContent = 
-                window.offlineManager.pendingPurchaseOrders.length;
-            document.getElementById('pending-inventory-movements-count').textContent = 
-                window.offlineManager.pendingInventoryMovements.length;
+            if (document.getElementById('pending-transactions-count')) {
+                document.getElementById('pending-transactions-count').textContent = 
+                    (window.offlineManager.pendingTransactions || []).length;
+            }
+            if (document.getElementById('pending-purchase-orders-count')) {
+                document.getElementById('pending-purchase-orders-count').textContent = 
+                    (window.offlineManager.pendingPurchaseOrders || []).length;
+            }
         }
 
         function viewOfflineData() {
             const data = {
-                pendingTransactions: window.offlineManager.pendingTransactions,
-                pendingPurchaseOrders: window.offlineManager.pendingPurchaseOrders,
-                pendingInventoryMovements: window.offlineManager.pendingInventoryMovements
+                pendingTransactions: window.offlineManager.pendingTransactions || [],
+                pendingPurchaseOrders: window.offlineManager.pendingPurchaseOrders || []
             };
 
             document.getElementById('offline-data-content').textContent = JSON.stringify(data, null, 2);

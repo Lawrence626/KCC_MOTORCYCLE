@@ -294,10 +294,10 @@
         }, 500);
     }
 
-    // Auto dismiss success alert after 4 seconds
+    // Auto dismiss success alert after 3 seconds
     setTimeout(() => {
         dismissAlert('profileSuccessAlert');
-    }, 4000);
+    }, 3000);
 
     // Toggle password visibility (eye icon)
     function togglePasswordVisibility(inputId, iconId) {

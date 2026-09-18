@@ -12,64 +12,83 @@ class OfflineTransactionsImport implements ToCollection, WithHeadingRow
 
     public function collection(Collection $collection)
     {
-        // Skip header row if not using WithHeadingRow
+        $groupedOrders = [];
+        $movements = [];
+
         foreach ($collection as $row) {
-            $record = $this->mapRowToRecord($row);
-            if ($record) {
-                $this->records[] = $record;
+            $rowArray = $row->toArray();
+            
+            // Normalize keys to lowercase trimmed strings
+            $normalized = [];
+            foreach ($rowArray as $k => $v) {
+                $cleanKey = strtolower(trim(str_replace([' ', '-'], '_', (string) $k)));
+                $normalized[$cleanKey] = is_string($v) ? trim($v) : $v;
+            }
+
+            $type = strtolower((string) ($normalized['type'] ?? ''));
+
+            if ($type === 'purchase_order') {
+                $orderNumber = $normalized['order_number'] ?? null;
+                if (!$orderNumber) {
+                    continue;
+                }
+
+                if (!isset($groupedOrders[$orderNumber])) {
+                    $groupedOrders[$orderNumber] = [
+                        'type' => 'purchase_order',
+                        'order_number' => $orderNumber,
+                        'supplier_id' => !empty($normalized['supplier_id']) ? (int) $normalized['supplier_id'] : null,
+                        'supplier_name' => $normalized['supplier_name'] ?? null,
+                        'status' => $normalized['status'] ?? 'pending',
+                        'sync_status' => 'imported',
+                        'notes' => $normalized['notes'] ?? null,
+                        'total_amount' => !empty($normalized['total_amount']) ? (float) $normalized['total_amount'] : 0,
+                        'created_at' => $normalized['created_at'] ?? now(),
+                        'updated_at' => $normalized['updated_at'] ?? now(),
+                        'items' => [],
+                    ];
+                }
+
+                if (!empty($normalized['product_id']) || !empty($normalized['product_name']) || !empty($normalized['sku'])) {
+                    $qty = (int) ($normalized['quantity'] ?? 1);
+                    $price = (float) ($normalized['unit_price'] ?? 0);
+                    $subtotal = !empty($normalized['subtotal']) ? (float) $normalized['subtotal'] : ($qty * $price);
+
+                    $groupedOrders[$orderNumber]['items'][] = [
+                        'product_id' => !empty($normalized['product_id']) ? (int) $normalized['product_id'] : null,
+                        'product_name' => $normalized['product_name'] ?? 'Item',
+                        'sku' => $normalized['sku'] ?? null,
+                        'quantity' => $qty,
+                        'unit_price' => $price,
+                        'subtotal' => $subtotal,
+                    ];
+                }
+            } elseif ($type === 'inventory_movement') {
+                $movements[] = [
+                    'type' => 'inventory_movement',
+                    'product_id' => !empty($normalized['product_id']) ? (int) $normalized['product_id'] : null,
+                    'product_name' => $normalized['product_name'] ?? null,
+                    'type_movement' => $normalized['movement_type'] ?? ($normalized['type_movement'] ?? 'adjustment'),
+                    'sync_status' => 'imported',
+                    'quantity_change' => (int) ($normalized['quantity_change'] ?? 0),
+                    'unit_price' => (float) ($normalized['unit_price'] ?? 0),
+                    'supplier_name' => $normalized['supplier_name'] ?? null,
+                    'notes' => $normalized['notes'] ?? null,
+                    'metadata' => null,
+                    'created_at' => $normalized['created_at'] ?? now(),
+                    'updated_at' => $normalized['updated_at'] ?? now(),
+                ];
             }
         }
-    }
 
-    protected function mapRowToRecord($row): ?array
-    {
-        // Skip empty rows
-        if (empty($row['type'])) {
-            return null;
+        // Calculate total amounts if missing
+        foreach ($groupedOrders as &$order) {
+            if (empty($order['total_amount']) && !empty($order['items'])) {
+                $order['total_amount'] = array_sum(array_column($order['items'], 'subtotal'));
+            }
         }
 
-        $type = strtolower($row['type']);
-
-        if ($type === 'purchase_order') {
-            return [
-                'type' => 'purchase_order',
-                'order_number' => $row['order_number'] ?? null,
-                'supplier_id' => $row['supplier_id'] ?? null,
-                'supplier_name' => $row['supplier_name'] ?? null,
-                'status' => $row['status'] ?? 'pending',
-                'sync_status' => 'imported',
-                'expected_delivery_date' => $row['expected_delivery_date'] ?? null,
-                'notes' => $row['notes'] ?? null,
-                'total_amount' => $row['total_amount'] ?? 0,
-                'created_at' => $row['created_at'] ?? now(),
-                'updated_at' => $row['updated_at'] ?? now(),
-                'items' => $this->parseItems($row),
-            ];
-        } elseif ($type === 'inventory_movement') {
-            return [
-                'type' => 'inventory_movement',
-                'product_id' => $row['product_id'] ?? null,
-                'product_name' => $row['product_name'] ?? null,
-                'type' => $row['movement_type'] ?? 'adjustment',
-                'sync_status' => 'imported',
-                'quantity_change' => $row['quantity_change'] ?? 0,
-                'unit_price' => $row['unit_price'] ?? 0,
-                'supplier_name' => $row['supplier_name'] ?? null,
-                'notes' => $row['notes'] ?? null,
-                'metadata' => null,
-                'created_at' => $row['created_at'] ?? now(),
-                'updated_at' => $row['updated_at'] ?? now(),
-            ];
-        }
-
-        return null;
-    }
-
-    protected function parseItems($row): array
-    {
-        // For simplicity, items would need to be in a separate sheet or parsed from a JSON string
-        // This is a placeholder implementation
-        return [];
+        $this->records = array_merge(array_values($groupedOrders), $movements);
     }
 
     public function getRecords(): array

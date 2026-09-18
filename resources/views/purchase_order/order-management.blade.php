@@ -19,7 +19,7 @@
     </style>
     <div class="space-y-5">
         @if(session('success'))
-            <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
+            <div id="orderManagementSuccessAlert" class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
                 {{ session('success') }}
             </div>
         @endif

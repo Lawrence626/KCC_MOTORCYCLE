@@ -154,42 +154,19 @@
                     <div class="relative inline-block" id="dd-desc-wrapper">
                         <select id="wm-product-description-filter" class="hidden">
                             <option value="">All Categories</option>
-                            @php
-                                $descriptions = \App\Models\ProductDescription::where('is_active', true)->orderBy('name')->get();
-                                foreach($descriptions as $desc):
-                            @endphp
-                                <option value="{{ $desc->name }}">{{ $desc->name }}</option>
-                            @php endforeach; @endphp
                         </select>
                         <button type="button" onclick="toggleDropdown('dd-desc-menu', event)" class="h-9 px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer inline-flex items-center gap-2">
                             <span id="dd-desc-label">All Categories</span>
                             <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                         <div id="dd-desc-menu" class="hidden absolute left-0 top-full z-50 mt-1 min-w-[160px] rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
-                            <button type="button" onclick="selectDropdownOption('wm-product-description-filter', 'dd-desc-label', 'dd-desc-menu', '', 'All Descriptions')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Categories</button>
-                            @foreach($descriptions as $desc)
-                                <button type="button" onclick="selectDropdownOption('wm-product-description-filter', 'dd-desc-label', 'dd-desc-menu', '{{ addslashes($desc->name) }}', '{{ addslashes($desc->name) }}')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">
-                                    {{ $desc->name }}
-                                </button>
-                            @endforeach
+                            <button type="button" onclick="selectDropdownOption('wm-product-description-filter', 'dd-desc-label', 'dd-desc-menu', '', 'All Categories')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Categories</button>
                         </div>
                     </div>
 
                     <div class="relative inline-block" id="dd-brand-wrapper">
                         <select id="wm-brand-filter" class="hidden">
                             <option value="">All Brands</option>
-                            @php
-                                $brands = \App\Models\Product::where('is_archived', false)
-                                    ->whereNotNull('brand')
-                                    ->where('brand', '!=', '')
-                                    ->distinct()
-                                    ->orderBy('brand')
-                                    ->pluck('brand')
-                                    ->toArray();
-                                foreach($brands as $brand):
-                            @endphp
-                                <option value="{{ $brand }}">{{ $brand }}</option>
-                            @php endforeach; @endphp
                         </select>
                         <button type="button" onclick="toggleDropdown('dd-brand-menu', event)" class="h-9 px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer inline-flex items-center gap-2">
                             <span id="dd-brand-label">All Brands</span>
@@ -197,15 +174,10 @@
                         </button>
                         <div id="dd-brand-menu" class="hidden absolute left-0 top-full z-50 mt-1 min-w-[140px] rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
                             <button type="button" onclick="selectDropdownOption('wm-brand-filter', 'dd-brand-label', 'dd-brand-menu', '', 'All Brands')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Brands</button>
-                            @foreach($brands as $brand)
-                                <button type="button" onclick="selectDropdownOption('wm-brand-filter', 'dd-brand-label', 'dd-brand-menu', '{{ addslashes($brand) }}', '{{ addslashes($brand) }}')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">
-                                    {{ $brand }}
-                                </button>
-                            @endforeach
                         </div>
                     </div>
 
-                    <button id="wm-clear-filters" onclick="document.getElementById('dd-desc-label').textContent='All Descriptions'; document.getElementById('dd-brand-label').textContent='All Brands';" class="h-9 px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-[10px] transition cursor-pointer inline-flex items-center">
+                    <button id="wm-clear-filters" type="button" class="h-9 px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-[10px] transition cursor-pointer inline-flex items-center">
                         Clear
                     </button>
                 </div>

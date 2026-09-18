@@ -785,6 +785,38 @@
                 }
             });
         })();
+
+        // Universal Auto-Dismiss for Success Alerts and Flash Messages across pages
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const autoDismissSelectors = [
+                    '#success-toast',
+                    '#pageSuccessAlert',
+                    '#orderManagementSuccessAlert',
+                    '#orderDetailSuccessAlert',
+                    '#deadStockSuccessAlert',
+                    '#deadStockShowSuccessAlert',
+                    '#profileSuccessAlert',
+                    '.alert-success'
+                ];
+                
+                autoDismissSelectors.forEach(function(selector) {
+                    document.querySelectorAll(selector).forEach(function(el) {
+                        if (el && !el.dataset.dismissing) {
+                            el.dataset.dismissing = 'true';
+                            el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                            el.style.opacity = '0';
+                            el.style.transform = 'translateY(-10px)';
+                            setTimeout(function() {
+                                if (el.parentNode) {
+                                    el.remove();
+                                }
+                            }, 400);
+                        }
+                    });
+                });
+            }, 3500);
+        });
     </script>
 
     @stack('scripts')

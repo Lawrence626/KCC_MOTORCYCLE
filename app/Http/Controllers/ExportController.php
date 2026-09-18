@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Services\OfflineReconciliationService;
 use App\Models\PurchaseOrder;
-use App\Models\InventoryMovement;
 use App\Models\SynchronizationHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,15 +25,11 @@ class ExportController extends Controller
     public function index()
     {
         $pendingPurchaseOrders = PurchaseOrder::where('sync_status', 'pending_sync')->count();
-        $pendingInventoryMovements = InventoryMovement::where('sync_status', 'pending_sync')->count();
         $exportedPurchaseOrders = PurchaseOrder::where('sync_status', 'exported')->count();
-        $exportedInventoryMovements = InventoryMovement::where('sync_status', 'exported')->count();
 
         return view('offline-reconciliation.export', compact(
             'pendingPurchaseOrders',
-            'pendingInventoryMovements',
-            'exportedPurchaseOrders',
-            'exportedInventoryMovements'
+            'exportedPurchaseOrders'
         ));
     }
 
@@ -43,7 +38,7 @@ class ExportController extends Controller
      */
     public function exportCsv(Request $request)
     {
-        $exportType = $request->input('type', 'all'); // all, purchase_orders, inventory_movements
+        $exportType = $request->input('type', 'purchase_orders');
         $syncStatus = $request->input('sync_status', 'pending_sync');
 
         $fileName = 'offline_transactions_' . date('Y_m_d') . '.csv';
@@ -65,7 +60,7 @@ class ExportController extends Controller
         $syncHistory->update(['total_records' => count($records)]);
 
         // Mark records as exported
-        $this->markRecordsAsExported($records, $exportType);
+        $this->markRecordsAsExported($records);
 
         return Excel::download(new OfflineTransactionsExport($records), $fileName);
     }
@@ -75,7 +70,7 @@ class ExportController extends Controller
      */
     public function exportExcel(Request $request)
     {
-        $exportType = $request->input('type', 'all');
+        $exportType = $request->input('type', 'purchase_orders');
         $syncStatus = $request->input('sync_status', 'pending_sync');
 
         $fileName = 'offline_transactions_' . date('Y_m_d') . '.xlsx';
@@ -97,7 +92,7 @@ class ExportController extends Controller
         $syncHistory->update(['total_records' => count($records)]);
 
         // Mark records as exported
-        $this->markRecordsAsExported($records, $exportType);
+        $this->markRecordsAsExported($records);
 
         return Excel::download(new OfflineTransactionsExport($records), $fileName);
     }
@@ -109,56 +104,53 @@ class ExportController extends Controller
     {
         $records = [];
 
-        if ($exportType === 'all' || $exportType === 'purchase_orders') {
-            $purchaseOrders = PurchaseOrder::where('sync_status', $syncStatus)
-                ->with('items')
-                ->get();
+        $purchaseOrders = PurchaseOrder::where('sync_status', $syncStatus)
+            ->with(['items.product', 'supplier'])
+            ->get();
 
-            foreach ($purchaseOrders as $po) {
+        foreach ($purchaseOrders as $po) {
+            if ($po->items->isEmpty()) {
                 $records[] = [
+                    'id' => $po->id,
                     'type' => 'purchase_order',
                     'order_number' => $po->order_number,
+                    'product_id' => '',
+                    'product_name' => '',
+                    'sku' => '',
                     'supplier_id' => $po->supplier_id,
                     'supplier_name' => $po->supplier_name,
+                    'quantity' => 0,
+                    'unit_price' => 0,
+                    'subtotal' => 0,
+                    'total_amount' => $po->total_amount,
                     'status' => $po->status,
                     'sync_status' => $po->sync_status,
-                    'expected_delivery_date' => $po->expected_delivery_date,
                     'notes' => $po->notes,
-                    'total_amount' => $po->total_amount,
-                    'created_at' => $po->created_at,
-                    'updated_at' => $po->updated_at,
-                    'items' => $po->items->map(function ($item) {
-                        return [
-                            'product_id' => $item->product_id,
-                            'quantity' => $item->quantity,
-                            'unit_price' => $item->unit_price,
-                            'total_price' => $item->total_price,
-                        ];
-                    })->toArray(),
+                    'created_at' => $po->created_at?->format('Y-m-d H:i:s'),
+                    'updated_at' => $po->updated_at?->format('Y-m-d H:i:s'),
                 ];
-            }
-        }
-
-        if ($exportType === 'all' || $exportType === 'inventory_movements') {
-            $movements = InventoryMovement::where('sync_status', $syncStatus)
-                ->with('product')
-                ->get();
-
-            foreach ($movements as $movement) {
-                $records[] = [
-                    'type' => 'inventory_movement',
-                    'product_id' => $movement->product_id,
-                    'product_name' => $movement->product?->name,
-                    'type' => $movement->type,
-                    'sync_status' => $movement->sync_status,
-                    'quantity_change' => $movement->quantity_change,
-                    'unit_price' => $movement->unit_price,
-                    'supplier_name' => $movement->supplier_name,
-                    'notes' => $movement->notes,
-                    'metadata' => $movement->metadata,
-                    'created_at' => $movement->created_at,
-                    'updated_at' => $movement->updated_at,
-                ];
+            } else {
+                foreach ($po->items as $item) {
+                    $records[] = [
+                        'id' => $po->id,
+                        'type' => 'purchase_order',
+                        'order_number' => $po->order_number,
+                        'product_id' => $item->product_id ?? '',
+                        'product_name' => $item->product_name ?: ($item->product?->product_name ?: $item->product?->name),
+                        'sku' => $item->sku ?: $item->product?->sku,
+                        'supplier_id' => $po->supplier_id,
+                        'supplier_name' => $po->supplier_name,
+                        'quantity' => (int) $item->quantity,
+                        'unit_price' => (float) $item->unit_price,
+                        'subtotal' => (float) $item->total_price,
+                        'total_amount' => (float) $po->total_amount,
+                        'status' => $po->status,
+                        'sync_status' => $po->sync_status,
+                        'notes' => $po->notes,
+                        'created_at' => $po->created_at?->format('Y-m-d H:i:s'),
+                        'updated_at' => $po->updated_at?->format('Y-m-d H:i:s'),
+                    ];
+                }
             }
         }
 
@@ -168,25 +160,21 @@ class ExportController extends Controller
     /**
      * Mark records as exported
      */
-    protected function markRecordsAsExported(array $records, string $exportType): void
+    protected function markRecordsAsExported(array $records): void
     {
         $poIds = [];
-        $movementIds = [];
 
         foreach ($records as $record) {
-            if ($record['type'] === 'purchase_order') {
-                $poIds[] = $record['id'] ?? null;
-            } elseif ($record['type'] === 'inventory_movement') {
-                $movementIds[] = $record['id'] ?? null;
+            if (($record['type'] ?? '') === 'purchase_order' && !empty($record['id'])) {
+                $poIds[] = $record['id'];
             }
         }
 
-        if (!empty($poIds) && ($exportType === 'all' || $exportType === 'purchase_orders')) {
-            PurchaseOrder::whereIn('id', array_filter($poIds))->update(['sync_status' => 'exported']);
-        }
+        $uniquePoIds = array_values(array_unique(array_filter($poIds)));
 
-        if (!empty($movementIds) && ($exportType === 'all' || $exportType === 'inventory_movements')) {
-            InventoryMovement::whereIn('id', array_filter($movementIds))->update(['sync_status' => 'exported']);
+        if (!empty($uniquePoIds)) {
+            PurchaseOrder::whereIn('id', $uniquePoIds)->update(['sync_status' => 'exported']);
         }
     }
 }
+

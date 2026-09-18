@@ -28,7 +28,7 @@
                 toast.style.transition = 'opacity 0.5s ease';
                 setTimeout(() => toast.remove(), 500);
             }
-        }, 3000);
+        }, 3500);
     </script>
 @endif
 
