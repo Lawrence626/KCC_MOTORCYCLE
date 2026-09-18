@@ -55,11 +55,13 @@ class PurchaseOrderController extends Controller
         $orders = $this->filteredPurchaseOrders($request, ['pending approval', 'approved', 'sent to supplier', 'in transit', 'awaiting confirmation'], 'orders')
             ->latest()
             ->paginate(10, ['*'], 'orders_page')
-            ->withQueryString();
+            ->withQueryString()
+            ->appends(['tab' => 'orders']);
 
         $backOrders = $this->filteredBackOrderItems($request)
             ->paginate(10, ['*'], 'back_orders_page')
-            ->withQueryString();
+            ->withQueryString()
+            ->appends(['tab' => 'back_orders']);
 
         $replacementBackOrders = \Illuminate\Support\Facades\Schema::hasTable('defective_return_requests')
             ? DefectiveReturnRequest::with(['purchaseOrder', 'product'])
@@ -78,12 +80,60 @@ class PurchaseOrderController extends Controller
         $receivedOrders = $this->filteredPurchaseOrders($request, ['completed', 'partially received'], 'received')
             ->latest()
             ->paginate(10, ['*'], 'received_page')
-            ->withQueryString();
+            ->withQueryString()
+            ->appends(['tab' => 'received']);
 
         $cancelledOrders = $this->filteredPurchaseOrders($request, ['rejected', 'cancelled'], 'cancelled')
             ->latest()
             ->paginate(10, ['*'], 'cancelled_page')
-            ->withQueryString();
+            ->withQueryString()
+            ->appends(['tab' => 'cancelled']);
+
+        $activeTab = $request->query('tab');
+        if (! $activeTab) {
+            if ($request->has('received_page') || $request->has('received_search') || $request->has('received_status') || $request->has('received_supplier')) {
+                $activeTab = 'received';
+            } elseif ($request->has('back_orders_page') || $request->has('back_orders_search') || $request->has('back_orders_status') || $request->has('back_orders_supplier')) {
+                $activeTab = 'back_orders';
+            } elseif ($request->has('cancelled_page') || $request->has('cancelled_search') || $request->has('cancelled_status') || $request->has('cancelled_supplier')) {
+                $activeTab = 'cancelled';
+            } else {
+                $activeTab = 'orders';
+            }
+        }
+
+        if ($request->ajax() || $request->wantsJson()) {
+            $html = match ($activeTab) {
+                'received' => view('purchase_order.partials.orders-table', [
+                    'orders' => $receivedOrders,
+                    'dateLabel' => 'Received',
+                    'dateType' => 'received',
+                    'emptyMessage' => 'No received purchase orders found.',
+                ])->render() . '<div class="mt-4 px-4">' . $receivedOrders->appends(['tab' => 'received'])->links()->render() . '</div>',
+
+                'back_orders' => view('purchase_order.partials.back-orders-table', [
+                    'backOrders' => $backOrders,
+                    'replacementBackOrders' => $replacementBackOrders,
+                ])->render() . '<div class="mt-4 px-4">' . $backOrders->appends(['tab' => 'back_orders'])->links()->render() . '</div>',
+
+                'cancelled' => view('purchase_order.partials.orders-table', [
+                    'orders' => $cancelledOrders,
+                    'dateLabel' => 'Created',
+                    'dateType' => 'created',
+                    'emptyMessage' => 'No cancelled purchase orders found.',
+                ])->render() . '<div class="mt-4 px-4">' . $cancelledOrders->appends(['tab' => 'cancelled'])->links()->render() . '</div>',
+
+                default => view('purchase_order.partials.orders-table', [
+                    'orders' => $orders,
+                    'emptyMessage' => 'No active purchase orders have been created yet.',
+                ])->render() . '<div class="mt-4 px-4">' . $orders->appends(['tab' => 'orders'])->links()->render() . '</div>',
+            };
+
+            return response()->json([
+                'tab' => $activeTab,
+                'html' => $html,
+            ]);
+        }
 
         return view('purchase_order.order-management', [
             'lowStockProducts' => $lowStockProducts,
@@ -98,7 +148,7 @@ class PurchaseOrderController extends Controller
             'replacementBackOrders' => $replacementBackOrders,
             'receivedOrders' => $receivedOrders,
             'cancelledOrders' => $cancelledOrders,
-            'activeTab' => $request->query('tab', 'orders'),
+            'activeTab' => $activeTab,
         ]);
     }
 

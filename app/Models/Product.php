@@ -57,10 +57,13 @@ class Product extends Model
         'disposal_date_disposed',
         'disposal_reason',
         'compatibility',
+        'discount_type',
+        'discount_value',
     ];
 
     protected $casts = [
         'unit_price' => 'decimal:2',
+        'discount_value' => 'decimal:2',
         'last_restock_date' => 'date',
         'expiry_date' => 'date',
         'manufacturing_date' => 'date',

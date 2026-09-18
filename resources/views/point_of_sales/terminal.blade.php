@@ -105,10 +105,13 @@
                                     <span class="font-semibold">Extra Charges</span>
                                     <input id="posExtraChargeInput" type="number" min="0" step="0.01" value="0" placeholder="0.00" class="mt-2 w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35" />
                                 </label>
-                                <label class="block text-sm text-slate-700">
-                                    <span class="font-semibold">Discount</span>
+                                <div class="block text-sm text-slate-700">
+                                    <div class="flex items-center justify-between">
+                                        <label for="posDiscountInput" class="font-semibold cursor-pointer">Discount</label>
+                                        <button type="button" id="posRemoveDiscountBtn" class="text-xs font-semibold text-red-600 hover:text-red-800 transition cursor-pointer hidden">Remove</button>
+                                    </div>
                                     <input id="posDiscountInput" type="number" min="0" step="0.01" value="0" placeholder="0.00" class="mt-2 w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35" />
-                                </label>
+                                </div>
                             </div>
                         </div>
                         <div id="posCartFooter" class="space-y-2 hidden text-sm text-slate-600">

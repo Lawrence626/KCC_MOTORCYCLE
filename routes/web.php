@@ -119,6 +119,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('role:admin,cashier')->group(function () {
         Route::post('api/pos/transactions', [POSTransactionController::class, 'store'])->name('api.pos.transactions.store');
         Route::post('api/pos/validate-stock', [POSTransactionController::class, 'validateStock'])->name('api.pos.validate_stock');
+        Route::post('api/pos/remove-product-discount', [App\Http\Controllers\DeadStockController::class, 'removeDiscount'])->name('api.pos.remove-discount');
     });
     // POS Transaction read access - Admin, Cashier, Inventory Clerk
     Route::middleware('role:admin,cashier,inventory_clerk')->group(function () {
@@ -353,9 +354,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('dead-stock/export/excel', [App\Http\Controllers\DeadStockController::class, 'exportExcel'])->name('dss.dead-stock.export-excel');
             Route::get('dead-stock/export/pdf', [App\Http\Controllers\DeadStockController::class, 'exportPdf'])->name('dss.dead-stock.export-pdf');
             Route::get('dead-stock/{id}', [App\Http\Controllers\DeadStockController::class, 'show'])->name('dss.dead-stock.show');
-            Route::post('dead-stock/recalculate', [App\Http\Controllers\DeadStockController::class, 'recalculate'])->name('dss.dead-stock.recalculate');
-            Route::post('dead-stock/{id}/resolve', [App\Http\Controllers\DeadStockController::class, 'markResolved'])->name('dss.dead-stock.resolve');
             Route::post('dead-stock/{id}/apply-discount', [App\Http\Controllers\DeadStockController::class, 'applyDiscount'])->name('dss.dead-stock.apply-discount');
+            Route::post('dead-stock/{id}/remove-discount', [App\Http\Controllers\DeadStockController::class, 'removeDiscountByDeadStockId'])->name('dss.dead-stock.remove-discount');
 
             // Recommendation Routes
             Route::get('recommendations', [App\Http\Controllers\DSSRecommendationController::class, 'index'])->name('dss.recommendations.index');

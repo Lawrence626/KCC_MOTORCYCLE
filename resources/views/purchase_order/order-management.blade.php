@@ -201,8 +201,10 @@
                         </div>
                     </label>
                 </form>
-                @include('purchase_order.partials.orders-table', ['orders' => $orders, 'emptyMessage' => 'No active purchase orders have been created yet.'])
-                <div class="mt-4 px-4">{{ $orders->links() }}</div>
+                <div id="orders-table-container">
+                    @include('purchase_order.partials.orders-table', ['orders' => $orders, 'emptyMessage' => 'No active purchase orders have been created yet.'])
+                    <div class="mt-4 px-4">{{ $orders->appends(['tab' => 'orders'])->links() }}</div>
+                </div>
             </div>
 
             <div id="back_orders-tab" class="tab-content hidden min-h-[360px]">
@@ -256,8 +258,10 @@
                         </div>
                     </label>
                 </form>
-                @include('purchase_order.partials.back-orders-table', ['backOrders' => $backOrders])
-                <div class="mt-4 px-4">{{ $backOrders->links() }}</div>
+                <div id="back_orders-table-container">
+                    @include('purchase_order.partials.back-orders-table', ['backOrders' => $backOrders, 'replacementBackOrders' => $replacementBackOrders])
+                    <div class="mt-4 px-4">{{ $backOrders->appends(['tab' => 'back_orders'])->links() }}</div>
+                </div>
             </div>
 
             <div id="received-tab" class="tab-content hidden min-h-[360px]">
@@ -312,8 +316,10 @@
                         </div>
                     </label>
                 </form>
-                @include('purchase_order.partials.orders-table', ['orders' => $receivedOrders, 'dateLabel' => 'Received', 'dateType' => 'received', 'emptyMessage' => 'No received purchase orders found.'])
-                <div class="mt-4 px-4">{{ $receivedOrders->links() }}</div>
+                <div id="received-table-container">
+                    @include('purchase_order.partials.orders-table', ['orders' => $receivedOrders, 'dateLabel' => 'Received', 'dateType' => 'received', 'emptyMessage' => 'No received purchase orders found.'])
+                    <div class="mt-4 px-4">{{ $receivedOrders->appends(['tab' => 'received'])->links() }}</div>
+                </div>
             </div>
 
             <div id="cancelled-tab" class="tab-content hidden min-h-[360px]">
@@ -368,8 +374,10 @@
                         </div>
                     </label>
                 </form>
-                @include('purchase_order.partials.orders-table', ['orders' => $cancelledOrders, 'dateLabel' => 'Created', 'dateType' => 'created', 'emptyMessage' => 'No cancelled purchase orders found.'])
-                <div class="mt-4 px-4">{{ $cancelledOrders->links() }}</div>
+                <div id="cancelled-table-container">
+                    @include('purchase_order.partials.orders-table', ['orders' => $cancelledOrders, 'dateLabel' => 'Created', 'dateType' => 'created', 'emptyMessage' => 'No cancelled purchase orders found.'])
+                    <div class="mt-4 px-4">{{ $cancelledOrders->appends(['tab' => 'cancelled'])->links() }}</div>
+                </div>
             </div>
         </div>
     </div>
@@ -407,6 +415,11 @@
                     opt.className = 'order-tab-dd-opt w-full px-3 py-1 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer';
                 }
             });
+
+            const receivedRangeTabInput = document.querySelector('#receivedRangeForm input[name="tab"]');
+            if (receivedRangeTabInput) {
+                receivedRangeTabInput.value = tabKey;
+            }
         }
 
         window.toggleOrderTabDropdown = function (e) {
@@ -425,8 +438,92 @@
             if (dd) dd.classList.add('hidden');
             if (chevron) chevron.style.transform = '';
             showOrderTab(tabName);
+            try {
+                const url = new URL(window.location.href);
+                url.searchParams.set('tab', tabName);
+                window.history.pushState({ tab: tabName, url: url.toString() }, '', url.toString());
+            } catch (e) {}
             setTimeout(resolvePoOrderImages, 50);
         };
+
+        let isFetchingTabTable = false;
+
+        async function loadTabTable(url, tabKey, updateHistory = true) {
+            if (isFetchingTabTable) return;
+
+            const container = document.getElementById(tabKey + '-table-container');
+            if (!container) return;
+
+            isFetchingTabTable = true;
+            container.style.transition = 'opacity 0.2s ease';
+            container.style.opacity = '0.4';
+            container.style.pointerEvents = 'none';
+
+            try {
+                const fetchUrl = new URL(url, window.location.origin);
+                if (!fetchUrl.searchParams.has('tab')) {
+                    fetchUrl.searchParams.set('tab', tabKey);
+                }
+
+                const res = await fetch(fetchUrl.toString(), {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+
+                const data = await res.json();
+                if (data && data.html !== undefined) {
+                    const targetKey = data.tab || tabKey;
+                    const targetContainer = document.getElementById(targetKey + '-table-container') || container;
+                    targetContainer.innerHTML = data.html;
+                    setTimeout(resolvePoOrderImages, 30);
+
+                    if (updateHistory) {
+                        window.history.pushState({ tab: targetKey, url: fetchUrl.toString() }, '', fetchUrl.toString());
+                    }
+
+                    const rect = targetContainer.getBoundingClientRect();
+                    if (rect.top < 100) {
+                        targetContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to load table via AJAX, falling back to full page load:', err);
+                window.location.href = url;
+            } finally {
+                isFetchingTabTable = false;
+                if (container) {
+                    container.style.opacity = '1';
+                    container.style.pointerEvents = '';
+                }
+            }
+        }
+
+        // Intercept clicks on pagination navigation links inside any tab
+        document.addEventListener('click', function (e) {
+            const paginationLink = e.target.closest('.tab-content nav[role="navigation"] a, .tab-content .pagination a');
+            if (!paginationLink) return;
+
+            const tabContent = paginationLink.closest('.tab-content');
+            if (!tabContent) return;
+
+            e.preventDefault();
+            const tabKey = tabContent.id.replace('-tab', '');
+            loadTabTable(paginationLink.href, tabKey, true);
+        });
+
+        window.addEventListener('popstate', function (e) {
+            const tab = (e.state && e.state.tab) || (new URLSearchParams(window.location.search)).get('tab') || 'orders';
+            showOrderTab(tab);
+            if (e.state && e.state.url) {
+                loadTabTable(e.state.url, tab, false);
+            }
+        });
 
         document.addEventListener('click', function (e) {
             const wrapper = document.getElementById('orderTabDropdownWrapper');

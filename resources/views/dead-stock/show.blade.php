@@ -16,33 +16,10 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                @php
-                    $priorityColors = [
-                        'Critical' => 'bg-red-100 text-red-700 border-red-300',
-                        'High' => 'bg-orange-100 text-orange-700 border-orange-300',
-                        'Medium' => 'bg-amber-100 text-amber-700 border-amber-300',
-                        'Low' => 'bg-blue-100 text-blue-700 border-blue-300',
-                    ];
-                @endphp
-                <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-bold border {{ $priorityColors[$deadStock->priority_level] ?? 'bg-slate-100 text-slate-600 border-slate-200' }}">
-                    @if($deadStock->priority_level === 'Critical')
-                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                    @elseif($deadStock->priority_level === 'High')
-                        <span class="w-2 h-2 rounded-full bg-orange-500"></span>
-                    @elseif($deadStock->priority_level === 'Medium')
-                        <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                    @else
-                        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                    @endif
-                    {{ $deadStock->priority_level }} Priority
+                <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-bold border border-rose-200 bg-rose-50 text-rose-700">
+                    <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                    {{ $deadStock->days_without_sale }} Days Unsold
                 </span>
-                <form action="{{ route('dss.dead-stock.resolve', $deadStock->id) }}" method="POST" class="inline">
-                    @csrf
-                    <button type="submit" onclick="return confirm('Mark this dead stock as resolved?')" class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-xl bg-emerald-500 text-white hover:bg-emerald-600 shadow-sm transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                        Mark Resolved
-                    </button>
-                </form>
             </div>
         </div>
 
@@ -338,7 +315,7 @@
         </div>
 
         {{-- ═══ FAST MOVING PRODUCTS (for bundle) ═══ --}}
-        @if($fastMovingProducts->isNotEmpty())
+        @if(!empty($fastMovingProducts) && $fastMovingProducts->isNotEmpty())
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="px-5 py-3.5 border-b border-slate-100 bg-gradient-to-r from-blue-50 to-white">
                 <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
@@ -375,7 +352,7 @@
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-emerald-50 to-white">
             <h3 class="text-lg font-bold text-slate-800">Apply Discount</h3>
-            <p class="text-sm text-slate-500 mt-0.5">{{ $product->name ?? '' }} — ₱{{ number_format($product->unit_price, 2) }}</p>
+            <p class="text-sm text-slate-500 mt-0.5">{{ $deadStock->product->description ?? $deadStock->product->name ?? 'Product' }} — ₱{{ number_format($deadStock->product->unit_price ?? 0, 2) }}</p>
         </div>
         <form action="{{ route('dss.dead-stock.apply-discount', $deadStock->id) }}" method="POST" class="p-6 space-y-4">
             @csrf

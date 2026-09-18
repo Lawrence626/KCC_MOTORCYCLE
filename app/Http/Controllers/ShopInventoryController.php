@@ -1192,6 +1192,8 @@ class ShopInventoryController extends Controller
                 'size' => $product->size,
                 'color' => $product->color,
                 'unit_price' => $product->unit_price,
+                'discount_type' => $product->discount_type ?? null,
+                'discount_value' => $product->discount_value ? (float) $product->discount_value : 0,
                 'stock_quantity' => $item->quantity, // Use shop inventory quantity
                 'shop_shelf_id' => $item->shop_shelf_id,
                 'shop_shelf_name' => $item->shopShelf->name,

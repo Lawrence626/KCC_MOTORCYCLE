@@ -17,7 +17,7 @@ class DeadStockDetectionService
      */
     public function analyzeAllProducts(): Collection
     {
-        $thresholdDays = DSSSettings::getSetting('dead_stock_threshold_days', 90);
+        $thresholdDays = DSSSettings::getSetting('dead_stock_threshold_days', 30);
         
         // Get all active products with stock greater than 0
         $products = Product::where('is_active', true)
@@ -50,7 +50,7 @@ class DeadStockDetectionService
     public function checkProductForDeadStock(Product $product, ?int $thresholdDays = null): ?DeadStock
     {
         if (!$thresholdDays) {
-            $thresholdDays = DSSSettings::getSetting('dead_stock_threshold_days', 90);
+            $thresholdDays = DSSSettings::getSetting('dead_stock_threshold_days', 30);
         }
 
         // Skip if no stock
@@ -75,9 +75,9 @@ class DeadStockDetectionService
         if (!$lastSale) {
             // Product has been restocked but never sold
             $referenceDate = $product->last_restock_date ?? $product->created_at;
-            $daysWithoutSale = $referenceDate ? Carbon::now()->diffInDays($referenceDate) : $thresholdDays + 1;
+            $daysWithoutSale = $referenceDate ? (int) abs(Carbon::now()->diffInDays($referenceDate)) : $thresholdDays + 1;
         } else {
-            $daysWithoutSale = Carbon::now()->diffInDays($lastSale);
+            $daysWithoutSale = (int) abs(Carbon::now()->diffInDays($lastSale));
         }
 
         // Check if meets dead stock criteria
@@ -241,13 +241,13 @@ class DeadStockDetectionService
             $lastSale = $this->getLastSaleDate($product->id);
 
             if (!$lastSale) {
-                $daysWithoutSale = $product->created_at ? Carbon::now()->diffInDays($product->created_at) : 0;
+                $daysWithoutSale = $product->created_at ? (int) abs(Carbon::now()->diffInDays($product->created_at)) : 0;
             } else {
-                $daysWithoutSale = Carbon::now()->diffInDays($lastSale);
+                $daysWithoutSale = (int) abs(Carbon::now()->diffInDays($lastSale));
             }
 
             // Include products approaching warning threshold
-            if ($daysWithoutSale >= $warningDays && $daysWithoutSale < DSSSettings::getSetting('dead_stock_threshold_days', 90)) {
+            if ($daysWithoutSale >= $warningDays && $daysWithoutSale < DSSSettings::getSetting('dead_stock_threshold_days', 30)) {
                 $atRisk->push([
                     'product' => $product,
                     'days_without_sale' => $daysWithoutSale,
@@ -366,6 +366,6 @@ class DeadStockDetectionService
      */
     public function getThresholdDays(): int
     {
-        return (int) DSSSettings::getSetting('dead_stock_threshold_days', 90);
+        return (int) DSSSettings::getSetting('dead_stock_threshold_days', 30);
     }
 }

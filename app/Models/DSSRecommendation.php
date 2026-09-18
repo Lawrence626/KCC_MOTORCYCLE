@@ -74,7 +74,7 @@ class DSSRecommendation extends Model
     /**
      * Mark recommendation as actioned.
      */
-    public function markAsActioned(string $notes = null): void
+    public function markAsActioned(?string $notes = null): void
     {
         $this->update([
             'action_taken_at' => now(),

@@ -8,6 +8,7 @@ const posState = {
     selectedServices: new Set(),
     extraCharge: 0,
     discount: 0,
+    hasAutoDiscount: false,
     paymentMethod: 'cash',
     productImages: {},
     lastReceipt: null,
@@ -240,6 +241,48 @@ function formatCurrency(value) {
 
 function findCartItem(productId) {
     return posState.cart.find(item => item.id === productId);
+}
+
+function recalculateAutoDiscount() {
+    let autoDiscount = 0;
+    let hasDeadStockDiscount = false;
+
+    posState.cart.forEach(item => {
+        const dType = item.discount_type;
+        const dVal = Number(item.discount_value || 0);
+        if (dVal > 0) {
+            hasDeadStockDiscount = true;
+            if (dType === 'percentage') {
+                autoDiscount += (item.unit_price * (dVal / 100)) * item.quantity;
+            } else if (dType === 'fixed') {
+                autoDiscount += dVal * item.quantity;
+            }
+        }
+    });
+
+    const discountInput = document.getElementById('posDiscountInput');
+    const removeBtn = document.getElementById('posRemoveDiscountBtn');
+    if (removeBtn) {
+        if (hasDeadStockDiscount) {
+            removeBtn.classList.remove('hidden');
+        } else {
+            removeBtn.classList.add('hidden');
+        }
+    }
+
+    if (hasDeadStockDiscount) {
+        if (discountInput) {
+            discountInput.value = autoDiscount.toFixed(2);
+        }
+        posState.discount = autoDiscount;
+        posState.hasAutoDiscount = true;
+    } else if (posState.hasAutoDiscount) {
+        if (discountInput) {
+            discountInput.value = '0.00';
+        }
+        posState.discount = 0;
+        posState.hasAutoDiscount = false;
+    }
 }
 
 function updateTotals() {
@@ -665,11 +708,20 @@ function renderCart() {
             stockInfoHtml = `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">STOCK:</span> ${maxStock} pcs</div>`;
         }
 
+        let discountBadge = '';
+        const itemDiscountVal = Number(item.discount_value || 0);
+        if (itemDiscountVal > 0) {
+            const discountLabel = item.discount_type === 'percentage'
+                ? `${itemDiscountVal}% OFF`
+                : `₱${itemDiscountVal.toFixed(2)} OFF`;
+            discountBadge = `<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-300 ml-1.5" title="Dead stock discount applied">🏷️ ${discountLabel}</span>`;
+        }
+
         const row = document.createElement('tr');
         row.className = `border-b border-slate-200 ${isExceeding || isOutOfStock ? 'bg-red-50/50' : ''}`;
         row.innerHTML = `
             <td class="px-3 py-3 text-slate-700 text-xs font-medium">
-                <div class="text-sm font-semibold text-slate-900 mb-0.5">${item.name}</div>
+                <div class="text-sm font-semibold text-slate-900 mb-0.5 flex items-center flex-wrap">${item.name}${discountBadge}</div>
                 ${item.product_description ? `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">PRODUCT DESCRIPTION:</span> ${item.product_description}</div>` : ''}
                 ${item.brand ? `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">BRAND:</span> ${item.brand}</div>` : ''}
                 ${item.compatibility ? `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">COMPATIBLE:</span> ${item.compatibility}</div>` : ''}
@@ -692,6 +744,7 @@ function renderCart() {
         tbody.appendChild(row);
     });
 
+    recalculateAutoDiscount();
     updateTotals();
 }
 
@@ -717,6 +770,8 @@ function addProductToCart(product) {
     const existing = findCartItem(product.id);
     if (existing) {
         existing.stock_quantity = availableStock;
+        if (product.discount_type !== undefined) existing.discount_type = product.discount_type;
+        if (product.discount_value !== undefined) existing.discount_value = Number(product.discount_value || 0);
         if (existing.quantity + 1 > availableStock) {
             showNotification(`Insufficient stock. Only ${availableStock} item(s) available.`, 'error');
             return false;
@@ -738,6 +793,8 @@ function addProductToCart(product) {
             category: product.category ?? 'Uncategorized',
             stock_quantity: availableStock,
             unit_price: Number(product.unit_price || 0),
+            discount_type: product.discount_type || null,
+            discount_value: Number(product.discount_value || 0),
             quantity: 1,
         });
         showNotification(`Added ${productName} to cart`, 'success');
@@ -777,6 +834,12 @@ function changeCartQuantity(productId, delta) {
 
 function clearCart() {
     posState.cart = [];
+    posState.discount = 0;
+    posState.hasAutoDiscount = false;
+    const discountInput = document.getElementById('posDiscountInput');
+    if (discountInput) discountInput.value = '0.00';
+    const removeBtn = document.getElementById('posRemoveDiscountBtn');
+    if (removeBtn) removeBtn.classList.add('hidden');
     renderCart();
 }
 
@@ -870,6 +933,7 @@ async function searchProducts(query = '', page = 1) {
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <span class="text-sm font-semibold text-slate-900">${formatCurrency(sellingPrice)}</span>
+                            ${Number(product.discount_value || 0) > 0 ? `<span class="pos-discount-badge inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-200" title="Dead stock discount">🏷️ ${product.discount_type === 'percentage' ? `${product.discount_value}% OFF` : `₱${Number(product.discount_value).toFixed(2)} OFF`}</span>` : ''}
                             <button type="button" class="pos-price-breakdown-toggle group relative inline-flex items-center gap-1 text-[10px] text-slate-500 hover:text-slate-1000 transition" data-product-id="${product.id}" data-vatable="${vatableSales}" data-included-vat="${includedVat}" title="Price Breakdown">
                                 <svg class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -896,7 +960,7 @@ async function searchProducts(query = '', page = 1) {
                     <div class="flex justify-center">
                         ${isOutOfStock
                     ? `<button type="button" disabled class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-slate-200 px-4 text-xs font-bold text-slate-400 cursor-not-allowed shadow-none tracking-wide">Out of Stock</button>`
-                    : `<button type="button" data-id="${product.id}" data-name="${productName}" data-sku="${product.sku || ''}" data-price="${product.unit_price || 0}" data-stock="${stockQty}" data-product-description="${product.product_description || product.category || ''}" data-brand="${brand}" data-compatibility="${compatibility}" data-category="${product.category || ''}" class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-[#6EC1D1] px-4 text-xs font-bold text-black shadow-sm hover:bg-[#59b2c2] transition-all duration-200 tracking-wide">Add to Cart</button>`
+                    : `<button type="button" data-id="${product.id}" data-name="${productName}" data-sku="${product.sku || ''}" data-price="${product.unit_price || 0}" data-stock="${stockQty}" data-product-description="${product.product_description || product.category || ''}" data-brand="${brand}" data-compatibility="${compatibility}" data-category="${product.category || ''}" data-discount-type="${product.discount_type || ''}" data-discount-value="${product.discount_value || 0}" class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-[#6EC1D1] px-4 text-xs font-bold text-black shadow-sm hover:bg-[#59b2c2] transition-all duration-200 tracking-wide">Add to Cart</button>`
                 }
                     </div>
                 </div>
@@ -1011,7 +1075,9 @@ async function scanProduct() {
                 compatibility: product.compatibility || '',
                 category: product.category || 'Uncategorized',
                 stock_quantity: stock,
-                unit_price: Number(product.unit_price || 0)
+                unit_price: Number(product.unit_price || 0),
+                discount_type: product.discount_type || null,
+                discount_value: Number(product.discount_value || 0)
             });
 
             if (added) {
@@ -1054,7 +1120,78 @@ function updateExtraCharge(value) {
 
 function updateDiscount(value) {
     posState.discount = Number(value) || 0;
+    posState.hasAutoDiscount = false;
     updateTotals();
+}
+
+async function removeAppliedDiscount() {
+    const discountedItems = posState.cart.filter(item => Number(item.discount_value || 0) > 0);
+    if (discountedItems.length === 0) return;
+
+    const productIds = discountedItems.map(item => item.id);
+    const removeBtn = document.getElementById('posRemoveDiscountBtn');
+    const originalText = removeBtn ? removeBtn.textContent : 'Remove';
+
+    if (removeBtn) {
+        removeBtn.disabled = true;
+        removeBtn.textContent = 'Removing...';
+    }
+
+    try {
+        const response = await fetch('/api/pos/remove-product-discount', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ product_ids: productIds }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            // Update cart items in place
+            discountedItems.forEach(item => {
+                item.discount_type = null;
+                item.discount_value = 0;
+            });
+
+            // Update product cards in the product grid DOM
+            productIds.forEach(id => {
+                const card = document.querySelector(`.pos-image-upload-card[data-product-id="${id}"]`);
+                if (card) {
+                    const badge = card.querySelector('.pos-discount-badge');
+                    if (badge) badge.remove();
+
+                    const btn = card.querySelector('.pos-add-card');
+                    if (btn) {
+                        btn.dataset.discountType = '';
+                        btn.dataset.discountValue = '0';
+                    }
+                }
+            });
+
+            posState.discount = 0;
+            posState.hasAutoDiscount = false;
+            const discountInput = document.getElementById('posDiscountInput');
+            if (discountInput) discountInput.value = '0.00';
+
+            renderCart();
+            updateTotals();
+            showNotification('Discount permanently removed from product.', 'success');
+        } else {
+            showNotification(data.message || 'Failed to remove discount.', 'error');
+        }
+    } catch (error) {
+        console.error('Error removing discount:', error);
+        showNotification('Error connecting to server to remove discount.', 'error');
+    } finally {
+        if (removeBtn) {
+            removeBtn.disabled = false;
+            removeBtn.textContent = originalText;
+        }
+    }
 }
 
 function togglePriceBreakdown(productId) {
@@ -1943,6 +2080,8 @@ function setupPosEvents() {
             const brand = button.dataset.brand || '';
             const compatibility = button.dataset.compatibility || '';
             const category = button.dataset.category || '';
+            const discountType = button.dataset.discountType || null;
+            const discountValue = parseFloat(button.dataset.discountValue) || 0;
 
             if (!productId) return;
             addProductToCart({
@@ -1954,7 +2093,9 @@ function setupPosEvents() {
                 product_description: productDescription,
                 brand,
                 compatibility,
-                category
+                category,
+                discount_type: discountType,
+                discount_value: discountValue
             });
             return;
         }
@@ -2052,6 +2193,7 @@ function setupPosEvents() {
     document.getElementById('posPaymentModalConfirm')?.addEventListener('click', confirmPayment);
     document.getElementById('posExtraChargeInput')?.addEventListener('input', event => updateExtraCharge(event.target.value));
     document.getElementById('posDiscountInput')?.addEventListener('input', event => updateDiscount(event.target.value));
+    document.getElementById('posRemoveDiscountBtn')?.addEventListener('click', removeAppliedDiscount);
     document.querySelectorAll('.pos-payment-method').forEach(radio => {
         radio.addEventListener('change', event => updatePaymentMethod(event.target.value));
     });
@@ -2619,7 +2761,9 @@ async function handleScannedCode(code) {
                 compatibility: product.compatibility || '',
                 category: product.category || 'Uncategorized',
                 stock_quantity: stock,
-                unit_price: Number(product.unit_price || 0)
+                unit_price: Number(product.unit_price || 0),
+                discount_type: product.discount_type || null,
+                discount_value: Number(product.discount_value || 0)
             });
         } else {
             showNotification(`Product not found: ${searchCode}`, 'error');
