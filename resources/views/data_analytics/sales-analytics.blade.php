@@ -192,11 +192,31 @@
                             <p class="text-xs text-slate-400 mt-0.5">Revenue progression across the selected date range.</p>
                         </div>
                     </div>
-                    <div class="flex gap-2">
-                        <button type="button" data-range="daily" class="sales-trend-range-btn sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Daily</button>
-                        <button type="button" data-range="weekly" class="sales-trend-range-btn sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Weekly</button>
-                        <button type="button" data-range="monthly" class="sales-trend-range-btn sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition active">Monthly</button>
-                        <button type="button" data-range="yearly" class="sales-trend-range-btn sales-range-btn px-3 py-1 text-sm font-medium rounded-[10px] transition">Yearly</button>
+                    {{-- Sales trend range dropdown card --}}
+                    <div class="relative" id="salesTrendRangeWrapper">
+                        <button type="button" id="salesTrendRangeDropdownBtn"
+                            onclick="toggleSalesTrendRangeDropdown(event)"
+                            class="inline-flex items-center gap-2 rounded-[10px] border border-[#59b2c2] bg-[#6EC1D1] px-3 py-1.5 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all duration-200 min-w-[110px] justify-between">
+                            <span id="salesTrendRangeLabel">Monthly</span>
+                            <svg id="salesTrendRangeChevron" class="w-3.5 h-3.5 text-slate-900 transition-transform duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 9l6 6 6-6" />
+                            </svg>
+                        </button>
+                        <div id="salesTrendRangeDropdown"
+                            class="hidden absolute top-full right-0 z-50 mt-1.5 w-full rounded-[12px] border border-slate-700 bg-[#0f172a] shadow-2xl overflow-hidden">
+                            <div class="p-1 space-y-0.5">
+                                {{-- Hidden buttons keep the existing JS (.sales-trend-range-btn + data-range) working --}}
+                                <button type="button" data-range="daily"   class="sales-trend-range-btn sales-range-btn hidden"></button>
+                                <button type="button" data-range="weekly"  class="sales-trend-range-btn sales-range-btn hidden"></button>
+                                <button type="button" data-range="monthly" class="sales-trend-range-btn sales-range-btn hidden active"></button>
+                                <button type="button" data-range="yearly"  class="sales-trend-range-btn sales-range-btn hidden"></button>
+
+                                <button type="button" onclick="pickSalesTrendRange('daily',   'Daily')"   id="salesTrendRangeOpt-daily"   class="sales-trend-range-dd-opt w-full px-3 py-1 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer">Daily</button>
+                                <button type="button" onclick="pickSalesTrendRange('weekly',  'Weekly')"  id="salesTrendRangeOpt-weekly"  class="sales-trend-range-dd-opt w-full px-3 py-1 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer">Weekly</button>
+                                <button type="button" onclick="pickSalesTrendRange('monthly', 'Monthly')" id="salesTrendRangeOpt-monthly" class="sales-trend-range-dd-opt w-full px-3 py-1 text-sm font-semibold rounded-[8px] transition-colors text-left bg-slate-700 text-white cursor-pointer">Monthly</button>
+                                <button type="button" onclick="pickSalesTrendRange('yearly',  'Yearly')"  id="salesTrendRangeOpt-yearly"  class="sales-trend-range-dd-opt w-full px-3 py-1 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer">Yearly</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -218,29 +238,133 @@
                     </div>
                     <span class="text-xs font-semibold uppercase tracking-wider text-[#105f68]">Revenue</span>
                 </div>
-                <div class="my-auto grid gap-3 lg:grid-cols-[1fr_auto] items-center justify-center w-full" id="categoryContentGrid">
-                    <div id="categoryChartWrapper" class="h-48 w-full flex items-center justify-center @if(empty($categoryBreakdown['labels'])) hidden @endif">
+                <div class="my-auto grid gap-3 lg:grid-cols-[auto_1fr] items-center justify-center w-full" id="categoryContentGrid">
+                    <div id="categoryChartWrapper" style="position: relative; width: 150px; height: 150px; max-width: 150px; max-height: 150px;" class="flex items-center justify-center shrink-0 mx-auto">
                         <canvas id="categoryChart" class="max-h-full max-w-full"></canvas>
-                    </div>
-                    <div id="categoryLegend" class="@if(empty($categoryBreakdown['labels'])) w-full flex items-center justify-center py-12 text-center col-span-full @else max-h-48 overflow-y-auto pr-1 space-y-2 text-sm my-auto @endif">
-                        @if(!empty($categoryBreakdown['labels']))
+                        <div id="categoryCenterOverlay" style="
+                            position: absolute; inset: 0;
+                            display: flex; flex-direction: column;
+                            align-items: center; justify-content: center;
+                            text-align: center;
+                            pointer-events: none;
+                            padding-top: 14px;
+                            transition: opacity 0.15s ease-in-out;">
                             @php
-                                $legendColors = ['bg-[#6EC1D1]','bg-[#59b2c2]','bg-emerald-500','bg-amber-500','bg-sky-500','bg-rose-500','bg-violet-500','bg-lime-500','bg-fuchsia-500','bg-orange-500'];
+                                $initialCatTotal = array_sum($categoryBreakdown['values'] ?? []);
                             @endphp
-                            @foreach($categoryBreakdown['labels'] as $index => $label)
-                                <div class="flex items-center gap-3 rounded-[12px] border border-slate-200 bg-slate-50 p-2.5">
-                                    <span class="h-2.5 w-2.5 rounded-full {{ $legendColors[$index % count($legendColors)] }}"></span>
-                                    <div>
-                                        <p class="font-semibold text-slate-900 text-xs">{{ $label }}</p>
-                                        <p class="text-slate-500 text-[11px]">
-                                            {{ data_get($categoryBreakdown, 'formatted.' . $index, '—') }} • {{ data_get($categoryBreakdown, 'shares.' . $index, 0) }}%
+                            <span id="categoryCenterValue" style="color: #000000; font-weight: 700; font-size: 14px; line-height: 1.1;">{{ $initialCatTotal > 0 ? ('₱' . number_format($initialCatTotal, 2)) : '0' }}</span>
+                            <span id="categoryCenterCaption" style="color: rgba(0,0,0,0.6); font-size: 9px; margin-top: 3px;">{{ $initialCatTotal > 0 ? 'Total Sales' : 'No sales in period' }}</span>
+                        </div>
+                    </div>
+                    <div id="categoryLegend" class="max-h-52 overflow-y-auto pr-1 space-y-1.5 text-sm my-auto w-full max-w-[160px] mx-auto">
+                        @php
+                            $predefinedCategoryDefs = [
+                                ['name' => 'Exhaust', 'color' => '#00f700'],
+                                ['name' => 'Helmets', 'color' => '#da0e0e'],
+                                ['name' => 'Tires', 'color' => '#f1a204'],
+                                ['name' => 'Brakes', 'color' => '#5541ec'],
+                                ['name' => 'Oils', 'color' => '#0948be'],
+                                ['name' => 'Batteries', 'color' => '#e93071'],
+                                ['name' => 'Accessories', 'color' => '#45AAF2'],
+                            ];
+
+                            $categoryColorMap = [
+                                'exhaust' => '#00f700',
+                                'exhausts' => '#00f700',
+                                'pipe' => '#00f700',
+                                'helmets' => '#da0e0e',
+                                'helmet' => '#da0e0e',
+                                'tires' => '#f1a204',
+                                'tire' => '#f1a204',
+                                'tire hugger' => '#f1a204',
+                                'brakes' => '#5541ec',
+                                'brake' => '#5541ec',
+                                'brake pads' => '#5541ec',
+                                'oils' => '#0948be',
+                                'oil' => '#0948be',
+                                'engine oil' => '#0948be',
+                                'lubricants' => '#0948be',
+                                'batteries' => '#e93071',
+                                'battery' => '#e93071',
+                                'accessories' => '#45AAF2',
+                                'shock' => '#8b5cf6',
+                                'swing arm' => '#10b981',
+                                'engine support' => '#f97316',
+                                'side mirror' => '#06b6d4',
+                                'monorack frame' => '#64748b',
+                                'quick throttle' => '#ec4899',
+                                'spark plug' => '#eab308',
+                                'filters' => '#14b8a6',
+                            ];
+                            $defaultPalette = ['#45AAF2', '#00f700', '#da0e0e', '#f1a204', '#5541ec', '#0948be', '#e93071', '#8b5cf6', '#10b981', '#f97316', '#06b6d4', '#ec4899'];
+
+                            $incomingCategoryData = [];
+                            foreach (($categoryBreakdown['labels'] ?? []) as $index => $lbl) {
+                                $val = (float) data_get($categoryBreakdown, 'values.' . $index, 0);
+                                $normKey = strtolower(trim($lbl));
+                                $singularKey = rtrim($normKey, 's');
+                                $incomingCategoryData[$normKey] = [
+                                    'label' => $lbl,
+                                    'value' => $val,
+                                    'formatted' => data_get($categoryBreakdown, 'formatted.' . $index, '₱' . number_format($val, 2)),
+                                    'share' => data_get($categoryBreakdown, 'shares.' . $index, 0),
+                                ];
+                                if ($singularKey !== $normKey) {
+                                    $incomingCategoryData[$singularKey] = $incomingCategoryData[$normKey];
+                                }
+                            }
+
+                            $allDisplayCategories = [];
+                            $matchedKeys = [];
+
+                            foreach ($predefinedCategoryDefs as $def) {
+                                $key = strtolower(trim($def['name']));
+                                $singularKey = rtrim($key, 's');
+                                $matched = $incomingCategoryData[$key] ?? $incomingCategoryData[$singularKey] ?? null;
+                                if ($matched) {
+                                    $matchedKeys[strtolower(trim($matched['label']))] = true;
+                                    $matchedKeys[$key] = true;
+                                    $matchedKeys[$singularKey] = true;
+                                }
+                                $allDisplayCategories[] = [
+                                    'name' => $def['name'],
+                                    'color' => $def['color'],
+                                    'has_value' => $matched && $matched['value'] > 0,
+                                    'formatted' => $matched ? $matched['formatted'] : '',
+                                    'share' => $matched ? $matched['share'] : 0,
+                                ];
+                            }
+
+                            $extraPaletteIdx = 0;
+                            foreach (($categoryBreakdown['labels'] ?? []) as $index => $lbl) {
+                                $normKey = strtolower(trim($lbl));
+                                if (!isset($matchedKeys[$normKey])) {
+                                    $val = (float) data_get($categoryBreakdown, 'values.' . $index, 0);
+                                    $dotColor = $categoryColorMap[$normKey] ?? $defaultPalette[$extraPaletteIdx % count($defaultPalette)];
+                                    $extraPaletteIdx++;
+                                    $allDisplayCategories[] = [
+                                        'name' => $lbl,
+                                        'color' => $dotColor,
+                                        'has_value' => $val > 0,
+                                        'formatted' => data_get($categoryBreakdown, 'formatted.' . $index, '₱' . number_format($val, 2)),
+                                        'share' => data_get($categoryBreakdown, 'shares.' . $index, 0),
+                                    ];
+                                }
+                            }
+                        @endphp
+                        @foreach($allDisplayCategories as $catItem)
+                            <div class="flex items-center gap-2 rounded-[9px] border border-slate-200 bg-slate-50 px-2.5 py-1.5 w-full">
+                                <span class="h-2 w-2 rounded-full flex-shrink-0" style="background-color: {{ $catItem['color'] }};"></span>
+                                <div class="min-w-0 flex-1">
+                                    <p class="font-semibold text-slate-900 text-xs truncate leading-tight">{{ $catItem['name'] }}</p>
+                                    @if($catItem['has_value'])
+                                        <p class="text-slate-500 text-[10px] leading-tight truncate mt-0.5">
+                                            {{ $catItem['formatted'] }} • {{ $catItem['share'] }}%
                                         </p>
-                                    </div>
+                                    @endif
                                 </div>
-                            @endforeach
-                        @else
-                            <p class="text-sm text-slate-400 font-medium">No sales data available for the selected date range.</p>
-                        @endif
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -287,8 +411,15 @@
                                     <tr class="hover:bg-slate-50 transition">
                                         <td class="px-4 py-2.5 text-center font-semibold text-slate-900 w-16 whitespace-nowrap">{{ $product['rank'] }}</td>
                                         <td class="px-4 py-2.5 text-left">
-                                            <div class="font-medium text-slate-900">{{ $product['name'] }}</div>
-                                            <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">{{ $product['sku'] ?? 'N/A' }}</div>
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                </div>
+                                                <div>
+                                                    <div class="font-medium text-slate-900">{{ $product['name'] }}</div>
+                                                    <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">{{ $product['sku'] ?? 'N/A' }}</div>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="px-4 py-2.5 text-left text-slate-600 w-44 whitespace-nowrap">{{ $product['category'] }}</td>
                                         <td class="px-4 py-2.5 text-center text-slate-900 w-32 whitespace-nowrap">{{ $product['qty'] }}</td>
@@ -319,6 +450,7 @@
                         <table class="w-full text-left text-xs text-slate-700">
                             <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                                 <tr>
+                                    <th class="px-4 py-3 text-center font-semibold text-white w-16 whitespace-nowrap">Rank</th>
                                     <th class="px-4 py-3 text-left font-semibold text-white">Product</th>
                                     <th class="px-4 py-3 text-center font-semibold text-white w-40 whitespace-nowrap">Quantity Sold</th>
                                     <th class="px-4 py-3 text-right font-semibold text-white w-36 whitespace-nowrap">Revenue</th>
@@ -327,16 +459,24 @@
                             <tbody class="divide-y divide-slate-200 bg-white" id="fastMovingProductsBody">
                                 @forelse(collect($fastMoving ?? [])->take(5) as $product)
                                     <tr class="hover:bg-slate-50 transition">
+                                        <td class="px-4 py-2.5 text-center font-semibold text-slate-900 w-16 whitespace-nowrap">{{ $product['rank'] ?? $loop->iteration }}</td>
                                         <td class="px-4 py-2.5 text-left">
-                                            <div class="font-medium text-slate-900">{{ $product['name'] }}</div>
-                                            <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">{{ $product['sku'] ?? 'N/A' }}</div>
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                </div>
+                                                <div>
+                                                    <div class="font-medium text-slate-900">{{ $product['name'] }}</div>
+                                                    <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">{{ $product['sku'] ?? 'N/A' }}</div>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="px-4 py-2.5 text-center text-slate-900 w-40 whitespace-nowrap">{{ $product['qty'] }}</td>
                                         <td class="px-4 py-2.5 text-right font-semibold text-slate-900 w-36 whitespace-nowrap">{{ $product['revenue'] }}</td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="3" class="px-4 py-4 text-center text-slate-500">No sales data available</td>
+                                        <td colspan="4" class="px-4 py-4 text-center text-slate-500">No sales data available</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -359,6 +499,7 @@
                         <table class="w-full text-left text-xs text-slate-700">
                             <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                                 <tr>
+                                    <th class="px-4 py-3 text-center font-semibold text-white w-16 whitespace-nowrap">Rank</th>
                                     <th class="px-4 py-3 text-left font-semibold text-white">Product</th>
                                     <th class="px-4 py-3 text-left font-semibold text-white w-36 whitespace-nowrap">Quantity Sold</th>
                                 </tr>
@@ -366,15 +507,23 @@
                             <tbody class="divide-y divide-slate-200 bg-white" id="slowMovingProductsBody">
                                 @forelse(collect($slowMoving ?? [])->take(5) as $product)
                                     <tr class="hover:bg-slate-50 transition">
+                                        <td class="px-4 py-2.5 text-center font-semibold text-slate-900 w-16 whitespace-nowrap">{{ $product['rank'] ?? $loop->iteration }}</td>
                                         <td class="px-4 py-2.5 text-left">
-                                            <div class="font-medium text-slate-900">{{ $product['name'] }}</div>
-                                            <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">{{ $product['sku'] ?? 'N/A' }}</div>
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                </div>
+                                                <div>
+                                                    <div class="font-medium text-slate-900">{{ $product['name'] }}</div>
+                                                    <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">{{ $product['sku'] ?? 'N/A' }}</div>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="px-4 py-2.5 text-left text-slate-900 w-36 whitespace-nowrap">{{ $product['qty'] }}</td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="2" class="px-4 py-4 text-center text-slate-500">No sales data available</td>
+                                        <td colspan="3" class="px-4 py-4 text-center text-slate-500">No sales data available</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -915,7 +1064,22 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
-                        tooltip: { mode: 'index', intersect: false }
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: '#1a1a1a',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#6EC1D1',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            titleFont: { size: 11, weight: 'bold' },
+                            bodyFont: { size: 13, weight: 'bold' },
+                            callbacks: {
+                                label: (context) => '₱' + Number(context.parsed.y || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+                            },
+                        },
                     },
                     scales: {
                         x: {
@@ -939,10 +1103,27 @@
                 salesTrendChart = new Chart(salesTrendCtx, salesTrendChartConfig);
             }
 
+            const SALES_TREND_RANGE_LABELS = { daily: 'Daily', weekly: 'Weekly', monthly: 'Monthly', yearly: 'Yearly' };
+
             const setActiveSalesTrendButton = (activeRange) => {
                 salesTrendRangeButtons.forEach((button) => {
                     const isActive = button.dataset.range === activeRange;
                     button.classList.toggle('active', isActive);
+                });
+
+                // sync dropdown trigger label
+                const label = document.getElementById('salesTrendRangeLabel');
+                if (label) label.textContent = SALES_TREND_RANGE_LABELS[activeRange] || activeRange;
+
+                // sync dropdown option highlights
+                ['daily', 'weekly', 'monthly', 'yearly'].forEach((r) => {
+                    const opt = document.getElementById('salesTrendRangeOpt-' + r);
+                    if (!opt) return;
+                    if (r === activeRange) {
+                        opt.className = 'sales-trend-range-dd-opt w-full px-3 py-1 text-sm font-semibold rounded-[8px] transition-colors text-left bg-slate-700 text-white cursor-pointer';
+                    } else {
+                        opt.className = 'sales-trend-range-dd-opt w-full px-3 py-1 text-sm font-normal rounded-[8px] transition-colors text-left text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer';
+                    }
                 });
             };
 
@@ -963,16 +1144,89 @@
                 });
             });
 
+            // ── Sales Trend Range Dropdown helpers ──
+            window.toggleSalesTrendRangeDropdown = function (e) {
+                if (e) e.stopPropagation();
+                const dd = document.getElementById('salesTrendRangeDropdown');
+                const chevron = document.getElementById('salesTrendRangeChevron');
+                if (!dd) return;
+                const isHidden = dd.classList.contains('hidden');
+                dd.classList.toggle('hidden', !isHidden);
+                if (chevron) chevron.style.transform = isHidden ? 'rotate(180deg)' : '';
+            };
+
+            window.pickSalesTrendRange = function (range, labelText) {
+                const dd = document.getElementById('salesTrendRangeDropdown');
+                const chevron = document.getElementById('salesTrendRangeChevron');
+                if (dd) dd.classList.add('hidden');
+                if (chevron) chevron.style.transform = '';
+                updateSalesTrendChart(range);
+            };
+
+            document.addEventListener('click', function (e) {
+                const wrapper = document.getElementById('salesTrendRangeWrapper');
+                if (wrapper && !wrapper.contains(e.target)) {
+                    const dd = document.getElementById('salesTrendRangeDropdown');
+                    const chevron = document.getElementById('salesTrendRangeChevron');
+                    if (dd) dd.classList.add('hidden');
+                    if (chevron) chevron.style.transform = '';
+                }
+            });
+
             setActiveSalesTrendButton('monthly');
 
             // ═══════════════════════════════════════════
             // CATEGORY CHART (initial render from server)
             // ═══════════════════════════════════════════
-            const chartColors = ['#6EC1D1', '#59b2c2', '#a2deea', '#34d399', '#f59e0b', '#8b5cf6', '#ec4899', '#f97316'];
-            const legendColorClasses = ['bg-[#6EC1D1]','bg-[#59b2c2]','bg-emerald-500','bg-amber-500','bg-sky-500','bg-rose-500','bg-violet-500','bg-lime-500','bg-fuchsia-500','bg-orange-500'];
+            const CATEGORY_DEFS = [
+                { name: 'Exhaust', color: '#00f700' },
+                { name: 'Helmets', color: '#da0e0e' },
+                { name: 'Tires', color: '#f1a204' },
+                { name: 'Brakes', color: '#5541ec' },
+                { name: 'Oils', color: '#0948be' },
+                { name: 'Batteries', color: '#e93071' },
+                { name: 'Accessories', color: '#45AAF2' },
+            ];
+
+            const categoryColorMap = {
+                'exhaust': '#00f700',
+                'exhausts': '#00f700',
+                'pipe': '#00f700',
+                'helmets': '#da0e0e',
+                'helmet': '#da0e0e',
+                'tires': '#f1a204',
+                'tire': '#f1a204',
+                'tire hugger': '#f1a204',
+                'brakes': '#5541ec',
+                'brake': '#5541ec',
+                'brake pads': '#5541ec',
+                'oils': '#0948be',
+                'oil': '#0948be',
+                'engine oil': '#0948be',
+                'lubricants': '#0948be',
+                'batteries': '#e93071',
+                'battery': '#e93071',
+                'accessories': '#45AAF2',
+                'shock': '#8b5cf6',
+                'swing arm': '#10b981',
+                'engine support': '#f97316',
+                'side mirror': '#06b6d4',
+                'monorack frame': '#64748b',
+                'quick throttle': '#ec4899',
+                'spark plug': '#eab308',
+                'filters': '#14b8a6',
+            };
+            const fallbackCategoryColors = ['#45AAF2', '#00f700', '#da0e0e', '#f1a204', '#5541ec', '#0948be', '#e93071', '#8b5cf6', '#10b981', '#f97316', '#06b6d4', '#ec4899'];
+
+            const getCategoryColor = (label, index = 0) => {
+                if (!label) return fallbackCategoryColors[index % fallbackCategoryColors.length];
+                const key = String(label).trim().toLowerCase();
+                return categoryColorMap[key] || fallbackCategoryColors[index % fallbackCategoryColors.length];
+            };
+
             let categoryChartInstance = null;
 
-            const initCategoryChart = (labels, values) => {
+            const initCategoryChart = (labels = [], values = []) => {
                 const categoryCtx = document.getElementById('categoryChart');
                 if (!categoryCtx) return;
 
@@ -981,39 +1235,126 @@
                     categoryChartInstance = null;
                 }
 
-                if (!labels.length) return;
+                // Filter out non-positive/empty values for the actual chart slices
+                const validData = [];
+                (labels || []).forEach((label, idx) => {
+                    const val = Number(values[idx] || 0);
+                    if (val > 0) {
+                        validData.push({
+                            label: label,
+                            value: val,
+                            color: getCategoryColor(label, idx)
+                        });
+                    }
+                });
 
-                const backgroundColors = labels.map((_, index) => chartColors[index % chartColors.length]);
+                const total = (values || []).reduce((sum, v) => sum + Number(v || 0), 0);
+                const isEmpty = validData.length === 0;
+                const activeCount = validData.length;
+                const hasMultiple = !isEmpty && activeCount > 1;
+
+                const EMPTY_RING_COLOR = '#E5E7EB';
+                const chartLabels = isEmpty ? ['No data'] : validData.map(d => d.label);
+                const chartValues = isEmpty ? [1] : validData.map(d => d.value);
+                const chartColors = isEmpty ? [EMPTY_RING_COLOR] : validData.map(d => d.color);
+
                 categoryChartInstance = new Chart(categoryCtx, {
                     type: 'doughnut',
+                    plugins: [],
                     data: {
-                        labels: labels,
+                        labels: chartLabels,
                         datasets: [{
-                            data: values,
-                            backgroundColor: backgroundColors,
-                            borderColor: '#ffffff',
-                            borderWidth: 2,
+                            data: chartValues,
+                            backgroundColor: chartColors,
+                            borderColor: hasMultiple ? '#ffffff' : 'transparent',
+                            borderWidth: hasMultiple ? 2.5 : 0,
+                            hoverBorderColor: hasMultiple ? '#ffffff' : 'transparent',
+                            hoverBorderWidth: hasMultiple ? 2.5 : 0,
+                            borderRadius: 0,
+                            hoverOffset: 0,
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        cutout: '62%',
+                        spacing: hasMultiple ? 1 : 0,
+                        circumference: 360,
+                        rotation: -90,
+                        layout: { padding: 0 },
+                        onHover: (event, elements) => {
+                            const overlay = document.getElementById('categoryCenterOverlay');
+                            if (overlay) {
+                                overlay.style.opacity = (elements && elements.length > 0) ? '0' : '1';
+                            }
+                        },
                         plugins: {
                             legend: { display: false },
                             tooltip: {
+                                enabled: !isEmpty,
+                                backgroundColor: '#1a1a1a',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                borderColor: (context) => {
+                                    const dataPoints = context.tooltip?.dataPoints;
+                                    if (dataPoints && dataPoints.length > 0) {
+                                        const dp = dataPoints[0];
+                                        const colors = dp.dataset?.backgroundColor;
+                                        if (Array.isArray(colors)) {
+                                            return colors[dp.dataIndex] || '#00f700';
+                                        }
+                                        if (typeof colors === 'string') {
+                                            return colors;
+                                        }
+                                    }
+                                    return '#00f700';
+                                },
+                                borderWidth: 0.8,
+                                padding: 6,
+                                titleFont: { size: 11 },
+                                bodyFont: { size: 11 },
+                                displayColors: true,
+                                boxWidth: 10,
+                                boxHeight: 10,
+                                boxPadding: 6,
+                                usePointStyle: false,
                                 callbacks: {
+                                    title: () => '',
                                     label: (context) => {
                                         const value = context.parsed || 0;
-                                        const total = context.dataset.data.reduce((sum, item) => sum + Number(item || 0), 0);
-                                        const percent = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-                                        return `${context.label}: ₱${Number(value).toLocaleString()} (${percent}%)`;
-                                    }
+                                        return `${context.label}: ₱${Number(value).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                                    },
+                                    labelColor: (context) => {
+                                        const color = (context.dataset.backgroundColor && context.dataset.backgroundColor[context.dataIndex]) || '#00f700';
+                                        return {
+                                            borderColor: color,
+                                            backgroundColor: color,
+                                            borderWidth: 0,
+                                            borderRadius: 2,
+                                        };
+                                    },
                                 }
                             }
-                        },
-                        cutout: '65%'
+                        }
                     }
                 });
+
+                if (!categoryCtx.dataset.hasLeaveListener) {
+                    categoryCtx.dataset.hasLeaveListener = 'true';
+                    categoryCtx.addEventListener('mouseleave', () => {
+                        const overlay = document.getElementById('categoryCenterOverlay');
+                        if (overlay) overlay.style.opacity = '1';
+                    });
+                }
+
+                const centerValueEl = document.getElementById('categoryCenterValue');
+                const centerCaptionEl = document.getElementById('categoryCenterCaption');
+                if (centerValueEl) {
+                    centerValueEl.textContent = isEmpty ? '0' : '₱' + Number(total).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                }
+                if (centerCaptionEl) {
+                    centerCaptionEl.textContent = isEmpty ? 'No sales in period' : 'Total Sales';
+                }
             };
 
             // Initial category chart from server data
@@ -1046,28 +1387,71 @@
             const emptyStateRow = (colspan, message) =>
                 `<tr><td colspan="${colspan}" class="px-3 py-6 text-center text-slate-400 text-sm">${message}</td></tr>`;
 
-            const renderCategoryLegend = (labels, formatted, shares) => {
+            const renderCategoryLegend = (labels = [], formatted = [], shares = []) => {
                 const legend = document.getElementById('categoryLegend');
-                const chartWrapper = document.getElementById('categoryChartWrapper');
                 if (!legend) return;
 
-                if (!labels.length) {
-                    if (chartWrapper) chartWrapper.classList.add('hidden');
-                    legend.className = 'w-full flex items-center justify-center py-12 text-center col-span-full';
-                    legend.innerHTML = '<p class="text-sm text-slate-400 font-medium">No sales data available for the selected date range.</p>';
-                    return;
-                }
+                const incomingMap = {};
+                (labels || []).forEach((label, index) => {
+                    const key = String(label).trim().toLowerCase();
+                    const singularKey = key.endsWith('s') ? key.slice(0, -1) : key;
+                    const item = {
+                        label: label,
+                        formatted: formatted[index] || '',
+                        share: shares[index] || 0,
+                        hasValue: true
+                    };
+                    incomingMap[key] = item;
+                    if (singularKey !== key) {
+                        incomingMap[singularKey] = item;
+                    }
+                });
 
-                if (chartWrapper) chartWrapper.classList.remove('hidden');
-                legend.className = 'space-y-2 text-sm my-auto';
-                legend.innerHTML = labels.map((label, index) => {
-                    const colorClass = legendColorClasses[index % legendColorClasses.length];
+                const allCategories = [];
+                const matchedKeys = {};
+
+                CATEGORY_DEFS.forEach(cat => {
+                    const key = cat.name.toLowerCase();
+                    const singularKey = key.endsWith('s') ? key.slice(0, -1) : key;
+                    const matched = incomingMap[key] || incomingMap[singularKey] || null;
+                    if (matched) {
+                        matchedKeys[matched.label.toLowerCase()] = true;
+                        matchedKeys[key] = true;
+                        matchedKeys[singularKey] = true;
+                    }
+                    allCategories.push({
+                        name: cat.name,
+                        color: cat.color,
+                        hasValue: !!matched,
+                        formatted: matched ? matched.formatted : '',
+                        share: matched ? matched.share : 0
+                    });
+                });
+
+                let extraIndex = 0;
+                (labels || []).forEach((lbl, idx) => {
+                    const key = String(lbl).trim().toLowerCase();
+                    if (!matchedKeys[key]) {
+                        const color = categoryColorMap[key] || fallbackCategoryColors[extraIndex % fallbackCategoryColors.length];
+                        extraIndex++;
+                        allCategories.push({
+                            name: lbl,
+                            color: color,
+                            hasValue: true,
+                            formatted: formatted[idx] || '',
+                            share: shares[idx] || 0
+                        });
+                    }
+                });
+
+                legend.className = 'max-h-52 overflow-y-auto pr-1 space-y-1.5 text-sm my-auto w-full max-w-[160px] mx-auto';
+                legend.innerHTML = allCategories.map((cat) => {
                     return `
-                        <div class="flex items-center gap-3 rounded-[12px] border border-slate-200 bg-slate-50 p-2.5">
-                            <span class="h-2.5 w-2.5 rounded-full ${colorClass}"></span>
-                            <div>
-                                <p class="font-semibold text-slate-900 text-xs">${label}</p>
-                                <p class="text-slate-500 text-[11px]">${formatted[index] || '—'} • ${shares[index] || 0}%</p>
+                        <div class="flex items-center gap-2 rounded-[9px] border border-slate-200 bg-slate-50 px-2.5 py-1.5 w-full">
+                            <span class="h-2 w-2 rounded-full flex-shrink-0" style="background-color: ${cat.color};"></span>
+                            <div class="min-w-0 flex-1">
+                                <p class="font-semibold text-slate-900 text-xs truncate leading-tight">${cat.name}</p>
+                                ${cat.hasValue ? `<p class="text-slate-500 text-[10px] leading-tight truncate mt-0.5">${cat.formatted} • ${cat.share}%</p>` : ''}
                             </div>
                         </div>
                     `;
@@ -1126,27 +1510,67 @@
                 controlsHtml += `<button type="button" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" ${currentPage >= totalPages ? 'disabled' : ''} onclick="goToProductPage('${tab}', ${currentPage + 1})">Next →</button>`;
 
                 controls.innerHTML = controlsHtml;
-                return { pageItems };
+                return { start, end, pageItems };
             }
+
+            const getAnalyticsProductImage = (p) => {
+                if (!p) return null;
+                if (p.image) return p.image;
+                try {
+                    const stored = localStorage.getItem('posProductImages');
+                    if (stored) {
+                        const images = JSON.parse(stored);
+                        const productId = p.id || p.product_id;
+                        if (productId && images[productId]) return images[productId];
+                        if (p.sku && images[p.sku]) return images[p.sku];
+                        if (p.name && images[p.name]) return images[p.name];
+
+                        const keys = Object.keys(images);
+                        if (p.sku) {
+                            const matchSku = keys.find(k => k.toLowerCase() === String(p.sku).toLowerCase());
+                            if (matchSku) return images[matchSku];
+                        }
+                        if (p.name) {
+                            const matchName = keys.find(k => k.toLowerCase() === String(p.name).toLowerCase());
+                            if (matchName) return images[matchName];
+                        }
+                    }
+                } catch (e) {}
+                return null;
+            };
+
+            const renderProductImageHtml = (p) => {
+                const imageUrl = getAnalyticsProductImage(p);
+                return imageUrl
+                    ? `<div class="w-8 h-8 rounded-[6px] bg-slate-100 flex-shrink-0 overflow-hidden border border-slate-200/80 bg-cover bg-center" style="background-image: url('${imageUrl}');"></div>`
+                    : `<div class="w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                       </div>`;
+            };
 
             const renderTopProducts = (products) => {
                 topProductsData = products || [];
                 const tbody = document.getElementById('topProductsBody');
                 if (!tbody) return;
 
-                const { pageItems } = updateTabPagination('top', topProductsData, 'topProductsPageInfo', 'topProductsPaginationControls', 'products');
+                const { pageItems, start } = updateTabPagination('top', topProductsData, 'topProductsPageInfo', 'topProductsPaginationControls', 'products');
 
                 if (!pageItems.length) {
                     tbody.innerHTML = emptyStateRow(5, 'No sales data available for the selected date range.');
                     return;
                 }
 
-                tbody.innerHTML = pageItems.map(p => `
+                tbody.innerHTML = pageItems.map((p, idx) => `
                     <tr class="hover:bg-slate-50 transition">
-                        <td class="px-4 py-2.5 text-center font-semibold text-slate-900 w-16 whitespace-nowrap">${p.rank}</td>
+                        <td class="px-4 py-2.5 text-center font-semibold text-slate-900 w-16 whitespace-nowrap">${p.rank || (start + idx + 1)}</td>
                         <td class="px-4 py-2.5 text-left">
-                            <div class="font-medium text-slate-900">${p.name}</div>
-                            <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">${p.sku || 'N/A'}</div>
+                            <div class="flex items-center gap-2.5">
+                                ${renderProductImageHtml(p)}
+                                <div>
+                                    <div class="font-medium text-slate-900">${p.name}</div>
+                                    <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">${p.sku || 'N/A'}</div>
+                                </div>
+                            </div>
                         </td>
                         <td class="px-4 py-2.5 text-left text-slate-600 w-44 whitespace-nowrap">${p.category}</td>
                         <td class="px-4 py-2.5 text-center text-slate-900 w-32 whitespace-nowrap">${p.qty}</td>
@@ -1160,18 +1584,24 @@
                 const tbody = document.getElementById('fastMovingProductsBody');
                 if (!tbody) return;
 
-                const { pageItems } = updateTabPagination('fast', fastMovingData, 'fastMovingPageInfo', 'fastMovingPaginationControls', 'products');
+                const { pageItems, start } = updateTabPagination('fast', fastMovingData, 'fastMovingPageInfo', 'fastMovingPaginationControls', 'products');
 
                 if (!pageItems.length) {
-                    tbody.innerHTML = emptyStateRow(3, 'No sales data available for the selected date range.');
+                    tbody.innerHTML = emptyStateRow(4, 'No sales data available for the selected date range.');
                     return;
                 }
 
-                tbody.innerHTML = pageItems.map(p => `
+                tbody.innerHTML = pageItems.map((p, idx) => `
                     <tr class="hover:bg-slate-50 transition">
+                        <td class="px-4 py-2.5 text-center font-semibold text-slate-900 w-16 whitespace-nowrap">${p.rank || (start + idx + 1)}</td>
                         <td class="px-4 py-2.5 text-left">
-                            <div class="font-medium text-slate-900">${p.name}</div>
-                            <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">${p.sku || 'N/A'}</div>
+                            <div class="flex items-center gap-2.5">
+                                ${renderProductImageHtml(p)}
+                                <div>
+                                    <div class="font-medium text-slate-900">${p.name}</div>
+                                    <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">${p.sku || 'N/A'}</div>
+                                </div>
+                            </div>
                         </td>
                         <td class="px-4 py-2.5 text-center text-slate-900 w-40 whitespace-nowrap">${p.qty}</td>
                         <td class="px-4 py-2.5 text-right font-semibold text-slate-900 w-36 whitespace-nowrap">${p.revenue}</td>
@@ -1184,23 +1614,34 @@
                 const tbody = document.getElementById('slowMovingProductsBody');
                 if (!tbody) return;
 
-                const { pageItems } = updateTabPagination('slow', slowMovingData, 'slowMovingPageInfo', 'slowMovingPaginationControls', 'products');
+                const { pageItems, start } = updateTabPagination('slow', slowMovingData, 'slowMovingPageInfo', 'slowMovingPaginationControls', 'products');
 
                 if (!pageItems.length) {
-                    tbody.innerHTML = emptyStateRow(2, 'No sales data available for the selected date range.');
+                    tbody.innerHTML = emptyStateRow(3, 'No sales data available for the selected date range.');
                     return;
                 }
 
-                tbody.innerHTML = pageItems.map(p => `
+                tbody.innerHTML = pageItems.map((p, idx) => `
                     <tr class="hover:bg-slate-50 transition">
+                        <td class="px-4 py-2.5 text-center font-semibold text-slate-900 w-16 whitespace-nowrap">${p.rank || (start + idx + 1)}</td>
                         <td class="px-4 py-2.5 text-left">
-                            <div class="font-medium text-slate-900">${p.name}</div>
-                            <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">${p.sku || 'N/A'}</div>
+                            <div class="flex items-center gap-2.5">
+                                ${renderProductImageHtml(p)}
+                                <div>
+                                    <div class="font-medium text-slate-900">${p.name}</div>
+                                    <div class="text-[11px] text-slate-400 mt-0.5 font-mono tracking-wide">${p.sku || 'N/A'}</div>
+                                </div>
+                            </div>
                         </td>
                         <td class="px-4 py-2.5 text-left text-slate-900 w-36 whitespace-nowrap">${p.qty}</td>
                     </tr>
                 `).join('');
             };
+
+            // Render with images on initial load
+            renderTopProducts(topProductsData);
+            renderFastMoving(fastMovingData);
+            renderSlowMoving(slowMovingData);
 
             const fetchFilteredWidgets = async (startDate, endDate) => {
                 showLoadingOverlays();

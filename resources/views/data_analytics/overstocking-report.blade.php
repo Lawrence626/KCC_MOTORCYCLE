@@ -112,8 +112,15 @@
                                 @forelse($overstockedProducts as $product)
                                     <tr class="hover:bg-slate-50 transition">
                                         <td class="px-3 py-2.5 font-semibold text-slate-900">
-                                            <div class="truncate">{{ $product->product_name ?: $product->name }}</div>
-                                            <div class="text-[11px] text-slate-400 font-mono truncate">{{ $product->sku }}</div>
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="truncate font-medium text-slate-900">{{ $product->product_name ?: $product->name }}</div>
+                                                    <div class="text-[11px] text-slate-400 font-mono truncate">{{ $product->sku }}</div>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="px-3 py-2.5 text-slate-900"><div class="truncate">{{ number_format($product->stock_quantity) }}</div></td>
                                         <td class="px-3 py-2.5 text-slate-600"><div class="truncate">{{ number_format($product->reorder_level) }}</div></td>
@@ -144,15 +151,27 @@
                     <h2 class="text-base font-semibold text-slate-900">Category exposure</h2>
                     <p class="text-xs text-slate-500 mt-1">Overstock exposure by product category.</p>
                 </div>
-                <div class="mt-4 space-y-2 flex-1 overflow-y-auto max-h-[340px] pr-1 custom-scrollbar">
+                <div id="categoryExposureList" class="mt-4 space-y-2 flex-1 overflow-y-auto max-h-[340px] pr-1 custom-scrollbar">
                     @forelse($categoryBreakdown as $category => $value)
-                        <div class="rounded-[14px] border border-slate-100 p-3" style="background: linear-gradient(50deg, #ffffff 0%, rgba(110, 193, 209, 0.18) 50%);">
+                        @php
+                            $sample = $overstockedProducts->firstWhere('category', $category);
+                        @endphp
+                        <div class="category-exposure-item rounded-[14px] border border-slate-100 p-3 transition hover:border-slate-200" style="background: linear-gradient(50deg, #ffffff 0%, rgba(110, 193, 209, 0.18) 50%);"
+                             data-category="{{ $category }}"
+                             data-product-id="{{ $sample?->id }}"
+                             data-sku="{{ $sample?->sku }}"
+                             data-name="{{ $sample?->product_name ?: $sample?->name }}">
                             <div class="flex items-center justify-between gap-3">
-                                <div>
-                                    <p class="font-semibold text-slate-900 text-xs">{{ $category ?: 'Uncategorized' }}</p>
-                                    <p class="text-[11px] text-slate-500">Potential value by category</p>
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <div class="category-img-container w-9 h-9 rounded-[8px] bg-white/90 border border-slate-200/70 flex items-center justify-center flex-shrink-0 text-slate-500 shadow-sm overflow-hidden">
+                                        <svg class="w-4 h-4 text-[#145a66]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="font-semibold text-slate-900 text-xs truncate">{{ $category ?: 'Uncategorized' }}</p>
+                                        <p class="text-[11px] text-slate-500 truncate">Potential value by category</p>
+                                    </div>
                                 </div>
-                                <p class="text-slate-900 font-semibold text-xs">₱{{ number_format($value, 2) }}</p>
+                                <p class="text-slate-900 font-semibold text-xs whitespace-nowrap">₱{{ number_format($value, 2) }}</p>
                             </div>
                         </div>
                     @empty
@@ -166,6 +185,8 @@
     @php
         $overstockJs = $overstockedProducts->map(function($product) {
             return [
+                'id' => $product->id,
+                'product_id' => $product->id,
                 'name' => $product->product_name ?: $product->name,
                 'sku' => $product->sku,
                 'stock_quantity' => $product->stock_quantity,
@@ -181,6 +202,41 @@
             const pageSize = 5;
             const overstockData = @json($overstockJs);
             let currentPage = 1;
+
+            const getProductImage = (p) => {
+                if (!p) return null;
+                if (p.image) return p.image;
+                try {
+                    const stored = localStorage.getItem('posProductImages');
+                    if (stored) {
+                        const images = JSON.parse(stored);
+                        const productId = p.id || p.product_id;
+                        if (productId && images[productId]) return images[productId];
+                        if (p.sku && images[p.sku]) return images[p.sku];
+                        if (p.name && images[p.name]) return images[p.name];
+
+                        const keys = Object.keys(images);
+                        if (p.sku) {
+                            const matchSku = keys.find(k => k.toLowerCase() === String(p.sku).toLowerCase());
+                            if (matchSku) return images[matchSku];
+                        }
+                        if (p.name) {
+                            const matchName = keys.find(k => k.toLowerCase() === String(p.name).toLowerCase());
+                            if (matchName) return images[matchName];
+                        }
+                    }
+                } catch (e) {}
+                return null;
+            };
+
+            const renderProductImageHtml = (p) => {
+                const imageUrl = getProductImage(p);
+                return imageUrl
+                    ? `<div class="w-8 h-8 rounded-[6px] bg-slate-100 flex-shrink-0 overflow-hidden border border-slate-200/80 bg-cover bg-center" style="background-image: url('${imageUrl}');"></div>`
+                    : `<div class="w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                       </div>`;
+            };
 
             window.goToOverstockPage = function(page) {
                 currentPage = page;
@@ -206,8 +262,13 @@
                     body.innerHTML = pageItems.map(product => `
                         <tr class="hover:bg-slate-50 transition">
                             <td class="px-3 py-2.5 font-semibold text-slate-900">
-                                <div class="truncate">${product.name}</div>
-                                <div class="text-[11px] text-slate-400 font-mono truncate">${product.sku}</div>
+                                <div class="flex items-center gap-2.5">
+                                    ${renderProductImageHtml(product)}
+                                    <div class="min-w-0">
+                                        <div class="truncate font-medium text-slate-900">${product.name}</div>
+                                        <div class="text-[11px] text-slate-400 font-mono truncate">${product.sku || 'N/A'}</div>
+                                    </div>
+                                </div>
                             </td>
                             <td class="px-3 py-2.5 text-slate-900"><div class="truncate">${product.stock_quantity.toLocaleString()}</div></td>
                             <td class="px-3 py-2.5 text-slate-600"><div class="truncate">${product.reorder_level.toLocaleString()}</div></td>
@@ -254,7 +315,33 @@
                 });
             }
 
+            function renderCategoryExposureImages() {
+                const items = document.querySelectorAll('.category-exposure-item');
+                items.forEach(item => {
+                    const category = item.dataset.category || '';
+                    const productId = item.dataset.productId || '';
+                    const sku = item.dataset.sku || '';
+                    const name = item.dataset.name || '';
+
+                    const imgContainer = item.querySelector('.category-img-container');
+                    if (!imgContainer) return;
+
+                    const imageUrl = getProductImage({ id: productId, sku, name }) || getProductImage({ name: category });
+                    if (imageUrl) {
+                        imgContainer.innerHTML = '';
+                        imgContainer.className = 'category-img-container w-9 h-9 rounded-[8px] bg-slate-100 border border-slate-200/80 flex-shrink-0 bg-cover bg-center shadow-sm';
+                        imgContainer.style.backgroundImage = `url('${imageUrl}')`;
+                    } else {
+                        imgContainer.className = 'category-img-container w-9 h-9 rounded-[8px] bg-slate-50 border border-slate-200/60 flex items-center justify-center flex-shrink-0 text-slate-300 shadow-sm overflow-hidden';
+                        imgContainer.style.backgroundImage = 'none';
+                        imgContainer.innerHTML = `<svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`;
+                    }
+                });
+            }
+
+            // Initial render
             render();
+            renderCategoryExposureImages();
         });
     </script>
 </x-layouts.app>

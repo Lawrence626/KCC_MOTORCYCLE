@@ -84,15 +84,15 @@
                         <button id="posEmptyCartButton" class="rounded-[10px] bg-[#6EC1D1] px-3 py-1.5 text-[11px] font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all duration-200">Empty</button>
                     </div>
                     <div class="p-5 space-y-4">
-                        <div class="overflow-x-auto">
+                        <div class="overflow-x-auto rounded-t-[10px] overflow-hidden">
                             <table id="posCartTable" class="min-w-full text-left text-[11px]">
-                                <thead class="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-700">
+                                <thead class="border-b border-slate-800 bg-[#0f172a] text-xs font-semibold uppercase tracking-wider text-white" style="background-color: #0f172a;">
                                     <tr>
-                                        <th class="px-3 py-2 text-left font-semibold">Item</th>
-                                        <th class="px-6 py-2 text-right font-semibold">Price</th>
-                                        <th class="px-3 py-2 text-center font-semibold">Qty</th>
-                                        <th class="px-6 py-2 text-right font-semibold">Total</th>
-                                        <th class="px-3 py-2 text-center font-semibold">Action</th>
+                                        <th class="px-3 py-2 text-left font-semibold text-white rounded-tl-[10px]">Item</th>
+                                        <th class="px-6 py-2 text-right font-semibold text-white">Price</th>
+                                        <th class="px-3 py-2 text-center font-semibold text-white">Qty</th>
+                                        <th class="px-6 py-2 text-right font-semibold text-white">Total</th>
+                                        <th class="px-3 py-2 text-center font-semibold text-white rounded-tr-[10px]">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="posCartBody"></tbody>
@@ -582,8 +582,8 @@
                                 <th class="px-3 py-3 text-white">Date</th>
                                 <th class="px-3 py-3 text-white">Method</th>
                                 <th class="px-3 py-3 text-center text-white">Items</th>
-                                <th class="px-3 py-3 text-right text-white">Total</th>
-                                <th class="px-3 py-3 text-center text-white">Action</th>
+                                <th class="px-4 py-3 text-right text-white min-w-[110px]">Total</th>
+                                <th class="pl-8 pr-4 py-3 text-center text-white min-w-[130px]">Action</th>
                             </tr>
                         </thead>
                         <tbody id="posTransactionHistoryBody" class="divide-y divide-slate-200"></tbody>
@@ -595,11 +595,12 @@
                     </div>
                     <button id="posBulkDeleteTransactions" class="rounded-[10px] bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">Delete Selected</button>
                 </div>
-                <div id="posTransactionHistoryPagination" class="mt-4 hidden flex items-center justify-between rounded-[10px] border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
-                    <div id="posTransactionHistoryInfo" class="font-medium">Showing 0 of 0</div>
-                    <div class="flex items-center gap-2">
-                        <button id="posHistoryPrevPage" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-black/10 disabled:opacity-50" disabled>Previous</button>
-                        <button id="posHistoryNextPage" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-black/10 disabled:opacity-50" disabled>Next</button>
+                <div id="posTransactionHistoryPagination" class="mt-4 hidden flex items-center justify-between rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600">
+                    <div id="posTransactionHistoryInfo" class="font-medium text-slate-600">Showing 0 of 0</div>
+                    <div class="flex items-center gap-1.5">
+                        <button id="posHistoryPrevPage" class="inline-flex items-center rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition cursor-pointer">← Prev</button>
+                        <div id="posHistoryPageNumbers" class="flex items-center gap-1"></div>
+                        <button id="posHistoryNextPage" class="inline-flex items-center rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition cursor-pointer">Next →</button>
                     </div>
                 </div>
                 <div id="posTransactionHistoryEmpty" class="rounded-[10px] border border-dashed border-slate-300 bg-slate-50 px-6 py-8 text-center text-slate-500 text-sm hidden">No transactions match this date range.</div>

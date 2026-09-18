@@ -59,6 +59,7 @@
                                 </button>
                             </div>
 
+                            @if(auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk'))
                             <div class="relative inline-flex items-center z-50">
                                 <button id="headerNotificationButton" type="button" class="relative inline-flex h-9 w-9 items-center justify-center border border-slate-700 text-white transition focus:outline-none cursor-pointer" style="border-radius: 20px; background-color: #0f0f0f;" aria-label="Notifications">
                                     <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a6 6 0 00-6 6v4.586l-1.707 1.707A1 1 0 005 16h14a1 1 0 00.707-1.707L18 12.586V8a6 6 0 00-6-6zm0 18a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 20z"/></svg>
@@ -79,6 +80,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @endif
                             <div class="relative inline-flex items-center z-50">
                                 <button id="headerProfileButton" type="button" class="inline-flex h-9 items-center gap-2 border border-slate-700 px-3 text-white transition focus:outline-none cursor-pointer" style="border-radius: 20px; background-color: #0f0f0f;">
                                     <span class="w-5.5 h-5.5 rounded-full bg-cyan-500 text-white grid place-items-center overflow-hidden text-sm font-semibold">
@@ -204,6 +206,7 @@
                     mobileOverlay.classList.add('hidden');
                 });
 
+<<<<<<< HEAD
                 // Close sidebar when clicking a link
                 const links = sidebarWrapper.querySelectorAll('a');
                 links.forEach(link => {
@@ -211,6 +214,90 @@
                         sidebarWrapper.classList.add('-translate-x-full');
                         mobileOverlay.classList.add('hidden');
                     });
+=======
+        function dismissAllNotifications() {
+            var notifDropdown = document.getElementById('headerNotificationDropdown');
+            if (notifDropdown) closeNotificationDropdown();
+            var notifPanel = document.getElementById('notification-panel');
+            if (notifPanel) notifPanel.classList.add('hidden');
+            var toastContainer = document.getElementById('inventory-toast-container');
+            if (toastContainer) toastContainer.innerHTML = '';
+            document.querySelectorAll('[data-toast-notification]').forEach(function(t) {
+                t.remove();
+            });
+        }
+
+        function closeProfileDropdown() {
+            headerProfileDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
+            headerProfileDropdown.classList.remove('block', 'opacity-100', 'scale-100');
+            headerProfileArrow.classList.remove('text-cyan-400');
+            headerProfileArrow.classList.add('text-white');
+            headerProfileButton.blur();
+        }
+
+        function openProfileDropdown() {
+            dismissAllNotifications();
+            headerProfileDropdown.classList.remove('hidden', 'opacity-0', 'scale-95');
+            headerProfileDropdown.classList.add('block', 'opacity-100', 'scale-100');
+            headerProfileArrow.classList.remove('text-white');
+            headerProfileArrow.classList.add('text-cyan-400');
+        }
+
+        function closeNotificationDropdown() {
+            if (!headerNotificationDropdown) return;
+            headerNotificationDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
+            headerNotificationDropdown.classList.remove('block', 'opacity-100', 'scale-100');
+            if (headerNotificationButton) headerNotificationButton.blur();
+        }
+
+        function openNotificationDropdown() {
+            if (!headerNotificationDropdown) return;
+            headerNotificationDropdown.classList.remove('hidden', 'opacity-0', 'scale-95');
+            headerNotificationDropdown.classList.add('block', 'opacity-100', 'scale-100');
+        }
+
+        if (headerProfileButton && headerProfileDropdown && headerProfileArrow) {
+            headerProfileDropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+
+            headerProfileButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dismissAllNotifications();
+                const isOpen = !headerProfileDropdown.classList.contains('hidden');
+                if (isOpen) {
+                    closeProfileDropdown();
+                } else {
+                    openProfileDropdown();
+                }
+            });
+
+            window.addEventListener('click', function(e) {
+                if (!headerProfileDropdown.contains(e.target) && !headerProfileButton.contains(e.target)) {
+                    closeProfileDropdown();
+                }
+            });
+        }
+
+        if (headerNotificationButton && headerNotificationDropdown) {
+            headerNotificationDropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+
+            headerNotificationButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isOpen = !headerNotificationDropdown.classList.contains('hidden');
+                if (isOpen) {
+                    closeNotificationDropdown();
+                } else {
+                    openNotificationDropdown();
+                }
+            });
+
+            if (headerNotificationClose) {
+                headerNotificationClose.addEventListener('click', function() {
+                    closeNotificationDropdown();
+>>>>>>> origin/main
                 });
             }
 
@@ -236,6 +323,7 @@
                 if (headerProfileButton) headerProfileButton.blur();
             }
 
+<<<<<<< HEAD
             function openProfileDropdown() {
                 if (!headerProfileDropdown) return;
                 headerProfileDropdown.classList.remove('hidden', 'opacity-0', 'scale-95');
@@ -243,6 +331,48 @@
                 if (headerProfileArrow) {
                     headerProfileArrow.classList.remove('text-white');
                     headerProfileArrow.classList.add('text-cyan-400');
+=======
+        // Dashboard profile dropdown handlers
+        if (dashboardProfileButton && dashboardProfileDropdown) {
+            dashboardProfileDropdown.addEventListener('click', function(e) { e.stopPropagation(); });
+
+            dashboardProfileButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dismissAllNotifications();
+
+                // Close Sales Range dropdown if open
+                const salesRangeDd = document.getElementById('salesRangeDropdown');
+                const salesRangeChevron = document.getElementById('salesRangeChevron');
+                if (salesRangeDd && !salesRangeDd.classList.contains('hidden')) {
+                    salesRangeDd.classList.add('hidden');
+                    if (salesRangeChevron) salesRangeChevron.style.transform = '';
+                }
+
+                // Close Sales Trend dropdown (in sales analytics) if open
+                const salesTrendDd = document.getElementById('salesTrendRangeDropdown');
+                const salesTrendChevron = document.getElementById('salesTrendRangeChevron');
+                if (salesTrendDd && !salesTrendDd.classList.contains('hidden')) {
+                    salesTrendDd.classList.add('hidden');
+                    if (salesTrendChevron) salesTrendChevron.style.transform = '';
+                }
+
+                // Close Order Tab dropdown (in order management) if open
+                const orderTabDd = document.getElementById('orderTabDropdown');
+                const orderTabChevron = document.getElementById('orderTabChevron');
+                if (orderTabDd && !orderTabDd.classList.contains('hidden')) {
+                    orderTabDd.classList.add('hidden');
+                    if (orderTabChevron) orderTabChevron.style.transform = '';
+                }
+
+                const isOpen = !dashboardProfileDropdown.classList.contains('hidden');
+                if (isOpen) {
+                    dashboardProfileDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
+                    dashboardProfileDropdown.classList.remove('block', 'opacity-100', 'scale-100');
+                    dashboardProfileButton.blur();
+                } else {
+                    dashboardProfileDropdown.classList.remove('hidden', 'opacity-0', 'scale-95');
+                    dashboardProfileDropdown.classList.add('block', 'opacity-100', 'scale-100');
+>>>>>>> origin/main
                 }
             }
 
@@ -359,6 +489,9 @@
             }
 
             function loadHeaderNotifications() {
+                var userRole = @json(auth()->user()->role ?? '');
+                if (userRole !== 'admin' && userRole !== 'inventory_clerk') return;
+
                 fetch('/api/inventory-notifications?limit=20', {
                     headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
                 })
@@ -393,8 +526,8 @@
                 list.innerHTML = notifications.map(function(n) {
                     var isCritical = n.notification_type === 'out_of_stock';
                     var iconSVG = isCritical 
-                        ? '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="#dc2626"></path><line x1="12" y1="9" x2="12" y2="13" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16.5" r="1.1" fill="#ffffff"></circle></svg>'
-                        : '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" fill="#d97706"></circle><line x1="12" y1="7.5" x2="12" y2="12.5" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16" r="1.1" fill="#ffffff"></circle></svg>';
+                        ? '<svg class="w-4 h-4 text-red-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>'
+                        : '<svg class="w-4 h-4 text-amber-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>';
                     var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
                     var ago = _timeAgo(n.created_at);
                     var stockText = isCritical ? '0 remaining' : (n.current_stock || 0) + ' remaining';
@@ -409,7 +542,7 @@
 
                     return '<div class="border-b border-slate-800/40 px-4 py-3 last:border-b-0 ' + bgClass + '" data-header-notif-id="' + n.id + '">' +
                         '<div class="flex items-start gap-3">' +
-                            '<div class="mt-0.5 flex-shrink-0 w-8 h-8 rounded-[10px] flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">' +
+                            '<div class="mt-0.5 flex-shrink-0 w-8 h-8 flex items-center justify-center" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">' +
                                 iconSVG +
                             '</div>' +
                             '<div class="flex-1 min-w-0">' +
@@ -656,8 +789,11 @@
                 notifications.forEach(function(n) {
                     var isCritical = n.notification_type === 'out_of_stock';
                     var iconSVG = isCritical 
-                        ? '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="#dc2626"></path><line x1="12" y1="9" x2="12" y2="13" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16.5" r="1.1" fill="#ffffff"></circle></svg>'
-                        : '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" fill="#d97706"></circle><line x1="12" y1="7.5" x2="12" y2="12.5" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"></line><circle cx="12" cy="16" r="1.1" fill="#ffffff"></circle></svg>';
+                        ? '<svg class="w-4 h-4 text-red-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>'
+                        : '<svg class="w-4 h-4 text-amber-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>';
+                    var iconBgStyle = isCritical
+                        ? 'background: linear-gradient(135deg, rgba(239, 68, 68, 0.06) 0%, rgba(239, 68, 68, 0.10) 100%); border: 1px solid rgba(239, 68, 68, 0.20); border-radius: 10px;'
+                        : 'background: linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(245, 158, 11, 0.10) 100%); border: 1px solid rgba(245, 158, 11, 0.20); border-radius: 10px;';
                     var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
                     var statusClass = 'notif-item notif-item-' + n.status;
                     var ago = window.timeAgo(n.created_at);
@@ -670,7 +806,7 @@
 
                     item.innerHTML =
                         '<div class="flex items-start gap-3">' +
-                            '<div class="flex-shrink-0 w-8 h-8 rounded-[10px] flex items-center justify-center" style="background-color: rgba(110, 193, 209, 0.18);">' +
+                            '<div class="flex-shrink-0 w-8 h-8 flex items-center justify-center" style="' + iconBgStyle + '">' +
                                 iconSVG +
                             '</div>' +
                             '<div class="flex-1 min-w-0">' +

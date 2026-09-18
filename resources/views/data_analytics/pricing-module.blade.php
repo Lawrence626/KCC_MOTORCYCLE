@@ -189,9 +189,19 @@
                     <tbody class="divide-y divide-slate-200 bg-white">
                         @forelse($supplierCostAnalysis as $analysis)
                             <tr class="hover:bg-slate-50 transition">
-                                <td class="px-4 py-4">
-                                    <div class="font-semibold text-slate-900">{{ $analysis->product?->product_name ?? 'Unknown' }}</div>
-                                    <div class="text-xs text-slate-500 font-normal">{{ $analysis->product?->sku ?? '—' }}</div>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="pricing-img-thumb w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300"
+                                             data-id="{{ $analysis->product?->id ?? '' }}"
+                                             data-sku="{{ $analysis->product?->sku ?? '' }}"
+                                             data-name="{{ $analysis->product?->product_name ?? $analysis->product?->name ?? '' }}">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <div class="font-semibold text-slate-900 truncate">{{ $analysis->product?->product_name ?? 'Unknown' }}</div>
+                                            <div class="text-[10px] text-slate-400 font-normal tracking-wide mt-0.5 truncate">{{ $analysis->product?->sku ?? '—' }}</div>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="px-4 py-4 text-slate-600">{{ $analysis->previous_cost !== null && $analysis->previous_cost > 0 ? '₱' . number_format((float) $analysis->previous_cost, 2) : '—' }}</td>
                                 <td class="px-4 py-4 text-slate-900">
@@ -292,7 +302,7 @@
             @endforeach
         </div>
 
-        <div class="grid grid-cols-1 xl:grid-cols-[1.4fr_1fr] gap-3">
+        <div class="grid grid-cols-1 xl:grid-cols-[1.25fr_1fr] gap-3">
             <div class="rounded-[20px] border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between">
                 <div>
                     <h2 class="text-base font-semibold text-slate-900">Pricing Analysis Overview</h2>
@@ -312,23 +322,38 @@
                 <div>
                     <h2 class="text-base font-semibold text-slate-900">Retail Price Update</h2>
                     <p class="text-xs text-slate-500 mt-1">Track recent unit price revisions across inventory.</p>
-                    <div class="mt-4 overflow-x-auto rounded-[10px] border border-slate-200">
-                        <table class="min-w-full text-left text-xs text-slate-700">
+                    <div class="mt-4 overflow-hidden rounded-[10px] border border-slate-200">
+                        <table class="w-full text-left text-xs text-slate-700 table-fixed">
                             <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                                 <tr>
-                                    <th class="px-4 py-3 text-left font-semibold text-white">Product</th>
-                                    <th class="px-4 py-3 text-left font-semibold text-white">Old</th>
-                                    <th class="px-4 py-3 text-left font-semibold text-white">New</th>
-                                    <th class="px-4 py-3 text-left font-semibold text-white">Date</th>
+                                    <th class="w-[43%] px-3 py-3 text-left font-semibold text-white whitespace-nowrap">Product</th>
+                                    <th class="w-[18%] px-2.5 py-3 text-left font-semibold text-white whitespace-nowrap">Old</th>
+                                    <th class="w-[20%] px-2.5 py-3 text-left font-semibold text-white whitespace-nowrap">New</th>
+                                    <th class="w-[19%] px-2.5 py-3 text-left font-semibold text-white whitespace-nowrap">Date</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-200 bg-white">
                                 @forelse($priceUpdates as $update)
                                     <tr class="hover:bg-slate-50 transition">
-                                        <td class="px-4 py-3 font-semibold text-slate-900">{{ $update->product->name ?? 'Unknown' }}</td>
-                                        <td class="px-4 py-3 text-slate-600">{{ data_get($update, 'metadata.old_price') ? '₱' . number_format(data_get($update, 'metadata.old_price'), 2) : '—' }}</td>
-                                        <td class="px-4 py-3 text-slate-900">₱{{ number_format((float) $update->unit_price, 2) }}</td>
-                                        <td class="px-4 py-3 text-slate-500">{{ $update->created_at->format('M d, Y') }}</td>
+                                        <td class="w-[43%] px-3 py-2.5 font-semibold text-slate-900">
+                                            <div class="flex items-center gap-2 min-w-0">
+                                                <div class="pricing-img-thumb w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300"
+                                                     data-id="{{ $update->product?->id ?? '' }}"
+                                                     data-sku="{{ $update->product?->sku ?? '' }}"
+                                                     data-name="{{ $update->product?->product_name ?? $update->product?->name ?? '' }}">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                </div>
+                                                <div class="min-w-0 flex-1">
+                                                    <div class="font-semibold text-slate-900 truncate text-xs">{{ $update->product?->product_name ?: ($update->product?->name ?? 'Unknown') }}</div>
+                                                    @if($update->product?->sku)
+                                                        <div class="text-[10px] text-slate-400 font-normal tracking-wide mt-0.5 truncate">{{ $update->product->sku }}</div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="w-[18%] px-2.5 py-2.5 text-slate-600 truncate whitespace-nowrap">{{ data_get($update, 'metadata.old_price') ? '₱' . number_format(data_get($update, 'metadata.old_price'), 2) : '—' }}</td>
+                                        <td class="w-[20%] px-2.5 py-2.5 text-slate-900 font-semibold truncate whitespace-nowrap">₱{{ number_format((float) $update->unit_price, 2) }}</td>
+                                        <td class="w-[19%] px-2.5 py-2.5 text-slate-500 truncate whitespace-nowrap text-[11px]">{{ $update->created_at->format('M d, Y') }}</td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -477,6 +502,7 @@
                         
                         if (newContainer) {
                             container.innerHTML = newContainer.innerHTML;
+                            resolvePricingImages();
                         }
                         container.style.opacity = '1';
                         container.style.pointerEvents = 'auto';
@@ -760,6 +786,46 @@
                     modal.classList.add('hidden');
                 }, 300);
             }
+
+            function resolvePricingImages() {
+                try {
+                    const stored = localStorage.getItem('posProductImages');
+                    if (!stored) return;
+                    const images = JSON.parse(stored);
+                    const keys = Object.keys(images);
+
+                    document.querySelectorAll('.pricing-img-thumb').forEach(container => {
+                        const id = container.dataset.id;
+                        const sku = container.dataset.sku;
+                        const name = container.dataset.name;
+
+                        let imgUrl = null;
+                        if (id && images[id]) imgUrl = images[id];
+                        else if (sku && images[sku]) imgUrl = images[sku];
+                        else if (name && images[name]) imgUrl = images[name];
+                        else {
+                            if (sku) {
+                                const matchSku = keys.find(k => k.toLowerCase() === String(sku).toLowerCase());
+                                if (matchSku) imgUrl = images[matchSku];
+                            }
+                            if (!imgUrl && name) {
+                                const matchName = keys.find(k => k.toLowerCase() === String(name).toLowerCase());
+                                if (matchName) imgUrl = images[matchName];
+                            }
+                        }
+
+                        if (imgUrl) {
+                            container.innerHTML = '';
+                            container.className = 'pricing-img-thumb w-8 h-8 rounded-[6px] bg-slate-100 border border-slate-200/80 flex-shrink-0 bg-cover bg-center';
+                            container.style.backgroundImage = `url('${imgUrl}')`;
+                        }
+                    });
+                } catch(e) {
+                    console.error('Error resolving pricing images:', e);
+                }
+            }
+
+            resolvePricingImages();
         </script>
     @endpush
 </x-layouts.app>

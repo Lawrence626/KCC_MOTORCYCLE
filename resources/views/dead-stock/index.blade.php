@@ -169,7 +169,19 @@
                     <tbody class="divide-y divide-slate-200 bg-white">
                         @foreach($atRiskProducts as $atRisk)
                         <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="px-4 py-2.5 font-medium text-slate-900">{{ $atRisk['product']->name ?? '' }}</td>
+                            <td class="px-4 py-2.5 font-medium text-slate-900">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="deadstock-img-thumb w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300"
+                                         data-id="{{ $atRisk['product']->id }}"
+                                         data-sku="{{ $atRisk['product']->sku }}"
+                                         data-name="{{ $atRisk['product']->name }}">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="truncate font-medium text-slate-900">{{ $atRisk['product']->name ?? '' }}</div>
+                                    </div>
+                                </div>
+                            </td>
                             <td class="px-4 py-2.5 text-xs text-slate-500 font-mono">{{ $atRisk['product']->sku ?? '' }}</td>
                             <td class="px-4 py-2.5 text-right">
                                 <span class="inline-flex items-center text-xs font-semibold text-slate-700">{{ $atRisk['days_without_sale'] }} days</span>
@@ -272,15 +284,25 @@
                         @endphp
                         <tr class="hover:bg-slate-50/80 transition-colors group">
                             {{-- Product Details --}}
-                            <td class="px-5 py-3 max-w-[260px] text-center">
-                                <a href="{{ route('dss.dead-stock.show', $ds->id) }}" class="block truncate font-medium text-slate-900 group-hover:text-teal-600 transition">
-                                    {{ $product->description ?? $product->name ?? 'N/A' }}
-                                </a>
-                                @if($product->brand || $product->product_name)
-                                <div class="truncate text-[11px] text-slate-400 mt-0.5">
-                                    {{ implode(' • ', array_filter([$product->brand, $product->product_name])) }}
+                            <td class="px-5 py-3 max-w-[260px] text-left">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="deadstock-img-thumb w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300"
+                                         data-id="{{ $product->id ?? '' }}"
+                                         data-sku="{{ $product->sku ?? '' }}"
+                                         data-name="{{ $product->name ?? $product->description ?? '' }}">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <a href="{{ route('dss.dead-stock.show', $ds->id) }}" class="block truncate font-medium text-slate-900 group-hover:text-teal-600 transition">
+                                            {{ $product->description ?? $product->name ?? 'N/A' }}
+                                        </a>
+                                        @if($product->brand || $product->product_name)
+                                        <div class="truncate text-[11px] text-slate-400 mt-0.5">
+                                            {{ implode(' • ', array_filter([$product->brand, $product->product_name])) }}
+                                        </div>
+                                        @endif
+                                    </div>
                                 </div>
-                                @endif
                             </td>
                             {{-- SKU --}}
                             <td class="px-4 py-3 text-center text-xs text-slate-500 font-mono">{{ $product->sku ?? '—' }}</td>
@@ -572,5 +594,45 @@
             document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
         }
     });
+
+    function resolveDeadStockImages() {
+        try {
+            const stored = localStorage.getItem('posProductImages');
+            if (!stored) return;
+            const images = JSON.parse(stored);
+            const keys = Object.keys(images);
+
+            document.querySelectorAll('.deadstock-img-thumb').forEach(container => {
+                const id = container.dataset.id;
+                const sku = container.dataset.sku;
+                const name = container.dataset.name;
+
+                let imgUrl = null;
+                if (id && images[id]) imgUrl = images[id];
+                else if (sku && images[sku]) imgUrl = images[sku];
+                else if (name && images[name]) imgUrl = images[name];
+                else {
+                    if (sku) {
+                        const matchSku = keys.find(k => k.toLowerCase() === String(sku).toLowerCase());
+                        if (matchSku) imgUrl = images[matchSku];
+                    }
+                    if (!imgUrl && name) {
+                        const matchName = keys.find(k => k.toLowerCase() === String(name).toLowerCase());
+                        if (matchName) imgUrl = images[matchName];
+                    }
+                }
+
+                if (imgUrl) {
+                    container.innerHTML = '';
+                    container.className = 'deadstock-img-thumb w-8 h-8 rounded-[6px] bg-slate-100 border border-slate-200/80 flex-shrink-0 bg-cover bg-center';
+                    container.style.backgroundImage = `url('${imgUrl}')`;
+                }
+            });
+        } catch(e) {
+            console.error('Error resolving dead stock images:', e);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', resolveDeadStockImages);
 </script>
 </x-layouts.app>

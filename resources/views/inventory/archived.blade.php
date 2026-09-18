@@ -203,6 +203,36 @@
             }
         }
 
+        function getArchivedProductImage(p) {
+            if (!p) return null;
+            if (p.image) return p.image;
+            try {
+                const stored = localStorage.getItem('posProductImages');
+                if (stored) {
+                    const images = JSON.parse(stored);
+                    const productId = p.id || p.product_id;
+                    if (productId && images[productId]) return images[productId];
+                    if (p.sku && images[p.sku]) return images[p.sku];
+
+                    const keys = Object.keys(images);
+                    if (p.sku) {
+                        const matchSku = keys.find(k => k.toLowerCase() === String(p.sku).toLowerCase());
+                        if (matchSku) return images[matchSku];
+                    }
+                }
+            } catch (e) {}
+            return null;
+        }
+
+        function renderArchivedProductImageHtml(p) {
+            const imageUrl = getArchivedProductImage(p);
+            return imageUrl
+                ? `<div class="w-8 h-8 rounded-[6px] bg-slate-100 flex-shrink-0 overflow-hidden border border-slate-200/80 bg-cover bg-center" style="background-image: url('${imageUrl}');"></div>`
+                : `<div class="w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                   </div>`;
+        }
+
         function renderTable(products) {
             const tbody = document.getElementById('archivedTableBody');
             tbody.innerHTML = '';
@@ -221,9 +251,12 @@
                 
                 row.innerHTML = `
                     <td class="px-3 py-2">
-                        <div>
-                            <p class="font-medium text-slate-900">${product.product_name || product.name || 'Unnamed'}</p>
-                            <p class="text-xs text-slate-500">${product.description || ''}</p>
+                        <div class="flex items-center gap-2.5">
+                            ${renderArchivedProductImageHtml(product)}
+                            <div>
+                                <p class="font-medium text-slate-900">${product.product_name || product.name || 'Unnamed'}</p>
+                                <p class="text-xs text-slate-500">${product.brand ? 'Brand: ' + product.brand : (product.description || '')}</p>
+                            </div>
                         </div>
                     </td>
                     <td class="px-3 py-2 text-slate-600">${product.sku || 'N/A'}</td>

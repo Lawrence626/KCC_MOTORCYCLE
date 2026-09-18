@@ -64,6 +64,18 @@
                     </h3>
                 </div>
                 <div class="p-5 space-y-3">
+                    <div class="flex items-center gap-3 pb-3 border-b border-slate-100">
+                        <div id="deadStockProductImage" class="w-14 h-14 rounded-[10px] bg-slate-50 border border-slate-200/70 flex items-center justify-center flex-shrink-0 text-slate-300 shadow-sm overflow-hidden bg-cover bg-center"
+                             data-id="{{ $deadStock->product->id ?? '' }}"
+                             data-sku="{{ $deadStock->product->sku ?? '' }}"
+                             data-name="{{ $deadStock->product->product_name ?? $deadStock->product->name ?? '' }}">
+                            <svg class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="text-sm font-bold text-slate-900 truncate">{{ $deadStock->product->description ?? $deadStock->product->name ?? 'Product' }}</h4>
+                            <p class="text-xs text-slate-400 font-mono mt-0.5 truncate">{{ $deadStock->product->sku ?? 'N/A' }}</p>
+                        </div>
+                    </div>
                     @php
                         $product = $deadStock->product;
                         $infoFields = [
@@ -424,6 +436,43 @@
                     }
                 }
             });
+        }
+        // Resolve product photo from localStorage
+        try {
+            const stored = localStorage.getItem('posProductImages');
+            if (stored) {
+                const images = JSON.parse(stored);
+                const imgEl = document.getElementById('deadStockProductImage');
+                if (imgEl) {
+                    const id = imgEl.dataset.id;
+                    const sku = imgEl.dataset.sku;
+                    const name = imgEl.dataset.name;
+                    const keys = Object.keys(images);
+
+                    let imgUrl = null;
+                    if (id && images[id]) imgUrl = images[id];
+                    else if (sku && images[sku]) imgUrl = images[sku];
+                    else if (name && images[name]) imgUrl = images[name];
+                    else {
+                        if (sku) {
+                            const matchSku = keys.find(k => k.toLowerCase() === String(sku).toLowerCase());
+                            if (matchSku) imgUrl = images[matchSku];
+                        }
+                        if (!imgUrl && name) {
+                            const matchName = keys.find(k => k.toLowerCase() === String(name).toLowerCase());
+                            if (matchName) imgUrl = images[matchName];
+                        }
+                    }
+
+                    if (imgUrl) {
+                        imgEl.innerHTML = '';
+                        imgEl.className = 'w-14 h-14 rounded-[10px] bg-slate-100 border border-slate-200/80 flex-shrink-0 bg-cover bg-center shadow-sm';
+                        imgEl.style.backgroundImage = `url('${imgUrl}')`;
+                    }
+                }
+            }
+        } catch(e) {
+            console.error('Error loading dead stock product photo:', e);
         }
     });
 

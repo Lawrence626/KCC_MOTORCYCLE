@@ -273,26 +273,34 @@ class AnalyticsController extends Controller
             ->map(function ($sales, $productId) use ($products) {
                 $product = $products->get($productId);
                 return [
-                    'name'    => $product?->product_name ?: ($product?->name ?? 'Unknown Product'),
-                    'sku'     => $product?->sku ?? 'N/A',
-                    'qty'     => $sales['qty'],
-                    'revenue' => $sales['revenue'],
+                    'id'         => $productId,
+                    'product_id' => $productId,
+                    'name'       => $product?->product_name ?: ($product?->name ?? 'Unknown Product'),
+                    'sku'        => $product?->sku ?? 'N/A',
+                    'qty'        => $sales['qty'],
+                    'revenue'    => $sales['revenue'],
                 ];
             })
             ->filter(fn($p) => $p['qty'] > 0)
             ->values();
 
-        $fast = $all->filter(fn($p) => $p['qty'] >= 10)->sortByDesc('qty')->take(5)->values()->map(fn($p) => [
-            'name'    => $p['name'],
-            'sku'     => $p['sku'],
-            'qty'     => $p['qty'],
-            'revenue' => '₱' . number_format($p['revenue'], 2),
+        $fast = $all->filter(fn($p) => $p['qty'] >= 10)->sortByDesc('qty')->take(5)->values()->map(fn($p, $index) => [
+            'rank'       => $index + 1,
+            'id'         => $p['id'],
+            'product_id' => $p['product_id'],
+            'name'       => $p['name'],
+            'sku'        => $p['sku'],
+            'qty'        => $p['qty'],
+            'revenue'    => '₱' . number_format($p['revenue'], 2),
         ])->toArray();
 
-        $slow = $all->filter(fn($p) => $p['qty'] < 10)->sortBy('qty')->take(5)->values()->map(fn($p) => [
-            'name' => $p['name'],
-            'sku'  => $p['sku'],
-            'qty'  => $p['qty'],
+        $slow = $all->filter(fn($p) => $p['qty'] < 10)->sortBy('qty')->take(5)->values()->map(fn($p, $index) => [
+            'rank'       => $index + 1,
+            'id'         => $p['id'],
+            'product_id' => $p['product_id'],
+            'name'       => $p['name'],
+            'sku'        => $p['sku'],
+            'qty'        => $p['qty'],
         ])->toArray();
 
         return ['fast' => $fast, 'slow' => $slow];
@@ -671,12 +679,14 @@ class AnalyticsController extends Controller
 
         return $topProducts->map(function ($product, $index) {
             return [
-                'rank' => $index + 1,
-                'name' => $product['name'],
-                'sku' => $product['sku'],
-                'category' => $product['category'],
-                'qty' => $product['qty'],
-                'revenue' => '₱' . number_format($product['revenue'], 2),
+                'rank'       => $index + 1,
+                'id'         => $product['id'] ?? null,
+                'product_id' => $product['id'] ?? null,
+                'name'       => $product['name'],
+                'sku'        => $product['sku'],
+                'category'   => $product['category'],
+                'qty'        => $product['qty'],
+                'revenue'    => '₱' . number_format($product['revenue'], 2),
             ];
         });
     }

@@ -75,7 +75,7 @@
     <div id="productModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="display:none">
         <div id="productOverlay" class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl"></div>
 
-        <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden transform transition-all z-10">
+        <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all z-10">
             <div class="px-6 py-5 bg-[#0f172a] relative flex items-start justify-between">
                 <div>
                     <h3 id="modalTitle" class="text-lg font-bold text-white mb-0.5">Add Product</h3>
@@ -202,7 +202,7 @@
     <!-- Delete List Modal (soft-delete picker) -->
     <div id="deleteListModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="display:none">
         <div id="deleteListOverlay" class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl"></div>
-        <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden transform transition-all z-10">
+        <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all z-10">
             <div class="px-6 py-5 bg-[#0f172a] relative flex items-start justify-between">
                 <div>
                     <h3 class="text-lg font-bold text-white mb-0.5">Delete Products</h3>
@@ -244,7 +244,7 @@
     <!-- Trash / Restore Modal -->
     <div id="trashModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="display:none">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeTrashModal()"></div>
-        <div class="relative w-full max-w-2xl bg-white rounded-[28px] border border-slate-200 shadow-[0_30px_80px_rgba(15,23,42,0.18)] overflow-hidden transform transition-all z-10">
+        <div class="relative w-full max-w-2xl bg-white rounded-[28px] shadow-[0_30px_80px_rgba(15,23,42,0.18)] overflow-hidden transform transition-all z-10">
             <!-- Header (matching Add User Modal style) -->
             <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>

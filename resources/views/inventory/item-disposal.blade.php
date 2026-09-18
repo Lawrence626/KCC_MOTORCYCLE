@@ -133,7 +133,7 @@
                                 @endphp
                                 <tr class="hover:bg-slate-50 transition border-b border-slate-100">
                                     <td class="px-3.5 py-3 text-center align-middle">
-                                        <div class="w-10 h-10 mx-auto rounded-lg bg-slate-100 flex items-center justify-center border border-slate-200">
+                                        <div class="disposal-img-thumb w-10 h-10 mx-auto rounded-lg bg-slate-100 flex items-center justify-center border border-slate-200 overflow-hidden bg-cover bg-center" data-id="{{ $product->id }}" data-sku="{{ $product->sku }}" data-image="{{ $product->image }}">
                                             <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
@@ -458,5 +458,39 @@
                 }
             });
         }
+
+        function resolveDisposalImages() {
+            try {
+                const stored = localStorage.getItem('posProductImages');
+                const images = stored ? JSON.parse(stored) : {};
+                const keys = Object.keys(images);
+
+                document.querySelectorAll('.disposal-img-thumb').forEach(container => {
+                    const id = container.dataset.id;
+                    const sku = container.dataset.sku;
+                    const imgData = container.dataset.image;
+
+                    let imgUrl = imgData || null;
+                    if (!imgUrl) {
+                        if (id && images[id]) imgUrl = images[id];
+                        else if (sku && images[sku]) imgUrl = images[sku];
+                        else if (sku) {
+                            const matchSku = keys.find(k => k.toLowerCase() === String(sku).toLowerCase());
+                            if (matchSku) imgUrl = images[matchSku];
+                        }
+                    }
+
+                    if (imgUrl) {
+                        container.innerHTML = '';
+                        container.style.backgroundImage = `url('${imgUrl}')`;
+                    }
+                });
+            } catch (e) {
+                console.error('Error resolving disposal images:', e);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', resolveDisposalImages);
+        resolveDisposalImages();
     </script>
 </x-layouts.app>

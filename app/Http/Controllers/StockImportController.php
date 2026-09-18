@@ -828,8 +828,10 @@ class StockImportController extends Controller
             ->map(function ($movement) {
                 return [
                     'id' => $movement->id,
+                    'product_id' => $movement->product_id,
                     'product_name' => $movement->product->name ?? 'Unknown',
                     'sku' => $movement->product->sku ?? null,
+                    'image' => $movement->product->image ?? null,
                     'type' => $movement->type,
                     'quantity_change' => $movement->quantity_change,
                     'unit_price' => $movement->unit_price,
