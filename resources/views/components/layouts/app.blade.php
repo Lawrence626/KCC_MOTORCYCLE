@@ -206,7 +206,6 @@
                     mobileOverlay.classList.add('hidden');
                 });
 
-<<<<<<< HEAD
                 // Close sidebar when clicking a link
                 const links = sidebarWrapper.querySelectorAll('a');
                 links.forEach(link => {
@@ -214,94 +213,10 @@
                         sidebarWrapper.classList.add('-translate-x-full');
                         mobileOverlay.classList.add('hidden');
                     });
-=======
-        function dismissAllNotifications() {
-            var notifDropdown = document.getElementById('headerNotificationDropdown');
-            if (notifDropdown) closeNotificationDropdown();
-            var notifPanel = document.getElementById('notification-panel');
-            if (notifPanel) notifPanel.classList.add('hidden');
-            var toastContainer = document.getElementById('inventory-toast-container');
-            if (toastContainer) toastContainer.innerHTML = '';
-            document.querySelectorAll('[data-toast-notification]').forEach(function(t) {
-                t.remove();
-            });
-        }
-
-        function closeProfileDropdown() {
-            headerProfileDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
-            headerProfileDropdown.classList.remove('block', 'opacity-100', 'scale-100');
-            headerProfileArrow.classList.remove('text-cyan-400');
-            headerProfileArrow.classList.add('text-white');
-            headerProfileButton.blur();
-        }
-
-        function openProfileDropdown() {
-            dismissAllNotifications();
-            headerProfileDropdown.classList.remove('hidden', 'opacity-0', 'scale-95');
-            headerProfileDropdown.classList.add('block', 'opacity-100', 'scale-100');
-            headerProfileArrow.classList.remove('text-white');
-            headerProfileArrow.classList.add('text-cyan-400');
-        }
-
-        function closeNotificationDropdown() {
-            if (!headerNotificationDropdown) return;
-            headerNotificationDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
-            headerNotificationDropdown.classList.remove('block', 'opacity-100', 'scale-100');
-            if (headerNotificationButton) headerNotificationButton.blur();
-        }
-
-        function openNotificationDropdown() {
-            if (!headerNotificationDropdown) return;
-            headerNotificationDropdown.classList.remove('hidden', 'opacity-0', 'scale-95');
-            headerNotificationDropdown.classList.add('block', 'opacity-100', 'scale-100');
-        }
-
-        if (headerProfileButton && headerProfileDropdown && headerProfileArrow) {
-            headerProfileDropdown.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-
-            headerProfileButton.addEventListener('click', function(e) {
-                e.stopPropagation();
-                dismissAllNotifications();
-                const isOpen = !headerProfileDropdown.classList.contains('hidden');
-                if (isOpen) {
-                    closeProfileDropdown();
-                } else {
-                    openProfileDropdown();
-                }
-            });
-
-            window.addEventListener('click', function(e) {
-                if (!headerProfileDropdown.contains(e.target) && !headerProfileButton.contains(e.target)) {
-                    closeProfileDropdown();
-                }
-            });
-        }
-
-        if (headerNotificationButton && headerNotificationDropdown) {
-            headerNotificationDropdown.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-
-            headerNotificationButton.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const isOpen = !headerNotificationDropdown.classList.contains('hidden');
-                if (isOpen) {
-                    closeNotificationDropdown();
-                } else {
-                    openNotificationDropdown();
-                }
-            });
-
-            if (headerNotificationClose) {
-                headerNotificationClose.addEventListener('click', function() {
-                    closeNotificationDropdown();
->>>>>>> origin/main
                 });
             }
 
-            // Header profile dropdown
+            // Dropdown & Action Elements
             const headerProfileButton = document.getElementById('headerProfileButton');
             const headerProfileDropdown = document.getElementById('headerProfileDropdown');
             const headerProfileArrow = document.getElementById('headerProfileArrow');
@@ -311,6 +226,18 @@
             const dashboardProfileButton = document.getElementById('dashboardProfileButton');
             const dashboardProfileDropdown = document.getElementById('dashboardProfileDropdown');
             const dashboardProfileArrow = document.getElementById('dashboardProfileArrow');
+
+            function dismissAllNotifications() {
+                var notifDropdown = document.getElementById('headerNotificationDropdown');
+                if (notifDropdown) closeNotificationDropdown();
+                var notifPanel = document.getElementById('notification-panel');
+                if (notifPanel) notifPanel.classList.add('hidden');
+                var toastContainer = document.getElementById('inventory-toast-container');
+                if (toastContainer) toastContainer.innerHTML = '';
+                document.querySelectorAll('[data-toast-notification]').forEach(function(t) {
+                    t.remove();
+                });
+            }
 
             function closeProfileDropdown() {
                 if (!headerProfileDropdown) return;
@@ -323,56 +250,14 @@
                 if (headerProfileButton) headerProfileButton.blur();
             }
 
-<<<<<<< HEAD
             function openProfileDropdown() {
                 if (!headerProfileDropdown) return;
+                dismissAllNotifications();
                 headerProfileDropdown.classList.remove('hidden', 'opacity-0', 'scale-95');
                 headerProfileDropdown.classList.add('block', 'opacity-100', 'scale-100');
                 if (headerProfileArrow) {
                     headerProfileArrow.classList.remove('text-white');
                     headerProfileArrow.classList.add('text-cyan-400');
-=======
-        // Dashboard profile dropdown handlers
-        if (dashboardProfileButton && dashboardProfileDropdown) {
-            dashboardProfileDropdown.addEventListener('click', function(e) { e.stopPropagation(); });
-
-            dashboardProfileButton.addEventListener('click', function(e) {
-                e.stopPropagation();
-                dismissAllNotifications();
-
-                // Close Sales Range dropdown if open
-                const salesRangeDd = document.getElementById('salesRangeDropdown');
-                const salesRangeChevron = document.getElementById('salesRangeChevron');
-                if (salesRangeDd && !salesRangeDd.classList.contains('hidden')) {
-                    salesRangeDd.classList.add('hidden');
-                    if (salesRangeChevron) salesRangeChevron.style.transform = '';
-                }
-
-                // Close Sales Trend dropdown (in sales analytics) if open
-                const salesTrendDd = document.getElementById('salesTrendRangeDropdown');
-                const salesTrendChevron = document.getElementById('salesTrendRangeChevron');
-                if (salesTrendDd && !salesTrendDd.classList.contains('hidden')) {
-                    salesTrendDd.classList.add('hidden');
-                    if (salesTrendChevron) salesTrendChevron.style.transform = '';
-                }
-
-                // Close Order Tab dropdown (in order management) if open
-                const orderTabDd = document.getElementById('orderTabDropdown');
-                const orderTabChevron = document.getElementById('orderTabChevron');
-                if (orderTabDd && !orderTabDd.classList.contains('hidden')) {
-                    orderTabDd.classList.add('hidden');
-                    if (orderTabChevron) orderTabChevron.style.transform = '';
-                }
-
-                const isOpen = !dashboardProfileDropdown.classList.contains('hidden');
-                if (isOpen) {
-                    dashboardProfileDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
-                    dashboardProfileDropdown.classList.remove('block', 'opacity-100', 'scale-100');
-                    dashboardProfileButton.blur();
-                } else {
-                    dashboardProfileDropdown.classList.remove('hidden', 'opacity-0', 'scale-95');
-                    dashboardProfileDropdown.classList.add('block', 'opacity-100', 'scale-100');
->>>>>>> origin/main
                 }
             }
 
@@ -389,6 +274,7 @@
                 headerNotificationDropdown.classList.add('block', 'opacity-100', 'scale-100');
             }
 
+            // Header profile dropdown event listeners
             if (headerProfileButton && headerProfileDropdown) {
                 headerProfileDropdown.addEventListener('click', function(e) {
                     e.stopPropagation();
@@ -396,6 +282,7 @@
 
                 headerProfileButton.addEventListener('click', function(e) {
                     e.stopPropagation();
+                    dismissAllNotifications();
                     const isOpen = !headerProfileDropdown.classList.contains('hidden');
                     if (isOpen) {
                         closeProfileDropdown();
@@ -411,6 +298,7 @@
                 });
             }
 
+            // Header notification dropdown event listeners
             if (headerNotificationButton && headerNotificationDropdown) {
                 headerNotificationDropdown.addEventListener('click', function(e) {
                     e.stopPropagation();
@@ -439,12 +327,38 @@
                 });
             }
 
-            // Dashboard profile dropdown handlers
+            // Dashboard / Cashier profile dropdown handlers
             if (dashboardProfileButton && dashboardProfileDropdown) {
                 dashboardProfileDropdown.addEventListener('click', function(e) { e.stopPropagation(); });
 
                 dashboardProfileButton.addEventListener('click', function(e) {
                     e.stopPropagation();
+                    dismissAllNotifications();
+
+                    // Close Sales Range dropdown if open
+                    const salesRangeDd = document.getElementById('salesRangeDropdown');
+                    const salesRangeChevron = document.getElementById('salesRangeChevron');
+                    if (salesRangeDd && !salesRangeDd.classList.contains('hidden')) {
+                        salesRangeDd.classList.add('hidden');
+                        if (salesRangeChevron) salesRangeChevron.style.transform = '';
+                    }
+
+                    // Close Sales Trend dropdown (in sales analytics) if open
+                    const salesTrendDd = document.getElementById('salesTrendRangeDropdown');
+                    const salesTrendChevron = document.getElementById('salesTrendRangeChevron');
+                    if (salesTrendDd && !salesTrendDd.classList.contains('hidden')) {
+                        salesTrendDd.classList.add('hidden');
+                        if (salesTrendChevron) salesTrendChevron.style.transform = '';
+                    }
+
+                    // Close Order Tab dropdown (in order management) if open
+                    const orderTabDd = document.getElementById('orderTabDropdown');
+                    const orderTabChevron = document.getElementById('orderTabChevron');
+                    if (orderTabDd && !orderTabDd.classList.contains('hidden')) {
+                        orderTabDd.classList.add('hidden');
+                        if (orderTabChevron) orderTabChevron.style.transform = '';
+                    }
+
                     const isOpen = !dashboardProfileDropdown.classList.contains('hidden');
                     if (isOpen) {
                         dashboardProfileDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
