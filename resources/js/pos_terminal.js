@@ -13,7 +13,7 @@ const posState = {
     lastReceipt: null,
     transactionHistory: [],
     transactionHistoryPage: 1,
-    transactionHistoryPageSize: 8,
+    transactionHistoryPageSize: 10,
     apiProductsUrl: window.POS?.routes?.apiProducts || '/api/shop-inventory/products',
     productPage: 1,
     productPageSize: 9,
@@ -280,9 +280,11 @@ function updateTotals() {
     if (posTotalSummaryEl) posTotalSummaryEl.textContent = formatCurrency(total);
 }
 
-function saveProductImagePreview(cardId, dataUrl) {
+function saveProductImagePreview(cardId, dataUrl, sku = null, name = null) {
     try {
         posState.productImages[cardId] = dataUrl;
+        if (sku) posState.productImages[sku] = dataUrl;
+        if (name) posState.productImages[name] = dataUrl;
         const serialized = JSON.stringify(posState.productImages);
         const sizeInMB = new Blob([serialized]).size / (1024 * 1024);
         console.log(`Saving ${Object.keys(posState.productImages).length} images, total size: ${sizeInMB.toFixed(2)}MB`);
@@ -297,6 +299,8 @@ function saveProductImagePreview(cardId, dataUrl) {
             try {
                 localStorage.setItem('posProductImages', JSON.stringify({}));
                 posState.productImages[cardId] = dataUrl;
+                if (sku) posState.productImages[sku] = dataUrl;
+                if (name) posState.productImages[name] = dataUrl;
                 localStorage.setItem('posProductImages', JSON.stringify(posState.productImages));
                 console.log('✓ Saved after clearing');
             } catch (retryError) {
@@ -323,7 +327,14 @@ function applyProductImagePreviews() {
         const card = input?.closest('.pos-image-upload-card');
         if (!card) return;
         const preview = card.querySelector('.pos-image-preview');
-        if (preview) preview.style.backgroundImage = `url('${dataUrl}')`;
+        const placeholder = card.querySelector('.pos-image-placeholder');
+        if (preview && dataUrl) {
+            preview.style.backgroundImage = `url('${dataUrl}')`;
+            preview.classList.remove('hidden');
+        }
+        if (placeholder && dataUrl) {
+            placeholder.classList.add('hidden');
+        }
     });
 }
 
@@ -363,12 +374,13 @@ function renderTransactionHistory() {
     const pageInfo = document.getElementById('posTransactionHistoryInfo');
     const prevButton = document.getElementById('posHistoryPrevPage');
     const nextButton = document.getElementById('posHistoryNextPage');
+    const pageNumbersContainer = document.getElementById('posHistoryPageNumbers');
     if (!body || !empty || !pagination || !pageInfo || !prevButton || !nextButton) return;
 
     const fromDate = document.getElementById('posHistoryFilterFrom')?.value;
     const toDate = document.getElementById('posHistoryFilterTo')?.value;
     const transactions = filterTransactionHistory(fromDate, toDate);
-    const pageSize = posState.transactionHistoryPageSize;
+    const pageSize = posState.transactionHistoryPageSize || 10;
     const totalPages = Math.max(1, Math.ceil(transactions.length / pageSize));
     posState.transactionHistoryPage = Math.min(Math.max(posState.transactionHistoryPage, 1), totalPages);
 
@@ -400,10 +412,16 @@ function renderTransactionHistory() {
             <td class="px-3 py-4 text-slate-700">${formatDateForHistory(transaction.createdAt)}</td>
             <td class="px-3 py-4 text-slate-700">${transaction.paymentMethod === 'cash' ? 'Cash' : 'QR PH'}</td>
             <td class="px-3 py-4 text-center text-slate-700">${transaction.items.length}</td>
-            <td class="px-3 py-4 text-right text-slate-900 font-semibold">${formatCurrency(transaction.total)}</td>
-            <td class="px-3 py-4 text-center">
-                <button onclick="viewTransactionInvoice('${transaction.invoice}')" class="font-semibold text-xs mr-2" style="color: #000000;">View</button>
-                <button onclick="deleteTransaction('${transaction.invoice}')" class="text-red-600 hover:text-red-700 font-medium text-xs">Delete</button>
+            <td class="px-4 py-4 text-right text-slate-900 font-semibold whitespace-nowrap">${formatCurrency(transaction.total)}</td>
+            <td class="pl-8 pr-4 py-4 text-center whitespace-nowrap">
+                <div class="flex items-center justify-center gap-3">
+                    <button onclick="viewTransactionInvoice('${transaction.invoice}')" class="font-semibold text-xs text-black hover:underline hover:decoration-black transition cursor-pointer">View</button>
+                    <button onclick="deleteTransaction('${transaction.invoice}')" class="p-1 text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition cursor-pointer inline-flex items-center justify-center" title="Delete">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
             </td>
         `;
         body.appendChild(row);
@@ -414,6 +432,25 @@ function renderTransactionHistory() {
     pageInfo.textContent = `Showing ${startDisplay}-${endDisplay} of ${transactions.length}`;
     prevButton.disabled = posState.transactionHistoryPage <= 1;
     nextButton.disabled = posState.transactionHistoryPage >= totalPages;
+
+    if (pageNumbersContainer) {
+        let numsHtml = '';
+        const maxVisiblePages = 5;
+        let startPage = Math.max(1, posState.transactionHistoryPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+
+        for (let page = startPage; page <= endPage; page++) {
+            if (page === posState.transactionHistoryPage) {
+                numsHtml += `<button type="button" disabled class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">${page}</button>`;
+            } else {
+                numsHtml += `<button type="button" onclick="goToTransactionHistoryPage(${page})" class="inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50 transition cursor-pointer">${page}</button>`;
+            }
+        }
+        pageNumbersContainer.innerHTML = numsHtml;
+    }
 }
 
 function openTransactionHistory() {
@@ -782,27 +819,39 @@ async function searchProducts(query = '', page = 1) {
         json.data.forEach(product => {
             const card = document.createElement('div');
             card.className = 'pos-image-upload-card relative rounded-3xl border border-slate-200 bg-slate-50 p-3 flex flex-col justify-between';
-            card.dataset.productId = product.id;
             const stockQty = Number(product.stock_quantity ?? product.stock ?? 0);
             const isOutOfStock = stockQty <= 0;
             const productName = product.product_name || product.name || 'Unnamed Product';
             const brand = product.brand ? `${product.brand}` : '';
             const compatibility = product.name && product.name !== productName ? product.name : (product.compatibility || '');
 
+            card.dataset.productId = product.id;
+            card.dataset.sku = product.sku || '';
+            card.dataset.name = productName;
+
             // Calculate VAT breakdown
             const sellingPrice = Number(product.unit_price || 0);
             const includedVat = sellingPrice * (12 / 112);
             const vatableSales = sellingPrice - includedVat;
 
+            const cardImage = product.image || posState.productImages[product.id] || (product.sku && posState.productImages[product.sku]) || (productName && posState.productImages[productName]) || '';
+
             card.innerHTML = `
                 <div class="flex-shrink-0">
-                    <div class="pos-image-preview h-24 w-full overflow-hidden rounded-[10px] bg-slate-200 bg-cover bg-center" style="background-image: url('${product.image || ''}')"></div>
+                    <div class="pos-image-container relative h-24 w-full overflow-hidden rounded-[10px] bg-slate-100/90 border border-slate-200/80 flex items-center justify-center">
+                        <div class="pos-image-preview absolute inset-0 bg-cover bg-center ${cardImage ? '' : 'hidden'}" style="${cardImage ? `background-image: url('${cardImage}');` : ''}"></div>
+                        <div class="pos-image-placeholder flex items-center justify-center text-slate-300 ${cardImage ? 'hidden' : ''}">
+                            <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                    </div>
                     <input type="file" accept="image/*" class="pos-image-uploader hidden" data-id="${product.id}" />
                     <div class="mt-2 flex items-center justify-between">
                         <h3 class="text-sm font-semibold text-slate-900 line-clamp-2">${productName}</h3>
                         <button type="button" aria-label="Upload image" title="Upload image" class="pos-image-upload-trigger ml-2 flex-shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-[10px] border border-slate-200 bg-white text-slate-700 hover:bg-slate-100">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                             </svg>
                         </button>
                     </div>
@@ -1080,6 +1129,9 @@ async function revalidateCartStock() {
 }
 
 async function openPaymentModal() {
+    // Dismiss any visible "Added to cart" toast notifications
+    dismissAllNotifications();
+
     if (posState.cart.length === 0) {
         alert('The cart is empty. Add items before proceeding to payment.');
         return;
@@ -1960,11 +2012,21 @@ function setupPosEvents() {
                 // Update preview
                 const card = input.closest('.pos-image-upload-card');
                 const preview = card?.querySelector('.pos-image-preview');
-                if (preview) preview.style.backgroundImage = `url('${compressedDataUrl}')`;
+                const placeholder = card?.querySelector('.pos-image-placeholder');
+                if (preview) {
+                    preview.style.backgroundImage = `url('${compressedDataUrl}')`;
+                    preview.classList.remove('hidden');
+                }
+                if (placeholder) {
+                    placeholder.classList.add('hidden');
+                }
 
                 // Save compressed version
                 if (input.dataset.id) {
-                    saveProductImagePreview(input.dataset.id, compressedDataUrl);
+                    const card = input.closest('.pos-image-upload-card');
+                    const sku = card?.dataset.sku || '';
+                    const name = card?.dataset.name || '';
+                    saveProductImagePreview(input.dataset.id, compressedDataUrl, sku, name);
                 }
             };
             img.src = reader.result;
@@ -2586,7 +2648,7 @@ function playScanNotification() {
 
 function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
-    notification.className = 'fixed top-4 right-8 z-50 rounded-[10px] border p-4 text-sm font-medium shadow-lg transition-all duration-300';
+    notification.className = 'pos-toast-notification fixed top-4 right-8 z-50 rounded-[10px] border p-4 text-sm font-medium shadow-lg transition-all duration-300';
     if (type === 'success') {
         notification.style.backgroundColor = '#e6fffe';
         notification.style.borderColor = '#6EC1D1';
@@ -2612,6 +2674,14 @@ function showNotification(message, type = 'success') {
         notification.style.transition = 'opacity 0.5s ease';
         setTimeout(() => notification.remove(), 500);
     }, 3000);
+}
+
+function dismissAllNotifications() {
+    document.querySelectorAll('.pos-toast-notification').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => el.remove(), 300);
+    });
 }
 
 window.addEventListener('DOMContentLoaded', initializePos);

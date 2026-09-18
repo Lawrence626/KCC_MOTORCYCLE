@@ -180,8 +180,11 @@
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeNewReplacementModal()"></div>
         <div class="relative bg-white rounded-[28px] shadow-[0_30px_100px_rgba(15,23,42,0.18)] max-w-2xl w-full overflow-hidden">
             <div class="flex items-center justify-between px-8 py-5 border-b border-transparent bg-[#6EC1D1] rounded-t-[28px]">
-                <h2 class="text-2xl font-semibold text-slate-900">New Replacement</h2>
-                <button onclick="closeNewReplacementModal()" class="text-slate-900 transition-colors p-2 rounded-[10px] hover:bg-black/10">
+                <div>
+                    <h2 class="text-xl font-bold text-black">New Replacement</h2>
+                    <p class="text-sm text-slate-900 font-medium">Create and process replacement item requests.</p>
+                </div>
+                <button onclick="closeNewReplacementModal()" class="text-black transition-colors p-2 rounded-[10px] hover:bg-black/10">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -269,7 +272,7 @@
             <!-- Modal Actions -->
             <div class="px-8 py-5 border-t border-slate-200 flex gap-3 justify-end bg-slate-50 rounded-b-[10px]">
                 <button onclick="closeNewReplacementModal()" class="px-6 py-3 rounded-[10px] border border-slate-300 bg-white text-slate-900 font-semibold text-sm hover:bg-black/10 transition-all">Cancel</button>
-                <button onclick="submitNewReplacement()" class="px-6 py-3 rounded-[10px] bg-[#6EC1D1] text-slate-900 font-semibold text-sm border-2 border-slate-200 hover:bg-[#59b2c2] transition-all shadow-lg shadow-slate-900/10">Create Replacement</button>
+                <button onclick="submitNewReplacement()" class="px-6 py-3 rounded-[10px] bg-[#6EC1D1] text-slate-900 font-bold text-sm hover:bg-[#59b2c2] transition-all shadow-md shadow-slate-900/10">Create Replacement</button>
             </div>
         </div>
     </div>

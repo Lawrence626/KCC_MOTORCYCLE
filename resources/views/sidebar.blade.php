@@ -379,16 +379,16 @@
         font-weight: 600;
     }
 
-    /* Arrow: points up by default, animates to point down when submenu is open.
+    /* Arrow: points down by default, animates to point up when submenu is open.
        FIX: dinagdagan ng color transition (parehong 0.5s/easing) para
        sabay ring mag-color-change ang arrow kasabay ng box wipe. */
     .sidebar-arrow {
         transition: transform 0.25s ease, color 0.5s cubic-bezier(0.65, 0, 0.35, 1);
-        transform: rotate(180deg);
+        transform: rotate(0deg);
     }
 
     .group.open .sidebar-arrow {
-        transform: rotate(0deg);
+        transform: rotate(180deg);
     }
 
     /* ============================================
@@ -590,7 +590,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
         button.addEventListener('click', function(event) {
             event.preventDefault();
-            group.classList.toggle('open');
+            const willOpen = !group.classList.contains('open');
+
+            // Close all other groups (single accordion open state)
+            allGroups.forEach(otherGroup => {
+                if (otherGroup !== group) {
+                    otherGroup.classList.remove('open');
+                    updateGroupState(otherGroup);
+                }
+            });
+
+            if (willOpen) {
+                group.classList.add('open');
+            } else {
+                group.classList.remove('open');
+            }
             updateGroupState(group);
         });
     });

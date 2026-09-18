@@ -58,6 +58,36 @@ function formatDate(dateString) {
     return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
+function getReverseLogisticsProductImage(p) {
+    if (!p) return null;
+    if (p.image) return p.image;
+    try {
+        const stored = localStorage.getItem('posProductImages');
+        if (stored) {
+            const images = JSON.parse(stored);
+            const productId = p.id || p.product_id;
+            if (productId && images[productId]) return images[productId];
+            if (p.sku && images[p.sku]) return images[p.sku];
+
+            const keys = Object.keys(images);
+            if (p.sku) {
+                const matchSku = keys.find(k => k.toLowerCase() === String(p.sku).toLowerCase());
+                if (matchSku) return images[matchSku];
+            }
+        }
+    } catch (e) {}
+    return null;
+}
+
+function renderReverseLogisticsProductImageHtml(p) {
+    const imageUrl = getReverseLogisticsProductImage(p);
+    return imageUrl
+        ? `<div class="w-8 h-8 rounded-[6px] bg-slate-100 flex-shrink-0 overflow-hidden border border-slate-200/80 bg-cover bg-center" style="background-image: url('${imageUrl}');"></div>`
+        : `<div class="w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+           </div>`;
+}
+
 function getStatusBadge(status) {
     const classes = {
         'Under Review': 'bg-amber-100 text-amber-800',
@@ -86,8 +116,13 @@ function renderTable() {
 
     recordsTableBody.innerHTML = filteredRecords.map(record => `
         <tr class="hover:bg-slate-50">
-            <td class="px-5 py-4 font-semibold text-slate-900">${record.productName}</td>
-            <td class="px-5 py-4 text-slate-600">${record.sku}</td>
+            <td class="px-5 py-4 font-semibold text-slate-900">
+                <div class="flex items-center gap-2.5">
+                    ${renderReverseLogisticsProductImageHtml(record)}
+                    <span class="font-semibold text-slate-900">${record.productName}</span>
+                </div>
+            </td>
+            <td class="px-5 py-4 text-slate-600 font-mono text-xs">${record.sku}</td>
             <td class="px-5 py-4"><span class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs text-slate-700">${record.returnReason}</span></td>
             <td class="px-5 py-4 text-slate-600">${record.condition}</td>
             <td class="px-5 py-4 text-slate-600">${record.quantity}</td>

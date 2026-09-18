@@ -187,7 +187,7 @@
     <!-- Log/Edit Return Modal -->
     <div id="returnModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
         <div id="modalOverlay" class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl"></div>
-        <div class="relative w-full max-w-3xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] z-10 flex flex-col">
+        <div class="relative w-full max-w-3xl overflow-hidden rounded-[28px] bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] z-10 flex flex-col">
             <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5 shrink-0">
                 <div>
                     <h2 id="modalTitle" class="text-xl font-bold text-black">Log a Returned Item</h2>
