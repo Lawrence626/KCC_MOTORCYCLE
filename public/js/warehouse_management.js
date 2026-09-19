@@ -1080,26 +1080,41 @@ document.addEventListener('DOMContentLoaded', function () {
                     const val = item.getAttribute('data-value');
                     inputEl.value = val;
                     menuEl.classList.add('hidden');
+                    wrapper.style.zIndex = '';
+                    const rowEl = wrapper.closest('.product-row-card');
+                    if (rowEl) rowEl.style.zIndex = '';
                     if (onSelectFn) onSelectFn(val);
                 });
             });
         }
 
-        inputEl.addEventListener('focus', () => {
+        function openMenu() {
             document.querySelectorAll('.custom-combobox-menu').forEach(m => {
                 if (m !== menuEl) m.classList.add('hidden');
             });
+            document.querySelectorAll('.custom-combobox-wrapper').forEach(w => {
+                w.style.zIndex = '';
+                w.style.position = '';
+            });
+            document.querySelectorAll('.product-row-card').forEach(r => {
+                r.style.zIndex = '';
+                r.style.position = 'relative';
+            });
+            wrapper.style.position = 'relative';
+            wrapper.style.zIndex = '100';
+            const rowEl = wrapper.closest('.product-row-card');
+            if (rowEl) {
+                rowEl.style.position = 'relative';
+                rowEl.style.zIndex = '90';
+            }
             renderItems(inputEl.value);
             menuEl.classList.remove('hidden');
-        });
+        }
 
+        inputEl.addEventListener('focus', openMenu);
         inputEl.addEventListener('click', (e) => {
             e.stopPropagation();
-            document.querySelectorAll('.custom-combobox-menu').forEach(m => {
-                if (m !== menuEl) m.classList.add('hidden');
-            });
-            renderItems(inputEl.value);
-            menuEl.classList.remove('hidden');
+            openMenu();
         });
 
         inputEl.addEventListener('input', () => {
@@ -1111,6 +1126,13 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.custom-combobox-wrapper')) {
             document.querySelectorAll('.custom-combobox-menu').forEach(m => m.classList.add('hidden'));
+            document.querySelectorAll('.custom-combobox-wrapper').forEach(w => {
+                w.style.zIndex = '';
+                w.style.position = '';
+            });
+            document.querySelectorAll('.product-row-card').forEach(r => {
+                r.style.zIndex = '';
+            });
         }
     });
 
@@ -1135,7 +1157,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const row = document.createElement('div');
-        row.className = 'product-row product-row-card border border-slate-200 rounded-[18px] p-3.5 bg-slate-50 space-y-2.5';
+        row.className = 'product-row product-row-card relative border border-slate-200 rounded-[18px] p-3.5 bg-slate-50 space-y-2.5';
         if (product.id) {
             row.dataset.productId = product.id;
         }
@@ -1145,47 +1167,44 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="custom-combobox-wrapper relative">
                     <label class="block text-xs font-bold text-slate-700 mb-1">Category</label>
                     <div class="relative">
-                        <input type="text" class="product-category w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 pr-7 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm" placeholder="Select or type category..." autocomplete="off" value="${escapeHtml(initialCategory)}" />
-                        <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <input type="text" class="product-category w-full h-10 rounded-[10px] border border-slate-300 bg-white px-3 py-2 pr-7 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm" placeholder="Select or type category..." autocomplete="off" value="${escapeHtml(initialCategory)}" />
+                        <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </div>
-                    <div class="custom-combobox-menu hidden absolute left-0 right-0 top-full z-[100000010] mt-1 max-h-44 overflow-y-auto rounded-[12px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5"></div>
+                    <div class="custom-combobox-menu hidden absolute left-0 right-0 top-full z-[100] mt-1 max-h-44 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5"></div>
                 </div>
                 <div class="custom-combobox-wrapper relative">
                     <label class="block text-xs font-bold text-slate-700 mb-1">Brand</label>
                     <div class="relative">
-                        <input type="text" class="product-brand w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 pr-7 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm" placeholder="Select or type brand..." autocomplete="off" value="${escapeHtml(initialBrand)}" />
-                        <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <input type="text" class="product-brand w-full h-10 rounded-[10px] border border-slate-300 bg-white px-3 py-2 pr-7 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm" placeholder="Select or type brand..." autocomplete="off" value="${escapeHtml(initialBrand)}" />
+                        <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </div>
-                    <div class="custom-combobox-menu hidden absolute left-0 right-0 top-full z-[100000010] mt-1 max-h-44 overflow-y-auto rounded-[12px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5"></div>
+                    <div class="custom-combobox-menu hidden absolute left-0 right-0 top-full z-[100] mt-1 max-h-44 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5"></div>
                 </div>
                 <div class="custom-combobox-wrapper relative">
                     <label class="block text-xs font-bold text-slate-700 mb-1">Product Name / Model</label>
                     <div class="relative">
-                        <input type="text" class="product-model w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 pr-7 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm" placeholder="Select or type product name..." autocomplete="off" value="${escapeHtml(initialModel)}" />
-                        <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <input type="text" class="product-model w-full h-10 rounded-[10px] border border-slate-300 bg-white px-3 py-2 pr-7 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm" placeholder="Select or type product name..." autocomplete="off" value="${escapeHtml(initialModel)}" />
+                        <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </div>
-                    <div class="custom-combobox-menu hidden absolute left-0 right-0 top-full z-[100000010] mt-1 max-h-44 overflow-y-auto rounded-[12px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5"></div>
+                    <div class="custom-combobox-menu hidden absolute left-0 right-0 top-full z-[100] mt-1 max-h-44 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5"></div>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_1.2fr_auto] gap-3 items-end pt-1">
                 <div>
-                    <div class="flex items-center justify-between mb-1">
-                        <label class="block text-xs font-semibold text-slate-600">SKU (Auto-Generated)</label>
-                        <span class="text-[10px] text-cyan-700 font-medium font-mono">auto</span>
-                    </div>
-                    <input type="text" class="product-sku w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm" value="${escapeHtml(initialSku)}" placeholder="SKU" />
+                    <label class="block text-xs font-bold text-slate-700 mb-1">SKU (Auto-Generated)</label>
+                    <input type="text" class="product-sku w-full h-10 rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm" value="${escapeHtml(initialSku)}" placeholder="SKU" />
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Quantity</label>
-                    <input type="number" min="1" class="product-qty w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm" value="${initialQty}" placeholder="Qty" />
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Quantity</label>
+                    <input type="number" min="1" class="product-qty w-full h-10 rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm" value="${initialQty}" placeholder="Qty" />
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Unit Price (₱)</label>
-                    <input type="number" step="0.01" min="0" class="product-price w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm" value="${initialPrice}" placeholder="0.00" />
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Unit Price (₱)</label>
+                    <input type="number" step="0.01" min="0" class="product-price w-full h-10 rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm" value="${initialPrice}" placeholder="0.00" />
                 </div>
                 <div class="flex justify-end pb-0.5">
-                    <button type="button" class="remove-product-row px-3 py-2 text-xs font-semibold text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-[10px] transition cursor-pointer">
+                    <button type="button" class="remove-product-row h-10 px-3 py-2 text-xs font-bold text-black hover:text-black hover:bg-slate-200/60 rounded-[10px] transition cursor-pointer inline-flex items-center justify-center border border-transparent">
                         ✕ Remove
                     </button>
                 </div>

@@ -4,7 +4,7 @@
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div class="pl-3 lg:pl-2">
                 <h1 class="text-3xl font-bold text-slate-900">Out of Stock Report</h1>
-                <p class="text-xs text-slate-500 mt-1">Monitor critical stockouts and low inventory that need replenishment first.</p>
+                <p class="text-sm text-slate-500 mt-1">Monitor critical stockouts and low inventory that need replenishment first.</p>
             </div>
             <div class="flex flex-col gap-2 sm:flex-row pr-4">
                 <a href="{{ route('analytics.out_of_stock.export') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">

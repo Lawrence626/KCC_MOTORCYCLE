@@ -11,7 +11,7 @@
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div class="pl-3 lg:pl-2">
                 <h1 class="text-3xl font-bold text-slate-900">Dead Stock Analysis</h1>
-                <p class="text-xs text-slate-500 mt-1">
+                <p class="text-sm text-slate-500 mt-1">
                     Inventory items without sales for <span class="text-slate-900 font-semibold">{{ $thresholdDays }} days</span> or more.
                 </p>
             </div>
@@ -105,41 +105,43 @@
             {{-- Toolbar --}}
             <div class="px-4 py-3 border-b border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between gap-3">
                 <form method="GET" action="{{ route('dss.dead-stock.index') }}" id="deadStockFilterForm" class="w-full flex flex-col sm:flex-row items-center gap-2">
-                    <div class="relative flex-1 min-w-[240px]">
+                    <div class="relative w-full max-w-[450px]">
                         <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Search inventory..."
                                class="w-full pl-9 pr-3 h-9 text-xs rounded-[12px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm">
                     </div>
 
-                    <!-- Custom Sort Dropdown -->
-                    <div class="relative min-w-[150px]" data-dropdown-wrapper="sortFilter">
-                        <input type="hidden" name="sort_by" id="sortFilter" value="{{ request('sort_by', 'days_without_sale') }}" />
-                        <button type="button" id="sortFilterBtn" onclick="toggleCustomDropdown('sortFilterDropdown', event)" class="w-full h-9 rounded-[12px] border border-slate-300 bg-white px-3 text-left text-xs text-slate-900 flex items-center justify-between gap-2 hover:border-slate-400 focus:outline-none focus:ring-1 focus:ring-black/35 transition shadow-sm">
-                            <span id="sortFilterDisplay">
-                                @switch(request('sort_by', 'days_without_sale'))
-                                    @case('stock_value') Highest Value @break
-                                    @case('current_stock') Highest Stock @break
-                                    @case('last_sold_date') Last Sold @break
-                                    @default Longest Unsold
-                                @endswitch
-                            </span>
-                            <svg class="w-4 h-4 text-slate-500 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6"/></svg>
-                        </button>
-                        <div id="sortFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-1 w-full min-w-[150px] rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
-                            <button type="button" onclick="selectDeadStockFilter('sortFilter', 'days_without_sale', 'Longest Unsold', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Longest Unsold</button>
-                            <button type="button" onclick="selectDeadStockFilter('sortFilter', 'stock_value', 'Highest Value', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Highest Value</button>
-                            <button type="button" onclick="selectDeadStockFilter('sortFilter', 'current_stock', 'Highest Stock', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Highest Stock</button>
-                            <button type="button" onclick="selectDeadStockFilter('sortFilter', 'last_sold_date', 'Last Sold', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Last Sold</button>
+                    <div class="flex items-center gap-2">
+                        <!-- Custom Sort Dropdown -->
+                        <div class="relative min-w-[150px]" data-dropdown-wrapper="sortFilter">
+                            <input type="hidden" name="sort_by" id="sortFilter" value="{{ request('sort_by', 'days_without_sale') }}" />
+                            <button type="button" id="sortFilterBtn" onclick="toggleCustomDropdown('sortFilterDropdown', event)" class="w-full h-9 rounded-[12px] border border-slate-300 bg-white px-3 text-left text-xs text-slate-900 flex items-center justify-between gap-2 hover:border-slate-400 focus:outline-none focus:ring-1 focus:ring-black/35 transition shadow-sm">
+                                <span id="sortFilterDisplay">
+                                    @switch(request('sort_by', 'days_without_sale'))
+                                        @case('stock_value') Highest Value @break
+                                        @case('current_stock') Highest Stock @break
+                                        @case('last_sold_date') Last Sold @break
+                                        @default Longest Unsold
+                                    @endswitch
+                                </span>
+                                <svg class="w-4 h-4 text-slate-500 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6"/></svg>
+                            </button>
+                            <div id="sortFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-1 w-full min-w-[150px] rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
+                                <button type="button" onclick="selectDeadStockFilter('sortFilter', 'days_without_sale', 'Longest Unsold', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Longest Unsold</button>
+                                <button type="button" onclick="selectDeadStockFilter('sortFilter', 'stock_value', 'Highest Value', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Highest Value</button>
+                                <button type="button" onclick="selectDeadStockFilter('sortFilter', 'current_stock', 'Highest Stock', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Highest Stock</button>
+                                <button type="button" onclick="selectDeadStockFilter('sortFilter', 'last_sold_date', 'Last Sold', 'sortFilterDisplay', 'sortFilterDropdown')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition">Last Sold</button>
+                            </div>
                         </div>
-                    </div>
 
-                    <input type="hidden" name="sort_order" value="{{ request('sort_order', 'desc') }}">
-                    <button type="submit" class="shrink-0 h-9 w-9 rounded-[12px] border border-slate-300 bg-white text-slate-700 hover:bg-black/10 transition shadow-sm flex items-center justify-center" title="Apply Filters">
-                        <svg class="w-4 h-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
-                    </button>
-                    @if(request('search') || request('sort_by'))
-                    <a href="{{ route('dss.dead-stock.index') }}" id="clearDeadStockFilters" class="text-xs font-semibold text-slate-500 hover:text-slate-700 transition">Clear</a>
-                    @endif
+                        <input type="hidden" name="sort_order" value="{{ request('sort_order', 'desc') }}">
+                        <button type="submit" class="shrink-0 h-9 w-9 rounded-[12px] border border-slate-300 bg-white text-slate-700 hover:bg-black/10 transition shadow-sm flex items-center justify-center" title="Apply Filters">
+                            <svg class="w-4 h-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                        </button>
+                        @if(request('search') || request('sort_by'))
+                        <a href="{{ route('dss.dead-stock.index') }}" id="clearDeadStockFilters" class="text-xs font-semibold text-slate-500 hover:text-slate-700 transition">Clear</a>
+                        @endif
+                    </div>
                 </form>
             </div>
 

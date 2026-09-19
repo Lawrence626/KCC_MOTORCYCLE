@@ -86,7 +86,7 @@ class DeadStock extends Model
                 'suggested_discount' => '20% discount',
                 'suggested_discount_value' => 20,
                 'reason' => "Item has been unsold for {$days} days.",
-                'badge_color' => 'bg-rose-100 text-rose-800 border-rose-200',
+                'badge_color' => 'bg-slate-100 text-slate-900 border-slate-200',
                 'range' => '91+ days',
             ];
         } elseif ($days >= 61) {
@@ -95,7 +95,7 @@ class DeadStock extends Model
                 'suggested_discount' => '10%–15% discount',
                 'suggested_discount_value' => 15,
                 'reason' => "Item has been unsold for {$days} days.",
-                'badge_color' => 'bg-amber-100 text-amber-800 border-amber-200',
+                'badge_color' => 'bg-slate-100 text-slate-900 border-slate-200',
                 'range' => '61–90 days',
             ];
         } elseif ($days >= 31) {
@@ -104,7 +104,7 @@ class DeadStock extends Model
                 'suggested_discount' => '5%',
                 'suggested_discount_value' => 5,
                 'reason' => "Item has been unsold for {$days} days.",
-                'badge_color' => 'bg-emerald-100 text-emerald-800 border-emerald-200',
+                'badge_color' => 'bg-slate-100 text-slate-900 border-slate-200',
                 'range' => '31–60 days',
             ];
         }
@@ -114,7 +114,7 @@ class DeadStock extends Model
             'suggested_discount' => 'Monitor',
             'suggested_discount_value' => 0,
             'reason' => "Item has been unsold for {$days} days.",
-            'badge_color' => 'bg-slate-100 text-slate-700 border-slate-200',
+            'badge_color' => 'bg-slate-100 text-slate-900 border-slate-200',
             'range' => 'Under 31 days',
         ];
     }

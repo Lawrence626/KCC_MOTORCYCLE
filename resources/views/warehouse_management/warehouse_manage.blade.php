@@ -36,21 +36,21 @@
         .warehouse-shelves { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(220px, auto); }
         .map-unit { min-height: 220px; }
         .modal-panel { width: min(100%, 960px); border-radius: 1.5rem; background: #ffffff; box-shadow: 0 28px 80px rgba(15,23,42,0.18); }
-        .modal-field { border: 1px solid rgba(148,163,184,0.35); background: #f8fafc; border-radius: 0.85rem; }
+        .modal-field { border: 1px solid rgba(148,163,184,0.35); background: #f8fafc; border-radius: 10px; }
         .modal-field input,
         .modal-field select { border: none; background: transparent; outline: none; }
         .modal-field label { color: #334155; }
-        .product-row-card { background: #f8fafc; border: 1px solid rgba(148,163,184,0.2); border-radius: 1rem; padding: 0.85rem; }
+        .product-row-card { position: relative; background: #f8fafc; border: 1px solid rgba(148,163,184,0.2); border-radius: 1rem; padding: 0.85rem; }
         .product-row-card .row-grid { gap: 0.75rem; }
         .product-row-card .product-sku,
         .product-row-card .product-brand,
         .product-row-card .product-compatible,
         .product-row-card .product-qty,
         .product-row-card .product-price,
-        .product-row-card .product-select { background: #ffffff; border: 1px solid rgba(148,163,184,0.25); border-radius: 0.85rem; }
+        .product-row-card .product-select { background: #ffffff; border: 1px solid rgba(148,163,184,0.25); border-radius: 10px; }
         .product-row-card .product-sku { background: #f1f5f9; }
         .product-row-card .product-name {
-            background: #ffffff; border: 1px solid rgba(148,163,184,0.25); border-radius: 0.85rem; padding: 0.75rem;
+            background: #ffffff; border: 1px solid rgba(148,163,184,0.25); border-radius: 10px; padding: 0.75rem;
         }
         .product-row-card input:focus,
         .product-row-card select:focus,
@@ -61,20 +61,20 @@
             border-color: #94a3b8 !important;
             box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35) !important;
         }
-        .product-row-card .product-select,
-        .product-row-card .product-sku,
-        .product-row-card .product-brand,
-        .product-row-card .product-compatible,
-        .product-row-card .product-qty,
-        .product-row-card .product-price { padding: 0.75rem; }
-        .remove-product-row { color: #ef4444; transition: color 0.2s ease; }
-        .remove-product-row:hover { color: #b91c1c; }
+        .remove-product-row,
+        .remove-product-row:hover,
+        .remove-product-row:focus,
+        .remove-product-row:active,
+        .remove-product-row:visited {
+            color: #000000 !important;
+            -webkit-text-fill-color: #000000 !important;
+        }
         .modal-actions { border-top: 1px solid rgba(148,163,184,0.25); padding-top: 0.85rem; }
         .modal-footer-button { border-radius: 0.85rem; padding: 0.75rem 1.2rem; font-weight: 600; }
         .modal-footer-button.primary { background: var(--brand); color: #fff; }
         .modal-footer-button.secondary { background: #f8fafc; color: #334155; border: 1px solid rgba(148,163,184,0.35); }
         .product-row-card label { font-size: 0.72rem; }
-        .product-row-card .remove-product-row { font-size: 0.85rem; }
+        .product-row-card .remove-product-row { font-size: 0.75rem; }
         .modal-panel { max-height: 95vh; overflow: auto; }
         #modal-product-rows { max-height: 560px; overflow-y: auto; }
         .toast-container { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 60; display: flex; flex-direction: column; gap: 0.85rem; pointer-events: none; width: max-content; min-width: 280px; }
@@ -343,19 +343,26 @@
         function toggleModalWarehouseDropdown(e) {
             e.stopPropagation();
             const menu = document.getElementById('modalWarehouseDropdownMenu');
-            if (menu) menu.classList.toggle('hidden');
+            const wrapper = document.getElementById('modalWarehouseDropdownWrapper');
+            if (menu) {
+                const isOpening = menu.classList.contains('hidden');
+                menu.classList.toggle('hidden');
+                if (wrapper) wrapper.style.zIndex = isOpening ? '60' : '';
+            }
         }
 
         function selectModalWarehouseOption(val, labelText) {
             const selectEl = document.getElementById('modal-warehouse-select');
             const labelSpan = document.getElementById('modalWarehouseSelectLabel');
             const menu = document.getElementById('modalWarehouseDropdownMenu');
+            const wrapper = document.getElementById('modalWarehouseDropdownWrapper');
             if (selectEl) {
                 selectEl.value = val;
                 selectEl.dispatchEvent(new Event('change'));
             }
             if (labelSpan) labelSpan.textContent = labelText;
             if (menu) menu.classList.add('hidden');
+            if (wrapper) wrapper.style.zIndex = '';
         }
 
         document.addEventListener('click', function(e) {
@@ -363,6 +370,7 @@
             const wrapper = document.getElementById('modalWarehouseDropdownWrapper');
             if (menu && wrapper && !wrapper.contains(e.target)) {
                 menu.classList.add('hidden');
+                wrapper.style.zIndex = '';
             }
         });
 
@@ -604,11 +612,11 @@
                                 @endforeach
                             </select>
                             <div class="relative" id="modalWarehouseDropdownWrapper">
-                                <button type="button" onclick="toggleModalWarehouseDropdown(event)" class="w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-left text-sm font-medium text-slate-900 flex items-center justify-between gap-2 hover:border-slate-400 focus:outline-none focus:ring-1 focus:ring-black/35 transition shadow-sm cursor-pointer">
+                                <button type="button" onclick="toggleModalWarehouseDropdown(event)" class="w-full rounded-[10px] border border-slate-300 bg-white px-4 py-3 text-left text-sm font-medium text-slate-900 flex items-center justify-between gap-2 hover:border-slate-400 focus:outline-none focus:ring-1 focus:ring-black/35 transition shadow-sm cursor-pointer">
                                     <span id="modalWarehouseSelectLabel">{{ $warehouses[0]['name'] ?? 'Select Warehouse' }}</span>
                                     <svg class="w-4 h-4 text-slate-500 flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </button>
-                                <div id="modalWarehouseDropdownMenu" class="hidden absolute left-0 right-0 top-full z-50 mt-1 rounded-[12px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
+                                <div id="modalWarehouseDropdownMenu" class="hidden absolute left-0 right-0 top-full z-50 mt-1 rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
                                     @foreach($warehouses as $index => $wh)
                                         <button type="button" onclick="selectModalWarehouseOption('{{ $index }}', '{{ addslashes($wh['name']) }}')" class="w-full text-left px-3 py-2.5 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">{{ $wh['name'] }}</button>
                                     @endforeach
@@ -617,12 +625,12 @@
                         </div>
                         <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
                             <label class="block text-sm font-semibold text-slate-900 mb-2">Shelf Name</label>
-                            <input id="modal-shelf-name" type="text" class="block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm" placeholder="Enter shelf name" />
+                            <input id="modal-shelf-name" type="text" class="block w-full rounded-[10px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm" placeholder="Enter shelf name" />
                         </div>
                         <div class="rounded-[28px] border border-slate-200 p-4 bg-white lg:col-span-2">
                             <label class="block text-sm font-semibold text-slate-900 mb-2">Shelf Capacity</label>
                             <input id="modal-shelf-capacity" type="number" min="1" value="10"
-                                   class="block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm"
+                                   class="block w-full rounded-[10px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm"
                                    placeholder="Enter shelf capacity" />
                             <p class="text-xs text-slate-500 mt-2 font-medium flex items-center gap-1.5">
                                 <svg class="w-4 h-4 text-slate-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">

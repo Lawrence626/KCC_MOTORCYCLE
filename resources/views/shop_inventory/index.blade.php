@@ -41,8 +41,13 @@
         .product-row-card .product-price,
         .product-row-card .product-select { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 0.5rem 0.75rem; font-size: 0.75rem; }
         .product-row-card .product-sku { background: #f1f5f9; }
-        .remove-product-row { color: #ef4444; transition: color 0.2s ease; font-size: 0.75rem; }
-        .remove-product-row:hover { color: #b91c1c; }
+        .remove-product-row,
+        .remove-product-row:hover,
+        .remove-product-row:focus,
+        .remove-product-row:active {
+            color: #000000 !important;
+            font-size: 0.75rem;
+        }
         .modal-actions { border-top: 1px solid #e2e8f0; padding-top: 0.75rem; }
         .modal-footer-button { border-radius: 10px; padding: 0.4rem 0.9rem; font-size: 0.75rem; font-weight: 600; transition: all 0.15s ease; }
         .modal-footer-button.primary { background: #6EC1D1; color: #000; border: 1px solid rgba(110, 193, 209, 0.4); }

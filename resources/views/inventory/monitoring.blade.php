@@ -3,8 +3,8 @@
         <!-- Header -->
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div class="pl-3 lg:pl-1">
-                <h1 class="text-4xl font-bold text-slate-900">Inventory Monitoring</h1>
-                <p class="text-gray-600 text-base mt-1">Real-time tracking of inventory operations and movements</p>
+                <h1 class="text-3xl font-bold text-slate-900">Inventory Monitoring</h1>
+                <p class="text-sm text-slate-500 mt-1">Real-time tracking of inventory operations and movements</p>
             </div>
         </div>
 

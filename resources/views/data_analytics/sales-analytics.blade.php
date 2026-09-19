@@ -54,7 +54,7 @@
         <!-- Header -->
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div class="pl-3 lg:pl-2">
-                <h1 class="text-4xl font-bold text-slate-900">Sales Analytics</h1>
+                <h1 class="text-3xl font-bold text-slate-900">Sales Analytics</h1>
                 <p class="text-sm text-slate-500 mt-1">Track revenue performance, product demand, and market momentum in a compact analytics workspace.</p>
             </div>
             <div class="flex flex-col gap-2 sm:flex-row pr-4">

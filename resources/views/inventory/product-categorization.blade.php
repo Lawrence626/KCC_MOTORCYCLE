@@ -3,8 +3,8 @@
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 px-2 py-1">
             <div>
-                <h1 class="text-4xl font-bold text-slate-900">Product Categorization</h1>
-                <p class="text-base text-slate-500 mt-1">Add, update, and delete product categories. Set SKU (QR code) and filter compatibility for each motorcycle.</p>
+                <h1 class="text-3xl font-bold text-slate-900">Product Categorization</h1>
+                <p class="text-sm text-slate-500 mt-1">Add, update, and delete product categories. Set SKU (QR code) and filter compatibility for each motorcycle.</p>
             </div>
             <div class="flex items-center gap-3 flex-wrap">
                 <!-- Bulk Actions Toolbar -->
