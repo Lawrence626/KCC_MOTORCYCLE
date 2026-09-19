@@ -164,25 +164,16 @@ class DeadStockDetectionService
      */
     public function getSuggestedAction(int $daysWithoutSale, int $stockQty, float $stockValue): string
     {
-        if ($daysWithoutSale >= 180) {
-            if ($stockValue > 5000) {
-                return 'Supplier Return';
-            }
-            return 'Deep Discount';
+        if ($daysWithoutSale >= 91) {
+            return '20% Discount';
         }
 
-        if ($daysWithoutSale >= 120) {
-            if ($stockQty >= 10) {
-                return 'Bundle';
-            }
-            return 'Relocate';
+        if ($daysWithoutSale >= 61) {
+            return '10%–15% Discount';
         }
 
-        if ($daysWithoutSale >= 90) {
-            if ($stockQty >= 5) {
-                return 'Promotion';
-            }
-            return 'Featured Display';
+        if ($daysWithoutSale >= 31) {
+            return '5% Discount';
         }
 
         return 'Monitor';

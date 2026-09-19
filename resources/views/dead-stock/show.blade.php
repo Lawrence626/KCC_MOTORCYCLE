@@ -115,12 +115,6 @@
                 </div>
                 <div class="p-5 space-y-3">
                     <div class="flex justify-between items-center">
-                        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Priority Level</span>
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border {{ $priorityColors[$deadStock->priority_level] ?? '' }}">
-                            {{ $deadStock->priority_level }}
-                        </span>
-                    </div>
-                    <div class="flex justify-between items-center">
                         <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Days Without Sale</span>
                         <span class="text-2xl font-extrabold text-rose-600">{{ $deadStock->days_without_sale }}</span>
                     </div>
@@ -138,131 +132,140 @@
                         <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Detected On</span>
                         <span class="text-sm text-slate-800 font-medium">{{ $deadStock->detected_at ? $deadStock->detected_at->format('M d, Y') : 'N/A' }}</span>
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Suggested Action</span>
-                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">
-                            {{ $deadStock->analysis_notes ?? 'Monitor' }}
-                        </span>
-                    </div>
                 </div>
             </div>
         </div>
 
-        {{-- ═══ ACTION BUTTONS ═══ --}}
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-            <h3 class="text-sm font-bold text-slate-700 mb-3">Quick Actions</h3>
-            <div class="flex flex-wrap gap-2">
-                <button onclick="openShowDiscountModal()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-sm font-semibold hover:bg-emerald-100 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"/></svg>
-                    Apply Discount
-                </button>
-                <a href="{{ route('dss.recommendations.index', ['product_id' => $deadStock->product_id]) }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 text-sm font-semibold hover:bg-indigo-100 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-                    View All Recommendations
-                </a>
-                <button onclick="document.getElementById('salesHistorySection').scrollIntoView({behavior:'smooth'})" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 text-sm font-semibold hover:bg-purple-100 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                    View Sales History
-                </button>
-            </div>
-        </div>
 
-        {{-- ═══ DSS RECOMMENDATIONS ═══ --}}
+        {{-- ═══ RECOMMENDATION ═══ --}}
+        @php
+            $autoRec = $deadStock->getAutomaticRecommendation();
+            $product = $deadStock->product;
+            $hasDiscount = !empty($product->discount_type) && !empty($product->discount_value);
+        @endphp
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="px-5 py-3.5 border-b border-slate-100 bg-gradient-to-r from-indigo-50 to-white flex items-center justify-between">
                 <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
                     <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-                    DSS Recommendations ({{ $recommendations->count() }})
+                    Recommendation
                 </h3>
+                @if($hasDiscount)
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        Discount Applied: {{ $product->discount_type === 'percentage' ? $product->discount_value . '%' : '₱' . number_format($product->discount_value, 2) }}
+                    </span>
+                @else
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                        Action Recommended
+                    </span>
+                @endif
             </div>
-            <div class="divide-y divide-slate-100">
-                @forelse($recommendations as $rec)
-                @php
-                    $typeIcons = [
-                        'promotion' => ['icon' => '📣', 'bg' => 'bg-orange-50 border-orange-200', 'text' => 'text-orange-700'],
-                        'discount' => ['icon' => '💰', 'bg' => 'bg-emerald-50 border-emerald-200', 'text' => 'text-emerald-700'],
-                        'bundle' => ['icon' => '📦', 'bg' => 'bg-blue-50 border-blue-200', 'text' => 'text-blue-700'],
-                        'relocate' => ['icon' => '🏪', 'bg' => 'bg-purple-50 border-purple-200', 'text' => 'text-purple-700'],
-                        'featured_display' => ['icon' => '⭐', 'bg' => 'bg-amber-50 border-amber-200', 'text' => 'text-amber-700'],
-                        'social_media' => ['icon' => '📱', 'bg' => 'bg-pink-50 border-pink-200', 'text' => 'text-pink-700'],
-                        'supplier_return' => ['icon' => '🔄', 'bg' => 'bg-red-50 border-red-200', 'text' => 'text-red-700'],
-                    ];
-                    $style = $typeIcons[$rec->recommendation_type] ?? ['icon' => '📋', 'bg' => 'bg-slate-50 border-slate-200', 'text' => 'text-slate-700'];
-                    $recPriorityColors = [
-                        'Critical' => 'bg-red-100 text-red-700',
-                        'High' => 'bg-orange-100 text-orange-700',
-                        'Medium' => 'bg-amber-100 text-amber-700',
-                        'Low' => 'bg-blue-100 text-blue-700',
-                    ];
-                @endphp
-                <div class="px-5 py-4">
-                    <div class="flex items-start justify-between gap-3">
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2 mb-1.5">
-                                <span class="text-lg">{{ $style['icon'] }}</span>
-                                <h4 class="text-sm font-bold text-slate-800">{{ $rec->getTypeLabel() }}</h4>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold {{ $recPriorityColors[$rec->priority] ?? 'bg-slate-100 text-slate-600' }}">{{ $rec->priority }}</span>
-                                @if($rec->action_taken_at)
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">✓ Actioned</span>
-                                @else
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">Pending</span>
-                                @endif
-                            </div>
-                            <p class="text-sm text-slate-600 leading-relaxed">{{ $rec->description }}</p>
 
-                            {{-- Bundle products --}}
-                            @if($rec->recommendation_type === 'bundle' && isset($rec->metadata['bundle_product_ids']))
-                            <div class="mt-3 p-3 rounded-xl bg-blue-50/60 border border-blue-100">
-                                <p class="text-xs font-semibold text-blue-700 mb-1.5">Recommended Bundle Partners (Fast Moving)</p>
-                                <div class="flex flex-wrap gap-1.5">
-                                    @foreach($rec->getBundleProducts() as $bundleProduct)
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-blue-200 text-xs font-medium text-blue-800">
-                                        🔥 {{ $bundleProduct->name }}
-                                    </span>
-                                    @endforeach
-                                </div>
-                            </div>
-                            @endif
-
-                            {{-- Discount metadata --}}
-                            @if($rec->recommendation_type === 'discount' && isset($rec->metadata['suggested_discount_min']))
-                            <div class="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200">
-                                <span class="text-xs font-semibold text-emerald-700">Suggested: {{ $rec->metadata['suggested_discount_min'] }}% – {{ $rec->metadata['suggested_discount_max'] }}%</span>
-                            </div>
-                            @endif
-
-                            {{-- Action taken --}}
-                            @if($rec->action_taken_at)
-                            <div class="mt-2 p-3 rounded-xl bg-emerald-50 border border-emerald-100">
-                                <p class="text-xs text-emerald-700">
-                                    <strong>Actioned:</strong> {{ $rec->action_taken_at->format('M d, Y h:i A') }}
-                                    @if($rec->action_notes)
-                                        — {{ $rec->action_notes }}
-                                    @endif
+            <div class="p-5 space-y-4">
+                {{-- Automatic Recommendation Card --}}
+                <div class="p-5 rounded-2xl border border-slate-200/90 bg-gradient-to-br from-slate-50/70 via-white to-slate-50/40 shadow-xs">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                        <div class="space-y-3.5 flex-1 min-w-0">
+                            {{-- Recommendation --}}
+                            <div>
+                                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Recommendation</span>
+                                <p class="text-base font-bold text-slate-900 flex items-center gap-2">
+                                    <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm flex-shrink-0">💰</span>
+                                    <span>{{ $autoRec['recommendation'] }}</span>
                                 </p>
                             </div>
-                            @endif
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                                {{-- Suggested Discount --}}
+                                <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Suggested Discount</span>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold border {{ $autoRec['badge_color'] }}">
+                                        {{ $autoRec['suggested_discount'] }}
+                                    </span>
+                                </div>
+
+                                {{-- Reason --}}
+                                <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Reason</span>
+                                    <p class="text-xs font-semibold text-slate-700">
+                                        {{ $autoRec['reason'] }}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
-                        {{-- Action button --}}
-                        @if(!$rec->action_taken_at)
-                        <form action="{{ route('dss.recommendations.action', $rec->id) }}" method="POST" class="flex-shrink-0">
-                            @csrf
-                            <input type="hidden" name="action_notes" value="Marked as actioned from dead stock detail page">
-                            <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border {{ $style['bg'] }} {{ $style['text'] }} hover:opacity-80 transition">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                                Mark Done
-                            </button>
-                        </form>
-                        @endif
+                        {{-- Action Buttons --}}
+                        <div class="flex-shrink-0 flex sm:flex-col items-stretch justify-center gap-2 pt-1 lg:pt-0">
+                            @if(!$hasDiscount)
+                                @if($autoRec['suggested_discount_value'] > 0)
+                                <button type="button"
+                                        onclick="openShowDiscountModalWithVal({{ $autoRec['suggested_discount_value'] }})"
+                                        class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"/></svg>
+                                    Apply {{ $autoRec['suggested_discount_value'] }}% Discount
+                                </button>
+                                @else
+                                <button type="button"
+                                        onclick="openShowDiscountModal()"
+                                        class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold shadow-sm transition">
+                                    Apply Discount
+                                </button>
+                                @endif
+                            @else
+                                <div class="flex items-center gap-2">
+                                    <button type="button"
+                                            onclick="openShowDiscountModal()"
+                                            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
+                                        Update Discount
+                                    </button>
+                                    <form action="{{ route('dss.dead-stock.remove-discount', $deadStock->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit"
+                                                onclick="return confirm('Remove discount from this product?')"
+                                                class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-rose-200 bg-rose-50 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition">
+                                            Remove
+                                        </button>
+                                    </form>
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
-                @empty
-                <div class="px-6 py-12 text-center">
-                    <svg class="w-10 h-10 mx-auto text-slate-300 mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-                    <p class="text-sm text-slate-500">No recommendations generated yet. Try recalculating the analysis.</p>
+
+                {{-- Additional insights (bundles, promotions) if present from recommendation engine --}}
+                @php
+                    $otherRecs = $recommendations->where('recommendation_type', '!=', 'discount');
+                @endphp
+                @if($otherRecs->isNotEmpty())
+                <div class="pt-3 border-t border-slate-100">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5">Additional Insights</p>
+                    <div class="space-y-2">
+                        @foreach($otherRecs as $rec)
+                        @php
+                            $typeIcons = [
+                                'promotion' => ['icon' => '📣', 'bg' => 'bg-orange-50 border-orange-200', 'text' => 'text-orange-700'],
+                                'bundle' => ['icon' => '📦', 'bg' => 'bg-blue-50 border-blue-200', 'text' => 'text-blue-700'],
+                                'relocate' => ['icon' => '🏪', 'bg' => 'bg-purple-50 border-purple-200', 'text' => 'text-purple-700'],
+                                'featured_display' => ['icon' => '⭐', 'bg' => 'bg-amber-50 border-amber-200', 'text' => 'text-amber-700'],
+                                'social_media' => ['icon' => '📱', 'bg' => 'bg-pink-50 border-pink-200', 'text' => 'text-pink-700'],
+                                'supplier_return' => ['icon' => '🔄', 'bg' => 'bg-red-50 border-red-200', 'text' => 'text-red-700'],
+                            ];
+                            $style = $typeIcons[$rec->recommendation_type] ?? ['icon' => '📋', 'bg' => 'bg-slate-50 border-slate-200', 'text' => 'text-slate-700'];
+                        @endphp
+                        <div class="p-3 rounded-xl border border-slate-200/70 bg-white flex items-start justify-between gap-3">
+                            <div class="flex items-start gap-2.5">
+                                <span class="text-base mt-0.5">{{ $style['icon'] }}</span>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-800">{{ $rec->getTypeLabel() }}</h4>
+                                    <p class="text-xs text-slate-600 mt-0.5">{{ $rec->description }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
                 </div>
-                @endforelse
+                @endif
             </div>
         </div>
 
@@ -358,11 +361,12 @@
             @csrf
             <div>
                 <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Quick Discount</label>
-                <div class="grid grid-cols-4 gap-2">
-                    <button type="button" onclick="setShowDiscount('percentage', 10, this)" class="show-discount-btn px-3 py-2.5 rounded-xl border-2 border-slate-200 text-sm font-bold text-slate-700 hover:border-emerald-400 hover:bg-emerald-50 transition text-center">10%</button>
-                    <button type="button" onclick="setShowDiscount('percentage', 15, this)" class="show-discount-btn px-3 py-2.5 rounded-xl border-2 border-slate-200 text-sm font-bold text-slate-700 hover:border-emerald-400 hover:bg-emerald-50 transition text-center">15%</button>
-                    <button type="button" onclick="setShowDiscount('percentage', 20, this)" class="show-discount-btn px-3 py-2.5 rounded-xl border-2 border-slate-200 text-sm font-bold text-slate-700 hover:border-emerald-400 hover:bg-emerald-50 transition text-center">20%</button>
-                    <button type="button" onclick="setShowDiscount('percentage', 25, this)" class="show-discount-btn px-3 py-2.5 rounded-xl border-2 border-slate-200 text-sm font-bold text-slate-700 hover:border-emerald-400 hover:bg-emerald-50 transition text-center">25%</button>
+                <div class="grid grid-cols-5 gap-1.5">
+                    <button type="button" onclick="setShowDiscount('percentage', 5, this)" class="show-discount-btn px-2.5 py-2.5 rounded-xl border-2 border-slate-200 text-sm font-bold text-slate-700 hover:border-emerald-400 hover:bg-emerald-50 transition text-center">5%</button>
+                    <button type="button" onclick="setShowDiscount('percentage', 10, this)" class="show-discount-btn px-2.5 py-2.5 rounded-xl border-2 border-slate-200 text-sm font-bold text-slate-700 hover:border-emerald-400 hover:bg-emerald-50 transition text-center">10%</button>
+                    <button type="button" onclick="setShowDiscount('percentage', 15, this)" class="show-discount-btn px-2.5 py-2.5 rounded-xl border-2 border-slate-200 text-sm font-bold text-slate-700 hover:border-emerald-400 hover:bg-emerald-50 transition text-center">15%</button>
+                    <button type="button" onclick="setShowDiscount('percentage', 20, this)" class="show-discount-btn px-2.5 py-2.5 rounded-xl border-2 border-slate-200 text-sm font-bold text-slate-700 hover:border-emerald-400 hover:bg-emerald-50 transition text-center">20%</button>
+                    <button type="button" onclick="setShowDiscount('percentage', 25, this)" class="show-discount-btn px-2.5 py-2.5 rounded-xl border-2 border-slate-200 text-sm font-bold text-slate-700 hover:border-emerald-400 hover:bg-emerald-50 transition text-center">25%</button>
                 </div>
             </div>
             <div class="flex items-center gap-3"><div class="h-px flex-1 bg-slate-200"></div><span class="text-xs text-slate-400">or</span><div class="h-px flex-1 bg-slate-200"></div></div>
@@ -460,7 +464,19 @@
         document.getElementById('showDiscountType').value = type;
         document.getElementById('showDiscountValue').value = value;
         document.querySelectorAll('.show-discount-btn').forEach(b => b.classList.remove('border-emerald-500', 'bg-emerald-50'));
-        btn.classList.add('border-emerald-500', 'bg-emerald-50');
+        if (btn) {
+            btn.classList.add('border-emerald-500', 'bg-emerald-50');
+        }
+    }
+    function openShowDiscountModalWithVal(val) {
+        openShowDiscountModal();
+        let matchedBtn = null;
+        document.querySelectorAll('.show-discount-btn').forEach(b => {
+            if (parseInt(b.textContent) === parseInt(val)) {
+                matchedBtn = b;
+            }
+        });
+        setShowDiscount('percentage', val, matchedBtn);
     }
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeShowDiscountModal(); });
 </script>

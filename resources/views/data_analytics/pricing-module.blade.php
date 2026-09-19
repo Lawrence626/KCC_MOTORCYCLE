@@ -221,7 +221,7 @@
                                 </td>
                                 <td class="px-4 py-4 text-slate-900 font-semibold">
                                     @php
-                                        $suggestedPrice = round(((float) $analysis->supplier_cost * 1.12) / 0.70, 2);
+                                        $suggestedPrice = round((float) $analysis->supplier_cost * 1.20, 2);
                                     @endphp
                                     ₱{{ number_format($suggestedPrice, 2) }}
                                 </td>
@@ -582,7 +582,7 @@
                 list.unshift({
                     type:    'retail_reco',
                     title:   'Retail Recommendation: ' + productName + ' (' + (sku || '—') + ')',
-                    message: 'Increase the retail price to maintain a 30% profit margin.',
+                    message: 'Increase the retail price to maintain a 20% markup.',
                     time:    new Date().toLocaleString()
                 });
                 
@@ -724,8 +724,8 @@
                                     <span class="font-medium text-slate-700">₱${currentRetailStr}</span>
                                 </div>
                                 <div class="px-4 py-2.5 flex justify-between items-center text-xs">
-                                    <span class="text-slate-500">Target Profit Margin</span>
-                                    <span class="font-medium text-slate-700">30%</span>
+                                    <span class="text-slate-500">20% Markup</span>
+                                    <span class="font-medium text-slate-700">20%</span>
                                 </div>
                                 <div class="px-4 py-2.5 flex justify-between items-center text-xs bg-slate-50/50">
                                     <span class="font-semibold text-slate-800">Suggested Retail Price</span>

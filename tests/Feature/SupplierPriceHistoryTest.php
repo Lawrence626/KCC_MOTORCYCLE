@@ -169,7 +169,7 @@ test('it updates product latest cost and analysis when a custom receiving cost i
     expect((float) $analysis->previous_cost)->toEqual(200.0);
     expect((float) $analysis->supplier_cost)->toEqual(220.0);
     expect((float) $analysis->change_percentage)->toEqual(10.0);
-    expect((float) $analysis->suggested_retail_price)->toEqual(352.0); // round((220 * 1.12) / 0.70, 2)
+    expect((float) $analysis->suggested_retail_price)->toEqual(264.0); // round(220 * 1.20, 2)
     expect($analysis->recommendation)->toContain('Increase the retail price');
 });
 

@@ -293,7 +293,10 @@
             }
         }
 
+        let isVerifyingOtp = false;
         async function verifyOtpCode() {
+            if (isVerifyingOtp) return;
+
             otpError.classList.add('hidden');
             otpStatus.classList.add('hidden');
 
@@ -303,6 +306,9 @@
                 otpError.classList.remove('hidden');
                 return;
             }
+
+            isVerifyingOtp = true;
+            otpVerifyButton.disabled = true;
 
             try {
                 const response = await fetch('{{ url('/login/otp/verify') }}', {
@@ -320,6 +326,8 @@
                 if (! response.ok) {
                     otpError.textContent = data.message || 'The verification code is incorrect.';
                     otpError.classList.remove('hidden');
+                    isVerifyingOtp = false;
+                    otpVerifyButton.disabled = false;
                     return;
                 }
 
@@ -327,6 +335,8 @@
             } catch (error) {
                 otpError.textContent = 'Unable to verify code. Please try again.';
                 otpError.classList.remove('hidden');
+                isVerifyingOtp = false;
+                otpVerifyButton.disabled = false;
             }
         }
 
@@ -392,15 +402,6 @@
             }
         });
 
-        // Enter key support for OTP verification
-        otpDigits.forEach((digit) => {
-            digit.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    verifyOtpCode();
-                }
-            });
-        });
 
         otpVerifyButton.addEventListener('click', function() {
             verifyOtpCode();

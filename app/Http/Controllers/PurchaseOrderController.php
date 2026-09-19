@@ -591,8 +591,8 @@ class PurchaseOrderController extends Controller
             }
 
             $recommendation = match ($trend) {
-                'increasing' => 'Supplier cost has increased. Review the suggested retail price to maintain your target profit margin.',
-                'decreasing' => 'Supplier cost has decreased. Maintaining the current retail price will increase your profit margin.',
+                'increasing' => 'Supplier cost has increased. Review the suggested retail price to maintain a 20% markup.',
+                'decreasing' => 'Supplier cost has decreased. Maintaining the current retail price will increase your markup.',
                 default      => 'Supplier pricing is stable. Maintain the current retail price.',
             };
 
@@ -1053,14 +1053,14 @@ class PurchaseOrderController extends Controller
                     };
 
                     $reason = match (true) {
-                        $currentCost > $previousCost => 'Supplier cost increased while maintaining the desired profit margin.',
+                        $currentCost > $previousCost => 'Supplier cost increased while maintaining the desired 20% markup.',
                         $currentCost < $previousCost => 'Supplier cost decreased, allowing for higher profit or more competitive pricing.',
                         default => 'Supplier cost has not changed.',
                     };
 
-                    $targetProfitMargin = 0.30;
+                    $markupMultiplier = 1.20;
                     $suggestedRetailPrice = $currentCost > 0
-                        ? round(($currentCost * 1.12) / (1 - $targetProfitMargin), 2)
+                        ? round($currentCost * $markupMultiplier, 2)
                         : 0;
 
                     SupplierPriceHistory::create([

@@ -15,17 +15,42 @@
                     Inventory items without sales for <span class="text-slate-900 font-semibold">{{ $thresholdDays }} days</span> or more.
                 </p>
             </div>
-            <div class="flex flex-wrap items-center gap-2 pr-4">
-                <a href="{{ route('dss.dead-stock.export-excel') }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}"
-                   class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
-                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <span>Export CSV</span>
-                </a>
-                <a href="{{ route('dss.dead-stock.export-pdf') }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}" target="_blank"
-                   class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
-                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                    <span>Export PDF</span>
-                </a>
+            <div class="flex items-center gap-2 pr-4">
+                <div class="relative" data-dropdown-wrapper="exportMenu">
+                    <button type="button"
+                            id="exportDropdownBtn"
+                            onclick="toggleCustomDropdown('exportDropdownMenu', event)"
+                            class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus:outline-none transition-all duration-200">
+                        <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <span>Export</span>
+                        <svg class="h-4 w-4 text-slate-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+
+                    <div id="exportDropdownMenu"
+                         class="dropdown-menu hidden absolute right-0 top-full z-50 mt-1.5 w-44 rounded-[12px] border border-slate-200 bg-white p-1.5 shadow-xl space-y-0.5">
+                        <a href="{{ route('dss.dead-stock.export-excel') }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}"
+                           onclick="exportDeadStock('csv', event)"
+                           class="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 rounded-[8px] transition cursor-pointer">
+                            <svg class="h-4 w-4 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span>Export CSV</span>
+                        </a>
+                        <a href="{{ route('dss.dead-stock.export-pdf') }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}"
+                           target="_blank"
+                           onclick="exportDeadStock('pdf', event)"
+                           class="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 rounded-[8px] transition cursor-pointer">
+                            <svg class="h-4 w-4 text-rose-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                            </svg>
+                            <span>Export PDF</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -248,6 +273,23 @@
             document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
         }
     });
+
+    function exportDeadStock(format, event) {
+        if (event) {
+            event.preventDefault();
+        }
+        document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
+        const baseUrl = format === 'csv'
+            ? '{{ route("dss.dead-stock.export-excel") }}'
+            : '{{ route("dss.dead-stock.export-pdf") }}';
+        const params = window.location.search;
+        const finalUrl = baseUrl + (params ? params : '');
+        if (format === 'pdf') {
+            window.open(finalUrl, '_blank');
+        } else {
+            window.location.href = finalUrl;
+        }
+    }
 
     function resolveDeadStockImages() {
         try {

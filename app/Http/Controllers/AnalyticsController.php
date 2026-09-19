@@ -432,8 +432,8 @@ class AnalyticsController extends Controller
                 : 0;
 
             $recommendation = match (true) {
-                $previousCost !== null && $currentCost > $previousCost => 'Increase the retail price to maintain a 30% profit margin.',
-                $previousCost !== null && $currentCost < $previousCost => 'Maintain the current retail price to increase profit margin.',
+                $previousCost !== null && $currentCost > $previousCost => 'Increase the retail price to maintain a 20% markup.',
+                $previousCost !== null && $currentCost < $previousCost => 'Maintain the current retail price to increase markup.',
                 default => 'Maintain current retail price.',
             };
 
@@ -459,7 +459,7 @@ class AnalyticsController extends Controller
                 'previous_cost'       => $previousCost,
                 'change_percentage'   => $changePercentage,
                 'recommendation'      => $recommendation,
-                'suggested_retail_price' => $currentCost > 0 ? round(($currentCost * 1.12) / 0.70, 2) : 0,
+                'suggested_retail_price' => $currentCost > 0 ? round($currentCost * 1.20, 2) : 0,
                 'supplier'            => null,
                 'latest_receipt_date' => $latestReceiptDate,
             ];
@@ -944,7 +944,7 @@ class AnalyticsController extends Controller
                 'supplier_cost'    => $currentCost,
                 'previous_cost'    => $previousCost ?? 'N/A',
                 'change_pct'       => $changePercentage,
-                'suggested_retail' => $currentCost > 0 ? round(($currentCost * 1.12) / 0.70, 2) : 0,
+                'suggested_retail' => $currentCost > 0 ? round($currentCost * 1.20, 2) : 0,
             ];
         });
 
