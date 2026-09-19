@@ -261,8 +261,8 @@
             const passwordConfirmation = confirmPasswordInput.value;
 
             // Client-side validation
-            if (password.length < 8) {
-                passwordError.textContent = 'Password must be at least 8 characters long.';
+            if (password.length < 12) {
+                passwordError.textContent = 'Password must be at least 12 characters long.';
                 passwordError.classList.remove('hidden');
                 resetPasswordButton.disabled = false;
                 resetPasswordButton.textContent = 'Reset Password';

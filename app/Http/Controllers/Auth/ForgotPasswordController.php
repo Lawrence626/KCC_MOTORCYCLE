@@ -6,8 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
+use App\Mail\SendOtpMail;
 use Carbon\Carbon;
 
 class ForgotPasswordController extends Controller
@@ -25,8 +26,16 @@ class ForgotPasswordController extends Controller
             'email.exists' => 'No account found with this email address.',
         ]);
 
+        $user = User::where('email', $request->email)->first();
+        if ($user && ! ($user->is_active ?? true)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Your account has been archived and cannot access the system.',
+            ], 403);
+        }
+
         $email = $request->email;
-        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
         DB::table('password_reset_tokens')
             ->where('email', $email)
@@ -35,25 +44,24 @@ class ForgotPasswordController extends Controller
         DB::table('password_reset_tokens')->insert([
             'email' => $email,
             'token' => $code,
+            'otp' => $code,
             'expires_at' => Carbon::now()->addMinutes(15),
-            'used' => false,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
 
         try {
-            Mail::raw("Your password reset code is: {$code}\n\nThis code will expire in 15 minutes.", function ($message) use ($email) {
-                $message->to($email)->subject('Password Reset Code');
-            });
+            Mail::to($email)->send(new SendOtpMail($code, $email));
 
             return response()->json([
                 'success' => true,
                 'message' => 'Reset code sent to your email. Please check your inbox.',
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            Log::error('Failed to send reset code: ' . $e->getMessage());
             return response()->json([
                 'success' => true,
-                'message' => 'Reset code generated successfully. (Development mode: code is ' . $code . ')',
+                'message' => 'Reset code generated. (Code: ' . $code . ')',
                 'dev_code' => $code,
             ]);
         }
@@ -68,8 +76,9 @@ class ForgotPasswordController extends Controller
 
         $token = DB::table('password_reset_tokens')
             ->where('email', $request->email)
-            ->where('token', $request->code)
-            ->where('used', false)
+            ->where(function ($query) use ($request) {
+                $query->where('token', $request->code)->orWhere('otp', $request->code);
+            })
             ->where('expires_at', '>', Carbon::now())
             ->first();
 
@@ -99,28 +108,37 @@ class ForgotPasswordController extends Controller
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
-            'code' => 'required|string|size:6',
-            'password' => 'required|min:12|regex:/[a-z]/|regex:/[A-Z]/|regex:/[0-9]/|regex:/[@$!%*#?]/',
-            'password_confirmation' => 'required|same:password',
+            'email' => 'required|email|exists:users,email',
+            'code' => 'nullable|string',
+            'password' => [
+                'required',
+                'string',
+                'min:12',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&^()\-]).+$/',
+                'confirmed',
+            ],
         ], [
-            'password.regex' => 'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character (@ $ ! % * # ?).',
+            'password.regex' => 'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character.',
             'password.min' => 'Password must be at least 12 characters.',
+            'password.confirmed' => 'The password confirmation does not match.',
         ]);
 
-        $token = DB::table('password_reset_tokens')
+        $tokenQuery = DB::table('password_reset_tokens')
             ->where('email', $request->email)
-            ->where(function ($query) use ($request) {
+            ->where('expires_at', '>', Carbon::now());
+
+        if ($request->filled('code')) {
+            $tokenQuery->where(function ($query) use ($request) {
                 $query->where('token', $request->code)->orWhere('otp', $request->code);
-            })
-            ->where('used', false)
-            ->where('expires_at', '>', Carbon::now())
-            ->first();
+            });
+        }
+
+        $token = $tokenQuery->first();
 
         if (!$token) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid or expired code.',
+                'message' => 'Your password reset session has expired or is invalid. Please request a new OTP.',
             ], 400);
         }
 
@@ -132,12 +150,12 @@ class ForgotPasswordController extends Controller
             ], 404);
         }
 
-        $user->password = Hash::make($request->password);
+        $user->password = $request->password;
         $user->save();
 
         DB::table('password_reset_tokens')
-            ->where('id', $token->id)
-            ->update(['used' => true]);
+            ->where('email', $request->email)
+            ->delete();
 
         return response()->json([
             'success' => true,
@@ -150,10 +168,20 @@ class ForgotPasswordController extends Controller
     {
         $request->validate([
             'email' => 'required|email|exists:users,email',
+        ], [
+            'email.exists' => 'No account found with this email address.',
         ]);
 
+        $user = User::where('email', $request->email)->first();
+        if ($user && ! ($user->is_active ?? true)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Your account has been archived and cannot access the system.',
+            ], 403);
+        }
+
         $email = $request->email;
-        $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
         DB::table('password_reset_tokens')
             ->where('email', $email)
@@ -161,28 +189,26 @@ class ForgotPasswordController extends Controller
 
         DB::table('password_reset_tokens')->insert([
             'email' => $email,
+            'token' => $otp,
             'otp' => $otp,
             'expires_at' => Carbon::now()->addMinutes(15),
-            'used' => false,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
 
         try {
-            Mail::raw("Your password reset code is: {$otp}\n\nThis code will expire in 15 minutes.", function ($message) use ($email) {
-                $message->to($email)->subject('Password Reset OTP');
-            });
+            Mail::to($email)->send(new SendOtpMail($otp, $email));
 
             return response()->json([
                 'success' => true,
                 'message' => 'Reset code sent to your email. Please check your inbox.',
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            Log::error('Failed to send OTP email: ' . $e->getMessage());
             return response()->json([
-                'success' => true,
-                'message' => 'Reset code generated successfully. (Development mode: code is ' . $otp . ')',
-                'dev_code' => $otp,
-            ]);
+                'success' => false,
+                'message' => 'Unable to send OTP email. Please try again.',
+            ], 500);
         }
     }
 
@@ -205,8 +231,9 @@ class ForgotPasswordController extends Controller
 
         $resetToken = DB::table('password_reset_tokens')
             ->where('email', $request->email)
-            ->where('otp', $request->otp)
-            ->where('used', false)
+            ->where(function ($query) use ($request) {
+                $query->where('otp', $request->otp)->orWhere('token', $request->otp);
+            })
             ->where('expires_at', '>', Carbon::now())
             ->first();
 

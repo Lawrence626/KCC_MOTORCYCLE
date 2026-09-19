@@ -33,9 +33,8 @@
 
         <!-- Filter Section -->
         <div class="rounded-[10px] border border-slate-200 bg-white p-3 shadow-sm">
-            <div class="flex items-center gap-3">
                 <div class="flex-1 min-w-0">
-                    <input type="text" id="searchInput" placeholder="Search by brand, product description, or SKU..." class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] focus:border-transparent">
+                    <input type="text" id="searchInput" placeholder="Search by brand, product category, or SKU..." class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] focus:border-transparent">
                 </div>
                 <button id="clearFilterBtn" class="px-3.5 py-2 rounded-[12px] border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
                     Clear Filter
@@ -53,7 +52,7 @@
                                 <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1] cursor-pointer">
                             </th>
                             <th class="px-3.5 py-3 font-semibold text-left text-white">Brand</th>
-                            <th class="px-3.5 py-3 font-semibold text-left text-white">Product Description</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Product Category</th>
                             <th class="px-3.5 py-3 font-semibold text-left text-white">SKU (QR Code)</th>
                             <th class="px-3.5 py-3 font-semibold text-left text-white">Location</th>
                             <th class="px-3.5 py-3 font-semibold text-left text-white">Compatible Models</th>
@@ -93,9 +92,15 @@
                         <input type="text" id="productName" placeholder="e.g., APIDO" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 bg-white text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#6EC1D1] focus:ring-1 focus:ring-[#6EC1D1]/20 hover:border-slate-300 mt-1" required />
                     </div>
                     <div>
-                        <label class="text-xs font-semibold text-slate-700">Product Description (Category)</label>
+                        <label class="text-xs font-semibold text-slate-700">Product Category</label>
                         <select id="productCategory" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 bg-white text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#6EC1D1] focus:ring-1 focus:ring-[#6EC1D1]/20 hover:border-slate-300 mt-1" required>
                             <option value="">Select category</option>
+                            <option value="ENGINE OIL">ENGINE OIL</option>
+                            <option value="GEAR OIL">GEAR OIL</option>
+                            <option value="BRAKE FLUID (BRAKE OIL)">BRAKE FLUID (BRAKE OIL)</option>
+                            <option value="COOLANT / RADIATOR COOLANT">COOLANT / RADIATOR COOLANT</option>
+                            <option value="CVT CLEANER">CVT CLEANER</option>
+                            <option value="TIRE SEALANT">TIRE SEALANT</option>
                             <option value="PIPE">PIPE</option>
                             <option value="SHOCK">SHOCK</option>
                             <option value="SWING ARM">SWING ARM</option>
@@ -107,15 +112,61 @@
                             <option value="TIRE">TIRE</option>
                         </select>
                     </div>
-                    <div class="col-span-2">
-                        <label class="text-xs font-semibold text-slate-700">SKU / QR Code</label>
-                        <input type="text" id="productSku" placeholder="e.g., PIPE-APIDO" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 bg-white text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#6EC1D1] focus:ring-1 focus:ring-[#6EC1D1]/20 hover:border-slate-300 mt-1" required />
+
+                    <!-- Warehouse Selection Dropdown -->
+                    <div>
+                        <label class="text-xs font-semibold text-slate-700">Warehouse Location <span class="text-red-500">*</span></label>
+                        <select id="productWarehouse" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 bg-white text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#6EC1D1] focus:ring-1 focus:ring-[#6EC1D1]/20 hover:border-slate-300 mt-1" required>
+                            <option value="">Select warehouse</option>
+                            <option value="Warehouse A">Warehouse A</option>
+                            <option value="Warehouse B">Warehouse B</option>
+                            <option value="Warehouse C">Warehouse C</option>
+                            <option value="Warehouse D">Warehouse D</option>
+                            <option value="SHOP">Shop (Main Store)</option>
+                        </select>
                     </div>
+
                     <div>
                         <label class="text-xs font-semibold text-slate-700">Reorder Level</label>
                         <input type="number" id="productReorderLevel" min="0" value="10" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 bg-white text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#6EC1D1] focus:ring-1 focus:ring-[#6EC1D1]/20 hover:border-slate-300 mt-1" />
                     </div>
+
+                    <!-- Extra Volume / Liter Field (for Oils / Fluids) -->
+                    <div id="oilVolumeGroup" class="col-span-2 hidden bg-cyan-50/50 p-3 rounded-xl border border-cyan-200">
+                        <label id="oilVolumeLabel" class="text-xs font-semibold text-slate-800 block mb-1">Volume / Liters (e.g., 800mL, 1L)</label>
+                        <input type="text" id="productSize" placeholder="e.g., 800mL, 1L, 1.2L" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 bg-white text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300" />
+                        <div id="oilVolumePills" class="mt-2 flex flex-wrap gap-1.5 items-center">
+                            <span class="text-[11px] text-slate-500 font-medium mr-1">Quick volume:</span>
+                            <button type="button" class="volume-pill px-2.5 py-1 rounded-md text-xs font-semibold bg-white text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 border border-slate-200 shadow-sm transition" data-volume="800mL">800mL</button>
+                            <button type="button" class="volume-pill px-2.5 py-1 rounded-md text-xs font-semibold bg-white text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 border border-slate-200 shadow-sm transition" data-volume="1L">1L</button>
+                            <button type="button" class="volume-pill px-2.5 py-1 rounded-md text-xs font-semibold bg-white text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 border border-slate-200 shadow-sm transition" data-volume="1.2L">1.2L</button>
+                            <button type="button" class="volume-pill px-2.5 py-1 rounded-md text-xs font-semibold bg-white text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 border border-slate-200 shadow-sm transition" data-volume="120mL">120mL</button>
+                            <button type="button" class="volume-pill px-2.5 py-1 rounded-md text-xs font-semibold bg-white text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 border border-slate-200 shadow-sm transition" data-volume="500mL">500mL</button>
+                            <button type="button" class="volume-pill px-2.5 py-1 rounded-md text-xs font-semibold bg-white text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 border border-slate-200 shadow-sm transition" data-volume="4L">4L</button>
+                        </div>
+                    </div>
+
                     <div class="col-span-2">
+                        <label class="text-xs font-semibold text-slate-700">SKU / QR Code</label>
+                        <input type="text" id="productSku" placeholder="e.g., KCC_PIPE_APIDO_001" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 bg-white text-xs font-medium text-slate-900 transition focus:outline-none focus:border-[#00fff2] focus:ring-1 focus:ring-[#00fff2]/20 hover:border-slate-300 mt-1" required />
+                    </div>
+
+                    <!-- General Item / Universal Checkbox -->
+                    <div class="col-span-2 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                        <label class="flex items-start gap-2.5 cursor-pointer">
+                            <input type="checkbox" id="isGeneralCheckbox" class="mt-0.5 rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2] w-4 h-4 cursor-pointer" />
+                            <div>
+                                <span class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                                    <span>General Item / Universal</span>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">Fits all models</span>
+                                </span>
+                                <p class="text-[11px] text-slate-500 mt-0.5">Check if this product does not require specific motorcycle models (e.g., Oils, universal accessories).</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Compatible Motorcycle Models Section -->
+                    <div id="compatibleModelsSection" class="col-span-2">
                         <label class="text-xs font-semibold text-slate-700 mb-2 block">Compatible Motorcycle Models</label>
                         <div id="motorcycleList" class="space-y-2 max-h-40 overflow-y-auto border border-slate-200 rounded-lg p-3 bg-slate-50">
                             <!-- Motorcycle checkboxes will load here -->

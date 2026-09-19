@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateProductCatalogRequest;
 use App\Models\MotorcycleModel;
 use App\Models\ProductCatalog;
 use App\Models\ProductDescription;
+use App\Models\Warehouse;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Http\Request;
@@ -76,7 +77,8 @@ class ProductCatalogController extends Controller
     {
         $productDescriptions = ProductDescription::active()->get();
         $motorcycles = MotorcycleModel::active()->get()->groupBy('brand');
-        return view('product-catalog.create', compact('productDescriptions', 'motorcycles'));
+        $warehouses = Warehouse::where('is_active', true)->orderBy('name')->get();
+        return view('product-catalog.create', compact('productDescriptions', 'motorcycles', 'warehouses'));
     }
 
     /**
@@ -112,8 +114,10 @@ class ProductCatalogController extends Controller
             $qrCodePath = $this->generateQRCode($product->sku);
             $product->update(['qr_code_path' => $qrCodePath]);
 
-            // Attach motorcycle models
-            $product->motorcycleModels()->attach($request->motorcycle_models);
+            // Attach motorcycle models if not general
+            if (!$request->boolean('is_general') && $request->filled('motorcycle_models')) {
+                $product->motorcycleModels()->attach($request->motorcycle_models);
+            }
 
             DB::commit();
             return redirect()->route('product-catalog.index')
@@ -143,7 +147,8 @@ class ProductCatalogController extends Controller
         $productCatalog->load('motorcycleModels');
         $productDescriptions = ProductDescription::active()->get();
         $motorcycles = MotorcycleModel::active()->get()->groupBy('brand');
-        return view('product-catalog.edit', compact('productCatalog', 'productDescriptions', 'motorcycles'));
+        $warehouses = Warehouse::where('is_active', true)->orderBy('name')->get();
+        return view('product-catalog.edit', compact('productCatalog', 'productDescriptions', 'motorcycles', 'warehouses'));
     }
 
     /**
@@ -175,51 +180,56 @@ class ProductCatalogController extends Controller
                 'expiration_date' => $request->expiration_date,
             ]);
 
-            // Sync motorcycle models - handle both array and comma-separated string
-            $motorcycleModels = $request->motorcycle_models;
-            if (is_string($motorcycleModels)) {
-                $motorcycleModels = array_filter(explode(',', $motorcycleModels), function($id) {
-                    return !empty(trim($id));
-                });
-            }
-            
-            // Separate existing model IDs from new model names
-            $existingModelIds = [];
-            $newModelNames = [];
-            
-            if (is_array($motorcycleModels)) {
-                foreach ($motorcycleModels as $item) {
-                    $item = trim($item);
-                    if (is_numeric($item)) {
-                        $existingModelIds[] = (int) $item;
-                    } elseif (!empty($item)) {
-                        $newModelNames[] = $item;
+            if ($request->boolean('is_general')) {
+                // General product has no specific motorcycle models
+                $productCatalog->motorcycleModels()->detach();
+            } else {
+                // Sync motorcycle models - handle both array and comma-separated string
+                $motorcycleModels = $request->motorcycle_models;
+                if (is_string($motorcycleModels)) {
+                    $motorcycleModels = array_filter(explode(',', $motorcycleModels), function($id) {
+                        return !empty(trim($id));
+                    });
+                }
+                
+                // Separate existing model IDs from new model names
+                $existingModelIds = [];
+                $newModelNames = [];
+                
+                if (is_array($motorcycleModels)) {
+                    foreach ($motorcycleModels as $item) {
+                        $item = trim($item);
+                        if (is_numeric($item)) {
+                            $existingModelIds[] = (int) $item;
+                        } elseif (!empty($item)) {
+                            $newModelNames[] = $item;
+                        }
                     }
                 }
-            }
-            
-            // Sync existing models by ID
-            $productCatalog->motorcycleModels()->sync($existingModelIds);
-            
-            // Add new models by name (create if not exists)
-            foreach ($newModelNames as $modelName) {
-                // Try to find existing model by name
-                $motorcycleModel = MotorcycleModel::where('model_name', $modelName)
-                    ->orWhere('brand', $modelName)
-                    ->first();
                 
-                if (!$motorcycleModel) {
-                    // Create new model
-                    $motorcycleModel = MotorcycleModel::create([
-                        'brand' => 'Custom',
-                        'model_name' => $modelName,
-                        'is_active' => true
-                    ]);
-                }
+                // Sync existing models by ID
+                $productCatalog->motorcycleModels()->sync($existingModelIds);
                 
-                // Attach if not already attached
-                if (!$productCatalog->motorcycleModels()->where('motorcycle_models.id', $motorcycleModel->id)->exists()) {
-                    $productCatalog->motorcycleModels()->attach($motorcycleModel->id);
+                // Add new models by name (create if not exists)
+                foreach ($newModelNames as $modelName) {
+                    // Try to find existing model by name
+                    $motorcycleModel = MotorcycleModel::where('model_name', $modelName)
+                        ->orWhere('brand', $modelName)
+                        ->first();
+                    
+                    if (!$motorcycleModel) {
+                        // Create new model
+                        $motorcycleModel = MotorcycleModel::create([
+                            'brand' => 'Custom',
+                            'model_name' => $modelName,
+                            'is_active' => true
+                        ]);
+                    }
+                    
+                    // Attach if not already attached
+                    if (!$productCatalog->motorcycleModels()->where('motorcycle_models.id', $motorcycleModel->id)->exists()) {
+                        $productCatalog->motorcycleModels()->attach($motorcycleModel->id);
+                    }
                 }
             }
 
@@ -250,14 +260,15 @@ class ProductCatalogController extends Controller
     }
 
     /**
-     * Generate SKU: KCC_{PRODUCT_DESC}_{BRAND}_{SEQ}
-     * SEQ is unique per (product_description, brand) pair so the same brand+desc
-     * with different compatible motorcycle models gets its own sequential number.
+     * Generate SKU: KCC_{PRODUCT_DESC}_{BRAND}_{SIZE?}_{SEQ}
+     * SEQ is unique per (product_description, brand, size) group.
      */
     public function generateSKU(Request $request)
     {
         $productDescriptionName = $request->product_description;
         $brand = strtoupper(trim($request->brand ?? ''));
+        $rawSize = trim($request->size ?? '');
+        $productName = trim($request->product_name ?? '');
 
         if (!$productDescriptionName) {
             return response()->json(['error' => 'Product description is required'], 422);
@@ -267,15 +278,106 @@ class ProductCatalogController extends Controller
         $descSlug  = strtoupper(str_replace(' ', '_', trim($productDescriptionName)));
         $brandSlug = $brand !== '' ? str_replace(' ', '_', $brand) : 'UNKNOWN';
 
-        // Count existing (non-deleted) products with same desc+brand
-        $count = ProductCatalog::where('product_description', $productDescriptionName)
-            ->where('brand', $request->brand ?? '')
-            ->count();
+        // Normalize size / liter slug
+        $sizeSlug = self::normalizeSizeSlug($rawSize, $productDescriptionName, $productName);
 
+        // Count existing (non-deleted) products with same desc + brand (+ size if specified)
+        $query = ProductCatalog::where('product_description', $productDescriptionName)
+            ->where('brand', $request->brand ?? '');
+
+        if ($sizeSlug !== '') {
+            $query->where(function ($q) use ($rawSize, $sizeSlug) {
+                if ($rawSize !== '') {
+                    $q->where('size', $rawSize);
+                }
+                $q->orWhere('sku', 'like', "%_{$sizeSlug}_%");
+            });
+        }
+
+        $count = $query->count();
         $seq = str_pad($count + 1, 3, '0', STR_PAD_LEFT);
-        $sku = "KCC_{$descSlug}_{$brandSlug}_{$seq}";
 
-        return response()->json(['sku' => $sku]);
+        if ($sizeSlug !== '') {
+            $sku = "KCC_{$descSlug}_{$brandSlug}_{$sizeSlug}_{$seq}";
+        } else {
+            $sku = "KCC_{$descSlug}_{$brandSlug}_{$seq}";
+        }
+
+        return response()->json([
+            'sku' => $sku,
+            'size_slug' => $sizeSlug,
+        ]);
+    }
+
+    /**
+     * Normalize size / liter / volume into a clean uppercase SKU slug.
+     */
+    public static function normalizeSizeSlug(?string $size, string $productDescription = '', string $productName = ''): string
+    {
+        $size = trim($size ?? '');
+
+        // If size is empty, try to auto-extract from product name (especially for oils/liquids)
+        if ($size === '' && !empty($productName)) {
+            if (preg_match('/\((\d+(?:\.\d+)?\s*(?:ml|l|liter|liters|litre|litres))\)/i', $productName, $matches)) {
+                $size = $matches[1];
+            } elseif (preg_match('/\b(\d+(?:\.\d+)?)\s*(ml|l|liter|liters|litre|litres)\b/i', $productName, $matches)) {
+                $size = $matches[1] . $matches[2];
+            }
+        }
+
+        if ($size === '') {
+            return '';
+        }
+
+        $upper = strtoupper(trim($size));
+
+        // Handle Liter variations (e.g. 1L, 1 L, 1 LITER, 1.0L)
+        if (preg_match('/^(\d+(?:\.\d+)?)\s*(?:L|LITER|LITERS|LITRE|LITRES)$/i', $upper, $m)) {
+            $num = (float) $m[1];
+            if ($num == 1.0) {
+                return '1L';
+            }
+            if ($num == 0.8) {
+                return '800ML';
+            }
+            $formattedNum = (string) $num;
+            return $formattedNum . 'L';
+        }
+
+        // Handle mL variations (e.g. 800ML, 800 ML, 1000ML -> 1L)
+        if (preg_match('/^(\d+)\s*(?:ML|MILLILITER|MILLILITERS)$/i', $upper, $m)) {
+            $ml = (int) $m[1];
+            if ($ml === 1000) {
+                return '1L';
+            }
+            return $ml . 'ML';
+        }
+
+        // Handle numeric-only input for oil/fluid products
+        $isOil = preg_match('/oil|fluid|coolant|cleaner|sealant|lubricant/i', $productDescription . ' ' . $productName);
+        if ($isOil && is_numeric($size)) {
+            $val = (float) $size;
+            if ($val == 1) {
+                return '1L';
+            }
+            if ($val == 800 || $val == 0.8) {
+                return '800ML';
+            }
+            if ($val == 120) {
+                return '120ML';
+            }
+            if ($val == 500) {
+                return '500ML';
+            }
+            if ($val >= 50) {
+                return ((int) $val) . 'ML';
+            }
+            return ((string) $val) . 'L';
+        }
+
+        // General size normalization (replace spaces, slashes, dashes with underscores, keep alphanumeric & dots)
+        $slug = preg_replace('/[^A-Za-z0-9_\.]/', '', str_replace([' ', '/', '-'], '_', $upper));
+        return trim($slug, '_');
     }
 
     /**

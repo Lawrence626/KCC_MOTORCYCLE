@@ -32,24 +32,38 @@
                         <!-- Left Column - Form Fields -->
                         <div class="lg:col-span-2 space-y-4">
                             <div>
-                                <label class="text-xs font-semibold text-slate-600 mb-1 block">Warehouse</label>
-                                <input type="text" 
-                                       name="warehouse" 
-                                       value="{{ old('warehouse', $productCatalog->warehouse) }}" 
-                                       placeholder="e.g., Warehouse A" 
-                                       class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm">
+                                <label class="text-xs font-semibold text-slate-600 mb-1 block">Warehouse <span class="text-red-500">*</span></label>
+                                <select name="warehouse" 
+                                        id="warehouseSelect"
+                                        class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm h-10"
+                                        required>
+                                    <option value="">Select warehouse</option>
+                                    @if(isset($warehouses) && $warehouses->count() > 0)
+                                        @foreach($warehouses as $wh)
+                                            <option value="{{ $wh->name }}" {{ old('warehouse', $productCatalog->warehouse) == $wh->name ? 'selected' : '' }}>
+                                                {{ $wh->name }}
+                                            </option>
+                                        @endforeach
+                                    @else
+                                        <option value="Warehouse A" {{ old('warehouse', $productCatalog->warehouse) == 'Warehouse A' ? 'selected' : '' }}>Warehouse A</option>
+                                        <option value="Warehouse B" {{ old('warehouse', $productCatalog->warehouse) == 'Warehouse B' ? 'selected' : '' }}>Warehouse B</option>
+                                        <option value="Warehouse C" {{ old('warehouse', $productCatalog->warehouse) == 'Warehouse C' ? 'selected' : '' }}>Warehouse C</option>
+                                        <option value="Warehouse D" {{ old('warehouse', $productCatalog->warehouse) == 'Warehouse D' ? 'selected' : '' }}>Warehouse D</option>
+                                        <option value="SHOP" {{ old('warehouse', $productCatalog->warehouse) == 'SHOP' ? 'selected' : '' }}>Shop (Main Store)</option>
+                                    @endif
+                                </select>
                                 @error('warehouse')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             <div>
-                                <label class="text-xs font-semibold text-slate-600 mb-1 block">Product Description <span class="text-red-500">*</span></label>
+                                <label class="text-xs font-semibold text-slate-600 mb-1 block">Product Category <span class="text-red-500">*</span></label>
                                 <select name="product_description" 
                                         id="productDescriptionSelect"
                                         class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm" 
                                         required>
-                                    <option value="">Select product description</option>
+                                    <option value="">Select product category</option>
                                     @foreach($productDescriptions as $description)
                                         <option value="{{ $description->name }}" 
                                                 data-brands="{{ json_encode($description->brands) }}"
@@ -90,12 +104,22 @@
 
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="text-xs font-semibold text-slate-600 mb-1 block">Size</label>
+                                    <label id="sizeLabel" class="text-xs font-semibold text-slate-600 mb-1 block">Size (Optional)</label>
                                     <input type="text" 
                                            name="size" 
+                                           id="sizeInput"
                                            value="{{ old('size', $productCatalog->size) }}" 
                                            placeholder="e.g., L, XL, 14 inch" 
                                            class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm">
+                                    <div id="oilVolumePills" class="hidden mt-1.5 flex flex-wrap gap-1 items-center">
+                                        <span class="text-[10px] text-slate-400 font-medium mr-0.5">Quick volume:</span>
+                                        <button type="button" class="volume-pill px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-700 hover:bg-[#00fff2]/30 hover:text-slate-900 border border-slate-200 transition" data-volume="800mL">800mL</button>
+                                        <button type="button" class="volume-pill px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-700 hover:bg-[#00fff2]/30 hover:text-slate-900 border border-slate-200 transition" data-volume="1L">1L</button>
+                                        <button type="button" class="volume-pill px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-700 hover:bg-[#00fff2]/30 hover:text-slate-900 border border-slate-200 transition" data-volume="1.2L">1.2L</button>
+                                        <button type="button" class="volume-pill px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-700 hover:bg-[#00fff2]/30 hover:text-slate-900 border border-slate-200 transition" data-volume="120mL">120mL</button>
+                                        <button type="button" class="volume-pill px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-700 hover:bg-[#00fff2]/30 hover:text-slate-900 border border-slate-200 transition" data-volume="500mL">500mL</button>
+                                        <button type="button" class="volume-pill px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-700 hover:bg-[#00fff2]/30 hover:text-slate-900 border border-slate-200 transition" data-volume="4L">4L</button>
+                                    </div>
                                     @error('size')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -165,7 +189,7 @@
                                 <label class="text-xs font-semibold text-slate-600 mb-1 block">Description</label>
                                 <textarea name="description" 
                                           rows="3" 
-                                          placeholder="Product description (optional)" 
+                                          placeholder="Additional notes / details (optional)" 
                                           class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 hover:ring-1 hover:ring-black/15 transition shadow-sm">{{ old('description', $productCatalog->description) }}</textarea>
                                 @error('description')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -222,7 +246,27 @@
                                 @enderror
                             </div>
 
-                            <div>
+                            <!-- General Item Checkbox -->
+                            <div class="rounded-[14px] border border-slate-200 bg-slate-50/80 p-3.5 shadow-sm">
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input type="checkbox" 
+                                           name="is_general" 
+                                           id="isGeneralCheckbox" 
+                                           value="1" 
+                                           {{ old('is_general', (isset($productCatalog->motorcycleModels) && count($productCatalog->motorcycleModels) === 0) ? '1' : '') == '1' ? 'checked' : '' }}
+                                           class="mt-0.5 rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2] w-4 h-4 cursor-pointer">
+                                    <div class="select-none">
+                                        <span class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                                            <span>General Item / Universal</span>
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">Fits all models</span>
+                                        </span>
+                                        <p class="text-[11px] text-slate-500 mt-0.5">Check if this product is a general item (e.g., Engine Oil, Gear Oil, universal fluids/tools) that does not need specific motorcycle models.</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- Compatible Motorcycle Models Container -->
+                            <div id="compatibleModelsContainer" class="space-y-2">
                                 <label class="text-xs font-semibold text-slate-600 mb-2 block">Compatible Motorcycle Models</label>
                                 <div class="border border-slate-300 rounded-[12px] p-4">
                                     <!-- Existing Compatible Models -->
@@ -411,19 +455,44 @@
                 updateButtonLabel();
             }
 
-            setupCustomSelectDropdown('productDescriptionSelect', 'Select product description');
+            setupCustomSelectDropdown('warehouseSelect', 'Select warehouse');
+            setupCustomSelectDropdown('productDescriptionSelect', 'Select product category');
             setupCustomSelectDropdown('brandSelect', 'Select brand');
             setupCustomSelectDropdown('statusSelect', 'Active');
             const productDescriptionSelect = document.getElementById('productDescriptionSelect');
             const brandSelect = document.getElementById('brandSelect');
             const skuInput = document.getElementById('skuInput');
             const generateSkuBtn = document.getElementById('generateSkuBtn');
+            const sizeInput = document.getElementById('sizeInput');
+            const sizeLabel = document.getElementById('sizeLabel');
+            const oilVolumePills = document.getElementById('oilVolumePills');
+            const productNameInput = document.querySelector('input[name="product_name"]');
             const currentBrand = "{{ $productCatalog->brand }}";
             const expirationFields = document.getElementById('expirationFields');
             const addCompatibleModelInput = document.getElementById('addCompatibleModelInput');
             const addCompatibleBtn = document.getElementById('addCompatibleBtn');
             const existingCompatibleModels = document.getElementById('existingCompatibleModels');
             const motorcycleModelsInput = document.getElementById('motorcycleModelsInput');
+            const isGeneralCheckbox = document.getElementById('isGeneralCheckbox');
+            const compatibleModelsContainer = document.getElementById('compatibleModelsContainer');
+
+            // General item toggle handler
+            function toggleGeneralState() {
+                if (!isGeneralCheckbox || !compatibleModelsContainer) return;
+                if (isGeneralCheckbox.checked) {
+                    compatibleModelsContainer.classList.add('hidden');
+                } else {
+                    compatibleModelsContainer.classList.remove('hidden');
+                }
+            }
+
+            if (isGeneralCheckbox) {
+                isGeneralCheckbox.addEventListener('change', function() {
+                    this.dataset.userModified = 'true';
+                    toggleGeneralState();
+                });
+                toggleGeneralState();
+            }
 
             // Expirable product descriptions
             const expirableDescriptions = [
@@ -435,20 +504,63 @@
                 'TIRE SEALANT'
             ];
 
-            // Function to show/hide expiration fields
+            // Function to show/hide expiration fields & oil volume pills
             function toggleExpirationFields() {
-                const selectedDescription = productDescriptionSelect.value.toUpperCase();
-                if (expirableDescriptions.includes(selectedDescription)) {
+                const selectedDescription = (productDescriptionSelect.value || '').toUpperCase();
+                const isExpirable = expirableDescriptions.includes(selectedDescription);
+                const isOilOrFluid = /OIL|FLUID|COOLANT|CLEANER|SEALANT|LUBRICANT/.test(selectedDescription);
+
+                if (isExpirable) {
                     expirationFields.classList.remove('hidden');
                 } else {
                     expirationFields.classList.add('hidden');
                 }
+
+                if (oilVolumePills && sizeLabel && sizeInput) {
+                    if (isOilOrFluid) {
+                        oilVolumePills.classList.remove('hidden');
+                        sizeLabel.textContent = 'Volume / Liters (e.g., 800mL, 1L)';
+                        sizeInput.placeholder = 'e.g., 800mL, 1L, 1.2L';
+                    } else {
+                        oilVolumePills.classList.add('hidden');
+                        sizeLabel.textContent = 'Size (Optional)';
+                        sizeInput.placeholder = 'e.g., L, XL, 14 inch';
+                    }
+                }
+            }
+
+            // Quick volume pill click handlers
+            if (oilVolumePills) {
+                oilVolumePills.querySelectorAll('.volume-pill').forEach(pill => {
+                    // Check if initial size matches this pill
+                    if (sizeInput && sizeInput.value && sizeInput.value.toLowerCase() === pill.dataset.volume.toLowerCase()) {
+                        pill.classList.remove('bg-slate-100', 'text-slate-700', 'border-slate-200');
+                        pill.classList.add('bg-[#00fff2]', 'text-slate-900', 'border-cyan-400');
+                    }
+
+                    pill.addEventListener('click', function() {
+                        if (sizeInput) {
+                            sizeInput.value = this.dataset.volume;
+                            // Highlight selected pill
+                            oilVolumePills.querySelectorAll('.volume-pill').forEach(p => {
+                                p.classList.remove('bg-[#00fff2]', 'text-slate-900', 'border-cyan-400');
+                                p.classList.add('bg-slate-100', 'text-slate-700', 'border-slate-200');
+                            });
+                            this.classList.remove('bg-slate-100', 'text-slate-700', 'border-slate-200');
+                            this.classList.add('bg-[#00fff2]', 'text-slate-900', 'border-cyan-400');
+
+                            if (productDescriptionSelect.value && brandSelect.value) {
+                                generateSku();
+                            }
+                        }
+                    });
+                });
             }
 
             // Initialize brand dropdown based on current product description
             function initializeBrandDropdown() {
                 const selectedOption = productDescriptionSelect.options[productDescriptionSelect.selectedIndex];
-                const brands = selectedOption.dataset.brands ? JSON.parse(selectedOption.dataset.brands) : [];
+                const brands = selectedOption && selectedOption.dataset.brands ? JSON.parse(selectedOption.dataset.brands) : [];
                 
                 // Clear brand dropdown
                 brandSelect.innerHTML = '<option value="">Select brand</option>';
@@ -475,7 +587,7 @@
             // Update brand dropdown when product description changes
             productDescriptionSelect.addEventListener('change', function() {
                 const selectedOption = this.options[this.selectedIndex];
-                const brands = selectedOption.dataset.brands ? JSON.parse(selectedOption.dataset.brands) : [];
+                const brands = selectedOption && selectedOption.dataset.brands ? JSON.parse(selectedOption.dataset.brands) : [];
                 
                 // Clear brand dropdown
                 brandSelect.innerHTML = '<option value="">Select brand</option>';
@@ -496,20 +608,29 @@
                     brandSelect.value = '';
                 }
                 
-                // Toggle expiration fields
+                // Toggle expiration fields & volume pills
                 toggleExpirationFields();
             });
 
-            // Generate SKU
-            generateSkuBtn.addEventListener('click', async function() {
+            // Generate SKU helper
+            async function generateSku() {
                 const productDescription = productDescriptionSelect.value;
+                const brand = brandSelect.value;
+                const size = sizeInput ? sizeInput.value : '';
+                const productName = productNameInput ? productNameInput.value : '';
+
                 if (!productDescription) {
-                    alert('Please select a product description first');
+                    alert('Please select a product category first');
+                    return;
+                }
+                if (!brand) {
+                    alert('Please select a brand first');
                     return;
                 }
 
                 try {
-                    const response = await fetch(`{{ route('product-catalog.generate-sku') }}?product_description=${encodeURIComponent(productDescription)}`);
+                    const url = `{{ route('product-catalog.generate-sku') }}?product_description=${encodeURIComponent(productDescription)}&brand=${encodeURIComponent(brand)}&size=${encodeURIComponent(size)}&product_name=${encodeURIComponent(productName)}`;
+                    const response = await fetch(url);
                     const data = await response.json();
                     if (data.sku) {
                         skuInput.value = data.sku;
@@ -520,7 +641,30 @@
                     console.error('Error generating SKU:', error);
                     alert('Failed to generate SKU');
                 }
+            }
+
+            // Auto-generate SKU when brand changes
+            brandSelect.addEventListener('change', function() {
+                if (productDescriptionSelect.value && this.value) {
+                    generateSku();
+                }
             });
+
+            // Auto-generate SKU when size / volume changes
+            if (sizeInput) {
+                let sizeTimeout;
+                sizeInput.addEventListener('input', function() {
+                    clearTimeout(sizeTimeout);
+                    sizeTimeout = setTimeout(() => {
+                        if (productDescriptionSelect.value && brandSelect.value) {
+                            generateSku();
+                        }
+                    }, 400);
+                });
+            }
+
+            // Generate SKU button
+            generateSkuBtn.addEventListener('click', generateSku);
 
             // Add compatible model from text input
             addCompatibleBtn.addEventListener('click', function() {

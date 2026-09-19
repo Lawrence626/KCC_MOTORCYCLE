@@ -1,11 +1,13 @@
-// Offline Manager - Handles offline detection, local storage, and synchronization
+// Offline Manager - Handles offline detection, local storage, and synchronization for Purchase Orders
 class OfflineManager {
     constructor() {
         this.isOnline = navigator.onLine;
         this.dbName = 'KCC_OfflineDB';
-        this.dbVersion = 2;
+        this.dbVersion = 4;
         this.db = null;
-        this.queue = [];
+        this.queue = {
+            orders: []
+        };
         this.init();
     }
 
@@ -37,15 +39,15 @@ class OfflineManager {
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
 
+                // Delete deprecated pending_movements store if it exists
+                if (db.objectStoreNames.contains('pending_movements')) {
+                    db.deleteObjectStore('pending_movements');
+                }
+
                 // Create stores for offline operations
                 if (!db.objectStoreNames.contains('pending_orders')) {
                     const orderStore = db.createObjectStore('pending_orders', { keyPath: 'id', autoIncrement: true });
                     orderStore.createIndex('timestamp', 'timestamp');
-                }
-
-                if (!db.objectStoreNames.contains('pending_movements')) {
-                    const movementStore = db.createObjectStore('pending_movements', { keyPath: 'id', autoIncrement: true });
-                    movementStore.createIndex('timestamp', 'timestamp');
                 }
 
                 if (!db.objectStoreNames.contains('sync_queue')) {
@@ -58,6 +60,14 @@ class OfflineManager {
                     const archiveStore = db.createObjectStore('archived_orders', { keyPath: 'id', autoIncrement: true });
                     archiveStore.createIndex('archived_at', 'archived_at');
                 }
+
+                if (!db.objectStoreNames.contains('master_products')) {
+                    db.createObjectStore('master_products', { keyPath: 'id' });
+                }
+
+                if (!db.objectStoreNames.contains('master_suppliers')) {
+                    db.createObjectStore('master_suppliers', { keyPath: 'id' });
+                }
             };
         });
     }
@@ -65,16 +75,13 @@ class OfflineManager {
     handleOnline() {
         this.isOnline = true;
         this.updateStatusIndicator();
-        this.showNotification('You are back online. Syncing...', 'success');
-        
-        // Attempt to sync pending operations
-        this.syncPendingOperations();
+        this.showNotification('You are back online.', 'success');
     }
 
     handleOffline() {
         this.isOnline = false;
         this.updateStatusIndicator();
-        this.showNotification('You are offline. Orders will be saved locally.', 'warning');
+        this.showNotification('You are currently offline. Orders will be saved locally.', 'warning');
     }
 
     updateStatusIndicator() {
@@ -83,9 +90,9 @@ class OfflineManager {
             if (this.isOnline) {
                 indicator.className = 'hidden';
             } else {
-                indicator.className = 'fixed top-4 right-4 bg-amber-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 flex items-center gap-2';
+                indicator.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-100 border border-amber-300 rounded-[10px] text-xs font-semibold text-amber-900 shadow-sm';
                 indicator.innerHTML = `
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 text-amber-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
                     </svg>
                     <span>Offline Mode</span>
@@ -95,94 +102,80 @@ class OfflineManager {
     }
 
     showNotification(message, type = 'info') {
-        // Simple notification system
         const notification = document.createElement('div');
-        notification.className = `fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg z-50 ${
-            type === 'success' ? 'bg-green-500 text-white' :
-            type === 'warning' ? 'bg-amber-500 text-white' :
-            type === 'error' ? 'bg-red-500 text-white' :
-            'bg-blue-500 text-white'
+        notification.className = `fixed bottom-4 right-4 px-4 py-2.5 rounded-[12px] shadow-xl z-50 text-xs font-semibold flex items-center gap-2 ${
+            type === 'success' ? 'bg-green-600 text-white' :
+            type === 'warning' ? 'bg-amber-500 text-slate-950' :
+            type === 'error' ? 'bg-red-600 text-white' :
+            'bg-[#0f172a] text-white'
         }`;
         notification.textContent = message;
         document.body.appendChild(notification);
 
         setTimeout(() => {
             notification.remove();
-        }, 3000);
+        }, 3500);
+    }
+
+    async cacheMasterData(products = [], suppliers = []) {
+        if (!this.db) return;
+
+        try {
+            if (Array.isArray(products) && products.length > 0) {
+                const txP = this.db.transaction(['master_products'], 'readwrite');
+                const storeP = txP.objectStore('master_products');
+                for (const p of products) {
+                    storeP.put(p);
+                }
+            }
+
+            if (Array.isArray(suppliers) && suppliers.length > 0) {
+                const txS = this.db.transaction(['master_suppliers'], 'readwrite');
+                const storeS = txS.objectStore('master_suppliers');
+                for (const s of suppliers) {
+                    storeS.put(s);
+                }
+            }
+        } catch (e) {
+            console.warn('Could not cache master data to IndexedDB:', e);
+        }
+    }
+
+    async getCachedProducts() {
+        return this.getAllFromStore('master_products');
+    }
+
+    async getCachedSuppliers() {
+        return this.getAllFromStore('master_suppliers');
     }
 
     async savePendingOrder(orderData) {
         return new Promise((resolve, reject) => {
+            if (!this.db) {
+                reject(new Error('IndexedDB not initialized'));
+                return;
+            }
+
             const transaction = this.db.transaction(['pending_orders'], 'readwrite');
             const store = transaction.objectStore('pending_orders');
 
-            // Check if order with same order_number already exists
-            const index = store.index('timestamp');
-            const request = index.openCursor(null, 'prev');
-            
-            request.onsuccess = (event) => {
-                const cursor = event.target.result;
-                if (cursor) {
-                    const existingOrder = cursor.value;
-                    if (existingOrder.order_number === orderData.order_number) {
-                        reject(new Error('Order with this number already exists'));
-                        return;
-                    }
-                    cursor.continue();
-                } else {
-                    // No duplicate found, add the order
-                    const order = {
-                        ...orderData,
-                        timestamp: new Date().toISOString(),
-                        synced: false
-                    };
-
-                    const addRequest = store.add(order);
-                    addRequest.onsuccess = () => resolve(addRequest.result);
-                    addRequest.onerror = () => reject(addRequest.error);
-                }
-            };
-
-            request.onerror = () => {
-                // If index doesn't exist, just add without checking
-                const order = {
-                    ...orderData,
-                    timestamp: new Date().toISOString(),
-                    synced: false
-                };
-
-                const addRequest = store.add(order);
-                addRequest.onsuccess = () => resolve(addRequest.result);
-                addRequest.onerror = () => reject(addRequest.error);
-            };
-        });
-    }
-
-    async savePendingMovement(movementData) {
-        return new Promise((resolve, reject) => {
-            const transaction = this.db.transaction(['pending_movements'], 'readwrite');
-            const store = transaction.objectStore('pending_movements');
-
-            const movement = {
-                ...movementData,
+            const order = {
+                ...orderData,
                 timestamp: new Date().toISOString(),
                 synced: false
             };
 
-            const request = store.add(movement);
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
+            const addRequest = store.add(order);
+            addRequest.onsuccess = () => resolve(addRequest.result);
+            addRequest.onerror = () => reject(addRequest.error);
         });
     }
 
     async loadPendingOperations() {
-        // Load pending orders
         const orders = await this.getAllFromStore('pending_orders');
-        const movements = await this.getAllFromStore('pending_movements');
         
         this.queue = {
-            orders: orders.filter(o => !o.synced),
-            movements: movements.filter(m => !m.synced)
+            orders: orders.filter(o => !o.synced)
         };
 
         this.updateQueueCount();
@@ -190,22 +183,145 @@ class OfflineManager {
 
     async getAllFromStore(storeName) {
         return new Promise((resolve, reject) => {
+            if (!this.db) {
+                resolve([]);
+                return;
+            }
+
+            if (!this.db.objectStoreNames.contains(storeName)) {
+                resolve([]);
+                return;
+            }
+
             const transaction = this.db.transaction([storeName], 'readonly');
             const store = transaction.objectStore(storeName);
             const request = store.getAll();
 
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror = () => resolve([]);
         });
     }
 
     async getOrderById(storeName, id) {
         return new Promise((resolve, reject) => {
+            if (!this.db || !this.db.objectStoreNames.contains(storeName)) {
+                reject(new Error(`Store ${storeName} not available`));
+                return;
+            }
+
             const transaction = this.db.transaction([storeName], 'readonly');
             const store = transaction.objectStore(storeName);
-            const request = store.get(id);
+            const numKey = (!isNaN(id) && id !== '' && id !== null) ? Number(id) : id;
+            const request = store.get(numKey);
 
-            request.onsuccess = () => resolve(request.result);
+            request.onsuccess = () => {
+                if (request.result !== undefined) {
+                    resolve(request.result);
+                } else if (numKey !== id) {
+                    const fallbackReq = store.get(id);
+                    fallbackReq.onsuccess = () => resolve(fallbackReq.result);
+                    fallbackReq.onerror = () => reject(fallbackReq.error);
+                } else {
+                    resolve(undefined);
+                }
+            };
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async archiveOrder(id) {
+        return new Promise(async (resolve, reject) => {
+            if (!this.db) {
+                reject(new Error('IndexedDB not initialized'));
+                return;
+            }
+
+            try {
+                const order = await this.getOrderById('pending_orders', id);
+                if (!order) {
+                    reject(new Error(`Order #${id} not found in local orders`));
+                    return;
+                }
+
+                const transaction = this.db.transaction(['pending_orders', 'archived_orders'], 'readwrite');
+                const pendingStore = transaction.objectStore('pending_orders');
+                const archiveStore = transaction.objectStore('archived_orders');
+
+                // Omit the pending_orders id so archived_orders creates its own autoIncrement key without conflict
+                const { id: originalId, ...orderData } = order;
+                const recordToArchive = {
+                    ...orderData,
+                    original_id: originalId,
+                    archived_at: new Date().toISOString()
+                };
+
+                const addReq = archiveStore.add(recordToArchive);
+                addReq.onsuccess = () => {
+                    const delKey = (order.id !== undefined) ? order.id : ((!isNaN(id) && id !== '') ? Number(id) : id);
+                    const delReq = pendingStore.delete(delKey);
+                    delReq.onsuccess = () => resolve(addReq.result);
+                    delReq.onerror = () => reject(delReq.error);
+                };
+                addReq.onerror = () => reject(addReq.error);
+                transaction.onerror = () => reject(transaction.error);
+            } catch (err) {
+                reject(err);
+            }
+        });
+    }
+
+    async restoreOrder(id) {
+        return new Promise(async (resolve, reject) => {
+            if (!this.db) {
+                reject(new Error('IndexedDB not initialized'));
+                return;
+            }
+
+            try {
+                const order = await this.getOrderById('archived_orders', id);
+                if (!order) {
+                    reject(new Error(`Archived order #${id} not found`));
+                    return;
+                }
+
+                const transaction = this.db.transaction(['pending_orders', 'archived_orders'], 'readwrite');
+                const pendingStore = transaction.objectStore('pending_orders');
+                const archiveStore = transaction.objectStore('archived_orders');
+
+                const { id: archiveId, archived_at, ...orderData } = order;
+                const recordToRestore = {
+                    ...orderData,
+                    restored_at: new Date().toISOString()
+                };
+
+                const addReq = pendingStore.add(recordToRestore);
+                addReq.onsuccess = () => {
+                    const delKey = (order.id !== undefined) ? order.id : ((!isNaN(id) && id !== '') ? Number(id) : id);
+                    const delReq = archiveStore.delete(delKey);
+                    delReq.onsuccess = () => resolve(addReq.result);
+                    delReq.onerror = () => reject(delReq.error);
+                };
+                addReq.onerror = () => reject(addReq.error);
+                transaction.onerror = () => reject(transaction.error);
+            } catch (err) {
+                reject(err);
+            }
+        });
+    }
+
+    async deleteOrder(storeName, id) {
+        return new Promise((resolve, reject) => {
+            if (!this.db || !this.db.objectStoreNames.contains(storeName)) {
+                reject(new Error(`Store ${storeName} not available`));
+                return;
+            }
+
+            const transaction = this.db.transaction([storeName], 'readwrite');
+            const store = transaction.objectStore(storeName);
+            const key = (!isNaN(id) && id !== '' && id !== null) ? Number(id) : id;
+            const request = store.delete(key);
+
+            request.onsuccess = () => resolve();
             request.onerror = () => reject(request.error);
         });
     }
@@ -213,7 +329,7 @@ class OfflineManager {
     updateQueueCount() {
         const countElement = document.getElementById('pending-sync-count');
         if (countElement) {
-            const total = (this.queue.orders?.length || 0) + (this.queue.movements?.length || 0);
+            const total = this.queue.orders?.length || 0;
             countElement.textContent = total;
         }
     }
@@ -222,28 +338,19 @@ class OfflineManager {
         if (!this.isOnline) return;
 
         try {
-            // Sync pending orders
+            await this.loadPendingOperations();
+
             for (const order of this.queue.orders) {
                 await this.syncOrder(order);
             }
 
-            // Sync pending movements
-            for (const movement of this.queue.movements) {
-                await this.syncMovement(movement);
-            }
-
-            this.showNotification('Sync completed successfully!', 'success');
-            this.queue = { orders: [], movements: [] };
-            this.updateQueueCount();
-
+            await this.loadPendingOperations();
         } catch (error) {
-            console.error('Sync failed:', error);
-            this.showNotification('Sync failed. Will retry later.', 'error');
+            console.error('Sync error:', error);
         }
     }
 
     async syncOrder(order) {
-        // Send order to server
         const response = await fetch('/offline-reconciliation/sync-order', {
             method: 'POST',
             headers: {
@@ -254,51 +361,159 @@ class OfflineManager {
         });
 
         if (response.ok) {
-            // Mark as synced in IndexedDB
             await this.markAsSynced('pending_orders', order.id);
-        }
-    }
-
-    async syncMovement(movement) {
-        // Send movement to server
-        const response = await fetch('/offline-reconciliation/sync-movement', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content
-            },
-            body: JSON.stringify(movement)
-        });
-
-        if (response.ok) {
-            // Mark as synced in IndexedDB
-            await this.markAsSynced('pending_movements', movement.id);
         }
     }
 
     async markAsSynced(storeName, id) {
         return new Promise((resolve, reject) => {
+            if (!this.db) return resolve();
             const transaction = this.db.transaction([storeName], 'readwrite');
             const store = transaction.objectStore(storeName);
             const request = store.get(id);
 
             request.onsuccess = () => {
                 const data = request.result;
-                data.synced = true;
-                const updateRequest = store.put(data);
-                updateRequest.onsuccess = () => resolve();
-                updateRequest.onerror = () => reject(updateRequest.error);
+                if (data) {
+                    data.synced = true;
+                    data.sync_status = 'synchronized';
+                    const updateRequest = store.put(data);
+                    updateRequest.onsuccess = () => resolve();
+                    updateRequest.onerror = () => reject(updateRequest.error);
+                } else {
+                    resolve();
+                }
             };
             request.onerror = () => reject(request.error);
         });
     }
 
-    getPendingOrders() {
-        return this.queue.orders || [];
+    async clearOfflineData() {
+        return new Promise((resolve, reject) => {
+            if (!this.db) return resolve();
+            const storesToClear = ['pending_orders', 'archived_orders', 'sync_queue'].filter(
+                s => this.db.objectStoreNames.contains(s)
+            );
+            if (storesToClear.length === 0) return resolve();
+
+            const tx = this.db.transaction(storesToClear, 'readwrite');
+            for (const storeName of storesToClear) {
+                tx.objectStore(storeName).clear();
+            }
+            tx.oncomplete = () => {
+                this.queue = { orders: [] };
+                this.updateQueueCount();
+                resolve();
+            };
+            tx.onerror = () => reject(tx.error);
+        });
     }
 
-    getPendingMovements() {
-        return this.queue.movements || [];
+    exportOrdersToCsv(orders = []) {
+        if (!orders || orders.length === 0) {
+            alert('No local orders to export.');
+            return;
+        }
+
+        const headers = [
+            'Type',
+            'Order Number',
+            'Product ID',
+            'Product Name',
+            'SKU',
+            'Supplier ID',
+            'Supplier Name',
+            'Quantity',
+            'Unit Price',
+            'Subtotal',
+            'Total Amount',
+            'Status',
+            'Sync Status',
+            'Notes',
+            'Created At',
+            'Updated At'
+        ];
+
+        const rows = [headers.join(',')];
+
+        for (const order of orders) {
+            const safeNotes = (order.notes || '').replace(/"/g, '""');
+            const poNum = order.order_number || '';
+            const suppId = order.supplier_id || '';
+            const suppName = (order.supplier_name || '').replace(/"/g, '""');
+            const totalAmt = (order.total_amount || 0).toFixed(2);
+            const status = order.status || 'pending';
+            const syncStatus = 'exported';
+            const createdAt = order.timestamp || new Date().toISOString();
+
+            if (Array.isArray(order.items) && order.items.length > 0) {
+                for (const item of order.items) {
+                    const pId = item.product_id || '';
+                    const pName = (item.product_name || '').replace(/"/g, '""');
+                    const pSku = (item.sku || '').replace(/"/g, '""');
+                    const qty = item.quantity || 1;
+                    const unitPrice = (item.unit_price || 0).toFixed(2);
+                    const subtotal = (item.subtotal || (qty * item.unit_price)).toFixed(2);
+
+                    rows.push([
+                        'purchase_order',
+                        `"${poNum}"`,
+                        `"${pId}"`,
+                        `"${pName}"`,
+                        `"${pSku}"`,
+                        `"${suppId}"`,
+                        `"${suppName}"`,
+                        qty,
+                        unitPrice,
+                        subtotal,
+                        totalAmt,
+                        `"${status}"`,
+                        `"${syncStatus}"`,
+                        `"${safeNotes}"`,
+                        `"${createdAt}"`,
+                        `"${createdAt}"`
+                    ].join(','));
+                }
+            } else {
+                rows.push([
+                    'purchase_order',
+                    `"${poNum}"`,
+                    '',
+                    '',
+                    '',
+                    `"${suppId}"`,
+                    `"${suppName}"`,
+                    '',
+                    '',
+                    '',
+                    totalAmt,
+                    `"${status}"`,
+                    `"${syncStatus}"`,
+                    `"${safeNotes}"`,
+                    `"${createdAt}"`,
+                    `"${createdAt}"`
+                ].join(','));
+            }
+        }
+
+        const csvContent = rows.join('\r\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const ymd = new Date().toISOString().slice(0, 10).replace(/-/g, '_');
+        a.href = url;
+        a.download = `offline_transactions_${ymd}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        alert(`Export Successful! ${orders.length} offline purchase order${orders.length === 1 ? '' : 's'} exported to CSV. File download has started.`);
+        return orders.length;
+    }
+
+    getPendingOrders() {
+        return this.queue.orders || [];
     }
 
     isOffline() {
@@ -308,3 +523,4 @@ class OfflineManager {
 
 // Initialize offline manager
 const offlineManager = new OfflineManager();
+window.offlineManager = offlineManager;

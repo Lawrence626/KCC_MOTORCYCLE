@@ -31,16 +31,15 @@ class OfflineTransactionsExport implements FromCollection, WithHeadings, WithMap
             'Order Number',
             'Product ID',
             'Product Name',
+            'SKU',
             'Supplier ID',
             'Supplier Name',
             'Quantity',
-            'Quantity Change',
             'Unit Price',
+            'Subtotal',
             'Total Amount',
             'Status',
             'Sync Status',
-            'Movement Type',
-            'Expected Delivery Date',
             'Notes',
             'Created At',
             'Updated At',
@@ -49,59 +48,34 @@ class OfflineTransactionsExport implements FromCollection, WithHeadings, WithMap
 
     public function map($record): array
     {
-        if ($record['type'] === 'purchase_order') {
-            return [
-                $record['type'],
-                $record['order_number'] ?? '',
-                '',
-                '',
-                $record['supplier_id'] ?? '',
-                $record['supplier_name'] ?? '',
-                '',
-                '',
-                '',
-                $record['total_amount'] ?? 0,
-                $record['status'] ?? '',
-                $record['sync_status'] ?? '',
-                '',
-                $record['expected_delivery_date'] ?? '',
-                $record['notes'] ?? '',
-                $record['created_at'] ?? '',
-                $record['updated_at'] ?? '',
-            ];
-        } elseif ($record['type'] === 'inventory_movement') {
-            return [
-                $record['type'],
-                '',
-                $record['product_id'] ?? '',
-                $record['product_name'] ?? '',
-                '',
-                $record['supplier_name'] ?? '',
-                '',
-                $record['quantity_change'] ?? 0,
-                $record['unit_price'] ?? 0,
-                '',
-                '',
-                $record['sync_status'] ?? '',
-                $record['type'] ?? '',
-                '',
-                $record['notes'] ?? '',
-                $record['created_at'] ?? '',
-                $record['updated_at'] ?? '',
-            ];
-        }
-
-        return [];
+        return [
+            $record['type'] ?? 'purchase_order',
+            $record['order_number'] ?? '',
+            $record['product_id'] ?? '',
+            $record['product_name'] ?? '',
+            $record['sku'] ?? '',
+            $record['supplier_id'] ?? '',
+            $record['supplier_name'] ?? '',
+            $record['quantity'] ?? '',
+            $record['unit_price'] ?? 0,
+            $record['subtotal'] ?? 0,
+            $record['total_amount'] ?? 0,
+            $record['status'] ?? '',
+            $record['sync_status'] ?? '',
+            $record['notes'] ?? '',
+            $record['created_at'] ?? '',
+            $record['updated_at'] ?? '',
+        ];
     }
 
     public function styles(Worksheet $sheet)
     {
         return [
             1 => [
-                'font' => ['bold' => true],
+                'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
                 'fill' => [
                     'fillType' => Fill::FILL_SOLID,
-                    'startColor' => ['rgb' => '4F81BD'],
+                    'startColor' => ['rgb' => '0F172A'],
                 ],
                 'alignment' => [
                     'horizontal' => Alignment::HORIZONTAL_CENTER,

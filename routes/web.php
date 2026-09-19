@@ -60,7 +60,7 @@ Route::middleware(['auth'])->group(function () {
     // Profile update for authenticated users
     Route::match(['patch','post'], 'profile', [UserController::class, 'updateProfile'])->name('profile.update');
     // Profile display
-    Route::view('profile', 'profile.show')->name('profile.show');
+    Route::get('profile', [UserController::class, 'showProfile'])->name('profile.show');
 
     // Point of Sales Routes - Admin and Cashier only
     Route::middleware('role:admin,cashier')->group(function () {
@@ -265,10 +265,9 @@ Route::middleware(['auth'])->group(function () {
     // Offline Data Reconciliation Routes - Admin only
     Route::prefix('offline-reconciliation')->group(function () {
         Route::get('purchase-orders', [App\Http\Controllers\OfflineReconciliationController::class, 'index'])->name('offline.purchase-orders');
-        Route::get('inventory-movements', [App\Http\Controllers\OfflineReconciliationController::class, 'inventoryMovements'])->name('offline.inventory-movements');
         Route::get('export', [App\Http\Controllers\ExportController::class, 'index'])->name('offline.export');
-        Route::post('export/csv', [App\Http\Controllers\ExportController::class, 'exportCsv'])->name('offline.export.csv');
-        Route::post('export/excel', [App\Http\Controllers\ExportController::class, 'exportExcel'])->name('offline.export.excel');
+        Route::match(['get', 'post'], 'export/csv', [App\Http\Controllers\ExportController::class, 'exportCsv'])->name('offline.export.csv');
+        Route::match(['get', 'post'], 'export/excel', [App\Http\Controllers\ExportController::class, 'exportExcel'])->name('offline.export.excel');
         Route::get('import', [App\Http\Controllers\ImportController::class, 'index'])->name('offline.import');
         Route::post('import', [App\Http\Controllers\ImportController::class, 'import'])->name('offline.import.store');
         Route::post('import/validate', [App\Http\Controllers\ImportController::class, 'validateFile'])->name('offline.import.validate');
@@ -282,30 +281,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('api/stats', [App\Http\Controllers\OfflineReconciliationController::class, 'stats'])->name('offline.api.stats');
         Route::get('local-orders', [App\Http\Controllers\OfflineReconciliationController::class, 'localOrders'])->name('offline.local.orders');
         Route::post('sync-order', [App\Http\Controllers\OfflineReconciliationController::class, 'syncOrder'])->name('offline.sync.order');
-        Route::post('sync-movement', [App\Http\Controllers\OfflineReconciliationController::class, 'syncMovement'])->name('offline.sync.movement');
-    });
-
-    // Offline Data Reconciliation Routes - Admin only
-    Route::prefix('offline-reconciliation')->group(function () {
-        Route::get('purchase-orders', [App\Http\Controllers\OfflineReconciliationController::class, 'index'])->name('offline.purchase-orders');
-        Route::get('inventory-movements', [App\Http\Controllers\OfflineReconciliationController::class, 'inventoryMovements'])->name('offline.inventory-movements');
-        Route::get('export', [App\Http\Controllers\ExportController::class, 'index'])->name('offline.export');
-        Route::post('export/csv', [App\Http\Controllers\ExportController::class, 'exportCsv'])->name('offline.export.csv');
-        Route::post('export/excel', [App\Http\Controllers\ExportController::class, 'exportExcel'])->name('offline.export.excel');
-        Route::get('import', [App\Http\Controllers\ImportController::class, 'index'])->name('offline.import');
-        Route::post('import', [App\Http\Controllers\ImportController::class, 'import'])->name('offline.import.store');
-        Route::post('import/validate', [App\Http\Controllers\ImportController::class, 'validateFile'])->name('offline.import.validate');
-        Route::get('pending-imports', [App\Http\Controllers\ImportController::class, 'pendingImports'])->name('offline.pending.imports');
-        Route::get('pending-imports/{id}/review', [App\Http\Controllers\ImportController::class, 'review'])->name('offline.pending.review');
-        Route::post('pending-imports/{id}/approve', [App\Http\Controllers\ImportController::class, 'approve'])->name('offline.pending.approve');
-        Route::post('pending-imports/{id}/reject', [App\Http\Controllers\ImportController::class, 'reject'])->name('offline.pending.reject');
-        Route::get('history', [App\Http\Controllers\OfflineReconciliationController::class, 'history'])->name('offline.history');
-        Route::get('report/{id}', [App\Http\Controllers\OfflineReconciliationController::class, 'report'])->name('offline.report');
-        Route::delete('history/{id}', [App\Http\Controllers\OfflineReconciliationController::class, 'destroyHistory'])->name('offline.history.destroy');
-        Route::get('api/stats', [App\Http\Controllers\OfflineReconciliationController::class, 'stats'])->name('offline.api.stats');
-        Route::get('local-orders', [App\Http\Controllers\OfflineReconciliationController::class, 'localOrders'])->name('offline.local.orders');
-        Route::post('sync-order', [App\Http\Controllers\OfflineReconciliationController::class, 'syncOrder'])->name('offline.sync.order');
-        Route::post('sync-movement', [App\Http\Controllers\OfflineReconciliationController::class, 'syncMovement'])->name('offline.sync.movement');
     });
 
     // Supplier Assessment Route - Admin only
@@ -331,7 +306,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Offline Reconciliation Route - Admin only
     Route::middleware('role:admin')->group(function () {
-        Route::view('offline-reconciliation', 'offline_reconciliation.offline_recon')->name('offline.reconciliation');
+        Route::get('offline-reconciliation', [App\Http\Controllers\OfflineReconciliationController::class, 'overview'])->name('offline.reconciliation');
         Route::view('offline-reconciliation/test', 'offline_reconciliation.test-offline')->name('offline.reconciliation.test');
     });
 

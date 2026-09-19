@@ -108,6 +108,8 @@ class POSTransactionController extends Controller
             'discount' => 'required|numeric|min:0',
             'tax' => 'required|numeric|min:0',
             'total_amount' => 'required|numeric|min:0',
+            'amount_paid' => 'nullable|numeric|min:0',
+            'change_amount' => 'nullable|numeric|min:0',
             'payment_method' => 'required|in:cash,qr',
         ]);
 
@@ -205,6 +207,13 @@ class POSTransactionController extends Controller
                 ];
             })->toArray();
 
+            $amountPaid = isset($validated['amount_paid']) && is_numeric($validated['amount_paid'])
+                ? (float) $validated['amount_paid']
+                : (float) $validated['total_amount'];
+            $changeAmount = isset($validated['change_amount']) && is_numeric($validated['change_amount'])
+                ? (float) $validated['change_amount']
+                : max(0, $amountPaid - (float) $validated['total_amount']);
+
             $transaction = POSTransaction::create([
                 'invoice_number' => $validated['invoice_number'],
                 'user_id' => auth()->id(),
@@ -215,6 +224,8 @@ class POSTransactionController extends Controller
                 'discount' => $validated['discount'],
                 'tax' => $validated['tax'],
                 'total_amount' => $validated['total_amount'],
+                'amount_paid' => $amountPaid,
+                'change_amount' => $changeAmount,
                 'payment_method' => $validated['payment_method'],
                 'status' => 'completed',
                 'completed_at' => now(),

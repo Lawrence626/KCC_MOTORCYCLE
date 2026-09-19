@@ -147,7 +147,7 @@
                 <div class="flex flex-wrap items-center justify-end gap-2 w-full lg:w-auto">
                     <div class="relative inline-block" id="dd-desc-wrapper">
                         <select id="product-description-filter" class="hidden">
-                            <option value="">All Descriptions</option>
+                            <option value="">All Categories</option>
                             @php
                                 $descriptions = \App\Models\ProductDescription::where('is_active', true)->orderBy('name')->get();
                                 foreach($descriptions as $desc):
@@ -156,11 +156,11 @@
                             @php endforeach; @endphp
                         </select>
                         <button type="button" onclick="toggleDropdown('dd-desc-menu', event)" class="px-3 py-1.5 text-xs font-semibold rounded-[10px] border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm cursor-pointer flex items-center gap-2">
-                            <span id="dd-desc-label">All Descriptions</span>
+                            <span id="dd-desc-label">All Categories</span>
                             <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                         <div id="dd-desc-menu" class="hidden absolute left-0 top-full z-50 mt-1 min-w-[160px] rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
-                            <button type="button" onclick="selectShopDropdownOption('product-description-filter', 'dd-desc-label', 'dd-desc-menu', '', 'All Descriptions')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Descriptions</button>
+                            <button type="button" onclick="selectShopDropdownOption('product-description-filter', 'dd-desc-label', 'dd-desc-menu', '', 'All Descriptions')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">All Categories</button>
                             @foreach($descriptions as $desc)
                                 <button type="button" onclick="selectShopDropdownOption('product-description-filter', 'dd-desc-label', 'dd-desc-menu', '{{ addslashes($desc->name) }}', '{{ addslashes($desc->name) }}')" class="w-full text-left px-3 py-2 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">
                                     {{ $desc->name }}
@@ -605,7 +605,7 @@
                 <div class="space-y-2">
                     <div class="grid gap-3 md:grid-cols-3">
                         <div>
-                            <label class="block text-xs font-medium text-slate-700">Product Description</label>
+                            <label class="block text-xs font-medium text-slate-700">Product Category</label>
                             <input type="text" class="product-desc mt-1 block w-full px-4 py-3 text-sm" value="${product.description || ''}" placeholder="e.g. CALIPER" />
                         </div>
                         <div>

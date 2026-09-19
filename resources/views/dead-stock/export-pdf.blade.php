@@ -45,7 +45,7 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Product Description</th>
+                <th>Product Category</th>
                 <th>Brand</th>
                 <th>Product Name</th>
                 <th>SKU</th>

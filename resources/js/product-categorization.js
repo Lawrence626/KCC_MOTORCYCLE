@@ -102,8 +102,14 @@ const form = document.getElementById('productForm');
 const productId = document.getElementById('productId');
 const productName = document.getElementById('productName');
 const productCategory = document.getElementById('productCategory');
-const productSku = document.getElementById('productSku');
+const productWarehouse = document.getElementById('productWarehouse');
 const productReorderLevel = document.getElementById('productReorderLevel');
+const oilVolumeGroup = document.getElementById('oilVolumeGroup');
+const productSize = document.getElementById('productSize');
+const oilVolumePills = document.getElementById('oilVolumePills');
+const isGeneralCheckbox = document.getElementById('isGeneralCheckbox');
+const compatibleModelsSection = document.getElementById('compatibleModelsSection');
+const productSku = document.getElementById('productSku');
 const modalTitle = document.getElementById('modalTitle');
 const selectAllCheckbox = document.getElementById('selectAll');
 const bulkActionsToolbar = document.getElementById('bulkActionsToolbar');
@@ -142,6 +148,84 @@ let selectedIds = [];
 let deleteSelectedIds = [];
 let trashSelectedIds = [];
 
+// ─── Size Slug Helper ─────────────────────────────────────────────────────────
+function normalizeSizeSlug(size, category = '', brand = '') {
+    if (!size || !size.trim()) return '';
+    let s = size.trim();
+    if (/^\d+(\.\d+)?$/.test(s)) {
+        const val = parseFloat(s);
+        s = val >= 10 ? `${val}mL` : `${val}L`;
+    }
+    const match = s.match(/^(\d+(?:\.\d+)?)\s*(ml|l|liter|liters|litre|litres)$/i);
+    if (match) {
+        let num = parseFloat(match[1]);
+        const unit = match[2].toLowerCase();
+        if (unit.startsWith('l')) {
+            return `${num}L`;
+        }
+        if (unit === 'ml') {
+            if (num >= 1000 && num % 1000 === 0) {
+                return `${num / 1000}L`;
+            }
+            return `${num}ML`;
+        }
+    }
+    return s.toUpperCase().replace(/\s+/g, '_');
+}
+
+// ─── Toggle Oil Volume & General Item UI ──────────────────────────────────────
+function toggleOilAndGeneralState() {
+    const category = (productCategory?.value || '').toUpperCase();
+    const isOilOrFluid = /OIL|FLUID|COOLANT|CLEANER|SEALANT|LUBRICANT/.test(category);
+
+    if (oilVolumeGroup) {
+        if (isOilOrFluid) {
+            oilVolumeGroup.classList.remove('hidden');
+            if (isGeneralCheckbox && !isGeneralCheckbox.dataset.userModified) {
+                isGeneralCheckbox.checked = true;
+            }
+        } else {
+            oilVolumeGroup.classList.add('hidden');
+        }
+    }
+
+    if (compatibleModelsSection && isGeneralCheckbox) {
+        if (isGeneralCheckbox.checked) {
+            compatibleModelsSection.classList.add('hidden');
+            document.querySelectorAll('.motorcycle-checkbox').forEach(cb => cb.checked = false);
+        } else {
+            compatibleModelsSection.classList.remove('hidden');
+        }
+    }
+}
+
+// ─── Auto-generate SKU helper ─────────────────────────────────────────────────
+function autoGenerateSku() {
+    const category = productCategory?.value || '';
+    const brand = productName?.value || '';
+    const size = productSize?.value || '';
+
+    if (!category || !brand) return;
+
+    const descSlug = category.toUpperCase().replace(/[\/\(\)\s]+/g, '_').replace(/^_+|_+$/g, '');
+    const brandSlug = brand.toUpperCase().replace(/[\/\(\)\s]+/g, '_').replace(/^_+|_+$/g, '');
+    const sizeSlug = normalizeSizeSlug(size, category, brand);
+
+    const sameDescBrand = products.filter(p =>
+        !p.deleted &&
+        (p.category || '').toUpperCase() === category.toUpperCase() &&
+        (p.name || '').toUpperCase() === brand.toUpperCase() &&
+        (p.id !== currentEditId)
+    );
+    const seq = String(sameDescBrand.length + 1).padStart(3, '0');
+
+    if (sizeSlug) {
+        productSku.value = `KCC_${descSlug}_${brandSlug}_${sizeSlug}_${seq}`;
+    } else {
+        productSku.value = `KCC_${descSlug}_${brandSlug}_${seq}`;
+    }
+}
+
 // ─── Active-product helpers ───────────────────────────────────────────────────
 function activeProducts() { return products.filter(p => !p.deleted); }
 function deletedProducts() { return products.filter(p => p.deleted); }
@@ -171,7 +255,7 @@ function renderTable() {
     });
 
     if (active.length === 0) {
-        tbody.innerHTML = '<tr class="hover:bg-slate-50"><td colspan="7" class="px-6 py-8 text-center text-slate-500">No products found. Add one to get started.</td></tr>';
+        tbody.innerHTML = '<tr class="hover:bg-slate-50"><td colspan="8" class="px-6 py-8 text-center text-slate-500">No products found. Add one to get started.</td></tr>';
         return;
     }
 
@@ -189,7 +273,12 @@ function renderTable() {
             <td class="px-4 py-3 font-semibold text-slate-900">${product.product_description || product.category || 'Unnamed Product'}</td>
             <td class="px-4 py-3 text-slate-600 font-mono text-xs">${product.sku}</td>
             <td class="px-4 py-3 text-slate-600 text-xs">${product.warehouse || '-'}</td>
-            <td class="px-4 py-3 text-slate-600"><div class="flex flex-wrap gap-1">${product.models.map(m => `<span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded text-xs">${m}</span>`).join('')}</div></td>
+            <td class="px-4 py-3 text-slate-600">
+                ${(product.is_general || !product.models || product.models.length === 0 || product.models.includes('Universal'))
+                    ? '<span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded text-xs font-semibold">Universal / General</span>'
+                    : `<div class="flex flex-wrap gap-1">${product.models.map(m => `<span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded text-xs">${m}</span>`).join('')}</div>`
+                }
+            </td>
             <td class="px-4 py-3 text-center font-semibold ${(product.reorder_level ?? 10) >= 100 ? 'text-amber-600' : 'text-slate-700'}">${product.reorder_level ?? 10}</td>
             <td class="px-4 py-3 text-center"><button onclick="openEditProduct(${product.id})" class="text-[#105f68] hover:underline text-xs font-semibold">Edit</button></td>
         </tr>
@@ -204,27 +293,63 @@ function openModal(id = null) {
     form.reset();
     document.querySelectorAll('.motorcycle-checkbox').forEach(cb => cb.checked = false);
 
+    if (oilVolumePills) {
+        oilVolumePills.querySelectorAll('.volume-pill').forEach(p => {
+            p.classList.remove('bg-[#00fff2]', 'text-slate-900', 'border-cyan-400');
+            p.classList.add('bg-white', 'text-slate-700', 'border-slate-200');
+        });
+    }
+
     if (id) {
         const product = products.find(p => p.id === id);
         if (product) {
             productId.value = id;
-            productName.value = product.name;
-            productCategory.value = product.category;
-            productSku.value = product.sku;
+            productName.value = product.name || '';
+            productCategory.value = product.category || '';
+            if (productWarehouse) productWarehouse.value = product.warehouse || 'Warehouse A';
+            if (productSize) productSize.value = product.size || '';
+            productSku.value = product.sku || '';
             if (productReorderLevel) productReorderLevel.value = product.reorder_level ?? 10;
-            product.models.forEach(model => {
-                const checkbox = document.querySelector(`.motorcycle-checkbox[value="${model}"]`);
-                if (checkbox) checkbox.checked = true;
-            });
+            
+            const isGeneral = product.is_general || !product.models || product.models.length === 0 || product.models.includes('Universal');
+            if (isGeneralCheckbox) {
+                isGeneralCheckbox.checked = isGeneral;
+                isGeneralCheckbox.dataset.userModified = 'true';
+            }
+
+            if (!isGeneral && product.models) {
+                product.models.forEach(model => {
+                    const checkbox = document.querySelector(`.motorcycle-checkbox[value="${model}"]`);
+                    if (checkbox) checkbox.checked = true;
+                });
+            }
+
+            // Highlight matching volume pill
+            if (oilVolumePills && product.size) {
+                oilVolumePills.querySelectorAll('.volume-pill').forEach(p => {
+                    if (p.dataset.volume.toLowerCase() === product.size.toLowerCase()) {
+                        p.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
+                        p.classList.add('bg-[#00fff2]', 'text-slate-900', 'border-cyan-400');
+                    }
+                });
+            }
+
             modalTitle.textContent = 'Edit Product';
             deleteBtn.classList.remove('hidden');
         }
     } else {
         productId.value = '';
+        if (productWarehouse) productWarehouse.value = 'Warehouse A';
+        if (productSize) productSize.value = '';
+        if (isGeneralCheckbox) {
+            isGeneralCheckbox.checked = false;
+            isGeneralCheckbox.dataset.userModified = '';
+        }
         modalTitle.textContent = 'Add Product';
         deleteBtn.classList.add('hidden');
     }
 
+    toggleOilAndGeneralState();
     modal.style.display = 'flex';
     document.body.classList.add('overflow-hidden');
 }
@@ -238,14 +363,20 @@ function openEditProduct(id) { openModal(id); }
 
 function handleFormSubmit(event) {
     event.preventDefault();
-    const selectedModels = Array.from(document.querySelectorAll('.motorcycle-checkbox:checked')).map(cb => cb.value);
+    const isGeneral = isGeneralCheckbox ? isGeneralCheckbox.checked : false;
+    const selectedModels = isGeneral 
+        ? ['Universal'] 
+        : Array.from(document.querySelectorAll('.motorcycle-checkbox:checked')).map(cb => cb.value);
 
     const category = productCategory.value;
     const brand = productName.value;
+    const warehouse = productWarehouse ? productWarehouse.value : 'Warehouse A';
+    const size = productSize ? productSize.value : '';
 
     // Slugify: uppercase, spaces → underscores
-    const descSlug = category.toUpperCase().replace(/\s+/g, '_');
-    const brandSlug = brand.toUpperCase().replace(/\s+/g, '_');
+    const descSlug = category.toUpperCase().replace(/[\/\(\)\s]+/g, '_').replace(/^_+|_+$/g, '');
+    const brandSlug = brand.toUpperCase().replace(/[\/\(\)\s]+/g, '_').replace(/^_+|_+$/g, '');
+    const sizeSlug = normalizeSizeSlug(size, category, brand);
 
     if (productId.value) {
         // EDIT: update existing product
@@ -253,10 +384,12 @@ function handleFormSubmit(event) {
         if (product) {
             product.name = brand;
             product.category = category;
+            product.warehouse = warehouse;
+            product.size = size;
+            product.is_general = isGeneral;
             product.reorder_level = parseInt(productReorderLevel?.value) || 10;
             product.models = selectedModels;
 
-            // Only regenerate SKU if brand or category changed
             const sameDescBrand = products.filter(p =>
                 !p.deleted &&
                 p.category === category &&
@@ -264,7 +397,13 @@ function handleFormSubmit(event) {
                 p.id !== product.id
             );
             const seq = String(sameDescBrand.length + 1).padStart(3, '0');
-            product.sku = productSku.value || `KCC_${descSlug}_${brandSlug}_${seq}`;
+            if (productSku.value) {
+                product.sku = productSku.value;
+            } else if (sizeSlug) {
+                product.sku = `KCC_${descSlug}_${brandSlug}_${sizeSlug}_${seq}`;
+            } else {
+                product.sku = `KCC_${descSlug}_${brandSlug}_${seq}`;
+            }
         }
     } else {
         // ADD: count non-deleted products with same desc+brand to get next seq
@@ -274,12 +413,22 @@ function handleFormSubmit(event) {
             p.name === brand
         );
         const seq = String(sameDescBrand.length + 1).padStart(3, '0');
-        const generatedSku = productSku.value || `KCC_${descSlug}_${brandSlug}_${seq}`;
+        let generatedSku = productSku.value;
+        if (!generatedSku) {
+            if (sizeSlug) {
+                generatedSku = `KCC_${descSlug}_${brandSlug}_${sizeSlug}_${seq}`;
+            } else {
+                generatedSku = `KCC_${descSlug}_${brandSlug}_${seq}`;
+            }
+        }
 
         products.push({
             id: Math.max(...products.map(p => p.id), 0) + 1,
             name: brand,
             category,
+            warehouse,
+            size,
+            is_general: isGeneral,
             sku: generatedSku,
             models: selectedModels,
             reorder_level: parseInt(productReorderLevel?.value) || 10,
@@ -555,6 +704,51 @@ if (form) form.addEventListener('submit', handleFormSubmit);
 if (deleteBtn) deleteBtn.addEventListener('click', handleDelete);
 if (bulkDeleteBtn) bulkDeleteBtn.addEventListener('click', handleBulkDelete);
 if (clearSelectionBtn) clearSelectionBtn.addEventListener('click', clearSelection);
+
+// Category & General & SKU Listeners
+if (productCategory) {
+    productCategory.addEventListener('change', function() {
+        if (isGeneralCheckbox && !isGeneralCheckbox.dataset.userModified) {
+            const isOilOrFluid = /OIL|FLUID|COOLANT|CLEANER|SEALANT|LUBRICANT/.test((this.value || '').toUpperCase());
+            isGeneralCheckbox.checked = isOilOrFluid;
+        }
+        toggleOilAndGeneralState();
+        autoGenerateSku();
+    });
+}
+
+if (isGeneralCheckbox) {
+    isGeneralCheckbox.addEventListener('change', function() {
+        this.dataset.userModified = 'true';
+        toggleOilAndGeneralState();
+    });
+}
+
+if (productName) {
+    productName.addEventListener('input', autoGenerateSku);
+}
+
+if (productSize) {
+    productSize.addEventListener('input', autoGenerateSku);
+}
+
+// Volume pills click handler
+if (oilVolumePills) {
+    oilVolumePills.querySelectorAll('.volume-pill').forEach(pill => {
+        pill.addEventListener('click', function() {
+            if (productSize) {
+                productSize.value = this.dataset.volume;
+                oilVolumePills.querySelectorAll('.volume-pill').forEach(p => {
+                    p.classList.remove('bg-[#00fff2]', 'text-slate-900', 'border-cyan-400');
+                    p.classList.add('bg-white', 'text-slate-700', 'border-slate-200');
+                });
+                this.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
+                this.classList.add('bg-[#00fff2]', 'text-slate-900', 'border-cyan-400');
+                autoGenerateSku();
+            }
+        });
+    });
+}
 
 // Search filter
 if (searchInput) {

@@ -34,7 +34,7 @@
                         toast.style.transition = 'opacity 0.5s ease';
                         setTimeout(() => toast.remove(), 500);
                     }
-                }, 3000);
+                }, 3500);
             </script>
         @endif
 
@@ -86,7 +86,7 @@
             <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
                 <div class="flex items-start justify-between gap-2">
                     <div class="flex-1 min-w-0">
-                        <p class="text-black text-xs font-semibold">Stock Inventory Value</p>
+                        <p class="text-black text-xs font-semibold">Supplier Products Value</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">&#8369;{{ number_format($quickStats['stockValue'], 2) }}</p>
                             <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Combined value of supplier stock.</p>

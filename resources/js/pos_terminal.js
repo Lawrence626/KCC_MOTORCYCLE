@@ -65,7 +65,8 @@ function renderCategoryDropdown() {
 
     select.innerHTML = posState.categories.map(category => {
         const isSelected = category === posState.selectedCategory;
-        return `<option value="${category}" ${isSelected ? 'selected' : ''}>${category}</option>`;
+        const label = (category === 'All' || category === 'all') ? 'All Categories' : category;
+        return `<option value="${category}" ${isSelected ? 'selected' : ''}>${label}</option>`;
     }).join('');
 
     // Add event listener
@@ -102,7 +103,8 @@ function updateBrandDropdown() {
 
     select.innerHTML = brands.map(brand => {
         const isSelected = brand === posState.selectedBrand;
-        return `<option value="${brand}" ${isSelected ? 'selected' : ''}>${brand}</option>`;
+        const label = (brand === 'All' || brand === 'all') ? 'All Brands' : brand;
+        return `<option value="${brand}" ${isSelected ? 'selected' : ''}>${label}</option>`;
     }).join('');
 
     // Add event listener
@@ -1265,6 +1267,59 @@ async function revalidateCartStock() {
     }
 }
 
+function updateChangeCalculation() {
+    const tenderedInput = document.getElementById('posAmountTenderedInput');
+    const changeDisplay = document.getElementById('posChangeDisplayAmount');
+    const warningEl = document.getElementById('posInsufficientWarning');
+    const warningText = document.getElementById('posInsufficientText');
+    const confirmBtn = document.getElementById('posPaymentModalConfirm');
+    const cashSection = document.getElementById('posCashPaymentDetails');
+    const selectedMethod = document.querySelector('input[name="posPaymentModalMethod"]:checked')?.value || posState.paymentMethod;
+
+    if (!confirmBtn) return;
+
+    const total = posState.currentPaymentTotal ?? 0;
+
+    if (selectedMethod === 'qr') {
+        if (cashSection) cashSection.classList.add('hidden');
+        confirmBtn.disabled = false;
+        confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        return;
+    }
+
+    if (cashSection) cashSection.classList.remove('hidden');
+    if (!tenderedInput || !changeDisplay) return;
+
+    const rawVal = tenderedInput.value.trim();
+    if (rawVal === '') {
+        changeDisplay.textContent = '₱0.00';
+        if (warningEl) warningEl.classList.add('hidden');
+        confirmBtn.disabled = true;
+        confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        return;
+    }
+
+    const tendered = parseFloat(rawVal) || 0;
+    const diff = tendered - total;
+
+    if (diff < -0.001) {
+        const short = Math.abs(diff);
+        changeDisplay.textContent = '₱0.00';
+        if (warningEl) {
+            warningEl.classList.remove('hidden');
+            if (warningText) warningText.textContent = `Insufficient amount (Kulang ng ${formatCurrency(short)})`;
+        }
+        confirmBtn.disabled = true;
+        confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    } else {
+        const change = Math.max(0, diff);
+        changeDisplay.textContent = formatCurrency(change);
+        if (warningEl) warningEl.classList.add('hidden');
+        confirmBtn.disabled = false;
+        confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+}
+
 async function openPaymentModal() {
     // Dismiss any visible "Added to cart" toast notifications
     dismissAllNotifications();
@@ -1334,6 +1389,7 @@ async function openPaymentModal() {
     // VAT-Inclusive: Total = Subtotal + Services + Extra - Discount
     // VAT is already included in all prices
     const total = Math.max(0, subtotal + servicesTotal + extra - discount);
+    posState.currentPaymentTotal = total;
 
     // Included VAT = Total × (12 / 112)
     const includedVat = total * (12 / 112);
@@ -1357,7 +1413,20 @@ async function openPaymentModal() {
         });
     }
 
+    const tenderedInput = document.getElementById('posAmountTenderedInput');
+    if (tenderedInput) {
+        tenderedInput.value = '';
+    }
+
+    updateChangeCalculation();
+
     document.getElementById('posPaymentModal')?.classList.remove('hidden');
+
+    setTimeout(() => {
+        if (tenderedInput && (document.querySelector('input[name="posPaymentModalMethod"]:checked')?.value || posState.paymentMethod) === 'cash') {
+            tenderedInput.focus();
+        }
+    }, 150);
 }
 
 function closePaymentModal() {
@@ -1383,6 +1452,7 @@ function populateReceipt() {
     const receiptTax = document.getElementById('receiptTax');
     const receiptTotal = document.getElementById('receiptTotal');
     const receiptPaid = document.getElementById('receiptPaid');
+    const receiptChange = document.getElementById('receiptChange');
     const receiptPaymentMethod = document.getElementById('receiptPaymentMethod');
 
     if (!receiptInvoice) return;
@@ -1401,6 +1471,7 @@ function populateReceipt() {
         tax: 0,
         total: 0,
         amountReceived: 0,
+        change: 0,
         paymentMethod: posState.paymentMethod,
     };
 
@@ -1413,6 +1484,7 @@ function populateReceipt() {
         receiptData.tax = receiptData.total * (12 / 112);
 
         receiptData.amountReceived = receiptData.total;
+        receiptData.change = 0;
     }
 
     if (receiptInvoice) receiptInvoice.textContent = receiptData.invoiceNumber;
@@ -1423,6 +1495,7 @@ function populateReceipt() {
     if (receiptTax) receiptTax.textContent = formatCurrency(receiptData.tax);
     if (receiptTotal) receiptTotal.textContent = formatCurrency(receiptData.total);
     if (receiptPaid) receiptPaid.textContent = formatCurrency(receiptData.amountReceived ?? receiptData.total);
+    if (receiptChange) receiptChange.textContent = formatCurrency(receiptData.change ?? Math.max(0, (receiptData.amountReceived ?? receiptData.total) - receiptData.total));
     if (receiptPaymentMethod) receiptPaymentMethod.textContent = receiptData.paymentMethod === 'qr' ? 'QR PH' : 'Cash';
 
     const invoiceNumHeader = document.getElementById('invoiceNumHeader');
@@ -1460,7 +1533,7 @@ function populateReceipt() {
     if (invoiceTax) invoiceTax.textContent = formatCurrency(receiptData.tax);
     if (invoiceTotalAmount) invoiceTotalAmount.textContent = formatCurrency(receiptData.total);
     if (invoiceAmountReceived) invoiceAmountReceived.textContent = formatCurrency(receiptData.amountReceived ?? receiptData.total);
-    if (invoiceChange) invoiceChange.textContent = formatCurrency(Math.max(0, (receiptData.amountReceived ?? receiptData.total) - receiptData.total));
+    if (invoiceChange) invoiceChange.textContent = formatCurrency(receiptData.change ?? Math.max(0, (receiptData.amountReceived ?? receiptData.total) - receiptData.total));
     if (invoicePaymentMethod) invoicePaymentMethod.textContent = receiptData.paymentMethod === 'qr' ? 'QR PH' : 'Cash';
 }
 
@@ -1573,8 +1646,13 @@ function printReceipt() {
     const discount = formatCurrency(receiptData?.discount || 0);
     const tax = formatCurrency(receiptData?.tax || 0);
     const total = formatCurrency(receiptData?.total || 0);
-    const paid = formatCurrency(receiptData?.amountReceived ?? receiptData?.total ?? 0);
-    const paymentMethod = receiptData?.paymentMethod === 'qr' ? 'QR PH' : 'Cash';
+    const rawPaid = receiptData?.amountReceived != null ? parseFloat(receiptData.amountReceived) : (receiptData?.amount_paid != null ? parseFloat(receiptData.amount_paid) : (receiptData?.total || 0));
+    const rawTotal = receiptData?.total != null ? parseFloat(receiptData.total) : 0;
+    const rawChange = receiptData?.change != null ? parseFloat(receiptData.change) : (receiptData?.change_amount != null ? parseFloat(receiptData.change_amount) : Math.max(0, rawPaid - rawTotal));
+
+    const paid = formatCurrency(rawPaid);
+    const change = formatCurrency(rawChange);
+    const paymentMethod = (receiptData?.paymentMethod === 'qr' || receiptData?.payment_method === 'qr') ? 'QR PH' : 'Cash';
 
     const itemsHTML = items.map((item, index) => `
         <tr>
@@ -1643,6 +1721,7 @@ function printReceipt() {
 
                     <div class="receipt-payment">
                         <div class="row"><span class="label">Amount Paid</span><span>${paid}</span></div>
+                        <div class="row"><span class="label">Change (Sukli)</span><span style="font-weight:700; color:#059669;">${change}</span></div>
                         <div class="row"><span class="label">Payment Method</span><span>${paymentMethod}</span></div>
                     </div>
 
@@ -1824,7 +1903,6 @@ function buildInvoiceHTML(receiptData, cashierName) {
       </div>
     </div>
 
-    <!-- Payment -->
     <div class="payment-section">
       <div class="pay-box">
         <div class="pay-label">Payment Method</div>
@@ -1840,7 +1918,6 @@ function buildInvoiceHTML(receiptData, cashierName) {
       </div>
     </div>
 
-    <!-- Footer -->
     <div class="inv-footer">
       <div class="thank-you">Thank you for your purchase!</div>
       <p>This serves as your official receipt. Please keep this for your records.</p>
@@ -1853,8 +1930,23 @@ function buildInvoiceHTML(receiptData, cashierName) {
 }
 
 function printInvoice() {
-    const receiptData = posState.lastReceipt;
-    if (!receiptData) return;
+    const receiptData = posState.lastReceipt || {
+        invoiceNumber: document.getElementById('receiptInvoice')?.textContent || 'INV-000000',
+        date: new Date().toISOString(),
+        items: posState.cart.map(item => ({ id: item.id, name: item.name, sku: item.sku || '', qty: item.quantity, price: item.unit_price })),
+        subtotal: posState.cart.reduce((sum, item) => sum + item.unit_price * item.quantity, 0),
+        servicesTotal: Array.from(posState.selectedServices).reduce((sum, serviceId) => {
+            const service = posState.services.find(s => s.id === serviceId);
+            return service ? sum + service.price : sum;
+        }, 0),
+        extra: Number(posState.extraCharge || 0),
+        discount: Number(posState.discount || 0),
+        tax: 0,
+        total: 0,
+        amountReceived: 0,
+        change: 0,
+        paymentMethod: posState.paymentMethod,
+    };
     const cashierName = document.getElementById('receiptCashierName')?.textContent
         || window.POS?.cashier || 'Cashier';
     openPrintWindow(buildInvoiceHTML(receiptData, cashierName));
@@ -1872,12 +1964,9 @@ function openPrintWindow(html) {
 async function confirmPayment() {
     const confirmBtn = document.getElementById('posPaymentModalConfirm');
     const originalText = confirmBtn ? confirmBtn.textContent : 'Confirm Payment';
-    if (confirmBtn) {
-        confirmBtn.disabled = true;
-        confirmBtn.textContent = 'Processing...';
-    }
 
-    updatePaymentMethod(document.querySelector('input[name="posPaymentModalMethod"]:checked')?.value || posState.paymentMethod);
+    const selectedMethod = document.querySelector('input[name="posPaymentModalMethod"]:checked')?.value || posState.paymentMethod;
+    updatePaymentMethod(selectedMethod);
 
     const invoiceNumber = document.getElementById('posPaymentInvoice')?.textContent || 'INV-000000';
     const now = new Date();
@@ -1889,12 +1978,35 @@ async function confirmPayment() {
     const extra = Number(posState.extraCharge || 0);
     const discount = Number(posState.discount || 0);
 
-    // VAT-Inclusive: Total = Subtotal + Services + Extra - Discount
-    // VAT is already included in all prices
     const transactionTotal = Math.max(0, subtotal + servicesTotal + extra - discount);
-
-    // Included VAT = Total × (12 / 112)
     const tax = transactionTotal * (12 / 112);
+
+    let amountPaid = transactionTotal;
+    let changeAmount = 0;
+
+    if (selectedMethod === 'cash') {
+        const tenderedInput = document.getElementById('posAmountTenderedInput');
+        const rawVal = tenderedInput ? tenderedInput.value.trim() : '';
+        if (!rawVal) {
+            alert('Please enter the cash amount paid by the customer.');
+            tenderedInput?.focus();
+            return;
+        }
+        const val = parseFloat(rawVal) || 0;
+        if (val < transactionTotal - 0.001) {
+            const short = transactionTotal - val;
+            alert(`Insufficient cash payment.\n\nTotal Due: ${formatCurrency(transactionTotal)}\nAmount Paid: ${formatCurrency(val)}\nShortage: ${formatCurrency(short)}`);
+            tenderedInput?.focus();
+            return;
+        }
+        amountPaid = val;
+        changeAmount = Math.max(0, val - transactionTotal);
+    }
+
+    if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'Processing...';
+    }
 
     const items = posState.cart.map(item => ({
         id: item.id,
@@ -1904,7 +2016,6 @@ async function confirmPayment() {
         price: item.unit_price,
     }));
 
-    // Prepare items for backend storage & atomic stock deduction
     const transactionItems = posState.cart.map(item => ({
         id: item.id,
         name: item.name,
@@ -1924,7 +2035,9 @@ async function confirmPayment() {
         discount: discount,
         tax: tax,
         total_amount: transactionTotal,
-        payment_method: posState.paymentMethod === 'qr' ? 'qr' : 'cash',
+        amount_paid: amountPaid,
+        change_amount: changeAmount,
+        payment_method: selectedMethod === 'qr' ? 'qr' : 'cash',
     };
 
     try {
@@ -1942,7 +2055,6 @@ async function confirmPayment() {
         if (!response.ok || !data.success) {
             const errorMsg = data.message || 'Transaction failed. Please check stock availability.';
             alert(`Payment Failed: Insufficient Stock or System Error\n\n${errorMsg}`);
-            // Re-validate cart and refresh products so cashier sees current stocks
             await revalidateCartStock();
             searchProducts(posState.productSearchQuery, posState.productPage);
             return;
@@ -1960,21 +2072,23 @@ async function confirmPayment() {
             discount,
             tax,
             total: transactionTotal,
-            paymentMethod: posState.paymentMethod,
+            amountReceived: amountPaid,
+            change: changeAmount,
+            paymentMethod: selectedMethod,
         };
 
         recordTransaction(
             invoiceNumber,
             now.toISOString(),
             transactionTotal,
-            posState.paymentMethod,
+            selectedMethod,
             items
         );
 
         renderTransactionHistory();
         populateReceipt();
 
-        if (posState.paymentMethod === 'qr') {
+        if (selectedMethod === 'qr') {
             showQRPaymentModal(transactionTotal);
         } else {
             const receiptDetails = document.getElementById('receiptInvoiceDetails');
@@ -1982,7 +2096,7 @@ async function confirmPayment() {
             const printButton = document.getElementById('posPrintReceiptButton');
             if (receiptDetails) receiptDetails.classList.add('hidden');
             if (viewInvoiceButton) viewInvoiceButton.classList.remove('hidden');
-            if (printButton) printButton.classList.add('hidden');
+            if (printButton) printButton.classList.remove('hidden');
             showReceiptOverlay();
         }
 
@@ -1996,8 +2110,6 @@ async function confirmPayment() {
         if (scanFeedback) scanFeedback.textContent = '';
         updateTotals();
         clearCart();
-
-        // Refresh product grid to show updated stock counts
         searchProducts(posState.productSearchQuery, posState.productPage);
 
     } catch (error) {
@@ -2191,6 +2303,21 @@ function setupPosEvents() {
     document.getElementById('posPaymentModalClose')?.addEventListener('click', closePaymentModal);
     document.getElementById('posPaymentModalCancel')?.addEventListener('click', closePaymentModal);
     document.getElementById('posPaymentModalConfirm')?.addEventListener('click', confirmPayment);
+    document.getElementById('posAmountTenderedInput')?.addEventListener('input', updateChangeCalculation);
+    document.querySelectorAll('.pos-quick-cash-pill').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const tenderedInput = document.getElementById('posAmountTenderedInput');
+            if (!tenderedInput) return;
+            const total = posState.currentPaymentTotal ?? 0;
+            if (this.dataset.mode === 'exact') {
+                tenderedInput.value = total > 0 ? (total % 1 === 0 ? total : total.toFixed(2)) : 0;
+            } else if (this.dataset.amount) {
+                tenderedInput.value = this.dataset.amount;
+            }
+            updateChangeCalculation();
+            tenderedInput.focus();
+        });
+    });
     document.getElementById('posExtraChargeInput')?.addEventListener('input', event => updateExtraCharge(event.target.value));
     document.getElementById('posDiscountInput')?.addEventListener('input', event => updateDiscount(event.target.value));
     document.getElementById('posRemoveDiscountBtn')?.addEventListener('click', removeAppliedDiscount);
@@ -2199,7 +2326,10 @@ function setupPosEvents() {
     });
 
     document.querySelectorAll('input[name="posPaymentModalMethod"]').forEach(radio => {
-        radio.addEventListener('change', event => updatePaymentMethod(event.target.value));
+        radio.addEventListener('change', event => {
+            updatePaymentMethod(event.target.value);
+            updateChangeCalculation();
+        });
     });
 
     document.querySelectorAll('.pos-service-checkbox').forEach(checkbox => {
@@ -2415,6 +2545,9 @@ function setupPosEvents() {
 }
 
 function initializePos() {
+    if (window.POS?.routes?.apiProducts) {
+        posState.apiProductsUrl = window.POS.routes.apiProducts;
+    }
     posState.transactionHistory = loadTransactionHistory();
     loadProductImagePreviews();
     setupPosEvents();
@@ -2437,6 +2570,7 @@ window.closeInvoiceModal = closeInvoiceModal;
 window.deleteTransaction = deleteTransaction;
 window.posArchiveProduct = posArchiveProduct;
 window.bulkDeleteTransactions = bulkDeleteTransactions;
+window.searchProducts = searchProducts;
 
 async function posArchiveProduct(productId) {
     if (!confirm('Are you sure you want to archive this product? It will be hidden from both POS and All Stocks inventory.')) {
@@ -2828,4 +2962,8 @@ function dismissAllNotifications() {
     });
 }
 
-window.addEventListener('DOMContentLoaded', initializePos);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializePos);
+} else {
+    initializePos();
+}

@@ -38,7 +38,7 @@
                                     <dd class="font-mono text-slate-900 font-semibold">{{ $productCatalog->sku }}</dd>
                                 </div>
                                 <div class="bg-slate-50 rounded-[12px] p-3 border border-slate-100">
-                                    <dt class="text-slate-500 font-medium mb-0.5">Product Description</dt>
+                                    <dt class="text-slate-500 font-medium mb-0.5">Product Category</dt>
                                     <dd class="text-slate-900 font-semibold">{{ $productCatalog->product_description }}</dd>
                                 </div>
                                 <div class="bg-slate-50 rounded-[12px] p-3 border border-slate-100">
@@ -123,7 +123,12 @@
                                     @endforeach
                                 </div>
                             @else
-                                <p class="text-xs text-slate-400 italic">No compatible models specified</p>
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-800 rounded-full text-xs font-semibold border border-emerald-200">
+                                    <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    General Item / Universal (Fits all models)
+                                </span>
                             @endif
                         </div>
 

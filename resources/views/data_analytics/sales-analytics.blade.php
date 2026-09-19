@@ -407,7 +407,7 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-200 bg-white" id="topProductsBody">
-                                @forelse(collect($topProducts)->take(5) as $product)
+                                @forelse(collect($topProducts ?? [])->take(5) as $product)
                                     <tr class="hover:bg-slate-50 transition">
                                         <td class="px-4 py-2.5 text-center font-semibold text-slate-900 w-16 whitespace-nowrap">{{ $product['rank'] }}</td>
                                         <td class="px-4 py-2.5 text-left">
@@ -435,11 +435,11 @@
                     </div>
                     <!-- Tab 1 Pagination -->
                     <div class="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-3 py-2 text-xs">
-                        <p id="topProductsPageInfo" class="text-slate-600">Showing {{ collect($topProducts)->count() > 0 ? 1 : 0 }}-{{ min(5, collect($topProducts)->count()) }} of {{ collect($topProducts)->count() }} products</p>
+                        <p id="topProductsPageInfo" class="text-slate-600">Showing {{ collect($topProducts ?? [])->count() > 0 ? 1 : 0 }}-{{ min(5, collect($topProducts ?? [])->count()) }} of {{ collect($topProducts ?? [])->count() }} products</p>
                         <div id="topProductsPaginationControls" class="flex gap-1">
                             <button type="button" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>← Prev</button>
                             <button type="button" class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">1</button>
-                            <button type="button" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" {{ collect($topProducts)->count() <= 5 ? 'disabled' : '' }}>Next →</button>
+                            <button type="button" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" {{ collect($topProducts ?? [])->count() <= 5 ? 'disabled' : '' }}>Next →</button>
                         </div>
                     </div>
                 </div>
@@ -457,7 +457,7 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-200 bg-white" id="fastMovingProductsBody">
-                                @forelse(collect($fastMoving)->take(5) as $product)
+                                @forelse(collect($fastMoving ?? [])->take(5) as $product)
                                     <tr class="hover:bg-slate-50 transition">
                                         <td class="px-4 py-2.5 text-center font-semibold text-slate-900 w-16 whitespace-nowrap">{{ $product['rank'] ?? $loop->iteration }}</td>
                                         <td class="px-4 py-2.5 text-left">
@@ -484,11 +484,11 @@
                     </div>
                     <!-- Tab 2 Pagination -->
                     <div class="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-3 py-2 text-xs">
-                        <p id="fastMovingPageInfo" class="text-slate-600">Showing {{ collect($fastMoving)->count() > 0 ? 1 : 0 }}-{{ min(5, collect($fastMoving)->count()) }} of {{ collect($fastMoving)->count() }} products</p>
+                        <p id="fastMovingPageInfo" class="text-slate-600">Showing {{ collect($fastMoving ?? [])->count() > 0 ? 1 : 0 }}-{{ min(5, collect($fastMoving ?? [])->count()) }} of {{ collect($fastMoving ?? [])->count() }} products</p>
                         <div id="fastMovingPaginationControls" class="flex gap-1">
                             <button type="button" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>← Prev</button>
                             <button type="button" class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">1</button>
-                            <button type="button" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" {{ collect($fastMoving)->count() <= 5 ? 'disabled' : '' }}>Next →</button>
+                            <button type="button" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" {{ collect($fastMoving ?? [])->count() <= 5 ? 'disabled' : '' }}>Next →</button>
                         </div>
                     </div>
                 </div>
@@ -505,7 +505,7 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-200 bg-white" id="slowMovingProductsBody">
-                                @forelse(collect($slowMoving)->take(5) as $product)
+                                @forelse(collect($slowMoving ?? [])->take(5) as $product)
                                     <tr class="hover:bg-slate-50 transition">
                                         <td class="px-4 py-2.5 text-center font-semibold text-slate-900 w-16 whitespace-nowrap">{{ $product['rank'] ?? $loop->iteration }}</td>
                                         <td class="px-4 py-2.5 text-left">
@@ -531,11 +531,11 @@
                     </div>
                     <!-- Tab 3 Pagination -->
                     <div class="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-3 py-2 text-xs">
-                        <p id="slowMovingPageInfo" class="text-slate-600">Showing {{ collect($slowMoving)->count() > 0 ? 1 : 0 }}-{{ min(5, collect($slowMoving)->count()) }} of {{ collect($slowMoving)->count() }} products</p>
+                        <p id="slowMovingPageInfo" class="text-slate-600">Showing {{ collect($slowMoving ?? [])->count() > 0 ? 1 : 0 }}-{{ min(5, collect($slowMoving ?? [])->count()) }} of {{ collect($slowMoving ?? [])->count() }} products</p>
                         <div id="slowMovingPaginationControls" class="flex gap-1">
                             <button type="button" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>← Prev</button>
                             <button type="button" class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">1</button>
-                            <button type="button" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" {{ collect($slowMoving)->count() <= 5 ? 'disabled' : '' }}>Next →</button>
+                            <button type="button" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed" {{ collect($slowMoving ?? [])->count() <= 5 ? 'disabled' : '' }}>Next →</button>
                         </div>
                     </div>
                 </div>   </table>
@@ -1458,9 +1458,9 @@
                 }).join('');
             };
 
-            let topProductsData = @json($topProducts);
-            let fastMovingData = @json($fastMoving);
-            let slowMovingData = @json($slowMoving);
+            let topProductsData = @json($topProducts ?? []);
+            let fastMovingData = @json($fastMoving ?? []);
+            let slowMovingData = @json($slowMoving ?? []);
 
             const tabPages = { top: 1, fast: 1, slow: 1 };
             const pageSize = 5;

@@ -53,6 +53,8 @@ beforeEach(function () {
         $table->decimal('discount', 10, 2)->default(0);
         $table->decimal('tax', 10, 2)->default(0);
         $table->decimal('total_amount', 10, 2)->default(0);
+        $table->decimal('amount_paid', 10, 2)->nullable();
+        $table->decimal('change_amount', 10, 2)->nullable();
         $table->string('payment_method')->nullable();
         $table->string('status')->default('completed');
         $table->timestamp('completed_at')->nullable();
@@ -245,4 +247,48 @@ it('prevents checkout when requested quantity exceeds available stock', function
     $product->refresh();
     expect($product->stock_quantity)->toBe(2);
 });
+
+it('records amount_paid and change_amount when cash is tendered', function () {
+    $user = User::create([
+        'name' => 'Cashier User',
+        'email' => 'cashier@example.com',
+        'password' => Hash::make('password123'),
+        'role' => 'cashier',
+    ]);
+
+    $product = Product::create([
+        'name' => 'Engine Oil 1L',
+        'category' => 'ENGINE OIL',
+        'stock_quantity' => 10,
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('api.pos.transactions.store'), [
+        'invoice_number' => 'INV-CASH-101',
+        'items' => [[
+            'id' => $product->id,
+            'name' => $product->name,
+            'quantity' => 1,
+            'unit_price' => 350.00,
+        ]],
+        'subtotal' => 350.00,
+        'services_total' => 0,
+        'extra_charge' => 0,
+        'discount' => 0,
+        'tax' => 37.50,
+        'total_amount' => 350.00,
+        'amount_paid' => 500.00,
+        'change_amount' => 150.00,
+        'payment_method' => 'cash',
+    ]);
+
+    $response->assertStatus(201);
+    $response->assertJsonFragment(['success' => true]);
+
+    $transaction = \App\Models\POSTransaction::where('invoice_number', 'INV-CASH-101')->first();
+    expect($transaction)->not->toBeNull();
+    expect((float) $transaction->total_amount)->toEqual(350.00);
+    expect((float) $transaction->amount_paid)->toEqual(500.00);
+    expect((float) $transaction->change_amount)->toEqual(150.00);
+});
+
 

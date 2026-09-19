@@ -9,7 +9,7 @@
         </div>
 
         @if(session('success'))
-            <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">{{ session('success') }}</div>
+            <div id="orderDetailSuccessAlert" class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">{{ session('success') }}</div>
         @endif
         @if(session('warning'))
             <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700">{{ session('warning') }}</div>
