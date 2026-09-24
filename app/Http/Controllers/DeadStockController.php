@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\DeadStock;
+use App\Models\FastMovingProduct;
 use App\Models\DSSSettings;
 use App\Models\DSSRecommendation;
-use App\Models\FastMovingProduct;
 use App\Models\Product;
 use App\Services\DeadStockDetectionService;
 use App\Services\SalesVelocityAnalysisService;
@@ -31,40 +31,40 @@ class DeadStockController extends Controller
 
     /**
      * Display the dead stock management page.
+     * Automatically recalculates dead stock on every page load.
      */
-    public function index(Request $request): View
+    public function index(Request $request)
     {
-        $countByPriority = $this->detectionService->getCountByPriority();
+        // Automatically recalculate dead stock analysis on full page load (skip on AJAX pagination for speed)
+        if (! $request->ajax() && ! $request->wantsJson()) {
+            $this->detectionService->analyzeAllProducts();
+        }
+
         $totalDeadStocks = $this->detectionService->getTotalCount();
         $totalValue = $this->detectionService->getTotalValue();
         $thresholdDays = $this->detectionService->getThresholdDays();
 
-        // Get all dead stocks with full details, search, filter, sort
+        // 10 items per page by default
         $deadStocks = $this->detectionService->getDeadStocksWithDetails(
             search: $request->get('search'),
-            priority: $request->get('priority'),
             sortBy: $request->get('sort_by', 'days_without_sale'),
             sortOrder: $request->get('sort_order', 'desc'),
-            perPage: $request->get('per_page', 25)
+            perPage: (int) $request->get('per_page', 10)
         );
 
-        // Get at-risk products
-        $atRiskProducts = $this->detectionService->getAtRiskProducts();
-
-        // Get fast moving products for bundle suggestions
-        $fastMovingProducts = FastMovingProduct::orderBy('velocity_score', 'desc')
-            ->limit(10)
-            ->with('product')
-            ->get();
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'html' => view('dead-stock.partials.table', [
+                    'deadStocks' => $deadStocks,
+                ])->render(),
+            ]);
+        }
 
         return view('dead-stock.index', [
-            'countByPriority' => $countByPriority,
             'totalDeadStocks' => $totalDeadStocks,
             'totalValue' => $totalValue,
             'thresholdDays' => $thresholdDays,
             'deadStocks' => $deadStocks,
-            'atRiskProducts' => $atRiskProducts,
-            'fastMovingProducts' => $fastMovingProducts,
         ]);
     }
 
@@ -79,7 +79,7 @@ class DeadStockController extends Controller
         // Get sales history
         $salesHistory = $this->detectionService->getProductSalesHistory($deadStock->product_id);
 
-        // Get fast moving products for bundle modal
+        // Get fast moving products for bundle suggestions
         $fastMovingProducts = FastMovingProduct::orderBy('velocity_score', 'desc')
             ->limit(10)
             ->with('product')
@@ -94,32 +94,9 @@ class DeadStockController extends Controller
     }
 
     /**
-     * Recalculate all dead stocks.
-     */
-    public function recalculate(Request $request)
-    {
-        $this->detectionService->analyzeAllProducts();
-        $this->velocityService->analyzeAllProducts();
-        $this->recommendationService->generateAllRecommendations();
-
-        return redirect()->back()->with('success', 'Dead stock analysis recalculated successfully.');
-    }
-
-    /**
-     * Mark a dead stock as resolved.
-     */
-    public function markResolved(int $id, Request $request)
-    {
-        $deadStock = DeadStock::findOrFail($id);
-        $deadStock->update([
-            'is_active' => false,
-        ]);
-
-        return redirect()->back()->with('success', 'Dead stock marked as resolved.');
-    }
-
-    /**
      * Apply a discount to a dead stock product.
+     * Stores discount info on the product so the POS can auto-apply it at checkout.
+     * Does NOT change the product's original unit_price.
      */
     public function applyDiscount(int $id, Request $request)
     {
@@ -129,25 +106,150 @@ class DeadStockController extends Controller
         ]);
 
         $deadStock = DeadStock::with('product')->findOrFail($id);
+        $product = $deadStock->product;
 
-        // Mark the discount recommendation as actioned
+        $discountType = $request->input('discount_type');
+        $discountValue = (float) $request->input('discount_value');
+
+        // Store the discount on the product (does NOT change unit_price)
+        $product->discount_type = $discountType;
+        $product->discount_value = $discountValue;
+        $product->save();
+
+        $productName = $product->description ?? $product->product_name ?? $product->name ?? 'Product';
+        $notes = $discountType === 'percentage'
+            ? "Applied {$discountValue}% discount to {$productName}"
+            : "Applied ₱" . number_format($discountValue, 2) . " discount to {$productName}";
+
+        // Update dead stock analysis notes
+        $deadStock->analysis_notes = $notes;
+        $deadStock->save();
+
+        // Mark the discount recommendation as actioned or create record
         $discountRecommendation = DSSRecommendation::where('product_id', $deadStock->product_id)
             ->where('recommendation_type', 'discount')
             ->where('is_active', true)
             ->first();
 
-        $discountType = $request->input('discount_type');
-        $discountValue = $request->input('discount_value');
-
-        $notes = $discountType === 'percentage'
-            ? "Applied {$discountValue}% discount to {$deadStock->product->name}"
-            : "Applied ₱" . number_format($discountValue, 2) . " discount to {$deadStock->product->name}";
-
         if ($discountRecommendation) {
             $discountRecommendation->markAsActioned($notes);
+        } else {
+            DSSRecommendation::create([
+                'product_id' => $deadStock->product_id,
+                'recommendation_type' => 'discount',
+                'title' => 'Apply Discount',
+                'description' => $notes,
+                'priority' => 'Medium',
+                'metadata' => [
+                    'discount_type' => $discountType,
+                    'discount_value' => $discountValue,
+                ],
+                'is_active' => false,
+                'generated_at' => now(),
+                'last_updated_at' => now(),
+                'action_taken_at' => now(),
+                'action_notes' => $notes,
+            ]);
         }
 
         return redirect()->back()->with('success', $notes);
+    }
+
+    /**
+     * Permanently remove discount from a product / dead stock item.
+     */
+    public function removeDiscount(Request $request)
+    {
+        $productId = $request->input('product_id');
+        $productIds = (array) $request->input('product_ids', []);
+
+        if ($productId) {
+            $productIds[] = $productId;
+        }
+
+        $deadStockId = $request->input('dead_stock_id');
+        if ($deadStockId) {
+            $ds = DeadStock::find($deadStockId);
+            if ($ds && $ds->product_id) {
+                $productIds[] = $ds->product_id;
+            }
+        }
+
+        $productIds = array_values(array_unique(array_filter($productIds)));
+
+        if (empty($productIds)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No product specified to remove discount.',
+            ], 400);
+        }
+
+        $products = Product::whereIn('id', $productIds)->get();
+
+        foreach ($products as $product) {
+            $product->discount_type = null;
+            $product->discount_value = null;
+            $product->save();
+
+            // Reset notes on dead stock record if present
+            $deadStock = DeadStock::where('product_id', $product->id)->first();
+            if ($deadStock) {
+                $deadStock->analysis_notes = 'Promotion';
+                $deadStock->save();
+            }
+
+            // Mark any active discount recommendations as inactive
+            DSSRecommendation::where('product_id', $product->id)
+                ->where('recommendation_type', 'discount')
+                ->update([
+                    'is_active' => false,
+                    'action_notes' => 'Discount removed permanently',
+                    'last_updated_at' => now(),
+                ]);
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Discount removed permanently.',
+                'product_ids' => $productIds,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Discount removed permanently.');
+    }
+
+    /**
+     * Permanently remove discount by dead stock id.
+     */
+    public function removeDiscountByDeadStockId(int $id, Request $request)
+    {
+        $deadStock = DeadStock::with('product')->findOrFail($id);
+        if ($deadStock->product) {
+            $deadStock->product->discount_type = null;
+            $deadStock->product->discount_value = null;
+            $deadStock->product->save();
+        }
+
+        $deadStock->analysis_notes = 'Promotion';
+        $deadStock->save();
+
+        DSSRecommendation::where('product_id', $deadStock->product_id)
+            ->where('recommendation_type', 'discount')
+            ->update([
+                'is_active' => false,
+                'action_notes' => 'Discount removed permanently',
+                'last_updated_at' => now(),
+            ]);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Discount removed permanently.',
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Discount removed permanently.');
     }
 
     /**
@@ -155,13 +257,13 @@ class DeadStockController extends Controller
      */
     public function exportExcel(Request $request)
     {
-        $query = DeadStock::where('is_active', true)->with('product');
+        // Auto-recalculate before export to ensure fresh data
+        $this->detectionService->analyzeAllProducts();
 
-        if ($request->filled('priority')) {
-            $query->where('priority_level', $request->get('priority'));
-        }
-
-        $deadStocks = $query->orderBy('days_without_sale', 'desc')->get();
+        $deadStocks = DeadStock::where('is_active', true)
+            ->with('product')
+            ->orderBy('days_without_sale', 'desc')
+            ->get();
 
         $headers = [
             'Content-Type' => 'text/csv; charset=utf-8',
@@ -176,7 +278,7 @@ class DeadStockController extends Controller
             fputcsv($file, [
                 'Product Description', 'Brand', 'Product Name', 'Compatible Model',
                 'SKU', 'Warehouse', 'Current Stock', 'Stock Value (₱)',
-                'Last Sold Date', 'Days Since Last Sale', 'Suggested Action', 'Priority'
+                'Last Sold Date', 'Days Since Last Sale', 'Suggested Action'
             ]);
 
             foreach ($deadStocks as $ds) {
@@ -193,7 +295,6 @@ class DeadStockController extends Controller
                     $ds->last_sold_date ? $ds->last_sold_date->format('M d, Y') : 'Never',
                     $ds->days_without_sale,
                     $ds->analysis_notes ?? 'Monitor',
-                    $ds->priority_level,
                 ]);
             }
 
@@ -208,13 +309,14 @@ class DeadStockController extends Controller
      */
     public function exportPdf(Request $request)
     {
-        $query = DeadStock::where('is_active', true)->with('product');
+        // Auto-recalculate before export to ensure fresh data
+        $this->detectionService->analyzeAllProducts();
 
-        if ($request->filled('priority')) {
-            $query->where('priority_level', $request->get('priority'));
-        }
+        $deadStocks = DeadStock::where('is_active', true)
+            ->with('product')
+            ->orderBy('days_without_sale', 'desc')
+            ->get();
 
-        $deadStocks = $query->orderBy('days_without_sale', 'desc')->get();
         $thresholdDays = $this->detectionService->getThresholdDays();
 
         // Generate a print-friendly HTML that can be printed as PDF
@@ -236,9 +338,9 @@ class DeadStockController extends Controller
     {
         return response()->json([
             'total' => $this->detectionService->getTotalCount(),
-            'countByPriority' => $this->detectionService->getCountByPriority(),
             'totalValue' => $this->detectionService->getTotalValue(),
             'thresholdDays' => $this->detectionService->getThresholdDays(),
         ]);
     }
 }
+

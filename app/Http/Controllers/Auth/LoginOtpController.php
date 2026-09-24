@@ -8,18 +8,25 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 class LoginOtpController extends Controller
 {
+    /**
+     * Build the cache key for a given email address.
+     * Using a hash to avoid exposing the raw email in cache keys.
+     */
+    private function cacheKey(string $email): string
+    {
+        return 'login_otp_' . hash('sha256', strtolower(trim($email)));
+    }
+
     public function send(Request $request): JsonResponse
     {
         $request->validate([
-            'email' => ['required', 'email'],
+            'email'    => ['required', 'email'],
             'password' => ['required', 'string'],
             'remember' => ['sometimes', 'boolean'],
         ]);
@@ -39,15 +46,17 @@ class LoginOtpController extends Controller
         }
 
         $otpCode = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        $expiresAt = now()->addMinutes(10);
 
-        Session::put('login.otp', [
-            'user_id' => $user->id,
-            'email' => $user->email,
-            'code' => $otpCode,
-            'expires_at' => $expiresAt->timestamp,
+        // Store OTP in the cache (not the session).
+        // Session storage was unreliable here because the database session driver
+        // doesn't always flush before the browser fires the subsequent verify request.
+        // Cache::put() writes to the cache store (also database-backed) synchronously
+        // and is not tied to the browser's session cookie, making it much more reliable.
+        Cache::put($this->cacheKey($user->email), [
+            'user_id'  => $user->id,
+            'code'     => $otpCode,
             'remember' => $request->boolean('remember'),
-        ]);
+        ], now()->addMinutes(10));
 
         Mail::to($user->email)->send(new LoginOtpCodeMail($user, $otpCode));
 
@@ -59,41 +68,42 @@ class LoginOtpController extends Controller
     public function verify(Request $request): JsonResponse
     {
         $request->validate([
-            'code' => ['required', 'digits:6'],
+            'email' => ['required', 'email'],
+            'code'  => ['required', 'digits:6'],
         ]);
 
-        $otpData = Session::get('login.otp');
+        $cacheKey = $this->cacheKey($request->email);
+        $otpData  = Cache::get($cacheKey);
 
         if (! $otpData) {
-            return response()->json(['message' => 'No verification request found. Please login again.'], 422);
-        }
-
-        if (now()->timestamp > ($otpData['expires_at'] ?? 0)) {
-            Session::forget('login.otp');
-
-            return response()->json(['message' => 'The verification code has expired. Please login again.'], 422);
+            return response()->json([
+                'message' => 'No verification request found. Please login again.',
+            ], 422);
         }
 
         if ($request->code !== $otpData['code']) {
-            return response()->json(['message' => 'The verification code is incorrect. Please try again.'], 422);
+            return response()->json([
+                'message' => 'The verification code is incorrect. Please try again.',
+            ], 422);
         }
 
         $user = User::find($otpData['user_id']);
 
         if (! $user) {
-            Session::forget('login.otp');
-
-            return response()->json(['message' => 'Unable to verify login. Please try again.'], 422);
+            Cache::forget($cacheKey);
+            return response()->json([
+                'message' => 'Unable to verify login. Please try again.',
+            ], 422);
         }
 
         if (! $user->email_verified_at) {
-            $user->forceFill([
-                'email_verified_at' => now(),
-            ])->save();
+            $user->forceFill(['email_verified_at' => now()])->save();
         }
 
         Auth::loginUsingId($user->id, $otpData['remember'] ?? false);
-        Session::forget('login.otp');
+
+        // Remove the OTP from cache once used — one-time use only
+        Cache::forget($cacheKey);
 
         return response()->json(['redirectUrl' => route('dashboard')]);
     }

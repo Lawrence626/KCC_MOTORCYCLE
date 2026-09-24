@@ -95,7 +95,7 @@ class DashboardController extends Controller
         $categoryService = new SalesCategoryService();
         $categoryBreakdown = $categoryService->getTodaysCategoryBreakdown();
 
-        $topItems = $currentTransactions->flatMap(function ($transaction) use ($productCategories, $productsForCat) {
+        $soldItems = $currentTransactions->flatMap(function ($transaction) use ($productCategories, $productsForCat) {
             return collect($transaction->items ?? [])->map(function ($item) use ($productCategories, $productsForCat) {
                 $quantity = (int) ($item['quantity'] ?? $item['qty'] ?? 0);
                 $productId = $item['id'] ?? null;
@@ -127,7 +127,11 @@ class DashboardController extends Controller
                     'revenue' => $quantity * $unitPrice,
                 ];
             });
-        })->groupBy('product_id')->map(function ($items) {
+        })->filter(fn ($item) => $item['quantity'] > 0);
+
+        $groupedSoldItems = $soldItems->groupBy(function ($item) {
+            return $item['product_id'] ?? $item['sku'] ?? $item['name'];
+        })->map(function ($items) {
             return [
                 'product_id' => $items->first()['product_id'] ?? null,
                 'name' => $items->first()['name'],
@@ -136,7 +140,38 @@ class DashboardController extends Controller
                 'quantity' => $items->sum('quantity'),
                 'revenue' => $items->sum('revenue'),
             ];
-        })->sortByDesc('quantity')->take(5)->values();
+        })->values();
+
+        $topItems = $groupedSoldItems->sortByDesc('quantity')->take(5)->values();
+
+        $allFastMoving = $groupedSoldItems->sortByDesc('quantity')->values()->map(function ($item, $index) {
+            return [
+                'rank' => $index + 1,
+                'id' => $item['product_id'] ?? null,
+                'product_id' => $item['product_id'] ?? null,
+                'name' => $item['name'],
+                'sku' => $item['sku'] ?: 'N/A',
+                'category' => $item['category'] ?? 'General',
+                'quantity' => (int) $item['quantity'],
+                'revenue' => (float) $item['revenue'],
+            ];
+        })->all();
+
+        $allSlowMoving = $groupedSoldItems->sortBy('quantity')->values()->map(function ($item, $index) {
+            return [
+                'rank' => $index + 1,
+                'id' => $item['product_id'] ?? null,
+                'product_id' => $item['product_id'] ?? null,
+                'name' => $item['name'],
+                'sku' => $item['sku'] ?: 'N/A',
+                'category' => $item['category'] ?? 'General',
+                'quantity' => (int) $item['quantity'],
+                'revenue' => (float) $item['revenue'],
+            ];
+        })->all();
+
+        $fastMoving = array_slice($allFastMoving, 0, 5);
+        $slowMoving = array_slice($allSlowMoving, 0, 5);
 
         $inventory = [
             'total_products' => Product::query()->where('is_archived', false)->count(),
@@ -182,6 +217,10 @@ class DashboardController extends Controller
                     ],
                 ],
             ],
+            'fast_moving' => $fastMoving,
+            'slow_moving' => $slowMoving,
+            'all_fast_moving' => $allFastMoving,
+            'all_slow_moving' => $allSlowMoving,
             'top_items' => $topItems->map(function ($item, $index) {
                 return [
                     'rank' => $index + 1,
@@ -271,6 +310,17 @@ class DashboardController extends Controller
     {
         $now = now();
 
+        $yearly = [];
+        $yearlyLabels = [];
+        for ($i = 4; $i >= 0; $i--) {
+            $year = $now->copy()->subYears($i);
+            $yearlyLabels[] = $year->format('Y');
+            $yearly[] = (float) POSTransaction::query()
+                ->completed()
+                ->whereBetween('completed_at', [$year->copy()->startOfYear(), $year->copy()->endOfYear()])
+                ->sum('total_amount');
+        }
+
         $monthly = [];
         $monthlyLabels = [];
         for ($i = 5; $i >= 0; $i--) {
@@ -307,6 +357,7 @@ class DashboardController extends Controller
         }
 
         return [
+            'yearly' => ['labels' => $yearlyLabels, 'values' => $yearly],
             'monthly' => ['labels' => $monthlyLabels, 'values' => $monthly],
             'weekly' => ['labels' => $weeklyLabels, 'values' => $weekly],
             'daily' => ['labels' => $dailyLabels, 'values' => $daily],

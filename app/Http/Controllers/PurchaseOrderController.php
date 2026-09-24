@@ -56,13 +56,19 @@ class PurchaseOrderController extends Controller
         $orders = $this->filteredPurchaseOrders($request, ['pending approval', 'approved', 'sent to supplier', 'in transit', 'awaiting confirmation'], 'orders')
             ->latest()
             ->paginate(10, ['*'], 'orders_page')
-            ->withQueryString();
+            ->withQueryString()
+            ->appends(['tab' => 'orders']);
 
         $backOrders = $this->filteredBackOrderItems($request)
             ->paginate(10, ['*'], 'back_orders_page')
-            ->withQueryString();
+            ->withQueryString()
+            ->appends(['tab' => 'back_orders']);
 
+<<<<<<< HEAD
         $replacementBackOrders = Schema::hasTable('defective_return_requests')
+=======
+        $replacementBackOrders = \Illuminate\Support\Facades\Schema::hasTable('defective_return_requests')
+>>>>>>> 4832e71640143292d1c85fd036fa86392c6969d7
             ? DefectiveReturnRequest::with(['purchaseOrder', 'product'])
                 ->where('resolution', 'Replacement')
                 ->whereIn('status', ['Replacement Approved', 'Awaiting Replacement'])
@@ -79,12 +85,60 @@ class PurchaseOrderController extends Controller
         $receivedOrders = $this->filteredPurchaseOrders($request, ['completed', 'partially received'], 'received')
             ->latest()
             ->paginate(10, ['*'], 'received_page')
-            ->withQueryString();
+            ->withQueryString()
+            ->appends(['tab' => 'received']);
 
         $cancelledOrders = $this->filteredPurchaseOrders($request, ['rejected', 'cancelled'], 'cancelled')
             ->latest()
             ->paginate(10, ['*'], 'cancelled_page')
-            ->withQueryString();
+            ->withQueryString()
+            ->appends(['tab' => 'cancelled']);
+
+        $activeTab = $request->query('tab');
+        if (! $activeTab) {
+            if ($request->has('received_page') || $request->has('received_search') || $request->has('received_status') || $request->has('received_supplier')) {
+                $activeTab = 'received';
+            } elseif ($request->has('back_orders_page') || $request->has('back_orders_search') || $request->has('back_orders_status') || $request->has('back_orders_supplier')) {
+                $activeTab = 'back_orders';
+            } elseif ($request->has('cancelled_page') || $request->has('cancelled_search') || $request->has('cancelled_status') || $request->has('cancelled_supplier')) {
+                $activeTab = 'cancelled';
+            } else {
+                $activeTab = 'orders';
+            }
+        }
+
+        if ($request->ajax() || $request->wantsJson()) {
+            $html = match ($activeTab) {
+                'received' => view('purchase_order.partials.orders-table', [
+                    'orders' => $receivedOrders,
+                    'dateLabel' => 'Received',
+                    'dateType' => 'received',
+                    'emptyMessage' => 'No received purchase orders found.',
+                ])->render() . '<div class="mt-4 px-4">' . $receivedOrders->appends(['tab' => 'received'])->links()->render() . '</div>',
+
+                'back_orders' => view('purchase_order.partials.back-orders-table', [
+                    'backOrders' => $backOrders,
+                    'replacementBackOrders' => $replacementBackOrders,
+                ])->render() . '<div class="mt-4 px-4">' . $backOrders->appends(['tab' => 'back_orders'])->links()->render() . '</div>',
+
+                'cancelled' => view('purchase_order.partials.orders-table', [
+                    'orders' => $cancelledOrders,
+                    'dateLabel' => 'Created',
+                    'dateType' => 'created',
+                    'emptyMessage' => 'No cancelled purchase orders found.',
+                ])->render() . '<div class="mt-4 px-4">' . $cancelledOrders->appends(['tab' => 'cancelled'])->links()->render() . '</div>',
+
+                default => view('purchase_order.partials.orders-table', [
+                    'orders' => $orders,
+                    'emptyMessage' => 'No active purchase orders have been created yet.',
+                ])->render() . '<div class="mt-4 px-4">' . $orders->appends(['tab' => 'orders'])->links()->render() . '</div>',
+            };
+
+            return response()->json([
+                'tab' => $activeTab,
+                'html' => $html,
+            ]);
+        }
 
         return view('purchase_order.order-management', [
             'lowStockProducts' => $lowStockProducts,
@@ -99,7 +153,7 @@ class PurchaseOrderController extends Controller
             'replacementBackOrders' => $replacementBackOrders,
             'receivedOrders' => $receivedOrders,
             'cancelledOrders' => $cancelledOrders,
-            'activeTab' => $request->query('tab', 'orders'),
+            'activeTab' => $activeTab,
         ]);
     }
 
@@ -124,6 +178,15 @@ class PurchaseOrderController extends Controller
                 }
             });
 
+        $search = trim((string) $request->query('search', ''));
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('product_name', 'like', "%{$search}%")
+                  ->orWhere('name', 'like', "%{$search}%")
+                  ->orWhere('sku', 'like', "%{$search}%");
+            });
+        }
+
         // Get all products matching the query
         $allProducts = $query->get();
         $recentSales = $this->getRecentProductSales(30);
@@ -132,7 +195,7 @@ class PurchaseOrderController extends Controller
         $allProducts->transform(function ($product) use ($recentSales) {
             $soldLast30Days = $recentSales[$product->id] ?? 0;
             $product->sales_count = $soldLast30Days;
-            $product->movement_category = $this->getProductMovementCategory($soldLast30Days);
+            $product->movement_category = $this->getProductMovementCategory($soldLast30Days, $product->id);
             return $product;
         });
 
@@ -156,7 +219,7 @@ class PurchaseOrderController extends Controller
         $filteredProducts = $preselected->concat($others);
 
         // Manually paginate the filtered collection
-        $page = $request->query('page', 1);
+        $page = (int) $request->query('page', 1);
         $perPage = 8;
         $offset = ($page - 1) * $perPage;
         $paginatedProducts = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -166,6 +229,21 @@ class PurchaseOrderController extends Controller
             $page,
             ['path' => $request->url(), 'query' => $request->query()]
         );
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'table_html' => view('purchase_order.partials.product-rows', [
+                    'lowStockProducts' => $paginatedProducts,
+                    'selectedProductIds' => $selectedProductIds,
+                ])->render(),
+                'pagination_html' => $paginatedProducts->links()->render(),
+                'total' => $paginatedProducts->total(),
+                'first_item' => $paginatedProducts->firstItem() ?? 0,
+                'last_item' => $paginatedProducts->lastItem() ?? 0,
+                'current_page' => $paginatedProducts->currentPage(),
+                'last_page' => $paginatedProducts->lastPage(),
+            ]);
+        }
 
         return view('purchase_order.create', [
             'lowStockProducts' => $paginatedProducts,
@@ -206,15 +284,15 @@ class PurchaseOrderController extends Controller
         return $productSales;
     }
 
-    private function getProductMovementCategory(int $salesCount): string
+    private function getProductMovementCategory(int $salesCount, ?int $productId = null): string
     {
-        // For testing purposes, assign random categories if no sales data
+        // For testing purposes, assign deterministic categories if no sales data
         // More balanced distribution: 50% fast_moving, 30% slow_moving, 20% special_order
         if ($salesCount === 0) {
-            $random = rand(1, 10);
-            if ($random <= 5) {
+            $seed = $productId ? (abs(crc32((string) $productId)) % 10) + 1 : 1;
+            if ($seed <= 5) {
                 return 'fast_moving';
-            } elseif ($random <= 8) {
+            } elseif ($seed <= 8) {
                 return 'slow_moving';
             }
             return 'special_order';
@@ -266,7 +344,8 @@ class PurchaseOrderController extends Controller
         $status = $request->query($prefix . '_status');
         $supplier = $request->query($prefix . '_supplier');
 
-        return PurchaseOrder::whereIn('status', $statuses)
+        return PurchaseOrder::with(['items.product'])
+            ->whereIn('status', $statuses)
             ->when($status && in_array($status, $statuses, true), fn ($query) => $query->where('status', $status))
             ->when($supplier, fn ($query, $supplier) => $query->where('supplier_name', $supplier))
             ->when($search, fn ($query, $search) => $query->where(function ($query) use ($search) {
@@ -281,7 +360,7 @@ class PurchaseOrderController extends Controller
         $supplier = $request->query('back_orders_supplier');
 
         return PurchaseOrderItem::query()
-            ->with('purchaseOrder')
+            ->with(['purchaseOrder', 'product'])
             ->whereColumn('received_quantity', '<', 'quantity')
             ->whereHas('purchaseOrder', function ($query) use ($supplier) {
                 $query->whereNotIn('status', ['rejected', 'cancelled'])
@@ -316,7 +395,8 @@ class PurchaseOrderController extends Controller
         $issuesFound = PurchaseOrder::where('status', 'rejected')
             ->count();
 
-        $orders = PurchaseOrder::whereIn('status', $receivedStatuses)
+        $orders = PurchaseOrder::with(['items.product'])
+            ->whereIn('status', $receivedStatuses)
             ->when($status && in_array($status, $receivedStatuses, true), fn ($query) => $query->where('status', $status))
             ->when($search, fn ($query, $search) => $query->where(function ($query) use ($search) {
                 $query->where('order_number', 'like', "%{$search}%")
@@ -389,12 +469,19 @@ class PurchaseOrderController extends Controller
         $totalAmount = $selectedProducts->sum('total_price');
         $orderNumber = 'PO-' . now()->format('YmdHis') . '-' . Str::upper(Str::random(4));
 
-        $purchaseOrder = DB::transaction(function () use ($supplier, $validated, $selectedProducts, $totalAmount, $orderNumber) {
+        $user = auth()->user();
+        $isAdmin = $user && $user->role === 'admin';
+        $initialStatus = $isAdmin ? 'approved' : 'pending approval';
+
+        $purchaseOrder = DB::transaction(function () use ($supplier, $validated, $selectedProducts, $totalAmount, $orderNumber, $user, $isAdmin, $initialStatus) {
             $purchaseOrder = PurchaseOrder::create([
                 'order_number'            => $orderNumber,
                 'supplier_id'             => $supplier->id,
                 'supplier_name'           => $supplier->name,
-                'status'                  => 'pending approval',
+                'user_id'                 => $user?->id,
+                'created_by_role'         => $user?->role ?? ($isAdmin ? 'admin' : 'inventory_clerk'),
+                'status'                  => $initialStatus,
+                'approved_at'             => $isAdmin ? now() : null,
                 'expected_delivery_date'  => $validated['expected_delivery_date'] ?? null,
                 'notes'                   => $validated['notes'] ?? null,
                 'total_amount'            => $totalAmount,
@@ -416,6 +503,10 @@ class PurchaseOrderController extends Controller
 
             return $purchaseOrder;
         });
+
+        if ($isAdmin) {
+            return redirect()->route('order.show', $purchaseOrder)->with('success', 'Purchase order created successfully and is ready to send to supplier.');
+        }
 
         $this->notifyAdminsOfNewPurchaseOrder($purchaseOrder);
 
@@ -505,8 +596,8 @@ class PurchaseOrderController extends Controller
             }
 
             $recommendation = match ($trend) {
-                'increasing' => 'Supplier cost has increased. Review the suggested retail price to maintain your target profit margin.',
-                'decreasing' => 'Supplier cost has decreased. Maintaining the current retail price will increase your profit margin.',
+                'increasing' => 'Supplier cost has increased. Review the suggested retail price to maintain a 20% markup.',
+                'decreasing' => 'Supplier cost has decreased. Maintaining the current retail price will increase your markup.',
                 default      => 'Supplier pricing is stable. Maintain the current retail price.',
             };
 
@@ -689,14 +780,17 @@ class PurchaseOrderController extends Controller
         return redirect()->route('order.show', $purchaseOrder)->with('success', 'Purchase order approved.');
     }
 
-    public function reject(PurchaseOrder $purchaseOrder)
+    public function reject(Request $request, PurchaseOrder $purchaseOrder)
     {
         if (!in_array($purchaseOrder->status, ['pending approval', 'approved'])) {
             return redirect()->route('order.show', $purchaseOrder)->with('warning', 'Only pending approval or approved orders can be rejected.');
         }
 
         $purchaseOrder->update([
-            'status' => 'rejected',
+            'status'           => 'rejected',
+            'rejected_at'      => now(),
+            'rejected_by'      => auth()->id(),
+            'rejection_reason' => $request->input('rejection_reason'),
         ]);
 
         return redirect()->route('order.show', $purchaseOrder)->with('success', 'Purchase order rejected.');
@@ -964,14 +1058,14 @@ class PurchaseOrderController extends Controller
                     };
 
                     $reason = match (true) {
-                        $currentCost > $previousCost => 'Supplier cost increased while maintaining the desired profit margin.',
+                        $currentCost > $previousCost => 'Supplier cost increased while maintaining the desired 20% markup.',
                         $currentCost < $previousCost => 'Supplier cost decreased, allowing for higher profit or more competitive pricing.',
                         default => 'Supplier cost has not changed.',
                     };
 
-                    $targetProfitMargin = 0.30;
+                    $markupMultiplier = 1.20;
                     $suggestedRetailPrice = $currentCost > 0
-                        ? round(($currentCost * 1.12) / (1 - $targetProfitMargin), 2)
+                        ? round($currentCost * $markupMultiplier, 2)
                         : 0;
 
                     SupplierPriceHistory::create([

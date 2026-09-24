@@ -27,7 +27,7 @@ class CheckRole
         }
 
         if (! in_array($user->role, $roles, true)) {
-            abort(403);
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to access that page.');
         }
 
         return $next($request);

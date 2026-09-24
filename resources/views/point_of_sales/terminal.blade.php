@@ -3,7 +3,7 @@
          <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div class="pl-3 lg:pl-1">
                 <h1 class="text-3xl font-bold text-slate-900">Point of Sale (POS)</h1>
-                <p class="text-gray-600 text-sm mt-1">Process sales, service billing, and payments from one compact page.</p>
+                <p class="text-sm text-slate-500 mt-1">Process sales, service billing, and payments from one compact page.</p>
             </div>
             <div class="flex flex-wrap gap-2">
          <button id="posOpenDesktopScannerButton" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 font-semibold shadow-sm hover:bg-black/10 transition-all duration-200">
@@ -36,9 +36,9 @@
                             <div class="relative flex-1">
                                 <label for="posProductSearchInput" class="sr-only">Search products</label>
                                 <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/></svg>
-                                <input id="posProductSearchInput" type="text" placeholder="Search products..." class="w-full rounded-[10px] border border-slate-700 bg-slate-800/90 text-white placeholder:text-white placeholder-white pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#00fff2]" style="height: 42px;" />
+                                <input id="posProductSearchInput" type="text" placeholder="Search products..." class="w-full rounded-[10px] border border-slate-700 bg-slate-800/90 text-white placeholder:text-white placeholder-white pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#6EC1D1]" style="height: 42px;" />
                             </div>
-                            <button id="posFilterToggleButton" type="button" aria-label="Open filter" class="inline-flex h-[42px] w-[42px] items-center justify-center rounded-[10px] bg-slate-800 text-white border border-slate-700 transition hover:bg-slate-700 focus:outline-none focus:ring-1 focus:ring-[#00fff2] flex-shrink-0">
+                            <button id="posFilterToggleButton" type="button" aria-label="Open filter" class="inline-flex h-[42px] w-[42px] items-center justify-center rounded-[10px] bg-slate-800 text-white border border-slate-700 transition hover:bg-slate-700 focus:outline-none focus:ring-1 focus:ring-[#6EC1D1] flex-shrink-0">
                                 <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L15 13.414V18a1 1 0 01-1.447.894l-4-2A1 1 0 019 16v-2.586L3.293 6.707A1 1 0 013 6V4z"/></svg>
                             </button>
                         </div>
@@ -48,14 +48,14 @@
                             <label class="text-xs font-semibold text-white whitespace-nowrap">Filter by:</label>
                             <div class="relative">
                                 <select id="posCategorySelect" class="hidden">
-                                    <option value="All">All Product Description</option>
-                                    <!-- Categories will be loaded dynamically from product descriptions -->
+                                    <option value="All">All Categories</option>
+                                    <!-- Categories will be loaded dynamically from product categories -->
                                 </select>
                             </div>
                             <div class="relative">
                                 <select id="posBrandSelect" class="hidden">
                                     <option value="All">All Brands</option>
-                                    <!-- Brands will be loaded dynamically based on selected product description -->
+                                    <!-- Brands will be loaded dynamically based on selected product category -->
                                 </select>
                             </div>
                         </div>
@@ -81,18 +81,18 @@
                             <h2 class="text-sm font-bold text-white">Cart</h2>
                             <p class="text-xs text-slate-300">Selected items show here.</p>
                         </div>
-                        <button id="posEmptyCartButton" class="rounded-[10px] bg-[#00FFF2] px-3 py-1.5 text-[11px] font-bold text-slate-900 shadow-sm hover:bg-[#00D9CC] transition-all duration-200">Empty</button>
+                        <button id="posEmptyCartButton" class="rounded-[10px] bg-[#6EC1D1] px-3 py-1.5 text-[11px] font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all duration-200">Empty</button>
                     </div>
                     <div class="p-5 space-y-4">
-                        <div class="overflow-x-auto">
+                        <div class="overflow-x-auto rounded-t-[10px] overflow-hidden">
                             <table id="posCartTable" class="min-w-full text-left text-[11px]">
-                                <thead class="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-700">
+                                <thead class="border-b border-slate-800 bg-[#0f172a] text-xs font-semibold uppercase tracking-wider text-white" style="background-color: #0f172a;">
                                     <tr>
-                                        <th class="px-3 py-2 text-left font-semibold">Item</th>
-                                        <th class="px-6 py-2 text-right font-semibold">Price</th>
-                                        <th class="px-3 py-2 text-center font-semibold">Qty</th>
-                                        <th class="px-6 py-2 text-right font-semibold">Total</th>
-                                        <th class="px-3 py-2 text-center font-semibold">Action</th>
+                                        <th class="px-3 py-2 text-left font-semibold text-white rounded-tl-[10px]">Item</th>
+                                        <th class="px-6 py-2 text-right font-semibold text-white">Price</th>
+                                        <th class="px-3 py-2 text-center font-semibold text-white">Qty</th>
+                                        <th class="px-6 py-2 text-right font-semibold text-white">Total</th>
+                                        <th class="px-3 py-2 text-center font-semibold text-white rounded-tr-[10px]">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="posCartBody"></tbody>
@@ -105,10 +105,13 @@
                                     <span class="font-semibold">Extra Charges</span>
                                     <input id="posExtraChargeInput" type="number" min="0" step="0.01" value="0" placeholder="0.00" class="mt-2 w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35" />
                                 </label>
-                                <label class="block text-sm text-slate-700">
-                                    <span class="font-semibold">Discount</span>
+                                <div class="block text-sm text-slate-700">
+                                    <div class="flex items-center justify-between">
+                                        <label for="posDiscountInput" class="font-semibold cursor-pointer">Discount</label>
+                                        <button type="button" id="posRemoveDiscountBtn" class="text-xs font-semibold text-red-600 hover:text-red-800 transition cursor-pointer hidden">Remove</button>
+                                    </div>
                                     <input id="posDiscountInput" type="number" min="0" step="0.01" value="0" placeholder="0.00" class="mt-2 w-full rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35" />
-                                </label>
+                                </div>
                             </div>
                         </div>
                         <div id="posCartFooter" class="space-y-2 hidden text-sm text-slate-600">
@@ -161,14 +164,14 @@
                     </div>
                     <div class="p-6 grid gap-3">
                         <label class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 px-3 py-2 text-sm cursor-pointer hover:border-slate-400">
-                            <input type="radio" name="posPaymentMethod" value="cash" class="pos-payment-method h-4 w-4 rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]" checked />
+                            <input type="radio" name="posPaymentMethod" value="cash" class="pos-payment-method h-4 w-4 rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1]" checked />
                             <span>Cash</span>
                         </label>
                         <label class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 px-3 py-2 text-sm cursor-pointer hover:border-slate-400">
-                            <input type="radio" name="posPaymentMethod" value="qr" class="pos-payment-method h-4 w-4 rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]" />
+                            <input type="radio" name="posPaymentMethod" value="qr" class="pos-payment-method h-4 w-4 rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1]" />
                             <span>QR PH</span>
                         </label>
-                        <button id="posProceedPaymentButton" class="w-full rounded-[10px] bg-[#00fff2] px-3 py-2 text-sm font-bold text-black hover:bg-[#00e6da] transition-all duration-200 shadow-sm">Proceed to Payment</button>
+                        <button id="posProceedPaymentButton" class="w-full rounded-[10px] bg-[#6EC1D1] px-3 py-2 text-sm font-bold text-black hover:bg-[#59b2c2] transition-all duration-200 shadow-sm">Proceed to Payment</button>
                     </div>
                 </div>
 
@@ -179,10 +182,10 @@
     <div id="posPaymentModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('posPaymentModal').classList.add('hidden')"></div>
         <div class="relative w-full max-w-4xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Process Payment</h2>
-                    <p class="text-sm text-slate-800 font-medium">Review the transaction and confirm payment.</p>
+                    <p class="text-sm text-slate-900 font-medium">Review the transaction and confirm payment.</p>
                 </div>
                 <button id="posPaymentModalClose" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -234,23 +237,68 @@
                     <div class="rounded-[28px] border border-slate-200 p-4">
                         <h3 class="text-base font-semibold text-slate-900 mb-3">Payment Method</h3>
                         <div class="grid gap-3">
-                            <label class="inline-flex items-center gap-3 rounded-[10px] border border-slate-200 px-4 py-3 cursor-pointer hover:border-slate-400">
+                            <label class="inline-flex items-center gap-3 rounded-[10px] border border-slate-200 px-4 py-3 cursor-pointer hover:border-slate-400 has-[:checked]:border-[#00fff2] has-[:checked]:bg-[#00fff2]/10 transition">
                                 <input type="radio" name="posPaymentModalMethod" value="cash" class="h-4 w-4 text-[#105f68] rounded-[10px] focus:ring-[#105f68]" checked />
                                 <span class="font-medium text-slate-900">Cash</span>
                             </label>
-                            <div class="flex items-center gap-3 rounded-[10px] border border-slate-200 px-4 py-3 hover:border-slate-400">
+                            <label class="inline-flex items-center gap-3 rounded-[10px] border border-slate-200 px-4 py-3 cursor-pointer hover:border-slate-400 has-[:checked]:border-[#00fff2] has-[:checked]:bg-[#00fff2]/10 transition">
                                 <input type="radio" name="posPaymentModalMethod" value="qr" class="h-4 w-4 text-[#105f68] rounded-[10px] focus:ring-[#105f68]" />
                                 <span class="font-medium text-slate-900">QR PH</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Cash Tendered & Change Auto-Calculation -->
+                    <div id="posCashPaymentDetails" class="rounded-[28px] border border-slate-200 bg-slate-50/70 p-4 space-y-3.5">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-bold text-slate-900">Cash Received & Change</h3>
+                            <span class="text-[11px] font-semibold text-[#105f68] bg-[#00fff2]/20 px-2 py-0.5 rounded-full">Auto-calculate</span>
+                        </div>
+
+                        <!-- Amount Paid / Tendered Input -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">Amount Paid by Customer <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">₱</span>
+                                <input type="number" 
+                                       id="posAmountTenderedInput" 
+                                       step="any" 
+                                       min="0" 
+                                       placeholder="0.00"
+                                       class="w-full pl-8 pr-3.5 py-2.5 rounded-[12px] border-2 border-slate-300 bg-white text-base font-bold text-slate-900 focus:outline-none focus:border-[#00fff2] focus:ring-2 focus:ring-[#00fff2]/30 transition shadow-sm" />
+                            </div>
+                        </div>
+
+                        <!-- Quick Cash Suggestions -->
+                        <div>
+                            <span class="text-[11px] font-semibold text-slate-500 block mb-1.5">Quick Cash:</span>
+                            <div id="posQuickCashPills" class="flex flex-wrap gap-1.5">
+                                <button type="button" class="pos-quick-cash-pill px-2.5 py-1 rounded-[8px] bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 hover:border-cyan-300 transition shadow-xs" data-mode="exact">Exact</button>
+                                <button type="button" class="pos-quick-cash-pill px-2.5 py-1 rounded-[8px] bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 hover:border-cyan-300 transition shadow-xs" data-amount="100">₱100</button>
+                                <button type="button" class="pos-quick-cash-pill px-2.5 py-1 rounded-[8px] bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 hover:border-cyan-300 transition shadow-xs" data-amount="200">₱200</button>
+                                <button type="button" class="pos-quick-cash-pill px-2.5 py-1 rounded-[8px] bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 hover:border-cyan-300 transition shadow-xs" data-amount="500">₱500</button>
+                                <button type="button" class="pos-quick-cash-pill px-2.5 py-1 rounded-[8px] bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 hover:border-cyan-300 transition shadow-xs" data-amount="1000">₱1,000</button>
+                                <button type="button" class="pos-quick-cash-pill px-2.5 py-1 rounded-[8px] bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 hover:border-cyan-300 transition shadow-xs" data-amount="1500">₱1,500</button>
+                                <button type="button" class="pos-quick-cash-pill px-2.5 py-1 rounded-[8px] bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-[#00fff2] hover:text-slate-900 hover:border-cyan-300 transition shadow-xs" data-amount="2000">₱2,000</button>
+                            </div>
+                        </div>
+
+                        <!-- Change Box -->
+                        <div id="posChangeDisplayBox" class="rounded-[16px] border border-slate-200 bg-white p-3.5 transition-all">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-600">Change (Sukli)</span>
+                                <span id="posChangeDisplayAmount" class="text-lg font-extrabold text-emerald-600">₱0.00</span>
+                            </div>
+                            <div id="posInsufficientWarning" class="hidden mt-1.5 text-[11px] font-semibold text-red-500 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                <span id="posInsufficientText">Insufficient amount</span>
                             </div>
                         </div>
                     </div>
-                    <div class="rounded-[28px] border border-slate-200 p-4">
-                        <h3 class="text-base font-semibold text-slate-900 mb-3">Notes</h3>
-                        <p class="text-sm text-slate-500">Confirm the transaction after verifying the total, services, and charges.</p>
-                    </div>
+
                     <div class="flex gap-3">
                         <button id="posPaymentModalCancel" class="flex-1 rounded-[10px] bg-black/10 px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-black/20">Cancel</button>
-                        <button id="posPaymentModalConfirm" class="flex-1 rounded-[10px] bg-[#00fff2] px-4 py-3 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300">Confirm Payment</button>
+                        <button id="posPaymentModalConfirm" class="flex-1 rounded-[10px] bg-[#6EC1D1] px-4 py-3 text-sm font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300 transition shadow-sm">Confirm Payment</button>
                     </div>
                 </div>
             </div>
@@ -261,15 +309,15 @@
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('posReceiptOverlay').classList.add('hidden')"></div>
         <div class="relative w-full max-w-3xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
             <div class="receipt-content">
-                <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                     <div class="flex items-center gap-4">
                         <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-black text-white">
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                         </span>
                         <div>
                             <h2 class="text-xl font-bold text-black">Payment Successful!</h2>
-                            <p class="text-sm text-slate-800 font-medium">Transaction has been recorded successfully.</p>
-                            <p class="mt-1 text-sm text-slate-800 font-medium">Invoice #: <span id="receiptInvoice">INV-000000</span></p>
+                            <p class="text-sm text-slate-900 font-medium">Transaction has been recorded successfully.</p>
+                            <p class="mt-1 text-sm text-slate-900 font-medium">Invoice #: <span id="receiptInvoice">INV-000000</span></p>
                             <p id="receiptDate" class="hidden"></p>
                         </div>
                     </div>
@@ -278,14 +326,18 @@
                     </button>
                 </div>
                 <div class="px-6 py-6">
-                    <div class="grid gap-4 sm:grid-cols-2 mb-6">
+                    <div class="grid gap-4 sm:grid-cols-3 mb-6">
                         <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                            <p class="text-sm text-slate-500">Paid Amount</p>
-                            <p id="receiptPaid" class="mt-2 text-xl font-semibold text-slate-900">₱0.00</p>
+                            <p class="text-xs font-semibold text-slate-500">Amount Paid</p>
+                            <p id="receiptPaid" class="mt-2 text-xl font-bold text-slate-900">₱0.00</p>
+                        </div>
+                        <div class="rounded-3xl border border-slate-200 bg-emerald-50/70 p-4">
+                            <p class="text-xs font-semibold text-emerald-700">Change (Sukli)</p>
+                            <p id="receiptChange" class="mt-2 text-xl font-bold text-emerald-700">₱0.00</p>
                         </div>
                         <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                            <p class="text-sm text-slate-500">Payment Method</p>
-                            <p id="receiptPaymentMethod" class="mt-2 text-xl font-semibold text-slate-900">Cash</p>
+                            <p class="text-xs font-semibold text-slate-500">Payment Method</p>
+                            <p id="receiptPaymentMethod" class="mt-2 text-xl font-bold text-slate-900">Cash</p>
                         </div>
                     </div>
                     <div id="receiptInvoiceDetails" class="hidden">
@@ -364,8 +416,8 @@
                     </div>
                     <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
                         <button id="posCloseReceiptDoneButton" class="flex-1 rounded-[10px] bg-black/10 px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-black/20">Close</button>
-                        <button id="posPrintReceiptButton" class="flex-1 rounded-[10px] bg-[#00fff2] px-4 py-3 text-sm font-bold text-black hover:bg-[#00e6da] ring-1 ring-slate-300 hidden">Print Receipt</button>
-                        <button id="posViewInvoiceButton" class="flex-1 rounded-[10px] bg-[#00fff2] px-4 py-3 text-sm font-bold text-black shadow-sm hover:bg-[#00e6da] ring-1 ring-slate-300">View Invoice</button>
+                        <button id="posPrintReceiptButton" class="flex-1 rounded-[10px] bg-[#6EC1D1] px-4 py-3 text-sm font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300 hidden">Print Receipt</button>
+                        <button id="posViewInvoiceButton" class="flex-1 rounded-[10px] bg-[#6EC1D1] px-4 py-3 text-sm font-bold text-black shadow-sm hover:bg-[#59b2c2] ring-1 ring-slate-300">View Invoice</button>
                     </div>
                 </div>
             </div>
@@ -393,7 +445,7 @@
                     <div id="posQRCode" class="flex items-center justify-center" style="width: 240px; height: 240px;"></div>
                 </div>
                 <p class="text-sm text-slate-600 text-center mb-6">Scan the QR code with your mobile app to proceed with payment</p>
-                <button id="posQRPaymentCompleteButton" class="w-full rounded-2xl bg-[#00fff2] px-4 py-3 text-sm font-bold text-black hover:bg-[#00e6da]">Payment Complete</button>
+                <button id="posQRPaymentCompleteButton" class="w-full rounded-2xl bg-[#6EC1D1] px-4 py-3 text-sm font-bold text-black hover:bg-[#59b2c2]">Payment Complete</button>
             </div>
         </div>
     </div>
@@ -403,7 +455,7 @@
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('posInvoiceModal').classList.add('hidden')"></div>
         <div class="relative w-full max-w-3xl max-h-[100vh] overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
             <div class="receipt-content">
-                <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+                <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                     <div class="flex items-center gap-4">
                         <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-black text-white">
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -487,7 +539,7 @@
 
                     <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
                         <button id="posCloseInvoiceDoneButton" class="flex-1 rounded-[10px] bg-black/10 px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-black/20">Close</button>
-                        <button id="posPrintInvoiceButton" class="flex-1 rounded-[10px] bg-[#00fff2] px-4 py-3 text-sm font-bold text-black hover:bg-[#00e6da]">Print Invoice</button>
+                        <button id="posPrintInvoiceButton" class="flex-1 rounded-[10px] bg-[#6EC1D1] px-4 py-3 text-sm font-bold text-black hover:bg-[#59b2c2]">Print Invoice</button>
                     </div>
                 </div>
             </div>
@@ -497,10 +549,10 @@
     <div id="posTransactionHistoryModal" class="hidden fixed inset-0 z-[100000001] flex items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('posTransactionHistoryModal').classList.add('hidden')"></div>
         <div class="relative flex w-full max-w-5xl max-h-[90vh] flex-col overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5 flex-shrink-0">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5 flex-shrink-0">
                 <div>
                     <h2 class="text-xl font-bold text-black">Transaction History</h2>
-                    <p class="text-sm text-slate-800 font-medium">All completed transactions are recorded here. Filter by date to review specific sales.</p>
+                    <p class="text-sm text-slate-900 font-medium">All completed transactions are recorded here. Filter by date to review specific sales.</p>
                 </div>
                 <button id="posCloseTransactionHistoryButton" class="rounded-[10px] p-2 text-black hover:bg-black/10">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -510,14 +562,14 @@
                 <div class="grid gap-3 sm:grid-cols-[1.2fr_1fr_1fr] items-end">
                     <label class="block text-sm text-slate-700">
                         <span class="font-semibold">From</span>
-                        <input id="posHistoryFilterFrom" type="date" class="mt-2 h-11 w-full rounded-[10px] border border-slate-300 bg-slate-50 px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2]" style="accent-color: #00fff2; color-scheme: light;" />
+                        <input id="posHistoryFilterFrom" type="date" class="mt-2 h-11 w-full rounded-[10px] border border-slate-300 bg-slate-50 px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1]" style="accent-color: #6EC1D1; color-scheme: light;" />
                     </label>
                     <label class="block text-sm text-slate-700">
                         <span class="font-semibold">To</span>
-                        <input id="posHistoryFilterTo" type="date" class="mt-2 h-11 w-full rounded-[10px] border border-slate-300 bg-slate-50 px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00fff2]" style="accent-color: #00fff2; color-scheme: light;" />
+                        <input id="posHistoryFilterTo" type="date" class="mt-2 h-11 w-full rounded-[10px] border border-slate-300 bg-slate-50 px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1]" style="accent-color: #6EC1D1; color-scheme: light;" />
                     </label>
                     <div class="flex items-center gap-3">
-                        <button id="posHistoryFilterApplyButton" class="h-11 rounded-[10px] bg-[#00fff2] px-4 text-sm font-bold text-black hover:bg-[#00e6da]">Apply Filter</button>
+                        <button id="posHistoryFilterApplyButton" class="h-11 rounded-[10px] bg-[#6EC1D1] px-4 text-sm font-bold text-black hover:bg-[#59b2c2]">Apply Filter</button>
                         <button id="posHistoryFilterClearButton" class="h-11 rounded-[10px] border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-900 hover:bg-black/10">Clear</button>
                     </div>
                 </div>
@@ -533,8 +585,8 @@
                                 <th class="px-3 py-3 text-white">Date</th>
                                 <th class="px-3 py-3 text-white">Method</th>
                                 <th class="px-3 py-3 text-center text-white">Items</th>
-                                <th class="px-3 py-3 text-right text-white">Total</th>
-                                <th class="px-3 py-3 text-center text-white">Action</th>
+                                <th class="px-4 py-3 text-right text-white min-w-[110px]">Total</th>
+                                <th class="pl-8 pr-4 py-3 text-center text-white min-w-[130px]">Action</th>
                             </tr>
                         </thead>
                         <tbody id="posTransactionHistoryBody" class="divide-y divide-slate-200"></tbody>
@@ -546,11 +598,12 @@
                     </div>
                     <button id="posBulkDeleteTransactions" class="rounded-[10px] bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">Delete Selected</button>
                 </div>
-                <div id="posTransactionHistoryPagination" class="mt-4 hidden flex items-center justify-between rounded-[10px] border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
-                    <div id="posTransactionHistoryInfo" class="font-medium">Showing 0 of 0</div>
-                    <div class="flex items-center gap-2">
-                        <button id="posHistoryPrevPage" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-black/10 disabled:opacity-50" disabled>Previous</button>
-                        <button id="posHistoryNextPage" class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-black/10 disabled:opacity-50" disabled>Next</button>
+                <div id="posTransactionHistoryPagination" class="mt-4 hidden flex items-center justify-between rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600">
+                    <div id="posTransactionHistoryInfo" class="font-medium text-slate-600">Showing 0 of 0</div>
+                    <div class="flex items-center gap-1.5">
+                        <button id="posHistoryPrevPage" class="inline-flex items-center rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition cursor-pointer">← Prev</button>
+                        <div id="posHistoryPageNumbers" class="flex items-center gap-1"></div>
+                        <button id="posHistoryNextPage" class="inline-flex items-center rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition cursor-pointer">Next →</button>
                     </div>
                 </div>
                 <div id="posTransactionHistoryEmpty" class="rounded-[10px] border border-dashed border-slate-300 bg-slate-50 px-6 py-8 text-center text-slate-500 text-sm hidden">No transactions match this date range.</div>
@@ -562,7 +615,7 @@
     <div id="posDesktopScannerModal" class="fixed inset-0 hidden items-center justify-center z-50 px-4 py-6" style="display: none;">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('posDesktopScannerModal').style.display='none'"></div>
         <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4">
-            <div class="bg-[#00fff2] px-6 py-4 rounded-t-2xl">
+            <div class="bg-[#6EC1D1] px-6 py-4 rounded-t-2xl">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="bg-black/10 rounded-lg p-2">
@@ -597,7 +650,7 @@
                     <h1 class="text-lg font-bold text-white">POS Scanner</h1>
                     <p class="text-xs text-slate-400">Scan QR codes to add items to cart</p>
                 </div>
-                <button id="posCloseMobileScannerButton" class="rounded-full bg-[#00fff2] px-3 py-1.5 text-xs font-bold text-black hover:bg-[#00e6da] transition-colors">
+                <button id="posCloseMobileScannerButton" class="rounded-full bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-black hover:bg-[#59b2c2] transition-colors">
                     Close
                 </button>
             </div>
@@ -724,7 +777,7 @@
                         if (isSelected) {
                             dayClasses += "bg-[#0f172a] text-white font-bold shadow-sm";
                         } else if (isToday) {
-                            dayClasses += "bg-[#00fff2] text-black font-bold shadow-sm";
+                            dayClasses += "bg-[#6EC1D1] text-black font-bold shadow-sm";
                         } else {
                             dayClasses += "text-slate-700 hover:bg-slate-100";
                         }
@@ -809,7 +862,7 @@
                         const isSel = selectedDate && selectedDate.getFullYear() === year && selectedDate.getMonth() === idx;
                         let mClasses = "py-2.5 rounded-xl text-center font-semibold cursor-pointer transition-all duration-150 ";
                         if (isSel) {
-                            mClasses += "bg-[#00fff2] text-black font-bold shadow-md";
+                            mClasses += "bg-[#6EC1D1] text-black font-bold shadow-md";
                         } else {
                             mClasses += "text-slate-700 hover:bg-slate-100";
                         }
@@ -885,7 +938,7 @@
                 const button = document.createElement('button');
                 button.type = 'button';
                 button.id = selectId + 'Button';
-                button.className = 'custom-select-button inline-flex min-w-[130px] items-center justify-between gap-2 rounded-[10px] border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-700 focus:outline-none focus:ring-1 focus:ring-[#00fff2]';
+                button.className = 'custom-select-button inline-flex min-w-[130px] items-center justify-between gap-2 rounded-[10px] border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-700 focus:outline-none focus:ring-1 focus:ring-[#6EC1D1]';
                 button.innerHTML = `
                     <span class="custom-select-label truncate"></span>
                     <svg class="h-3.5 w-3.5 flex-shrink-0 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -895,8 +948,8 @@
                 wrapper.insertBefore(button, select);
 
                 const panel = document.createElement('div');
-                panel.className = 'custom-select-panel hidden absolute left-0 top-full z-50 mt-2 rounded-[18px] border border-slate-100 bg-white p-2 shadow-[0_16px_40px_rgba(0,0,0,0.12)]';
-                panel.style.width = button.offsetWidth + 'px';
+                panel.className = 'custom-select-panel hidden absolute left-0 top-full z-50 mt-1 rounded-[12px] border border-slate-700/80 bg-[#0f172a] p-1.5 shadow-2xl text-white max-h-60 overflow-y-auto space-y-0.5';
+                panel.style.minWidth = button.offsetWidth + 'px';
                 wrapper.appendChild(panel);
 
                 const labelSpan = button.querySelector('.custom-select-label');
@@ -909,10 +962,10 @@
                         item.type = 'button';
                         item.dataset.value = opt.value;
                         const isSelected = opt.value === select.value;
-                        item.className = 'custom-select-item w-full rounded-xl px-3 py-1.5 text-center text-xs transition-colors duration-100 ' +
+                        item.className = 'custom-select-item w-full rounded-[8px] px-3 py-2 text-left text-xs transition-colors duration-100 whitespace-nowrap ' +
                             (isSelected
-                                ? 'bg-slate-100 font-semibold text-slate-900'
-                                : 'text-slate-700 hover:bg-slate-100');
+                                ? 'bg-slate-800 font-bold text-white'
+                                : 'text-slate-200 hover:text-white hover:bg-slate-800');
                         item.textContent = opt.textContent;
                         item.addEventListener('click', (e) => {
                             e.stopPropagation();
@@ -929,14 +982,18 @@
 
                 function updateButtonLabel() {
                     const selectedOption = select.options[select.selectedIndex];
-                    labelSpan.textContent = selectedOption ? selectedOption.textContent : (placeholder || '');
+                    let text = selectedOption ? selectedOption.textContent.trim() : (placeholder || '');
+                    if (text === 'All') {
+                        text = placeholder || 'All';
+                    }
+                    labelSpan.textContent = text;
                 }
 
                 function openPanel() {
                     document.querySelectorAll('.custom-select-panel').forEach((p) => {
                         if (p !== panel) p.classList.add('hidden');
                     });
-                    panel.style.width = button.offsetWidth + 'px';
+                    panel.style.minWidth = button.offsetWidth + 'px';
                     renderOptions();
                     panel.classList.remove('hidden');
                     chevron.classList.remove('text-slate-400');
@@ -973,7 +1030,7 @@
                 updateButtonLabel();
             }
 
-            setupCustomSelectDropdown('posCategorySelect', 'All Product Description');
+            setupCustomSelectDropdown('posCategorySelect', 'All Categories');
             setupCustomSelectDropdown('posBrandSelect', 'All Brands');
         });
     </script>

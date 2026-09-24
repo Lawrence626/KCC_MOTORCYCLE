@@ -26,7 +26,7 @@
     <div class="space-y-6">
         <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
         
-        <div class="flex items-start justify-between">
+        <div class="flex items-start justify-between gap-2">
             <div>
                 <h1 class="text-3xl font-extrabold text-slate-900">Edit Shelf</h1>
                 <p class="mt-2 text-sm text-gray-500">Update shelf information for <strong class="text-emerald-600">{{ $shelf->name }}</strong></p>

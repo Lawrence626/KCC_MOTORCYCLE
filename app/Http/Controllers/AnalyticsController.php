@@ -273,26 +273,34 @@ class AnalyticsController extends Controller
             ->map(function ($sales, $productId) use ($products) {
                 $product = $products->get($productId);
                 return [
-                    'name'    => $product?->product_name ?: ($product?->name ?? 'Unknown Product'),
-                    'sku'     => $product?->sku ?? 'N/A',
-                    'qty'     => $sales['qty'],
-                    'revenue' => $sales['revenue'],
+                    'id'         => $productId,
+                    'product_id' => $productId,
+                    'name'       => $product?->product_name ?: ($product?->name ?? 'Unknown Product'),
+                    'sku'        => $product?->sku ?? 'N/A',
+                    'qty'        => $sales['qty'],
+                    'revenue'    => $sales['revenue'],
                 ];
             })
             ->filter(fn($p) => $p['qty'] > 0)
             ->values();
 
-        $fast = $all->filter(fn($p) => $p['qty'] >= 10)->sortByDesc('qty')->take(5)->values()->map(fn($p) => [
-            'name'    => $p['name'],
-            'sku'     => $p['sku'],
-            'qty'     => $p['qty'],
-            'revenue' => '₱' . number_format($p['revenue'], 2),
+        $fast = $all->filter(fn($p) => $p['qty'] >= 10)->sortByDesc('qty')->take(5)->values()->map(fn($p, $index) => [
+            'rank'       => $index + 1,
+            'id'         => $p['id'],
+            'product_id' => $p['product_id'],
+            'name'       => $p['name'],
+            'sku'        => $p['sku'],
+            'qty'        => $p['qty'],
+            'revenue'    => '₱' . number_format($p['revenue'], 2),
         ])->toArray();
 
-        $slow = $all->filter(fn($p) => $p['qty'] < 10)->sortBy('qty')->take(5)->values()->map(fn($p) => [
-            'name' => $p['name'],
-            'sku'  => $p['sku'],
-            'qty'  => $p['qty'],
+        $slow = $all->filter(fn($p) => $p['qty'] < 10)->sortBy('qty')->take(5)->values()->map(fn($p, $index) => [
+            'rank'       => $index + 1,
+            'id'         => $p['id'],
+            'product_id' => $p['product_id'],
+            'name'       => $p['name'],
+            'sku'        => $p['sku'],
+            'qty'        => $p['qty'],
         ])->toArray();
 
         return ['fast' => $fast, 'slow' => $slow];
@@ -301,6 +309,17 @@ class AnalyticsController extends Controller
     protected function buildSalesTrendData()
     {
         $now = now();
+
+        $yearlyLabels = [];
+        $yearlyValues = [];
+        for ($i = 4; $i >= 0; $i--) {
+            $year = $now->copy()->subYears($i);
+            $yearlyLabels[] = $year->format('Y');
+            $yearlyValues[] = (float) POSTransaction::query()
+                ->completed()
+                ->whereBetween('completed_at', [$year->copy()->startOfYear(), $year->copy()->endOfYear()])
+                ->sum('total_amount');
+        }
 
         $monthlyLabels = [];
         $monthlyValues = [];
@@ -338,6 +357,7 @@ class AnalyticsController extends Controller
         }
 
         return [
+            'yearly' => ['labels' => $yearlyLabels, 'values' => $yearlyValues],
             'monthly' => ['labels' => $monthlyLabels, 'values' => $monthlyValues],
             'weekly' => ['labels' => $weeklyLabels, 'values' => $weeklyValues],
             'daily' => ['labels' => $dailyLabels, 'values' => $dailyValues],
@@ -412,8 +432,8 @@ class AnalyticsController extends Controller
                 : 0;
 
             $recommendation = match (true) {
-                $previousCost !== null && $currentCost > $previousCost => 'Increase the retail price to maintain a 30% profit margin.',
-                $previousCost !== null && $currentCost < $previousCost => 'Maintain the current retail price to increase profit margin.',
+                $previousCost !== null && $currentCost > $previousCost => 'Increase the retail price to maintain a 20% markup.',
+                $previousCost !== null && $currentCost < $previousCost => 'Maintain the current retail price to increase markup.',
                 default => 'Maintain current retail price.',
             };
 
@@ -439,7 +459,7 @@ class AnalyticsController extends Controller
                 'previous_cost'       => $previousCost,
                 'change_percentage'   => $changePercentage,
                 'recommendation'      => $recommendation,
-                'suggested_retail_price' => $currentCost > 0 ? round(($currentCost * 1.12) / 0.70, 2) : 0,
+                'suggested_retail_price' => $currentCost > 0 ? round($currentCost * 1.20, 2) : 0,
                 'supplier'            => null,
                 'latest_receipt_date' => $latestReceiptDate,
             ];
@@ -659,12 +679,14 @@ class AnalyticsController extends Controller
 
         return $topProducts->map(function ($product, $index) {
             return [
-                'rank' => $index + 1,
-                'name' => $product['name'],
-                'sku' => $product['sku'],
-                'category' => $product['category'],
-                'qty' => $product['qty'],
-                'revenue' => '₱' . number_format($product['revenue'], 2),
+                'rank'       => $index + 1,
+                'id'         => $product['id'] ?? null,
+                'product_id' => $product['id'] ?? null,
+                'name'       => $product['name'],
+                'sku'        => $product['sku'],
+                'category'   => $product['category'],
+                'qty'        => $product['qty'],
+                'revenue'    => '₱' . number_format($product['revenue'], 2),
             ];
         });
     }
@@ -922,7 +944,7 @@ class AnalyticsController extends Controller
                 'supplier_cost'    => $currentCost,
                 'previous_cost'    => $previousCost ?? 'N/A',
                 'change_pct'       => $changePercentage,
-                'suggested_retail' => $currentCost > 0 ? round(($currentCost * 1.12) / 0.70, 2) : 0,
+                'suggested_retail' => $currentCost > 0 ? round($currentCost * 1.20, 2) : 0,
             ];
         });
 

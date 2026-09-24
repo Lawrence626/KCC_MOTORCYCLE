@@ -41,7 +41,7 @@
                     </form>
                     <button onclick="clearSelection()" class="text-xs text-slate-600 hover:text-slate-800 font-medium">Clear</button>
                 </div>
-                <a href="{{ route('product-catalog.create') }}" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#00fff2] text-slate-900 text-sm font-semibold hover:bg-[#00e6da] transition shadow-sm">
+                <a href="{{ route('product-catalog.create') }}" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#6EC1D1] text-slate-900 text-sm font-semibold hover:bg-[#59b2c2] transition shadow-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                     <span>Add Product</span>
                 </a>
@@ -82,11 +82,11 @@
                         </select>
                     </div>
                     <div>
-                        <label class="text-xs text-slate-600 font-semibold mb-1 block">Product Description</label>
+                        <label class="text-xs text-slate-600 font-semibold mb-1 block">Product Category</label>
                         <select name="product_description"
                                 id="productDescriptionFilter"
                                 class="w-full h-10 px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm">
-                            <option value="">All Descriptions</option>
+                            <option value="">All Categories</option>
                             @foreach($productDescriptions as $description)
                                 <option value="{{ $description->name }}"
                                         data-brands="{{ json_encode($description->brands) }}"
@@ -138,10 +138,10 @@
                     <thead class="bg-[#0f172a] border-b border-slate-200 sticky-header text-[10px] uppercase tracking-wider rounded-t-[10px] text-white">
                         <tr>
                             <th class="px-3.5 py-3 font-semibold text-center text-white w-10 rounded-tl-[10px]">
-                                <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2] cursor-pointer">
+                                <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1] cursor-pointer">
                             </th>
                             <th class="px-3.5 py-3 font-semibold text-left text-white">Locations</th>
-                            <th class="px-3.5 py-3 font-semibold text-left text-white">Product Description</th>
+                            <th class="px-3.5 py-3 font-semibold text-left text-white">Product Category</th>
                             <th class="px-3.5 py-3 font-semibold text-left text-white">Brand</th>
                             <th class="px-3.5 py-3 font-semibold text-left text-white">SKU</th>
                             <th class="px-3.5 py-3 font-semibold text-center text-white">Size</th>
@@ -158,11 +158,11 @@
                             @foreach($products as $product)
                                 <tr class="hover:bg-slate-50 transition border-b border-slate-100">
                                     <td class="px-3.5 py-3 text-center align-middle w-10">
-                                        <input type="checkbox" class="product-checkbox rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]" value="{{ $product->id }}">
+                                        <input type="checkbox" class="product-checkbox rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1]" value="{{ $product->id }}">
                                     </td>
                                     <td class="px-3.5 py-3 text-left text-slate-600 text-xs align-middle">{{ $product->warehouse ?? '-' }}</td>
                                     <td class="px-3.5 py-3 text-left align-middle">
-                                        <span class="px-2.5 py-0.5 rounded-full bg-[#105f68] text-[#00fff2] text-[11px] font-semibold">{{ $product->product_description }}</span>
+                                        <span class="px-2.5 py-0.5 rounded-full bg-[rgba(110,193,209,0.18)] text-[#145a66] border border-[#a2deea] text-[11px] font-semibold">{{ $product->product_description }}</span>
                                     </td>
                                     <td class="px-3.5 py-3 text-left font-semibold text-slate-900 align-middle">{{ $product->brand }}</td>
                                     <td class="px-3.5 py-3 text-left align-middle">
@@ -176,7 +176,7 @@
                                     <td class="px-3.5 py-3 text-center text-slate-600 text-xs align-middle">{{ $product->size ?? '-' }}</td>
                                     <td class="px-3.5 py-3 text-center text-slate-600 text-xs align-middle">{{ $product->color ?? '-' }}</td>
                                     <td class="px-3.5 py-3 text-center align-middle">
-                                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold {{ $product->effective_stock_quantity <= $product->effective_reorder_level ? 'bg-red-600 text-white' : 'bg-[#00fff2] text-black' }}">
+                                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold {{ $product->effective_stock_quantity <= $product->effective_reorder_level ? 'bg-red-600 text-white' : 'bg-[#6EC1D1] text-black' }}">
                                             {{ $product->effective_stock_quantity }}
                                         </span>
                                     </td>
@@ -193,8 +193,8 @@
                                                 @if($product->motorcycleModels->count() > 3)
                                                     <span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded text-xs">+{{ $product->motorcycleModels->count() - 3 }} more</span>
                                                 @endif
-                                            @elseif(!$product->product_name)
-                                                <span class="text-xs text-slate-400">No compatibility</span>
+                                            @else
+                                                <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-xs font-semibold">Universal / General</span>
                                             @endif
                                         </div>
                                     </td>
@@ -419,7 +419,7 @@
             }
 
             setupCustomSelectDropdown('warehouseFilter', 'All Locations');
-            setupCustomSelectDropdown('productDescriptionFilter', 'All Descriptions');
+            setupCustomSelectDropdown('productDescriptionFilter', 'All Categories');
             setupCustomSelectDropdown('brandFilter', 'All Brands');
             setupCustomSelectDropdown('sizeFilter', 'All Sizes');
 
@@ -655,9 +655,9 @@
             tbody.innerHTML = trashData.map(p => `
                 <tr class="hover:bg-red-50/40">
                     <td class="px-4 py-2">
-                        <input type="checkbox" class="trash-checkbox rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]" value="${p.id}" ${trashSelectedIds.includes(p.id) ? 'checked' : ''}>
+                        <input type="checkbox" class="trash-checkbox rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1]" value="${p.id}" ${trashSelectedIds.includes(p.id) ? 'checked' : ''}>
                     </td>
-                    <td class="px-4 py-2"><span class="px-2.5 py-0.5 rounded-full bg-[#105f68] text-[#00fff2] text-[11px] font-semibold">${p.product_description}</span></td>
+                    <td class="px-4 py-2"><span class="px-2.5 py-0.5 rounded-full bg-[rgba(110,193,209,0.18)] text-[#145a66] border border-[#a2deea] text-[11px] font-semibold">${p.product_description}</span></td>
                     <td class="px-4 py-2 font-medium text-slate-700">${p.brand}</td>
                     <td class="px-4 py-2 font-mono text-xs text-slate-400">${p.sku}</td>
                 </tr>`).join('');
@@ -741,13 +741,13 @@
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeTrashModal()"></div>
         <div class="relative w-full max-w-2xl bg-white rounded-[28px] border border-slate-200 shadow-[0_30px_80px_rgba(15,23,42,0.18)] overflow-hidden transform transition-all z-10">
             <!-- Header (matching Add User Modal style) -->
-            <div class="flex items-center justify-between border-b border-[#00fff2] bg-[#00fff2] px-6 py-5">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h3 class="text-xl font-bold text-black flex items-center gap-2">
                         Trash
-                        <span class="text-sm font-medium text-slate-800">(<span id="trashItemCount">0</span> items)</span>
+                        <span class="text-sm font-medium text-slate-900">(<span id="trashItemCount">0</span> items)</span>
                     </h3>
-                    <p class="text-sm text-slate-800 font-medium mt-0.5">Restore items back to the catalog, or permanently delete them.</p>
+                    <p class="text-sm text-slate-900 font-medium mt-0.5">Restore items back to the catalog, or permanently delete them.</p>
                 </div>
                 <button type="button" onclick="closeTrashModal()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -760,7 +760,7 @@
                         <thead class="bg-[#0f172a] border-b border-slate-800 sticky top-0 text-xs uppercase tracking-wider text-white">
                             <tr>
                                 <th class="px-4 py-3 text-left font-semibold text-white w-10">
-                                    <input type="checkbox" id="selectAllTrash" class="rounded border-slate-300 text-[#00fff2] focus:ring-[#00fff2]">
+                                    <input type="checkbox" id="selectAllTrash" class="rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1]">
                                 </th>
                                 <th class="px-4 py-3 text-left font-semibold text-white">Description</th>
                                 <th class="px-4 py-3 text-left font-semibold text-white">Brand</th>
@@ -780,7 +780,7 @@
                         <button id="restoreSelectedBtn"
                             onclick="restoreSelected()"
                             disabled
-                            class="rounded-[10px] bg-[#00fff2] px-4 py-2 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#00e6da] transition disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1.5">
+                            class="rounded-[10px] bg-[#6EC1D1] px-4 py-2 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1.5">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
                             Restore Selected
                         </button>

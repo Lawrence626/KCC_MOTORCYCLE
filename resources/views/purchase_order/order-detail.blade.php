@@ -9,7 +9,7 @@
         </div>
 
         @if(session('success'))
-            <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">{{ session('success') }}</div>
+            <div id="orderDetailSuccessAlert" class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">{{ session('success') }}</div>
         @endif
         @if(session('warning'))
             <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700">{{ session('warning') }}</div>
@@ -161,25 +161,27 @@
                     </p>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    @if($purchaseOrder->status === 'pending approval')
-                        <form method="POST" action="{{ route('order.approve', $purchaseOrder) }}">
-                            @csrf
-                            <button type="submit" class="rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-700">Approve</button>
-                        </form>
-                        <form method="POST" action="{{ route('order.reject', $purchaseOrder) }}">
-                            @csrf
-                            <button type="submit" class="rounded-2xl border border-rose-200 bg-white px-4 py-3 text-sm font-semibold text-rose-700 hover:bg-rose-50">Reject</button>
-                        </form>
-                    @elseif($purchaseOrder->status === 'approved')
-                        <form method="POST" action="{{ route('order.send', $purchaseOrder) }}">
-                            @csrf
-                            <button type="submit" class="rounded-2xl bg-cyan-600 px-4 py-3 text-sm font-semibold text-white hover:bg-cyan-700">Send to Supplier</button>
-                        </form>
-                    @elseif($purchaseOrder->status === 'sent to supplier')
-                        <form method="POST" action="{{ route('order.in_transit', $purchaseOrder) }}">
-                            @csrf
-                            <button type="submit" class="rounded-2xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white hover:bg-sky-700">Mark In Transit</button>
-                        </form>
+                    @if(auth()->user() && auth()->user()->role === 'admin')
+                        @if($purchaseOrder->status === 'pending approval' && $purchaseOrder->created_by_role !== 'admin')
+                            <form method="POST" action="{{ route('order.approve', $purchaseOrder) }}">
+                                @csrf
+                                <button type="submit" class="rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-700">Approve</button>
+                            </form>
+                            <form method="POST" action="{{ route('order.reject', $purchaseOrder) }}">
+                                @csrf
+                                <button type="submit" class="rounded-2xl border border-rose-200 bg-white px-4 py-3 text-sm font-semibold text-rose-700 hover:bg-rose-50">Reject</button>
+                            </form>
+                        @elseif($purchaseOrder->status === 'approved')
+                            <form method="POST" action="{{ route('order.send', $purchaseOrder) }}">
+                                @csrf
+                                <button type="submit" class="rounded-2xl bg-cyan-600 px-4 py-3 text-sm font-semibold text-white hover:bg-cyan-700">Send to Supplier</button>
+                            </form>
+                        @elseif($purchaseOrder->status === 'sent to supplier')
+                            <form method="POST" action="{{ route('order.in_transit', $purchaseOrder) }}">
+                                @csrf
+                                <button type="submit" class="rounded-2xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white hover:bg-sky-700">Mark In Transit</button>
+                            </form>
+                        @endif
                     @endif
                 </div>
             </div>
@@ -216,8 +218,19 @@
                                     $totalPrice = (float) $item->quantity * $unitPrice;
                                 }
                             @endphp
-                            <tr class="hover:bg-white">
-                                <td class="px-4 py-3 font-medium text-slate-900">{{ $item->product_name }}</td>
+                                <td class="px-4 py-3 font-medium text-slate-900">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="po-detail-img-thumb w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300"
+                                             data-id="{{ $item->product_id ?? '' }}"
+                                             data-sku="{{ $item->sku ?? ($item->product?->sku ?? '') }}"
+                                             data-name="{{ $item->product_name ?? '' }}">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <div class="font-medium text-slate-900 truncate">{{ $item->product_name }}</div>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td class="px-4 py-3 text-slate-500">{{ $item->sku }}</td>
                                 <td class="px-4 py-3 font-semibold">{{ $item->quantity }}</td>
                                 @if($isReceivingStage)
@@ -282,7 +295,19 @@
                                             }
                                         @endphp
                                         <tr class="receive-item-row hover:bg-white" data-item-id="{{ $item->id }}" data-ordered="{{ $item->quantity }}" data-already-received="{{ $item->received_quantity ?? 0 }}">
-                                            <td class="px-4 py-3 font-medium text-slate-900">{{ $item->product_name }}</td>
+                                            <td class="px-4 py-3 font-medium text-slate-900">
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="po-detail-img-thumb w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300"
+                                                         data-id="{{ $item->product_id ?? '' }}"
+                                                         data-sku="{{ $item->sku ?? ($item->product?->sku ?? '') }}"
+                                                         data-name="{{ $item->product_name ?? '' }}">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                    </div>
+                                                    <div class="min-w-0">
+                                                        <div class="font-medium text-slate-900 truncate">{{ $item->product_name }}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
                                             <td class="px-4 py-3">{{ $item->quantity }}</td>
                                             <td class="px-4 py-3">{{ $item->received_quantity ?? 0 }}</td>
                                             <td class="px-4 py-3 font-semibold text-slate-700">
@@ -711,5 +736,44 @@
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         }
+
+        function resolvePoDetailImages() {
+            try {
+                const stored = localStorage.getItem('posProductImages');
+                if (!stored) return;
+                const images = JSON.parse(stored);
+                const keys = Object.keys(images);
+
+                document.querySelectorAll('.po-detail-img-thumb').forEach(container => {
+                    const id = container.dataset.id;
+                    const sku = container.dataset.sku;
+                    const name = container.dataset.name;
+
+                    let imgUrl = null;
+                    if (id && images[id]) imgUrl = images[id];
+                    else if (sku && images[sku]) imgUrl = images[sku];
+                    else if (name && images[name]) imgUrl = images[name];
+                    else {
+                        if (sku) {
+                            const matchSku = keys.find(k => k.toLowerCase() === String(sku).toLowerCase());
+                            if (matchSku) imgUrl = images[matchSku];
+                        }
+                        if (!imgUrl && name) {
+                            const matchName = keys.find(k => k.toLowerCase() === String(name).toLowerCase());
+                            if (matchName) imgUrl = images[matchName];
+                        }
+                    }
+
+                    if (imgUrl) {
+                        container.innerHTML = '';
+                        container.className = 'po-detail-img-thumb w-8 h-8 rounded-[6px] bg-slate-100 border border-slate-200/80 flex-shrink-0 bg-cover bg-center';
+                        container.style.backgroundImage = `url('${imgUrl}')`;
+                    }
+                });
+            } catch(e) {
+                console.error('Error resolving order detail product images:', e);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', resolvePoDetailImages);
     </script>
 </x-layouts.app>

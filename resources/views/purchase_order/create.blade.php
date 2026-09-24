@@ -31,13 +31,14 @@
 
     <form action="{{ route('order.store') }}" method="POST" id="po-form" class="space-y-6">
         @csrf
+        <div id="selected-products-hidden-inputs"></div>
 
         {{-- ══════════════════════════════════════════════════════════
              STEP 1 – SELECT PRODUCTS
         ════════════════════════════════════════════════════════════ --}}
         <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">1</span>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">1</span>
                 <div>
                     <h2 class="text-sm font-semibold text-white">Select Products to Reorder</h2>
                     <p class="text-xs text-slate-300">Choose from low-stock products. The supplier list will update automatically.</p>
@@ -86,14 +87,22 @@
                             </button>
                             <div id="movementFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
                                 @foreach($filters as $key => $label)
-                                    <button type="button" onclick="selectMovementFilter(event, '{{ $key }}', '{{ $label }}')" class="w-full px-4 py-2.5 text-center text-sm {{ ($currentFilter ?? 'all') === $key ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
+                                    <button type="button" onclick="selectMovementFilter(event, '{{ $key }}', '{{ $label }}')" class="w-full px-4 py-2.5 text-left text-sm {{ ($currentFilter ?? 'all') === $key ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">{{ $label }}</button>
                                 @endforeach
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="overflow-hidden rounded-[10px] border border-slate-200">
+                <div id="table-wrapper" class="relative overflow-hidden rounded-[10px] border border-slate-200">
+                    <div id="table-loading-overlay" class="hidden absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center z-10 pointer-events-none">
+                        <div class="flex items-center justify-center p-2.5 bg-slate-900 text-white rounded-full shadow-lg">
+                            <svg class="animate-spin h-5 w-5 text-[#00fff2]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                            </svg>
+                        </div>
+                    </div>
                     <table class="min-w-full text-left text-sm">
                         <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider border-b border-slate-200 rounded-t-[10px]" style="background-color: #0f172a;">
                             <tr>
@@ -104,7 +113,6 @@
                                 </th>
                                 <th class="px-4 py-3">Product</th>
                                 <th class="px-4 py-3">Movement</th>
-                                <th class="px-4 py-3">Default Supplier</th>
                                 <th class="px-4 py-3">SKU</th>
                                 <th class="px-4 py-3">Stock</th>
                                 <th class="px-4 py-3">Reorder Level</th>
@@ -125,75 +133,13 @@
                                 <th class="px-4 py-3 rounded-tr-[10px]">Unit Price (₱)</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-200 text-slate-700">
-                            @forelse($lowStockProducts as $product)
-                                @php $idx = $loop->index; @endphp
-                                <tr class="product-row hover:bg-slate-50 transition-colors"
-                                    data-product-id="{{ $product->id }}">
-                                    <td class="px-4 py-3">
-                                        <input type="checkbox"
-                                               name="products[{{ $idx }}][selected]"
-                                               value="1"
-                                               {{ in_array($product->id, $selectedProductIds, true) ? 'checked' : '' }}
-                                               class="product-checkbox h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" />
-                                        <input type="hidden" name="products[{{ $idx }}][product_id]" value="{{ $product->id }}" />
-                                        <input type="hidden" name="products[{{ $idx }}][product_name]" value="{{ $product->product_name ?? $product->name }}" />
-                                        <input type="hidden" name="products[{{ $idx }}][sku]" value="{{ $product->sku }}" />
-                                    </td>
-                                    <td class="px-4 py-3 font-medium text-slate-800">{{ $product->product_name ?? $product->name }}</td>
-                                    <td class="px-4 py-3">
-                                        @php
-                                            $mov = $product->movement_category ?? 'special_order';
-                                            $movLabel = match($mov) {
-                                                'fast_moving'   => 'Fast moving',
-                                                'slow_moving'   => 'Slow moving',
-                                                'special_order' => 'Special order',
-                                                default         => ucfirst(str_replace('_', ' ', $mov)),
-                                            };
-                                            $movClass = match($mov) {
-                                                'fast_moving'   => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
-                                                'slow_moving'   => 'bg-amber-50 text-amber-700 ring-amber-200',
-                                                'special_order' => 'bg-sky-50 text-sky-700 ring-sky-200',
-                                                default         => 'bg-slate-100 text-slate-600 ring-slate-200',
-                                            };
-                                        @endphp
-                                        <span class="inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ring-inset {{ $movClass }}">
-                                            {{ $movLabel }}
-                                        </span>
-                                    </td>
-                                    <td class="px-4 py-3 text-slate-500">{{ $product->supplier_name ?? '—' }}</td>
-                                    <td class="px-4 py-3 font-mono text-xs text-slate-500">{{ $product->sku }}</td>
-                                    <td class="px-4 py-3">
-                                        <span class="{{ $product->stock_quantity <= 0 ? 'text-rose-600 font-semibold' : 'text-amber-600 font-semibold' }}">
-                                            {{ $product->stock_quantity }}
-                                        </span>
-                                    </td>
-                                    <td class="px-4 py-3">{{ $product->reorder_level }}</td>
-                                    <td class="px-4 py-3">
-                                        <input name="products[{{ $idx }}][quantity]"
-                                               type="number" min="1"
-                                               value="{{ old('products.' . $idx . '.quantity', max(1, 100 - $product->stock_quantity)) }}"
-                                               class="w-20 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:outline-none focus:ring-1 focus:ring-black/35" />
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <input name="products[{{ $idx }}][unit_price]"
-                                               type="number" step="0.01" min="0"
-                                               value="{{ old('products.' . $idx . '.unit_price', $product->unit_price) }}"
-                                               class="w-28 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:outline-none focus:ring-1 focus:ring-black/35" />
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="9" class="px-4 py-8 text-center text-sm text-slate-500">
-                                        No products found for this filter.
-                                    </td>
-                                </tr>
-                            @endforelse
+                        <tbody id="product-table-body" class="divide-y divide-slate-200 text-slate-700">
+                            @include('purchase_order.partials.product-rows', ['lowStockProducts' => $lowStockProducts, 'selectedProductIds' => $selectedProductIds])
                         </tbody>
                     </table>
                 </div>
 
-                <div class="mt-4 px-2">{{ $lowStockProducts->links() }}</div>
+                <div id="pagination-container" class="mt-4 px-2">{{ $lowStockProducts->links() }}</div>
 
                 <div id="selected-count-bar" class="mt-4 hidden rounded-[10px] bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800 font-medium">
                     <span id="selected-count-text"></span>
@@ -204,9 +150,9 @@
         {{-- ══════════════════════════════════════════════════════════
              STEP 2 – SELECT SUPPLIER
         ════════════════════════════════════════════════════════════ --}}
-        <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
+        <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">2</span>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">2</span>
                 <div>
                     <h2 class="text-sm font-semibold text-white">Select Supplier</h2>
                     <p class="text-xs text-slate-300">Only suppliers that can fulfill every selected product are shown.</p>
@@ -231,12 +177,24 @@
 
                 <div id="no-supplier-message" class="hidden rounded-[10px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"></div>
 
-                <div id="supplier-dropdown-wrapper" class="hidden">
-                    <label class="block text-xs font-semibold text-slate-500 mb-2">Supplier</label>
-                    <select name="supplier_id" id="supplier-select" required
-                            class="w-full max-w-sm rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 outline-none">
-                        <option value="">Select supplier…</option>
-                    </select>
+                <div id="supplier-dropdown-wrapper" class="hidden relative max-w-sm z-30" data-dropdown-wrapper="supplierSelect">
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Supplier</label>
+                    <input type="hidden" name="supplier_id" id="supplier-select" value="" />
+                    <button type="button"
+                            id="supplierSelectButton"
+                            onclick="toggleSupplierDropdown(event)"
+                            class="w-full rounded-[10px] border border-slate-200 bg-white px-4 py-2.5 text-left text-sm text-slate-900 flex items-center justify-between shadow-sm cursor-pointer hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 transition">
+                        <span id="supplierSelectDisplay" class="truncate text-slate-400 font-normal">Select supplier…</span>
+                        <svg id="supplierSelectArrow" class="w-4 h-4 text-slate-600 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="supplierSelectDropdown"
+                         class="dropdown-menu hidden absolute top-full left-0 z-50 mt-1.5 w-full rounded-[16px] border border-slate-200 bg-white shadow-xl p-3 space-y-1 max-h-60 overflow-y-auto">
+                        <div id="supplierSelectList" class="space-y-1">
+                            <!-- Supplier checkboxes dynamically loaded here -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -246,7 +204,7 @@
         ════════════════════════════════════════════════════════════ --}}
         <div id="supplier-info-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">3</span>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">3</span>
                 <h2 class="text-sm font-semibold text-white">Supplier Information</h2>
             </div>
             <div class="p-6">
@@ -276,7 +234,7 @@
         ════════════════════════════════════════════════════════════ --}}
         <div id="price-analysis-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">4</span>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">4</span>
                 <div>
                     <h2 class="text-sm font-semibold text-white">Supplier Price Analysis</h2>
                     <p class="text-xs text-slate-300">Historical costs, trends, and purchasing recommendations per product.</p>
@@ -292,7 +250,7 @@
         ════════════════════════════════════════════════════════════ --}}
         <div id="comparison-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">★</span>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">★</span>
                 <div>
                     <h2 class="text-sm font-semibold text-white">Supplier Comparison</h2>
                     <p class="text-xs text-slate-300">All qualified suppliers ranked by cost. Click Select to choose one.</p>
@@ -318,40 +276,16 @@
             </div>
         </div>
 
-        {{-- ══════════════════════════════════════════════════════════
-             ORDER DETAILS
-        ════════════════════════════════════════════════════════════ --}}
-       <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden min-h-[510px]">
-            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#00fff2] text-xs font-bold text-black">5</span>
-                <h2 class="text-sm font-semibold text-white">Order Details</h2>
-            </div>
-            <div class="p-6 grid gap-4 relative">
-                <label class="block text-sm text-slate-700 w-72">
-                    <span class="text-xs font-semibold text-slate-500">Expected Delivery Date</span>
-                    <input name="expected_delivery_date"
-                           id="expectedDeliveryDate"
-                           value="{{ old('expected_delivery_date') }}"
-                           type="date"
-                           class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 outline-none" />
-                </label>
-                <label class="block text-sm text-slate-700">
-                    <span class="text-xs font-semibold text-slate-500">Notes</span>
-                    <textarea name="notes" rows="6"
-                              class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 outline-none">{{ old('notes') }}</textarea>
-                </label>
-            </div>
-{{-- Actions --}}
-<div class="px-6 pb-6 pt-15 flex flex-wrap items-center justify-end gap-3">
-    <a href="{{ route('order.management') }}"
-       class="max-w-xs rounded-[10px] border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-black/10 transition-all duration-200">
-        Cancel
-    </a>
-    <button type="submit"
-            class="max-w-xs inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#00fff2] px-5 py-3 text-sm font-semibold text-black shadow-sm hover:bg-[#00e6da] transition-all duration-200">
-        Submit Purchase Order
-    </button>
-</div>
+        {{-- Actions --}}
+        <div class="flex flex-wrap items-center justify-end gap-3 pt-2">
+            <a href="{{ route('order.management') }}"
+               class="max-w-xs rounded-[10px] border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-black/10 transition-all duration-200">
+                Cancel
+            </a>
+            <button type="submit"
+                    class="max-w-xs inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#6EC1D1] px-5 py-3 text-sm font-semibold text-black shadow-sm hover:bg-[#59b2c2] transition-all duration-200">
+                Submit Purchase Order
+            </button>
         </div>
     </form>
 </div>
@@ -383,16 +317,17 @@
 
     // ── State ──────────────────────────────────────────────────────────────────
     let selectedProductIds = [];
+    const selectedProductsStore = new Map();
     let currentSupplierId  = null;
     let filterTimer        = null;
+    let isFetchingPage     = false;
 
     // ── DOM references ─────────────────────────────────────────────────────────
-    const checkboxes        = document.querySelectorAll('.product-checkbox');
     const selectAllBox      = $el('select-all-products');
     const supplierSelect    = $el('supplier-select');
     const productSearch     = $el('product-search');
-    const productRows       = document.querySelectorAll('.product-row');
-    const productTableBody  = document.querySelector('table tbody');
+    const productTableBody  = $el('product-table-body') || document.querySelector('table tbody');
+    const poForm            = $el('po-form');
 
     // ── Dropdown functions ────────────────────────────────────────────────────────
     function resetDropdownButtonStyles() {
@@ -448,83 +383,347 @@
             button.style.boxShadow = '';
         }
 
-        // Navigate to new URL with filter
+        // Navigate to new URL with filter via AJAX
         const url = new URL(window.location.href);
         url.searchParams.set('movement', value);
         url.searchParams.set('page', '1');
-        window.location.href = url.toString();
+        fetchProducts(url.toString());
     }
 
     // Attach functions to window for inline onclick handlers
     window.toggleDropdown = toggleDropdown;
     window.selectMovementFilter = selectMovementFilter;
 
+    // ── Supplier Dropdown Functions ───────────────────────────────────────────
+    function updateSupplierTriggerDisplay(name) {
+        const displaySpan = $el('supplierSelectDisplay');
+        const button = $el('supplierSelectButton');
+        if (!displaySpan) return;
+
+        if (name) {
+            displaySpan.textContent = name;
+            displaySpan.className = 'truncate text-slate-900 font-medium text-sm';
+            if (button) button.title = name;
+        } else {
+            displaySpan.textContent = 'Select supplier…';
+            displaySpan.className = 'truncate text-slate-400 font-normal text-sm';
+            if (button) button.title = '';
+        }
+    }
+
+    function selectSupplier(id, name) {
+        currentSupplierId = id ? parseInt(id, 10) : null;
+        if (supplierSelect) {
+            supplierSelect.value = currentSupplierId ? String(currentSupplierId) : '';
+        }
+
+        updateSupplierTriggerDisplay(name);
+
+        const listContainer = $el('supplierSelectList');
+        if (listContainer) {
+            listContainer.querySelectorAll('button[data-supplier-id]').forEach(btn => {
+                const isSelected = currentSupplierId && parseInt(btn.dataset.supplierId, 10) === currentSupplierId;
+                if (isSelected) {
+                    btn.className = 'w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-900 bg-black/10 rounded-[10px] transition cursor-pointer';
+                } else {
+                    btn.className = 'w-full px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] transition cursor-pointer';
+                }
+            });
+        }
+
+        if (currentSupplierId) {
+            loadSupplierDetails(currentSupplierId);
+        } else {
+            hideSupplierPanels();
+        }
+    }
+
+    function toggleSupplierDropdown(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        const dropdown = $el('supplierSelectDropdown');
+        const arrow = $el('supplierSelectArrow');
+        if (!dropdown) return;
+
+        const isCurrentlyHidden = dropdown.classList.contains('hidden');
+
+        document.querySelectorAll('.dropdown-menu').forEach(d => {
+            if (d !== dropdown) d.classList.add('hidden');
+        });
+
+        if (isCurrentlyHidden) {
+            dropdown.classList.remove('hidden');
+            if (arrow) arrow.classList.add('rotate-180');
+        } else {
+            dropdown.classList.add('hidden');
+            if (arrow) arrow.classList.remove('rotate-180');
+        }
+    }
+
+    function closeSupplierDropdown() {
+        const dropdown = $el('supplierSelectDropdown');
+        const arrow = $el('supplierSelectArrow');
+        if (dropdown) dropdown.classList.add('hidden');
+        if (arrow) arrow.classList.remove('rotate-180');
+    }
+
+    window.toggleSupplierDropdown = toggleSupplierDropdown;
+    window.closeSupplierDropdown = closeSupplierDropdown;
+    window.selectSupplier = selectSupplier;
+
     document.addEventListener('click', function(event) {
-        if (!event.target.closest('.dropdown-menu') && !event.target.closest('[onclick^="toggleDropdown"]')) {
-            document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.add('hidden'));
+        if (!event.target.closest('[data-dropdown-wrapper="supplierSelect"]')) {
+            closeSupplierDropdown();
+        }
+        if (!event.target.closest('.dropdown-menu') && !event.target.closest('[onclick^="toggleDropdown"]') && !event.target.closest('#supplierSelectButton')) {
+            document.querySelectorAll('.dropdown-menu').forEach(d => {
+                if (d.id !== 'supplierSelectDropdown') d.classList.add('hidden');
+            });
             resetDropdownButtonStyles();
         }
     });
 
-    // ── Product search (client-side filtering) ────────────────────────────────
-    let noMatchRow = null;
+    // ── Store Synchronisation & State Management ──────────────────────────────
+    function syncVisibleRowsToStore() {
+        const rows = productTableBody ? productTableBody.querySelectorAll('.product-row') : [];
+        rows.forEach(row => {
+            const pid = parseInt(row.dataset.productId, 10);
+            const cb = row.querySelector('.product-checkbox');
+            if (!pid || !cb) return;
 
-    function createNoMatchRow() {
-        if (noMatchRow) return noMatchRow;
-        noMatchRow = document.createElement('tr');
-        noMatchRow.id = 'no-match-row';
-        noMatchRow.innerHTML = '<td colspan="9" class="px-4 py-8 text-center text-sm text-slate-500">No matching products found.</td>';
-        return noMatchRow;
-    }
-
-    function applySearch() {
-        const term = (productSearch?.value || '').trim().toLowerCase();
-        let visibleCount = 0;
-
-        productRows.forEach(row => {
-            const nameCell = row.querySelector('td:nth-child(2)');
-            const skuCell  = row.querySelector('td:nth-child(5)');
-            const name = (nameCell?.textContent || '').toLowerCase();
-            const sku  = (skuCell?.textContent || '').toLowerCase();
-
-            if (!term || name.includes(term) || sku.includes(term)) {
-                row.style.display = '';
-                visibleCount++;
+            if (cb.checked) {
+                const qtyInput = row.querySelector('input[name*="[quantity]"]');
+                const priceInput = row.querySelector('input[name*="[unit_price]"]');
+                const prev = selectedProductsStore.get(pid) || {};
+                selectedProductsStore.set(pid, {
+                    product_id: pid,
+                    product_name: row.dataset.productName || row.querySelector('td:nth-child(2)')?.textContent?.trim() || prev.product_name || '',
+                    sku: row.dataset.sku || row.querySelector('td:nth-child(4)')?.textContent?.trim() || prev.sku || '',
+                    quantity: qtyInput ? (parseInt(qtyInput.value, 10) || 1) : (prev.quantity || parseInt(row.dataset.defaultQuantity, 10) || 1),
+                    unit_price: priceInput ? (parseFloat(priceInput.value) || 0) : (prev.unit_price !== undefined ? prev.unit_price : (parseFloat(row.dataset.defaultUnitPrice) || 0)),
+                    selected: true,
+                });
             } else {
-                row.style.display = 'none';
+                selectedProductsStore.delete(pid);
             }
         });
+    }
 
-        // Show / hide "no matching products" message
-        const existing = $el('no-match-row');
-        if (visibleCount === 0 && productRows.length > 0) {
-            if (!existing && productTableBody) {
-                productTableBody.appendChild(createNoMatchRow());
+    function applyStoreToVisibleRows() {
+        const rows = productTableBody ? productTableBody.querySelectorAll('.product-row') : [];
+        rows.forEach(row => {
+            const pid = parseInt(row.dataset.productId, 10);
+            const cb = row.querySelector('.product-checkbox');
+            const qtyInput = row.querySelector('input[name*="[quantity]"]');
+            const priceInput = row.querySelector('input[name*="[unit_price]"]');
+
+            if (selectedProductsStore.has(pid)) {
+                const item = selectedProductsStore.get(pid);
+                if (cb) cb.checked = true;
+                if (qtyInput && item.quantity !== undefined) qtyInput.value = item.quantity;
+                if (priceInput && item.unit_price !== undefined) priceInput.value = item.unit_price;
+            } else {
+                if (cb) cb.checked = false;
             }
-        } else if (existing) {
-            existing.remove();
-            noMatchRow = null;
+        });
+    }
+
+    function updateSelectAllCheckboxState() {
+        if (!selectAllBox || !productTableBody) return;
+        const visibleCheckboxes = Array.from(productTableBody.querySelectorAll('.product-checkbox'));
+        if (visibleCheckboxes.length === 0) {
+            selectAllBox.checked = false;
+            selectAllBox.indeterminate = false;
+            return;
+        }
+        const allChecked = visibleCheckboxes.every(cb => cb.checked);
+        const someChecked = visibleCheckboxes.some(cb => cb.checked);
+
+        selectAllBox.checked = allChecked;
+        selectAllBox.indeterminate = !allChecked && someChecked;
+    }
+
+    function handleRowCheckboxChange(cb) {
+        const row = cb.closest('.product-row');
+        if (!row) return;
+        const pid = parseInt(row.dataset.productId, 10);
+        if (!pid) return;
+
+        if (cb.checked) {
+            const qtyInput = row.querySelector('input[name*="[quantity]"]');
+            const priceInput = row.querySelector('input[name*="[unit_price]"]');
+            selectedProductsStore.set(pid, {
+                product_id: pid,
+                product_name: row.dataset.productName || row.querySelector('td:nth-child(2)')?.textContent?.trim() || '',
+                sku: row.dataset.sku || row.querySelector('td:nth-child(4)')?.textContent?.trim() || '',
+                quantity: qtyInput ? (parseInt(qtyInput.value, 10) || 1) : (parseInt(row.dataset.defaultQuantity, 10) || 1),
+                unit_price: priceInput ? (parseFloat(priceInput.value) || 0) : (parseFloat(row.dataset.defaultUnitPrice) || 0),
+                selected: true,
+            });
+        } else {
+            selectedProductsStore.delete(pid);
+        }
+
+        updateSelectAllCheckboxState();
+        onProductSelectionChange();
+    }
+
+    function handleRowInputChange(input) {
+        const row = input.closest('.product-row');
+        if (!row) return;
+        const pid = parseInt(row.dataset.productId, 10);
+        if (!pid) return;
+
+        if (selectedProductsStore.has(pid)) {
+            const item = selectedProductsStore.get(pid);
+            if (input.name.includes('[quantity]')) {
+                item.quantity = parseInt(input.value, 10) || 1;
+            } else if (input.name.includes('[unit_price]')) {
+                item.unit_price = parseFloat(input.value) || 0;
+            }
         }
     }
 
-    productSearch?.addEventListener('input', applySearch);
+    // ── AJAX Page Fetcher (No reload) ─────────────────────────────────────────
+    async function fetchProducts(targetUrl, updateHistory = true) {
+        if (isFetchingPage) return;
+        isFetchingPage = true;
+
+        syncVisibleRowsToStore();
+
+        const overlay = $el('table-loading-overlay');
+        if (overlay) overlay.classList.remove('hidden');
+        if (productTableBody) productTableBody.classList.add('opacity-50');
+
+        try {
+            const fetchUrl = new URL(targetUrl, window.location.origin);
+            const res = await fetch(fetchUrl.toString(), {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+
+            const data = await res.json();
+
+            if (productTableBody && data.table_html !== undefined) {
+                productTableBody.innerHTML = data.table_html;
+                resolvePoProductImages();
+            }
+
+            const paginationContainer = $el('pagination-container');
+            if (paginationContainer && data.pagination_html !== undefined) {
+                paginationContainer.innerHTML = data.pagination_html;
+            }
+
+            applyStoreToVisibleRows();
+            updateSelectAllCheckboxState();
+
+            if (updateHistory) {
+                window.history.pushState({ url: targetUrl }, '', targetUrl);
+            }
+
+        } catch (err) {
+            console.error('Failed to load products page:', err);
+        } finally {
+            isFetchingPage = false;
+            if (overlay) overlay.classList.add('hidden');
+            if (productTableBody) productTableBody.classList.remove('opacity-50');
+        }
+    }
+
+    // ── Event Delegation for table rows ───────────────────────────────────────
+    productTableBody?.addEventListener('change', function (e) {
+        if (e.target.matches('.product-checkbox')) {
+            handleRowCheckboxChange(e.target);
+        }
+    });
+
+    productTableBody?.addEventListener('input', function (e) {
+        if (e.target.matches('input[name*="[quantity]"]') || e.target.matches('input[name*="[unit_price]"]')) {
+            handleRowInputChange(e.target);
+        }
+    });
 
     // ── Select-all toggle ─────────────────────────────────────────────────────
     selectAllBox?.addEventListener('change', function () {
-        checkboxes.forEach(cb => { cb.checked = this.checked; });
+        const isChecked = this.checked;
+        const rows = productTableBody ? productTableBody.querySelectorAll('.product-row') : [];
+        rows.forEach(row => {
+            const cb = row.querySelector('.product-checkbox');
+            const pid = parseInt(row.dataset.productId, 10);
+            if (!cb || !pid) return;
+
+            cb.checked = isChecked;
+            if (isChecked) {
+                const qtyInput = row.querySelector('input[name*="[quantity]"]');
+                const priceInput = row.querySelector('input[name*="[unit_price]"]');
+                selectedProductsStore.set(pid, {
+                    product_id: pid,
+                    product_name: row.dataset.productName || row.querySelector('td:nth-child(2)')?.textContent?.trim() || '',
+                    sku: row.dataset.sku || row.querySelector('td:nth-child(4)')?.textContent?.trim() || '',
+                    quantity: qtyInput ? (parseInt(qtyInput.value, 10) || 1) : (parseInt(row.dataset.defaultQuantity, 10) || 1),
+                    unit_price: priceInput ? (parseFloat(priceInput.value) || 0) : (parseFloat(row.dataset.defaultUnitPrice) || 0),
+                    selected: true,
+                });
+            } else {
+                selectedProductsStore.delete(pid);
+            }
+        });
+
         onProductSelectionChange();
     });
 
-    // ── Per-product checkbox ──────────────────────────────────────────────────
-    checkboxes.forEach(cb => cb.addEventListener('change', () => {
-        const all  = [...checkboxes].every(c => c.checked);
-        const none = [...checkboxes].every(c => !c.checked);
-        if (selectAllBox) {
-            selectAllBox.checked       = all;
-            selectAllBox.indeterminate = !all && !none;
+    // ── Intercept pagination clicks without page reload ───────────────────────
+    document.addEventListener('click', function (e) {
+        const pageLink = e.target.closest('#pagination-container a');
+        if (pageLink) {
+            e.preventDefault();
+            const href = pageLink.getAttribute('href');
+            if (href && href !== '#' && href !== 'javascript:void(0)') {
+                fetchProducts(href);
+            }
         }
-        onProductSelectionChange();
-    }));
+    });
+
+    // ── Browser back/forward navigation ───────────────────────────────────────
+    window.addEventListener('popstate', function () {
+        fetchProducts(window.location.href, false);
+    });
+
+    // ── Product search with debounce ──────────────────────────────────────────
+    let searchTimer = null;
+    function triggerSearch(term) {
+        const url = new URL(window.location.href);
+        if (term) {
+            url.searchParams.set('search', term);
+        } else {
+            url.searchParams.delete('search');
+        }
+        url.searchParams.set('page', '1');
+        fetchProducts(url.toString());
+    }
+
+    productSearch?.addEventListener('input', function () {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => {
+            triggerSearch(this.value.trim());
+        }, 300);
+    });
+
+    productSearch?.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            clearTimeout(searchTimer);
+            triggerSearch(this.value.trim());
+        }
+    });
 
     // ── Supplier dropdown change ──────────────────────────────────────────────
     supplierSelect?.addEventListener('change', () => {
@@ -535,9 +734,7 @@
 
     // ── Product selection change ──────────────────────────────────────────────
     function onProductSelectionChange() {
-        selectedProductIds = [...document.querySelectorAll('.product-checkbox:checked')]
-            .map(cb => parseInt(cb.closest('tr').dataset.productId, 10))
-            .filter(Boolean);
+        selectedProductIds = Array.from(selectedProductsStore.keys());
 
         // Count badge
         const bar = $el('selected-count-bar');
@@ -554,6 +751,78 @@
         clearTimeout(filterTimer);
         filterTimer = setTimeout(refreshSupplierDropdown, 250);
     }
+
+    // ── Form submission: submit all selected products from all pages ──────────
+    poForm?.addEventListener('submit', function (e) {
+        syncVisibleRowsToStore();
+
+        if (selectedProductsStore.size === 0) {
+            e.preventDefault();
+            alert('Please select at least one product to order.');
+            return false;
+        }
+
+        if (!supplierSelect || !supplierSelect.value) {
+            e.preventDefault();
+            alert('Please select a supplier.');
+            $el('supplierSelectButton')?.focus();
+            return false;
+        }
+
+        const hiddenContainer = $el('selected-products-hidden-inputs');
+        if (hiddenContainer) {
+            hiddenContainer.innerHTML = '';
+            let idx = 0;
+            selectedProductsStore.forEach(item => {
+                const pSelected = document.createElement('input');
+                pSelected.type = 'hidden';
+                pSelected.name = `products[${idx}][selected]`;
+                pSelected.value = '1';
+                hiddenContainer.appendChild(pSelected);
+
+                const pId = document.createElement('input');
+                pId.type = 'hidden';
+                pId.name = `products[${idx}][product_id]`;
+                pId.value = item.product_id;
+                hiddenContainer.appendChild(pId);
+
+                const pName = document.createElement('input');
+                pName.type = 'hidden';
+                pName.name = `products[${idx}][product_name]`;
+                pName.value = item.product_name;
+                hiddenContainer.appendChild(pName);
+
+                const pSku = document.createElement('input');
+                pSku.type = 'hidden';
+                pSku.name = `products[${idx}][sku]`;
+                pSku.value = item.sku;
+                hiddenContainer.appendChild(pSku);
+
+                const pQty = document.createElement('input');
+                pQty.type = 'hidden';
+                pQty.name = `products[${idx}][quantity]`;
+                pQty.value = item.quantity;
+                hiddenContainer.appendChild(pQty);
+
+                const pPrice = document.createElement('input');
+                pPrice.type = 'hidden';
+                pPrice.name = `products[${idx}][unit_price]`;
+                pPrice.value = item.unit_price;
+                hiddenContainer.appendChild(pPrice);
+
+                idx++;
+            });
+        }
+
+        // Temporarily disable the inputs in the table body so only hiddenContainer inputs are submitted
+        const tableInputs = productTableBody.querySelectorAll('input, select');
+        tableInputs.forEach(inp => { inp.disabled = true; });
+
+        // Safety timeout to re-enable if submission was interrupted by client-side validation
+        setTimeout(() => {
+            tableInputs.forEach(inp => { inp.disabled = false; });
+        }, 1500);
+    });
 
     // ── Refresh supplier dropdown ─────────────────────────────────────────────
     async function refreshSupplierDropdown() {
@@ -592,22 +861,34 @@
             }
 
             // Populate dropdown
-            supplierSelect.innerHTML = '<option value="">Select supplier…</option>';
-            data.suppliers.forEach(s => {
-                const opt = document.createElement('option');
-                opt.value       = s.id;
-                opt.textContent = s.name;
-                supplierSelect.appendChild(opt);
-            });
+            const listContainer = $el('supplierSelectList');
+            if (listContainer) {
+                listContainer.innerHTML = data.suppliers.map(s => {
+                    const isSelected = currentSupplierId && parseInt(s.id, 10) === currentSupplierId;
+                    return `
+                        <button type="button"
+                                data-supplier-id="${s.id}"
+                                data-name="${escHtml(s.name)}"
+                                onclick="selectSupplier(${s.id}, '${escHtml(s.name).replace(/'/g, "\\'")}'); closeSupplierDropdown();"
+                                class="w-full px-4 py-2.5 text-left text-sm ${isSelected ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100'} rounded-[10px] transition cursor-pointer">
+                            ${escHtml(s.name)}
+                        </button>
+                    `;
+                }).join('');
+            }
+
             $el('supplier-dropdown-wrapper').classList.remove('hidden');
 
             // Restore previously selected supplier if it is still valid
             if (currentSupplierId) {
-                const stillValid = [...supplierSelect.options].some(o => parseInt(o.value, 10) === currentSupplierId);
-                if (stillValid) {
-                    supplierSelect.value = currentSupplierId;
-                    loadSupplierDetails(currentSupplierId);
+                const found = data.suppliers.find(s => s.id === currentSupplierId);
+                if (found) {
+                    selectSupplier(found.id, found.name);
+                } else {
+                    selectSupplier(null, '');
                 }
+            } else {
+                updateSupplierTriggerDisplay('');
             }
 
             loadComparison();
@@ -830,10 +1111,15 @@
 
     // ── Public helper for comparison "Select" button ──────────────────────────
     window._poSelectSupplier = function (supplierId) {
-        supplierSelect.value = supplierId;
-        currentSupplierId    = supplierId;
-        loadSupplierDetails(supplierId);
-        $el('supplier-select').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const sId = parseInt(supplierId, 10);
+        const optBtn = document.querySelector(`#supplierSelectList button[data-supplier-id="${sId}"]`);
+        const name = optBtn ? optBtn.dataset.name : '';
+        selectSupplier(sId, name);
+
+        const btn = $el('supplierSelectButton') || $el('supplier-dropdown-wrapper');
+        if (btn) {
+            btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
     };
 
     // ── Hide downstream panels ────────────────────────────────────────────────
@@ -842,238 +1128,69 @@
         $el('price-analysis-panel').classList.add('hidden');
     }
 
-    // ── Boot: trigger initial state ───────────────────────────────────────────
-    onProductSelectionChange();
+    // ── Resolve Product Images from LocalStorage ────────────────────────────
+    function resolvePoProductImages() {
+        try {
+            const stored = localStorage.getItem('posProductImages');
+            if (!stored) return;
+            const images = JSON.parse(stored);
+            const keys = Object.keys(images);
 
-    // ── Custom Date Picker for Expected Delivery Date ───────────────────────
-    function setupCustomDatePicker(inputId) {
-        const input = document.getElementById(inputId);
-        if (!input) return;
+            document.querySelectorAll('.po-product-img-thumb').forEach(container => {
+                const id = container.dataset.id;
+                const sku = container.dataset.sku;
+                const name = container.dataset.name;
 
-        input.type = 'text';
-        input.readOnly = true;
-        input.placeholder = 'mm/dd/yyyy';
-        input.className = 'h-11 w-full rounded-[14px] border border-slate-300 bg-white px-3.5 pr-10 text-sm text-slate-900 focus:outline-none focus:border-slate-400 focus:ring-1 focus:ring-slate-300 cursor-pointer shadow-sm transition';
-
-        const wrapper = document.createElement('div');
-        wrapper.className = 'relative w-full mt-2 z-[999999]';
-        input.parentNode.insertBefore(wrapper, input);
-        wrapper.appendChild(input);
-
-        // Add calendar icon inside input
-        const icon = document.createElement('div');
-        icon.className = 'absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 transition-colors duration-150';
-        icon.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`;
-        wrapper.appendChild(icon);
-
-        function setIconActive(isActive) {
-            if (isActive) {
-                icon.classList.remove('text-slate-400');
-                icon.classList.add('text-slate-600');
-            } else {
-                icon.classList.remove('text-slate-600');
-                icon.classList.add('text-slate-400');
-            }
-        }
-
-        const card = document.createElement('div');
-        card.className = 'custom-calendar-card hidden absolute top-full left-0 mt-2 z-[999999] w-72 rounded-[18px] bg-white p-4 shadow-[0_16px_40px_rgba(0,0,0,0.12)] border border-slate-100 transition-all duration-200';
-        wrapper.appendChild(card);
-
-        let currentDate = new Date();
-        let selectedDate = input.value ? new Date(input.value) : null;
-        let viewMode = 'days';
-
-        function render() {
-            if (viewMode === 'days') {
-                renderDaysView();
-            } else {
-                renderMonthsView();
-            }
-        }
-
-        function renderDaysView() {
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const daysInPrevMonth = new Date(year, month, 0).getDate();
-
-            let html = `
-                <div class="flex items-center justify-between mb-3 px-1">
-                    <button type="button" class="toggle-view-btn text-sm font-bold text-slate-900 hover:text-slate-700 inline-flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-slate-100 transition">
-                        <span>${monthNames[month]} ${year}</span>
-                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-                    <div class="flex items-center gap-1">
-                        <button type="button" class="prev-month-btn p-1.5 rounded-full text-slate-600 hover:bg-slate-100 transition" title="Previous Month">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
-                        </button>
-                        <button type="button" class="next-month-btn p-1.5 rounded-full text-slate-600 hover:bg-slate-100 transition" title="Next Month">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="grid grid-cols-7 gap-1 text-center mb-1 text-[11px] font-semibold text-slate-400">
-                    <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
-                </div>
-                <div class="grid grid-cols-7 gap-1.5 text-center text-xs">
-            `;
-
-            for (let i = firstDay - 1; i >= 0; i--) {
-                html += `<span class="h-7 flex items-center justify-center text-slate-300">${daysInPrevMonth - i}</span>`;
-            }
-
-            const today = new Date();
-            for (let day = 1; day <= daysInMonth; day++) {
-                const isSelected = selectedDate && selectedDate.getFullYear() === year && selectedDate.getMonth() === month && selectedDate.getDate() === day;
-                const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
-
-                let dayClasses = "h-7 w-7 mx-auto flex items-center justify-center rounded-lg font-medium cursor-pointer transition-all duration-150 ";
-                if (isSelected) {
-                    dayClasses += "bg-[#0f172a] text-white font-bold shadow-sm";
-                } else if (isToday) {
-                    dayClasses += "bg-[#00fff2] text-black font-bold shadow-sm";
-                } else {
-                    dayClasses += "text-slate-700 hover:bg-slate-100";
+                let imgUrl = null;
+                if (id && images[id]) imgUrl = images[id];
+                else if (sku && images[sku]) imgUrl = images[sku];
+                else if (name && images[name]) imgUrl = images[name];
+                else {
+                    if (sku) {
+                        const matchSku = keys.find(k => k.toLowerCase() === String(sku).toLowerCase());
+                        if (matchSku) imgUrl = images[matchSku];
+                    }
+                    if (!imgUrl && name) {
+                        const matchName = keys.find(k => k.toLowerCase() === String(name).toLowerCase());
+                        if (matchName) imgUrl = images[matchName];
+                    }
                 }
 
-                html += `<button type="button" data-day="${day}" class="day-btn ${dayClasses}">${day}</button>`;
-            }
-
-            const totalSlots = firstDay + daysInMonth;
-            const nextDays = (7 - (totalSlots % 7)) % 7;
-            for (let i = 1; i <= nextDays; i++) {
-                html += `<span class="h-7 flex items-center justify-center text-slate-300">${i}</span>`;
-            }
-
-            html += `
-                </div>
-                <div class="flex items-center justify-between mt-3 pt-2.5 border-t border-slate-100 text-xs font-semibold px-1">
-                    <button type="button" class="clear-btn text-slate-500 hover:text-red-600 transition">Clear</button>
-                    <button type="button" class="today-btn text-slate-900 font-bold hover:underline transition">Today</button>
-                </div>
-            `;
-
-            card.innerHTML = html;
-
-            card.querySelector('.toggle-view-btn')?.addEventListener('click', (e) => { e.stopPropagation(); viewMode = 'months'; render(); });
-            card.querySelector('.prev-month-btn')?.addEventListener('click', (e) => { e.stopPropagation(); currentDate.setMonth(currentDate.getMonth() - 1); render(); });
-            card.querySelector('.next-month-btn')?.addEventListener('click', (e) => { e.stopPropagation(); currentDate.setMonth(currentDate.getMonth() + 1); render(); });
-            card.querySelector('.clear-btn')?.addEventListener('click', (e) => {
-                e.stopPropagation();
-                selectedDate = null;
-                input.value = '';
-                input.dispatchEvent(new Event('change', { bubbles: true }));
-                card.classList.add('hidden');
-                setIconActive(false);
-            });
-            card.querySelector('.today-btn')?.addEventListener('click', (e) => {
-                e.stopPropagation();
-                selectedDate = new Date();
-                currentDate = new Date();
-                const yyyy = selectedDate.getFullYear();
-                const mm = String(selectedDate.getMonth() + 1).padStart(2, '0');
-                const dd = String(selectedDate.getDate()).padStart(2, '0');
-                input.value = `${yyyy}-${mm}-${dd}`;
-                input.dispatchEvent(new Event('change', { bubbles: true }));
-                card.classList.add('hidden');
-                setIconActive(false);
-            });
-
-            card.querySelectorAll('.day-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const day = parseInt(btn.dataset.day);
-                    selectedDate = new Date(year, month, day);
-                    const yyyy = year;
-                    const mm = String(month + 1).padStart(2, '0');
-                    const dd = String(day).padStart(2, '0');
-                    input.value = `${yyyy}-${mm}-${dd}`;
-                    input.dispatchEvent(new Event('change', { bubbles: true }));
-                    card.classList.add('hidden');
-                    setIconActive(false);
-                });
-            });
-        }
-
-        function renderMonthsView() {
-            const year = currentDate.getFullYear();
-            const shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-            let html = `
-                <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100 px-1">
-                    <button type="button" class="prev-year-btn p-1.5 rounded-full text-slate-600 hover:bg-slate-100 transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                    </button>
-                    <span class="text-sm font-bold text-slate-900">${year}</span>
-                    <button type="button" class="next-year-btn p-1.5 rounded-full text-slate-600 hover:bg-slate-100 transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </button>
-                </div>
-                <div class="grid grid-cols-3 gap-2 text-xs">
-            `;
-
-            shortMonths.forEach((m, idx) => {
-                const isSel = selectedDate && selectedDate.getFullYear() === year && selectedDate.getMonth() === idx;
-                let mClasses = "py-2.5 rounded-xl text-center font-semibold cursor-pointer transition-all duration-150 ";
-                if (isSel) {
-                    mClasses += "bg-[#00fff2] text-black font-bold shadow-md";
-                } else {
-                    mClasses += "text-slate-700 hover:bg-slate-100";
+                if (imgUrl) {
+                    container.innerHTML = '';
+                    container.className = 'po-product-img-thumb w-8 h-8 rounded-[6px] bg-slate-100 border border-slate-200/80 flex-shrink-0 bg-cover bg-center';
+                    container.style.backgroundImage = `url('${imgUrl}')`;
                 }
-                html += `<button type="button" data-month="${idx}" class="month-btn ${mClasses}">${m}</button>`;
             });
-
-            html += `
-                </div>
-                <div class="mt-3 text-right">
-                    <button type="button" class="back-days-btn text-xs font-bold text-black hover:underline">Back to Days</button>
-                </div>
-            `;
-
-            card.innerHTML = html;
-
-            card.querySelector('.prev-year-btn')?.addEventListener('click', (e) => { e.stopPropagation(); currentDate.setFullYear(year - 1); render(); });
-            card.querySelector('.next-year-btn')?.addEventListener('click', (e) => { e.stopPropagation(); currentDate.setFullYear(year + 1); render(); });
-            card.querySelector('.back-days-btn')?.addEventListener('click', (e) => { e.stopPropagation(); viewMode = 'days'; render(); });
-
-            card.querySelectorAll('.month-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const mIdx = parseInt(btn.dataset.month);
-                    currentDate.setMonth(mIdx);
-                    viewMode = 'days';
-                    render();
-                });
-            });
+        } catch(e) {
+            console.error('Error resolving PO product images:', e);
         }
-
-        input.addEventListener('click', (e) => {
-            e.stopPropagation();
-            document.querySelectorAll('.custom-calendar-card').forEach(c => {
-                if (c !== card) c.classList.add('hidden');
-            });
-            card.classList.toggle('hidden');
-            const isOpen = !card.classList.contains('hidden');
-            if (isOpen) {
-                render();
-            }
-            setIconActive(isOpen);
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!wrapper.contains(e.target)) {
-                card.classList.add('hidden');
-                setIconActive(false);
-            }
-        });
     }
 
-    // Initialize custom date picker
-    setupCustomDatePicker('expectedDeliveryDate');
+    // ── Boot: trigger initial state ───────────────────────────────────────────
+    if (productTableBody) {
+        const rows = productTableBody.querySelectorAll('.product-row');
+        rows.forEach(row => {
+            const cb = row.querySelector('.product-checkbox');
+            const pid = parseInt(row.dataset.productId, 10);
+            if (cb && (cb.checked || (Array.isArray(preselectedIds) && preselectedIds.includes(pid)))) {
+                cb.checked = true;
+                const qtyInput = row.querySelector('input[name*="[quantity]"]');
+                const priceInput = row.querySelector('input[name*="[unit_price]"]');
+                selectedProductsStore.set(pid, {
+                    product_id: pid,
+                    product_name: row.dataset.productName || row.querySelector('td:nth-child(2)')?.textContent?.trim() || '',
+                    sku: row.dataset.sku || row.querySelector('td:nth-child(4)')?.textContent?.trim() || '',
+                    quantity: qtyInput ? (parseInt(qtyInput.value, 10) || 1) : (parseInt(row.dataset.defaultQuantity, 10) || 1),
+                    unit_price: priceInput ? (parseFloat(priceInput.value) || 0) : (parseFloat(row.dataset.defaultUnitPrice) || 0),
+                    selected: true,
+                });
+            }
+        });
+        updateSelectAllCheckboxState();
+    }
+    onProductSelectionChange();
+    resolvePoProductImages();
 
 })();
 </script>

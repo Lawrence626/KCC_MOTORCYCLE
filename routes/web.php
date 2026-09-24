@@ -60,7 +60,7 @@ Route::middleware(['auth'])->group(function () {
     // Profile update for authenticated users
     Route::match(['patch','post'], 'profile', [UserController::class, 'updateProfile'])->name('profile.update');
     // Profile display
-    Route::view('profile', 'profile.show')->name('profile.show');
+    Route::get('profile', [UserController::class, 'showProfile'])->name('profile.show');
 
     // Point of Sales Routes - Admin and Cashier only
     Route::middleware('role:admin,cashier')->group(function () {
@@ -106,6 +106,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('api/product-descriptions', [App\Http\Controllers\StockImportController::class, 'getProductDescriptions'])->name('api.product-descriptions');
     Route::get('api/products/archived', [App\Http\Controllers\StockImportController::class, 'getArchivedProducts'])->name('api.products.archived');
     Route::get('api/products/{id}', [App\Http\Controllers\StockImportController::class, 'getProduct'])->name('api.product.show');
+    Route::get('api/suppliers', [App\Http\Controllers\StockImportController::class, 'getSuppliers'])->name('api.suppliers');
     Route::get('api/inventory/location-quantities/{product_id}', [App\Http\Controllers\StockImportController::class, 'getLocationQuantities'])->name('api.inventory.location-quantities');
     Route::get('api/stats', [App\Http\Controllers\StockImportController::class, 'getStats'])->name('api.stats');
     Route::get('api/movements', [App\Http\Controllers\StockImportController::class, 'getMovements'])->name('api.movements');
@@ -118,6 +119,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('role:admin,cashier')->group(function () {
         Route::post('api/pos/transactions', [POSTransactionController::class, 'store'])->name('api.pos.transactions.store');
         Route::post('api/pos/validate-stock', [POSTransactionController::class, 'validateStock'])->name('api.pos.validate_stock');
+        Route::post('api/pos/remove-product-discount', [App\Http\Controllers\DeadStockController::class, 'removeDiscount'])->name('api.pos.remove-discount');
     });
     // POS Transaction read access - Admin, Cashier, Inventory Clerk
     Route::middleware('role:admin,cashier,inventory_clerk')->group(function () {
@@ -157,18 +159,22 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('api/reverse-logistics/{id}', [App\Http\Controllers\ReverseLogisticsController::class, 'destroy'])->name('api.reverse-logistics.destroy');
     });
 
-    // Data Analytics Routes - Sales analytics for Cashier and Warehouse, all for others
-    Route::middleware('role:admin,cashier,inventory_clerk,warehouse_personnel')->group(function () {
+    // Data Analytics Routes - Sales analytics for Admin, Cashier, and Warehouse only (NOT inventory clerk)
+    Route::middleware('role:admin,cashier,warehouse_personnel')->group(function () {
         Route::get('analytics/sales', [AnalyticsController::class, 'sales'])->name('sales.analytics');
         Route::get('api/analytics/sales-widgets', [AnalyticsController::class, 'salesFilteredWidgets'])->name('api.analytics.sales_widgets');
         Route::get('analytics/sales/export', [AnalyticsController::class, 'exportSales'])->name('analytics.sales.export');
     });
 
-    // Other analytics routes - Admin and Inventory Clerk only
-    Route::middleware('role:admin,inventory_clerk')->group(function () {
+    // Pricing Module - Admin only
+    Route::middleware('role:admin')->group(function () {
         Route::get('analytics/pricing', [AnalyticsController::class, 'pricing'])->name('pricing.module');
         Route::post('analytics/pricing/dismiss/{id}', [AnalyticsController::class, 'dismissAlert'])->name('pricing.dismiss');
         Route::get('analytics/pricing/export', [AnalyticsController::class, 'exportPricing'])->name('analytics.pricing.export');
+    });
+
+    // Inventory analytics routes - Admin and Inventory Clerk
+    Route::middleware('role:admin,inventory_clerk')->group(function () {
         Route::get('analytics/overstocking', [AnalyticsController::class, 'overstocking'])->name('overstocking.report');
         Route::get('analytics/overstocking/export', [AnalyticsController::class, 'exportOverstocking'])->name('analytics.overstocking.export');
         Route::get('analytics/out-of-stock', [AnalyticsController::class, 'outOfStock'])->name('out.of.stock');
@@ -259,10 +265,9 @@ Route::middleware(['auth'])->group(function () {
     // Offline Data Reconciliation Routes - Admin only
     Route::prefix('offline-reconciliation')->group(function () {
         Route::get('purchase-orders', [App\Http\Controllers\OfflineReconciliationController::class, 'index'])->name('offline.purchase-orders');
-        Route::get('inventory-movements', [App\Http\Controllers\OfflineReconciliationController::class, 'inventoryMovements'])->name('offline.inventory-movements');
         Route::get('export', [App\Http\Controllers\ExportController::class, 'index'])->name('offline.export');
-        Route::post('export/csv', [App\Http\Controllers\ExportController::class, 'exportCsv'])->name('offline.export.csv');
-        Route::post('export/excel', [App\Http\Controllers\ExportController::class, 'exportExcel'])->name('offline.export.excel');
+        Route::match(['get', 'post'], 'export/csv', [App\Http\Controllers\ExportController::class, 'exportCsv'])->name('offline.export.csv');
+        Route::match(['get', 'post'], 'export/excel', [App\Http\Controllers\ExportController::class, 'exportExcel'])->name('offline.export.excel');
         Route::get('import', [App\Http\Controllers\ImportController::class, 'index'])->name('offline.import');
         Route::post('import', [App\Http\Controllers\ImportController::class, 'import'])->name('offline.import.store');
         Route::post('import/validate', [App\Http\Controllers\ImportController::class, 'validateFile'])->name('offline.import.validate');
@@ -276,30 +281,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('api/stats', [App\Http\Controllers\OfflineReconciliationController::class, 'stats'])->name('offline.api.stats');
         Route::get('local-orders', [App\Http\Controllers\OfflineReconciliationController::class, 'localOrders'])->name('offline.local.orders');
         Route::post('sync-order', [App\Http\Controllers\OfflineReconciliationController::class, 'syncOrder'])->name('offline.sync.order');
-        Route::post('sync-movement', [App\Http\Controllers\OfflineReconciliationController::class, 'syncMovement'])->name('offline.sync.movement');
-    });
-
-    // Offline Data Reconciliation Routes - Admin only
-    Route::prefix('offline-reconciliation')->group(function () {
-        Route::get('purchase-orders', [App\Http\Controllers\OfflineReconciliationController::class, 'index'])->name('offline.purchase-orders');
-        Route::get('inventory-movements', [App\Http\Controllers\OfflineReconciliationController::class, 'inventoryMovements'])->name('offline.inventory-movements');
-        Route::get('export', [App\Http\Controllers\ExportController::class, 'index'])->name('offline.export');
-        Route::post('export/csv', [App\Http\Controllers\ExportController::class, 'exportCsv'])->name('offline.export.csv');
-        Route::post('export/excel', [App\Http\Controllers\ExportController::class, 'exportExcel'])->name('offline.export.excel');
-        Route::get('import', [App\Http\Controllers\ImportController::class, 'index'])->name('offline.import');
-        Route::post('import', [App\Http\Controllers\ImportController::class, 'import'])->name('offline.import.store');
-        Route::post('import/validate', [App\Http\Controllers\ImportController::class, 'validateFile'])->name('offline.import.validate');
-        Route::get('pending-imports', [App\Http\Controllers\ImportController::class, 'pendingImports'])->name('offline.pending.imports');
-        Route::get('pending-imports/{id}/review', [App\Http\Controllers\ImportController::class, 'review'])->name('offline.pending.review');
-        Route::post('pending-imports/{id}/approve', [App\Http\Controllers\ImportController::class, 'approve'])->name('offline.pending.approve');
-        Route::post('pending-imports/{id}/reject', [App\Http\Controllers\ImportController::class, 'reject'])->name('offline.pending.reject');
-        Route::get('history', [App\Http\Controllers\OfflineReconciliationController::class, 'history'])->name('offline.history');
-        Route::get('report/{id}', [App\Http\Controllers\OfflineReconciliationController::class, 'report'])->name('offline.report');
-        Route::delete('history/{id}', [App\Http\Controllers\OfflineReconciliationController::class, 'destroyHistory'])->name('offline.history.destroy');
-        Route::get('api/stats', [App\Http\Controllers\OfflineReconciliationController::class, 'stats'])->name('offline.api.stats');
-        Route::get('local-orders', [App\Http\Controllers\OfflineReconciliationController::class, 'localOrders'])->name('offline.local.orders');
-        Route::post('sync-order', [App\Http\Controllers\OfflineReconciliationController::class, 'syncOrder'])->name('offline.sync.order');
-        Route::post('sync-movement', [App\Http\Controllers\OfflineReconciliationController::class, 'syncMovement'])->name('offline.sync.movement');
     });
 
     // Supplier Assessment Route - Admin only
@@ -325,7 +306,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Offline Reconciliation Route - Admin only
     Route::middleware('role:admin')->group(function () {
-        Route::view('offline-reconciliation', 'offline_reconciliation.offline_recon')->name('offline.reconciliation');
+        Route::get('offline-reconciliation', [App\Http\Controllers\OfflineReconciliationController::class, 'overview'])->name('offline.reconciliation');
         Route::view('offline-reconciliation/test', 'offline_reconciliation.test-offline')->name('offline.reconciliation.test');
     });
 
@@ -348,9 +329,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('dead-stock/export/excel', [App\Http\Controllers\DeadStockController::class, 'exportExcel'])->name('dss.dead-stock.export-excel');
             Route::get('dead-stock/export/pdf', [App\Http\Controllers\DeadStockController::class, 'exportPdf'])->name('dss.dead-stock.export-pdf');
             Route::get('dead-stock/{id}', [App\Http\Controllers\DeadStockController::class, 'show'])->name('dss.dead-stock.show');
-            Route::post('dead-stock/recalculate', [App\Http\Controllers\DeadStockController::class, 'recalculate'])->name('dss.dead-stock.recalculate');
-            Route::post('dead-stock/{id}/resolve', [App\Http\Controllers\DeadStockController::class, 'markResolved'])->name('dss.dead-stock.resolve');
             Route::post('dead-stock/{id}/apply-discount', [App\Http\Controllers\DeadStockController::class, 'applyDiscount'])->name('dss.dead-stock.apply-discount');
+            Route::post('dead-stock/{id}/remove-discount', [App\Http\Controllers\DeadStockController::class, 'removeDiscountByDeadStockId'])->name('dss.dead-stock.remove-discount');
 
             // Recommendation Routes
             Route::get('recommendations', [App\Http\Controllers\DSSRecommendationController::class, 'index'])->name('dss.recommendations.index');

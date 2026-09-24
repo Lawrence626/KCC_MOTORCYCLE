@@ -4,13 +4,12 @@ namespace App\Services;
 
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
-use App\Models\InventoryMovement;
 use App\Models\Product;
 use App\Models\Supplier;
+use App\Models\SupplierPriceHistory;
 use App\Models\SynchronizationHistory;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class OfflineReconciliationService
 {
@@ -25,21 +24,42 @@ class OfflineReconciliationService
             'duplicates' => [],
         ];
 
+        $seenOrderNumbers = [];
+
         foreach ($records as $index => $record) {
+            $orderNumber = $record['order_number'] ?? null;
+
+            // Check if record is a duplicate in DB or in current batch
+            if ($this->isDuplicate($record)) {
+                $validationResults['duplicates'][] = [
+                    'index' => $index,
+                    'record' => $record,
+                    'reason' => 'Order number already exists in database',
+                ];
+                continue;
+            }
+
+            if ($orderNumber && in_array($orderNumber, $seenOrderNumbers, true)) {
+                $validationResults['duplicates'][] = [
+                    'index' => $index,
+                    'record' => $record,
+                    'reason' => 'Duplicate order number within the imported file',
+                ];
+                continue;
+            }
+
             $errors = $this->validateRecord($record);
-            
+
             if (!empty($errors)) {
                 $validationResults['invalid'][] = [
                     'index' => $index,
                     'record' => $record,
                     'errors' => $errors,
                 ];
-            } elseif ($this->isDuplicate($record)) {
-                $validationResults['duplicates'][] = [
-                    'index' => $index,
-                    'record' => $record,
-                ];
             } else {
+                if ($orderNumber) {
+                    $seenOrderNumbers[] = $orderNumber;
+                }
                 $validationResults['valid'][] = $record;
             }
         }
@@ -54,22 +74,85 @@ class OfflineReconciliationService
     {
         $errors = [];
 
-        // Validate based on record type
-        if (isset($record['type']) && $record['type'] === 'purchase_order') {
+        $type = $record['type'] ?? 'purchase_order';
+
+        if ($type === 'purchase_order') {
+            // 1. Order Number
             if (empty($record['order_number'])) {
-                $errors[] = 'Purchase Order Number is required';
+                $errors[] = 'Purchase Order Number is required.';
             }
 
-            // Only check for duplicates in validation, not existence of supplier
-            // This allows importing with suppliers that don't exist yet
-        } elseif (isset($record['type']) && $record['type'] === 'inventory_movement') {
-            // Less strict validation for inventory movements
-            // Only check if product_id is provided, not if it exists
-            if (empty($record['product_name']) && empty($record['product_id'])) {
-                $errors[] = 'Product name or ID is required';
+            // 2. Supplier Validation
+            $supplier = null;
+            if (!empty($record['supplier_id'])) {
+                $supplier = Supplier::find($record['supplier_id']);
             }
-            if (isset($record['quantity_change']) && $record['quantity_change'] <= 0) {
-                $errors[] = 'Quantity change must be greater than zero';
+            if (!$supplier && !empty($record['supplier_name'])) {
+                $supplier = Supplier::where('name', $record['supplier_name'])->first();
+            }
+
+            if (!$supplier) {
+                $errors[] = 'Supplier does not exist in the database (Supplier: ' . ($record['supplier_name'] ?? $record['supplier_id'] ?? 'N/A') . ').';
+            }
+
+            // 3. Items validation
+            $items = $record['items'] ?? [];
+            if (empty($items) || !is_array($items)) {
+                $errors[] = 'Purchase order must contain at least one valid product item.';
+            } else {
+                foreach ($items as $itemIndex => $item) {
+                    $itemNum = $itemIndex + 1;
+                    
+                    // Product existence
+                    $product = null;
+                    if (!empty($item['product_id'])) {
+                        $product = Product::find($item['product_id']);
+                    }
+                    if (!$product && !empty($item['sku'])) {
+                        $product = Product::where('sku', trim($item['sku']))->first();
+                    }
+                    if (!$product && !empty($item['product_name'])) {
+                        $pName = trim($item['product_name']);
+                        $product = Product::where('name', $pName)
+                            ->orWhere('sku', $pName)
+                            ->first();
+                        if (!$product && \Illuminate\Support\Facades\Schema::hasColumn('products', 'product_name')) {
+                            $product = Product::where('product_name', $pName)->first();
+                        }
+                    }
+
+                    if (!$product) {
+                        $errors[] = "Item #{$itemNum}: Product does not exist in database ('" . ($item['product_name'] ?? $item['sku'] ?? $item['product_id'] ?? 'N/A') . "').";
+                        continue;
+                    }
+
+                    // Quantity validation
+                    $qty = (int) ($item['quantity'] ?? 0);
+                    if ($qty <= 0) {
+                        $errors[] = "Item #{$itemNum} ({$product->name}): Quantity must be greater than zero (given: {$qty}).";
+                    }
+
+                    // Price validation
+                    $unitPrice = (float) ($item['unit_price'] ?? 0);
+                    if ($unitPrice <= 0) {
+                        $supplierCost = ($supplier && $product) ? SupplierPriceHistory::where('supplier_id', $supplier->id)
+                            ->where('product_id', $product->id)
+                            ->latest('id')
+                            ->value('supplier_cost') : null;
+                        $fallbackPrice = (float) ($supplierCost ?? $product?->unit_price ?? 0);
+                        if ($fallbackPrice <= 0) {
+                            $errors[] = "Item #{$itemNum} ({$product->name}): This product does not have a valid purchase price and cannot be added to the Purchase Order.";
+                        }
+                    }
+
+                    // 4. Supplier-Product Eligibility Validation
+                    if ($supplier && $product) {
+                        $isEligible = $this->isSupplierEligibleForProduct($supplier, $product);
+                        if (!$isEligible) {
+                            $errors[] = "Supplier '{$supplier->name}' is not authorized to supply product '{$product->name}' (SKU: {$product->sku}).";
+                        }
+                    }
+                }
             }
         }
 
@@ -77,21 +160,37 @@ class OfflineReconciliationService
     }
 
     /**
+     * Check if a supplier is eligible to supply a specific product
+     */
+    public function isSupplierEligibleForProduct(Supplier $supplier, Product $product): bool
+    {
+        // Check supplier_products pivot table
+        $inPivot = DB::table('supplier_products')
+            ->where('supplier_id', $supplier->id)
+            ->where('product_id', $product->id)
+            ->exists();
+
+        if ($inPivot) {
+            return true;
+        }
+
+        // Check legacy supplier_name column on products
+        if (!empty($product->supplier_name) && strcasecmp(trim($product->supplier_name), trim($supplier->name)) === 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Check if record is a duplicate
      */
     protected function isDuplicate(array $record): bool
     {
-        if (isset($record['type']) && $record['type'] === 'purchase_order') {
-            return PurchaseOrder::where('order_number', $record['order_number'] ?? null)->exists();
-        }
+        $type = $record['type'] ?? 'purchase_order';
 
-        if (isset($record['type']) && $record['type'] === 'inventory_movement') {
-            // Check for duplicate by comparing key fields
-            return InventoryMovement::where('product_id', $record['product_id'] ?? null)
-                ->where('type', $record['type'] ?? null)
-                ->where('quantity_change', $record['quantity_change'] ?? null)
-                ->where('created_at', $record['created_at'] ?? null)
-                ->exists();
+        if ($type === 'purchase_order') {
+            return PurchaseOrder::where('order_number', $record['order_number'] ?? null)->exists();
         }
 
         return false;
@@ -128,18 +227,17 @@ class OfflineReconciliationService
                         continue;
                     }
 
-                    if ($record['type'] === 'purchase_order') {
+                    $type = $record['type'] ?? 'purchase_order';
+
+                    if ($type === 'purchase_order') {
                         $this->importPurchaseOrder($record);
-                        $importedCount++;
-                    } elseif ($record['type'] === 'inventory_movement') {
-                        $this->importInventoryMovement($record);
                         $importedCount++;
                     } else {
                         $skippedCount++;
                     }
                 } catch (\Exception $e) {
                     $failedCount++;
-                    \Log::error('Failed to import record', [
+                    Log::error('Failed to import record', [
                         'record' => $record,
                         'error' => $e->getMessage(),
                     ]);
@@ -159,49 +257,66 @@ class OfflineReconciliationService
     }
 
     /**
-     * Import a purchase order
+     * Import a purchase order with items
      */
     protected function importPurchaseOrder(array $record): void
     {
+        // Resolve supplier
+        $supplierId = $record['supplier_id'] ?? null;
+        $supplierName = $record['supplier_name'] ?? null;
+
+        if (!$supplierId && $supplierName) {
+            $foundSupplier = Supplier::where('name', $supplierName)->first();
+            $supplierId = $foundSupplier?->id;
+        }
+
         $purchaseOrder = PurchaseOrder::create([
             'order_number' => $record['order_number'],
-            'supplier_id' => $record['supplier_id'] ?? null,
-            'supplier_name' => $record['supplier_name'] ?? null,
+            'supplier_id' => $supplierId,
+            'supplier_name' => $supplierName,
             'status' => $record['status'] ?? 'pending',
             'sync_status' => 'synchronized',
-            'expected_delivery_date' => $record['expected_delivery_date'] ?? null,
             'notes' => $record['notes'] ?? null,
             'total_amount' => $record['total_amount'] ?? 0,
         ]);
 
         if (isset($record['items']) && is_array($record['items'])) {
             foreach ($record['items'] as $item) {
+                $productId = $item['product_id'] ?? null;
+                $productName = $item['product_name'] ?? 'Unknown Item';
+                $sku = $item['sku'] ?? null;
+
+                if (!$productId && $sku) {
+                    $foundProduct = Product::where('sku', $sku)->first();
+                    $productId = $foundProduct?->id;
+                    $productName = $foundProduct?->product_name ?: ($foundProduct?->name ?: $productName);
+                }
+
+                $quantity = (int) ($item['quantity'] ?? 1);
+                $unitPrice = (float) ($item['unit_price'] ?? 0);
+                $totalPrice = (float) ($item['subtotal'] ?? ($quantity * $unitPrice));
+
                 PurchaseOrderItem::create([
                     'purchase_order_id' => $purchaseOrder->id,
-                    'product_id' => $item['product_id'] ?? null,
-                    'quantity' => $item['quantity'] ?? 0,
-                    'unit_price' => $item['unit_price'] ?? 0,
-                    'total_price' => $item['total_price'] ?? 0,
+                    'product_id' => $productId,
+                    'product_name' => $productName,
+                    'sku' => $sku,
+                    'quantity' => $quantity,
+                    'unit_price' => $unitPrice,
+                    'total_price' => $totalPrice,
                 ]);
+
+                // Maintain supplier_products pivot table
+                if ($supplierId && $productId) {
+                    DB::table('supplier_products')->insertOrIgnore([
+                        'supplier_id' => $supplierId,
+                        'product_id' => $productId,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
             }
         }
-    }
-
-    /**
-     * Import an inventory movement
-     */
-    protected function importInventoryMovement(array $record): void
-    {
-        InventoryMovement::create([
-            'product_id' => $record['product_id'] ?? null,
-            'type' => $record['type'] ?? 'adjustment',
-            'sync_status' => 'synchronized',
-            'quantity_change' => $record['quantity_change'] ?? 0,
-            'unit_price' => $record['unit_price'] ?? 0,
-            'supplier_name' => $record['supplier_name'] ?? null,
-            'notes' => $record['notes'] ?? null,
-            'metadata' => $record['metadata'] ?? null,
-        ]);
     }
 
     /**
@@ -209,9 +324,7 @@ class OfflineReconciliationService
      */
     protected function markAsDuplicate(array $record): void
     {
-        // This is for tracking - we don't actually insert duplicates
-        // We could log this or create a separate duplicates table if needed
-        \Log::info('Duplicate record detected and skipped', ['record' => $record]);
+        Log::info('Duplicate record detected and skipped', ['record' => $record]);
     }
 
     /**
@@ -221,19 +334,16 @@ class OfflineReconciliationService
     {
         return [
             'purchase_orders' => PurchaseOrder::where('sync_status', 'pending_sync')->count(),
-            'inventory_movements' => InventoryMovement::where('sync_status', 'pending_sync')->count(),
         ];
     }
 
     /**
      * Mark records as exported
      */
-    public function markAsExported(array $recordIds, string $type): void
+    public function markAsExported(array $recordIds, string $type = 'purchase_order'): void
     {
         if ($type === 'purchase_order') {
             PurchaseOrder::whereIn('id', $recordIds)->update(['sync_status' => 'exported']);
-        } elseif ($type === 'inventory_movement') {
-            InventoryMovement::whereIn('id', $recordIds)->update(['sync_status' => 'exported']);
         }
     }
 
@@ -267,24 +377,20 @@ class OfflineReconciliationService
         return [
             'pending_sync' => [
                 'purchase_orders' => PurchaseOrder::where('sync_status', 'pending_sync')->count(),
-                'inventory_movements' => InventoryMovement::where('sync_status', 'pending_sync')->count(),
             ],
             'exported' => [
                 'purchase_orders' => PurchaseOrder::where('sync_status', 'exported')->count(),
-                'inventory_movements' => InventoryMovement::where('sync_status', 'exported')->count(),
             ],
             'synchronized' => [
                 'purchase_orders' => PurchaseOrder::where('sync_status', 'synchronized')->count(),
-                'inventory_movements' => InventoryMovement::where('sync_status', 'synchronized')->count(),
             ],
             'duplicate' => [
                 'purchase_orders' => PurchaseOrder::where('sync_status', 'duplicate')->count(),
-                'inventory_movements' => InventoryMovement::where('sync_status', 'duplicate')->count(),
             ],
             'failed' => [
                 'purchase_orders' => PurchaseOrder::where('sync_status', 'failed')->count(),
-                'inventory_movements' => InventoryMovement::where('sync_status', 'failed')->count(),
             ],
         ];
     }
 }
+

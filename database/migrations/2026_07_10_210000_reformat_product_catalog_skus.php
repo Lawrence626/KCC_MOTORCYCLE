@@ -16,6 +16,9 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Append a temporary suffix to avoid unique constraint violations
+        DB::statement("UPDATE product_catalog SET sku = CONCAT(sku, '_temp_', id)");
+
         // Fetch all products grouped by (product_description, brand), ordered by id
         $products = DB::table('product_catalog')
             ->whereNull('deleted_at')

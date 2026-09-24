@@ -17,7 +17,7 @@
         </div>
 
     @if(session('success'))
-    <div id="success-toast" class="fixed top-4 right-4 z-50 rounded-[10px] border border-[#00fff2] bg-[#e6fffe] p-4 text-sm font-medium text-slate-900 shadow-lg">
+    <div id="success-toast" class="fixed top-4 right-4 z-50 rounded-[10px] border border-[#6EC1D1] bg-teal-50 p-4 text-sm font-medium text-slate-900 shadow-lg">
         {{ session('success') }}
     </div>
     <script>
@@ -28,7 +28,7 @@
                 toast.style.transition = 'opacity 0.5s ease';
                 setTimeout(() => toast.remove(), 500);
             }
-        }, 3000);
+        }, 3500);
     </script>
 @endif
 
@@ -65,7 +65,7 @@
                                     <td class="px-4 py-3.5 text-right">
                                         <form method="POST" action="{{ route('supplier.assessment.restore', ['supplier' => $supplier->id]) }}">
                                             @csrf
-                                            <button type="submit" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#00FFF2] px-3 py-1.5 text-xs font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#00D9CC] transition-all">
+                                            <button type="submit" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all">
                                                 Restore
                                             </button>
                                         </form>
@@ -90,7 +90,7 @@
 
                             @foreach($archivedSuppliers->getUrlRange(1, $archivedSuppliers->lastPage()) as $page => $url)
                                 @if($page == $archivedSuppliers->currentPage())
-                                    <span class="px-3 py-1.5 text-xs font-bold text-slate-900 bg-[#00FFF2] border border-slate-200 shadow-sm rounded-[10px]">{{ $page }}</span>
+                                    <span class="px-3 py-1.5 text-xs font-bold text-slate-900 bg-[#6EC1D1] border border-slate-200 shadow-sm rounded-[10px]">{{ $page }}</span>
                                 @else
                                     <a href="{{ $url }}" class="px-3 py-1.5 text-xs rounded-[10px] border border-slate-200 text-slate-700 bg-white hover:bg-slate-100 transition-all">{{ $page }}</a>
                                 @endif

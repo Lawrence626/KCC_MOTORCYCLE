@@ -21,6 +21,36 @@ function formatDate(dateStr) {
         return dateStr;
     }
 }
+
+function getMonitoringProductImage(p) {
+    if (!p) return null;
+    if (p.image) return p.image;
+    try {
+        const stored = localStorage.getItem('posProductImages');
+        if (stored) {
+            const images = JSON.parse(stored);
+            const productId = p.id || p.product_id;
+            if (productId && images[productId]) return images[productId];
+            if (p.sku && images[p.sku]) return images[p.sku];
+
+            const keys = Object.keys(images);
+            if (p.sku) {
+                const matchSku = keys.find(k => k.toLowerCase() === String(p.sku).toLowerCase());
+                if (matchSku) return images[matchSku];
+            }
+        }
+    } catch (e) {}
+    return null;
+}
+
+function renderMonitoringProductImageHtml(p) {
+    const imageUrl = getMonitoringProductImage(p);
+    return imageUrl
+        ? `<div class="w-8 h-8 rounded-[6px] bg-slate-100 flex-shrink-0 overflow-hidden border border-slate-200/80 bg-cover bg-center" style="background-image: url('${imageUrl}');"></div>`
+        : `<div class="w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+           </div>`;
+}
 let currentEditProduct = null;
 
 function setEditFieldError(fieldId, message) {
@@ -41,6 +71,114 @@ function clearEditProductErrors() {
     });
 }
 
+function getAvailableSuppliers() {
+    if (window.AllStocks && Array.isArray(window.AllStocks.suppliers) && window.AllStocks.suppliers.length > 0) {
+        return Promise.resolve(window.AllStocks.suppliers);
+    }
+    const url = window.AllStocks?.routes?.apiSuppliers || '/api/suppliers';
+    return fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            const list = data.suppliers || [];
+            if (window.AllStocks) window.AllStocks.suppliers = list;
+            return list;
+        })
+        .catch(err => {
+            console.error('Error fetching suppliers:', err);
+            return [];
+        });
+}
+
+function updateEditSuppliersDisplay() {
+    const displaySpan = document.getElementById('editSuppliersDisplay');
+    const button = document.getElementById('editSuppliersButton');
+    const hiddenInput = document.getElementById('editSupplier');
+    const checkboxes = Array.from(document.querySelectorAll('#editSuppliersList input.supplier-checkbox:checked'));
+
+    const selectedNames = checkboxes.map(cb => cb.dataset.name);
+
+    if (hiddenInput) {
+        hiddenInput.value = selectedNames.join(', ');
+    }
+
+    if (!displaySpan || !button) return;
+
+    if (selectedNames.length === 0) {
+        displaySpan.textContent = 'Select suppliers...';
+        displaySpan.className = 'truncate text-slate-400';
+        button.title = '';
+    } else if (selectedNames.length === 1) {
+        displaySpan.textContent = selectedNames[0];
+        displaySpan.className = 'truncate text-slate-900 font-medium';
+        button.title = selectedNames[0];
+    } else if (selectedNames.length === 2) {
+        displaySpan.textContent = selectedNames.join(', ');
+        displaySpan.className = 'truncate text-slate-900 font-medium';
+        button.title = selectedNames.join(', ');
+    } else {
+        displaySpan.textContent = `${selectedNames.length} suppliers selected`;
+        displaySpan.className = 'truncate text-slate-900 font-medium';
+        button.title = selectedNames.join(', ');
+    }
+}
+
+function renderEditSuppliersDropdown(selectedIds = []) {
+    const listContainer = document.getElementById('editSuppliersList');
+    if (!listContainer) return;
+
+    const suppliers = window.AllStocks?.suppliers || [];
+    if (!suppliers.length) {
+        getAvailableSuppliers().then(fetched => {
+            renderEditSuppliersDropdown(selectedIds);
+        });
+        listContainer.innerHTML = '<div class="p-3 text-left text-xs text-slate-500">Loading suppliers...</div>';
+        return;
+    }
+
+    const selectedSet = new Set(selectedIds.map(id => String(id)));
+
+    listContainer.innerHTML = suppliers.map(s => {
+        const isChecked = selectedSet.has(String(s.id));
+        return `
+            <label class="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-800 hover:bg-slate-100 rounded-[8px] cursor-pointer select-none transition">
+                <input type="checkbox" value="${s.id}" data-name="${s.name}" class="supplier-checkbox rounded border-slate-300 text-cyan-500 focus:ring-cyan-400/20 w-4 h-4 cursor-pointer accent-[#00fff2]" ${isChecked ? 'checked' : ''} />
+                <span class="truncate font-medium text-slate-900">${s.name}</span>
+            </label>
+        `;
+    }).join('');
+
+    listContainer.querySelectorAll('input.supplier-checkbox').forEach(cb => {
+        cb.addEventListener('change', function () {
+            updateEditSuppliersDisplay();
+        });
+    });
+
+    updateEditSuppliersDisplay();
+}
+
+function toggleEditSuppliersDropdown(e) {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    const dropdown = document.getElementById('editSuppliersDropdown');
+    const arrow = document.getElementById('editSuppliersArrow');
+    if (!dropdown) return;
+
+    document.querySelectorAll('#editProductModal .dropdown-menu').forEach(d => {
+        if (d !== dropdown) d.classList.add('hidden');
+    });
+
+    const isOpening = dropdown.classList.contains('hidden');
+    if (isOpening) {
+        dropdown.classList.remove('hidden');
+        if (arrow) arrow.classList.add('rotate-180');
+    } else {
+        dropdown.classList.add('hidden');
+        if (arrow) arrow.classList.remove('rotate-180');
+    }
+}
+
 function populateEditProductForm(product) {
     currentEditProduct = product;
     document.getElementById('editProductId').value = product.id;
@@ -53,6 +191,22 @@ function populateEditProductForm(product) {
     document.getElementById('editStockQuantity').value = product.stock_quantity ?? 0;
     document.getElementById('editUnitPrice').value = product.unit_price ?? 0;
     document.getElementById('editSupplier').value = product.supplier_name || '';
+
+    // Suppliers population
+    let initialSupplierIds = [];
+    if (product.suppliers && Array.isArray(product.suppliers) && product.suppliers.length > 0) {
+        initialSupplierIds = product.suppliers.map(s => s.id);
+    } else if (product.supplier_name) {
+        const names = product.supplier_name.split(',').map(n => n.trim().toLowerCase());
+        const available = window.AllStocks?.suppliers || [];
+        initialSupplierIds = available
+            .filter(s => names.includes(s.name.trim().toLowerCase()))
+            .map(s => s.id);
+    }
+
+    currentEditProduct._supplier_ids = initialSupplierIds.slice();
+    renderEditSuppliersDropdown(initialSupplierIds);
+
     document.getElementById('editCategory').value = product.category || '';
     document.getElementById('editLastRestock').value = product.last_restock_date ? String(product.last_restock_date).split('T')[0] : '';
     document.getElementById('editExpiryDate').value = product.expiry_date ? String(product.expiry_date).split('T')[0] : '';
@@ -138,6 +292,10 @@ function closeEditProductModal() {
         form.reset();
         clearEditProductErrors();
     }
+    const suppliersDropdown = document.getElementById('editSuppliersDropdown');
+    if (suppliersDropdown) suppliersDropdown.classList.add('hidden');
+    const arrow = document.getElementById('editSuppliersArrow');
+    if (arrow) arrow.classList.remove('rotate-180');
     currentEditProduct = null;
 }
 
@@ -219,6 +377,11 @@ function attachUIEvents() {
     const cancelEdit = document.getElementById('cancelEditProduct');
     if (cancelEdit) cancelEdit.addEventListener('click', closeEditProductModal);
 
+    const editSuppliersBtn = document.getElementById('editSuppliersButton');
+    if (editSuppliersBtn) editSuppliersBtn.addEventListener('click', toggleEditSuppliersDropdown);
+    const editSuppliersDropdown = document.getElementById('editSuppliersDropdown');
+    if (editSuppliersDropdown) editSuppliersDropdown.addEventListener('click', function (e) { e.stopPropagation(); });
+
     const editProductModal = document.getElementById('editProductModal');
     if (editProductModal) editProductModal.addEventListener('click', function (e) { if (e.target === this) closeEditProductModal(); });
 
@@ -265,6 +428,19 @@ function attachUIEvents() {
                         payload[field] = value;
                     }
                 });
+
+                // Check if supplier_ids changed
+                const currentCheckedSupplierIds = Array.from(
+                    document.querySelectorAll('#editSuppliersList input.supplier-checkbox:checked')
+                ).map(cb => parseInt(cb.value));
+
+                const prevSupplierIds = (currentEditProduct?._supplier_ids || []).slice().map(Number).sort();
+                const newSupplierIds = currentCheckedSupplierIds.slice().map(Number).sort();
+                const suppliersChanged = JSON.stringify(prevSupplierIds) !== JSON.stringify(newSupplierIds);
+
+                if (suppliersChanged) {
+                    payload.supplier_ids = currentCheckedSupplierIds;
+                }
 
                 const url = window.AllStocks.routes.productUpdateBase + '/' + productId;
                 const res = await fetch(url, {
@@ -482,7 +658,15 @@ function renderMovements() {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td class="px-2 py-2 text-slate-700">${entry.created_at}</td>
-                <td class="px-2 py-2 text-slate-700">${entry.product_name} ${entry.sku ? '(' + entry.sku + ')' : ''}</td>
+                <td class="px-2 py-2 text-slate-700">
+                    <div class="flex items-center gap-2">
+                        ${renderMonitoringProductImageHtml(entry)}
+                        <div class="min-w-0">
+                            <div class="font-medium text-slate-900 truncate">${entry.product_name}</div>
+                            ${entry.sku ? `<div class="text-[10px] text-slate-400 font-mono truncate">${entry.sku}</div>` : ''}
+                        </div>
+                    </div>
+                </td>
                 <td class="px-2 py-2 text-slate-700 capitalize">${entry.type.replace(/_/g, ' ')}</td>
                 <td class="px-2 py-2 text-center text-slate-700">${entry.quantity_change ?? '-'}</td>
                 <td class="px-2 py-2 text-slate-700">${entry.notes || entry.supplier_name || '-'}</td>
@@ -528,7 +712,12 @@ async function loadProducts(page = 1) {
                     <td class="px-3.5 py-3 text-center w-10 align-middle">
                         <input type="checkbox" class="product-checkbox rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 cursor-pointer" data-product-id="${product.id}" />
                     </td>
-                    <td class="px-3.5 py-3 text-left text-slate-900 font-medium whitespace-nowrap align-middle">${product.name}</td>
+                    <td class="px-3.5 py-3 text-left text-slate-900 font-medium whitespace-nowrap align-middle">
+                        <div class="flex items-center gap-2.5">
+                            ${renderMonitoringProductImageHtml(product)}
+                            <span class="truncate font-semibold text-slate-900">${product.name}</span>
+                        </div>
+                    </td>
                     <td class="px-3.5 py-3 text-left text-slate-600 whitespace-nowrap align-middle">${product.product_name || 'Uncategorized'}</td>
                     <td class="px-3.5 py-3 text-left text-slate-600 font-mono text-[10.5px] whitespace-nowrap align-middle">${`KCC_${(product.sku || product.name || '').replace(/[^A-Za-z0-9\-\+]/g, '')}`}</td>
                     <td class="px-3.5 py-3 text-left text-slate-600 whitespace-nowrap align-middle">${product.brand || '-'}</td>
@@ -610,6 +799,7 @@ function initializeMonitoringPage() {
     loadStats();
     loadProducts(1);
     loadMovements();
+    getAvailableSuppliers().then(() => renderEditSuppliersDropdown());
 }
 
 // Expose key functions to global scope for onclick handlers
@@ -617,6 +807,7 @@ window.loadProducts = loadProducts;
 window.performSearch = performSearch;
 window.resetFilters = resetFilters;
 window.openEditModal = openEditModal;
+window.toggleEditSuppliersDropdown = toggleEditSuppliersDropdown;
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeMonitoringPage);

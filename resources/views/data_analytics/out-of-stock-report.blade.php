@@ -4,7 +4,7 @@
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div class="pl-3 lg:pl-2">
                 <h1 class="text-3xl font-bold text-slate-900">Out of Stock Report</h1>
-                <p class="text-xs text-slate-500 mt-1">Monitor critical stockouts and low inventory that need replenishment first.</p>
+                <p class="text-sm text-slate-500 mt-1">Monitor critical stockouts and low inventory that need replenishment first.</p>
             </div>
             <div class="flex flex-col gap-2 sm:flex-row pr-4">
                 <a href="{{ route('analytics.out_of_stock.export') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
@@ -17,51 +17,51 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Out of Stock SKUs</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ number_format($outOfStockCount) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Products currently unavailable for sale.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm5.31-3.1L6.1 5.69C7.45 4.63 9.15 4 12 4c4.42 0 8 3.58 8 8 0 1.85-.63 3.55-1.69 4.9z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Low Stock SKUs</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ number_format($lowStockCount) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Products at or below reorder level demanding urgent attention.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M4.47 21h15.06c1.54 0 2.5-1.67 1.73-3L13.73 4.99c-.77-1.33-2.69-1.33-3.46 0L2.74 18c-.77 1.33.19 3 1.73 3zM13 18h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Action Priority</p>
                         <div class="mt-1">
                             <p class="text-lg font-bold text-black">{{ $outOfStockCount > 0 ? 'Restock Out-of-Stock First' : 'Inventory Stable' }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Recommended first step for replenishment planning.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
                         </svg>
                     </div>
@@ -76,7 +76,7 @@
                         <h2 class="text-base font-semibold text-slate-900">Out of stock products</h2>
                         <p class="text-xs text-slate-500 mt-1">Products that need immediate restocking.</p>
                     </div>
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-red-700 border border-red-200/60">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-800">
                         <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>
                         Critical
                     </span>
@@ -97,12 +97,19 @@
                                 @forelse(collect($outOfStockProducts)->take(5) as $product)
                                     <tr class="hover:bg-slate-50 transition">
                                         <td class="px-3 py-2.5 font-semibold text-slate-900">
-                                            <div class="truncate">{{ $product->product_name ?: $product->name }}</div>
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="truncate font-medium text-slate-900">{{ $product->product_name ?: $product->name }}</div>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="px-3 py-2.5 text-slate-600">
                                             <div class="truncate">{{ $product->category }}</div>
                                         </td>
-                                        <td class="px-3 py-2.5 text-slate-900 font-mono text-[11px]">
+                                        <td class="px-3 py-2.5 text-slate-500 font-mono text-[11px]">
                                             <div class="truncate">{{ $product->sku }}</div>
                                         </td>
                                         <td class="px-3 py-2.5 text-slate-500">
@@ -135,7 +142,7 @@
                         <h2 class="text-base font-semibold text-slate-900">Low stock products</h2>
                         <p class="text-xs text-slate-500 mt-1">Products at or below reorder levels.</p>
                     </div>
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-amber-700 border border-amber-200/60">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-800">
                         <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                         Review
                     </span>
@@ -156,8 +163,15 @@
                                 @forelse(collect($lowStockProducts)->take(5) as $product)
                                     <tr class="hover:bg-slate-50 transition">
                                         <td class="px-3 py-2.5 font-semibold text-slate-900">
-                                            <div class="truncate">{{ $product->product_name ?: $product->name }}</div>
-                                            <div class="truncate text-[10px] text-slate-400 font-normal tracking-wide mt-0.5">{{ $product->sku }}</div>
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="truncate font-medium text-slate-900">{{ $product->product_name ?: $product->name }}</div>
+                                                    <div class="truncate text-[10px] text-slate-400 font-normal tracking-wide mt-0.5">{{ $product->sku }}</div>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="px-3 py-2.5 text-slate-900">
                                             <div class="truncate">{{ number_format($product->stock_quantity) }}</div>
@@ -194,8 +208,11 @@
     @php
         $outOfStockJs = $outOfStockProducts->map(function($product) {
             return [
+                'id' => $product->id,
                 'name' => $product->product_name ?: $product->name,
+                'category' => $product->category,
                 'sku' => $product->sku,
+                'last_restock_date' => optional($product->last_restock_date)->format('M d, Y') ?? 'N/A',
                 'stock_quantity' => $product->stock_quantity ?? 0,
                 'reorder_level' => $product->reorder_level ?? 0,
                 'need' => max(0, 100 - ($product->stock_quantity ?? 0)),
@@ -204,11 +221,12 @@
 
         $lowStockJs = $lowStockProducts->map(function($product) {
             return [
+                'id' => $product->id,
                 'name' => $product->product_name ?: $product->name,
                 'sku' => $product->sku,
                 'stock_quantity' => $product->stock_quantity,
                 'reorder_level' => $product->reorder_level,
-                'need' => max(0, 100 - $product->stock_quantity),
+                'need' => max(0, ($product->reorder_level ?? 0) - $product->stock_quantity),
             ];
         })->toArray();
     @endphp
@@ -217,6 +235,41 @@
         document.addEventListener('DOMContentLoaded', function() {
             const outOfStockData = @json($outOfStockJs);
             const lowStockData = @json($lowStockJs);
+
+            const getProductImage = (p) => {
+                if (!p) return null;
+                if (p.image) return p.image;
+                try {
+                    const stored = localStorage.getItem('posProductImages');
+                    if (stored) {
+                        const images = JSON.parse(stored);
+                        const productId = p.id || p.product_id;
+                        if (productId && images[productId]) return images[productId];
+                        if (p.sku && images[p.sku]) return images[p.sku];
+                        if (p.name && images[p.name]) return images[p.name];
+
+                        const keys = Object.keys(images);
+                        if (p.sku) {
+                            const matchSku = keys.find(k => k.toLowerCase() === String(p.sku).toLowerCase());
+                            if (matchSku) return images[matchSku];
+                        }
+                        if (p.name) {
+                            const matchName = keys.find(k => k.toLowerCase() === String(p.name).toLowerCase());
+                            if (matchName) return images[matchName];
+                        }
+                    }
+                } catch (e) {}
+                return null;
+            };
+
+            const renderProductImageHtml = (p) => {
+                const imageUrl = getProductImage(p);
+                return imageUrl
+                    ? `<div class="w-8 h-8 rounded-[6px] bg-slate-100 flex-shrink-0 overflow-hidden border border-slate-200/80 bg-cover bg-center" style="background-image: url('${imageUrl}');"></div>`
+                    : `<div class="w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                       </div>`;
+            };
 
             const state = {
                 outOfStockPage: 1,
@@ -287,12 +340,17 @@
                         return `
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="px-3 py-2.5 font-semibold text-slate-900">
-                                    <div class="truncate">${product.name}</div>
+                                    <div class="flex items-center gap-2.5">
+                                        ${renderProductImageHtml(product)}
+                                        <div class="min-w-0">
+                                            <div class="truncate font-medium text-slate-900">${product.name}</div>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="px-3 py-2.5 text-slate-600">
                                     <div class="truncate">${product.category || 'N/A'}</div>
                                 </td>
-                                <td class="px-3 py-2.5 text-slate-900 font-mono text-[11px]">
+                                <td class="px-3 py-2.5 text-slate-500 font-mono text-[11px]">
                                     <div class="truncate">${product.sku || 'N/A'}</div>
                                 </td>
                                 <td class="px-3 py-2.5 text-slate-500">
@@ -316,8 +374,13 @@
                         return `
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="px-3 py-2.5 font-semibold text-slate-900">
-                                    <div class="truncate">${product.name}</div>
-                                    <div class="truncate text-[10px] text-slate-400 font-normal tracking-wide mt-0.5">${product.sku || 'N/A'}</div>
+                                    <div class="flex items-center gap-2.5">
+                                        ${renderProductImageHtml(product)}
+                                        <div class="min-w-0">
+                                            <div class="truncate font-medium text-slate-900">${product.name}</div>
+                                            <div class="truncate text-[10px] text-slate-400 font-normal tracking-wide mt-0.5">${product.sku || 'N/A'}</div>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="px-3 py-2.5 text-slate-900"><div class="truncate">${product.stock_quantity}</div></td>
                                 <td class="px-3 py-2.5 text-slate-600"><div class="truncate">${product.reorder_level}</div></td>

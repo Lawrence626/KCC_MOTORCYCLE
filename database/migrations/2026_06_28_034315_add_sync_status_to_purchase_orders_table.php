@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('purchase_orders', function (Blueprint $table) {
-            $table->enum('sync_status', ['pending_sync', 'exported', 'imported', 'synchronized', 'duplicate', 'failed'])->default('pending_sync')->after('status');
+            $table->enum('sync_status', ['pending_sync', 'exported', 'imported', 'synchronized', 'duplicate', 'failed'])->nullable()->default(null)->after('status');
         });
     }
 

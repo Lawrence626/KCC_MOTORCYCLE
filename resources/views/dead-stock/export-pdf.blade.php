@@ -15,10 +15,6 @@
         th { background-color: #f1f5f9; border: 1px solid #e2e8f0; padding: 8px 10px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #475569; font-weight: 600; }
         td { border: 1px solid #e2e8f0; padding: 7px 10px; font-size: 11px; }
         tr:nth-child(even) { background-color: #f8fafc; }
-        .priority-critical { color: #dc2626; font-weight: 700; }
-        .priority-high { color: #ea580c; font-weight: 700; }
-        .priority-medium { color: #d97706; font-weight: 700; }
-        .priority-low { color: #2563eb; font-weight: 700; }
         .text-right { text-align: right; }
         .text-center { text-align: center; }
         .footer { text-align: center; padding: 20px; margin-top: 15px; border-top: 1px solid #e2e8f0; font-size: 10px; color: #94a3b8; }
@@ -49,7 +45,7 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Product Description</th>
+                <th>Product Category</th>
                 <th>Brand</th>
                 <th>Product Name</th>
                 <th>SKU</th>
@@ -58,7 +54,6 @@
                 <th class="text-center">Last Sold</th>
                 <th class="text-center">Days Unsold</th>
                 <th>Suggested Action</th>
-                <th class="text-center">Priority</th>
             </tr>
         </thead>
         <tbody>
@@ -75,7 +70,6 @@
                 <td class="text-center">{{ $ds->last_sold_date ? $ds->last_sold_date->format('M d, Y') : 'Never' }}</td>
                 <td class="text-center"><strong>{{ $ds->days_without_sale }}</strong></td>
                 <td>{{ $ds->analysis_notes ?? 'Monitor' }}</td>
-                <td class="text-center priority-{{ strtolower($ds->priority_level) }}">{{ $ds->priority_level }}</td>
             </tr>
             @endforeach
         </tbody>

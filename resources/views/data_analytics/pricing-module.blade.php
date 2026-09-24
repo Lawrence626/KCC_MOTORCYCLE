@@ -4,7 +4,7 @@
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div class="pl-3 lg:pl-2">
                 <h1 class="text-3xl font-bold text-slate-900">Pricing Module</h1>
-                <p class="text-xs text-slate-500 mt-1">Analyze pricing trends, monitor stock value, and track recent price breaks.</p>
+                <p class="text-sm text-slate-500 mt-1">Analyze pricing trends, monitor stock value, and track recent price breaks.</p>
             </div>
             <div class="flex flex-col gap-2 sm:flex-row pr-4">
                 <a href="{{ route('analytics.pricing.export') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
@@ -17,25 +17,25 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Average Unit Price</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">₱{{ number_format($averageUnitPrice, 2) }}</p>
                             <p class="text-gray-500 text-xs mt-1 font-medium">Average current price for active inventory items.</p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
                     <div class="flex-1 overflow-hidden">
                         <p class="text-black text-xs font-semibold">Most Expensive SKU</p>
                         <div class="mt-1">
@@ -49,16 +49,16 @@
                             </p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4" style="border-radius: 20px; background: linear-gradient(50deg, #ffffff 0%, #29d5d815 50%);">
-                <div class="flex items-start justify-between">
+            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                <div class="flex items-start justify-between gap-2">
                     <div class="flex-1 overflow-hidden">
                         <p class="text-black text-xs font-semibold">Cheapest SKU</p>
                         <div class="mt-1">
@@ -72,8 +72,8 @@
                             </p>
                         </div>
                     </div>
-                    <div class="border border-gray-200 w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: #00fff2ff;">
-                        <svg class="w-5 h-5" style="color: #000000ff;" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                             <path d="M16 18l2.29-2.29-4.88-4.88-4 4L2 7.41 3.41 6l6 6 4-4 6.3 6.29L22 12v6z"/>
                         </svg>
                     </div>
@@ -156,20 +156,20 @@
                             </svg>
                         </button>
                         <div id="costChangeFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 right-0 z-[60] mt-1.5 w-full rounded-[12px] border border-slate-200 bg-white shadow-2xl p-1.5 space-y-0.5">
-                            <button type="button" onclick="selectCostChangeOption('', 'All')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">All</button>
-                            <button type="button" onclick="selectCostChangeOption('none', 'No Change')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">No Change</button>
-                            <button type="button" onclick="selectCostChangeOption('up', 'Increased Cost')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">Increased Cost</button>
-                            <button type="button" onclick="selectCostChangeOption('down', 'Decreased Cost')" class="w-full px-3 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">Decreased Cost</button>
+                            <button type="button" onclick="selectCostChangeOption('', 'All')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">All</button>
+                            <button type="button" onclick="selectCostChangeOption('none', 'No Change')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">No Change</button>
+                            <button type="button" onclick="selectCostChangeOption('up', 'Increased Cost')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">Increased Cost</button>
+                            <button type="button" onclick="selectCostChangeOption('down', 'Decreased Cost')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-medium whitespace-nowrap">Decreased Cost</button>
                         </div>
                     </div>
                     <button
                         type="button"
                         onclick="supplierFilterSubmit()"
-                        class="inline-flex items-center justify-center rounded-[12px] bg-[#0f172a] px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-slate-800 transition"
+                        class="inline-flex items-center justify-center rounded-[12px] bg-[#0f172a] px-4 py-[11px] text-xs font-semibold text-white shadow-sm hover:bg-slate-800 transition"
                     >Search</button>
                     @if(request('search') || request('cost_change'))
                         <a href="{{ strtok(request()->fullUrl(), '?') }}"
-                           class="inline-flex items-center justify-center rounded-[12px] border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm hover:bg-slate-50 transition"
+                           class="inline-flex items-center justify-center rounded-[12px] border border-slate-300 bg-white px-3 py-[11px] text-xs font-semibold text-slate-600 shadow-sm hover:bg-slate-50 transition"
                            title="Clear filters">✕ Clear</a>
                     @endif
                 </form>
@@ -189,9 +189,19 @@
                     <tbody class="divide-y divide-slate-200 bg-white">
                         @forelse($supplierCostAnalysis as $analysis)
                             <tr class="hover:bg-slate-50 transition">
-                                <td class="px-4 py-4">
-                                    <div class="font-semibold text-slate-900">{{ $analysis->product?->product_name ?? 'Unknown' }}</div>
-                                    <div class="text-xs text-slate-500 font-normal">{{ $analysis->product?->sku ?? '—' }}</div>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="pricing-img-thumb w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300"
+                                             data-id="{{ $analysis->product?->id ?? '' }}"
+                                             data-sku="{{ $analysis->product?->sku ?? '' }}"
+                                             data-name="{{ $analysis->product?->product_name ?? $analysis->product?->name ?? '' }}">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <div class="font-semibold text-slate-900 truncate">{{ $analysis->product?->product_name ?? 'Unknown' }}</div>
+                                            <div class="text-[10px] text-slate-400 font-normal tracking-wide mt-0.5 truncate">{{ $analysis->product?->sku ?? '—' }}</div>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="px-4 py-4 text-slate-600">{{ $analysis->previous_cost !== null && $analysis->previous_cost > 0 ? '₱' . number_format((float) $analysis->previous_cost, 2) : '—' }}</td>
                                 <td class="px-4 py-4 text-slate-900">
@@ -211,7 +221,7 @@
                                 </td>
                                 <td class="px-4 py-4 text-slate-900 font-semibold">
                                     @php
-                                        $suggestedPrice = round(((float) $analysis->supplier_cost * 1.12) / 0.70, 2);
+                                        $suggestedPrice = round((float) $analysis->supplier_cost * 1.20, 2);
                                     @endphp
                                     ₱{{ number_format($suggestedPrice, 2) }}
                                 </td>
@@ -292,7 +302,7 @@
             @endforeach
         </div>
 
-        <div class="grid grid-cols-1 xl:grid-cols-[1.4fr_1fr] gap-3">
+        <div class="grid grid-cols-1 xl:grid-cols-[1.25fr_1fr] gap-3">
             <div class="rounded-[20px] border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between">
                 <div>
                     <h2 class="text-base font-semibold text-slate-900">Pricing Analysis Overview</h2>
@@ -308,38 +318,53 @@
                 </div>
             </div>
 
-            <div id="retail-price-container" class="rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm overflow-hidden">
+            <div id="retail-price-container" class="rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm overflow-hidden flex flex-col justify-between h-full">
                 <div>
                     <h2 class="text-base font-semibold text-slate-900">Retail Price Update</h2>
                     <p class="text-xs text-slate-500 mt-1">Track recent unit price revisions across inventory.</p>
-                </div>
-                <div class="mt-4 overflow-x-auto rounded-[10px] border border-slate-200">
-                    <table class="min-w-full text-left text-xs text-slate-700">
-                        <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
-                            <tr>
-                                <th class="px-4 py-3 text-left font-semibold text-white">Product</th>
-                                <th class="px-4 py-3 text-left font-semibold text-white">Old</th>
-                                <th class="px-4 py-3 text-left font-semibold text-white">New</th>
-                                <th class="px-4 py-3 text-left font-semibold text-white">Date</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-200 bg-white">
-                            @forelse($priceUpdates as $update)
-                                <tr class="hover:bg-slate-50 transition">
-                                    <td class="px-4 py-3 font-semibold text-slate-900">{{ $update->product->name ?? 'Unknown' }}</td>
-                                    <td class="px-4 py-3 text-slate-600">{{ data_get($update, 'metadata.old_price') ? '₱' . number_format(data_get($update, 'metadata.old_price'), 2) : '—' }}</td>
-                                    <td class="px-4 py-3 text-slate-900">₱{{ number_format((float) $update->unit_price, 2) }}</td>
-                                    <td class="px-4 py-3 text-slate-500">{{ $update->created_at->format('M d, Y') }}</td>
-                                </tr>
-                            @empty
+                    <div class="mt-4 overflow-hidden rounded-[10px] border border-slate-200">
+                        <table class="w-full text-left text-xs text-slate-700 table-fixed">
+                            <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                                 <tr>
-                                    <td colspan="4" class="px-4 py-6 text-center text-slate-500">No recent pricing updates available.</td>
+                                    <th class="w-[43%] px-3 py-3 text-left font-semibold text-white whitespace-nowrap">Product</th>
+                                    <th class="w-[18%] px-2.5 py-3 text-left font-semibold text-white whitespace-nowrap">Old</th>
+                                    <th class="w-[20%] px-2.5 py-3 text-left font-semibold text-white whitespace-nowrap">New</th>
+                                    <th class="w-[19%] px-2.5 py-3 text-left font-semibold text-white whitespace-nowrap">Date</th>
                                 </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 bg-white">
+                                @forelse($priceUpdates as $update)
+                                    <tr class="hover:bg-slate-50 transition">
+                                        <td class="w-[43%] px-3 py-2.5 font-semibold text-slate-900">
+                                            <div class="flex items-center gap-2 min-w-0">
+                                                <div class="pricing-img-thumb w-8 h-8 rounded-[6px] bg-slate-50 flex-shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-300"
+                                                     data-id="{{ $update->product?->id ?? '' }}"
+                                                     data-sku="{{ $update->product?->sku ?? '' }}"
+                                                     data-name="{{ $update->product?->product_name ?? $update->product?->name ?? '' }}">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                </div>
+                                                <div class="min-w-0 flex-1">
+                                                    <div class="font-semibold text-slate-900 truncate text-xs">{{ $update->product?->product_name ?: ($update->product?->name ?? 'Unknown') }}</div>
+                                                    @if($update->product?->sku)
+                                                        <div class="text-[10px] text-slate-400 font-normal tracking-wide mt-0.5 truncate">{{ $update->product->sku }}</div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="w-[18%] px-2.5 py-2.5 text-slate-600 truncate whitespace-nowrap">{{ data_get($update, 'metadata.old_price') ? '₱' . number_format(data_get($update, 'metadata.old_price'), 2) : '—' }}</td>
+                                        <td class="w-[20%] px-2.5 py-2.5 text-slate-900 font-semibold truncate whitespace-nowrap">₱{{ number_format((float) $update->unit_price, 2) }}</td>
+                                        <td class="w-[19%] px-2.5 py-2.5 text-slate-500 truncate whitespace-nowrap text-[11px]">{{ $update->created_at->format('M d, Y') }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="px-4 py-6 text-center text-slate-500">No recent pricing updates available.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="mt-4 px-4">
+                <div class="mt-auto pt-3 -mx-4 -mb-4">
                     {{ $priceUpdates->links() }}
                 </div>
             </div>
@@ -477,6 +502,7 @@
                         
                         if (newContainer) {
                             container.innerHTML = newContainer.innerHTML;
+                            resolvePricingImages();
                         }
                         container.style.opacity = '1';
                         container.style.pointerEvents = 'auto';
@@ -556,7 +582,7 @@
                 list.unshift({
                     type:    'retail_reco',
                     title:   'Retail Recommendation: ' + productName + ' (' + (sku || '—') + ')',
-                    message: 'Increase the retail price to maintain a 30% profit margin.',
+                    message: 'Increase the retail price to maintain a 20% markup.',
                     time:    new Date().toLocaleString()
                 });
                 
@@ -698,8 +724,8 @@
                                     <span class="font-medium text-slate-700">₱${currentRetailStr}</span>
                                 </div>
                                 <div class="px-4 py-2.5 flex justify-between items-center text-xs">
-                                    <span class="text-slate-500">Target Profit Margin</span>
-                                    <span class="font-medium text-slate-700">30%</span>
+                                    <span class="text-slate-500">20% Markup</span>
+                                    <span class="font-medium text-slate-700">20%</span>
                                 </div>
                                 <div class="px-4 py-2.5 flex justify-between items-center text-xs bg-slate-50/50">
                                     <span class="font-semibold text-slate-800">Suggested Retail Price</span>
@@ -760,6 +786,46 @@
                     modal.classList.add('hidden');
                 }, 300);
             }
+
+            function resolvePricingImages() {
+                try {
+                    const stored = localStorage.getItem('posProductImages');
+                    if (!stored) return;
+                    const images = JSON.parse(stored);
+                    const keys = Object.keys(images);
+
+                    document.querySelectorAll('.pricing-img-thumb').forEach(container => {
+                        const id = container.dataset.id;
+                        const sku = container.dataset.sku;
+                        const name = container.dataset.name;
+
+                        let imgUrl = null;
+                        if (id && images[id]) imgUrl = images[id];
+                        else if (sku && images[sku]) imgUrl = images[sku];
+                        else if (name && images[name]) imgUrl = images[name];
+                        else {
+                            if (sku) {
+                                const matchSku = keys.find(k => k.toLowerCase() === String(sku).toLowerCase());
+                                if (matchSku) imgUrl = images[matchSku];
+                            }
+                            if (!imgUrl && name) {
+                                const matchName = keys.find(k => k.toLowerCase() === String(name).toLowerCase());
+                                if (matchName) imgUrl = images[matchName];
+                            }
+                        }
+
+                        if (imgUrl) {
+                            container.innerHTML = '';
+                            container.className = 'pricing-img-thumb w-8 h-8 rounded-[6px] bg-slate-100 border border-slate-200/80 flex-shrink-0 bg-cover bg-center';
+                            container.style.backgroundImage = `url('${imgUrl}')`;
+                        }
+                    });
+                } catch(e) {
+                    console.error('Error resolving pricing images:', e);
+                }
+            }
+
+            resolvePricingImages();
         </script>
     @endpush
 </x-layouts.app>

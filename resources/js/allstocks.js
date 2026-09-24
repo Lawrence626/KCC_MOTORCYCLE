@@ -37,7 +37,6 @@ function getLocationSummary(product) {
     const uniqueLocations = [...new Set(locations)];
     return uniqueLocations.map(wh => getWarehouseBadge(wh)).join(', ');
 }
-
 function setEditFieldError(fieldId, message) {
     const field = document.getElementById(fieldId);
     if (!field) return;
@@ -56,6 +55,114 @@ function clearEditProductErrors() {
     });
 }
 
+function getAvailableSuppliers() {
+    if (window.AllStocks && Array.isArray(window.AllStocks.suppliers) && window.AllStocks.suppliers.length > 0) {
+        return Promise.resolve(window.AllStocks.suppliers);
+    }
+    const url = window.AllStocks?.routes?.apiSuppliers || '/api/suppliers';
+    return fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            const list = data.suppliers || [];
+            if (window.AllStocks) window.AllStocks.suppliers = list;
+            return list;
+        })
+        .catch(err => {
+            console.error('Error fetching suppliers:', err);
+            return [];
+        });
+}
+
+function updateEditSuppliersDisplay() {
+    const displaySpan = document.getElementById('editSuppliersDisplay');
+    const button = document.getElementById('editSuppliersButton');
+    const hiddenInput = document.getElementById('editSupplier');
+    const checkboxes = Array.from(document.querySelectorAll('#editSuppliersList input.supplier-checkbox:checked'));
+
+    const selectedNames = checkboxes.map(cb => cb.dataset.name);
+
+    if (hiddenInput) {
+        hiddenInput.value = selectedNames.join(', ');
+    }
+
+    if (!displaySpan || !button) return;
+
+    if (selectedNames.length === 0) {
+        displaySpan.textContent = 'Select suppliers...';
+        displaySpan.className = 'truncate text-slate-400';
+        button.title = '';
+    } else if (selectedNames.length === 1) {
+        displaySpan.textContent = selectedNames[0];
+        displaySpan.className = 'truncate text-slate-900 font-medium';
+        button.title = selectedNames[0];
+    } else if (selectedNames.length === 2) {
+        displaySpan.textContent = selectedNames.join(', ');
+        displaySpan.className = 'truncate text-slate-900 font-medium';
+        button.title = selectedNames.join(', ');
+    } else {
+        displaySpan.textContent = `${selectedNames.length} suppliers selected`;
+        displaySpan.className = 'truncate text-slate-900 font-medium';
+        button.title = selectedNames.join(', ');
+    }
+}
+
+function renderEditSuppliersDropdown(selectedIds = []) {
+    const listContainer = document.getElementById('editSuppliersList');
+    if (!listContainer) return;
+
+    const suppliers = window.AllStocks?.suppliers || [];
+    if (!suppliers.length) {
+        getAvailableSuppliers().then(fetched => {
+            renderEditSuppliersDropdown(selectedIds);
+        });
+        listContainer.innerHTML = '<div class="p-3 text-left text-xs text-slate-500">Loading suppliers...</div>';
+        return;
+    }
+
+    const selectedSet = new Set(selectedIds.map(id => String(id)));
+
+    listContainer.innerHTML = suppliers.map(s => {
+        const isChecked = selectedSet.has(String(s.id));
+        return `
+            <label class="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-800 hover:bg-slate-100 rounded-[8px] cursor-pointer select-none transition">
+                <input type="checkbox" value="${s.id}" data-name="${s.name}" class="supplier-checkbox rounded border-slate-300 text-cyan-500 focus:ring-cyan-400/20 w-4 h-4 cursor-pointer accent-[#00fff2]" ${isChecked ? 'checked' : ''} />
+                <span class="truncate font-medium text-slate-900">${s.name}</span>
+            </label>
+        `;
+    }).join('');
+
+    listContainer.querySelectorAll('input.supplier-checkbox').forEach(cb => {
+        cb.addEventListener('change', function () {
+            updateEditSuppliersDisplay();
+        });
+    });
+
+    updateEditSuppliersDisplay();
+}
+
+function toggleEditSuppliersDropdown(e) {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    const dropdown = document.getElementById('editSuppliersDropdown');
+    const arrow = document.getElementById('editSuppliersArrow');
+    if (!dropdown) return;
+
+    document.querySelectorAll('#editProductModal .dropdown-menu').forEach(d => {
+        if (d !== dropdown) d.classList.add('hidden');
+    });
+
+    const isOpening = dropdown.classList.contains('hidden');
+    if (isOpening) {
+        dropdown.classList.remove('hidden');
+        if (arrow) arrow.classList.add('rotate-180');
+    } else {
+        dropdown.classList.add('hidden');
+        if (arrow) arrow.classList.remove('rotate-180');
+    }
+}
+
 function populateEditProductForm(product) {
     currentEditProduct = product;
     document.getElementById('editProductId').value = product.id;
@@ -68,6 +175,21 @@ function populateEditProductForm(product) {
     document.getElementById('editStockQuantity').value = product.stock_quantity ?? 0;
     document.getElementById('editUnitPrice').value = product.unit_price ?? 0;
     document.getElementById('editSupplier').value = product.supplier_name || '';
+
+    // Suppliers population
+    let initialSupplierIds = [];
+    if (product.suppliers && Array.isArray(product.suppliers) && product.suppliers.length > 0) {
+        initialSupplierIds = product.suppliers.map(s => s.id);
+    } else if (product.supplier_name) {
+        const names = product.supplier_name.split(',').map(n => n.trim().toLowerCase());
+        const available = window.AllStocks?.suppliers || [];
+        initialSupplierIds = available
+            .filter(s => names.includes(s.name.trim().toLowerCase()))
+            .map(s => s.id);
+    }
+
+    currentEditProduct._supplier_ids = initialSupplierIds.slice();
+    renderEditSuppliersDropdown(initialSupplierIds);
 
     const categoryVal = product.category || '';
     document.getElementById('editCategory').value = categoryVal;
@@ -150,6 +272,10 @@ function closeEditProductModal() {
         form.reset();
         clearEditProductErrors();
     }
+    const suppliersDropdown = document.getElementById('editSuppliersDropdown');
+    if (suppliersDropdown) suppliersDropdown.classList.add('hidden');
+    const arrow = document.getElementById('editSuppliersArrow');
+    if (arrow) arrow.classList.remove('rotate-180');
     currentEditProduct = null;
 }
 
@@ -543,6 +669,11 @@ function attachUIEvents() {
     const cancelEdit = document.getElementById('cancelEditProduct');
     if (cancelEdit) cancelEdit.addEventListener('click', closeEditProductModal);
 
+    const editSuppliersBtn = document.getElementById('editSuppliersButton');
+    if (editSuppliersBtn) editSuppliersBtn.addEventListener('click', toggleEditSuppliersDropdown);
+    const editSuppliersDropdown = document.getElementById('editSuppliersDropdown');
+    if (editSuppliersDropdown) editSuppliersDropdown.addEventListener('click', function (e) { e.stopPropagation(); });
+
     const editProductModal = document.getElementById('editProductModal');
     if (editProductModal) editProductModal.addEventListener('click', function (e) { if (e.target === this) closeEditProductModal(); });
 
@@ -640,6 +771,19 @@ function attachUIEvents() {
                         payload[field] = value;
                     }
                 });
+
+                // Check if supplier_ids changed
+                const currentCheckedSupplierIds = Array.from(
+                    document.querySelectorAll('#editSuppliersList input.supplier-checkbox:checked')
+                ).map(cb => parseInt(cb.value));
+
+                const prevSupplierIds = (currentEditProduct?._supplier_ids || []).slice().map(Number).sort();
+                const newSupplierIds = currentCheckedSupplierIds.slice().map(Number).sort();
+                const suppliersChanged = JSON.stringify(prevSupplierIds) !== JSON.stringify(newSupplierIds);
+
+                if (suppliersChanged) {
+                    payload.supplier_ids = currentCheckedSupplierIds;
+                }
 
                 const url = window.AllStocks.routes.productUpdateBase + '/' + productId;
                 const res = await fetch(url, {
@@ -1271,6 +1415,7 @@ function initializeAllStocksPage() {
     loadStats();
     loadProducts(1);
     loadMovements();
+    getAvailableSuppliers().then(() => renderEditSuppliersDropdown());
 
     // Load filter options after a short delay
     setTimeout(() => {

@@ -297,13 +297,13 @@ class WarehouseManagementController extends Controller
                 return [
                     'id' => $product->id,
                     'sku' => $sku,
-                    'name' => $productDescription,
+                    'name' => $compatibility ?: $productDescription,
+                    'product_name' => $compatibility ?: $productDescription,
                     'description' => $productDescription,
                     'brand' => $brand,
                     'compatible_model' => $compatibility,
                     'qty' => $product->stock_quantity ?? 1,
                     'price' => $product->unit_price ?? 0,
-                    'category' => $productDescription,
                 ];
             }),
         ]);
@@ -318,13 +318,6 @@ class WarehouseManagementController extends Controller
                 'name' => 'required|string|max:255',
                 'capacity' => 'nullable|integer|min:1|max:100',
                 'products' => 'nullable|array',
-                    'products.*.id' => 'nullable|integer|exists:products,id',
-                    'products.*.sku' => 'nullable|string|max:255',
-                    'products.*.description' => 'nullable|string|max:255',
-                    'products.*.brand' => 'nullable|string|max:255',
-                    'products.*.compatible_model' => 'nullable|string|max:255',
-                    'products.*.qty' => 'nullable|integer|min:0',
-                    'products.*.price' => 'nullable|numeric|min:0',
                 'archived' => 'nullable|boolean',
             ]);
 
@@ -346,50 +339,126 @@ class WarehouseManagementController extends Controller
                 ], 422);
             }
 
-            // Enrich product data with full product information, and write back edits
+            // Process product data (support existing catalog products and newly added categories/brands)
             $products = $request->input('products', []);
-            foreach ($products as $index => $shelfProduct) {
-                if (isset($shelfProduct['id'])) {
+            $processedProducts = [];
+
+            foreach ($products as $shelfProduct) {
+                $category = trim($shelfProduct['category'] ?? $shelfProduct['description'] ?? '');
+                $brand    = trim($shelfProduct['brand'] ?? '');
+                $name     = trim($shelfProduct['product_name'] ?? $shelfProduct['compatible_model'] ?? $shelfProduct['name'] ?? '');
+                $sku      = trim($shelfProduct['sku'] ?? '');
+                $price    = floatval($shelfProduct['price'] ?? 0);
+                $qty      = intval($shelfProduct['qty'] ?? $shelfProduct['stock_quantity'] ?? 1);
+                if ($qty <= 0) $qty = 1;
+
+                if (empty($category) && empty($name) && empty($sku)) {
+                    continue;
+                }
+
+                $product = null;
+                if (!empty($shelfProduct['id'])) {
                     $product = Product::with('productCatalog')->find($shelfProduct['id']);
-                    if ($product) {
-                        // Always prioritize ProductCatalog data for correct product information
-                        if ($product->productCatalog) {
-                            // Use user-edited values if provided, otherwise fall back to catalog
-                            $productDescription = !empty($shelfProduct['description']) ? $shelfProduct['description'] : $product->productCatalog->product_description;
-                            $brand              = !empty($shelfProduct['brand'])        ? $shelfProduct['brand']        : $product->productCatalog->brand;
-                            $sku                = !empty($shelfProduct['sku'])          ? $shelfProduct['sku']          : $product->productCatalog->sku;
-                            $compatibility      = !empty($shelfProduct['compatible_model']) ? $shelfProduct['compatible_model'] : $product->productCatalog->product_name;
-
-                            // Write back any user edits to the ProductCatalog
-                            $catalogUpdates = [];
-                            if (!empty($shelfProduct['description']))       $catalogUpdates['product_description'] = $shelfProduct['description'];
-                            if (!empty($shelfProduct['brand']))             $catalogUpdates['brand']               = $shelfProduct['brand'];
-                            if (!empty($shelfProduct['compatible_model']))  $catalogUpdates['product_name']        = $shelfProduct['compatible_model'];
-                            if (!empty($shelfProduct['sku']))               $catalogUpdates['sku']                 = $shelfProduct['sku'];
-                            if (!empty($catalogUpdates)) {
-                                $product->productCatalog->update($catalogUpdates);
-                            }
-                        } else {
-                            // Fallback to Product data if no catalog relationship
-                            $productDescription = !empty($shelfProduct['description']) ? $shelfProduct['description'] : ($product->description ?? $product->product_name ?? $product->name);
-                            $brand              = !empty($shelfProduct['brand'])        ? $shelfProduct['brand']        : $product->brand;
-                            $sku                = !empty($shelfProduct['sku'])          ? $shelfProduct['sku']          : $product->sku;
-                            $compatibility      = !empty($shelfProduct['compatible_model']) ? $shelfProduct['compatible_model'] : $product->compatibility;
+                }
+                if (!$product && !empty($sku)) {
+                    $product = Product::with('productCatalog')->where('sku', $sku)->first();
+                    if (!$product) {
+                        $cat = ProductCatalog::where('sku', $sku)->first();
+                        if ($cat) {
+                            $product = Product::where('product_catalog_id', $cat->id)->first();
                         }
-
-                        // Update Product price and qty if provided
-                        $productDirty = false;
-                        if (isset($shelfProduct['price']))  { $product->unit_price      = $shelfProduct['price'];  $productDirty = true; }
-                        if (isset($shelfProduct['qty']))    { $product->stock_quantity   = $shelfProduct['qty'];   $productDirty = true; }
-                        if ($productDirty) $product->save();
-
-                        $products[$index]['description']      = $productDescription;
-                        $products[$index]['brand']            = $brand;
-                        $products[$index]['compatible_model'] = $compatibility;
-                        $products[$index]['sku']              = $sku;
-                        $products[$index]['price']            = $product->unit_price ?? 0;
                     }
                 }
+                if (!$product && !empty($category) && !empty($name)) {
+                    $cat = ProductCatalog::where('product_description', $category)
+                        ->where('product_name', $name)
+                        ->where('brand', $brand)
+                        ->first();
+                    if ($cat) {
+                        $product = Product::where('product_catalog_id', $cat->id)->first();
+                    }
+                }
+
+                if ($product) {
+                    if ($product->productCatalog) {
+                        $catalogUpdates = [];
+                        if (!empty($category)) $catalogUpdates['product_description'] = $category;
+                        if (!empty($brand))    $catalogUpdates['brand']               = $brand;
+                        if (!empty($name))     $catalogUpdates['product_name']        = $name;
+                        if (!empty($sku))      $catalogUpdates['sku']                 = $sku;
+                        if (!empty($catalogUpdates)) {
+                            $product->productCatalog->update($catalogUpdates);
+                        }
+                    }
+                    if ($price > 0) {
+                        $product->unit_price = $price;
+                        $product->save();
+                    }
+
+                    $cat = $product->productCatalog;
+                    $finalCategory = $cat ? $cat->product_description : ($category ?: $product->description);
+                    $finalBrand    = $cat ? $cat->brand : ($brand ?: $product->brand);
+                    $finalSku      = $cat ? $cat->sku : ($sku ?: $product->sku);
+                    $finalName     = $cat ? $cat->product_name : ($name ?: $product->compatibility);
+                    $productId     = $product->id;
+                } else {
+                    // Create new ProductCatalog & Product
+                    if (empty($sku)) {
+                        $cleanCat = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $category ?: 'ITEM'));
+                        $cleanBrand = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $brand ?: 'GEN'));
+                        $sku = 'KCC_' . $cleanCat . '_' . $cleanBrand . '_' . substr(uniqid(), -4);
+                    }
+                    $catalog = ProductCatalog::create([
+                        'sku' => $sku,
+                        'product_description' => $category ?: 'General',
+                        'brand' => $brand ?: 'Generic',
+                        'product_name' => $name ?: ($category ?: 'Item'),
+                    ]);
+
+                    $product = Product::create([
+                        'product_catalog_id' => $catalog->id,
+                        'sku' => $sku,
+                        'name' => $category ?: 'Item',
+                        'product_name' => $name ?: ($category ?: 'Item'),
+                        'description' => $category ?: 'General',
+                        'brand' => $brand ?: 'Generic',
+                        'compatibility' => $name ?: 'Universal',
+                        'unit_price' => $price,
+                        'stock_quantity' => $qty,
+                        'is_archived' => false,
+                    ]);
+
+                    $finalCategory = $catalog->product_description;
+                    $finalBrand    = $catalog->brand;
+                    $finalSku      = $catalog->sku;
+                    $finalName     = $catalog->product_name;
+                    $productId     = $product->id;
+                }
+
+                // Update / create warehouse stock
+                ProductWarehouseStock::updateOrCreate(
+                    [
+                        'product_id' => $productId,
+                        'warehouse' => $warehouse->name,
+                    ],
+                    [
+                        'quantity' => $qty,
+                    ]
+                );
+
+                $processedProducts[] = [
+                    'id' => $productId,
+                    'sku' => $finalSku,
+                    'name' => $finalName ?: $finalCategory,
+                    'description' => $finalCategory,
+                    'brand' => $finalBrand,
+                    'compatible_model' => $finalName ?: $finalCategory,
+                    'qty' => $qty,
+                    'stock_quantity' => $qty,
+                    'price' => $price,
+                    'category' => $finalCategory,
+                    'product_name' => $finalName ?: $finalCategory,
+                ];
             }
 
             $shelf = WarehouseShelf::updateOrCreate(
@@ -398,12 +467,12 @@ class WarehouseManagementController extends Controller
                     'slot_index' => $slotIndex,
                 ],
                 [
-                    'warehouse_code' => $warehouse->code,
+                    'warehouse_code' => $warehouse->code ?: ('WH-' . $warehouseId),
                     'warehouse_index' => 0, // Legacy field, kept for compatibility
                     'sort_order' => $slotIndex,
                     'name' => $shelfName,
                     'capacity' => $capacity,
-                    'products' => array_values($products),
+                    'products' => array_values($processedProducts),
                     'archived' => $request->boolean('archived', false),
                 ]
             );
@@ -679,24 +748,30 @@ class WarehouseManagementController extends Controller
 
             // Create inventory movement records
             foreach ($transfers as $transfer) {
-                // Try to find the actual product by SKU to get real product_id
-                $product = \App\Models\ProductCatalog::where('sku', $transfer['sku'])->first();
-                $actualProductId = $product ? $product->id : null;
+                // Look up the Product (not ProductCatalog) — inventory_movements.product_id FK references products.id
+                $product = \App\Models\Product::whereHas('productCatalog', function ($q) use ($transfer) {
+                    $q->where('sku', $transfer['sku']);
+                })->first();
 
-                // Only create inventory movement if we have a valid product_id
-                if ($actualProductId) {
+                // Fallback: try matching directly on products.sku
+                if (!$product) {
+                    $product = \App\Models\Product::where('sku', $transfer['sku'])->first();
+                }
+
+                // Only create inventory movement if we have a valid products.id
+                if ($product) {
                     InventoryMovement::create([
-                        'product_id' => $actualProductId,
-                        'type' => 'transfer',
+                        'product_id'      => $product->id,
+                        'type'            => 'transfer',
                         'quantity_change' => -$transfer['transfer_qty'],
-                        'unit_price' => $transfer['unit_price'],
-                        'supplier_name' => 'Shelf Transfer',
-                        'notes' => "Transferred from {$sourceShelf->name} to {$destinationShelf->name}",
-                        'metadata' => [
-                            'source' => 'warehouse_management',
-                            'source_shelf' => $sourceShelf->name,
+                        'unit_price'      => $transfer['unit_price'],
+                        'supplier_name'   => 'Shelf Transfer',
+                        'notes'           => "Transferred from {$sourceShelf->name} to {$destinationShelf->name}",
+                        'metadata'        => [
+                            'source'            => 'warehouse_management',
+                            'source_shelf'      => $sourceShelf->name,
                             'destination_shelf' => $destinationShelf->name,
-                            'warehouse_id' => $warehouseId,
+                            'warehouse_id'      => $warehouseId,
                         ],
                     ]);
                 }

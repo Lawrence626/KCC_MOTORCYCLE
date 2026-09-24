@@ -84,7 +84,7 @@ class SalesVelocityAnalysisService
                             $lastSaleDate = $transactionDate;
                         }
 
-                        $daysAgo = $now->diffInDays($transactionDate);
+                        $daysAgo = (int) abs($now->diffInDays($transactionDate));
 
                         if ($daysAgo <= 7) {
                             $units7 += $quantity;
@@ -142,7 +142,7 @@ class SalesVelocityAnalysisService
             return true; // Never sold = slow moving
         }
 
-        $daysWithoutSale = Carbon::now()->diffInDays($salesData['last_sale_date']);
+        $daysWithoutSale = (int) abs(Carbon::now()->diffInDays($salesData['last_sale_date']));
         return $daysWithoutSale >= $slowMovingThreshold;
     }
 
@@ -175,7 +175,7 @@ class SalesVelocityAnalysisService
         $product = Product::find($productId);
 
         $daysWithoutSale = $salesData['last_sale_date'] 
-            ? Carbon::now()->diffInDays($salesData['last_sale_date']) 
+            ? (int) abs(Carbon::now()->diffInDays($salesData['last_sale_date'])) 
             : 999; // Default to 999 days if never sold
 
         SlowMovingProduct::updateOrCreate(

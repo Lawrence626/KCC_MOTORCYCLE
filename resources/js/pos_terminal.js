@@ -8,12 +8,13 @@ const posState = {
     selectedServices: new Set(),
     extraCharge: 0,
     discount: 0,
+    hasAutoDiscount: false,
     paymentMethod: 'cash',
     productImages: {},
     lastReceipt: null,
     transactionHistory: [],
     transactionHistoryPage: 1,
-    transactionHistoryPageSize: 8,
+    transactionHistoryPageSize: 10,
     apiProductsUrl: window.POS?.routes?.apiProducts || '/api/shop-inventory/products',
     productPage: 1,
     productPageSize: 9,
@@ -64,7 +65,8 @@ function renderCategoryDropdown() {
 
     select.innerHTML = posState.categories.map(category => {
         const isSelected = category === posState.selectedCategory;
-        return `<option value="${category}" ${isSelected ? 'selected' : ''}>${category}</option>`;
+        const label = (category === 'All' || category === 'all') ? 'All Categories' : category;
+        return `<option value="${category}" ${isSelected ? 'selected' : ''}>${label}</option>`;
     }).join('');
 
     // Add event listener
@@ -101,7 +103,8 @@ function updateBrandDropdown() {
 
     select.innerHTML = brands.map(brand => {
         const isSelected = brand === posState.selectedBrand;
-        return `<option value="${brand}" ${isSelected ? 'selected' : ''}>${brand}</option>`;
+        const label = (brand === 'All' || brand === 'all') ? 'All Brands' : brand;
+        return `<option value="${brand}" ${isSelected ? 'selected' : ''}>${label}</option>`;
     }).join('');
 
     // Add event listener
@@ -242,6 +245,48 @@ function findCartItem(productId) {
     return posState.cart.find(item => item.id === productId);
 }
 
+function recalculateAutoDiscount() {
+    let autoDiscount = 0;
+    let hasDeadStockDiscount = false;
+
+    posState.cart.forEach(item => {
+        const dType = item.discount_type;
+        const dVal = Number(item.discount_value || 0);
+        if (dVal > 0) {
+            hasDeadStockDiscount = true;
+            if (dType === 'percentage') {
+                autoDiscount += (item.unit_price * (dVal / 100)) * item.quantity;
+            } else if (dType === 'fixed') {
+                autoDiscount += dVal * item.quantity;
+            }
+        }
+    });
+
+    const discountInput = document.getElementById('posDiscountInput');
+    const removeBtn = document.getElementById('posRemoveDiscountBtn');
+    if (removeBtn) {
+        if (hasDeadStockDiscount) {
+            removeBtn.classList.remove('hidden');
+        } else {
+            removeBtn.classList.add('hidden');
+        }
+    }
+
+    if (hasDeadStockDiscount) {
+        if (discountInput) {
+            discountInput.value = autoDiscount.toFixed(2);
+        }
+        posState.discount = autoDiscount;
+        posState.hasAutoDiscount = true;
+    } else if (posState.hasAutoDiscount) {
+        if (discountInput) {
+            discountInput.value = '0.00';
+        }
+        posState.discount = 0;
+        posState.hasAutoDiscount = false;
+    }
+}
+
 function updateTotals() {
     const subtotal = posState.cart.reduce((sum, item) => sum + item.unit_price * item.quantity, 0);
     const servicesTotal = Array.from(posState.selectedServices).reduce((sum, serviceId) => {
@@ -280,9 +325,11 @@ function updateTotals() {
     if (posTotalSummaryEl) posTotalSummaryEl.textContent = formatCurrency(total);
 }
 
-function saveProductImagePreview(cardId, dataUrl) {
+function saveProductImagePreview(cardId, dataUrl, sku = null, name = null) {
     try {
         posState.productImages[cardId] = dataUrl;
+        if (sku) posState.productImages[sku] = dataUrl;
+        if (name) posState.productImages[name] = dataUrl;
         const serialized = JSON.stringify(posState.productImages);
         const sizeInMB = new Blob([serialized]).size / (1024 * 1024);
         console.log(`Saving ${Object.keys(posState.productImages).length} images, total size: ${sizeInMB.toFixed(2)}MB`);
@@ -297,6 +344,8 @@ function saveProductImagePreview(cardId, dataUrl) {
             try {
                 localStorage.setItem('posProductImages', JSON.stringify({}));
                 posState.productImages[cardId] = dataUrl;
+                if (sku) posState.productImages[sku] = dataUrl;
+                if (name) posState.productImages[name] = dataUrl;
                 localStorage.setItem('posProductImages', JSON.stringify(posState.productImages));
                 console.log('✓ Saved after clearing');
             } catch (retryError) {
@@ -323,7 +372,14 @@ function applyProductImagePreviews() {
         const card = input?.closest('.pos-image-upload-card');
         if (!card) return;
         const preview = card.querySelector('.pos-image-preview');
-        if (preview) preview.style.backgroundImage = `url('${dataUrl}')`;
+        const placeholder = card.querySelector('.pos-image-placeholder');
+        if (preview && dataUrl) {
+            preview.style.backgroundImage = `url('${dataUrl}')`;
+            preview.classList.remove('hidden');
+        }
+        if (placeholder && dataUrl) {
+            placeholder.classList.add('hidden');
+        }
     });
 }
 
@@ -363,12 +419,13 @@ function renderTransactionHistory() {
     const pageInfo = document.getElementById('posTransactionHistoryInfo');
     const prevButton = document.getElementById('posHistoryPrevPage');
     const nextButton = document.getElementById('posHistoryNextPage');
+    const pageNumbersContainer = document.getElementById('posHistoryPageNumbers');
     if (!body || !empty || !pagination || !pageInfo || !prevButton || !nextButton) return;
 
     const fromDate = document.getElementById('posHistoryFilterFrom')?.value;
     const toDate = document.getElementById('posHistoryFilterTo')?.value;
     const transactions = filterTransactionHistory(fromDate, toDate);
-    const pageSize = posState.transactionHistoryPageSize;
+    const pageSize = posState.transactionHistoryPageSize || 10;
     const totalPages = Math.max(1, Math.ceil(transactions.length / pageSize));
     posState.transactionHistoryPage = Math.min(Math.max(posState.transactionHistoryPage, 1), totalPages);
 
@@ -400,10 +457,16 @@ function renderTransactionHistory() {
             <td class="px-3 py-4 text-slate-700">${formatDateForHistory(transaction.createdAt)}</td>
             <td class="px-3 py-4 text-slate-700">${transaction.paymentMethod === 'cash' ? 'Cash' : 'QR PH'}</td>
             <td class="px-3 py-4 text-center text-slate-700">${transaction.items.length}</td>
-            <td class="px-3 py-4 text-right text-slate-900 font-semibold">${formatCurrency(transaction.total)}</td>
-            <td class="px-3 py-4 text-center">
-                <button onclick="viewTransactionInvoice('${transaction.invoice}')" class="font-semibold text-xs mr-2" style="color: #000000;">View</button>
-                <button onclick="deleteTransaction('${transaction.invoice}')" class="text-red-600 hover:text-red-700 font-medium text-xs">Delete</button>
+            <td class="px-4 py-4 text-right text-slate-900 font-semibold whitespace-nowrap">${formatCurrency(transaction.total)}</td>
+            <td class="pl-8 pr-4 py-4 text-center whitespace-nowrap">
+                <div class="flex items-center justify-center gap-3">
+                    <button onclick="viewTransactionInvoice('${transaction.invoice}')" class="font-semibold text-xs text-black hover:underline hover:decoration-black transition cursor-pointer">View</button>
+                    <button onclick="deleteTransaction('${transaction.invoice}')" class="p-1 text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition cursor-pointer inline-flex items-center justify-center" title="Delete">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
             </td>
         `;
         body.appendChild(row);
@@ -414,6 +477,25 @@ function renderTransactionHistory() {
     pageInfo.textContent = `Showing ${startDisplay}-${endDisplay} of ${transactions.length}`;
     prevButton.disabled = posState.transactionHistoryPage <= 1;
     nextButton.disabled = posState.transactionHistoryPage >= totalPages;
+
+    if (pageNumbersContainer) {
+        let numsHtml = '';
+        const maxVisiblePages = 5;
+        let startPage = Math.max(1, posState.transactionHistoryPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+
+        for (let page = startPage; page <= endPage; page++) {
+            if (page === posState.transactionHistoryPage) {
+                numsHtml += `<button type="button" disabled class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">${page}</button>`;
+            } else {
+                numsHtml += `<button type="button" onclick="goToTransactionHistoryPage(${page})" class="inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50 transition cursor-pointer">${page}</button>`;
+            }
+        }
+        pageNumbersContainer.innerHTML = numsHtml;
+    }
 }
 
 function openTransactionHistory() {
@@ -628,11 +710,20 @@ function renderCart() {
             stockInfoHtml = `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">STOCK:</span> ${maxStock} pcs</div>`;
         }
 
+        let discountBadge = '';
+        const itemDiscountVal = Number(item.discount_value || 0);
+        if (itemDiscountVal > 0) {
+            const discountLabel = item.discount_type === 'percentage'
+                ? `${itemDiscountVal}% OFF`
+                : `₱${itemDiscountVal.toFixed(2)} OFF`;
+            discountBadge = `<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-300 ml-1.5" title="Dead stock discount applied">🏷️ ${discountLabel}</span>`;
+        }
+
         const row = document.createElement('tr');
         row.className = `border-b border-slate-200 ${isExceeding || isOutOfStock ? 'bg-red-50/50' : ''}`;
         row.innerHTML = `
             <td class="px-3 py-3 text-slate-700 text-xs font-medium">
-                <div class="text-sm font-semibold text-slate-900 mb-0.5">${item.name}</div>
+                <div class="text-sm font-semibold text-slate-900 mb-0.5 flex items-center flex-wrap">${item.name}${discountBadge}</div>
                 ${item.product_description ? `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">PRODUCT DESCRIPTION:</span> ${item.product_description}</div>` : ''}
                 ${item.brand ? `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">BRAND:</span> ${item.brand}</div>` : ''}
                 ${item.compatibility ? `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">COMPATIBLE:</span> ${item.compatibility}</div>` : ''}
@@ -655,6 +746,7 @@ function renderCart() {
         tbody.appendChild(row);
     });
 
+    recalculateAutoDiscount();
     updateTotals();
 }
 
@@ -680,6 +772,8 @@ function addProductToCart(product) {
     const existing = findCartItem(product.id);
     if (existing) {
         existing.stock_quantity = availableStock;
+        if (product.discount_type !== undefined) existing.discount_type = product.discount_type;
+        if (product.discount_value !== undefined) existing.discount_value = Number(product.discount_value || 0);
         if (existing.quantity + 1 > availableStock) {
             showNotification(`Insufficient stock. Only ${availableStock} item(s) available.`, 'error');
             return false;
@@ -701,6 +795,8 @@ function addProductToCart(product) {
             category: product.category ?? 'Uncategorized',
             stock_quantity: availableStock,
             unit_price: Number(product.unit_price || 0),
+            discount_type: product.discount_type || null,
+            discount_value: Number(product.discount_value || 0),
             quantity: 1,
         });
         showNotification(`Added ${productName} to cart`, 'success');
@@ -740,6 +836,12 @@ function changeCartQuantity(productId, delta) {
 
 function clearCart() {
     posState.cart = [];
+    posState.discount = 0;
+    posState.hasAutoDiscount = false;
+    const discountInput = document.getElementById('posDiscountInput');
+    if (discountInput) discountInput.value = '0.00';
+    const removeBtn = document.getElementById('posRemoveDiscountBtn');
+    if (removeBtn) removeBtn.classList.add('hidden');
     renderCart();
 }
 
@@ -782,27 +884,39 @@ async function searchProducts(query = '', page = 1) {
         json.data.forEach(product => {
             const card = document.createElement('div');
             card.className = 'pos-image-upload-card relative rounded-3xl border border-slate-200 bg-slate-50 p-3 flex flex-col justify-between';
-            card.dataset.productId = product.id;
             const stockQty = Number(product.stock_quantity ?? product.stock ?? 0);
             const isOutOfStock = stockQty <= 0;
             const productName = product.product_name || product.name || 'Unnamed Product';
             const brand = product.brand ? `${product.brand}` : '';
             const compatibility = product.name && product.name !== productName ? product.name : (product.compatibility || '');
 
+            card.dataset.productId = product.id;
+            card.dataset.sku = product.sku || '';
+            card.dataset.name = productName;
+
             // Calculate VAT breakdown
             const sellingPrice = Number(product.unit_price || 0);
             const includedVat = sellingPrice * (12 / 112);
             const vatableSales = sellingPrice - includedVat;
 
+            const cardImage = product.image || posState.productImages[product.id] || (product.sku && posState.productImages[product.sku]) || (productName && posState.productImages[productName]) || '';
+
             card.innerHTML = `
                 <div class="flex-shrink-0">
-                    <div class="pos-image-preview h-24 w-full overflow-hidden rounded-[10px] bg-slate-200 bg-cover bg-center" style="background-image: url('${product.image || ''}')"></div>
+                    <div class="pos-image-container relative h-24 w-full overflow-hidden rounded-[10px] bg-slate-100/90 border border-slate-200/80 flex items-center justify-center">
+                        <div class="pos-image-preview absolute inset-0 bg-cover bg-center ${cardImage ? '' : 'hidden'}" style="${cardImage ? `background-image: url('${cardImage}');` : ''}"></div>
+                        <div class="pos-image-placeholder flex items-center justify-center text-slate-300 ${cardImage ? 'hidden' : ''}">
+                            <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                    </div>
                     <input type="file" accept="image/*" class="pos-image-uploader hidden" data-id="${product.id}" />
                     <div class="mt-2 flex items-center justify-between">
                         <h3 class="text-sm font-semibold text-slate-900 line-clamp-2">${productName}</h3>
                         <button type="button" aria-label="Upload image" title="Upload image" class="pos-image-upload-trigger ml-2 flex-shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-[10px] border border-slate-200 bg-white text-slate-700 hover:bg-slate-100">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                             </svg>
                         </button>
                     </div>
@@ -813,14 +927,15 @@ async function searchProducts(query = '', page = 1) {
                     ${compatibility ? `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">COMPATIBLE:</span> ${compatibility}</p>` : ''}
                     ${product.sku ? `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">SKU:</span> ${product.sku}</p>` : ''}
                     ${isOutOfStock
-                        ? `<p class="text-[9px] text-red-600 font-semibold"><span class="font-semibold text-black">STOCK:</span> 0 pcs <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-bold bg-red-100 text-red-700">Out of Stock</span></p>`
-                        : `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">STOCK:</span> ${stockQty} pcs</p>`
-                    }
+                    ? `<p class="text-[9px] text-red-600 font-semibold"><span class="font-semibold text-black">STOCK:</span> 0 pcs <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-bold bg-red-100 text-red-700">Out of Stock</span></p>`
+                    : `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">STOCK:</span> ${stockQty} pcs</p>`
+                }
                 </div>
                 <div class="flex-shrink-0 space-y-2">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <span class="text-sm font-semibold text-slate-900">${formatCurrency(sellingPrice)}</span>
+                            ${Number(product.discount_value || 0) > 0 ? `<span class="pos-discount-badge inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-200" title="Dead stock discount">🏷️ ${product.discount_type === 'percentage' ? `${product.discount_value}% OFF` : `₱${Number(product.discount_value).toFixed(2)} OFF`}</span>` : ''}
                             <button type="button" class="pos-price-breakdown-toggle group relative inline-flex items-center gap-1 text-[10px] text-slate-500 hover:text-slate-1000 transition" data-product-id="${product.id}" data-vatable="${vatableSales}" data-included-vat="${includedVat}" title="Price Breakdown">
                                 <svg class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -846,9 +961,9 @@ async function searchProducts(query = '', page = 1) {
                     </div>
                     <div class="flex justify-center">
                         ${isOutOfStock
-                            ? `<button type="button" disabled class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-slate-200 px-4 text-xs font-bold text-slate-400 cursor-not-allowed shadow-none tracking-wide">Out of Stock</button>`
-                            : `<button type="button" data-id="${product.id}" data-name="${productName}" data-sku="${product.sku || ''}" data-price="${product.unit_price || 0}" data-stock="${stockQty}" data-product-description="${product.product_description || product.category || ''}" data-brand="${brand}" data-compatibility="${compatibility}" data-category="${product.category || ''}" class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-[#00fff2] px-4 text-xs font-bold text-black shadow-sm hover:bg-[#00e6da] transition-all duration-200 tracking-wide">Add to Cart</button>`
-                        }
+                    ? `<button type="button" disabled class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-slate-200 px-4 text-xs font-bold text-slate-400 cursor-not-allowed shadow-none tracking-wide">Out of Stock</button>`
+                    : `<button type="button" data-id="${product.id}" data-name="${productName}" data-sku="${product.sku || ''}" data-price="${product.unit_price || 0}" data-stock="${stockQty}" data-product-description="${product.product_description || product.category || ''}" data-brand="${brand}" data-compatibility="${compatibility}" data-category="${product.category || ''}" data-discount-type="${product.discount_type || ''}" data-discount-value="${product.discount_value || 0}" class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-[#6EC1D1] px-4 text-xs font-bold text-black shadow-sm hover:bg-[#59b2c2] transition-all duration-200 tracking-wide">Add to Cart</button>`
+                }
                     </div>
                 </div>
             `;
@@ -962,7 +1077,9 @@ async function scanProduct() {
                 compatibility: product.compatibility || '',
                 category: product.category || 'Uncategorized',
                 stock_quantity: stock,
-                unit_price: Number(product.unit_price || 0)
+                unit_price: Number(product.unit_price || 0),
+                discount_type: product.discount_type || null,
+                discount_value: Number(product.discount_value || 0)
             });
 
             if (added) {
@@ -1005,7 +1122,78 @@ function updateExtraCharge(value) {
 
 function updateDiscount(value) {
     posState.discount = Number(value) || 0;
+    posState.hasAutoDiscount = false;
     updateTotals();
+}
+
+async function removeAppliedDiscount() {
+    const discountedItems = posState.cart.filter(item => Number(item.discount_value || 0) > 0);
+    if (discountedItems.length === 0) return;
+
+    const productIds = discountedItems.map(item => item.id);
+    const removeBtn = document.getElementById('posRemoveDiscountBtn');
+    const originalText = removeBtn ? removeBtn.textContent : 'Remove';
+
+    if (removeBtn) {
+        removeBtn.disabled = true;
+        removeBtn.textContent = 'Removing...';
+    }
+
+    try {
+        const response = await fetch('/api/pos/remove-product-discount', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ product_ids: productIds }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            // Update cart items in place
+            discountedItems.forEach(item => {
+                item.discount_type = null;
+                item.discount_value = 0;
+            });
+
+            // Update product cards in the product grid DOM
+            productIds.forEach(id => {
+                const card = document.querySelector(`.pos-image-upload-card[data-product-id="${id}"]`);
+                if (card) {
+                    const badge = card.querySelector('.pos-discount-badge');
+                    if (badge) badge.remove();
+
+                    const btn = card.querySelector('.pos-add-card');
+                    if (btn) {
+                        btn.dataset.discountType = '';
+                        btn.dataset.discountValue = '0';
+                    }
+                }
+            });
+
+            posState.discount = 0;
+            posState.hasAutoDiscount = false;
+            const discountInput = document.getElementById('posDiscountInput');
+            if (discountInput) discountInput.value = '0.00';
+
+            renderCart();
+            updateTotals();
+            showNotification('Discount permanently removed from product.', 'success');
+        } else {
+            showNotification(data.message || 'Failed to remove discount.', 'error');
+        }
+    } catch (error) {
+        console.error('Error removing discount:', error);
+        showNotification('Error connecting to server to remove discount.', 'error');
+    } finally {
+        if (removeBtn) {
+            removeBtn.disabled = false;
+            removeBtn.textContent = originalText;
+        }
+    }
 }
 
 function togglePriceBreakdown(productId) {
@@ -1079,7 +1267,63 @@ async function revalidateCartStock() {
     }
 }
 
+function updateChangeCalculation() {
+    const tenderedInput = document.getElementById('posAmountTenderedInput');
+    const changeDisplay = document.getElementById('posChangeDisplayAmount');
+    const warningEl = document.getElementById('posInsufficientWarning');
+    const warningText = document.getElementById('posInsufficientText');
+    const confirmBtn = document.getElementById('posPaymentModalConfirm');
+    const cashSection = document.getElementById('posCashPaymentDetails');
+    const selectedMethod = document.querySelector('input[name="posPaymentModalMethod"]:checked')?.value || posState.paymentMethod;
+
+    if (!confirmBtn) return;
+
+    const total = posState.currentPaymentTotal ?? 0;
+
+    if (selectedMethod === 'qr') {
+        if (cashSection) cashSection.classList.add('hidden');
+        confirmBtn.disabled = false;
+        confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        return;
+    }
+
+    if (cashSection) cashSection.classList.remove('hidden');
+    if (!tenderedInput || !changeDisplay) return;
+
+    const rawVal = tenderedInput.value.trim();
+    if (rawVal === '') {
+        changeDisplay.textContent = '₱0.00';
+        if (warningEl) warningEl.classList.add('hidden');
+        confirmBtn.disabled = true;
+        confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        return;
+    }
+
+    const tendered = parseFloat(rawVal) || 0;
+    const diff = tendered - total;
+
+    if (diff < -0.001) {
+        const short = Math.abs(diff);
+        changeDisplay.textContent = '₱0.00';
+        if (warningEl) {
+            warningEl.classList.remove('hidden');
+            if (warningText) warningText.textContent = `Insufficient amount (Kulang ng ${formatCurrency(short)})`;
+        }
+        confirmBtn.disabled = true;
+        confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    } else {
+        const change = Math.max(0, diff);
+        changeDisplay.textContent = formatCurrency(change);
+        if (warningEl) warningEl.classList.add('hidden');
+        confirmBtn.disabled = false;
+        confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+}
+
 async function openPaymentModal() {
+    // Dismiss any visible "Added to cart" toast notifications
+    dismissAllNotifications();
+
     if (posState.cart.length === 0) {
         alert('The cart is empty. Add items before proceeding to payment.');
         return;
@@ -1145,6 +1389,7 @@ async function openPaymentModal() {
     // VAT-Inclusive: Total = Subtotal + Services + Extra - Discount
     // VAT is already included in all prices
     const total = Math.max(0, subtotal + servicesTotal + extra - discount);
+    posState.currentPaymentTotal = total;
 
     // Included VAT = Total × (12 / 112)
     const includedVat = total * (12 / 112);
@@ -1168,7 +1413,20 @@ async function openPaymentModal() {
         });
     }
 
+    const tenderedInput = document.getElementById('posAmountTenderedInput');
+    if (tenderedInput) {
+        tenderedInput.value = '';
+    }
+
+    updateChangeCalculation();
+
     document.getElementById('posPaymentModal')?.classList.remove('hidden');
+
+    setTimeout(() => {
+        if (tenderedInput && (document.querySelector('input[name="posPaymentModalMethod"]:checked')?.value || posState.paymentMethod) === 'cash') {
+            tenderedInput.focus();
+        }
+    }, 150);
 }
 
 function closePaymentModal() {
@@ -1194,6 +1452,7 @@ function populateReceipt() {
     const receiptTax = document.getElementById('receiptTax');
     const receiptTotal = document.getElementById('receiptTotal');
     const receiptPaid = document.getElementById('receiptPaid');
+    const receiptChange = document.getElementById('receiptChange');
     const receiptPaymentMethod = document.getElementById('receiptPaymentMethod');
 
     if (!receiptInvoice) return;
@@ -1212,6 +1471,7 @@ function populateReceipt() {
         tax: 0,
         total: 0,
         amountReceived: 0,
+        change: 0,
         paymentMethod: posState.paymentMethod,
     };
 
@@ -1224,6 +1484,7 @@ function populateReceipt() {
         receiptData.tax = receiptData.total * (12 / 112);
 
         receiptData.amountReceived = receiptData.total;
+        receiptData.change = 0;
     }
 
     if (receiptInvoice) receiptInvoice.textContent = receiptData.invoiceNumber;
@@ -1234,6 +1495,7 @@ function populateReceipt() {
     if (receiptTax) receiptTax.textContent = formatCurrency(receiptData.tax);
     if (receiptTotal) receiptTotal.textContent = formatCurrency(receiptData.total);
     if (receiptPaid) receiptPaid.textContent = formatCurrency(receiptData.amountReceived ?? receiptData.total);
+    if (receiptChange) receiptChange.textContent = formatCurrency(receiptData.change ?? Math.max(0, (receiptData.amountReceived ?? receiptData.total) - receiptData.total));
     if (receiptPaymentMethod) receiptPaymentMethod.textContent = receiptData.paymentMethod === 'qr' ? 'QR PH' : 'Cash';
 
     const invoiceNumHeader = document.getElementById('invoiceNumHeader');
@@ -1271,7 +1533,7 @@ function populateReceipt() {
     if (invoiceTax) invoiceTax.textContent = formatCurrency(receiptData.tax);
     if (invoiceTotalAmount) invoiceTotalAmount.textContent = formatCurrency(receiptData.total);
     if (invoiceAmountReceived) invoiceAmountReceived.textContent = formatCurrency(receiptData.amountReceived ?? receiptData.total);
-    if (invoiceChange) invoiceChange.textContent = formatCurrency(Math.max(0, (receiptData.amountReceived ?? receiptData.total) - receiptData.total));
+    if (invoiceChange) invoiceChange.textContent = formatCurrency(receiptData.change ?? Math.max(0, (receiptData.amountReceived ?? receiptData.total) - receiptData.total));
     if (invoicePaymentMethod) invoicePaymentMethod.textContent = receiptData.paymentMethod === 'qr' ? 'QR PH' : 'Cash';
 }
 
@@ -1384,8 +1646,13 @@ function printReceipt() {
     const discount = formatCurrency(receiptData?.discount || 0);
     const tax = formatCurrency(receiptData?.tax || 0);
     const total = formatCurrency(receiptData?.total || 0);
-    const paid = formatCurrency(receiptData?.amountReceived ?? receiptData?.total ?? 0);
-    const paymentMethod = receiptData?.paymentMethod === 'qr' ? 'QR PH' : 'Cash';
+    const rawPaid = receiptData?.amountReceived != null ? parseFloat(receiptData.amountReceived) : (receiptData?.amount_paid != null ? parseFloat(receiptData.amount_paid) : (receiptData?.total || 0));
+    const rawTotal = receiptData?.total != null ? parseFloat(receiptData.total) : 0;
+    const rawChange = receiptData?.change != null ? parseFloat(receiptData.change) : (receiptData?.change_amount != null ? parseFloat(receiptData.change_amount) : Math.max(0, rawPaid - rawTotal));
+
+    const paid = formatCurrency(rawPaid);
+    const change = formatCurrency(rawChange);
+    const paymentMethod = (receiptData?.paymentMethod === 'qr' || receiptData?.payment_method === 'qr') ? 'QR PH' : 'Cash';
 
     const itemsHTML = items.map((item, index) => `
         <tr>
@@ -1454,6 +1721,7 @@ function printReceipt() {
 
                     <div class="receipt-payment">
                         <div class="row"><span class="label">Amount Paid</span><span>${paid}</span></div>
+                        <div class="row"><span class="label">Change (Sukli)</span><span style="font-weight:700; color:#059669;">${change}</span></div>
                         <div class="row"><span class="label">Payment Method</span><span>${paymentMethod}</span></div>
                     </div>
 
@@ -1635,7 +1903,6 @@ function buildInvoiceHTML(receiptData, cashierName) {
       </div>
     </div>
 
-    <!-- Payment -->
     <div class="payment-section">
       <div class="pay-box">
         <div class="pay-label">Payment Method</div>
@@ -1651,7 +1918,6 @@ function buildInvoiceHTML(receiptData, cashierName) {
       </div>
     </div>
 
-    <!-- Footer -->
     <div class="inv-footer">
       <div class="thank-you">Thank you for your purchase!</div>
       <p>This serves as your official receipt. Please keep this for your records.</p>
@@ -1664,8 +1930,23 @@ function buildInvoiceHTML(receiptData, cashierName) {
 }
 
 function printInvoice() {
-    const receiptData = posState.lastReceipt;
-    if (!receiptData) return;
+    const receiptData = posState.lastReceipt || {
+        invoiceNumber: document.getElementById('receiptInvoice')?.textContent || 'INV-000000',
+        date: new Date().toISOString(),
+        items: posState.cart.map(item => ({ id: item.id, name: item.name, sku: item.sku || '', qty: item.quantity, price: item.unit_price })),
+        subtotal: posState.cart.reduce((sum, item) => sum + item.unit_price * item.quantity, 0),
+        servicesTotal: Array.from(posState.selectedServices).reduce((sum, serviceId) => {
+            const service = posState.services.find(s => s.id === serviceId);
+            return service ? sum + service.price : sum;
+        }, 0),
+        extra: Number(posState.extraCharge || 0),
+        discount: Number(posState.discount || 0),
+        tax: 0,
+        total: 0,
+        amountReceived: 0,
+        change: 0,
+        paymentMethod: posState.paymentMethod,
+    };
     const cashierName = document.getElementById('receiptCashierName')?.textContent
         || window.POS?.cashier || 'Cashier';
     openPrintWindow(buildInvoiceHTML(receiptData, cashierName));
@@ -1683,12 +1964,9 @@ function openPrintWindow(html) {
 async function confirmPayment() {
     const confirmBtn = document.getElementById('posPaymentModalConfirm');
     const originalText = confirmBtn ? confirmBtn.textContent : 'Confirm Payment';
-    if (confirmBtn) {
-        confirmBtn.disabled = true;
-        confirmBtn.textContent = 'Processing...';
-    }
 
-    updatePaymentMethod(document.querySelector('input[name="posPaymentModalMethod"]:checked')?.value || posState.paymentMethod);
+    const selectedMethod = document.querySelector('input[name="posPaymentModalMethod"]:checked')?.value || posState.paymentMethod;
+    updatePaymentMethod(selectedMethod);
 
     const invoiceNumber = document.getElementById('posPaymentInvoice')?.textContent || 'INV-000000';
     const now = new Date();
@@ -1700,12 +1978,35 @@ async function confirmPayment() {
     const extra = Number(posState.extraCharge || 0);
     const discount = Number(posState.discount || 0);
 
-    // VAT-Inclusive: Total = Subtotal + Services + Extra - Discount
-    // VAT is already included in all prices
     const transactionTotal = Math.max(0, subtotal + servicesTotal + extra - discount);
-
-    // Included VAT = Total × (12 / 112)
     const tax = transactionTotal * (12 / 112);
+
+    let amountPaid = transactionTotal;
+    let changeAmount = 0;
+
+    if (selectedMethod === 'cash') {
+        const tenderedInput = document.getElementById('posAmountTenderedInput');
+        const rawVal = tenderedInput ? tenderedInput.value.trim() : '';
+        if (!rawVal) {
+            alert('Please enter the cash amount paid by the customer.');
+            tenderedInput?.focus();
+            return;
+        }
+        const val = parseFloat(rawVal) || 0;
+        if (val < transactionTotal - 0.001) {
+            const short = transactionTotal - val;
+            alert(`Insufficient cash payment.\n\nTotal Due: ${formatCurrency(transactionTotal)}\nAmount Paid: ${formatCurrency(val)}\nShortage: ${formatCurrency(short)}`);
+            tenderedInput?.focus();
+            return;
+        }
+        amountPaid = val;
+        changeAmount = Math.max(0, val - transactionTotal);
+    }
+
+    if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'Processing...';
+    }
 
     const items = posState.cart.map(item => ({
         id: item.id,
@@ -1715,7 +2016,6 @@ async function confirmPayment() {
         price: item.unit_price,
     }));
 
-    // Prepare items for backend storage & atomic stock deduction
     const transactionItems = posState.cart.map(item => ({
         id: item.id,
         name: item.name,
@@ -1735,7 +2035,9 @@ async function confirmPayment() {
         discount: discount,
         tax: tax,
         total_amount: transactionTotal,
-        payment_method: posState.paymentMethod === 'qr' ? 'qr' : 'cash',
+        amount_paid: amountPaid,
+        change_amount: changeAmount,
+        payment_method: selectedMethod === 'qr' ? 'qr' : 'cash',
     };
 
     try {
@@ -1753,7 +2055,6 @@ async function confirmPayment() {
         if (!response.ok || !data.success) {
             const errorMsg = data.message || 'Transaction failed. Please check stock availability.';
             alert(`Payment Failed: Insufficient Stock or System Error\n\n${errorMsg}`);
-            // Re-validate cart and refresh products so cashier sees current stocks
             await revalidateCartStock();
             searchProducts(posState.productSearchQuery, posState.productPage);
             return;
@@ -1771,21 +2072,23 @@ async function confirmPayment() {
             discount,
             tax,
             total: transactionTotal,
-            paymentMethod: posState.paymentMethod,
+            amountReceived: amountPaid,
+            change: changeAmount,
+            paymentMethod: selectedMethod,
         };
 
         recordTransaction(
             invoiceNumber,
             now.toISOString(),
             transactionTotal,
-            posState.paymentMethod,
+            selectedMethod,
             items
         );
 
         renderTransactionHistory();
         populateReceipt();
 
-        if (posState.paymentMethod === 'qr') {
+        if (selectedMethod === 'qr') {
             showQRPaymentModal(transactionTotal);
         } else {
             const receiptDetails = document.getElementById('receiptInvoiceDetails');
@@ -1793,7 +2096,7 @@ async function confirmPayment() {
             const printButton = document.getElementById('posPrintReceiptButton');
             if (receiptDetails) receiptDetails.classList.add('hidden');
             if (viewInvoiceButton) viewInvoiceButton.classList.remove('hidden');
-            if (printButton) printButton.classList.add('hidden');
+            if (printButton) printButton.classList.remove('hidden');
             showReceiptOverlay();
         }
 
@@ -1807,8 +2110,6 @@ async function confirmPayment() {
         if (scanFeedback) scanFeedback.textContent = '';
         updateTotals();
         clearCart();
-
-        // Refresh product grid to show updated stock counts
         searchProducts(posState.productSearchQuery, posState.productPage);
 
     } catch (error) {
@@ -1891,6 +2192,8 @@ function setupPosEvents() {
             const brand = button.dataset.brand || '';
             const compatibility = button.dataset.compatibility || '';
             const category = button.dataset.category || '';
+            const discountType = button.dataset.discountType || null;
+            const discountValue = parseFloat(button.dataset.discountValue) || 0;
 
             if (!productId) return;
             addProductToCart({
@@ -1902,7 +2205,9 @@ function setupPosEvents() {
                 product_description: productDescription,
                 brand,
                 compatibility,
-                category
+                category,
+                discount_type: discountType,
+                discount_value: discountValue
             });
             return;
         }
@@ -1960,11 +2265,21 @@ function setupPosEvents() {
                 // Update preview
                 const card = input.closest('.pos-image-upload-card');
                 const preview = card?.querySelector('.pos-image-preview');
-                if (preview) preview.style.backgroundImage = `url('${compressedDataUrl}')`;
+                const placeholder = card?.querySelector('.pos-image-placeholder');
+                if (preview) {
+                    preview.style.backgroundImage = `url('${compressedDataUrl}')`;
+                    preview.classList.remove('hidden');
+                }
+                if (placeholder) {
+                    placeholder.classList.add('hidden');
+                }
 
                 // Save compressed version
                 if (input.dataset.id) {
-                    saveProductImagePreview(input.dataset.id, compressedDataUrl);
+                    const card = input.closest('.pos-image-upload-card');
+                    const sku = card?.dataset.sku || '';
+                    const name = card?.dataset.name || '';
+                    saveProductImagePreview(input.dataset.id, compressedDataUrl, sku, name);
                 }
             };
             img.src = reader.result;
@@ -1988,14 +2303,33 @@ function setupPosEvents() {
     document.getElementById('posPaymentModalClose')?.addEventListener('click', closePaymentModal);
     document.getElementById('posPaymentModalCancel')?.addEventListener('click', closePaymentModal);
     document.getElementById('posPaymentModalConfirm')?.addEventListener('click', confirmPayment);
+    document.getElementById('posAmountTenderedInput')?.addEventListener('input', updateChangeCalculation);
+    document.querySelectorAll('.pos-quick-cash-pill').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const tenderedInput = document.getElementById('posAmountTenderedInput');
+            if (!tenderedInput) return;
+            const total = posState.currentPaymentTotal ?? 0;
+            if (this.dataset.mode === 'exact') {
+                tenderedInput.value = total > 0 ? (total % 1 === 0 ? total : total.toFixed(2)) : 0;
+            } else if (this.dataset.amount) {
+                tenderedInput.value = this.dataset.amount;
+            }
+            updateChangeCalculation();
+            tenderedInput.focus();
+        });
+    });
     document.getElementById('posExtraChargeInput')?.addEventListener('input', event => updateExtraCharge(event.target.value));
     document.getElementById('posDiscountInput')?.addEventListener('input', event => updateDiscount(event.target.value));
+    document.getElementById('posRemoveDiscountBtn')?.addEventListener('click', removeAppliedDiscount);
     document.querySelectorAll('.pos-payment-method').forEach(radio => {
         radio.addEventListener('change', event => updatePaymentMethod(event.target.value));
     });
 
     document.querySelectorAll('input[name="posPaymentModalMethod"]').forEach(radio => {
-        radio.addEventListener('change', event => updatePaymentMethod(event.target.value));
+        radio.addEventListener('change', event => {
+            updatePaymentMethod(event.target.value);
+            updateChangeCalculation();
+        });
     });
 
     document.querySelectorAll('.pos-service-checkbox').forEach(checkbox => {
@@ -2211,6 +2545,9 @@ function setupPosEvents() {
 }
 
 function initializePos() {
+    if (window.POS?.routes?.apiProducts) {
+        posState.apiProductsUrl = window.POS.routes.apiProducts;
+    }
     posState.transactionHistory = loadTransactionHistory();
     loadProductImagePreviews();
     setupPosEvents();
@@ -2233,6 +2570,7 @@ window.closeInvoiceModal = closeInvoiceModal;
 window.deleteTransaction = deleteTransaction;
 window.posArchiveProduct = posArchiveProduct;
 window.bulkDeleteTransactions = bulkDeleteTransactions;
+window.searchProducts = searchProducts;
 
 async function posArchiveProduct(productId) {
     if (!confirm('Are you sure you want to archive this product? It will be hidden from both POS and All Stocks inventory.')) {
@@ -2557,7 +2895,9 @@ async function handleScannedCode(code) {
                 compatibility: product.compatibility || '',
                 category: product.category || 'Uncategorized',
                 stock_quantity: stock,
-                unit_price: Number(product.unit_price || 0)
+                unit_price: Number(product.unit_price || 0),
+                discount_type: product.discount_type || null,
+                discount_value: Number(product.discount_value || 0)
             });
         } else {
             showNotification(`Product not found: ${searchCode}`, 'error');
@@ -2586,10 +2926,10 @@ function playScanNotification() {
 
 function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
-    notification.className = 'fixed top-4 right-8 z-50 rounded-[10px] border p-4 text-sm font-medium shadow-lg transition-all duration-300';
+    notification.className = 'pos-toast-notification fixed top-4 right-8 z-50 rounded-[10px] border p-4 text-sm font-medium shadow-lg transition-all duration-300';
     if (type === 'success') {
         notification.style.backgroundColor = '#e6fffe';
-        notification.style.borderColor = '#00fff2';
+        notification.style.borderColor = '#6EC1D1';
         notification.style.borderWidth = '1px';
         notification.style.borderStyle = 'solid';
         notification.style.color = '#0f172a';
@@ -2614,4 +2954,16 @@ function showNotification(message, type = 'success') {
     }, 3000);
 }
 
-window.addEventListener('DOMContentLoaded', initializePos);
+function dismissAllNotifications() {
+    document.querySelectorAll('.pos-toast-notification').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => el.remove(), 300);
+    });
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializePos);
+} else {
+    initializePos();
+}

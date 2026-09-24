@@ -43,16 +43,16 @@ class ImportController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|mimes:csv,xlsx,xls',
+            'file' => ['required', 'file', 'max:20480', 'mimes:csv,txt,xlsx,xls,bin'],
         ]);
 
         $file = $request->file('file');
         $fileName = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
+        $extension = strtolower($file->getClientOriginalExtension());
 
         try {
             // For CSV files, read manually to avoid Laravel Excel path issues
-            if ($extension === 'csv') {
+            if ($extension === 'csv' || $extension === 'txt') {
                 $records = $this->readCsvFile($file);
             } else {
                 // For Excel files, use Laravel Excel
@@ -86,7 +86,16 @@ class ImportController extends Controller
 
             \Log::info('Pending import created', ['id' => $pendingImport->id]);
 
-            return back()->with('success', 'File uploaded successfully. Pending admin review.')
+            $validCount = count($validationResults['valid']);
+            $dupCount = count($validationResults['duplicates']);
+            $invalidCount = count($validationResults['invalid']);
+
+            $msg = "File \"{$fileName}\" uploaded successfully! Found {$validCount} valid order" . ($validCount === 1 ? '' : 's');
+            if ($dupCount > 0) $msg .= ", {$dupCount} duplicate" . ($dupCount === 1 ? '' : 's');
+            if ($invalidCount > 0) $msg .= ", {$invalidCount} invalid row" . ($invalidCount === 1 ? '' : 's');
+            $msg .= ". Staged for review below.";
+
+            return back()->with('success', $msg)
                 ->with('pending_import_id', $pendingImport->id);
 
         } catch (\Exception $e) {
@@ -100,7 +109,6 @@ class ImportController extends Controller
      */
     protected function readCsvFile($file): array
     {
-        $records = [];
         $handle = fopen($file->getPathname(), 'r');
         
         if ($handle === false) {
@@ -115,70 +123,77 @@ class ImportController extends Controller
             throw new \Exception('Unable to read CSV header');
         }
 
+        // Clean headers: remove UTF-8 BOM, trim, lowercase, replace spaces/dashes with underscores
+        $cleanHeaders = array_map(function ($h) {
+            $h = preg_replace('/^\xEF\xBB\xBF/', '', (string) $h);
+            return strtolower(trim(str_replace([' ', '-'], '_', (string) $h)));
+        }, $headers);
+
+        $groupedOrders = [];
+
         // Read data rows
-        $rowNumber = 0;
         while (($row = fgetcsv($handle)) !== false) {
-            $rowNumber++;
-            if (count($row) !== count($headers)) {
-                continue; // Skip malformed rows
+            if (empty(array_filter($row, fn($val) => trim((string)$val) !== ''))) {
+                continue; // Skip empty rows
+            }
+            if (count($row) < count($cleanHeaders)) {
+                $row = array_pad($row, count($cleanHeaders), '');
+            } elseif (count($row) > count($cleanHeaders)) {
+                $row = array_slice($row, 0, count($cleanHeaders));
             }
 
-            $record = array_combine($headers, $row);
-            $record = $this->mapRowToRecord($record);
-            
-            if ($record) {
-                $records[] = $record;
+            $rawRow = array_combine($cleanHeaders, $row);
+            $type = strtolower(trim($rawRow['type'] ?? ''));
+
+            if ($type === 'purchase_order' || empty($type)) {
+                $orderNumber = trim($rawRow['order_number'] ?? '');
+                if (!$orderNumber) {
+                    continue;
+                }
+
+                if (!isset($groupedOrders[$orderNumber])) {
+                    $groupedOrders[$orderNumber] = [
+                        'type' => 'purchase_order',
+                        'order_number' => $orderNumber,
+                        'supplier_id' => !empty($rawRow['supplier_id']) ? (int) $rawRow['supplier_id'] : null,
+                        'supplier_name' => !empty($rawRow['supplier_name']) ? trim($rawRow['supplier_name']) : null,
+                        'status' => !empty($rawRow['status']) ? trim($rawRow['status']) : 'pending',
+                        'sync_status' => 'imported',
+                        'notes' => !empty($rawRow['notes']) ? trim($rawRow['notes']) : null,
+                        'total_amount' => !empty($rawRow['total_amount']) ? (float) $rawRow['total_amount'] : 0,
+                        'created_at' => !empty($rawRow['created_at']) ? trim($rawRow['created_at']) : now(),
+                        'updated_at' => !empty($rawRow['updated_at']) ? trim($rawRow['updated_at']) : now(),
+                        'items' => [],
+                    ];
+                }
+
+                if (!empty($rawRow['product_id']) || !empty($rawRow['product_name']) || !empty($rawRow['sku'])) {
+                    $qty = (int) ($rawRow['quantity'] ?? 1);
+                    $price = (float) ($rawRow['unit_price'] ?? 0);
+                    $subtotal = !empty($rawRow['subtotal']) ? (float) $rawRow['subtotal'] : ($qty * $price);
+
+                    $groupedOrders[$orderNumber]['items'][] = [
+                        'product_id' => !empty($rawRow['product_id']) ? (int) $rawRow['product_id'] : null,
+                        'product_name' => !empty($rawRow['product_name']) ? trim($rawRow['product_name']) : 'Item',
+                        'sku' => !empty($rawRow['sku']) ? trim($rawRow['sku']) : null,
+                        'quantity' => $qty,
+                        'unit_price' => $price,
+                        'subtotal' => $subtotal,
+                    ];
+                }
             }
         }
 
         fclose($handle);
-        return $records;
-    }
 
-    /**
-     * Map CSV row to record format
-     */
-    protected function mapRowToRecord(array $row): ?array
-    {
-        if (empty($row['type'])) {
-            return null;
+        // Recalculate total amount from items if needed
+        foreach ($groupedOrders as &$order) {
+            if (empty($order['total_amount']) && !empty($order['items'])) {
+                $order['total_amount'] = array_sum(array_column($order['items'], 'subtotal'));
+            }
         }
 
-        $type = strtolower($row['type']);
-
-        if ($type === 'purchase_order') {
-            return [
-                'type' => 'purchase_order',
-                'order_number' => $row['order_number'] ?? null,
-                'supplier_id' => $row['supplier_id'] ?? null,
-                'supplier_name' => $row['supplier_name'] ?? null,
-                'status' => $row['status'] ?? 'pending',
-                'sync_status' => 'imported',
-                'expected_delivery_date' => $row['expected_delivery_date'] ?? null,
-                'notes' => $row['notes'] ?? null,
-                'total_amount' => $row['total_amount'] ?? 0,
-                'created_at' => $row['created_at'] ?? now(),
-                'updated_at' => $row['updated_at'] ?? now(),
-                'items' => [],
-            ];
-        } elseif ($type === 'inventory_movement') {
-            return [
-                'type' => 'inventory_movement',
-                'product_id' => $row['product_id'] ?? null,
-                'product_name' => $row['product_name'] ?? null,
-                'type' => $row['movement_type'] ?? 'adjustment',
-                'sync_status' => 'imported',
-                'quantity_change' => $row['quantity_change'] ?? 0,
-                'unit_price' => $row['unit_price'] ?? 0,
-                'supplier_name' => $row['supplier_name'] ?? null,
-                'notes' => $row['notes'] ?? null,
-                'metadata' => null,
-                'created_at' => $row['created_at'] ?? now(),
-                'updated_at' => $row['updated_at'] ?? now(),
-            ];
-        }
-
-        return null;
+        return array_values($groupedOrders);
     }
 
     /**
@@ -187,15 +202,15 @@ class ImportController extends Controller
     public function validateFile(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|mimes:csv,xlsx,xls',
+            'file' => ['required', 'file', 'max:20480', 'mimes:csv,txt,xlsx,xls,bin'],
         ]);
 
         $file = $request->file('file');
-        $extension = $file->getClientOriginalExtension();
+        $extension = strtolower($file->getClientOriginalExtension());
 
         try {
             // For CSV files, read manually
-            if ($extension === 'csv') {
+            if ($extension === 'csv' || $extension === 'txt') {
                 $records = $this->readCsvFile($file);
             } else {
                 // For Excel files, use Laravel Excel
@@ -207,8 +222,8 @@ class ImportController extends Controller
             if (empty($records)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No valid records found in the file.',
-                ]);
+                    'message' => 'No valid purchase orders found in the file. Please check column headers and content.',
+                ], 422);
             }
 
             $validationResults = $this->reconciliationService->validateImport($records);
@@ -225,8 +240,8 @@ class ImportController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation failed: ' . $e->getMessage(),
-            ]);
+                'message' => 'Validation error: ' . $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -238,13 +253,20 @@ class ImportController extends Controller
         $query = PendingImport::query()->with(['uploadedBy', 'reviewedBy']);
 
         // Filter by status
-        if ($request->has('status') && $request->status) {
+        if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        $pendingImports = $query->latest()->paginate(10);
+        $pendingImports = $query->latest()->paginate(10)->withQueryString();
 
-        return view('offline-reconciliation.pending-imports', compact('pendingImports'));
+        $stats = [
+            'pending' => PendingImport::where('status', 'pending')->count(),
+            'approved' => PendingImport::where('status', 'approved')->count(),
+            'rejected' => PendingImport::where('status', 'rejected')->count(),
+            'total' => PendingImport::count(),
+        ];
+
+        return view('offline-reconciliation.pending-imports', compact('pendingImports', 'stats'));
     }
 
     /**
@@ -257,59 +279,87 @@ class ImportController extends Controller
 
         $html = '<div class="space-y-4">';
         
-        // Summary
+        // Summary Cards
         $html .= '<div class="grid grid-cols-2 md:grid-cols-4 gap-2">';
-        $html .= '<div class="p-3 bg-slate-50 rounded-lg"><p class="text-xs text-slate-600">Total Records</p><p class="text-lg font-bold text-slate-900">' . $pendingImport->total_records . '</p></div>';
-        $html .= '<div class="p-3 bg-green-50 rounded-lg"><p class="text-xs text-green-600">Valid Records</p><p class="text-lg font-bold text-green-700">' . $pendingImport->valid_records . '</p></div>';
-        $html .= '<div class="p-3 bg-red-50 rounded-lg"><p class="text-xs text-red-600">Invalid Records</p><p class="text-lg font-bold text-red-700">' . $pendingImport->invalid_records . '</p></div>';
-        $html .= '<div class="p-3 bg-amber-50 rounded-lg"><p class="text-xs text-amber-600">Duplicate Records</p><p class="text-lg font-bold text-amber-700">' . $pendingImport->duplicate_records . '</p></div>';
+        $html .= '<div class="p-3 bg-slate-50 border border-slate-200 rounded-[12px]"><p class="text-xs text-slate-600 font-semibold">Total Records</p><p class="text-lg font-bold text-slate-900">' . $pendingImport->total_records . '</p></div>';
+        $html .= '<div class="p-3 bg-green-50 border border-green-200 rounded-[12px]"><p class="text-xs text-green-700 font-semibold">Valid Records</p><p class="text-lg font-bold text-green-700">' . $pendingImport->valid_records . '</p></div>';
+        $html .= '<div class="p-3 bg-red-50 border border-red-200 rounded-[12px]"><p class="text-xs text-red-700 font-semibold">Invalid Records</p><p class="text-lg font-bold text-red-700">' . $pendingImport->invalid_records . '</p></div>';
+        $html .= '<div class="p-3 bg-amber-50 border border-amber-200 rounded-[12px]"><p class="text-xs text-amber-700 font-semibold">Duplicate Records</p><p class="text-lg font-bold text-amber-700">' . $pendingImport->duplicate_records . '</p></div>';
         $html .= '</div>';
 
-        // Valid records preview
+        // Valid records preview with item details
         if (!empty($data['valid'])) {
-            $html .= '<div><h4 class="text-sm font-semibold text-slate-900 mb-2">Valid Records (' . count($data['valid']) . ')</h4>';
-            $html .= '<div class="max-h-60 overflow-y-auto border border-slate-200 rounded-lg">';
-            $html .= '<table class="w-full text-xs">';
-            $html .= '<thead class="bg-slate-50"><tr><th class="px-2 py-1 text-left">Type</th><th class="px-2 py-1 text-left">Details</th></tr></thead>';
-            $html .= '<tbody>';
-            foreach (array_slice($data['valid'], 0, 10) as $record) {
-                $html .= '<tr class="border-t">';
-                $html .= '<td class="px-2 py-1">' . ucfirst($record['type'] ?? 'Unknown') . '</td>';
-                $html .= '<td class="px-2 py-1">' . ($record['order_number'] ?? $record['product_name'] ?? 'N/A') . '</td>';
-                $html .= '</tr>';
-            }
-            if (count($data['valid']) > 10) {
-                $html .= '<tr><td colspan="2" class="px-2 py-1 text-slate-500">... and ' . (count($data['valid']) - 10) . ' more</td></tr>';
-            }
-            $html .= '</tbody></table></div></div>';
-        }
+            $html .= '<div><h4 class="text-xs uppercase tracking-wider font-bold text-green-800 mb-2 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-green-500"></span> Valid Records Ready for Sync (' . count($data['valid']) . ')</h4>';
+            $html .= '<div class="max-h-72 overflow-y-auto border border-slate-200 rounded-[12px] divide-y divide-slate-100">';
+            foreach ($data['valid'] as $record) {
+                $isPO = ($record['type'] ?? '') === 'purchase_order';
+                $orderNum = $record['order_number'] ?? 'N/A';
+                $supplierName = $record['supplier_name'] ?? 'N/A';
+                $totalAmount = number_format((float) ($record['total_amount'] ?? 0), 2);
+                $itemsCount = !empty($record['items']) ? count($record['items']) : 0;
 
-        // Invalid records
-        if (!empty($data['invalid'])) {
-            $html .= '<div><h4 class="text-sm font-semibold text-red-900 mb-2">Invalid Records (' . count($data['invalid']) . ')</h4>';
-            $html .= '<div class="max-h-40 overflow-y-auto border border-red-200 rounded-lg">';
-            foreach (array_slice($data['invalid'], 0, 5) as $invalid) {
-                $html .= '<div class="p-2 bg-red-50 border-b border-red-100">';
-                $html .= '<p class="text-xs text-red-700">Row ' . ($invalid['index'] + 1) . ': ' . implode(', ', $invalid['errors']) . '</p>';
+                $html .= '<div class="p-3 bg-white hover:bg-slate-50 transition">';
+                $html .= '<div class="flex items-center justify-between text-xs mb-1.5">';
+                $html .= '<span class="font-bold text-slate-900 font-mono">' . htmlspecialchars($orderNum) . '</span>';
+                $html .= '<span class="font-semibold text-slate-700">₱' . $totalAmount . '</span>';
+                $html .= '</div>';
+                $html .= '<div class="flex items-center justify-between text-[11px] text-slate-500 mb-2">';
+                $html .= '<span>Supplier: <strong class="text-slate-800">' . htmlspecialchars($supplierName) . '</strong></span>';
+                $html .= '<span>' . $itemsCount . ' Item(s)</span>';
+                $html .= '</div>';
+
+                if ($isPO && !empty($record['items'])) {
+                    $html .= '<div class="bg-slate-50 rounded-[8px] p-2 border border-slate-100 space-y-1">';
+                    foreach ($record['items'] as $item) {
+                        $pName = htmlspecialchars($item['product_name'] ?? 'Product');
+                        $pSku = htmlspecialchars($item['sku'] ?? 'N/A');
+                        $pQty = (int) ($item['quantity'] ?? 1);
+                        $pPrice = number_format((float) ($item['unit_price'] ?? 0), 2);
+                        $pSubtotal = number_format((float) ($item['subtotal'] ?? ($pQty * ($item['unit_price'] ?? 0))), 2);
+
+                        $html .= '<div class="flex items-center justify-between text-[10px] text-slate-600">';
+                        $html .= '<span>• ' . $pName . ' <span class="text-slate-400">(' . $pSku . ')</span> × ' . $pQty . ' @ ₱' . $pPrice . '</span>';
+                        $html .= '<span class="font-semibold text-slate-800">₱' . $pSubtotal . '</span>';
+                        $html .= '</div>';
+                    }
+                    $html .= '</div>';
+                }
+
                 $html .= '</div>';
             }
-            if (count($data['invalid']) > 5) {
-                $html .= '<p class="text-xs text-red-600 p-2">... and ' . (count($data['invalid']) - 5) . ' more</p>';
+            $html .= '</div></div>';
+        }
+
+        // Invalid records with error reasons
+        if (!empty($data['invalid'])) {
+            $html .= '<div><h4 class="text-xs uppercase tracking-wider font-bold text-red-800 mb-2 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-500"></span> Invalid Records (' . count($data['invalid']) . ')</h4>';
+            $html .= '<div class="max-h-56 overflow-y-auto border border-red-200 rounded-[12px] divide-y divide-red-100">';
+            foreach ($data['invalid'] as $invalid) {
+                $orderNum = $invalid['record']['order_number'] ?? ('Row #' . (($invalid['index'] ?? 0) + 1));
+                $errors = $invalid['errors'] ?? ['Validation failed.'];
+                $html .= '<div class="p-2.5 bg-red-50/50">';
+                $html .= '<div class="font-bold text-xs text-red-900 font-mono mb-1">' . htmlspecialchars($orderNum) . '</div>';
+                $html .= '<ul class="list-disc list-inside text-[11px] text-red-700 space-y-0.5">';
+                foreach ($errors as $err) {
+                    $html .= '<li>' . htmlspecialchars($err) . '</li>';
+                }
+                $html .= '</ul>';
+                $html .= '</div>';
             }
             $html .= '</div></div>';
         }
 
         // Duplicate records
         if (!empty($data['duplicates'])) {
-            $html .= '<div><h4 class="text-sm font-semibold text-amber-900 mb-2">Duplicate Records (' . count($data['duplicates']) . ')</h4>';
-            $html .= '<div class="max-h-40 overflow-y-auto border border-amber-200 rounded-lg">';
-            foreach (array_slice($data['duplicates'], 0, 5) as $duplicate) {
-                $html .= '<div class="p-2 bg-amber-50 border-b border-amber-100">';
-                $html .= '<p class="text-xs text-amber-700">' . ($duplicate['order_number'] ?? $duplicate['product_name'] ?? 'N/A') . '</p>';
+            $html .= '<div><h4 class="text-xs uppercase tracking-wider font-bold text-amber-800 mb-2 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-500"></span> Duplicate Records (' . count($data['duplicates']) . ')</h4>';
+            $html .= '<div class="max-h-40 overflow-y-auto border border-amber-200 rounded-[12px] divide-y divide-amber-100">';
+            foreach ($data['duplicates'] as $dup) {
+                $orderNum = $dup['record']['order_number'] ?? ($dup['order_number'] ?? 'N/A');
+                $reason = $dup['reason'] ?? 'Already exists in database';
+                $html .= '<div class="p-2 bg-amber-50/50 flex items-center justify-between text-xs">';
+                $html .= '<span class="font-bold text-amber-900 font-mono">' . htmlspecialchars($orderNum) . '</span>';
+                $html .= '<span class="text-[11px] text-amber-700 font-medium">' . htmlspecialchars($reason) . '</span>';
                 $html .= '</div>';
-            }
-            if (count($data['duplicates']) > 5) {
-                $html .= '<p class="text-xs text-amber-600 p-2">... and ' . (count($data['duplicates']) - 5) . ' more</p>';
             }
             $html .= '</div></div>';
         }
@@ -352,7 +402,10 @@ class ImportController extends Controller
                 'reviewed_at' => now(),
             ]);
 
-            return back()->with('success', 'Import approved and synchronized successfully.');
+            $validOrders = $pendingImport->data['valid'] ?? [];
+            $validCount = count($validOrders);
+
+            return back()->with('success', "Import Approved! Successfully synchronized {$validCount} purchase order" . ($validCount === 1 ? '' : 's') . " from file \"{$pendingImport->file_name}\" into the database.");
         } catch (\Exception $e) {
             \Log::error('Approve failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             return back()->with('error', 'Failed to approve import: ' . $e->getMessage());
@@ -391,6 +444,6 @@ class ImportController extends Controller
             'reviewed_at' => now(),
         ]);
 
-        return back()->with('success', 'Import rejected successfully.');
+        return back()->with('success', "Import for \"{$pendingImport->file_name}\" was rejected successfully.");
     }
 }

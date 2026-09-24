@@ -120,30 +120,37 @@ class DSSRecommendationEngineService
             ->where('is_active', true)
             ->first();
 
-        if (!$deadStock || $deadStock->days_without_sale < 90) {
+        if (!$deadStock || $deadStock->days_without_sale < 31) {
             return null;
         }
 
-        $priority = $this->getPriorityForDaysWithoutSale($deadStock->days_without_sale);
+        $days = (int) $deadStock->days_without_sale;
+        $autoRec = $deadStock->getAutomaticRecommendation();
 
-        // Suggest discount percentage based on days without sale
-        $discountPercentage = $deadStock->days_without_sale >= 180 ? 20 : ($deadStock->days_without_sale >= 120 ? 15 : 10);
+        if ($days >= 91) {
+            $minDiscount = 20;
+            $maxDiscount = 20;
+        } elseif ($days >= 61) {
+            $minDiscount = 10;
+            $maxDiscount = 15;
+        } else {
+            $minDiscount = 5;
+            $maxDiscount = 5;
+        }
 
-        $description = sprintf(
-            "Reduce the selling price by %d%% to %d%% to increase sales velocity and free up warehouse space.",
-            $discountPercentage - 5,
-            $discountPercentage
-        );
+        $priority = $this->getPriorityForDaysWithoutSale($days);
 
         return DSSRecommendation::updateOrCreate(
             ['product_id' => $product->id, 'recommendation_type' => 'discount'],
             [
-                'title' => 'Apply Price Reduction',
-                'description' => $description,
+                'title' => 'Apply a discount to increase sales.',
+                'description' => "Suggested Discount: {$autoRec['suggested_discount']}. Reason: {$autoRec['reason']}",
                 'priority' => $priority,
                 'metadata' => [
-                    'suggested_discount_min' => $discountPercentage - 5,
-                    'suggested_discount_max' => $discountPercentage,
+                    'suggested_discount_min' => $minDiscount,
+                    'suggested_discount_max' => $maxDiscount,
+                    'suggested_discount_label' => $autoRec['suggested_discount'],
+                    'days_without_sale' => $days,
                 ],
                 'is_active' => true,
                 'generated_at' => now(),
