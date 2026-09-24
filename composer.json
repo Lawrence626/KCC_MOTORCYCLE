@@ -9,22 +9,21 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.3",
-        "endroid/qr-code": "^6.1",
-        "laravel/fortify": "^1.37",
-        "laravel/framework": "^13.8",
-        "laravel/tinker": "^3.0",
+        "php": "^8.2",
+        "endroid/qr-code": "^5.0 || ^6.0",
+        "laravel/fortify": "^1.20",
+        "laravel/framework": "^11.0",
+        "laravel/tinker": "^2.9",
         "maatwebsite/excel": "^3.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
-        "laravel/pail": "^1.2.5",
-        "laravel/pao": "^1.0.6",
-        "laravel/pint": "^1.27",
+        "laravel/pail": "^1.2",
+        "laravel/pint": "^1.15",
         "mockery/mockery": "^1.6",
-        "nunomaduro/collision": "^8.6",
-        "pestphp/pest": "^4.7",
-        "pestphp/pest-plugin-laravel": "^4.1"
+        "nunomaduro/collision": "^8.0",
+        "pestphp/pest": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0"
     },
     "autoload": {
         "psr-4": {
@@ -83,6 +82,22 @@
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
+        "audit": {
+            "abandoned": "report",
+            "ignore": {
+                "PKSA-m5cs-t1y6-qpcs": "Local dev environment",
+                "PKSA-3r5d-mb8f-1qw9": "Local dev environment",
+                "PKSA-mdq4-51ck-6kdq": "Local dev environment",
+                "PKSA-8qx3-n5y5-vvnd": "Local dev environment",
+                "PKSA-q46n-4fdk-zjr4": "Local dev environment",
+                "PKSA-qzrn-rnz3-85w1": "Local dev environment",
+                "PKSA-w7xr-vk7n-rstm": "Local dev environment"
+            }
+        },
+        "platform": {
+            "php": "8.2.12"
+        },
+        "platform-check": false,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
