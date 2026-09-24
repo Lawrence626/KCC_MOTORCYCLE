@@ -1,9 +1,9 @@
 <x-layouts.app :title="__('Received Orders')">
     <div class="space-y-5">
-            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
                 <div class="pl-3 lg:pl-2">
                 <h1 class="text-3xl font-bold text-slate-900">Received Orders</h1>
-                <p class="max-w-2xl text-sm text-slate-500">Track completed deliveries, confirm order receipts, and view inventory impact.</p>
+                <p class="max-w-2xl text-xs text-slate-500">Track completed deliveries, confirm order receipts, and view inventory impact.</p>
             </div>
             <div class="flex flex-wrap items-center gap-3">
                 <button id="ro-generate-qr" type="button" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200">
@@ -1112,5 +1112,38 @@
             window.roScanPrevPage = roScanPrevPage;
             window.roScanNextPage = roScanNextPage;
         });
+
+        // Notification panel toggle
+        window.toggleNotificationPanel = function(e) {
+            if (e) e.stopPropagation();
+            var panel = document.getElementById('notification-panel');
+            if (!panel) return;
+
+            // Close profile dropdown first if open
+            var profileDropdown = document.getElementById('dashboardProfileDropdown');
+            if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
+                profileDropdown.classList.add('hidden');
+                profileDropdown.classList.add('opacity-0', 'scale-95');
+            }
+
+            const isOpen = !panel.classList.contains('hidden');
+            if (isOpen) {
+                panel.classList.add('hidden');
+            } else {
+                panel.classList.remove('hidden');
+            }
+        };
+
+        // Mark all notifications as read
+        window.markAllNotificationsRead = function() {
+            // Implementation for marking notifications as read
+            console.log('Mark all notifications as read');
+        };
+
+        // Open all notifications modal
+        window.openAllNotificationsModal = function() {
+            // Implementation for opening all notifications modal
+            console.log('Open all notifications modal');
+        };
     </script>
 </x-layouts.app>

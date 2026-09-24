@@ -11,7 +11,7 @@
         <div class="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm">
             <div class="flex items-start justify-between gap-2">
                 <div>
-                    <h1 class="text-2xl font-bold text-slate-900">{{ $productCatalog->product_description }}</h1>
+                    <h1 class="text-3xl font-bold text-slate-900">{{ $productCatalog->product_description }}</h1>
                     @if($productCatalog->product_name)
                         <p class="text-xs text-slate-500 mt-1">{{ $productCatalog->product_name }}</p>
                     @endif

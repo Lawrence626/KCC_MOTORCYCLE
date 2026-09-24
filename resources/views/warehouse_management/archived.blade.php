@@ -28,7 +28,7 @@
 
         <div class="flex items-start justify-between gap-2">
             <div>
-                <h1 class="text-3xl font-extrabold text-slate-900">Archived Warehouses</h1>
+                <h1 class="text-3xl font-bold text-slate-900">Archived Warehouses</h1>
                 <p class="mt-2 text-sm text-gray-500">Manage and restore archived warehouses.</p>
             </div>
             <div class="flex items-center gap-3">

@@ -1,7 +1,7 @@
 <x-layouts.app :title="__('Item Disposal')">
     <div class="space-y-4">
         <!-- Header -->
-        <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center justify-between gap-3 pt-2 pb-1 pl-1">
             <div class="pl-3 lg:pl-2">
                 <h1 class="text-3xl font-bold text-slate-900">Item Disposal List</h1>
                 <p class="text-sm text-slate-500 mt-1">Automatically identifies expired, damaged, or recalled inventory items requiring disposal.</p>
@@ -238,8 +238,8 @@
     <!-- Item Details Modal -->
     <div id="itemModal" class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 py-4">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('itemModal').classList.add('hidden')"></div>
-        <div class="relative w-full max-w-2xl lg:max-w-3xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
+        <div class="relative w-full max-w-2xl lg:max-w-3xl overflow-hidden rounded-[28px] border-0 ring-0 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h2 class="text-xl font-bold text-black">Item Details</h2>
                     <p class="text-sm text-slate-900 font-medium">View complete item information</p>

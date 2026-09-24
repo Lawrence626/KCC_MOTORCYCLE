@@ -65,6 +65,7 @@ Route::middleware(['auth'])->group(function () {
     // Point of Sales Routes - Admin and Cashier only
     Route::middleware('role:admin,cashier')->group(function () {
         Route::view('pos/terminal', 'point_of_sales.terminal')->name('pos.terminal');
+        Route::view('pos/archived-items', 'inventory.archived')->name('pos.archived');
         Route::view('pos/mobile-scanner', 'point_of_sales.mobile-scanner')->name('pos.mobile-scanner');
         Route::post('pos/scan', [App\Http\Controllers\PosController::class, 'handleScan'])->name('pos.scan');
         Route::view('replacing-items', 'point_of_sales.replacing-items')->name('replacing.items');

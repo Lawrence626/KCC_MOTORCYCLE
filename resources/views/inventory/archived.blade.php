@@ -1,27 +1,11 @@
 <x-layouts.app :title="__('Archived Items')">
+    <div id="dashboard-root" class="space-y-1.5">
     <div class="flex flex-col gap-5" style="min-height: calc(100vh - 200px);">
         <!-- Header -->
-       <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+       <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
                 <div class="pl-3 lg:pl-2">
                 <h1 class="text-3xl font-bold text-slate-900">Archived Items</h1>
-                <p class="text-2XL text-slate-500 mt-0.5">Archived inventory items. Restore or permanently delete</p>
-            </div>
-            <div class="flex gap-2 items-center">
-                <div class="relative flex-shrink-0" data-dropdown-wrapper="backNavigation">
-                    <button type="button" id="backNavigationButton" onclick="toggleCustomDropdown('backNavigationDropdown', event)" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
-                        <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                        </svg>
-                        <span>BACK</span>
-                        <svg class="w-3.5 h-3.5 text-slate-500 ml-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-                    <div id="backNavigationDropdown" class="dropdown-menu hidden absolute top-full right-0 z-[999] mt-1.5 w-48 rounded-[12px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-1">
-                        <a href="{{ route('allstocks') }}" class="block text-left px-3 py-2 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition">Back to All Stocks</a>
-                        <a href="{{ route('pos.terminal') }}" class="block text-left px-3 py-2 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition">Back to POS</a>
-                    </div>
-                </div>
+                <p class="text-xs text-slate-500 mt-0.5">Archived inventory items. Restore or permanently delete</p>
             </div>
         </div>
 
@@ -81,7 +65,7 @@
                         <span id="categoryLabel">All Categories</span>
                         <svg class="w-3.5 h-3.5 text-slate-400 flex-shrink-0" id="categoryChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
-                    <div id="categoryDropdown" class="hidden absolute top-full mt-2 left-0 w-full bg-white border border-slate-100 rounded-[18px] shadow-[0_16px_40px_rgba(0,0,0,0.12)] z-50 p-3 space-y-1 max-h-60 overflow-y-auto">
+                    <div id="categoryDropdown" class="hidden absolute top-full mt-2 right-0 left-auto w-[270px] bg-white border border-slate-100 rounded-[18px] shadow-[0_16px_40px_rgba(0,0,0,0.12)] z-50 p-3 space-y-1 max-h-48 overflow-y-auto">
                         <button type="button" onclick="selectCategory('', 'All Categories')" class="w-full px-4 py-2 text-left text-sm bg-slate-100 text-slate-900 font-semibold rounded-[10px] category-option" data-value="">All Categories</button>
                         <button type="button" onclick="selectCategory('Exhaust', 'Exhaust')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="Exhaust">Exhaust</button>
                         <button type="button" onclick="selectCategory('Helmets', 'Helmets')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="Helmets">Helmets</button>
@@ -458,5 +442,54 @@
 
         // Load on page load
         loadArchivedProducts();
+
+        // Notification Panel Toggle
+        function toggleNotificationPanel(event) {
+            event.stopPropagation();
+            const panel = document.getElementById('notification-panel');
+            const profileDropdown = document.getElementById('dashboardProfileDropdown');
+            if (panel) {
+                const isHidden = panel.classList.contains('hidden');
+                if (isHidden) {
+                    panel.classList.remove('hidden');
+                    if (profileDropdown) {
+                        profileDropdown.classList.add('hidden');
+                        profileDropdown.classList.remove('opacity-100', 'scale-100');
+                        profileDropdown.classList.add('opacity-0', 'scale-95');
+                    }
+                } else {
+                    panel.classList.add('hidden');
+                }
+            }
+        }
+
+        // Helper functions
+        function markAllNotificationsRead() {
+            // Placeholder for marking all notifications as read
+            console.log('Mark all notifications as read');
+        }
+
+        function openAllNotificationsModal() {
+            // Placeholder for opening all notifications modal
+            console.log('Open all notifications modal');
+        }
+
+        // Close dropdowns when clicking outside
+        window.addEventListener('click', function(event) {
+            const panel = document.getElementById('notification-panel');
+            const profileDropdown = document.getElementById('dashboardProfileDropdown');
+            const notificationBell = document.getElementById('notification-bell-btn');
+            const profileButton = document.getElementById('dashboardProfileButton');
+
+            if (panel && !panel.contains(event.target) && notificationBell && !notificationBell.contains(event.target)) {
+                panel.classList.add('hidden');
+            }
+
+            if (profileDropdown && !profileDropdown.contains(event.target) && profileButton && !profileButton.contains(event.target)) {
+                profileDropdown.classList.add('hidden');
+                profileDropdown.classList.remove('opacity-100', 'scale-100');
+                profileDropdown.classList.add('opacity-0', 'scale-95');
+            }
+        });
     </script>
 </x-layouts.app>

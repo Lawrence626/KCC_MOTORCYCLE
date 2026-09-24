@@ -4,7 +4,7 @@
 
         <div class="w-full px-1 pt-2">
             <div class="flex items-start justify-between">
-                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">
+                <h1 class="text-3xl font-bold text-slate-900">
                     {{ $deadStock->product->description ?? $deadStock->product->name ?? 'Product' }}
                 </h1>
                 <a href="{{ route('dss.dead-stock.index') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-50 transition-all shrink-0 self-end">

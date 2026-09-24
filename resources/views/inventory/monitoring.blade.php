@@ -1,7 +1,7 @@
 <x-layouts.app :title="__('Inventory Monitoring')">
     <div class="space-y-4">
         <!-- Header -->
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
             <div class="pl-3 lg:pl-1">
                 <h1 class="text-3xl font-bold text-slate-900">Inventory Monitoring</h1>
                 <p class="text-sm text-slate-500 mt-1">Real-time tracking of inventory operations and movements</p>
@@ -349,7 +349,7 @@
                             <input name="unit_price" id="editUnitPrice" type="number" step="0.01" required class="w-full rounded-[10px] border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 shadow-sm hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
                         </div>
                         <!-- Suppliers Multi-Select Dropdown -->
-                        <div class="space-y-1 relative z-[105]" data-dropdown-wrapper="editSuppliers">
+                        <div class="space-y-1 relative z-[100]" data-dropdown-wrapper="editSuppliers">
                             <label class="block text-xs font-medium text-slate-700">Suppliers</label>
                             <input type="hidden" name="supplier_name" id="editSupplier" value="" />
                             <button type="button" id="editSuppliersButton" class="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-left text-xs text-slate-900 flex items-center justify-between hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-sm h-9 cursor-pointer transition">
@@ -358,7 +358,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
-                            <div id="editSuppliersDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[105] mt-1.5 w-full rounded-[12px] border border-slate-200 bg-white shadow-xl p-2 space-y-1 max-h-56 overflow-y-auto">
+                            <div id="editSuppliersDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[100] mt-1.5 w-full rounded-[12px] border border-slate-200 bg-white shadow-xl p-2 space-y-1 max-h-56 overflow-y-auto">
                                 <div id="editSuppliersList" class="space-y-0.5">
                                     <!-- Supplier checkboxes dynamically loaded here -->
                                 </div>
@@ -373,7 +373,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                                 </svg>
                             </button>
-                            <div id="editCategoryDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[99999] mt-1 w-full rounded-[10px] border border-slate-300 bg-white shadow-xl p-1.5 max-h-[200px] overflow-y-auto">
+                            <div id="editCategoryDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[100] mt-1 w-full rounded-[10px] border border-slate-300 bg-white shadow-xl p-1.5 max-h-[200px] overflow-y-auto">
                                 <button type="button" onclick="selectDropdownOption('editCategory', '', 'Select category', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Select category</button>
                                 <button type="button" onclick="selectDropdownOption('editCategory', 'engine_oil', 'Engine Oil', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Engine Oil</button>
                                 <button type="button" onclick="selectDropdownOption('editCategory', 'lubricants', 'Lubricants', 'editCategoryDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Lubricants</button>
@@ -548,7 +548,7 @@
             }
 
             const card = document.createElement('div');
-            card.className = 'custom-calendar-card hidden absolute top-full left-0 mt-1 z-[999999] w-full rounded-[14px] bg-white p-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.12)] border border-slate-200 transition-all duration-200';
+            card.className = 'custom-calendar-card hidden absolute top-full left-0 mt-1 z-[90] w-full rounded-[14px] bg-white p-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.12)] border border-slate-200 transition-all duration-200';
             wrapper.appendChild(card);
 
             if (input.value && input.value.includes('T')) {

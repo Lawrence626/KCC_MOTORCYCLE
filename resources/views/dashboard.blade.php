@@ -1,125 +1,9 @@
 <x-layouts.app :title="__('Dashboard')">
-    <div id="dashboard-root" data-dashboard-url="{{ route('dashboard.data') }}" data-refresh-interval="15000" class="space-y-1.5">
-       
-            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div class="pl-3 lg:pl-2">
-                    <h1 class="text-4xl font-bold text-slate-900">Dashboard</h1>
-                    <p class="text-gray-600 text-base mt-1">Overview of sales, inventory and performance insights</p>
-                </div>
-                <div class="flex flex-col gap-1 sm:flex-row sm:items-center pr-4">
-                    @if(auth()->check())
-                        @if(!in_array(auth()->user()->role, ['cashier', 'warehouse_personnel']))
-                        <div class="relative" id="notification-bell-wrapper">
-                            <button
-                                type="button"
-                                id="notification-bell-btn"
-                                class="relative p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition"
-                                aria-label="Notifications"
-                                onclick="toggleNotificationPanel(event)"
-                            >
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-                                </svg>
-                                <span
-                                    id="notification-badge"
-                                    class="absolute -top-0.5 -right-0.5 hidden rounded-full bg-red-500 text-[10px] font-bold text-white text-center"
-                                    style="min-width: 18px; height: 18px; padding: 0 4px; display: none; align-items: center; justify-content: center; line-height: 1; text-align: center;"
-                                ></span>
-                            </button>
-
-                            {{-- Notification Dropdown Panel --}}
-                            <div
-                                id="notification-panel"
-                                class="hidden absolute right-0 top-full mt-2 w-[320px] rounded-xl bg-white border border-slate-200 shadow-2xl z-[9999] flex flex-col"
-                                style="max-height: 350px;"
-                            >
-                                <div class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b border-slate-800 rounded-t-xl bg-[#0f172a]" style="background-color: #0f172a;">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-sm font-bold text-white">Notifications</span>
-                                        <span id="notif-center-unread-badge" class="hidden inline-flex items-center justify-center rounded-full text-[11px] font-bold text-white text-center" style="background-color: #ef4444; width: 20px; height: 20px; padding: 0; display: none; align-items: center; justify-content: center; line-height: 1; text-align: center; border-radius: 50%; box-sizing: border-box;">0</span>
-                                    </div>
-                                    <div class="flex items-center gap-3">
-                                        <button
-                                            type="button"
-                                            onclick="markAllNotificationsRead()"
-                                            class="text-xs font-semibold text-slate-300 hover:text-white transition-colors"
-                                        >Mark all as read</button>
-                                    </div>
-                                </div>
-                                <div id="notification-list" class="flex-1 overflow-y-auto">
-                                    {{-- Notifications rendered by JS --}}
-                                </div>
-                                <div id="notification-empty" class="hidden px-4 py-8 text-center">
-                                    <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#ccfbf1] mb-2">
-                                        <svg class="w-5 h-5 text-[#0f766e]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
-                                    </div>
-                                    <p class="text-sm font-semibold text-slate-800">All caught up</p>
-                                    <p class="text-xs text-slate-500 mt-1">No new inventory alerts.</p>
-                                </div>
-                                <div class="sticky bottom-0 z-10 px-4 py-3 bg-slate-50 border-t border-slate-100 text-center rounded-b-xl">
-                                    <button type="button" onclick="openAllNotificationsModal()" class="text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors">View All Notifications</button>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
-                        <div class="relative inline-flex items-center gap-1.5 rounded-[20px] px-3 py-2 text-left">
-                            <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-black grid place-items-center text-lg font-semibold overflow-hidden">
-                                {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
-                            </span>
-                            <div class="flex flex-col leading-tight">
-                                <span class="text-sm font-semibold text-black">{{ auth()->user()->name ?? 'Admin' }}</span>
-                                <span class="text-xs text-gray-500">{{ auth()->user()->email ?? '' }}</span>
-                            </div>
-                            <button type="button" id="dashboardProfileButton" class="inline-flex h-7 w-7 items-center justify-center rounded-[12px] bg-transparent text-[#0f0f0f] transition-colors duration-200 focus:outline-none hover:bg-transparent focus:bg-transparent active:bg-transparent hover:text-slate-400 border-none cursor-pointer" style="background: transparent !important; border: none !important; box-shadow: none !important;" aria-label="Open profile menu">
-                                <svg id="dashboardProfileArrow" class="w-5 h-5 text-current transition-colors duration-200" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5H7z"/></svg>
-                            </button>
-
-                            <div id="dashboardProfileDropdown" class="absolute right-0 top-full mt-2 w-65 min-h-[100px] rounded-[15px] bg-[#0f0f0f] shadow-2xl shadow-black/20 z-50 hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right" style="color: #ffffff;">
-                                <div class="px-4 py-4 border-b border-slate-700/60">
-                                    <div class="flex items-center gap-3">
-                                        <span class="w-12 h-12 rounded-full bg-gray-200 text-black grid place-items-center overflow-hidden text-lg font-semibold">
-                                            {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
-                                        </span>
-                                        <div>
-                                            <div class="text-[13px] font-semibold text-white">{{ auth()->user()->name ?? 'Admin' }}</div>
-                                            <div class="text-[12px] text-gray-400">{{ auth()->user()->email ?? '' }}</div>
-                                        </div>
-                                    </div>
-                                    <div class="mt-3">
-                                        <span class="inline-flex items-center rounded-full border border-gray-600/30 bg-gray-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style="color: #32FFFD;">
-                                            {{ (auth()->user()->role ?? 'user') === 'admin' ? 'Administrator' : ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'user')) }}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col gap-1 px-2 py-2">
-                                    <a href="{{ route('profile.show') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/60 transition">
-                                        <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-700 text-white">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9 9 0 1118.879 6.196 9 9 0 015.12 17.804z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                        </span>
-                                        <span>View Profile</span>
-                                    </a>
-                                    <a href="{{ route('settings.general') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/60 transition">
-                                        <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-700 text-white">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                        </span>
-                                        <span>Settings</span>
-                                    </a>
-                                    <form action="{{ route('logout') }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="flex w-full items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/60 transition">
-                                            <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-700 text-white">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                                            </span>
-                                            <span>Logout</span>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
-                </div>
-            </div>
+    <div id="dashboard-root" data-dashboard-url="{{ route('dashboard.data') }}" data-refresh-interval="15000" class="space-y-4">
+        <!-- Dashboard Title (scrolls with page content) -->
+        <div class="pb-2 pl-2">
+            <h1 class="text-3xl font-bold text-slate-900">Dashboard</h1>
+            <p class="text-gray-600 text-sm mt-1">Overview of sales, inventory and performance insights</p>
         </div>
 
         @php
@@ -127,15 +11,15 @@
         @endphp
 
         <!-- Stats Grid -->
-        <div class="w-full -mt-2.5">
-            <div class="grid grid-cols-1 sm:grid-cols-2 {{ $canSeeDeadStock ? 'lg:grid-cols-3 xl:grid-cols-5' : 'lg:grid-cols-4' }} gap-x-5 gap-y-3">
+        <div class="w-full mt-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 {{ $canSeeDeadStock ? 'lg:grid-cols-3 xl:grid-cols-5' : 'lg:grid-cols-4' }} gap-x-5 gap-y-10">
                 <!-- Total Sales -->
                  <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
                     <div class="flex items-start justify-between gap-2">
                         <div class="flex-1 min-w-0">
-                            <p class="text-black text-sm font-semibold truncate">Total Sales</p>
+                            <p class="text-black text-xs font-semibold truncate">Total Sales</p>
                             <div class="mt-1">
-                                <p id="salesValue" class="text-3xl font-bold text-black truncate">—</p>
+                                <p id="salesValue" class="text-2xl font-bold text-black truncate">—</p>
                                 <p id="salesComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
                             </div>
                         </div>
@@ -151,9 +35,9 @@
                <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
                     <div class="flex items-start justify-between gap-2">
                         <div class="flex-1 min-w-0">
-                            <p class="text-black text-sm font-semibold truncate" style="color: #000000;">Total Transaction</p>
+                            <p class="text-black text-xs font-semibold truncate" style="color: #000000;">Total Transaction</p>
                             <div class="mt-1">
-                                <p id="transactionsValue" class="text-3xl font-bold truncate" style="color: #000000;">—</p>
+                                <p id="transactionsValue" class="text-2xl font-bold truncate" style="color: #000000;">—</p>
                                 <p id="transactionsComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
                             </div>
                         </div>
@@ -169,9 +53,9 @@
                 <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
                     <div class="flex items-start justify-between gap-2">
                         <div class="flex-1 min-w-0">
-                            <p class="text-black text-sm font-semibold truncate" style="color: #000000;">Total Profit</p>
+                            <p class="text-black text-xs font-semibold truncate" style="color: #000000;">Total Profit</p>
                             <div class="mt-1">
-                                <p id="profitValue" class="text-3xl font-bold truncate" style="color: #000000;">—</p>
+                                <p id="profitValue" class="text-2xl font-bold truncate" style="color: #000000;">—</p>
                                 <p id="profitComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
                             </div>
                         </div>
@@ -187,9 +71,9 @@
                  <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
                     <div class="flex items-start justify-between gap-2">
                         <div class="flex-1 min-w-0">
-                            <p class="text-black text-sm font-semibold truncate" style="color: #000000;">Total Item Sold</p>
+                            <p class="text-black text-xs font-semibold truncate" style="color: #000000;">Total Item Sold</p>
                             <div class="mt-1">
-                                <p id="itemsSoldValue" class="text-3xl font-bold truncate" style="color: #030303;">—</p>
+                                <p id="itemsSoldValue" class="text-2xl font-bold truncate" style="color: #030303;">—</p>
                                 <p id="itemsSoldComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
                             </div>
                         </div>
@@ -206,9 +90,9 @@
                 <a href="{{ route('dss.dead-stock.index') }}" class="border border-gray-200 p-4 bg-white shadow-sm block hover:shadow-md hover:ring-2 hover:ring-[#6EC1D1] hover:border-[#6EC1D1] transition cursor-pointer group" style="border-radius: 20px;">
                     <div class="flex items-start justify-between gap-2">
                         <div class="flex-1 min-w-0">
-                            <p class="text-black text-sm font-semibold truncate">Dead Stock</p>
+                            <p class="text-black text-xs font-semibold truncate">Dead Stock</p>
                             <div class="mt-1">
-                                <p id="deadStockCardItems" class="text-3xl font-bold text-black truncate">—</p>
+                                <p id="deadStockCardItems" class="text-2xl font-bold text-black truncate">—</p>
                                 <p id="deadStockCardValue" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
                             </div>
                         </div>
@@ -240,9 +124,9 @@
         </script>
 
         <!-- Charts Row -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-3 -mt-3">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-15 mt-4">
             <!-- Sales Overview Chart -->
-            <div id="salesOverviewCard" class="lg:col-span-2 border border-slate-200 relative overflow-hidden rounded-[15px] bg-white shadow-sm" style="min-height: 240px; box-sizing: border-box; border-radius: 15px;">
+            <div id="salesOverviewCard" class="lg:col-span-2 border border-slate-200 relative overflow-hidden rounded-[15px] bg-white shadow-sm" style="min-height: 360px; box-sizing: border-box; border-radius: 15px;">
 
                 <!-- Header (title + range buttons) -->
                 <div id="salesOverviewHeader" class="bg-[#0f172a] px-6 py-4 flex items-center justify-between border-b border-slate-800">
@@ -278,16 +162,16 @@
                 </div>
 
                 <!-- Body (chart) -->
-                <div id="salesOverviewBody" class="relative w-full p-2.5 pb-1" style="height:360px;">
+                <div id="salesOverviewBody" class="relative w-full p-2.5 pb-1" style="height:280px;">
                     <canvas id="salesChart"></canvas>
                 </div>
             </div>
 
             <!-- Sales by Category (full-circle ring + white knockout center + neon-on-sale legend) -->
-            <div class="border border-gray-200 p-3 rounded-[15px]" style="border-radius: 15px; background-color: #ffffff;">
+            <div class="border border-gray-200 p-3 rounded-[15px] flex flex-col" style="border-radius: 15px; background-color: #ffffff; min-height: 360px;">
                 <h2 class="text-sm font-bold text-black mb-2" style="font-family: 'Poppins', sans-serif;">Sales by Category</h2>
-                <div class="flex flex-col items-center gap-3">
-                    <div style="position: relative; width: 150px; height: 150px; max-width: 150px; max-height: 150px;" class="mx-auto flex items-center justify-center">
+                <div class="flex flex-col items-center gap-3 flex-1">
+                    <div style="position: relative; width: 120px; height: 120px; max-width: 120px; max-height: 120px;" class="mx-auto flex items-center justify-center flex-shrink-0">
                         <canvas id="categoryChart"></canvas>
                         <div id="categoryCenterOverlay" style="
                             position: absolute; inset: 0;
@@ -302,13 +186,13 @@
                         </div>
                     </div>
 
-                    <div id="categoryLegend" class="w-full space-y-1 text-xs"></div>
+                    <div id="categoryLegend" class="w-full space-y-1 text-xs overflow-y-auto flex-1" style="max-height: 160px;"></div>
                 </div>
             </div>
         </div>
 
         <!-- Tables Row -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-3 -mt-3">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-15 mt-4">
 
             <!-- Inventory Levels -->
             <div id="inventoryCardWrap" class="relative">
@@ -615,7 +499,7 @@
         </div>
 
         <!-- Floating Low Stock Toast Banner (Pest test requirement) -->
-        <div id="dashboardLowStockBanner" class="hidden fixed right-4 top-24 z-[100] max-w-sm rounded-2xl border border-amber-200 bg-white p-4 shadow-2xl transition-all duration-300" role="status">
+        <div id="dashboardLowStockBanner" class="hidden fixed right-4 top-24 z-[9999] max-w-sm rounded-2xl border border-amber-200 bg-white p-4 shadow-2xl transition-all duration-300" role="status">
             <div class="flex items-start justify-between gap-3">
                 <div class="flex-shrink-0 w-8 h-8 rounded-[10px] flex items-center justify-center" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(245, 158, 11, 0.10) 100%); border: 1px solid rgba(245, 158, 11, 0.20);">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none">

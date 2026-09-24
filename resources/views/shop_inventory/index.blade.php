@@ -72,7 +72,7 @@
         <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
         
         <!-- Header -->
-        <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+        <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between pt-2 pb-1 pl-1">
             <div class="pl-3 lg:pl-2">
                 <h1 class="text-3xl font-bold text-slate-900">Shop Inventory Items</h1>
                 <p class="text-xs text-slate-500 mt-1">Track and manage products across shop shelves for POS sales</p>
@@ -980,7 +980,7 @@
                 if (locationSelect) locationSelect.innerHTML = '<option value="">Select location</option>';
                 if (locationLabel) locationLabel.textContent = 'Select location';
 
-                let menuHtml = `<button type="button" onclick="selectAddShelfLocationOption('', 'Select location')" class="w-full text-left px-3 py-2.5 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">Select location</button>`;
+                let menuHtml = '';
 
                 if (data.success && data.sections && data.sections.length > 0) {
                     data.sections.forEach(section => {
@@ -1873,7 +1873,6 @@
                                     <svg class="w-4 h-4 text-slate-500 flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </button>
                                 <div id="addShelfLocationDropdownMenu" class="hidden absolute left-0 right-0 top-full z-[100000005] mt-1 rounded-[14px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
-                                    <button type="button" onclick="selectAddShelfLocationOption('', 'Select location')" class="w-full text-left px-3 py-2.5 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">Select location</button>
                                 </div>
                             </div>
                             <input type="text" id="add-shelf-new-section" class="hidden block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm mt-2" placeholder="Enter new section name" />
@@ -1974,4 +1973,39 @@
             </form>
         </div>
     </div>
+
+    <script>
+        // Notification panel toggle
+        window.toggleNotificationPanel = function(e) {
+            if (e) e.stopPropagation();
+            var panel = document.getElementById('notification-panel');
+            if (!panel) return;
+
+            // Close profile dropdown first if open
+            var profileDropdown = document.getElementById('dashboardProfileDropdown');
+            if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
+                profileDropdown.classList.add('hidden');
+                profileDropdown.classList.add('opacity-0', 'scale-95');
+            }
+
+            const isOpen = !panel.classList.contains('hidden');
+            if (isOpen) {
+                panel.classList.add('hidden');
+            } else {
+                panel.classList.remove('hidden');
+            }
+        };
+
+        // Mark all notifications as read
+        window.markAllNotificationsRead = function() {
+            // Implementation for marking notifications as read
+            console.log('Mark all notifications as read');
+        };
+
+        // Open all notifications modal
+        window.openAllNotificationsModal = function() {
+            // Implementation for opening all notifications modal
+            console.log('Open all notifications modal');
+        };
+    </script>
 </x-layouts.app>

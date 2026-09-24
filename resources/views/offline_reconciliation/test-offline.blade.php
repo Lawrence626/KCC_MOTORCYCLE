@@ -3,7 +3,7 @@
         <!-- Header -->
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-slate-900">Test Offline Mode</h1>
+                <h1 class="text-3xl font-bold text-slate-900">Test Offline Mode</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Test offline functionality without going offline</p>
             </div>
             <div class="flex items-center gap-2">

@@ -28,7 +28,7 @@
         
         <div class="flex items-start justify-between gap-2">
             <div>
-                <h1 class="text-3xl font-extrabold text-slate-900">Edit Shelf</h1>
+                <h1 class="text-3xl font-bold text-slate-900">Edit Shelf</h1>
                 <p class="mt-2 text-sm text-gray-500">Update shelf information for <strong class="text-emerald-600">{{ $shelf->name }}</strong></p>
             </div>
             <div class="flex items-center gap-3">

@@ -18,146 +18,158 @@
     <div class="flex h-full relative">
         @if(!$hasTopNavbar)
             <!-- Mobile Menu Toggle -->
-            <button id="mobile-menu-toggle" class="md:hidden fixed top-4 left-4 z-40 p-2 text-white bg-slate-800 rounded-lg hover:bg-slate-700">
+            <button id="mobile-menu-toggle" class="md:hidden fixed top-4 left-4 z-50 p-2 text-white bg-slate-800 rounded-lg hover:bg-slate-700">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
             </button>
 
             <!-- Mobile Overlay (backdrop) -->
-            <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+            <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden"></div>
 
             <!-- Sidebar -->
-            <div id="sidebar-wrapper" class="fixed top-0 left-0 w-70 h-full -translate-x-full md:translate-x-0 transition-transform duration-300 z-30">
+            <div id="sidebar-wrapper" class="fixed top-0 left-0 w-70 h-full -translate-x-full md:translate-x-0 transition-transform duration-300 z-50 md:z-30">
                 @include('sidebar')
             </div>
         @endif
 
         <!-- Main Content -->
-        <div class="flex-1 min-w-0 flex flex-col {{ $hasTopNavbar ? 'md:ml-0 bg-white' : 'md:ml-[270px] bg-white rounded-tl-[12px] rounded-bl-[12px]' }} relative z-40 h-full overflow-hidden">
-            @if(!$hasTopNavbar)
-                <!-- Header Container - Optional if a header slot is provided -->
-                @if(!empty($header))
-            <div id="dashboardHeader" class="flex-shrink-0 bg-white border-b border-slate-200 px-5 py-2 sticky top-0 z-10 transition-all duration-200 shadow-none rounded-tl-[12px]">
-                @auth
-                    <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div class="flex-1 min-w-0 flex flex-col {{ $hasTopNavbar ? 'md:ml-0 bg-white' : 'md:ml-[270px] bg-white rounded-tl-[10px] rounded-bl-[10px]' }} relative z-40 h-full overflow-hidden" style="{{ $hasTopNavbar ? '' : 'border-top-left-radius: 10px; border-bottom-left-radius: 10px;' }}">
+            @if($hasTopNavbar)
+                <div id="cashierTopNav" class="flex-shrink-0 relative z-50">
+                    @include('partials.cashier-navbar')
+                </div>
+            @else
+                <!-- Shared Fixed Header with Breadcrumb -->
+                <div id="dashboardStickyHeader" class="fixed top-0 left-0 right-4 md:left-[270px] md:right-4 z-[100000005] bg-white/95 backdrop-blur-md px-4 sm:px-6 pt-3 sm:pt-4 pb-2 transition-shadow border-b border-slate-100" style="border-top-left-radius: 10px;">
+                    <div class="flex items-center justify-between gap-3">
+                        <!-- Breadcrumb on Left -->
                         <div class="flex-1 min-w-0">
-                            {{ $header }}
+                            <x-breadcrumb />
                         </div>
-                        <div class="flex items-center gap-3 md:mt-2 mt-2">
-                            <!-- Theme Toggle Button -->
-                            <div class="relative inline-flex items-center z-50">
-                                <button id="headerThemeToggle" type="button" class="relative inline-flex h-9 w-9 items-center justify-center border border-slate-700 text-white transition hover:border-cyan-500 focus:outline-none" style="border-radius: 20px; background-color: #0f0f0f;" aria-label="Toggle Dark Mode" title="Toggle theme">
-                                    <!-- Sun Icon (shows in dark mode) -->
-                                    <svg id="themeIconSun" class="w-5 h-5 text-amber-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                                    </svg>
-                                    <!-- Moon Icon (shows in light mode) -->
-                                    <svg id="themeIconMoon" class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                                    </svg>
-                                </button>
-                            </div>
 
-                            @if(auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'inventory_clerk'))
-                            <div class="relative inline-flex items-center z-50">
-                                <button id="headerNotificationButton" type="button" class="relative inline-flex h-9 w-9 items-center justify-center border border-slate-700 text-white transition focus:outline-none cursor-pointer" style="border-radius: 20px; background-color: #0f0f0f;" aria-label="Notifications">
-                                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a6 6 0 00-6 6v4.586l-1.707 1.707A1 1 0 005 16h14a1 1 0 00.707-1.707L18 12.586V8a6 6 0 00-6-6zm0 18a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 20z"/></svg>
-                                    <span id="headerNotificationBadge" class="absolute -top-1 -right-1 hidden rounded-full bg-rose-600 text-[10px] font-bold text-white text-center" style="min-width: 18px; height: 18px; padding: 0 4px; display: none; align-items: center; justify-content: center; line-height: 1; text-align: center;">0</span>
-                                </button>
-                                <div id="headerNotificationDropdown" class="absolute right-0 top-full z-[99999] mt-2 w-[24rem] overflow-hidden rounded-[15px] border border-slate-700/60 bg-gradient-to-b from-[#0b0c10] to-[#20232a] shadow-2xl shadow-black/40 hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right">
-                                    <div class="px-4 py-4 border-b border-slate-800 bg-[#0f172a]" style="background-color: #0f172a;">
-                                        <div class="flex items-center justify-between gap-3">
-                                            <div>
-                                                <p class="text-sm font-bold text-white">Inventory Notifications</p>
-                                                <p class="text-xs text-slate-300">Recent stock alerts and reminders.</p>
-                                            </div>
-                                            <button id="headerNotificationClose" type="button" class="text-slate-400 transition hover:text-white font-bold text-lg" aria-label="Close notifications">×</button>
-                                        </div>
-                                    </div>
-                                    <div id="headerNotificationList" class="max-h-80 overflow-y-auto">
-                                        <div class="p-4 text-sm text-slate-400">Loading notifications…</div>
-                                    </div>
-                                </div>
-                            </div>
-                            @endif
-                            <div class="relative inline-flex items-center z-50">
-                                <button id="headerProfileButton" type="button" class="inline-flex h-9 items-center gap-2 border border-slate-700 px-3 text-white transition focus:outline-none cursor-pointer" style="border-radius: 20px; background-color: #0f0f0f;">
-                                    <span class="w-5.5 h-5.5 rounded-full bg-cyan-500 text-white grid place-items-center overflow-hidden text-sm font-semibold">
-                                        @if(auth()->user()->avatar)
-                                            <img src="{{ asset('storage/' . auth()->user()->avatar) }}?v={{ auth()->user()->updated_at?->timestamp }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover" />
-                                        @else
-                                            {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
-                                        @endif
-                                    </span>
-                                    <span class="hidden sm:inline-block text-[14px] font-medium text-white">{{ auth()->user()->name ?? 'User' }}</span>
-                                    <svg id="headerProfileArrow" class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M7 10l5 5 5-5H7z" />
-                                    </svg>
-                                </button>
+                        <!-- Notification and Profile on Right -->
+                        <div class="flex flex-col gap-1 sm:flex-row sm:items-center shrink-0 w-[250px] sm:w-[280px] justify-end">
+                            @if(auth()->check())
+                                @if(!in_array(auth()->user()->role, ['cashier', 'warehouse_personnel']))
+                                <div class="relative" id="notification-bell-wrapper">
+                                    <button
+                                        type="button"
+                                        id="notification-bell-btn"
+                                        class="relative p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition"
+                                        aria-label="Notifications"
+                                        onclick="toggleNotificationPanel(event)"
+                                    >
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                                        </svg>
+                                        <span
+                                            id="notification-badge"
+                                            class="absolute -top-0.5 -right-0.5 hidden rounded-full bg-red-500 text-[10px] font-bold text-white text-center"
+                                            style="min-width: 18px; height: 18px; padding: 0 4px; display: none; align-items: center; justify-content: center; line-height: 1; text-align: center;"
+                                        ></span>
+                                    </button>
 
-                                <div id="headerProfileDropdown" class="absolute right-0 top-full mt-2 w-65 min-h-[100px] rounded-[15px] border border-slate-700/60 bg-gradient-to-b from-[#0b0c10] to-[#20232a] shadow-2xl shadow-black/40 z-[99999] hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right">
-                                    <div class="px-4 py-4 border-b border-slate-800/60">
-                                        <div class="flex items-center gap-3">
-                                            <span class="w-12 h-12 rounded-full bg-cyan-500 text-white grid place-items-center overflow-hidden text-lg font-semibold">
-                                                @if(auth()->user()->avatar)
-                                                    <img src="{{ asset('storage/' . auth()->user()->avatar) }}?v={{ auth()->user()->updated_at?->timestamp }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover" />
-                                                @else
-                                                    {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
-                                                @endif
-                                            </span>
-                                            <div>
-                                                <div class="text-[13px] font-semibold text-white">{{ auth()->user()->name ?? 'User' }}</div>
-                                                <div class="text-[12px] text-slate-400">{{ auth()->user()->email ?? '' }}</div>
+                                    {{-- Notification Dropdown Panel --}}
+                                    <div
+                                        id="notification-panel"
+                                        class="hidden absolute right-0 top-full mt-2 w-[320px] rounded-xl bg-white border border-slate-200 shadow-2xl z-[100000006] flex flex-col"
+                                        style="max-height: 350px;"
+                                    >
+                                        <div class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b border-slate-800 rounded-t-xl bg-[#0f172a]" style="background-color: #0f172a;">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-sm font-bold text-white">Notifications</span>
+                                                <span id="notif-center-unread-badge" class="hidden inline-flex items-center justify-center rounded-full text-[11px] font-bold text-white text-center" style="background-color: #ef4444; width: 20px; height: 20px; padding: 0; display: none; align-items: center; justify-content: center; line-height: 1; text-align: center; border-radius: 50%; box-sizing: border-box;">0</span>
                                             </div>
-                                        </div>
-                                        <div class="mt-3">
-                                                <span class="inline-flex items-center rounded-full border border-cyan-500/20 bg-cyan-500/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-cyan-300">
-                                                {{ (auth()->user()->role ?? 'user') === 'admin' ? 'Administrator' : ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'user')) }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="flex flex-col gap-1 px-2 py-2">
-                                        <a href="{{ route('profile.show') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm text-slate-100 hover:bg-slate-800 transition">
-                                            <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-950 text-slate-300">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9 9 0 1118.879 6.196 9 9 0 015.12 17.804z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                            </span>
-                                            <span>View Profile</span>
-                                        </a>
-                                        <a href="{{ route('settings.general') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm text-slate-100 hover:bg-slate-800 transition">
-                                            <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-950 text-slate-300">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                            </span>
-                                            <span>Settings</span>
-                                        </a>
-                                        <button type="button" onclick="window.toggleTheme()" class="flex w-full items-center justify-between rounded-[10px] px-2.5 py-2.5 text-sm text-slate-100 hover:bg-slate-800 transition">
                                             <div class="flex items-center gap-3">
-                                                <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-950 text-slate-300">
-                                                    <svg id="dropdownThemeIcon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                                                    </svg>
-                                                </span>
-                                                <span id="dropdownThemeLabel">Dark Mode</span>
+                                                <button
+                                                    type="button"
+                                                    onclick="markAllNotificationsRead()"
+                                                    class="text-xs font-semibold text-slate-300 hover:text-white transition-colors"
+                                                >Mark all as read</button>
                                             </div>
-                                            <span id="dropdownThemeStatus" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-medium">Off</span>
-                                        </button>
-                                        <form action="{{ route('logout') }}" method="POST">
-                                            @csrf
-                                            <button type="submit" class="flex w-full items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm text-rose-300 hover:bg-slate-800 transition">
-                                                <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-950 text-rose-400">
-                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                                                </span>
-                                                <span>Logout</span>
-                                            </button>
-                                        </form>
+                                        </div>
+                                        <div id="notification-list" class="flex-1 overflow-y-auto">
+                                            {{-- Notifications rendered by JS --}}
+                                        </div>
+                                        <div id="notification-empty" class="hidden px-4 py-8 text-center">
+                                            <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#ccfbf1] mb-2">
+                                                <svg class="w-5 h-5 text-[#0f766e]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
+                                            </div>
+                                            <p class="text-sm font-semibold text-slate-800">All caught up</p>
+                                            <p class="text-xs text-slate-500 mt-1">No new inventory alerts.</p>
+                                        </div>
+                                        <div class="sticky bottom-0 z-10 px-4 py-3 bg-slate-50 border-t border-slate-100 text-center rounded-b-xl">
+                                            <button type="button" onclick="openAllNotificationsModal()" class="text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors">View All Notifications</button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                                @endif
+                                <div id="dashboardProfileTrigger" class="relative inline-flex items-center gap-1.5 rounded-[20px] px-3 py-2 text-left cursor-pointer select-none" role="button" tabindex="0" aria-label="Open profile menu" aria-expanded="false">
+                                    <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-black grid place-items-center text-lg font-semibold overflow-hidden">
+                                        {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
+                                    </span>
+                                    <div class="flex flex-col leading-tight">
+                                        <span class="text-sm font-semibold text-black">{{ auth()->user()->name ?? 'Admin' }}</span>
+                                        <span class="text-xs text-gray-500">{{ auth()->user()->email ?? '' }}</span>
+                                    </div>
+                                    <button type="button" id="dashboardProfileButton" class="inline-flex h-7 w-7 items-center justify-center rounded-[12px] bg-transparent text-[#0f0f0f] transition-colors duration-200 focus:outline-none hover:bg-transparent focus:bg-transparent active:bg-transparent hover:text-slate-400 border-none cursor-pointer" style="background: transparent !important; border: none !important; box-shadow: none !important;" aria-label="Open profile menu">
+                                        <svg id="dashboardProfileArrow" class="w-5 h-5 text-current transition-colors duration-200" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5H7z"/></svg>
+                                    </button>
+
+                                    <div id="dashboardProfileDropdown" class="absolute right-0 top-full mt-1 w-62 min-h-[100px] rounded-[15px] bg-[#0f0f0f] shadow-2xl shadow-black/20 z-[100000006] hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right" style="color: #ffffff;">
+                                        <div class="px-4 py-4 border-b border-slate-700/60">
+                                            <div class="flex items-center gap-3">
+                                                <span class="w-12 h-12 rounded-full bg-gray-200 text-black grid place-items-center overflow-hidden text-lg font-semibold">
+                                                    {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
+                                                </span>
+                                                <div>
+                                                    <div class="text-[13px] font-semibold text-white">{{ auth()->user()->name ?? 'Admin' }}</div>
+                                                    <div class="text-[12px] text-gray-400">{{ auth()->user()->email ?? '' }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3">
+                                                <span class="inline-flex items-center rounded-full border border-gray-600/30 bg-gray-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style="color: #32FFFD;">
+                                                    {{ (auth()->user()->role ?? 'user') === 'admin' ? 'Administrator' : ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'user')) }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col gap-1 px-2 py-2">
+                                            <a href="{{ route('profile.show') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/60 transition">
+                                                <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-700 text-white">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9 9 0 1118.879 6.196 9 9 0 015.12 17.804z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                                </span>
+                                                <span>View Profile</span>
+                                            </a>
+                                            <a href="{{ route('settings.general') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/60 transition">
+                                                <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-700 text-white">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                                </span>
+                                                <span>Settings</span>
+                                            </a>
+                                            <form action="{{ route('logout') }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="flex w-full items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/60 transition">
+                                                    <span class="w-6 h-6 grid place-items-center rounded-full bg-slate-700 text-white">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                                                    </span>
+                                                    <span>Logout</span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
-                @endauth
-            </div>
-            @endif
+                </div>
+
+                <!-- Header Container - Optional if a header slot is provided -->
+                @if(!empty($header))
+                    <div id="dashboardHeader" class="flex-shrink-0 bg-white dark:bg-[#0b1320] border-b border-slate-200 dark:border-[#162236] px-6 sm:px-8 py-1.5 rounded-tl-[10px] relative z-50" style="border-top-left-radius: 10px;">
+                        {{ $header }}
+                    </div>
+                @endif
             @endif
 
             <!-- Content Container - Scrollable -->
@@ -165,17 +177,16 @@
                 $flush = $flush ?? false;
                 $stretch = $stretch ?? true;
             @endphp
-            <div id="mainScrollArea" class="flex-1 min-w-0 min-h-0 overflow-y-auto relative flex flex-col z-40 bg-white rounded-bl-[12px]">
-                @if($hasTopNavbar)
-                    @include('partials.cashier-navbar')
-                @endif
+            <div id="mainScrollArea" class="flex-1 min-w-0 min-h-0 overflow-y-auto relative flex flex-col z-40 bg-white rounded-tl-[10px] rounded-bl-[10px]" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;">
                 <div id="topScrollFade" class="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-white/95 via-white/70 to-transparent opacity-0 transition-opacity duration-200"></div>
                 <div class="w-full min-w-0 max-w-full flex-1 {{ $stretch ? 'flex flex-col' : '' }}">
                     @if($flush)
-                        {{ $slot }}
+                        <div class="pt-17">
+                            {{ $slot }}
+                        </div>
                     @else
-                        <div class="bg-white w-full flex-1 px-4 sm:px-8 py-4 sm:py-6 space-y-8 overflow-hidden min-w-0 min-h-0 {{ $stretch ? 'flex flex-col' : '' }}">
-                            <div class="space-y-8 min-w-0 {{ $stretch ? 'flex-1' : 'h-full' }}">
+                        <div class="bg-white w-full flex-1 px-4 sm:px-8 py-4 sm:py-6 space-y-8 min-w-0 min-h-0 {{ $stretch ? 'flex flex-col' : '' }}">
+                            <div class="space-y-8 min-w-0 {{ $stretch ? 'flex-1' : 'h-full' }} pt-17">
                                 {{ $slot }}
                             </div>
                         </div>
@@ -224,6 +235,7 @@
             const headerNotificationDropdown = document.getElementById('headerNotificationDropdown');
             const headerNotificationClose = document.getElementById('headerNotificationClose');
             const dashboardProfileButton = document.getElementById('dashboardProfileButton');
+            const dashboardProfileTrigger = document.getElementById('dashboardProfileTrigger');
             const dashboardProfileDropdown = document.getElementById('dashboardProfileDropdown');
             const dashboardProfileArrow = document.getElementById('dashboardProfileArrow');
 
@@ -331,8 +343,8 @@
             if (dashboardProfileButton && dashboardProfileDropdown) {
                 dashboardProfileDropdown.addEventListener('click', function(e) { e.stopPropagation(); });
 
-                dashboardProfileButton.addEventListener('click', function(e) {
-                    e.stopPropagation();
+                function toggleDashboardProfileDropdown(e) {
+                    if (e) e.stopPropagation();
                     dismissAllNotifications();
 
                     // Close Sales Range dropdown if open
@@ -364,20 +376,76 @@
                         dashboardProfileDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
                         dashboardProfileDropdown.classList.remove('block', 'opacity-100', 'scale-100');
                         dashboardProfileButton.blur();
+                        if (dashboardProfileTrigger) dashboardProfileTrigger.setAttribute('aria-expanded', 'false');
                     } else {
                         dashboardProfileDropdown.classList.remove('hidden', 'opacity-0', 'scale-95');
                         dashboardProfileDropdown.classList.add('block', 'opacity-100', 'scale-100');
+                        if (dashboardProfileTrigger) dashboardProfileTrigger.setAttribute('aria-expanded', 'true');
                     }
-                });
+                }
+
+                dashboardProfileButton.addEventListener('click', toggleDashboardProfileDropdown);
+
+                if (dashboardProfileTrigger) {
+                    dashboardProfileTrigger.addEventListener('click', toggleDashboardProfileDropdown);
+                    dashboardProfileTrigger.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            toggleDashboardProfileDropdown(e);
+                        }
+                    });
+                }
 
                 window.addEventListener('click', function(e) {
-                    if (!dashboardProfileDropdown.contains(e.target) && !dashboardProfileButton.contains(e.target)) {
+                    const triggerClicked = dashboardProfileTrigger && dashboardProfileTrigger.contains(e.target);
+                    const buttonClicked = dashboardProfileButton && dashboardProfileButton.contains(e.target);
+                    if (!dashboardProfileDropdown.contains(e.target) && !triggerClicked && !buttonClicked) {
                         dashboardProfileDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
                         dashboardProfileDropdown.classList.remove('block', 'opacity-100', 'scale-100');
                         dashboardProfileButton.blur();
+                        if (dashboardProfileTrigger) dashboardProfileTrigger.setAttribute('aria-expanded', 'false');
                     }
                 });
             }
+
+            // Notification panel toggle function
+            window.toggleNotificationPanel = function(event) {
+                event.stopPropagation();
+                const panel = document.getElementById('notification-panel');
+                const dropdown = document.getElementById('dashboardProfileDropdown');
+
+                if (panel) {
+                    const isHidden = panel.classList.contains('hidden');
+                    if (isHidden) {
+                        panel.classList.remove('hidden');
+                        if (dropdown) {
+                            dropdown.classList.add('hidden', 'opacity-0', 'scale-95');
+                            dropdown.classList.remove('block', 'opacity-100', 'scale-100');
+                        }
+                    } else {
+                        panel.classList.add('hidden');
+                    }
+                }
+            };
+
+            // Mark all notifications as read
+            window.markAllNotificationsRead = function() {
+                console.log('Mark all notifications as read');
+            };
+
+            // Open all notifications modal
+            window.openAllNotificationsModal = function() {
+                console.log('Open all notifications modal');
+            };
+
+            // Close notification panel when clicking outside
+            window.addEventListener('click', function(e) {
+                const panel = document.getElementById('notification-panel');
+                const bellBtn = document.getElementById('notification-bell-btn');
+                if (panel && !panel.classList.contains('hidden') && !panel.contains(e.target) && !bellBtn.contains(e.target)) {
+                    panel.classList.add('hidden');
+                }
+            });
         })();
     </script>
 

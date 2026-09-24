@@ -1,9 +1,9 @@
 ﻿<x-layouts.app :title="__('Reconciliation Report')">
     <div class="space-y-3">
         <!-- Header -->
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between pt-2 pb-1 pl-1">
             <div>
-                <h1 class="text-2xl font-bold text-slate-900">Reconciliation Report</h1>
+                <h1 class="text-3xl font-bold text-slate-900">Reconciliation Report</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Detailed synchronization report for {{ $syncHistory->file_name }}</p>
             </div>
             <div class="flex gap-2">
@@ -146,4 +146,55 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Notification Panel Toggle
+        function toggleNotificationPanel(event) {
+            event.stopPropagation();
+            const panel = document.getElementById('notification-panel');
+            const profileDropdown = document.getElementById('dashboardProfileDropdown');
+            if (panel) {
+                const isHidden = panel.classList.contains('hidden');
+                if (isHidden) {
+                    panel.classList.remove('hidden');
+                    if (profileDropdown) {
+                        profileDropdown.classList.add('hidden');
+                        profileDropdown.classList.remove('opacity-100', 'scale-100');
+                        profileDropdown.classList.add('opacity-0', 'scale-95');
+                    }
+                } else {
+                    panel.classList.add('hidden');
+                }
+            }
+        }
+
+        // Helper functions
+        function markAllNotificationsRead() {
+            // Placeholder for marking all notifications as read
+            console.log('Mark all notifications as read');
+        }
+
+        function openAllNotificationsModal() {
+            // Placeholder for opening all notifications modal
+            console.log('Open all notifications modal');
+        }
+
+        // Close dropdowns when clicking outside
+        window.addEventListener('click', function(event) {
+            const panel = document.getElementById('notification-panel');
+            const profileDropdown = document.getElementById('dashboardProfileDropdown');
+            const notificationBell = document.getElementById('notification-bell-btn');
+            const profileButton = document.getElementById('dashboardProfileButton');
+
+            if (panel && !panel.contains(event.target) && notificationBell && !notificationBell.contains(event.target)) {
+                panel.classList.add('hidden');
+            }
+
+            if (profileDropdown && !profileDropdown.contains(event.target) && profileButton && !profileButton.contains(event.target)) {
+                profileDropdown.classList.add('hidden');
+                profileDropdown.classList.remove('opacity-100', 'scale-100');
+                profileDropdown.classList.add('opacity-0', 'scale-95');
+            }
+        });
+    </script>
 </x-layouts.app>

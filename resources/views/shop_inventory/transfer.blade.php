@@ -40,7 +40,7 @@
 
         <div class="flex items-start justify-between gap-2">
             <div>
-                <h1 class="text-3xl font-extrabold text-slate-900">Transfer Products</h1>
+                <h1 class="text-3xl font-bold text-slate-900">Transfer Products</h1>
                 <p class="mt-2 text-sm text-gray-500">Move products from <strong class="text-emerald-600">{{ is_array($shelf) ? $shelf['name'] : $shelf->name }}</strong> to another shelf</p>
             </div>
             <div class="flex items-center gap-3">

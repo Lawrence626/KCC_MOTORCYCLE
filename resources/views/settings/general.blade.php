@@ -3,7 +3,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <h1 class="text-2xl font-bold text-slate-900">Profile & Settings</h1>
-                <p class="text-xs text-slate-500 mt-1">Manage your account, security, and interface preferences</p>
+                <p class="text-[11px] text-slate-500 mt-1">Manage your account, security, and interface preferences</p>
             </div>
         </div>
 
