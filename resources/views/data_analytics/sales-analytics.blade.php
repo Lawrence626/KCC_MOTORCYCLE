@@ -1509,7 +1509,11 @@
                 }).join('');
             };
 
+<<<<<<< HEAD
+            let topProductsData = @json($topProducts);
+=======
             let topProductsData = @json($topProducts ?? []);
+>>>>>>> 4832e71640143292d1c85fd036fa86392c6969d7
             let fastMovingData = @json($fastMoving ?? []);
             let slowMovingData = @json($slowMoving ?? []);
 

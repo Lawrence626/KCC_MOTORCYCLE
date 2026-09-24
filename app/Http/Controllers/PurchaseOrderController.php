@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class PurchaseOrderController extends Controller
@@ -35,7 +36,7 @@ class PurchaseOrderController extends Controller
 
         $suppliers = Supplier::orderBy('name')->get();
         $totalOrders = PurchaseOrder::count();
-        $inTransitTotal = PurchaseOrder::where('status', 'in transit')->count();
+        $inTransitTotal = (float) PurchaseOrder::where('status', 'in transit')->sum('total_amount');
 
         $receivedCount = PurchaseOrder::where('status', 'completed')
             ->when($receivedRange === 'daily', fn ($query) => $query->whereDate('updated_at', today()))
@@ -63,7 +64,11 @@ class PurchaseOrderController extends Controller
             ->withQueryString()
             ->appends(['tab' => 'back_orders']);
 
+<<<<<<< HEAD
+        $replacementBackOrders = Schema::hasTable('defective_return_requests')
+=======
         $replacementBackOrders = \Illuminate\Support\Facades\Schema::hasTable('defective_return_requests')
+>>>>>>> 4832e71640143292d1c85fd036fa86392c6969d7
             ? DefectiveReturnRequest::with(['purchaseOrder', 'product'])
                 ->where('resolution', 'Replacement')
                 ->whereIn('status', ['Replacement Approved', 'Awaiting Replacement'])
