@@ -1,31 +1,23 @@
 <x-layouts.app :title="__('Dead Stock Analysis')">
-    <div id="dead-stock-root"
-         data-export-excel-url="{{ route('dss.dead-stock.export-excel') }}"
-         data-export-pdf-url="{{ route('dss.dead-stock.export-pdf') }}"
-         data-api-url="{{ route('api.dss.dead-stocks.index') }}"
-         data-dashboard-stats-url="{{ route('api.dss.dashboard-stats') }}"
-         data-csrf="{{ csrf_token() }}"
-         class="space-y-4">
-
-        {{-- ═══ HEADER ═══ --}}
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div class="pl-3 lg:pl-2">
-                <h1 class="text-3xl font-bold text-slate-900">Dead Stock Analysis</h1>
-                <p class="text-sm text-slate-500 mt-1">
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
+            <div>
+                <h1 class="text-lg font-bold text-slate-900 leading-tight">Dead Stock Analysis</h1>
+                <p class="text-xs text-slate-500 mt-0.5">
                     Inventory items without sales for <span class="text-slate-900 font-semibold">{{ $thresholdDays }} days</span> or more.
                 </p>
             </div>
-            <div class="flex items-center gap-2 pr-4">
+            <div class="flex items-center gap-2">
                 <div class="relative" data-dropdown-wrapper="exportMenu">
                     <button type="button"
                             id="exportDropdownBtn"
                             onclick="toggleCustomDropdown('exportDropdownMenu', event)"
-                            class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus:outline-none transition-all duration-200">
-                        <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus:outline-none transition-all duration-200">
+                        <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                         </svg>
                         <span>Export</span>
-                        <svg class="h-4 w-4 text-slate-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="h-3.5 w-3.5 text-slate-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </button>
@@ -53,6 +45,15 @@
                 </div>
             </div>
         </div>
+    </x-slot>
+
+    <div id="dead-stock-root"
+         data-export-excel-url="{{ route('dss.dead-stock.export-excel') }}"
+         data-export-pdf-url="{{ route('dss.dead-stock.export-pdf') }}"
+         data-api-url="{{ route('api.dss.dead-stocks.index') }}"
+         data-dashboard-stats-url="{{ route('api.dss.dashboard-stats') }}"
+         data-csrf="{{ csrf_token() }}"
+         class="space-y-4">
         {{-- ═══ SUCCESS ALERTS ═══ --}}
         @if(session('success'))
         <div id="deadStockSuccessAlert" class="rounded-[14px] border border-teal-200 bg-teal-50 px-4 py-3 text-xs font-semibold text-teal-900 flex items-center gap-3">

@@ -26,21 +26,22 @@
         .btn-success:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(16,185,129,0.35); }
     </style>
 
-    <div class="space-y-6">
-        <div class="flex items-center justify-between pl-3 lg:pl-2 pr-4">
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
             <div>
-                <h1 class="text-3xl font-bold text-slate-900">Archived Shelves</h1>
-                <p class="mt-1 text-sm text-slate-500 font-medium">View and manage archived shop shelves.</p>
+                <h1 class="text-lg font-bold text-slate-900 leading-tight">Archived Shelves</h1>
+                <p class="text-xs text-slate-500 mt-0.5">View and manage archived shop shelves.</p>
             </div>
-            <div class="flex items-center gap-3">
-                <a href="{{ route('shop.inventory') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                    </svg>
-                    Back to Shop Inventory
-                </a>
-            </div>
+            <a href="{{ route('shop.inventory') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus:outline-none transition-all duration-200 cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Back to Shop Inventory
+            </a>
         </div>
+    </x-slot>
+
+    <div class="space-y-4">
 
         @if($archivedShelves->count() > 0)
             <div class="grid gap-6 mt-4">

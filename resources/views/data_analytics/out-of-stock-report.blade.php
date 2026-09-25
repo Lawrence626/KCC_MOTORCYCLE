@@ -1,20 +1,20 @@
 <x-layouts.app :title="__('Out of Stock Report')">
-    <div class="space-y-4">
-        <!-- Header -->
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div class="pl-3 lg:pl-2">
-                <h1 class="text-3xl font-bold text-slate-900">Out of Stock Report</h1>
-                <p class="text-sm text-slate-500 mt-1">Monitor critical stockouts and low inventory that need replenishment first.</p>
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
+            <div>
+                <h1 class="text-lg font-bold text-slate-900 leading-tight">Out of Stock Report</h1>
+                <p class="text-xs text-slate-500 mt-0.5">Monitor critical stockouts and low inventory that need replenishment first.</p>
             </div>
-            <div class="flex flex-col gap-2 sm:flex-row pr-4">
-                <a href="{{ route('analytics.out_of_stock.export') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
-                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                    </svg>
-                    <span>Download Stockout List</span>
-                </a>
-            </div>
+            <a href="{{ route('analytics.out_of_stock.export') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus:outline-none transition-all duration-200">
+                <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+                <span>Download Stockout List</span>
+            </a>
         </div>
+    </x-slot>
+
+    <div class="space-y-4">
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">

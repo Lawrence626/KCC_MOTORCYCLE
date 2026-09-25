@@ -1,21 +1,21 @@
 <x-layouts.app :title="__('Create Purchase Order')">
-<div class="space-y-6">
-
-    {{-- Page Header --}}
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-       
-            <div class="pl-3 lg:pl-2">
-            <h1 class="text-3xl font-bold text-slate-900">Create Purchase Order</h1>
-            <p class="max-w-2xl text-sm text-slate-500">Select products first, then choose a qualified supplier. Pricing insights update automatically.</p>
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
+            <div>
+                <h1 class="text-lg font-bold text-slate-900 leading-tight">Create Purchase Order</h1>
+                <p class="text-xs text-slate-500 mt-0.5">Select products first, then choose a qualified supplier. Pricing insights update automatically.</p>
+            </div>
+            <a href="{{ route('order.management') }}"
+               class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 transition-all duration-200">
+                <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Back to orders
+            </a>
         </div>
-        <a href="{{ route('order.management') }}"
-           class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200">
-            <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-            </svg>
-            Back to orders
-        </a>
-    </div>
+    </x-slot>
+
+    <div class="space-y-4">
 
     {{-- Validation Errors --}}
     @if($errors->any())

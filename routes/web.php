@@ -156,6 +156,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('api/reverse-logistics', [App\Http\Controllers\ReverseLogisticsController::class, 'store'])->name('api.reverse-logistics.store');
         Route::get('api/reverse-logistics/{id}', [App\Http\Controllers\ReverseLogisticsController::class, 'show'])->name('api.reverse-logistics.show');
         Route::post('api/reverse-logistics/{id}', [App\Http\Controllers\ReverseLogisticsController::class, 'update'])->name('api.reverse-logistics.update');
+        Route::post('api/reverse-logistics/{id}/restock', [App\Http\Controllers\ReverseLogisticsController::class, 'processRestock'])->name('api.reverse-logistics.restock');
         Route::delete('api/reverse-logistics/{id}', [App\Http\Controllers\ReverseLogisticsController::class, 'destroy'])->name('api.reverse-logistics.destroy');
     });
 

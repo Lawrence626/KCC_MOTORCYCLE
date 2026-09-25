@@ -1,12 +1,15 @@
 <x-layouts.app :title="__('Purchase Order')">
-    <div class="space-y-5">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div class="space-y-2">
-                <h1 class="text-3xl font-bold text-slate-900">Purchase Order {{ $purchaseOrder->order_number }}</h1>
-                <p class="max-w-2xl text-sm text-slate-500">Review full purchase order details and manage the lifecycle.</p>
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
+            <div>
+                <h1 class="text-lg font-bold text-slate-900 leading-tight">Purchase Order {{ $purchaseOrder->order_number }}</h1>
+                <p class="text-xs text-slate-500 mt-0.5">Review full purchase order details and manage the lifecycle.</p>
             </div>
-            <a href="{{ route('order.management') }}" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:border-emerald-500 hover:text-slate-900">Back to Orders</a>
+            <a href="{{ route('order.management') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50">Back to Orders</a>
         </div>
+    </x-slot>
+
+    <div class="space-y-4">
 
         @if(session('success'))
             <div id="orderDetailSuccessAlert" class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">{{ session('success') }}</div>

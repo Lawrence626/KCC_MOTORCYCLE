@@ -1,19 +1,18 @@
 <x-layouts.app :title="__('Archived Items')">
-    <div class="flex flex-col gap-5" style="min-height: calc(100vh - 200px);">
-        <!-- Header -->
-       <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div class="pl-3 lg:pl-2">
-                <h1 class="text-3xl font-bold text-slate-900">Archived Items</h1>
-                <p class="text-2XL text-slate-500 mt-0.5">Archived inventory items. Restore or permanently delete</p>
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
+            <div>
+                <h1 class="text-lg font-bold text-slate-900 leading-tight">Archived Items</h1>
+                <p class="text-xs text-slate-500 mt-0.5">Archived inventory items. Restore or permanently delete.</p>
             </div>
             <div class="flex gap-2 items-center">
                 <div class="relative flex-shrink-0" data-dropdown-wrapper="backNavigation">
-                    <button type="button" id="backNavigationButton" onclick="toggleCustomDropdown('backNavigationDropdown', event)" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
-                        <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button type="button" id="backNavigationButton" onclick="toggleCustomDropdown('backNavigationDropdown', event)" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus:outline-none transition-all duration-200">
+                        <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                         </svg>
                         <span>BACK</span>
-                        <svg class="w-3.5 h-3.5 text-slate-500 ml-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-3 h-3 text-slate-500 ml-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
@@ -24,6 +23,9 @@
                 </div>
             </div>
         </div>
+    </x-slot>
+
+    <div class="flex flex-col gap-4">
 
         <!-- Quick Stats -->
         <div class="grid grid-cols-2 md:grid-cols-3 gap-3">

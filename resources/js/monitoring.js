@@ -601,6 +601,16 @@ async function loadMovements() {
     }
 }
 
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 function renderMovements() {
     const tbody = document.getElementById('movementFeed');
     const paginationInfo = document.getElementById('movementPaginationInfo');
@@ -656,20 +666,27 @@ function renderMovements() {
     if (paginatedMovements.length > 0) {
         paginatedMovements.forEach(entry => {
             const row = document.createElement('tr');
+            row.className = 'hover:bg-slate-50/80 transition-colors border-b border-slate-100/80';
+            const prodName = entry.product_name || '-';
+            const detailStr = entry.notes || entry.supplier_name || '-';
             row.innerHTML = `
-                <td class="px-2 py-2 text-slate-700">${entry.created_at}</td>
-                <td class="px-2 py-2 text-slate-700">
-                    <div class="flex items-center gap-2">
+                <td class="w-[18%] px-3 py-2 text-slate-600 align-middle truncate">${escapeHtml(entry.created_at)}</td>
+                <td class="w-[32%] px-3 py-2 text-slate-700 align-middle overflow-hidden">
+                    <div class="flex items-center gap-2 min-w-0" title="${escapeHtml(prodName)}">
                         ${renderMonitoringProductImageHtml(entry)}
-                        <div class="min-w-0">
-                            <div class="font-medium text-slate-900 truncate">${entry.product_name}</div>
-                            ${entry.sku ? `<div class="text-[10px] text-slate-400 font-mono truncate">${entry.sku}</div>` : ''}
+                        <div class="min-w-0 flex-1 overflow-hidden">
+                            <div class="font-medium text-slate-900 truncate">${escapeHtml(prodName)}</div>
+                            ${entry.sku ? `<div class="text-[10px] text-slate-400 font-mono truncate">${escapeHtml(entry.sku)}</div>` : ''}
                         </div>
                     </div>
                 </td>
-                <td class="px-2 py-2 text-slate-700 capitalize">${entry.type.replace(/_/g, ' ')}</td>
-                <td class="px-2 py-2 text-center text-slate-700">${entry.quantity_change ?? '-'}</td>
-                <td class="px-2 py-2 text-slate-700">${entry.notes || entry.supplier_name || '-'}</td>
+                <td class="w-[15%] px-3 py-2 text-slate-700 capitalize align-middle font-medium overflow-hidden">
+                    <span class="truncate block">${escapeHtml(entry.type ? entry.type.replace(/_/g, ' ') : '-')}</span>
+                </td>
+                <td class="w-[10%] px-3 py-2 text-center text-slate-900 font-semibold align-middle">${entry.quantity_change ?? '-'}</td>
+                <td class="w-[25%] px-3 py-2 text-slate-600 align-middle overflow-hidden">
+                    <span class="truncate block" title="${escapeHtml(detailStr)}">${escapeHtml(detailStr)}</span>
+                </td>
             `;
             tbody.appendChild(row);
         });
@@ -707,35 +724,67 @@ async function loadProducts(page = 1) {
         if (result.data && result.data.length > 0) {
             result.data.forEach(product => {
                 const row = document.createElement('tr');
-                row.className = 'hover:bg-slate-50 transition border-b border-slate-100';
+                row.className = 'hover:bg-slate-50/80 transition-colors border-b border-slate-100/80';
+                
+                const compatName = product.name || '-';
+                const prodName = product.product_name || 'Uncategorized';
+                const skuStr = `KCC_${(product.sku || product.name || '').replace(/[^A-Za-z0-9\-\+]/g, '')}`;
+                const brandStr = product.brand || '-';
+                const sizeStr = product.size || '-';
+                const colorStr = product.color || '-';
+                const supplierStr = product.supplier_name || '-';
+                const expiryStr = product.expiry_date ? `${formatDate(product.expiry_date)}` : 'Non-expiring';
+                const stockQty = product.stock_quantity ?? 0;
+                const priceFormatted = `₱${parseFloat(product.unit_price || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
                 row.innerHTML = `
-                    <td class="px-3.5 py-3 text-center w-10 align-middle">
+                    <td class="w-[3.5%] px-2 py-2.5 text-center align-middle">
                         <input type="checkbox" class="product-checkbox rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 cursor-pointer" data-product-id="${product.id}" />
                     </td>
-                    <td class="px-3.5 py-3 text-left text-slate-900 font-medium whitespace-nowrap align-middle">
-                        <div class="flex items-center gap-2.5">
+                    <td class="w-[15%] px-2.5 py-2.5 text-left align-middle overflow-hidden">
+                        <div class="flex items-center gap-2 min-w-0" title="${escapeHtml(compatName)}">
                             ${renderMonitoringProductImageHtml(product)}
-                            <span class="truncate font-semibold text-slate-900">${product.name}</span>
+                            <span class="truncate font-semibold text-slate-900 text-[11px]">${escapeHtml(compatName)}</span>
                         </div>
                     </td>
-                    <td class="px-3.5 py-3 text-left text-slate-600 whitespace-nowrap align-middle">${product.product_name || 'Uncategorized'}</td>
-                    <td class="px-3.5 py-3 text-left text-slate-600 font-mono text-[10.5px] whitespace-nowrap align-middle">${`KCC_${(product.sku || product.name || '').replace(/[^A-Za-z0-9\-\+]/g, '')}`}</td>
-                    <td class="px-3.5 py-3 text-left text-slate-600 whitespace-nowrap align-middle">${product.brand || '-'}</td>
-                    <td class="px-3.5 py-3 text-center text-slate-600 whitespace-nowrap align-middle">${product.size || '-'}</td>
-                    <td class="px-3.5 py-3 text-center text-slate-600 whitespace-nowrap align-middle">${product.color || '-'}</td>
-                    <td class="px-3.5 py-3 text-center font-semibold whitespace-nowrap align-middle ${product.stock_quantity === 0 ? 'text-red-600' : 'text-slate-900'}">${product.stock_quantity}</td>
-                    <td class="px-3.5 py-3 text-right text-slate-900 whitespace-nowrap align-middle">₱${parseFloat(product.unit_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                    <td class="px-3.5 py-3 text-left text-slate-600 whitespace-nowrap align-middle">${product.supplier_name || '-'}</td>
-                    <td class="px-3.5 py-3 text-left text-slate-600 whitespace-nowrap align-middle">${formatDate(product.last_restock_date)}</td>
-                    <td class="px-3.5 py-3 text-left text-slate-600 whitespace-nowrap align-middle">${product.expiry_date ? `${formatDate(product.expiry_date)} • ${product.expiry_status_label || 'Status'}` : 'Non-expiring'}</td>
-                    <td class="px-3.5 py-3 text-center align-middle whitespace-nowrap text-[10px] font-medium" onclick="event.stopPropagation()">
-                        <div class="inline-flex items-center gap-1.5 justify-center">
-                            <button type="button" onclick="event.stopPropagation(); openEditModal(${product.id});" class="text-black hover:text-slate-900 inline-flex items-center p-1" title="Edit">
+                    <td class="w-[10%] px-2 py-2.5 text-left text-slate-600 align-middle overflow-hidden">
+                        <span class="truncate block text-[11px]" title="${escapeHtml(prodName)}">${escapeHtml(prodName)}</span>
+                    </td>
+                    <td class="w-[12%] px-2 py-2.5 text-left text-slate-600 font-mono text-[10px] align-middle overflow-hidden">
+                        <span class="truncate block" title="${escapeHtml(skuStr)}">${escapeHtml(skuStr)}</span>
+                    </td>
+                    <td class="w-[8%] px-2 py-2.5 text-left text-slate-600 align-middle overflow-hidden">
+                        <span class="truncate block text-[11px]" title="${escapeHtml(brandStr)}">${escapeHtml(brandStr)}</span>
+                    </td>
+                    <td class="w-[5%] px-1.5 py-2.5 text-center text-slate-600 align-middle overflow-hidden">
+                        <span class="truncate block text-[11px]" title="${escapeHtml(sizeStr)}">${escapeHtml(sizeStr)}</span>
+                    </td>
+                    <td class="w-[5%] px-1.5 py-2.5 text-center text-slate-600 align-middle overflow-hidden">
+                        <span class="truncate block text-[11px]" title="${escapeHtml(colorStr)}">${escapeHtml(colorStr)}</span>
+                    </td>
+                    <td class="w-[6%] px-2 py-2.5 text-center font-bold text-[11px] align-middle ${stockQty === 0 ? 'text-red-600' : (stockQty <= 10 ? 'text-amber-600' : 'text-slate-900')}">
+                        ${stockQty}
+                    </td>
+                    <td class="w-[9%] px-2 py-2.5 text-right font-semibold text-slate-900 text-[11px] align-middle">
+                        ${priceFormatted}
+                    </td>
+                    <td class="w-[11%] px-2 py-2.5 text-left text-slate-600 align-middle overflow-hidden">
+                        <span class="truncate block text-[11px]" title="${escapeHtml(supplierStr)}">${escapeHtml(supplierStr)}</span>
+                    </td>
+                    <td class="w-[8.5%] px-2 py-2.5 text-left text-slate-600 text-[11px] align-middle overflow-hidden">
+                        <span class="truncate block">${formatDate(product.last_restock_date)}</span>
+                    </td>
+                    <td class="w-[9%] px-2 py-2.5 text-left text-slate-600 text-[11px] align-middle overflow-hidden">
+                        <span class="truncate block ${product.expiry_date && new Date(product.expiry_date) < new Date() ? 'text-red-600 font-semibold' : ''}" title="${escapeHtml(expiryStr)}">${escapeHtml(expiryStr)}</span>
+                    </td>
+                    <td class="w-[8%] px-2 py-2.5 text-center align-middle text-[10px] font-medium" onclick="event.stopPropagation()">
+                        <div class="inline-flex items-center gap-1 justify-center">
+                            <button type="button" onclick="event.stopPropagation(); openEditModal(${product.id});" class="text-slate-700 hover:text-black p-1 rounded hover:bg-slate-100 transition" title="Edit Product">
                                 <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                             </button>
-                            <button type="button" onclick="event.stopPropagation(); archiveProduct(${product.id});" class="rounded-[8px] border border-slate-200 px-2 py-1 text-[10px] font-semibold transition-all bg-white text-slate-700 hover:bg-black/10">Archive</button>
+                            <button type="button" onclick="event.stopPropagation(); archiveProduct(${product.id});" class="rounded-[6px] border border-slate-200 px-1.5 py-0.5 text-[9.5px] font-semibold transition-all bg-white text-slate-700 hover:bg-slate-100 hover:text-red-600">Archive</button>
                         </div>
                     </td>
                 `;

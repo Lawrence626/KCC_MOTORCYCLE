@@ -118,4 +118,53 @@ class ReverseLogisticsController extends Controller
             'message' => 'Reverse logistics record deleted successfully',
         ]);
     }
+
+    public function processRestock($id)
+    {
+        $record = ReverseLogistics::findOrFail($id);
+
+        $product = null;
+        if ($record->product_id) {
+            $product = \App\Models\Product::find($record->product_id);
+        }
+        if (!$product && $record->sku) {
+            $product = \App\Models\Product::where('sku', $record->sku)->first();
+        }
+
+        if ($product) {
+            $product->increment('stock_quantity', $record->quantity);
+            $product->update(['last_restock_date' => now()]);
+
+            if ($record->warehouse) {
+                $whName = strtoupper(trim($record->warehouse)) === 'SHOP' ? 'SHOP' : $record->warehouse;
+                $whStock = \App\Models\ProductWarehouseStock::firstOrNew([
+                    'product_id' => $product->id,
+                    'warehouse' => $whName,
+                ]);
+                $whStock->quantity = ($whStock->quantity ?? 0) + $record->quantity;
+                $whStock->save();
+            }
+
+            try {
+                \App\Models\InventoryMovement::create([
+                    'product_id' => $product->id,
+                    'type' => 'restock',
+                    'quantity' => $record->quantity,
+                    'source' => 'Reverse Logistics Restock',
+                    'notes' => 'Restocked from reverse logistics: ' . ($record->notes ?? 'N/A'),
+                    'created_by' => auth()->id() ?? 1,
+                ]);
+            } catch (\Exception $e) {
+                // Log movement failure gracefully
+            }
+        }
+
+        $record->update(['status' => 'Restocked']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Restock processed successfully' . ($product ? ' and inventory updated.' : '.'),
+            'data' => $record,
+        ]);
+    }
 }

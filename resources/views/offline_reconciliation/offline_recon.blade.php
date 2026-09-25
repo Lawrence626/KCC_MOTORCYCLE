@@ -1,21 +1,23 @@
 <x-layouts.app :title="__('Offline Reconciliation')">
-    <div class="space-y-4">
-        <!-- Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
             <div>
-                <h1 class="text-3xl font-bold text-slate-900">Offline Reconciliation</h1>
-                <p class="text-gray-600 text-sm mt-1">Manage offline data synchronization and system logs</p>
+                <h1 class="text-lg font-bold text-slate-900 leading-tight">Offline Reconciliation</h1>
+                <p class="text-xs text-slate-500 mt-0.5">Manage offline data synchronization and system logs.</p>
             </div>
             <div class="flex items-center gap-2">
                 <div id="offline-indicator" class="hidden"></div>
-                <button onclick="window.offlineManager && window.offlineManager.manualSync ? window.offlineManager.manualSync() : alert('Sync in progress...')" class="inline-flex items-center gap-2 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-4 py-2 text-sm font-semibold text-black shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200 cursor-pointer">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <button onclick="window.offlineManager && window.offlineManager.manualSync ? window.offlineManager.manualSync() : alert('Sync in progress...')" class="inline-flex items-center gap-1.5 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200 cursor-pointer">
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                     </svg>
                     <span>Sync Now</span>
                 </button>
             </div>
         </div>
+    </x-slot>
+
+    <div class="space-y-4">
 
         @include('partials.offline-submenu')
 

@@ -1,12 +1,15 @@
 <x-layouts.app :title="__('Purchase Requests')">
-    <div class="space-y-5">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div class="space-y-2">
-                <h1 class="text-3xl font-bold text-slate-900">Purchase Requests</h1>
-                <p class="max-w-2xl text-sm text-slate-500">Create and review purchase requests before they become approved orders.</p>
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
+            <div>
+                <h1 class="text-lg font-bold text-slate-900 leading-tight">Purchase Requests</h1>
+                <p class="text-xs text-slate-500 mt-0.5">Create and review purchase requests before they become approved orders.</p>
             </div>
-            <button class="inline-flex items-center gap-2 rounded-[10px] bg-[#105f68] px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-[#105f68]/20 hover:bg-[#0c474e]">New Request</button>
+            <button class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition">New Request</button>
         </div>
+    </x-slot>
+
+    <div class="space-y-4">
 
         <div class="grid gap-3 sm:grid-cols-3">
             <div class="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm">

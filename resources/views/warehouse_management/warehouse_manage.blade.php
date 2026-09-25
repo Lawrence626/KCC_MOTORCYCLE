@@ -91,34 +91,35 @@
         }
     </style>
 
-    <div class="space-y-4">
-        <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
-
-        {{-- ═══ HEADER ═══ --}}
-        <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-            <div class="pl-3 lg:pl-2">
-                <h1 class="text-3xl font-bold text-slate-900">Warehouse Management</h1>
-                <p class="text-xs text-slate-500 mt-1">Track and manage storage locations and products across your warehouses</p>
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
+            <div>
+                <h1 class="text-lg font-bold text-slate-900 leading-tight">Warehouse Management</h1>
+                <p class="text-xs text-slate-500 mt-0.5">Track and manage storage locations and products across your warehouses.</p>
             </div>
-            <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap pr-4">
+            <div class="flex items-center gap-2 flex-wrap">
                 <button id="add-shelf-button" type="button" onclick="openAddShelfModal()"
-                        class="inline-flex items-center gap-2 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-2 text-sm font-bold text-black shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
+                        class="inline-flex items-center gap-1.5 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
                     + Add Shelf
                 </button>
                 <button id="add-warehouse-button" type="button" onclick="openAddWarehouseModal()"
-                        class="inline-flex items-center gap-2 rounded-[10px] border border-slate-900 bg-[#0f172a] px-3 py-2 text-sm font-bold text-white shadow-sm hover:bg-slate-800 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
+                        class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-900 bg-[#0f172a] px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-slate-800 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
                     + Add Warehouse
                 </button>
                 <button id="view-archived-shelves" type="button" onclick="openArchivedShelvesModal()"
-                        class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
+                        class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
                     Archived Shelves
                 </button>
                 <button id="view-archived-warehouses" type="button"
-                        class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
+                        class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
                     Archived Warehouses
                 </button>
             </div>
         </div>
+    </x-slot>
+
+    <div class="space-y-4">
+        <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
         {{-- ═══ FILTERS & STATS ═══ --}}
         <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">

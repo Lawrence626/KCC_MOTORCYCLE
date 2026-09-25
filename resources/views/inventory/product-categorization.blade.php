@@ -1,35 +1,31 @@
 <x-layouts.app :title="__('Product Categorization')">
-    <div class="space-y-4">
-        <!-- Header -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 px-2 py-1">
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
             <div>
-                <h1 class="text-3xl font-bold text-slate-900">Product Categorization</h1>
-                <p class="text-sm text-slate-500 mt-1">Add, update, and delete product categories. Set SKU (QR code) and filter compatibility for each motorcycle.</p>
+                <h1 class="text-lg font-bold text-slate-900 leading-tight">Product Categorization</h1>
+                <p class="text-xs text-slate-500 mt-0.5">Add, update, and delete product categories.</p>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
+            <div class="flex items-center gap-2 flex-wrap">
                 <!-- Bulk Actions Toolbar -->
-                <div id="bulkActionsToolbar" class="items-center gap-3 bg-slate-50 px-4 py-2 rounded-xl border border-slate-200" style="display:none">
+                <div id="bulkActionsToolbar" class="items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200" style="display:none">
                     <span class="text-xs text-slate-700 font-medium"><span id="selectedCount">0</span> selected</span>
-                    <button id="bulkDeleteBtn" class="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition">
-                        Move to Trash
-                    </button>
+                    <button id="bulkDeleteBtn" class="px-2.5 py-1 rounded-lg bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition">Move to Trash</button>
                     <button id="clearSelectionBtn" class="text-xs text-slate-600 hover:text-slate-800 font-medium">Clear</button>
                 </div>
-                <!-- Trash Button with badge -->
-                <button id="openTrashBtn" class="relative inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 text-sm font-semibold hover:bg-slate-50 transition shadow-sm">
-                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
+                <button id="openTrashBtn" class="relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-semibold hover:bg-slate-50 transition shadow-sm">
+                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                     <span>Trash</span>
                     <span id="trashBadge" class="absolute -top-1.5 -right-1.5 items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs font-bold" style="display:none">0</span>
                 </button>
-                <button id="openDeleteList" class="px-4 py-2 rounded-lg border border-red-200 bg-white text-red-600 text-sm font-semibold hover:bg-red-50 transition shadow-sm">Delete List</button>
-                <button id="openAddProduct" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#6EC1D1] text-slate-900 text-sm font-semibold hover:bg-[#59b2c2] transition shadow-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                <button id="openDeleteList" class="px-3 py-1.5 rounded-lg border border-red-200 bg-white text-red-600 text-xs font-semibold hover:bg-red-50 transition shadow-sm">Delete List</button>
+                <button id="openAddProduct" class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#6EC1D1] text-slate-900 text-xs font-semibold hover:bg-[#59b2c2] transition shadow-sm">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                     <span>Add Product</span>
                 </button>
             </div>
         </div>
+    </x-slot>
+    <div class="space-y-4">
 
         <!-- Filter Section -->
         <div class="rounded-[10px] border border-slate-200 bg-white p-3 shadow-sm">
