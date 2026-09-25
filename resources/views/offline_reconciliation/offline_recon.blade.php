@@ -1,12 +1,8 @@
 <x-layouts.app :title="__('Offline Reconciliation')">
-<<<<<<< HEAD
+
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
-=======
-    <div class="space-y-4">
-        <!-- Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2 pb-1 pl-1">
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
+
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Offline Reconciliation</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Manage offline data synchronization and system logs.</p>

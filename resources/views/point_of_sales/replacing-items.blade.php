@@ -1,18 +1,11 @@
 <x-layouts.app :title="__('Replacing Items')">
-<<<<<<< HEAD
+
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Replacing Items</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Manage returned products and issue replacements.</p>
-=======
-    <div class="space-y-6">
-        <!-- Header Section -->
-         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
-                <div class="pl-3 lg:pl-1">
-                <h1 class="text-3xl font-bold text-slate-900">Replacing Items</h1>
-                <p class="text-xs text-slate-500 mt-1">Manage returned products and issue replacements.</p>
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
+
             </div>
             <button onclick="openNewReplacementModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#6EC1D1] text-slate-900 rounded-[10px] font-bold text-xs border border-slate-200 hover:bg-[#59b2c2] transition-all">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

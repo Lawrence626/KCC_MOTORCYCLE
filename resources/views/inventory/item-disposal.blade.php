@@ -1,18 +1,10 @@
 <x-layouts.app :title="__('Item Disposal')">
-<<<<<<< HEAD
+
     <x-slot name="header">
         <div>
             <h1 class="text-lg font-bold text-slate-900 leading-tight">Item Disposal List</h1>
             <p class="text-xs text-slate-500 mt-0.5">Automatically identifies expired, damaged, or recalled inventory items requiring disposal.</p>
-=======
-    <div class="space-y-4">
-        <!-- Header -->
-        <div class="flex items-center justify-between gap-3 pt-2 pb-1 pl-1">
-            <div class="pl-3 lg:pl-2">
-                <h1 class="text-3xl font-bold text-slate-900">Item Disposal List</h1>
-                <p class="text-sm text-slate-500 mt-1">Automatically identifies expired, damaged, or recalled inventory items requiring disposal.</p>
-            </div>
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
+
         </div>
     </x-slot>
     <div class="space-y-4">

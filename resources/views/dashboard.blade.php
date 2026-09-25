@@ -1,16 +1,10 @@
 <x-layouts.app :title="__('Dashboard')">
-<<<<<<< HEAD
+
     <x-slot name="header">
         <div>
             <h1 class="text-lg font-bold text-slate-900 leading-tight">Dashboard</h1>
             <p class="text-xs text-slate-500 mt-0.5">Overview of sales, inventory and performance insights</p>
-=======
-    <div id="dashboard-root" data-dashboard-url="{{ route('dashboard.data') }}" data-refresh-interval="15000" class="space-y-4">
-        <!-- Dashboard Title (scrolls with page content) -->
-        <div class="pb-2 pl-2">
-            <h1 class="text-3xl font-bold text-slate-900">Dashboard</h1>
-            <p class="text-gray-600 text-sm mt-1">Overview of sales, inventory and performance insights</p>
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
+
         </div>
     </x-slot>
 

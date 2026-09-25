@@ -1,5 +1,5 @@
 <x-layouts.app :title="__('Synchronization History')">
-<<<<<<< HEAD
+
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
@@ -13,16 +13,7 @@
                     </svg>
                     <span>Back to Offline Home</span>
                 </a>
-=======
-    <div class="space-y-4">
-        <!-- Header -->
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
-            <div>
-                <h1 class="text-3xl font-bold text-slate-900">Synchronization History</h1>
-                <p class="text-gray-600 text-xs mt-1">Track all export and import operations</p>
-            </div>
-            <div class="flex flex-wrap items-center gap-2">
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
+
                 <form action="{{ route('offline.export.csv') }}" method="POST" class="inline">
                     @csrf
                     <input type="hidden" name="type" value="sync_history">

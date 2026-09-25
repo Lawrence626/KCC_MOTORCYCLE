@@ -1,5 +1,5 @@
 <x-layouts.app :title="__('Archived Items')">
-<<<<<<< HEAD
+
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
@@ -22,15 +22,7 @@
                         <a href="{{ route('pos.terminal') }}" class="block text-left px-3 py-2 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition">Back to POS</a>
                     </div>
                 </div>
-=======
-    <div id="dashboard-root" class="space-y-1.5">
-    <div class="flex flex-col gap-5" style="min-height: calc(100vh - 200px);">
-        <!-- Header -->
-       <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
-                <div class="pl-3 lg:pl-2">
-                <h1 class="text-3xl font-bold text-slate-900">Archived Items</h1>
-                <p class="text-xs text-slate-500 mt-0.5">Archived inventory items. Restore or permanently delete</p>
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
+
             </div>
         </div>
     </x-slot>

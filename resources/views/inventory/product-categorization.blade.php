@@ -1,18 +1,11 @@
 <x-layouts.app :title="__('Product Categorization')">
-<<<<<<< HEAD
+
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Product Categorization</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Add, update, and delete product categories.</p>
-=======
-    <div class="space-y-4">
-        <!-- Header -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 px-2 py-1 pt-2 pb-1 pl-1">
-            <div>
-                <h1 class="text-3xl font-bold text-slate-900">Product Categorization</h1>
-                <p class="text-xs text-slate-500 mt-1">Add, update, and delete product categories. Set SKU (QR code) and filter compatibility for each motorcycle.</p>
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
+
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <!-- Bulk Actions Toolbar -->

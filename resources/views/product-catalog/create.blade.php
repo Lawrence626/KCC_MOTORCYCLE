@@ -7,28 +7,18 @@
         .qr-preview { width: 180px; height: 180px; }
     </style>
 
-<<<<<<< HEAD
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
-=======
-    <div id="dashboard-root" class="space-y-1.5">
-    <div class="space-y-4">
-        <!-- Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1 py-1 pt-2 pb-1 pl-1">
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Add New Product</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Create a new product with SKU generation, QR code, and motorcycle compatibility.</p>
             </div>
-<<<<<<< HEAD
             <div>
                 <a href="{{ route('product-catalog.index') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 transition-all">
                     <svg class="w-3.5 h-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                     Back to Products
                 </a>
             </div>
-=======
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
         </div>
     </x-slot>
 

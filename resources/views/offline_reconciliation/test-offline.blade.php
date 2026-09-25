@@ -2,11 +2,9 @@
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
-<<<<<<< HEAD
+
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Test Offline Mode</h1>
-=======
-                <h1 class="text-3xl font-bold text-slate-900">Test Offline Mode</h1>
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
+
                 <p class="text-xs text-slate-500 mt-0.5">Test offline functionality without going offline</p>
             </div>
             <div class="flex items-center gap-2">

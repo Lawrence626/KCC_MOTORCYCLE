@@ -1,17 +1,10 @@
 <x-layouts.app :title="__('Profile & Settings')">
-<<<<<<< HEAD
+
     <x-slot name="header">
         <div>
             <h1 class="text-lg font-bold text-slate-900 leading-tight">Profile & Settings</h1>
             <p class="text-xs text-slate-500 mt-0.5">Manage your account, security, and interface preferences</p>
-=======
-    <div class="space-y-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-slate-900">Profile & Settings</h1>
-                <p class="text-[11px] text-slate-500 mt-1">Manage your account, security, and interface preferences</p>
-            </div>
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
+
         </div>
     </x-slot>
 

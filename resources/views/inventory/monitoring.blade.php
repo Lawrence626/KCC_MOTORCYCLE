@@ -1,18 +1,10 @@
 <x-layouts.app :title="__('Inventory Monitoring')">
-<<<<<<< HEAD
+
     <x-slot name="header">
         <div>
             <h1 class="text-lg font-bold text-slate-900 leading-tight">Inventory Monitoring</h1>
             <p class="text-xs text-slate-500 mt-0.5">Real-time tracking of inventory operations and movements</p>
-=======
-    <div class="space-y-4">
-        <!-- Header -->
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
-            <div class="pl-3 lg:pl-1">
-                <h1 class="text-3xl font-bold text-slate-900">Inventory Monitoring</h1>
-                <p class="text-sm text-slate-500 mt-1">Real-time tracking of inventory operations and movements</p>
-            </div>
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
+
         </div>
     </x-slot>
     <div class="space-y-4">

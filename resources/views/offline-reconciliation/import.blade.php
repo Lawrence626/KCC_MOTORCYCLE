@@ -1,20 +1,11 @@
 <x-layouts.app :title="__('Import Data')">
-<<<<<<< HEAD
+
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Import Data</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Import offline transactions from CSV or Excel files.</p>
-=======
-    <div class="space-y-4">
-        <!-- Header -->
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
-            <div>
-                <h1 class="text-3xl font-bold text-slate-900">Import Data</h1>
-                <p class="text-gray-600 text-xs mt-1">Import offline transactions from CSV or Excel files</p>
-            </div>
-            <div class="flex flex-wrap items-center gap-2">
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
+
             </div>
             <a href="{{ Route::has('offline.reconciliation') ? route('offline.reconciliation') : url('/offline-reconciliation') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus:outline-none transition-all duration-200">
                 <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">

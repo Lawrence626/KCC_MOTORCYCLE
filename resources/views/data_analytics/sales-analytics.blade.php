@@ -50,20 +50,11 @@
         ];
     @endphp
 
-<<<<<<< HEAD
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Sales Analytics</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Track revenue performance, product demand, and market momentum in a compact analytics workspace.</p>
-=======
-    <div class="space-y-4">
-        <!-- Header -->
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
-            <div class="pl-3 lg:pl-2">
-                <h1 class="text-3xl font-bold text-slate-900">Sales Analytics</h1>
-                <p class="text-xs text-slate-500 mt-1">Track revenue performance, product demand, and market momentum in a compact analytics workspace.</p>
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
             </div>
             <div class="flex items-center gap-2">
                 <div class="relative">
@@ -1520,11 +1511,7 @@
                 }).join('');
             };
 
-<<<<<<< HEAD
-            let topProductsData = @json($topProducts);
-=======
-            let topProductsData = @json($topProducts ?? []);
->>>>>>> 4832e71640143292d1c85fd036fa86392c6969d7
+let topProductsData = @json($topProducts ?? []);
             let fastMovingData = @json($fastMoving ?? []);
             let slowMovingData = @json($slowMoving ?? []);
 

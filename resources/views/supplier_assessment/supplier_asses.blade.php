@@ -1,17 +1,11 @@
 <x-layouts.app :title="__('Supplier Assessment')">
-<<<<<<< HEAD
+
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Supplier Assessment</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Track supplier performance, manage supplier records, and inspect products with pricing at a glance.</p>
-=======
-    <div class="space-y-5">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
-            <div class="pl-3 lg:pl-1">
-                <h1 class="text-3xl font-bold text-slate-900">Supplier Assessment</h1>
-                <p class="text-gray-600 text-xs mt-1">Track supplier performance, manage supplier records, and inspect products with pricing at a glance.</p>
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
+
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 <button id="openSupplierModal" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all duration-200">

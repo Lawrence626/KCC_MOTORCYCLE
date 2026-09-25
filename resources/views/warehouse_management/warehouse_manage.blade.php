@@ -91,22 +91,13 @@
         }
     </style>
 
-<<<<<<< HEAD
+
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Warehouse Management</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Track and manage storage locations and products across your warehouses.</p>
-=======
-    <div class="space-y-4">
-        <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
-        {{-- ═══ HEADER ═══ --}}
-        <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between pt-2 pb-1 pl-1">
-            <div class="pl-3 lg:pl-2">
-                <h1 class="text-3xl font-bold text-slate-900">Warehouse Management</h1>
-                <p class="text-xs text-slate-500 mt-1">Track and manage storage locations and products across your warehouses</p>
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <button id="add-shelf-button" type="button" onclick="openAddShelfModal()"

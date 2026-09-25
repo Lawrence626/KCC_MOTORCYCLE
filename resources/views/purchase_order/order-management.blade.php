@@ -24,21 +24,11 @@
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Order Management</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Monitor and visualize purchase orders across the ordering lifecycle.</p>
             </div>
-<<<<<<< HEAD
+
             <div class="flex items-center gap-2">
                 <button class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 transition-all duration-200">
                     <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-=======
-        @endif
- <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
-                <div class="pl-3 lg:pl-2">
-                <h1 class="text-3xl font-bold text-slate-900">Order Management</h1>
-                <p class="max-w-2xl text-xs text-slate-500">Monitor and visualize purchase orders across the ordering lifecycle.</p>
-            </div>
-            <div class="flex flex-wrap gap-3">
-                <button class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200">
-                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
+
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                     </svg>
                     <span>Upload CSV</span>

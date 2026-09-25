@@ -1,17 +1,10 @@
-<<<<<<< HEAD
+
 <x-layouts.app :title="__('Reconciliation Report')">
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Reconciliation Report</h1>
-=======
-﻿<x-layouts.app :title="__('Reconciliation Report')">
-    <div class="space-y-3">
-        <!-- Header -->
-        <div class="flex items-center justify-between pt-2 pb-1 pl-1">
-            <div>
-                <h1 class="text-3xl font-bold text-slate-900">Reconciliation Report</h1>
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
+
                 <p class="text-xs text-slate-500 mt-0.5">Detailed synchronization report for {{ $syncHistory->file_name }}</p>
             </div>
             <div class="flex gap-2">

@@ -1,5 +1,5 @@
 <x-layouts.app :title="__('Create Purchase Order')">
-<<<<<<< HEAD
+
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
@@ -17,19 +17,7 @@
     </x-slot>
 
     <div class="space-y-4">
-=======
-    <div id="dashboard-root" class="space-y-1.5">
-<div class="space-y-6">
 
-    {{-- Page Header --}}
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between pt-2 pb-1 pl-1">
-       
-            <div class="pl-3 lg:pl-2">
-            <h1 class="text-3xl font-bold text-slate-900">Create Purchase Order</h1>
-            <p class="max-w-2xl text-xs text-slate-500">Select products first, then choose a qualified supplier. Pricing insights update automatically.</p>
-        </div>
-    </div>
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
 
     {{-- Validation Errors --}}
     @if($errors->any())

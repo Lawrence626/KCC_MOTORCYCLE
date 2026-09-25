@@ -68,22 +68,13 @@
         }
     </style>
 
-<<<<<<< HEAD
+
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Shop Inventory Items</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Track and manage products across shop shelves for POS sales.</p>
-=======
-    <div class="space-y-4">
-        <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
-        
-        <!-- Header -->
-        <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between pt-2 pb-1 pl-1">
-            <div class="pl-3 lg:pl-2">
-                <h1 class="text-3xl font-bold text-slate-900">Shop Inventory Items</h1>
-                <p class="text-xs text-slate-500 mt-1">Track and manage products across shop shelves for POS sales</p>
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
+
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <button id="add-shelf-button" type="button" class="inline-flex items-center gap-1.5 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap" onclick="openAddShelfModal()">

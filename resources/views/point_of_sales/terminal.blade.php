@@ -1,17 +1,9 @@
 <x-layouts.app :title="__('POS Terminal')">
-<<<<<<< HEAD
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Point of Sale (POS)</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Process sales, service billing, and payments from one compact page.</p>
-=======
-    <div class="space-y-3 max-w-[1480px] mx-auto px-3">
-         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
-                <div class="-ml-2 lg:-ml-2">
-                <h1 class="text-3xl font-bold text-slate-900">Point of Sale (POS)</h1>
-                <p class="text-xs text-slate-500 mt-1">Process sales, service billing, and payments from one compact page.</p>
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 <button id="posOpenDesktopScannerButton" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-800 font-semibold shadow-sm hover:bg-slate-50 transition-all duration-200">
@@ -26,13 +18,8 @@
                     <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/></svg>
                     Transaction History
                 </button>
-<<<<<<< HEAD
                 <a href="{{ route('archived') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-800 font-semibold shadow-sm hover:bg-slate-50 transition-all duration-200">
                     <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
-=======
-                <a href="{{ route('pos.archived') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 font-semibold shadow-sm hover:bg-black/10 transition-all duration-200">
-                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
->>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
                     Archived Items
                 </a>
             </div>
