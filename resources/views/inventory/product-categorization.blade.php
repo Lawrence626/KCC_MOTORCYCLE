@@ -1,9 +1,18 @@
 <x-layouts.app :title="__('Product Categorization')">
+<<<<<<< HEAD
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Product Categorization</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Add, update, and delete product categories.</p>
+=======
+    <div class="space-y-4">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 px-2 py-1 pt-2 pb-1 pl-1">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900">Product Categorization</h1>
+                <p class="text-xs text-slate-500 mt-1">Add, update, and delete product categories. Set SKU (QR code) and filter compatibility for each motorcycle.</p>
+>>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <!-- Bulk Actions Toolbar -->
@@ -296,6 +305,96 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Notification Panel Toggle
+        function toggleNotificationPanel(event) {
+            event.stopPropagation();
+            const panel = document.getElementById('notification-panel');
+            const profileDropdown = document.getElementById('dashboardProfileDropdown');
+            if (panel) {
+                const isHidden = panel.classList.contains('hidden');
+                if (isHidden) {
+                    panel.classList.remove('hidden');
+                    if (profileDropdown) {
+                        profileDropdown.classList.add('hidden');
+                        profileDropdown.classList.remove('opacity-100', 'scale-100');
+                        profileDropdown.classList.add('opacity-0', 'scale-95');
+                    }
+                } else {
+                    panel.classList.add('hidden');
+                }
+            }
+        }
+
+        // Helper functions
+        function markAllNotificationsRead() {
+            // Placeholder for marking all notifications as read
+            console.log('Mark all notifications as read');
+        }
+
+        function openAllNotificationsModal() {
+            // Placeholder for opening all notifications modal
+            console.log('Open all notifications modal');
+        }
+
+        // Close dropdowns when clicking outside
+        window.addEventListener('click', function(event) {
+            const panel = document.getElementById('notification-panel');
+            const profileDropdown = document.getElementById('dashboardProfileDropdown');
+            const notificationBell = document.getElementById('notification-bell-btn');
+            const profileButton = document.getElementById('dashboardProfileButton');
+
+            if (panel && !panel.contains(event.target) && notificationBell && !notificationBell.contains(event.target)) {
+                panel.classList.add('hidden');
+            }
+
+            if (profileDropdown && !profileDropdown.contains(event.target) && profileButton && !profileButton.contains(event.target)) {
+                profileDropdown.classList.add('hidden');
+                profileDropdown.classList.remove('opacity-100', 'scale-100');
+                profileDropdown.classList.add('opacity-0', 'scale-95');
+            }
+        });
+
+        // Notification panel toggle function
+        window.toggleNotificationPanel = function(event) {
+            event.stopPropagation();
+            const panel = document.getElementById('notification-panel');
+            const dropdown = document.getElementById('dashboardProfileDropdown');
+
+            if (panel) {
+                const isHidden = panel.classList.contains('hidden');
+                if (isHidden) {
+                    panel.classList.remove('hidden');
+                    if (dropdown) {
+                        dropdown.classList.add('hidden', 'opacity-0', 'scale-95');
+                        dropdown.classList.remove('block', 'opacity-100', 'scale-100');
+                    }
+                } else {
+                    panel.classList.add('hidden');
+                }
+            }
+        };
+
+        // Mark all notifications as read
+        window.markAllNotificationsRead = function() {
+            console.log('Mark all notifications as read');
+        };
+
+        // Open all notifications modal
+        window.openAllNotificationsModal = function() {
+            console.log('Open all notifications modal');
+        };
+
+        // Close notification panel when clicking outside
+        window.addEventListener('click', function(e) {
+            const panel = document.getElementById('notification-panel');
+            const bellBtn = document.getElementById('notification-bell-btn');
+            if (panel && !panel.classList.contains('hidden') && !panel.contains(e.target) && !bellBtn.contains(e.target)) {
+                panel.classList.add('hidden');
+            }
+        });
+    </script>
 
     @vite('resources/js/product-categorization.js')
 </x-layouts.app>

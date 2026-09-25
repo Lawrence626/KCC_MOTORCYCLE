@@ -1,9 +1,17 @@
 <x-layouts.app :title="__('POS Terminal')">
+<<<<<<< HEAD
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Point of Sale (POS)</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Process sales, service billing, and payments from one compact page.</p>
+=======
+    <div class="space-y-3 max-w-[1480px] mx-auto px-3">
+         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
+                <div class="-ml-2 lg:-ml-2">
+                <h1 class="text-3xl font-bold text-slate-900">Point of Sale (POS)</h1>
+                <p class="text-xs text-slate-500 mt-1">Process sales, service billing, and payments from one compact page.</p>
+>>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 <button id="posOpenDesktopScannerButton" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-800 font-semibold shadow-sm hover:bg-slate-50 transition-all duration-200">
@@ -18,8 +26,13 @@
                     <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/></svg>
                     Transaction History
                 </button>
+<<<<<<< HEAD
                 <a href="{{ route('archived') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-800 font-semibold shadow-sm hover:bg-slate-50 transition-all duration-200">
                     <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+=======
+                <a href="{{ route('pos.archived') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 font-semibold shadow-sm hover:bg-black/10 transition-all duration-200">
+                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+>>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
                     Archived Items
                 </a>
             </div>
@@ -28,7 +41,7 @@
 
     <div class="space-y-3 max-w-[1480px] mx-auto">
 
-        <div class="grid grid-cols-1 xl:grid-cols-[1.65fr_1fr] gap-4 mt-6">
+        <div class="grid grid-cols-1 xl:grid-cols-[1.65fr_1fr] gap-4 mt-2">
             <div class="space-y-3">
                 <div class="rounded-[20px] border border-slate-200 bg-white overflow-hidden shadow-sm">
                     <!-- Section Header Bar (matching All Stocks design) -->
@@ -85,18 +98,9 @@
                         </div>
                         <button id="posEmptyCartButton" class="rounded-[10px] bg-[#6EC1D1] px-3 py-1.5 text-[11px] font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all duration-200">Empty</button>
                     </div>
-                    <div class="p-5 space-y-4">
+                    <div class="px-5 pb-5 pt-2 space-y-4">
                         <div class="overflow-x-auto rounded-t-[10px] overflow-hidden">
                             <table id="posCartTable" class="min-w-full text-left text-[11px]">
-                                <thead class="border-b border-slate-800 bg-[#0f172a] text-xs font-semibold uppercase tracking-wider text-white" style="background-color: #0f172a;">
-                                    <tr>
-                                        <th class="px-3 py-2 text-left font-semibold text-white rounded-tl-[10px]">Item</th>
-                                        <th class="px-6 py-2 text-right font-semibold text-white">Price</th>
-                                        <th class="px-3 py-2 text-center font-semibold text-white">Qty</th>
-                                        <th class="px-6 py-2 text-right font-semibold text-white">Total</th>
-                                        <th class="px-3 py-2 text-center font-semibold text-white rounded-tr-[10px]">Action</th>
-                                    </tr>
-                                </thead>
                                 <tbody id="posCartBody"></tbody>
                             </table>
                             <div id="posEmptyCartMessage" class="mt-6 rounded-[10px] border border-dashed border-slate-300 bg-slate-50 px-3 py-6 text-center text-slate-500 text-sm">Cart empty.</div>
@@ -721,7 +725,7 @@
                 }
 
                 const card = document.createElement('div');
-                card.className = 'custom-calendar-card hidden absolute top-full left-0 mt-2 z-[99999] w-72 rounded-[18px] bg-white p-4 shadow-[0_16px_40px_rgba(0,0,0,0.12)] border border-slate-100 transition-all duration-200';
+                card.className = 'custom-calendar-card hidden absolute top-full left-0 mt-2 z-[90] w-72 rounded-[18px] bg-white p-4 shadow-[0_16px_40px_rgba(0,0,0,0.12)] border border-slate-100 transition-all duration-200';
                 wrapper.appendChild(card);
 
                 let currentDate = new Date();

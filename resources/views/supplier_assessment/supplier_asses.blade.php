@@ -1,9 +1,17 @@
 <x-layouts.app :title="__('Supplier Assessment')">
+<<<<<<< HEAD
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Supplier Assessment</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Track supplier performance, manage supplier records, and inspect products with pricing at a glance.</p>
+=======
+    <div class="space-y-5">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
+            <div class="pl-3 lg:pl-1">
+                <h1 class="text-3xl font-bold text-slate-900">Supplier Assessment</h1>
+                <p class="text-gray-600 text-xs mt-1">Track supplier performance, manage supplier records, and inspect products with pricing at a glance.</p>
+>>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 <button id="openSupplierModal" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all duration-200">
@@ -141,7 +149,7 @@
                 <div class="bg-[#0f172a] px-6 py-5 border-b border-slate-800 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between rounded-t-[15px]">
                     <div>
                         <p class="text-xs uppercase tracking-wider font-semibold text-[#6EC1D1]">Supplier overview</p>
-                        <h2 id="detailSupplierName" class="mt-0.5 text-2xl md:text-3xl font-bold text-white"></h2>
+                        <h2 id="detailSupplierName" class="mt-0.5 text-2xl md:text-2xl font-bold text-white"></h2>
                         <p id="detailSupplierNotes" class="mt-1 text-xs text-slate-300"></p>
                         <p id="detailSupplierAddress" class="mt-1 text-xs text-slate-400"></p>
                     </div>
@@ -833,4 +841,39 @@
             </script>
         @endpush
     </div>
+
+    <script>
+        // Notification panel toggle
+        window.toggleNotificationPanel = function(e) {
+            if (e) e.stopPropagation();
+            var panel = document.getElementById('notification-panel');
+            if (!panel) return;
+
+            // Close profile dropdown first if open
+            var profileDropdown = document.getElementById('dashboardProfileDropdown');
+            if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
+                profileDropdown.classList.add('hidden');
+                profileDropdown.classList.add('opacity-0', 'scale-95');
+            }
+
+            const isOpen = !panel.classList.contains('hidden');
+            if (isOpen) {
+                panel.classList.add('hidden');
+            } else {
+                panel.classList.remove('hidden');
+            }
+        };
+
+        // Mark all notifications as read
+        window.markAllNotificationsRead = function() {
+            // Implementation for marking notifications as read
+            console.log('Mark all notifications as read');
+        };
+
+        // Open all notifications modal
+        window.openAllNotificationsModal = function() {
+            // Implementation for opening all notifications modal
+            console.log('Open all notifications modal');
+        };
+    </script>
 </x-layouts.app>

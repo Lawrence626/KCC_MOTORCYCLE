@@ -6,6 +6,7 @@ const posState = {
         { id: 'brake_adjust', label: 'Brake Adjustment', price: 180.00 },
     ],
     selectedServices: new Set(),
+    expandedCartItems: new Set(),
     extraCharge: 0,
     discount: 0,
     hasAutoDiscount: false,
@@ -700,6 +701,7 @@ function renderCart() {
         const isAtMin = item.quantity <= 1;
         const isExceeding = item.quantity > maxStock;
         const isOutOfStock = maxStock <= 0;
+        const isExpanded = posState.expandedCartItems.has(item.id);
 
         let stockInfoHtml = '';
         if (isOutOfStock) {
@@ -719,28 +721,49 @@ function renderCart() {
             discountBadge = `<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-300 ml-1.5" title="Dead stock discount applied">🏷️ ${discountLabel}</span>`;
         }
 
+        const productDisplayName = item.name || item.product_name || 'Product';
+        const compactProductName = productDisplayName.length > 18 ? `${productDisplayName.slice(0, 18)}...` : productDisplayName;
+        const compactSkuText = item.sku ? `SKU: ${item.sku}` : 'SKU: N/A';
+
         const row = document.createElement('tr');
         row.className = `border-b border-slate-200 ${isExceeding || isOutOfStock ? 'bg-red-50/50' : ''}`;
         row.innerHTML = `
-            <td class="px-3 py-3 text-slate-700 text-xs font-medium">
-                <div class="text-sm font-semibold text-slate-900 mb-0.5 flex items-center flex-wrap">${item.name}${discountBadge}</div>
-                ${item.product_description ? `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">PRODUCT DESCRIPTION:</span> ${item.product_description}</div>` : ''}
-                ${item.brand ? `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">BRAND:</span> ${item.brand}</div>` : ''}
-                ${item.compatibility ? `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">COMPATIBLE:</span> ${item.compatibility}</div>` : ''}
-                ${item.sku ? `<div class="text-[10px] text-slate-700 mt-0.5"><span class="font-semibold text-black">SKU:</span> ${item.sku}</div>` : ''}
-                ${stockInfoHtml}
-            </td>
-            <td class="px-3 py-3 text-right text-slate-700 text-xs">${formatCurrency(item.unit_price)}</td>
-            <td class="px-3 py-3 text-center text-slate-700 text-xs">
-                <div class="inline-flex items-center rounded-lg border ${isExceeding || isOutOfStock ? 'border-red-400 ring-1 ring-red-400 bg-white' : 'border-slate-200'} overflow-hidden">
-                    <button data-action="decrement" data-id="${item.id}" ${isAtMin ? 'disabled' : ''} class="px-2 py-1 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent" title="${isAtMin ? 'Minimum quantity is 1' : 'Decrease quantity'}">−</button>
-                    <span class="px-3 text-slate-900 text-xs font-semibold ${isExceeding || isOutOfStock ? 'text-red-600' : ''}">${item.quantity}</span>
-                    <button data-action="increment" data-id="${item.id}" ${isAtMaxStock ? 'disabled' : ''} class="px-2 py-1 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent" title="${isAtMaxStock ? `Maximum stock reached (${maxStock} available)` : 'Increase quantity'}">+</button>
+            <td colspan="5" class="px-2 py-2 align-top">
+                <div class="pos-cart-item-panel rounded-[12px] border ${isExceeding || isOutOfStock ? 'border-red-200 bg-red-50/40' : 'border-slate-200 bg-white'} shadow-sm overflow-hidden">
+                    <div class="flex items-center justify-between gap-3 px-3 py-2.5">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-[12px] font-bold leading-snug text-slate-900">${compactProductName}</span>
+                                ${discountBadge}
+                            </div>
+                            <div class="mt-0.5 text-[9.5px] text-slate-500">${compactSkuText}</div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span class="text-[11px] font-semibold text-slate-800">${formatCurrency(item.unit_price * item.quantity)}</span>
+                            <button type="button" data-action="toggle-details" data-id="${item.id}" class="flex h-6 w-6 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-600 transition hover:bg-slate-100" aria-label="Toggle item details" aria-expanded="${isExpanded ? 'true' : 'false'}">
+                                <svg class="h-3.5 w-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <path d="M5 7.5L10 12.5L15 7.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="pos-cart-item-details ${isExpanded ? '' : 'hidden'} border-t border-slate-200 bg-slate-50/60 px-3 py-2.5 text-[10px] text-slate-700">
+                        ${item.product_description ? `<div class="leading-[1.5]"><span class="font-semibold text-black">PRODUCT DESCRIPTION:</span> ${item.product_description}</div>` : ''}
+                        ${item.brand ? `<div class="mt-1 leading-[1.5]"><span class="font-semibold text-black">BRAND:</span> ${item.brand}</div>` : ''}
+                        ${item.compatibility ? `<div class="mt-1 leading-[1.5]"><span class="font-semibold text-black">COMPATIBLE:</span> ${item.compatibility}</div>` : ''}
+                        ${stockInfoHtml}
+
+                        <div class="mt-2 flex items-center justify-between gap-3">
+                            <div class="inline-flex items-center rounded-lg border ${isExceeding || isOutOfStock ? 'border-red-400 ring-1 ring-red-400 bg-white' : 'border-slate-200'} overflow-hidden">
+                                <button data-action="decrement" data-id="${item.id}" ${isAtMin ? 'disabled' : ''} class="px-2 py-1 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent" title="${isAtMin ? 'Minimum quantity is 1' : 'Decrease quantity'}">−</button>
+                                <span class="px-3 text-slate-900 text-[10px] font-semibold ${isExceeding || isOutOfStock ? 'text-red-600' : ''}">${item.quantity}</span>
+                                <button data-action="increment" data-id="${item.id}" ${isAtMaxStock ? 'disabled' : ''} class="px-2 py-1 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent" title="${isAtMaxStock ? `Maximum stock reached (${maxStock} available)` : 'Increase quantity'}">+</button>
+                            </div>
+                            <button data-action="remove" data-id="${item.id}" class="text-red-600 hover:text-red-800 text-[10px] font-semibold">Remove</button>
+                        </div>
+                    </div>
                 </div>
-            </td>
-            <td class="px-3 py-3 text-right text-slate-700 text-xs">${formatCurrency(item.unit_price * item.quantity)}</td>
-            <td class="px-3 py-3 text-center text-slate-700 text-xs">
-                <button data-action="remove" data-id="${item.id}" class="text-red-600 hover:text-red-800 text-xs font-semibold">Remove</button>
             </td>
         `;
         tbody.appendChild(row);
@@ -2292,6 +2315,17 @@ function setupPosEvents() {
         if (!button) return;
         const productId = Number(button.dataset.id);
         const action = button.dataset.action;
+
+        if (action === 'toggle-details') {
+            if (posState.expandedCartItems.has(productId)) {
+                posState.expandedCartItems.delete(productId);
+            } else {
+                posState.expandedCartItems.add(productId);
+            }
+            renderCart();
+            return;
+        }
+
         if (action === 'increment') changeCartQuantity(productId, 1);
         if (action === 'decrement') changeCartQuantity(productId, -1);
         if (action === 'remove') removeCartItem(productId);

@@ -1,8 +1,16 @@
 <x-layouts.app :title="__('Dashboard')">
+<<<<<<< HEAD
     <x-slot name="header">
         <div>
             <h1 class="text-lg font-bold text-slate-900 leading-tight">Dashboard</h1>
             <p class="text-xs text-slate-500 mt-0.5">Overview of sales, inventory and performance insights</p>
+=======
+    <div id="dashboard-root" data-dashboard-url="{{ route('dashboard.data') }}" data-refresh-interval="15000" class="space-y-4">
+        <!-- Dashboard Title (scrolls with page content) -->
+        <div class="pb-2 pl-2">
+            <h1 class="text-3xl font-bold text-slate-900">Dashboard</h1>
+            <p class="text-gray-600 text-sm mt-1">Overview of sales, inventory and performance insights</p>
+>>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
         </div>
     </x-slot>
 
@@ -12,15 +20,15 @@
         @endphp
 
         <!-- Stats Grid -->
-        <div class="w-full -mt-2.5">
-            <div class="grid grid-cols-1 sm:grid-cols-2 {{ $canSeeDeadStock ? 'lg:grid-cols-3 xl:grid-cols-5' : 'lg:grid-cols-4' }} gap-x-5 gap-y-3">
+        <div class="w-full mt-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 {{ $canSeeDeadStock ? 'lg:grid-cols-3 xl:grid-cols-5' : 'lg:grid-cols-4' }} gap-x-5 gap-y-10">
                 <!-- Total Sales -->
                  <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
                     <div class="flex items-start justify-between gap-2">
                         <div class="flex-1 min-w-0">
-                            <p class="text-black text-sm font-semibold truncate">Total Sales</p>
+                            <p class="text-black text-xs font-semibold truncate">Total Sales</p>
                             <div class="mt-1">
-                                <p id="salesValue" class="text-3xl font-bold text-black truncate">—</p>
+                                <p id="salesValue" class="text-2xl font-bold text-black truncate">—</p>
                                 <p id="salesComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
                             </div>
                         </div>
@@ -36,9 +44,9 @@
                <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
                     <div class="flex items-start justify-between gap-2">
                         <div class="flex-1 min-w-0">
-                            <p class="text-black text-sm font-semibold truncate" style="color: #000000;">Total Transaction</p>
+                            <p class="text-black text-xs font-semibold truncate" style="color: #000000;">Total Transaction</p>
                             <div class="mt-1">
-                                <p id="transactionsValue" class="text-3xl font-bold truncate" style="color: #000000;">—</p>
+                                <p id="transactionsValue" class="text-2xl font-bold truncate" style="color: #000000;">—</p>
                                 <p id="transactionsComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
                             </div>
                         </div>
@@ -54,9 +62,9 @@
                 <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
                     <div class="flex items-start justify-between gap-2">
                         <div class="flex-1 min-w-0">
-                            <p class="text-black text-sm font-semibold truncate" style="color: #000000;">Total Profit</p>
+                            <p class="text-black text-xs font-semibold truncate" style="color: #000000;">Total Profit</p>
                             <div class="mt-1">
-                                <p id="profitValue" class="text-3xl font-bold truncate" style="color: #000000;">—</p>
+                                <p id="profitValue" class="text-2xl font-bold truncate" style="color: #000000;">—</p>
                                 <p id="profitComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
                             </div>
                         </div>
@@ -72,9 +80,9 @@
                  <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
                     <div class="flex items-start justify-between gap-2">
                         <div class="flex-1 min-w-0">
-                            <p class="text-black text-sm font-semibold truncate" style="color: #000000;">Total Item Sold</p>
+                            <p class="text-black text-xs font-semibold truncate" style="color: #000000;">Total Item Sold</p>
                             <div class="mt-1">
-                                <p id="itemsSoldValue" class="text-3xl font-bold truncate" style="color: #030303;">—</p>
+                                <p id="itemsSoldValue" class="text-2xl font-bold truncate" style="color: #030303;">—</p>
                                 <p id="itemsSoldComparison" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
                             </div>
                         </div>
@@ -91,9 +99,9 @@
                 <a href="{{ route('dss.dead-stock.index') }}" class="border border-gray-200 p-4 bg-white shadow-sm block hover:shadow-md hover:ring-2 hover:ring-[#6EC1D1] hover:border-[#6EC1D1] transition cursor-pointer group" style="border-radius: 20px;">
                     <div class="flex items-start justify-between gap-2">
                         <div class="flex-1 min-w-0">
-                            <p class="text-black text-sm font-semibold truncate">Dead Stock</p>
+                            <p class="text-black text-xs font-semibold truncate">Dead Stock</p>
                             <div class="mt-1">
-                                <p id="deadStockCardItems" class="text-3xl font-bold text-black truncate">—</p>
+                                <p id="deadStockCardItems" class="text-2xl font-bold text-black truncate">—</p>
                                 <p id="deadStockCardValue" class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Loading…</p>
                             </div>
                         </div>
@@ -125,9 +133,9 @@
         </script>
 
         <!-- Charts Row -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-3 -mt-3">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-15 mt-4">
             <!-- Sales Overview Chart -->
-            <div id="salesOverviewCard" class="lg:col-span-2 border border-slate-200 relative overflow-hidden rounded-[15px] bg-white shadow-sm" style="min-height: 240px; box-sizing: border-box; border-radius: 15px;">
+            <div id="salesOverviewCard" class="lg:col-span-2 border border-slate-200 relative overflow-hidden rounded-[15px] bg-white shadow-sm" style="min-height: 360px; box-sizing: border-box; border-radius: 15px;">
 
                 <!-- Header (title + range buttons) -->
                 <div id="salesOverviewHeader" class="bg-[#0f172a] px-6 py-4 flex items-center justify-between border-b border-slate-800">
@@ -163,16 +171,16 @@
                 </div>
 
                 <!-- Body (chart) -->
-                <div id="salesOverviewBody" class="relative w-full p-2.5 pb-1" style="height:360px;">
+                <div id="salesOverviewBody" class="relative w-full p-2.5 pb-1" style="height:280px;">
                     <canvas id="salesChart"></canvas>
                 </div>
             </div>
 
             <!-- Sales by Category (full-circle ring + white knockout center + neon-on-sale legend) -->
-            <div class="border border-gray-200 p-3 rounded-[15px]" style="border-radius: 15px; background-color: #ffffff;">
+            <div class="border border-gray-200 p-3 rounded-[15px] flex flex-col" style="border-radius: 15px; background-color: #ffffff; min-height: 360px;">
                 <h2 class="text-sm font-bold text-black mb-2" style="font-family: 'Poppins', sans-serif;">Sales by Category</h2>
-                <div class="flex flex-col items-center gap-3">
-                    <div style="position: relative; width: 150px; height: 150px; max-width: 150px; max-height: 150px;" class="mx-auto flex items-center justify-center">
+                <div class="flex flex-col items-center gap-3 flex-1">
+                    <div style="position: relative; width: 120px; height: 120px; max-width: 120px; max-height: 120px;" class="mx-auto flex items-center justify-center flex-shrink-0">
                         <canvas id="categoryChart"></canvas>
                         <div id="categoryCenterOverlay" style="
                             position: absolute; inset: 0;
@@ -187,13 +195,13 @@
                         </div>
                     </div>
 
-                    <div id="categoryLegend" class="w-full space-y-1 text-xs"></div>
+                    <div id="categoryLegend" class="w-full space-y-1 text-xs overflow-y-auto flex-1" style="max-height: 160px;"></div>
                 </div>
             </div>
         </div>
 
         <!-- Tables Row -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-3 -mt-3">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-15 mt-4">
 
             <!-- Inventory Levels -->
             <div id="inventoryCardWrap" class="relative">
@@ -500,7 +508,7 @@
         </div>
 
         <!-- Floating Low Stock Toast Banner (Pest test requirement) -->
-        <div id="dashboardLowStockBanner" class="hidden fixed right-4 top-24 z-[100] max-w-sm rounded-2xl border border-amber-200 bg-white p-4 shadow-2xl transition-all duration-300" role="status">
+        <div id="dashboardLowStockBanner" class="hidden fixed right-4 top-24 z-[9999] max-w-sm rounded-2xl border border-amber-200 bg-white p-4 shadow-2xl transition-all duration-300" role="status">
             <div class="flex items-start justify-between gap-3">
                 <div class="flex-shrink-0 w-8 h-8 rounded-[10px] flex items-center justify-center" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(245, 158, 11, 0.10) 100%); border: 1px solid rgba(245, 158, 11, 0.20);">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none">

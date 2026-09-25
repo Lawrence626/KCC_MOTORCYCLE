@@ -41,8 +41,13 @@
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
+<<<<<<< HEAD
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Transfer Products</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Move products from <strong class="text-emerald-600">{{ is_array($shelf) ? ($shelf['name'] ?? 'Unknown') : ($shelf->name ?? 'Unknown') }}</strong> to another shelf</p>
+=======
+                <h1 class="text-3xl font-bold text-slate-900">Transfer Products</h1>
+                <p class="mt-2 text-sm text-gray-500">Move products from <strong class="text-emerald-600">{{ is_array($shelf) ? ($shelf['name'] ?? 'Unknown') : ($shelf->name ?? 'Unknown') }}</strong> to another shelf</p>
+>>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
             </div>
             <div class="flex items-center gap-2">
                 <a href="{{ route('warehouse.management') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition">

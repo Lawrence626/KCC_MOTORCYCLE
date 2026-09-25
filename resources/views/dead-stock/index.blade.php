@@ -1,9 +1,25 @@
 <x-layouts.app :title="__('Dead Stock Analysis')">
+<<<<<<< HEAD
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Dead Stock Analysis</h1>
                 <p class="text-xs text-slate-500 mt-0.5">
+=======
+    <div id="dead-stock-root"
+         data-export-excel-url="{{ route('dss.dead-stock.export-excel') }}"
+         data-export-pdf-url="{{ route('dss.dead-stock.export-pdf') }}"
+         data-api-url="{{ route('api.dss.dead-stocks.index') }}"
+         data-dashboard-stats-url="{{ route('api.dss.dashboard-stats') }}"
+         data-csrf="{{ csrf_token() }}"
+         class="space-y-4">
+
+        {{-- ═══ HEADER ═══ --}}
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
+            <div class="pl-3 lg:pl-2">
+                <h1 class="text-3xl font-bold text-slate-900">Dead Stock Analysis</h1>
+                <p class="text-xs text-slate-500 mt-1">
+>>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
                     Inventory items without sales for <span class="text-slate-900 font-semibold">{{ $thresholdDays }} days</span> or more.
                 </p>
             </div>
@@ -155,6 +171,57 @@
 {{-- ═══════════════════════════════════════════════════════════ --}}
 {{-- JAVASCRIPT --}}
 {{-- ═══════════════════════════════════════════════════════════ --}}
+<script>
+    // Notification Panel Toggle
+    function toggleNotificationPanel(event) {
+        event.stopPropagation();
+        const panel = document.getElementById('notification-panel');
+        const profileDropdown = document.getElementById('dashboardProfileDropdown');
+        if (panel) {
+            const isHidden = panel.classList.contains('hidden');
+            if (isHidden) {
+                panel.classList.remove('hidden');
+                if (profileDropdown) {
+                    profileDropdown.classList.add('hidden');
+                    profileDropdown.classList.remove('opacity-100', 'scale-100');
+                    profileDropdown.classList.add('opacity-0', 'scale-95');
+                }
+            } else {
+                panel.classList.add('hidden');
+            }
+        }
+    }
+
+    // Helper functions
+    function markAllNotificationsRead() {
+        // Placeholder for marking all notifications as read
+        console.log('Mark all notifications as read');
+    }
+
+    function openAllNotificationsModal() {
+        // Placeholder for opening all notifications modal
+        console.log('Open all notifications modal');
+    }
+
+    // Close dropdowns when clicking outside
+    window.addEventListener('click', function(event) {
+        const panel = document.getElementById('notification-panel');
+        const profileDropdown = document.getElementById('dashboardProfileDropdown');
+        const notificationBell = document.getElementById('notification-bell-btn');
+        const profileButton = document.getElementById('dashboardProfileButton');
+
+        if (panel && !panel.contains(event.target) && notificationBell && !notificationBell.contains(event.target)) {
+            panel.classList.add('hidden');
+        }
+
+        if (profileDropdown && !profileDropdown.contains(event.target) && profileButton && !profileButton.contains(event.target)) {
+            profileDropdown.classList.add('hidden');
+            profileDropdown.classList.remove('opacity-100', 'scale-100');
+            profileDropdown.classList.add('opacity-0', 'scale-95');
+        }
+    });
+</script>
+
 <script>
     let isFetchingTable = false;
 

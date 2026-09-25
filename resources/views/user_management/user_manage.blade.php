@@ -1,4 +1,5 @@
 <x-layouts.app :title="__('User Management')">
+<<<<<<< HEAD
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
@@ -16,6 +17,18 @@
                 @else
                     <button id="openAddUserModal" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all duration-200">
                         <svg class="h-3.5 w-3.5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+=======
+    <div class="space-y-5">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
+            <div class="pl-3 lg:pl-1">
+                <h1 class="text-3xl font-bold text-slate-900">User Management</h1>
+                <p class="text-gray-600 text-xs mt-1">Manage user accounts, roles, and access across the system.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                @if(!($showArchived ?? false))
+                    <button id="openAddUserModal" class="inline-flex items-center gap-2 rounded-[10px] bg-[#6EC1D1] px-4 py-2.5 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all duration-200">
+                        <svg class="h-4 w-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+>>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
                         Add User
@@ -79,11 +92,11 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                                     </svg>
                                 </button>
-                                <div id="userRoleDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-300 bg-white shadow-xl p-3 space-y-1">
-                                    <button type="button" onclick="selectDropdown(event, 'userRoleInput', 'admin', 'userRoleButton', 'Administrator', 'userRoleDropdown')" class="w-full px-4 py-2.5 text-left text-sm {{ old('role', 'admin') === 'admin' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Administrator</button>
-                                    <button type="button" onclick="selectDropdown(event, 'userRoleInput', 'cashier', 'userRoleButton', 'Cashier', 'userRoleDropdown')" class="w-full px-4 py-2.5 text-left text-sm {{ old('role', 'admin') === 'cashier' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Cashier</button>
-                                    <button type="button" onclick="selectDropdown(event, 'userRoleInput', 'inventory_clerk', 'userRoleButton', 'Inventory Clerk', 'userRoleDropdown')" class="w-full px-4 py-2.5 text-left text-sm {{ old('role', 'admin') === 'inventory_clerk' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Inventory Clerk</button>
-                                    <button type="button" onclick="selectDropdown(event, 'userRoleInput', 'warehouse_personnel', 'userRoleButton', 'Warehouse Personnel', 'userRoleDropdown')" class="w-full px-4 py-2.5 text-left text-sm {{ old('role', 'admin') === 'warehouse_personnel' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Warehouse Personnel</button>
+                                <div id="userRoleDropdown" class="dropdown-menu hidden absolute top-full right-0 left-auto z-50 mt-1 w-[220px] rounded-[10px] border border-slate-300 bg-white shadow-xl p-1.5 space-y-0.5">
+                                    <button type="button" onclick="selectDropdown(event, 'userRoleInput', 'admin', 'userRoleButton', 'Administrator', 'userRoleDropdown')" class="w-full px-3 py-2 text-left text-xs {{ old('role', 'admin') === 'admin' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[8px]">Administrator</button>
+                                    <button type="button" onclick="selectDropdown(event, 'userRoleInput', 'cashier', 'userRoleButton', 'Cashier', 'userRoleDropdown')" class="w-full px-3 py-2 text-left text-xs {{ old('role', 'admin') === 'cashier' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[8px]">Cashier</button>
+                                    <button type="button" onclick="selectDropdown(event, 'userRoleInput', 'inventory_clerk', 'userRoleButton', 'Inventory Clerk', 'userRoleDropdown')" class="w-full px-3 py-2 text-left text-xs {{ old('role', 'admin') === 'inventory_clerk' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[8px]">Inventory Clerk</button>
+                                    <button type="button" onclick="selectDropdown(event, 'userRoleInput', 'warehouse_personnel', 'userRoleButton', 'Warehouse Personnel', 'userRoleDropdown')" class="w-full px-3 py-2 text-left text-xs {{ old('role', 'admin') === 'warehouse_personnel' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[8px]">Warehouse Personnel</button>
                                 </div>
                             </div>
                             <div class="space-y-1">
@@ -107,10 +120,10 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                                     </svg>
                                 </button>
-                                <div id="userGenderDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-2 w-full rounded-[10px] border border-slate-300 bg-white shadow-xl p-3 space-y-1">
-                                    <button type="button" onclick="selectDropdown(event, 'userGenderInput', 'Male', 'userGenderButton', 'Male', 'userGenderDropdown')" class="w-full px-4 py-2.5 text-left text-sm {{ old('gender', '') === 'Male' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Male</button>
-                                    <button type="button" onclick="selectDropdown(event, 'userGenderInput', 'Female', 'userGenderButton', 'Female', 'userGenderDropdown')" class="w-full px-4 py-2.5 text-left text-sm {{ old('gender', '') === 'Female' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Female</button>
-                                    <button type="button" onclick="selectDropdown(event, 'userGenderInput', 'Other', 'userGenderButton', 'Other', 'userGenderDropdown')" class="w-full px-4 py-2.5 text-left text-sm {{ old('gender', '') === 'Other' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[10px]">Other</button>
+                                <div id="userGenderDropdown" class="dropdown-menu hidden absolute top-full right-0 left-auto z-50 mt-1 w-[220px] rounded-[10px] border border-slate-300 bg-white shadow-xl p-1.5 space-y-0.5">
+                                    <button type="button" onclick="selectDropdown(event, 'userGenderInput', 'Male', 'userGenderButton', 'Male', 'userGenderDropdown')" class="w-full px-3 py-2 text-left text-xs {{ old('gender', '') === 'Male' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[8px]">Male</button>
+                                    <button type="button" onclick="selectDropdown(event, 'userGenderInput', 'Female', 'userGenderButton', 'Female', 'userGenderDropdown')" class="w-full px-3 py-2 text-left text-xs {{ old('gender', '') === 'Female' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[8px]">Female</button>
+                                    <button type="button" onclick="selectDropdown(event, 'userGenderInput', 'Other', 'userGenderButton', 'Other', 'userGenderDropdown')" class="w-full px-3 py-2 text-left text-xs {{ old('gender', '') === 'Other' ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[8">Other</button>
                                 </div>
                             </div>
                             <div class="sm:col-span-2 space-y-1">
@@ -495,6 +508,41 @@
         });
         window.addEventListener('scroll', closeRoleDropdown, true);
         window.addEventListener('resize', closeRoleDropdown);
+    </script>
+
+    <script>
+        // Notification panel toggle
+        window.toggleNotificationPanel = function(e) {
+            if (e) e.stopPropagation();
+            var panel = document.getElementById('notification-panel');
+            if (!panel) return;
+
+            // Close profile dropdown first if open
+            var profileDropdown = document.getElementById('dashboardProfileDropdown');
+            if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
+                profileDropdown.classList.add('hidden');
+                profileDropdown.classList.add('opacity-0', 'scale-95');
+            }
+
+            const isOpen = !panel.classList.contains('hidden');
+            if (isOpen) {
+                panel.classList.add('hidden');
+            } else {
+                panel.classList.remove('hidden');
+            }
+        };
+
+        // Mark all notifications as read
+        window.markAllNotificationsRead = function() {
+            // Implementation for marking notifications as read
+            console.log('Mark all notifications as read');
+        };
+
+        // Open all notifications modal
+        window.openAllNotificationsModal = function() {
+            // Implementation for opening all notifications modal
+            console.log('Open all notifications modal');
+        };
     </script>
 
     @push('scripts')

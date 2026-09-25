@@ -1,9 +1,20 @@
 <x-layouts.app :title="__('Import Data')">
+<<<<<<< HEAD
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Import Data</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Import offline transactions from CSV or Excel files.</p>
+=======
+    <div class="space-y-4">
+        <!-- Header -->
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900">Import Data</h1>
+                <p class="text-gray-600 text-xs mt-1">Import offline transactions from CSV or Excel files</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+>>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
             </div>
             <a href="{{ Route::has('offline.reconciliation') ? route('offline.reconciliation') : url('/offline-reconciliation') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus:outline-none transition-all duration-200">
                 <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -397,6 +408,57 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Notification Panel Toggle
+        function toggleNotificationPanel(event) {
+            event.stopPropagation();
+            const panel = document.getElementById('notification-panel');
+            const profileDropdown = document.getElementById('dashboardProfileDropdown');
+            if (panel) {
+                const isHidden = panel.classList.contains('hidden');
+                if (isHidden) {
+                    panel.classList.remove('hidden');
+                    if (profileDropdown) {
+                        profileDropdown.classList.add('hidden');
+                        profileDropdown.classList.remove('opacity-100', 'scale-100');
+                        profileDropdown.classList.add('opacity-0', 'scale-95');
+                    }
+                } else {
+                    panel.classList.add('hidden');
+                }
+            }
+        }
+
+        // Helper functions
+        function markAllNotificationsRead() {
+            // Placeholder for marking all notifications as read
+            console.log('Mark all notifications as read');
+        }
+
+        function openAllNotificationsModal() {
+            // Placeholder for opening all notifications modal
+            console.log('Open all notifications modal');
+        }
+
+        // Close dropdowns when clicking outside
+        window.addEventListener('click', function(event) {
+            const panel = document.getElementById('notification-panel');
+            const profileDropdown = document.getElementById('dashboardProfileDropdown');
+            const notificationBell = document.getElementById('notification-bell-btn');
+            const profileButton = document.getElementById('dashboardProfileButton');
+
+            if (panel && !panel.contains(event.target) && notificationBell && !notificationBell.contains(event.target)) {
+                panel.classList.add('hidden');
+            }
+
+            if (profileDropdown && !profileDropdown.contains(event.target) && profileButton && !profileButton.contains(event.target)) {
+                profileDropdown.classList.add('hidden');
+                profileDropdown.classList.remove('opacity-100', 'scale-100');
+                profileDropdown.classList.add('opacity-0', 'scale-95');
+            }
+        });
+    </script>
 
     <script>
         // Client Alert Helper

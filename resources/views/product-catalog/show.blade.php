@@ -1,4 +1,5 @@
 <x-layouts.app :title="__('Product Details')">
+<<<<<<< HEAD
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
@@ -7,6 +8,27 @@
             </div>
             <div class="flex items-center gap-2">
                 <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold {{ $productCatalog->status === 'Active' ? 'bg-[#105f68] text-white' : 'bg-red-600 text-white' }}">
+=======
+    <div class="max-w-4xl mx-auto space-y-4">
+        <div class="mb-2">
+            <a href="{{ route('product-catalog.index') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-50 transition-all">
+                <svg class="w-4 h-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Back to Products
+            </a>
+        </div>
+
+        <!-- Page Header -->
+        <div class="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-start justify-between gap-2">
+                <div>
+                    <h1 class="text-3xl font-bold text-slate-900">{{ $productCatalog->product_description }}</h1>
+                    @if($productCatalog->product_name)
+                        <p class="text-xs text-slate-500 mt-1">{{ $productCatalog->product_name }}</p>
+                    @endif
+                    <p class="text-xs text-slate-500 mt-0.5">{{ $productCatalog->brand }}</p>
+                </div>
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold {{ $productCatalog->status === 'Active' ? 'bg-[#105f68] text-white' : 'bg-red-600 text-white' }}">
+>>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
                     {{ $productCatalog->status }}
                 </span>
                 <a href="{{ route('product-catalog.index') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 transition-all">

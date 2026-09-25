@@ -50,11 +50,20 @@
         ];
     @endphp
 
+<<<<<<< HEAD
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Sales Analytics</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Track revenue performance, product demand, and market momentum in a compact analytics workspace.</p>
+=======
+    <div class="space-y-4">
+        <!-- Header -->
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
+            <div class="pl-3 lg:pl-2">
+                <h1 class="text-3xl font-bold text-slate-900">Sales Analytics</h1>
+                <p class="text-xs text-slate-500 mt-1">Track revenue performance, product demand, and market momentum in a compact analytics workspace.</p>
+>>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
             </div>
             <div class="flex items-center gap-2">
                 <div class="relative">
@@ -575,6 +584,57 @@
     </div>
 
     @push('scripts')
+        {{-- Header JavaScript --}}
+        <script>
+            // Notification Panel Toggle
+            function toggleNotificationPanel(event) {
+                event.stopPropagation();
+                const panel = document.getElementById('notification-panel');
+                const profileDropdown = document.getElementById('dashboardProfileDropdown');
+                if (panel) {
+                    const isHidden = panel.classList.contains('hidden');
+                    if (isHidden) {
+                        panel.classList.remove('hidden');
+                        if (profileDropdown) {
+                            profileDropdown.classList.add('hidden');
+                            profileDropdown.classList.remove('opacity-100', 'scale-100');
+                            profileDropdown.classList.add('opacity-0', 'scale-95');
+                        }
+                    } else {
+                        panel.classList.add('hidden');
+                    }
+                }
+            }
+
+            // Helper functions
+            function markAllNotificationsRead() {
+                // Placeholder for marking all notifications as read
+                console.log('Mark all notifications as read');
+            }
+
+            function openAllNotificationsModal() {
+                // Placeholder for opening all notifications modal
+                console.log('Open all notifications modal');
+            }
+
+            // Close dropdowns when clicking outside
+            window.addEventListener('click', function(event) {
+                const panel = document.getElementById('notification-panel');
+                const profileDropdown = document.getElementById('dashboardProfileDropdown');
+                const notificationBell = document.getElementById('notification-bell-btn');
+                const profileButton = document.getElementById('dashboardProfileButton');
+
+                if (panel && !panel.contains(event.target) && notificationBell && !notificationBell.contains(event.target)) {
+                    panel.classList.add('hidden');
+                }
+
+                if (profileDropdown && !profileDropdown.contains(event.target) && profileButton && !profileButton.contains(event.target)) {
+                    profileDropdown.classList.add('hidden');
+                    profileDropdown.classList.remove('opacity-100', 'scale-100');
+                    profileDropdown.classList.add('opacity-0', 'scale-95');
+                }
+            });
+        </script>
         {{-- Flatpickr CDN --}}
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

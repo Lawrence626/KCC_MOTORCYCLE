@@ -1,4 +1,5 @@
 <x-layouts.app :title="__('My Profile')">
+<<<<<<< HEAD
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
@@ -9,6 +10,11 @@
                 <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                 BACK TO DASHBOARD
             </a>
+=======
+    <div class="space-y-6">
+        <div class="pl-3 lg:pl-2">
+            <h1 class="text-3xl font-bold text-slate-900">My Profile</h1>
+>>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
         </div>
     </x-slot>
 

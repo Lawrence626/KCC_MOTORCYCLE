@@ -389,7 +389,7 @@ async function loadProductsForSelect() {
 
                     const btn = document.createElement('button');
                     btn.type = 'button';
-                    btn.className = 'w-full px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] transition';
+                    btn.className = 'w-full px-3 py-1.5 text-left text-xs font-medium text-slate-700 hover:bg-slate-100 rounded-[8px] transition';
                     btn.textContent = label;
                     btn.onclick = (e) => selectDropdownOption('productSelect', product.id, label, 'addStockProductDropdown', e);
                     dropdown.appendChild(btn);

@@ -7,18 +7,28 @@
         .qr-preview { width: 180px; height: 180px; }
     </style>
 
+<<<<<<< HEAD
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
+=======
+    <div id="dashboard-root" class="space-y-1.5">
+    <div class="space-y-4">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1 py-1 pt-2 pb-1 pl-1">
+>>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Add New Product</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Create a new product with SKU generation, QR code, and motorcycle compatibility.</p>
             </div>
+<<<<<<< HEAD
             <div>
                 <a href="{{ route('product-catalog.index') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 transition-all">
                     <svg class="w-3.5 h-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                     Back to Products
                 </a>
             </div>
+=======
+>>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
         </div>
     </x-slot>
 
@@ -49,8 +59,6 @@
                                         <option value="Warehouse A" {{ old('warehouse') == 'Warehouse A' ? 'selected' : '' }}>Warehouse A</option>
                                         <option value="Warehouse B" {{ old('warehouse') == 'Warehouse B' ? 'selected' : '' }}>Warehouse B</option>
                                         <option value="Warehouse C" {{ old('warehouse') == 'Warehouse C' ? 'selected' : '' }}>Warehouse C</option>
-                                        <option value="Warehouse D" {{ old('warehouse') == 'Warehouse D' ? 'selected' : '' }}>Warehouse D</option>
-                                        <option value="SHOP" {{ old('warehouse') == 'SHOP' ? 'selected' : '' }}>Shop (Main Store)</option>
                                     @endif
                                 </select>
                                 @error('warehouse')
@@ -382,8 +390,11 @@
                 select.dataset.customized = 'true';
                 select.classList.add('hidden');
 
-                const wrapper = select.parentElement;
-                wrapper.classList.add('relative', 'flex-1');
+                const originalParent = select.parentElement;
+                const wrapper = document.createElement('div');
+                wrapper.className = 'relative w-full';
+                originalParent.insertBefore(wrapper, select);
+                wrapper.appendChild(select);
 
                 const button = document.createElement('button');
                 button.type = 'button';
@@ -398,7 +409,10 @@
                 wrapper.insertBefore(button, select);
 
                 const panel = document.createElement('div');
-                panel.className = 'custom-select-panel hidden absolute left-0 top-full z-[999] mt-2 w-full max-h-60 overflow-y-auto rounded-[12px] border border-slate-200 bg-white p-3 space-y-1 shadow-xl';
+                const isCompactRightAligned = ['warehouseSelect', 'productDescriptionSelect', 'brandSelect', 'statusSelect'].includes(selectId);
+                panel.className = isCompactRightAligned
+                    ? 'custom-select-panel hidden absolute right-0 top-full z-[999] mt-2 w-[225px] max-h-52 overflow-y-auto rounded-[12px] border border-slate-200 bg-white p-3 space-y-1 shadow-xl'
+                    : 'custom-select-panel hidden absolute left-0 top-full z-[999] mt-2 w-full max-h-52 overflow-y-auto rounded-[12px] border border-slate-200 bg-white p-3 space-y-1 shadow-xl';
                 wrapper.appendChild(panel);
 
                 const labelSpan = button.querySelector('.custom-select-label');
@@ -406,6 +420,8 @@
                 function renderOptions() {
                     panel.innerHTML = '';
                     Array.from(select.options).forEach((opt) => {
+                        if (!opt.value && selectId === 'warehouseSelect') return;
+
                         const item = document.createElement('button');
                         item.type = 'button';
                         item.dataset.value = opt.value;
@@ -765,6 +781,55 @@
                     alert('Failed to add product category. Please try again.');
                 }
             });
+        });
+
+        // Notification Panel Toggle
+        function toggleNotificationPanel(event) {
+            event.stopPropagation();
+            const panel = document.getElementById('notification-panel');
+            const profileDropdown = document.getElementById('dashboardProfileDropdown');
+            if (panel) {
+                const isHidden = panel.classList.contains('hidden');
+                if (isHidden) {
+                    panel.classList.remove('hidden');
+                    if (profileDropdown) {
+                        profileDropdown.classList.add('hidden');
+                        profileDropdown.classList.remove('opacity-100', 'scale-100');
+                        profileDropdown.classList.add('opacity-0', 'scale-95');
+                    }
+                } else {
+                    panel.classList.add('hidden');
+                }
+            }
+        }
+
+        // Helper functions
+        function markAllNotificationsRead() {
+            // Placeholder for marking all notifications as read
+            console.log('Mark all notifications as read');
+        }
+
+        function openAllNotificationsModal() {
+            // Placeholder for opening all notifications modal
+            console.log('Open all notifications modal');
+        }
+
+        // Close dropdowns when clicking outside
+        window.addEventListener('click', function(event) {
+            const panel = document.getElementById('notification-panel');
+            const profileDropdown = document.getElementById('dashboardProfileDropdown');
+            const notificationBell = document.getElementById('notification-bell-btn');
+            const profileButton = document.getElementById('dashboardProfileButton');
+
+            if (panel && !panel.contains(event.target) && notificationBell && !notificationBell.contains(event.target)) {
+                panel.classList.add('hidden');
+            }
+
+            if (profileDropdown && !profileDropdown.contains(event.target) && profileButton && !profileButton.contains(event.target)) {
+                profileDropdown.classList.add('hidden');
+                profileDropdown.classList.remove('opacity-100', 'scale-100');
+                profileDropdown.classList.add('opacity-0', 'scale-95');
+            }
         });
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>

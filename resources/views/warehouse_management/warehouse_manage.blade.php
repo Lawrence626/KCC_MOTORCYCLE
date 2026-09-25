@@ -91,11 +91,22 @@
         }
     </style>
 
+<<<<<<< HEAD
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Warehouse Management</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Track and manage storage locations and products across your warehouses.</p>
+=======
+    <div class="space-y-4">
+        <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+        {{-- ═══ HEADER ═══ --}}
+        <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between pt-2 pb-1 pl-1">
+            <div class="pl-3 lg:pl-2">
+                <h1 class="text-3xl font-bold text-slate-900">Warehouse Management</h1>
+                <p class="text-xs text-slate-500 mt-1">Track and manage storage locations and products across your warehouses</p>
+>>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <button id="add-shelf-button" type="button" onclick="openAddShelfModal()"
@@ -617,9 +628,9 @@
                                     <span id="modalWarehouseSelectLabel">{{ $warehouses[0]['name'] ?? 'Select Warehouse' }}</span>
                                     <svg class="w-4 h-4 text-slate-500 flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </button>
-                                <div id="modalWarehouseDropdownMenu" class="hidden absolute left-0 right-0 top-full z-50 mt-1 rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
+                                <div id="modalWarehouseDropdownMenu" class="hidden absolute right-0 left-auto top-full z-50 mt-1 w-[220px] rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
                                     @foreach($warehouses as $index => $wh)
-                                        <button type="button" onclick="selectModalWarehouseOption('{{ $index }}', '{{ addslashes($wh['name']) }}')" class="w-full text-left px-3 py-2.5 rounded-[8px] text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">{{ $wh['name'] }}</button>
+                                        <button type="button" onclick="selectModalWarehouseOption('{{ $index }}', '{{ addslashes($wh['name']) }}')" class="w-full text-left px-3 py-2.5 rounded-[8px] text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer">{{ $wh['name'] }}</button>
                                     @endforeach
                                 </div>
                             </div>
@@ -1127,6 +1138,39 @@
                 }
             });
         })();
+
+        // Notification panel toggle
+        window.toggleNotificationPanel = function(e) {
+            if (e) e.stopPropagation();
+            var panel = document.getElementById('notification-panel');
+            if (!panel) return;
+
+            // Close profile dropdown first if open
+            var profileDropdown = document.getElementById('dashboardProfileDropdown');
+            if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
+                profileDropdown.classList.add('hidden');
+                profileDropdown.classList.add('opacity-0', 'scale-95');
+            }
+
+            const isOpen = !panel.classList.contains('hidden');
+            if (isOpen) {
+                panel.classList.add('hidden');
+            } else {
+                panel.classList.remove('hidden');
+            }
+        };
+
+        // Mark all notifications as read
+        window.markAllNotificationsRead = function() {
+            // Implementation for marking notifications as read
+            console.log('Mark all notifications as read');
+        };
+
+        // Open all notifications modal
+        window.openAllNotificationsModal = function() {
+            // Implementation for opening all notifications modal
+            console.log('Open all notifications modal');
+        };
     </script>
 
     <script src="{{ asset('js/warehouse_management.js') }}?v={{ time() }}"></script>

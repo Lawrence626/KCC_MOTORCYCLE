@@ -1,9 +1,18 @@
 <x-layouts.app :title="__('Replacing Items')">
+<<<<<<< HEAD
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Replacing Items</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Manage returned products and issue replacements.</p>
+=======
+    <div class="space-y-6">
+        <!-- Header Section -->
+         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
+                <div class="pl-3 lg:pl-1">
+                <h1 class="text-3xl font-bold text-slate-900">Replacing Items</h1>
+                <p class="text-xs text-slate-500 mt-1">Manage returned products and issue replacements.</p>
+>>>>>>> 594490397ebecd1f37adadd252bb79d7a67298f2
             </div>
             <button onclick="openNewReplacementModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#6EC1D1] text-slate-900 rounded-[10px] font-bold text-xs border border-slate-200 hover:bg-[#59b2c2] transition-all">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -194,20 +203,20 @@
                 <!-- Receipt Number -->
                 <div>
                     <label class="block text-sm font-semibold text-slate-900 mb-3">Receipt No.</label>
-                    <input id="newReceiptNo" type="text" placeholder="Enter receipt number" class="w-full px-5 py-3 rounded-[10px] border border-[#105f68]/20 bg-white text-slate-900 placeholder:text-slate-400 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent ring-1 ring-black/10 shadow-sm" />
+                    <input id="newReceiptNo" type="text" placeholder="Enter receipt number" class="w-full px-5 py-3 rounded-[10px] border border-[#105f68]/20 bg-white text-slate-900 placeholder:text-slate-400 text-xs font-medium focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent ring-1 ring-black/10 shadow-sm" />
                 </div>
 
                 <!-- Returned Item -->
                 <div class="relative">
                     <label class="block text-sm font-semibold text-slate-900 mb-3">Returned Item</label>
                     <input id="newReturnedItem" type="hidden" value="" />
-                    <button type="button" id="returnedItemButton" onclick="toggleDropdown('returnedItemDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-[#105f68]/20 bg-white text-left text-slate-900 text-sm font-semibold flex items-center justify-between focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent ring-1 ring-black/10 shadow-sm">
+                    <button type="button" id="returnedItemButton" onclick="toggleDropdown('returnedItemDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-[#105f68]/20 bg-white text-left text-slate-900 text-xs font-medium flex items-center justify-between focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent ring-1 ring-black/10 shadow-sm">
                         <span id="returnedItemLabel">Select returned item...</span>
                         <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                         </svg>
                     </button>
-                    <div id="returnedItemDropdown" class="hidden absolute z-50 w-full mt-2 bg-white border border-slate-200 rounded-[10px] shadow-xl p-1.5 space-y-0.5 max-h-40 overflow-y-auto">
+                    <div id="returnedItemDropdown" class="hidden absolute z-50 right-0 left-auto mt-2 w-[220px] bg-white border border-slate-200 rounded-[10px] shadow-xl p-1.5 space-y-0.5 max-h-40 overflow-y-auto">
                         <button type="button" onclick="selectDropdown('newReturnedItem', 'Brembo Brake Pad', 'returnedItemLabel', 'returnedItemDropdown')" style="-webkit-tap-highlight-color: transparent;" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-black/5 focus:outline-none focus:bg-black/10 active:bg-black/10 rounded-[8px]">Brembo Brake Pad</button>
                         <button type="button" onclick="selectDropdown('newReturnedItem', 'NGK Spark Plug', 'returnedItemLabel', 'returnedItemDropdown')" style="-webkit-tap-highlight-color: transparent;" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-black/5 focus:outline-none focus:bg-black/10 active:bg-black/10 rounded-[8px]">NGK Spark Plug</button>
                         <button type="button" onclick="selectDropdown('newReturnedItem', 'Motul 4T 10W40 Oil', 'returnedItemLabel', 'returnedItemDropdown')" style="-webkit-tap-highlight-color: transparent;" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-black/5 focus:outline-none focus:bg-black/10 active:bg-black/10 rounded-[8px]">Motul 4T 10W40 Oil</button>
@@ -218,13 +227,13 @@
                 <div class="relative">
                     <label class="block text-sm font-semibold text-slate-900 mb-3">Reason</label>
                     <input id="newReason" type="hidden" value="Defective Item" />
-                    <button type="button" id="newReasonButton" onclick="toggleDropdown('reasonDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-[#105f68]/20 bg-white text-left text-slate-900 text-sm font-semibold flex items-center justify-between focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent ring-1 ring-black/10 shadow-sm">
+                    <button type="button" id="newReasonButton" onclick="toggleDropdown('reasonDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-[#105f68]/20 bg-white text-left text-slate-900 text-xs font-medium flex items-center justify-between focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent ring-1 ring-black/10 shadow-sm">
                         <span id="newReasonLabel">Defective Item</span>
                         <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                         </svg>
                     </button>
-                    <div id="reasonDropdown" class="hidden absolute z-50 w-full mt-2 bg-white border border-slate-200 rounded-[10px] shadow-xl p-1.5 space-y-0.5 max-h-40 overflow-y-auto">
+                    <div id="reasonDropdown" class="hidden absolute z-50 right-0 left-auto mt-2 w-[220px] bg-white border border-slate-200 rounded-[10px] shadow-xl p-1.5 space-y-0.5 max-h-40 overflow-y-auto">
                         <button type="button" onclick="selectDropdown('newReason', 'Defective Item', 'newReasonLabel', 'reasonDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Defective Item</button>
                         <button type="button" onclick="selectDropdown('newReason', 'Wrong Item Sent', 'newReasonLabel', 'reasonDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Wrong Item Sent</button>
                         <button type="button" onclick="selectDropdown('newReason', 'Customer Request', 'newReasonLabel', 'reasonDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Customer Request</button>
@@ -237,13 +246,13 @@
                     <div class="col-span-3 relative">
                         <label class="block text-sm font-semibold text-slate-900 mb-3">Replacement Product</label>
                         <input id="newReplacementProduct" type="hidden" value="" />
-                        <button type="button" id="replacementProductButton" onclick="toggleDropdown('replacementProductDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-[#105f68]/20 bg-white text-left text-slate-900 text-sm font-semibold flex items-center justify-between focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent ring-1 ring-black/10 shadow-sm">
+                        <button type="button" id="replacementProductButton" onclick="toggleDropdown('replacementProductDropdown')" class="w-full px-5 py-3 rounded-[10px] border border-[#105f68]/20 bg-white text-left text-slate-900 text-xs font-medium flex items-center justify-between focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-transparent ring-1 ring-black/10 shadow-sm">
                             <span id="newReplacementProductLabel">Select product...</span>
                             <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
                             </svg>
                         </button>
-                        <div id="replacementProductDropdown" class="hidden absolute z-50 w-full mt-2 bg-white border border-slate-200 rounded-[10px] shadow-xl p-1.5 space-y-0.5 max-h-40 overflow-y-auto">
+                        <div id="replacementProductDropdown" class="hidden absolute z-50 right-0 left-auto mt-2 w-[220px] bg-white border border-slate-200 rounded-[10px] shadow-xl p-1.5 space-y-0.5 max-h-40 overflow-y-auto">
                             <button type="button" onclick="selectDropdown('newReplacementProduct', 'Brembo Brake Pad', 'newReplacementProductLabel', 'replacementProductDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Brembo Brake Pad</button>
                             <button type="button" onclick="selectDropdown('newReplacementProduct', 'NGK Spark Plug', 'newReplacementProductLabel', 'replacementProductDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">NGK Spark Plug</button>
                             <button type="button" onclick="selectDropdown('newReplacementProduct', 'Motul 4T 10W40 Oil', 'newReplacementProductLabel', 'replacementProductDropdown')" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Motul 4T 10W40 Oil</button>

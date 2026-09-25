@@ -398,13 +398,13 @@
                 <svg id="dashboardProfileArrow" class="w-4 h-4 text-slate-400 transition-colors duration-200 group-hover:text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5H7z"/></svg>
             </button>
 
-            {{-- Profile Dropdown Card (Dark Theme matching Navigation Buttons) --}}
-            <div id="dashboardProfileDropdown" class="absolute right-0 top-full mt-2.5 w-68 rounded-[18px] border border-slate-700/70 shadow-2xl shadow-black/80 z-[9999] hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right overflow-hidden" style="background: linear-gradient(135deg, #0a0a0c 0%, #1f2229 100%); color: #ffffff;">
+            {{-- Profile Dropdown Card (White Theme) --}}
+            <div id="dashboardProfileDropdown" class="absolute right-0 top-full mt-2.5 w-68 rounded-[18px] border border-slate-200 bg-white shadow-xl z-[9999] hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right overflow-hidden">
                 
                 <!-- User Info Header -->
-                <div class="px-4.5 py-4 border-b border-slate-800/80 bg-slate-950/40">
+                <div class="px-4.5 py-4 border-b border-slate-100 bg-white">
                     <div class="flex items-center gap-3">
-                        <span class="w-11 h-11 rounded-full bg-white text-slate-800 grid place-items-center overflow-hidden text-base font-semibold border border-slate-300 shadow-inner flex-shrink-0">
+                        <span class="w-11 h-11 rounded-full bg-slate-100 text-slate-800 grid place-items-center overflow-hidden text-base font-bold border border-slate-200 shadow-sm flex-shrink-0">
                             @if(auth()->user()->avatar)
                                 <img src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover" />
                             @else
@@ -412,12 +412,12 @@
                             @endif
                         </span>
                         <div class="min-w-0 flex-1">
-                            <div class="text-[14px] font-semibold text-white truncate">{{ auth()->user()->name ?? 'Cashier' }}</div>
-                            <div class="text-[11px] text-slate-300 truncate mt-0.5">{{ auth()->user()->email ?? '' }}</div>
+                            <div class="text-[14px] font-bold text-slate-900 truncate">{{ auth()->user()->name ?? 'Cashier' }}</div>
+                            <div class="text-[11px] text-slate-500 font-medium truncate mt-0.5">{{ auth()->user()->email ?? '' }}</div>
                         </div>
                     </div>
                     <div class="mt-3">
-                        <span class="inline-flex items-center rounded-full border border-[#00ddd2]/30 bg-[#00ddd2]/10 px-2.5 py-0.5 text-[11px] font-semibold tracking-wider text-[#00ddd2] uppercase">
+                        <span class="inline-flex items-center rounded-full border border-cyan-200 bg-cyan-50 px-2.5 py-0.5 text-[11px] font-bold tracking-wider text-cyan-800 uppercase">
                             {{ ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'user')) }}
                         </span>
                     </div>
@@ -425,27 +425,27 @@
 
                 <!-- Action Links -->
                 <div class="flex flex-col gap-1 p-2">
-                    <a href="{{ route('profile.show') }}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-200 hover:text-white hover:bg-slate-800/70 transition-all duration-150 group">
-                        <span class="w-7 h-7 grid place-items-center rounded-lg bg-slate-900/80 text-slate-400 group-hover:text-[#00ddd2] group-hover:bg-slate-800 transition-colors border border-slate-800">
+                    <a href="{{ route('profile.show') }}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-all duration-150 group">
+                        <span class="w-7 h-7 grid place-items-center rounded-lg bg-slate-100 text-slate-600 group-hover:text-cyan-600 transition-colors border border-slate-200">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9 9 0 1118.879 6.196 9 9 0 015.12 17.804z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         </span>
-                        <span class="font-medium">View Profile</span>
+                        <span>View Profile</span>
                     </a>
 
-                    <a href="{{ route('settings.general') }}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-200 hover:text-white hover:bg-slate-800/70 transition-all duration-150 group">
-                        <span class="w-7 h-7 grid place-items-center rounded-lg bg-slate-900/80 text-slate-400 group-hover:text-[#00ddd2] group-hover:bg-slate-800 transition-colors border border-slate-800">
+                    <a href="{{ route('settings.general') }}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-all duration-150 group">
+                        <span class="w-7 h-7 grid place-items-center rounded-lg bg-slate-100 text-slate-600 group-hover:text-cyan-600 transition-colors border border-slate-200">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         </span>
-                        <span class="font-medium">Settings</span>
+                        <span>Settings</span>
                     </a>
 
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
-                        <button type="submit" class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-200 hover:text-white hover:bg-slate-800/70 transition-all duration-150 group cursor-pointer">
-                            <span class="w-7 h-7 grid place-items-center rounded-lg bg-slate-900/80 text-slate-400 group-hover:text-[#00ddd2] group-hover:bg-slate-800 transition-colors border border-slate-800">
+                        <button type="submit" class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-all duration-150 group cursor-pointer">
+                            <span class="w-7 h-7 grid place-items-center rounded-lg bg-slate-100 text-slate-600 group-hover:text-slate-900 transition-colors border border-slate-200">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                             </span>
-                            <span class="font-medium">Logout</span>
+                            <span>Logout</span>
                         </button>
                     </form>
                 </div>
