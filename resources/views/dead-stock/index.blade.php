@@ -351,10 +351,39 @@
         }
     }
 
+    function applyThumbImage(container, imageUrl, fallbackSvg) {
+        const safeImageUrl = String(imageUrl || '').replace(/"/g, '%22');
+
+        if (safeImageUrl) {
+            container.innerHTML = '';
+            container.className = 'deadstock-img-thumb w-8 h-8 rounded-[6px] bg-slate-100 border border-slate-200/80 flex-shrink-0 overflow-hidden';
+            container.style.backgroundImage = `url("${safeImageUrl}")`;
+            container.style.backgroundSize = 'cover';
+            container.style.backgroundPosition = 'center';
+            container.style.backgroundRepeat = 'no-repeat';
+            container.style.backgroundColor = '#f8fafc';
+            return;
+        }
+
+        container.className = 'deadstock-img-thumb w-8 h-8 rounded-[6px] bg-slate-50 border border-slate-200/60 flex items-center justify-center flex-shrink-0 text-slate-300 overflow-hidden';
+        container.style.backgroundImage = 'none';
+        container.style.backgroundSize = 'cover';
+        container.style.backgroundPosition = 'center';
+        container.style.backgroundRepeat = 'no-repeat';
+        container.style.backgroundColor = '#f8fafc';
+        container.innerHTML = fallbackSvg;
+    }
+
     function resolveDeadStockImages() {
         try {
             const stored = localStorage.getItem('posProductImages');
-            if (!stored) return;
+            if (!stored) {
+                document.querySelectorAll('.deadstock-img-thumb').forEach(container => {
+                    applyThumbImage(container, '', '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>');
+                });
+                return;
+            }
+
             const images = JSON.parse(stored);
             const keys = Object.keys(images);
 
@@ -378,11 +407,7 @@
                     }
                 }
 
-                if (imgUrl) {
-                    container.innerHTML = '';
-                    container.className = 'deadstock-img-thumb w-8 h-8 rounded-[6px] bg-slate-100 border border-slate-200/80 flex-shrink-0 bg-cover bg-center';
-                    container.style.backgroundImage = `url('${imgUrl}')`;
-                }
+                applyThumbImage(container, imgUrl, '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>');
             });
         } catch(e) {
             console.error('Error resolving dead stock images:', e);

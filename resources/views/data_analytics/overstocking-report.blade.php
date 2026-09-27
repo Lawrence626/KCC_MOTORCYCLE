@@ -379,12 +379,21 @@
 
                     const imageUrl = getProductImage({ id: productId, sku, name }) || getProductImage({ name: category });
                     if (imageUrl) {
+                        const safeImageUrl = String(imageUrl).replace(/"/g, '%22');
                         imgContainer.innerHTML = '';
-                        imgContainer.className = 'category-img-container w-9 h-9 rounded-[8px] bg-slate-100 border border-slate-200/80 flex-shrink-0 bg-cover bg-center shadow-sm';
-                        imgContainer.style.backgroundImage = `url('${imageUrl}')`;
+                        imgContainer.className = 'category-img-container w-9 h-9 rounded-[8px] bg-slate-100 border border-slate-200/80 flex-shrink-0 shadow-sm overflow-hidden';
+                        imgContainer.style.backgroundImage = `url("${safeImageUrl}")`;
+                        imgContainer.style.backgroundSize = 'cover';
+                        imgContainer.style.backgroundPosition = 'center';
+                        imgContainer.style.backgroundRepeat = 'no-repeat';
+                        imgContainer.style.backgroundColor = '#f8fafc';
                     } else {
                         imgContainer.className = 'category-img-container w-9 h-9 rounded-[8px] bg-slate-50 border border-slate-200/60 flex items-center justify-center flex-shrink-0 text-slate-300 shadow-sm overflow-hidden';
                         imgContainer.style.backgroundImage = 'none';
+                        imgContainer.style.backgroundSize = 'cover';
+                        imgContainer.style.backgroundPosition = 'center';
+                        imgContainer.style.backgroundRepeat = 'no-repeat';
+                        imgContainer.style.backgroundColor = '#f8fafc';
                         imgContainer.innerHTML = `<svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`;
                     }
                 });

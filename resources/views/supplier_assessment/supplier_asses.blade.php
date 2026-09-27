@@ -1,5 +1,5 @@
 <x-layouts.app :title="__('Supplier Assessment')">
-    <div class="space-y-5">
+    <div class="space-y-5 px-3 sm:px-4 lg:px-5">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
             <div class="pl-3 lg:pl-1">
                 <h1 class="text-3xl font-bold text-slate-900">Supplier Assessment</h1>
@@ -7,7 +7,7 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-3">
-                <button id="openSupplierModal" class="inline-flex items-center gap-2 rounded-[10px] bg-[#6EC1D1] px-4 py-2 text-sm font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all duration-200">
+                <button id="openSupplierModal" class="inline-flex items-center gap-2 rounded-[10px] bg-[#6EC1D1] px-4 py-2 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all duration-200 border-0 focus:outline-none focus:ring-0">
                     <svg class="h-4 w-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
@@ -101,64 +101,83 @@
             </div>
         </div>
 
-        <section class="rounded-[15px] border border-slate-200 bg-white overflow-hidden shadow-sm">
-            <!-- Section Header Bar (matching All Stocks design) -->
-            <div class="bg-[#0f172a] px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-slate-800 rounded-t-[15px]">
-                <div>
-                    <h2 class="text-lg font-bold text-white">Select a Supplier</h2>
-                    <p class="text-xs text-slate-300">Search and pick a supplier partner to inspect details below</p>
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="relative w-72 md:w-80">
-                        <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/>
-                        </svg>
-                        <input id="supplierSearch" type="search" placeholder="Search supplier, contact, email..." class="w-full rounded-[10px] border border-slate-700 bg-slate-800/90 pl-10 pr-4 py-2 text-xs text-white placeholder:text-slate-300 focus:outline-none focus:ring-1 focus:ring-[#6EC1D1]" />
+        <div class="overflow-hidden rounded-[20px] border border-slate-200 bg-white shadow-[0_6px_18px_rgba(15,23,42,0.12)]">
+            <section class="relative z-[50] overflow-visible border-b border-slate-700 bg-[#0b1d2d]">
+                <div class="flex flex-col gap-4 px-6 py-4 md:flex-row md:items-center md:justify-between">
+                    <div class="min-w-0">
+                        <h2 class="text-[19px] font-bold text-white">Select a Supplier</h2>
+                        <p class="text-xs text-slate-300">Search and pick a supplier partner to inspect details below</p>
                     </div>
-                    <span id="supplierListCount" class="rounded-[10px] bg-[#6EC1D1] px-3 py-2 text-xs font-bold text-slate-900 shadow-sm whitespace-nowrap">{{ number_format($supplierSummaries->count()) }} shown</span>
+
+                    <div class="ml-auto flex items-center">
+                        <div class="relative z-[999]">
+                            <div class="overflow-hidden rounded-[12px] border border-slate-600 bg-slate-900/40 shadow-inner shadow-slate-950/40">
+                                <button id="supplierDropdownTrigger" type="button" class="inline-flex min-w-[270px] items-center justify-between gap-3 bg-[#122a3d] px-3.5 py-2.5 text-left text-xs font-medium text-slate-100 transition-all duration-200 hover:bg-[#18334d] focus:outline-none focus:ring-1 focus:ring-[#6EC1D1]">
+                                    <span class="flex items-center gap-2 min-w-0">
+                                        <svg class="h-4 w-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/>
+                                        </svg>
+                                        <span id="supplierDropdownLabel" class="truncate text-slate-100">Select supplier</span>
+                                    </span>
+                                    <svg id="supplierDropdownChevron" class="h-4 w-4 text-slate-300 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+
+                                <div id="supplierDropdown" class="absolute left-0 top-full z-[99999] mt-2 hidden w-full min-w-[270px] max-h-[320px] rounded-[12px] border border-slate-700 bg-[#0f172a] shadow-[0_16px_40px_rgba(15,23,42,0.42)] overflow-hidden">
+                                    <div class="p-2.5">
+                                        <div class="relative">
+                                            <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/>
+                                            </svg>
+                                            <input id="supplierSearch" type="search" placeholder="Search supplier..." class="w-full rounded-[10px] border border-slate-600 bg-slate-800/90 pl-9 pr-3 py-2 text-xs text-white placeholder:text-slate-300 focus:outline-none focus:ring-1 focus:ring-[#6EC1D1]" />
+                                        </div>
+                                    </div>
+                                    <div class="max-h-[220px] overflow-y-auto p-2">
+                                        <div id="supplierList" class="space-y-2"></div>
+                                    </div>
+                                    <div id="supplierPagination" class="border-t border-slate-700 bg-slate-900/60 px-3 py-2.5"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <main id="supplierDetailsContainer" class="relative z-0 min-h-[350px] overflow-hidden rounded-b-[20px] bg-white">
+            <div id="supplierDetailPlaceholder" class="flex min-h-[320px] items-center justify-center px-0 pb-0 pt-0 text-center text-slate-500">
+                <div class="w-full max-w-3xl rounded-[14px] px-4 py-8">
+                    <p class="text-xl font-semibold text-slate-800">Supplier details will appear here</p>
+                    <p class="mt-2 text-sm text-slate-500">Select a supplier to view pricing, performance, delivery reliability, and linked products.</p>
                 </div>
             </div>
 
-            <div class="p-5 space-y-4">
-                <div id="supplierList" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
-                <div id="supplierPagination" class="mt-4 flex flex-col items-center gap-2 sm:flex-row sm:justify-between border-t border-slate-100 pt-3"></div>
-            </div>
-        </section>
-
-        <main id="supplierDetailsContainer" class="rounded-[15px] border border-slate-200 bg-white shadow-sm min-h-[350px] overflow-hidden">
-            <div id="supplierDetailPlaceholder" class="p-6 py-16 text-center text-slate-500">
-                <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0v-4m0 4h4m-4-4l4 4"/>
-                </svg>
-                <p class="mt-4 text-lg font-semibold text-slate-900">Supplier details will appear here</p>
-                <p class="mt-2 text-sm text-slate-500 max-w-md mx-auto">Click a supplier card from above to inspect pricing, performance, delivery reliability, and linked products.</p>
-            </div>
-
-            <section id="supplierDetailPanel" class="hidden space-y-6">
+            <section id="supplierDetailPanel" class="hidden space-y-6 pt-0">
                 <!-- Section Header Bar (matching All Stocks design) -->
-                <div class="bg-[#0f172a] px-6 py-5 border-b border-slate-800 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between rounded-t-[15px]">
+                <div class="bg-white px-6 py-5 border-b border-slate-200 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between rounded-none shadow-[0_1px_0_rgba(15,23,42,0.05)]">
                     <div>
-                        <p class="text-xs uppercase tracking-wider font-semibold text-[#6EC1D1]">Supplier overview</p>
-                        <h2 id="detailSupplierName" class="mt-0.5 text-2xl md:text-2xl font-bold text-white"></h2>
-                        <p id="detailSupplierNotes" class="mt-1 text-xs text-slate-300"></p>
-                        <p id="detailSupplierAddress" class="mt-1 text-xs text-slate-400"></p>
+                        <p class="text-xs uppercase tracking-wider font-semibold text-slate-500">Supplier overview</p>
+                        <h2 id="detailSupplierName" class="mt-0.5 text-2xl md:text-2xl font-bold text-slate-900"></h2>
+                        <p id="detailSupplierNotes" class="mt-1 text-xs text-slate-600"></p>
+                        <p id="detailSupplierAddress" class="mt-1 text-xs text-slate-500"></p>
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
-                        <div class="rounded-[8px] bg-slate-800/90 px-3 py-1.5 border border-slate-700">
-                            <p class="text-[10px] uppercase tracking-wider text-[#6EC1D1] font-semibold leading-tight">Role</p>
-                            <p id="detailSupplierPosition" class="mt-0.5 font-semibold text-white text-[11px] leading-tight"></p>
+                        <div class="rounded-[8px] bg-slate-100 px-3 py-1.5 border border-slate-200">
+                            <p class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold leading-tight">Role</p>
+                            <p id="detailSupplierPosition" class="mt-0.5 font-semibold text-slate-800 text-[11px] leading-tight"></p>
                         </div>
-                        <div class="rounded-[8px] bg-slate-800/90 px-3 py-1.5 border border-slate-700">
-                            <p class="text-[10px] uppercase tracking-wider text-[#6EC1D1] font-semibold leading-tight">Primary Contact</p>
-                            <p id="detailSupplierContact" class="mt-0.5 font-medium text-white text-[11px] leading-tight"></p>
+                        <div class="rounded-[8px] bg-slate-100 px-3 py-1.5 border border-slate-200">
+                            <p class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold leading-tight">Primary Contact</p>
+                            <p id="detailSupplierContact" class="mt-0.5 font-medium text-slate-800 text-[11px] leading-tight"></p>
                         </div>
                         <div class="flex items-center gap-2">
                             <button id="detailEditSupplierButton" type="button" class="inline-flex items-center gap-1.5 rounded-[8px] bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all duration-200">
                                 <svg class="h-3.5 w-3.5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                 Edit
                             </button>
-                            <button id="detailArchiveSupplierButton" type="button" class="inline-flex items-center gap-1.5 rounded-[8px] border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-slate-700 transition-all duration-200">
-                                <svg class="h-3.5 w-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                            <button id="detailArchiveSupplierButton" type="button" class="inline-flex items-center gap-1.5 rounded-[8px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-all duration-200">
+                                <svg class="h-3.5 w-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
                                 Archive
                             </button>
                         </div>
@@ -435,7 +454,11 @@
                 const openSupplierModalButton = document.getElementById('openSupplierModal');
                 const closeSupplierModalButton = document.getElementById('closeSupplierModal');
                 const cancelSupplierModalButton = document.getElementById('cancelSupplierModal');
+                const supplierDropdownTrigger = document.getElementById('supplierDropdownTrigger');
+                const supplierDropdownLabel = document.getElementById('supplierDropdownLabel');
+                const supplierDropdownChevron = document.getElementById('supplierDropdownChevron');
                 const supplierSearch = document.getElementById('supplierSearch');
+                const supplierDropdown = document.getElementById('supplierDropdown');
                 const productsModalTitle = document.getElementById('productsModalTitle');
                 const productsModalSubtitle = document.getElementById('productsModalSubtitle');
                 const productsModalTableBody = document.getElementById('productsModalTableBody');
@@ -532,6 +555,10 @@
                     let visibleCount = 0;
                     const filteredSuppliers = [];
 
+                    if (!supplierSearch) {
+                        return;
+                    }
+
                     supplierSummaries.forEach(supplier => {
                         const name = supplier.name.toLowerCase();
                         const contact = (supplier.contact_person || '').toLowerCase();
@@ -551,47 +578,59 @@
                     const endIndex = startIndex + itemsPerPage;
                     const paginatedSuppliers = filteredSuppliers.slice(startIndex, endIndex);
 
+                    if (supplierSearch.value.trim()) {
+                        supplierDropdown.classList.remove('hidden');
+                    } else {
+                        supplierDropdown.classList.add('hidden');
+                    }
+
                     paginatedSuppliers.forEach(supplier => {
                         visibleCount += 1;
-                        const card = document.createElement('div');
+                        const card = document.createElement('button');
+                        card.type = 'button';
                         card.dataset.supplierName = supplier.name;
-                        card.className = 'supplier-card w-full rounded-[10px] border border-slate-200 bg-white p-4 text-left shadow-sm transition-all duration-200 hover:border-slate-300 hover:shadow-md cursor-pointer';
+                        card.className = 'supplier-card w-full rounded-[10px] border border-slate-700 bg-slate-900/60 p-3 text-left transition-all duration-200 hover:border-[#6EC1D1] hover:bg-slate-800/80 focus:outline-none';
                         card.innerHTML = `
                             <div class="flex items-start justify-between gap-2">
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-bold text-slate-900 truncate">${supplier.name}</p>
-                                    <p class="mt-0.5 text-xs text-slate-500 truncate">${supplier.contact_person || 'No contact'} · ${supplier.email || supplier.phone || 'No email'}</p>
+                                    <p class="text-sm font-bold text-white truncate">${supplier.name}</p>
+                                    <p class="mt-0.5 text-[11px] text-slate-300 truncate">${supplier.contact_person || 'No contact'} · ${supplier.email || supplier.phone || 'No email'}</p>
                                 </div>
-                                <span class="rounded-[8px] bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600 whitespace-nowrap border border-slate-200">${supplier.contact_position || 'Supplier'}</span>
+                                <span class="rounded-[8px] bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-[#6EC1D1] whitespace-nowrap border border-slate-600">${supplier.contact_position || 'Supplier'}</span>
                             </div>
-                            <div class="mt-3 grid gap-2 sm:grid-cols-2">
-                                <div class="rounded-[10px] border border-slate-100 p-2 text-xs text-slate-600" style="background: linear-gradient(50deg, #ffffff 0%, rgba(110, 193, 209, 0.12) 50%);">
-                                    <p class="font-bold text-slate-900 text-xs">${supplier.product_count ?? 0}</p>
-                                    <p class="text-[11px]">Products</p>
+                            <div class="mt-3 grid grid-cols-2 gap-2">
+                                <div class="rounded-[8px] border border-slate-700 bg-slate-800/70 p-2 text-[11px] text-slate-300">
+                                    <p class="font-bold text-white text-xs">${supplier.product_count ?? 0}</p>
+                                    <p>Products</p>
                                 </div>
-                                <div class="rounded-[10px] border border-slate-100 p-2 text-xs text-slate-600" style="background: linear-gradient(50deg, #ffffff 0%, rgba(110, 193, 209, 0.12) 50%);">
-                                    <p class="font-bold text-slate-900 text-xs">${supplier.performance_score ?? 0}</p>
-                                    <p class="text-[11px]">Performance</p>
+                                <div class="rounded-[8px] border border-slate-700 bg-slate-800/70 p-2 text-[11px] text-slate-300">
+                                    <p class="font-bold text-white text-xs">${supplier.performance_score ?? 0}</p>
+                                    <p>Performance</p>
                                 </div>
                             </div>
                         `;
                         supplierList.appendChild(card);
                     });
 
+                    if (paginatedSuppliers.length === 0) {
+                        supplierList.innerHTML = '<div class="rounded-[10px] border border-dashed border-slate-600 bg-slate-900/40 px-3 py-4 text-sm text-slate-300">No supplier matches your search.</div>';
+                        supplierDropdown.classList.remove('hidden');
+                    }
+
                     supplierListCount.textContent = `${visibleCount} shown`;
 
                     // Render pagination
                     if (totalPages > 1) {
                         supplierPagination.innerHTML = `
-                            <div class="text-xs text-slate-500">
+                            <div class="text-[11px] text-slate-300">
                                 Page ${currentPage} of ${totalPages}
                             </div>
-                            <div class="flex items-center gap-1.5 flex-wrap justify-center">
-                                <button data-page="${currentPage - 1}" class="pagination-btn px-2.5 py-1 text-xs rounded-[8px] border border-slate-200 transition-all ${currentPage === 1 ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-700 bg-white hover:bg-slate-100'}" ${currentPage === 1 ? 'disabled' : ''}>Prev</button>
+                            <div class="flex items-center gap-1.5 flex-wrap justify-center mt-2">
+                                <button type="button" data-page="${currentPage - 1}" class="pagination-btn px-2.5 py-1 text-[11px] rounded-[8px] border border-slate-600 transition-all ${currentPage === 1 ? 'text-slate-500 bg-slate-800 cursor-not-allowed' : 'text-slate-200 bg-slate-900 hover:bg-slate-800'}" ${currentPage === 1 ? 'disabled' : ''}>Prev</button>
                                 ${Array.from({length: totalPages}, (_, i) => i + 1).map(page => `
-                                    <button data-page="${page}" class="pagination-btn px-2.5 py-1 text-xs rounded-[8px] transition-all ${page === currentPage ? 'font-bold text-slate-900 bg-[#6EC1D1] border border-slate-200 shadow-sm' : 'text-slate-700 border border-slate-200 bg-white hover:bg-slate-100'}">${page}</button>
+                                    <button type="button" data-page="${page}" class="pagination-btn px-2.5 py-1 text-[11px] rounded-[8px] transition-all ${page === currentPage ? 'font-bold text-slate-900 bg-[#6EC1D1] border border-slate-200 shadow-sm' : 'text-slate-200 border border-slate-600 bg-slate-900 hover:bg-slate-800'}">${page}</button>
                                 `).join('')}
-                                <button data-page="${currentPage + 1}" class="pagination-btn px-2.5 py-1 text-xs rounded-[8px] border border-slate-200 transition-all ${currentPage === totalPages ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-700 bg-white hover:bg-slate-100'}" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
+                                <button type="button" data-page="${currentPage + 1}" class="pagination-btn px-2.5 py-1 text-[11px] rounded-[8px] border border-slate-600 transition-all ${currentPage === totalPages ? 'text-slate-500 bg-slate-800 cursor-not-allowed' : 'text-slate-200 bg-slate-900 hover:bg-slate-800'}" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
                             </div>
                         `;
                     } else {
@@ -615,6 +654,10 @@
                     const card = event.target.closest('.supplier-card');
                     if (card) {
                         setSupplierDetail(card.dataset.supplierName, true);
+                        supplierDropdown.classList.add('hidden');
+                        if (supplierDropdownChevron) {
+                            supplierDropdownChevron.classList.remove('rotate-180');
+                        }
                     }
                 });
 
@@ -652,6 +695,9 @@
 
                     supplierDetailPlaceholder.classList.add('hidden');
                     supplierDetailPanel.classList.remove('hidden');
+                    if (supplierDropdownLabel) {
+                        supplierDropdownLabel.textContent = supplier.name;
+                    }
 
                     if (activeSupplier && activeSupplier.name !== supplierName) {
                         currentProductPage = 1;
@@ -797,6 +843,36 @@
 
                 [closeSupplierModalButton, cancelSupplierModalButton].forEach(button => {
                     button.addEventListener('click', () => closeModal(supplierModal));
+                });
+
+                supplierDropdownTrigger.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    const isHidden = supplierDropdown.classList.contains('hidden');
+                    supplierDropdown.classList.toggle('hidden', !isHidden);
+                    if (supplierDropdownChevron) {
+                        supplierDropdownChevron.classList.toggle('rotate-180', !supplierDropdown.classList.contains('hidden'));
+                    }
+                    if (!supplierDropdown.classList.contains('hidden')) {
+                        supplierSearch.focus();
+                    }
+                });
+
+                supplierSearch.addEventListener('focus', () => {
+                    supplierDropdown.classList.remove('hidden');
+                    if (supplierDropdownChevron) {
+                        supplierDropdownChevron.classList.add('rotate-180');
+                    }
+                });
+
+                document.addEventListener('click', (event) => {
+                    const withinTrigger = event.target.closest('#supplierDropdownTrigger');
+                    const withinDropdown = event.target.closest('#supplierDropdown');
+                    if (!withinTrigger && !withinDropdown) {
+                        supplierDropdown.classList.add('hidden');
+                        if (supplierDropdownChevron) {
+                            supplierDropdownChevron.classList.remove('rotate-180');
+                        }
+                    }
                 });
 
                 supplierSearch.addEventListener('input', renderSupplierList);

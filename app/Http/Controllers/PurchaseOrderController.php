@@ -64,11 +64,7 @@ class PurchaseOrderController extends Controller
             ->withQueryString()
             ->appends(['tab' => 'back_orders']);
 
-<<<<<<< HEAD
         $replacementBackOrders = Schema::hasTable('defective_return_requests')
-=======
-        $replacementBackOrders = \Illuminate\Support\Facades\Schema::hasTable('defective_return_requests')
->>>>>>> 4832e71640143292d1c85fd036fa86392c6969d7
             ? DefectiveReturnRequest::with(['purchaseOrder', 'product'])
                 ->where('resolution', 'Replacement')
                 ->whereIn('status', ['Replacement Approved', 'Awaiting Replacement'])

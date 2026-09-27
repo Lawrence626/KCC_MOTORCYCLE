@@ -1744,7 +1744,7 @@ function printReceipt() {
 
                     <div class="receipt-payment">
                         <div class="row"><span class="label">Amount Paid</span><span>${paid}</span></div>
-                        <div class="row"><span class="label">Change (Sukli)</span><span style="font-weight:700; color:#059669;">${change}</span></div>
+                        <div class="row"><span class="label">Change (Sukli)</span><span style="font-weight:700; color:#111827;">${change}</span></div>
                         <div class="row"><span class="label">Payment Method</span><span>${paymentMethod}</span></div>
                     </div>
 
@@ -1860,7 +1860,7 @@ function buildInvoiceHTML(receiptData, cashierName) {
   .pay-box { flex: 1; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; background: #f8fafc; }
   .pay-box .pay-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.07em; color: #64748b; margin-bottom: 4px; font-weight: 600; }
   .pay-box .pay-value { font-size: 14px; font-weight: 800; color: #0f172a; }
-  .pay-box .pay-value.change { color: #059669; }
+  .pay-box .pay-value.change { color: #111827; }
 
   /* ── Footer ── */
   .inv-footer { text-align: center; padding-top: 18px; border-top: 1px dashed #cbd5e1; }
