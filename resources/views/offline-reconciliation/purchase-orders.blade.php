@@ -1,22 +1,21 @@
 <x-layouts.app :title="__('Offline Purchase Orders')">
 
     <x-slot name="header">
-        <div class="flex items-center justify-between w-full">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
             <div>
-                <h1 class="text-lg font-bold text-slate-900 leading-tight">Offline Purchase Orders</h1>
-                <p class="text-xs text-slate-500 mt-0.5">Generate and manage complete purchase orders locally during internet outages.</p>
+                <h1 class="text-2xl sm:text-[26px] font-bold text-slate-900 tracking-tight leading-tight">Offline Purchase Orders</h1>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1">Generate and manage complete purchase orders locally during internet outages.</p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 <div id="offline-indicator" class="hidden"></div>
-                <a href="{{ Route::has('offline.reconciliation') ? route('offline.reconciliation') : url('/offline-reconciliation') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus:outline-none transition-all duration-200">
+                <a href="{{ Route::has('offline.reconciliation') ? route('offline.reconciliation') : url('/offline-reconciliation') }}" class="inline-flex items-center gap-1.5 rounded-[12px] border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus:outline-none transition-all duration-200 cursor-pointer">
                     <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                     <span>Back to Offline Home</span>
                 </a>
-                <a href="{{ route('offline.export') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200">
+                <a href="{{ route('offline.export') }}" class="inline-flex items-center gap-1.5 rounded-[12px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3.5 py-2 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200 cursor-pointer">
                     <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                     </svg>
                     <span>Go to Export Data</span>
@@ -89,31 +88,51 @@
                     </div>
 
                     <!-- Catalog Search & Filter Controls -->
-                    <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex flex-wrap items-center gap-2.5">
                         <div class="relative min-w-[200px]">
-                            <input type="text" id="productSearchInput" oninput="renderProductCatalog()" placeholder="Search name, SKU, brand..." class="w-full pl-8 pr-3 py-1.5 rounded-[10px] border border-slate-300 bg-white text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-2xs">
+                            <input type="text" id="productSearchInput" oninput="renderProductCatalog()" placeholder="Search name, SKU, brand..." class="w-full pl-8 pr-3 py-2.5 rounded-[14px] border border-slate-300 bg-white text-xs sm:text-[13px] text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 hover:border-slate-400 transition shadow-2xs">
                             <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                             </svg>
                         </div>
 
-                        <select id="catalogCategoryFilter" onchange="onCategoryFilterChange()" class="px-2.5 py-1.5 rounded-[10px] border border-slate-300 bg-white text-xs text-slate-700 focus:outline-none shadow-2xs">
-                            <option value="">All Categories</option>
-                            @foreach($categories as $cat)
-                                @if(strtolower(trim($cat)) !== 'accessories')
-                                    <option value="{{ $cat }}">{{ $cat }}</option>
-                                @endif
-                            @endforeach
-                        </select>
+                        <!-- Category Filter Dropdown -->
+                        <div class="relative min-w-[170px]" data-dropdown-wrapper="catalogCategoryFilter">
+                            <input type="hidden" id="catalogCategoryFilter" value="" />
+                            <button type="button" id="catalogCategoryFilterButton" onclick="toggleDropdown('catalogCategoryFilterDropdown', event)" class="w-full px-3.5 py-2.5 rounded-[14px] border border-slate-300 bg-white text-left text-xs sm:text-[13px] text-slate-800 flex items-center justify-between hover:border-slate-400 focus:outline-none transition shadow-2xs cursor-pointer">
+                                <span id="catalogCategoryFilterLabel" class="truncate">All Categories</span>
+                                <svg class="w-4 h-4 text-slate-500 transition-transform duration-200 shrink-0 ml-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div id="catalogCategoryFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[50] mt-1.5 w-60 max-h-60 overflow-y-auto rounded-[14px] border border-slate-200/90 bg-white shadow-xl shadow-slate-200/60 p-1.5 space-y-0.5">
+                                <button type="button" onclick="selectCategoryOption('', 'All Categories', event)" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">All Categories</button>
+                                @foreach($categories as $cat)
+                                    @if(strtolower(trim($cat)) !== 'accessories')
+                                        <button type="button" onclick="selectCategoryOption('{{ $cat }}', '{{ $cat }}', event)" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">{{ $cat }}</button>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
 
-                        <select id="catalogBrandFilter" onchange="renderProductCatalog()" class="px-2.5 py-1.5 rounded-[10px] border border-slate-300 bg-white text-xs text-slate-700 focus:outline-none shadow-2xs">
-                            <option value="">All Brands</option>
-                            @foreach($brands as $brand)
-                                <option value="{{ $brand }}">{{ $brand }}</option>
-                            @endforeach
-                        </select>
+                        <!-- Brand Filter Dropdown -->
+                        <div class="relative min-w-[170px]" data-dropdown-wrapper="catalogBrandFilter">
+                            <input type="hidden" id="catalogBrandFilter" value="" />
+                            <button type="button" id="catalogBrandFilterButton" onclick="toggleDropdown('catalogBrandFilterDropdown', event)" class="w-full px-3.5 py-2.5 rounded-[14px] border border-slate-300 bg-white text-left text-xs sm:text-[13px] text-slate-800 flex items-center justify-between hover:border-slate-400 focus:outline-none transition shadow-2xs cursor-pointer">
+                                <span id="catalogBrandFilterLabel" class="truncate">All Brands</span>
+                                <svg class="w-4 h-4 text-slate-500 transition-transform duration-200 shrink-0 ml-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div id="catalogBrandFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[50] mt-1.5 w-60 max-h-60 overflow-y-auto rounded-[14px] border border-slate-200/90 bg-white shadow-xl shadow-slate-200/60 p-1.5 space-y-0.5">
+                                <button type="button" onclick="selectBrandOption('', 'All Brands', event)" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">All Brands</button>
+                                @foreach($brands as $brand)
+                                    <button type="button" onclick="selectBrandOption('{{ $brand }}', '{{ $brand }}', event)" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">{{ $brand }}</button>
+                                @endforeach
+                            </div>
+                        </div>
 
-                        <button type="button" id="toggleLowStockBtn" onclick="toggleLowStockFilter()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] border border-amber-300 bg-amber-50 text-xs font-semibold text-amber-900 hover:bg-amber-100 transition shadow-2xs cursor-pointer">
+                        <button type="button" id="toggleLowStockBtn" onclick="toggleLowStockFilter()" class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-[14px] border border-amber-300 bg-amber-50 text-xs font-semibold text-amber-900 hover:bg-amber-100 transition shadow-2xs cursor-pointer">
                             <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                             </svg>
@@ -462,6 +481,28 @@
             return 0;
         }
 
+        function selectCategoryOption(val, label, event) {
+            if (event) event.stopPropagation();
+            const input = document.getElementById('catalogCategoryFilter');
+            const labelEl = document.getElementById('catalogCategoryFilterLabel');
+            const menu = document.getElementById('catalogCategoryFilterDropdown');
+            if (input) input.value = val;
+            if (labelEl) labelEl.textContent = label;
+            if (menu) menu.classList.add('hidden');
+            onCategoryFilterChange();
+        }
+
+        function selectBrandOption(val, label, event) {
+            if (event) event.stopPropagation();
+            const input = document.getElementById('catalogBrandFilter');
+            const labelEl = document.getElementById('catalogBrandFilterLabel');
+            const menu = document.getElementById('catalogBrandFilterDropdown');
+            if (input) input.value = val;
+            if (labelEl) labelEl.textContent = label;
+            if (menu) menu.classList.add('hidden');
+            renderProductCatalog();
+        }
+
         // Category change handler: updates brand dropdown dynamically and re-renders catalog
         function onCategoryFilterChange() {
             const selectedCat = document.getElementById('catalogCategoryFilter')?.value || '';
@@ -471,9 +512,11 @@
 
         // Dynamically update Brand Filter options based on selected category
         function updateBrandFilterOptions(selectedCategory = '') {
-            const brandSelect = document.getElementById('catalogBrandFilter');
-            if (!brandSelect) return;
-            const currentBrand = brandSelect.value;
+            const brandInput = document.getElementById('catalogBrandFilter');
+            const brandLabel = document.getElementById('catalogBrandFilterLabel');
+            const brandMenu = document.getElementById('catalogBrandFilterDropdown');
+            if (!brandMenu) return;
+            const currentBrand = brandInput ? brandInput.value : '';
 
             let availableBrands = [];
 
@@ -522,15 +565,19 @@
 
             const uniqueBrands = Array.from(brandMap.values()).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
 
-            brandSelect.innerHTML = '<option value="">All Brands</option>' +
-                uniqueBrands.map(b => `<option value="${escapeHtml(b)}">${escapeHtml(b)}</option>`).join('');
+            let html = `<button type="button" onclick="selectBrandOption('', 'All Brands', event)" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">All Brands</button>`;
+            html += uniqueBrands.map(b => `<button type="button" onclick="selectBrandOption('${escapeHtml(b)}', '${escapeHtml(b)}', event)" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">${escapeHtml(b)}</button>`).join('');
+            brandMenu.innerHTML = html;
 
             // Keep selected brand if still valid
             const brandExists = uniqueBrands.some(b => b.toLowerCase() === currentBrand.toLowerCase());
             if (currentBrand && brandExists) {
-                brandSelect.value = brandMap.get(currentBrand.toLowerCase()) || currentBrand;
+                const cleanBrand = brandMap.get(currentBrand.toLowerCase()) || currentBrand;
+                if (brandInput) brandInput.value = cleanBrand;
+                if (brandLabel) brandLabel.textContent = cleanBrand;
             } else {
-                brandSelect.value = '';
+                if (brandInput) brandInput.value = '';
+                if (brandLabel) brandLabel.textContent = 'All Brands';
             }
         }
 
@@ -540,7 +587,9 @@
             if (searchInput) searchInput.value = '';
 
             const catFilter = document.getElementById('catalogCategoryFilter');
+            const catLabel = document.getElementById('catalogCategoryFilterLabel');
             if (catFilter) catFilter.value = '';
+            if (catLabel) catLabel.textContent = 'All Categories';
 
             updateBrandFilterOptions('');
 
@@ -548,7 +597,7 @@
             const btn = document.getElementById('toggleLowStockBtn');
             const txt = document.getElementById('lowStockBtnText');
             if (btn) {
-                btn.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] border border-amber-300 bg-amber-50 text-xs font-semibold text-amber-900 hover:bg-amber-100 transition shadow-2xs cursor-pointer';
+                btn.className = 'inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-[14px] border border-amber-300 bg-amber-50 text-xs font-semibold text-amber-900 hover:bg-amber-100 transition shadow-2xs cursor-pointer';
             }
             if (txt) {
                 txt.textContent = 'Low Stock Only';
@@ -1182,6 +1231,35 @@
             renderProductCatalog();
             updateEligibleSuppliers();
         }
+
+        // Custom Dropdown toggle helper
+        window.toggleDropdown = function(menuId, e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            const menu = document.getElementById(menuId);
+            if (!menu) return;
+            const isHidden = menu.classList.contains('hidden');
+            
+            // Close all other dropdown menus
+            document.querySelectorAll('.dropdown-menu').forEach(m => {
+                if (m.id !== menuId) m.classList.add('hidden');
+            });
+
+            if (isHidden) {
+                menu.classList.remove('hidden');
+            } else {
+                menu.classList.add('hidden');
+            }
+        };
+
+        // Close dropdowns on outside click
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('[data-dropdown-wrapper]') && !e.target.closest('.dropdown-menu')) {
+                document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.add('hidden'));
+            }
+        });
 
         // Utility: Escape HTML
         function escapeHtml(str) {

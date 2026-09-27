@@ -36,19 +36,132 @@
         <!-- Main Content -->
         <div class="flex-1 min-w-0 flex flex-col {{ $hasTopNavbar ? 'md:ml-0 bg-white' : 'md:ml-[270px] bg-white rounded-tl-[12px] rounded-bl-[12px]' }} relative z-40 h-full">
             @if(!$hasTopNavbar && auth()->check())
-                <div id="globalHeader" class="flex-shrink-0 bg-white border-b border-slate-200 px-6 py-2.5 sticky top-0 z-[999] flex items-center justify-between gap-4 rounded-tl-[12px]">
-                    <div class="flex-1 min-w-0">
-                        @if(!empty($header))
-                            {{ $header }}
+                @php
+                    $breadcrumbs = $breadcrumbs ?? null;
+                    if (!$breadcrumbs) {
+                        $routeName = request()->route() ? request()->route()->getName() : '';
+                        $crumbs = [
+                            ['title' => 'Dashboard', 'url' => route('dashboard')]
+                        ];
+
+                        if ($routeName === 'dashboard' || empty($routeName)) {
+                            $crumbs = [['title' => 'Dashboard', 'url' => null]];
+                        } elseif (str_starts_with($routeName, 'inventory.') || in_array($routeName, ['allstocks', 'archived', 'product.categorization', 'item.disposal', 'reverse-logistics']) || str_starts_with($routeName, 'product-catalog.')) {
+                            $crumbs[] = ['title' => 'Inventory Management', 'url' => null];
+                            
+                            if ($routeName === 'inventory.monitoring') {
+                                $crumbs[] = ['title' => 'Inventory Monitoring', 'url' => null];
+                            } elseif ($routeName === 'allstocks' || $routeName === 'archived') {
+                                $crumbs[] = ['title' => 'All Stocks', 'url' => null];
+                            } elseif ($routeName === 'product.categorization' || str_starts_with($routeName, 'product-catalog.')) {
+                                $crumbs[] = ['title' => 'Product Categorization', 'url' => null];
+                            } elseif ($routeName === 'item.disposal') {
+                                $crumbs[] = ['title' => 'Item Disposal List', 'url' => null];
+                            } elseif ($routeName === 'reverse-logistics') {
+                                $crumbs[] = ['title' => 'Reverse Logistics', 'url' => null];
+                            } else {
+                                $crumbs[] = ['title' => $title ?? 'Inventory', 'url' => null];
+                            }
+                        } elseif (str_starts_with($routeName, 'pos.') || $routeName === 'replacing.items') {
+                            $crumbs[] = ['title' => 'Point of Sales', 'url' => null];
+                            if ($routeName === 'pos.terminal') {
+                                $crumbs[] = ['title' => 'POS Terminal', 'url' => null];
+                            } elseif ($routeName === 'replacing.items') {
+                                $crumbs[] = ['title' => 'Records of Replacing Items', 'url' => null];
+                            } else {
+                                $crumbs[] = ['title' => $title ?? 'POS', 'url' => null];
+                            }
+                        } elseif (str_starts_with($routeName, 'purchase-order.') || str_starts_with($routeName, 'purchase_order.') || in_array($routeName, ['purchase-orders.index', 'purchase-requests.index', 'received-orders.index'])) {
+                            $crumbs[] = ['title' => 'Purchase Order', 'url' => null];
+                            $crumbs[] = ['title' => $title ?? 'Orders', 'url' => null];
+                        } elseif (str_starts_with($routeName, 'data_analytics.') || in_array($routeName, ['sales.analytics', 'pricing.module', 'overstocking.report', 'out.of.stock.report'])) {
+                            $crumbs[] = ['title' => 'Data Analytics', 'url' => null];
+                            $crumbs[] = ['title' => $title ?? 'Analytics', 'url' => null];
+                        } elseif (str_starts_with($routeName, 'warehouse.') || str_starts_with($routeName, 'warehouse_management.')) {
+                            $crumbs[] = ['title' => 'Warehouse Management', 'url' => null];
+                            $crumbs[] = ['title' => $title ?? 'Warehouse', 'url' => null];
+                        } elseif (str_starts_with($routeName, 'supplier_assessment.')) {
+                            $crumbs[] = ['title' => 'Supplier Assessment', 'url' => null];
+                            $crumbs[] = ['title' => $title ?? 'Suppliers', 'url' => null];
+                        } elseif (str_starts_with($routeName, 'user_management.')) {
+                            $crumbs[] = ['title' => 'User Management', 'url' => null];
+                            $crumbs[] = ['title' => $title ?? 'Users', 'url' => null];
+                        } elseif (str_starts_with($routeName, 'offline.') || str_starts_with($routeName, 'offline_recon.') || str_starts_with($routeName, 'offline_reconciliation.')) {
+                            $crumbs[] = ['title' => 'Offline Reconciliation', 'url' => route('offline.reconciliation')];
+                            if ($routeName === 'offline.reconciliation') {
+                                $crumbs = [
+                                    ['title' => 'Dashboard', 'url' => route('dashboard')],
+                                    ['title' => 'Offline Reconciliation', 'url' => null]
+                                ];
+                            } elseif ($routeName === 'offline.purchase-orders') {
+                                $crumbs[] = ['title' => 'Offline Purchase Orders', 'url' => null];
+                            } elseif ($routeName === 'offline.export') {
+                                $crumbs[] = ['title' => 'Export Data', 'url' => null];
+                            } elseif ($routeName === 'offline.import') {
+                                $crumbs[] = ['title' => 'Import Data', 'url' => null];
+                            } elseif ($routeName === 'offline.pending.imports') {
+                                $crumbs[] = ['title' => 'Pending Imports', 'url' => null];
+                            } elseif ($routeName === 'offline.history') {
+                                $crumbs[] = ['title' => 'Sync History', 'url' => null];
+                            } elseif ($routeName === 'offline.report') {
+                                $crumbs[] = ['title' => 'Reconciliation Report', 'url' => null];
+                            } else {
+                                $crumbs[] = ['title' => $title ?? 'Offline Reconciliation', 'url' => null];
+                            }
+                        } elseif (str_starts_with($routeName, 'dead-stock.') || str_starts_with($routeName, 'dead_stock.')) {
+                            $crumbs[] = ['title' => 'Dead Stock Management', 'url' => null];
+                            $crumbs[] = ['title' => $title ?? 'Dead Stock', 'url' => null];
+                        } elseif (str_starts_with($routeName, 'dss.')) {
+                            $crumbs[] = ['title' => 'Decision Support System', 'url' => null];
+                            $crumbs[] = ['title' => $title ?? 'Recommendations', 'url' => null];
+                        } elseif (str_starts_with($routeName, 'profile.')) {
+                            $crumbs[] = ['title' => 'User Profile', 'url' => null];
+                        } elseif (str_starts_with($routeName, 'settings.')) {
+                            $crumbs[] = ['title' => 'Settings', 'url' => null];
+                        } else {
+                            $crumbs[] = ['title' => $title ?? 'Dashboard', 'url' => null];
+                        }
+                    }
+                @endphp
+                <div id="globalHeader" class="flex-shrink-0 bg-white border-b border-slate-200/80 px-6 sm:px-8 py-3 sticky top-0 z-[999] flex items-center justify-between gap-4 rounded-tl-[12px]">
+                    <div class="flex-1 min-w-0 flex items-center">
+                        @if(isset($breadcrumbs) && is_string($breadcrumbs))
+                            {!! $breadcrumbs !!}
+                        @else
+                            <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-500 flex-wrap">
+                                @foreach($crumbs as $index => $crumb)
+                                    @php
+                                        $isLast = ($index === count($crumbs) - 1);
+                                    @endphp
+                                    @if(!$isLast)
+                                        @if(!empty($crumb['url']))
+                                            <a href="{{ $crumb['url'] }}" class="text-slate-500 hover:text-slate-800 transition-colors">
+                                                {{ $crumb['title'] }}
+                                            </a>
+                                        @else
+                                            <span class="text-slate-500">
+                                                {{ $crumb['title'] }}
+                                            </span>
+                                        @endif
+                                        <svg class="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs sm:text-sm font-semibold bg-[#e0e7ff]/80 text-[#3730a3] border border-[#c7d2fe]/60 shadow-xs">
+                                            {{ $crumb['title'] }}
+                                        </span>
+                                    @endif
+                                @endforeach
+                            </nav>
                         @endif
                     </div>
-                    <div class="flex items-center gap-3 flex-shrink-0">
+                    <div class="flex items-center gap-3 sm:gap-4 flex-shrink-0">
                         @if(!in_array(auth()->user()->role, ['cashier', 'warehouse_personnel']))
                         <div class="relative" id="notification-bell-wrapper">
                             <button
                                 type="button"
                                 id="notification-bell-btn"
-                                class="relative p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition"
+                                class="relative p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-full transition flex items-center justify-center"
                                 aria-label="Notifications"
                                 onclick="toggleNotificationPanel(event)"
                             >
@@ -57,8 +170,8 @@
                                 </svg>
                                 <span
                                     id="notification-badge"
-                                    class="absolute -top-0.5 -right-0.5 hidden rounded-full bg-red-500 text-[10px] font-bold text-white text-center"
-                                    style="min-width: 18px; height: 18px; padding: 0 4px; display: none; align-items: center; justify-content: center; line-height: 1; text-align: center;"
+                                    class="absolute top-1.5 right-1.5 hidden rounded-full bg-red-500 text-[9px] font-bold text-white text-center"
+                                    style="min-width: 8px; height: 8px; padding: 0; display: none;"
                                 ></span>
                             </button>
 
@@ -99,8 +212,8 @@
                         @endif
 
                         <div class="relative inline-flex items-center text-left">
-                            <button type="button" id="dashboardProfileButton" class="inline-flex items-center gap-2 rounded-[20px] px-3 py-1.5 text-left border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-sm focus:outline-none cursor-pointer group" aria-label="Open profile menu">
-                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-cyan-500 text-white grid place-items-center text-sm font-semibold overflow-hidden border border-cyan-400 flex-shrink-0">
+                            <button type="button" id="dashboardProfileButton" class="inline-flex items-center gap-2.5 rounded-full px-3 py-1.5 text-left border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-xs focus:outline-none cursor-pointer group" aria-label="Open profile menu">
+                                <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#ddd6fe] text-[#6d28d9] text-xs font-bold overflow-hidden border border-[#c4b5fd]/60 flex-shrink-0">
                                     @if(auth()->user()->avatar)
                                         <img src="{{ asset('storage/' . auth()->user()->avatar) }}?v={{ auth()->user()->updated_at?->timestamp }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover" />
                                     @else
@@ -108,18 +221,18 @@
                                     @endif
                                 </span>
                                 <div class="flex flex-col leading-tight text-left min-w-0">
-                                    <span class="text-xs font-semibold text-slate-900 max-w-[140px] truncate">{{ auth()->user()->name ?? 'Admin' }}</span>
-                                    <span class="text-[11px] text-slate-500 max-w-[150px] truncate">{{ auth()->user()->email ?? '' }}</span>
+                                    <span class="text-xs font-bold text-slate-800 max-w-[130px] truncate">{{ auth()->user()->name ?? 'arbie' }}</span>
+                                    <span class="text-[11px] text-slate-400 font-normal max-w-[150px] truncate">{{ auth()->user()->email ?? '' }}</span>
                                 </div>
-                                <svg id="dashboardProfileArrow" class="w-4 h-4 text-slate-400 transition-transform duration-200 group-hover:text-slate-600" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M7 10l5 5 5-5H7z"/>
+                                <svg id="dashboardProfileArrow" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200 group-hover:text-slate-600" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                                 </svg>
                             </button>
 
-                            <div id="dashboardProfileDropdown" class="absolute right-0 top-full mt-2 rounded-[15px] bg-white shadow-xl shadow-slate-200/80 z-[9999] hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right border border-slate-200" style="min-width: 240px;">
+                            <div id="dashboardProfileDropdown" class="absolute right-0 top-full mt-2 rounded-[14px] bg-white shadow-xl shadow-slate-200/80 z-[9999] hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right border border-slate-200" style="min-width: 240px;">
                                 <div class="px-4 py-4 border-b border-slate-100">
                                     <div class="flex items-center gap-3">
-                                        <span class="w-11 h-11 rounded-full bg-cyan-500 text-white grid place-items-center overflow-hidden text-base font-semibold flex-shrink-0 border border-cyan-400">
+                                        <span class="w-11 h-11 rounded-full bg-[#ddd6fe] text-[#6d28d9] grid place-items-center overflow-hidden text-base font-semibold flex-shrink-0 border border-[#c4b5fd]/60">
                                             {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
                                         </span>
                                         <div class="min-w-0">
@@ -128,7 +241,7 @@
                                         </div>
                                     </div>
                                     <div class="mt-2.5">
-                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] bg-cyan-50 text-cyan-700 border border-cyan-200">
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] bg-indigo-50 text-indigo-700 border border-indigo-200">
                                             {{ (auth()->user()->role ?? 'user') === 'admin' ? 'Administrator' : ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'user')) }}
                                         </span>
                                     </div>
@@ -168,19 +281,29 @@
                 $flush = $flush ?? false;
                 $stretch = $stretch ?? true;
             @endphp
-<div id="mainScrollArea" class="flex-1 min-w-0 min-h-0 overflow-y-auto relative flex flex-col bg-white rounded-bl-[12px]">
+            <div id="mainScrollArea" class="flex-1 min-w-0 min-h-0 overflow-y-auto relative flex flex-col bg-white rounded-bl-[12px]">
                 @if($hasTopNavbar)
                     @include('partials.cashier-navbar')
                 @endif
                 <div id="topScrollFade" class="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-white/95 via-white/70 to-transparent opacity-0 transition-opacity duration-200"></div>
                 <div class="w-full min-w-0 max-w-full flex-1 {{ $stretch ? 'flex flex-col' : '' }}">
                     @if($flush)
-                        <div class="pt-17">
+                        <div>
+                            @if(!empty($header))
+                                <div class="px-6 sm:px-8 pt-6 pb-2">
+                                    {{ $header }}
+                                </div>
+                            @endif
                             {{ $slot }}
                         </div>
                     @else
-                        <div class="bg-white w-full flex-1 px-4 sm:px-8 py-4 sm:py-6 space-y-8 min-w-0 min-h-0 {{ $stretch ? 'flex flex-col' : '' }}">
-                            <div class="space-y-8 min-w-0 {{ $stretch ? 'flex-1' : 'h-full' }} pt-17">
+                        <div class="bg-white w-full flex-1 px-6 sm:px-8 py-5 sm:py-6 space-y-6 min-w-0 min-h-0 {{ $stretch ? 'flex flex-col' : '' }}">
+                            @if(!empty($header))
+                                <div class="min-w-0">
+                                    {{ $header }}
+                                </div>
+                            @endif
+                            <div class="space-y-6 min-w-0 {{ $stretch ? 'flex-1' : 'h-full' }}">
                                 {{ $slot }}
                             </div>
                         </div>
@@ -928,6 +1051,38 @@
                     });
                 });
             }, 3500);
+        });
+
+        // Universal Dropdown Toggle & Outside-Click Handler
+        window.toggleDropdown = function(menuId, e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            const menu = document.getElementById(menuId);
+            if (!menu) return;
+            const isHidden = menu.classList.contains('hidden');
+            
+            // Close other open dropdowns
+            document.querySelectorAll('.dropdown-menu').forEach(function(m) {
+                if (m.id !== menuId) {
+                    m.classList.add('hidden');
+                }
+            });
+
+            if (isHidden) {
+                menu.classList.remove('hidden');
+            } else {
+                menu.classList.add('hidden');
+            }
+        };
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('[data-dropdown-wrapper]') && !e.target.closest('.dropdown-menu') && !e.target.closest('[onclick*="toggleDropdown"]')) {
+                document.querySelectorAll('.dropdown-menu').forEach(function(m) {
+                    m.classList.add('hidden');
+                });
+            }
         });
     </script>
 

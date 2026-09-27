@@ -1,20 +1,19 @@
 
 <x-layouts.app :title="__('Reconciliation Report')">
     <x-slot name="header">
-        <div class="flex items-center justify-between w-full">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
             <div>
-                <h1 class="text-lg font-bold text-slate-900 leading-tight">Reconciliation Report</h1>
-
-                <p class="text-xs text-slate-500 mt-0.5">Detailed synchronization report for {{ $syncHistory->file_name }}</p>
+                <h1 class="text-2xl sm:text-[26px] font-bold text-slate-900 tracking-tight leading-tight">Reconciliation Report</h1>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1">Detailed synchronization report for {{ $syncHistory->file_name }}</p>
             </div>
             <div class="flex gap-2">
-                <button onclick="window.print()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shadow-sm">
+                <button onclick="window.print()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[12px] border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shadow-sm cursor-pointer">
                     <svg class="w-3.5 h-3.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                     </svg>
                     Print Report
                 </button>
-                <a href="{{ route('offline.history') }}" class="inline-flex items-center px-3 py-1.5 rounded-[10px] border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shadow-sm">
+                <a href="{{ route('offline.history') }}" class="inline-flex items-center px-3.5 py-2 rounded-[12px] border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shadow-sm cursor-pointer">
                     Back to History
                 </a>
             </div>

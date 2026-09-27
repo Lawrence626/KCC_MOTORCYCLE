@@ -326,17 +326,107 @@ function updateTotals() {
     if (posTotalSummaryEl) posTotalSummaryEl.textContent = formatCurrency(total);
 }
 
-function saveProductImagePreview(cardId, dataUrl, sku = null, name = null) {
+function getProductDefaultImage(product) {
+    if (!product) return '';
+    const brand = String(product.brand || '').trim().toUpperCase();
+    const desc = String(product.product_description || product.category || '').trim().toUpperCase();
+    const name = String(product.product_name || product.name || '').trim().toUpperCase();
+    const compat = String(product.compatibility || '').trim().toUpperCase();
+    const sku = String(product.sku || '').trim().toUpperCase();
+
+    // Check for Apido Brand / Pipe
+    const isApido = brand.includes('APIDO') || name.includes('APIDO') || sku.includes('APIDO');
+    const isPipe = desc.includes('PIPE') || name.includes('PIPE') || compat.includes('PIPE') || sku.includes('PIPE') ||
+                   desc.includes('EXHAUST') || name.includes('EXHAUST') || compat.includes('EXHAUST') || sku.includes('EXHAUST') ||
+                   desc.includes('MUFFLER') || name.includes('MUFFLER') || compat.includes('MUFFLER') || sku.includes('MUFFLER');
+
+    if (isApido || (isPipe && brand.includes('APIDO'))) {
+        const apidoImages = [
+            '/images/products/apido_pipe_1.png',
+            '/images/products/apido_pipe_2.png',
+            '/images/products/apido_pipe_3.png'
+        ];
+        // Hash product identity to consistently distribute varied images across different products
+        const seedStr = String(product.id || '') + String(product.name || product.product_name || product.sku || '');
+        let hash = 0;
+        for (let i = 0; i < seedStr.length; i++) {
+            hash = (hash * 31 + seedStr.charCodeAt(i)) | 0;
+        }
+        return apidoImages[Math.abs(hash) % apidoImages.length];
+    }
+
+    // Check for KVIN Brand / Pipe
+    const isKvin = brand.includes('KVIN') || brand.includes('K-VIN') || brand.includes('K VIN') ||
+                   name.includes('KVIN') || name.includes('K-VIN') || name.includes('K VIN') ||
+                   sku.includes('KVIN') || sku.includes('K-VIN');
+
+    if (isKvin) {
+        const kvinImages = [
+            '/images/products/kvin_pipe_1.png',
+            '/images/products/kvin_pipe_2.png'
+        ];
+        // Hash product identity to consistently distribute varied images across different products
+        const seedStr = String(product.id || '') + String(product.name || product.product_name || product.sku || '');
+        let hash = 0;
+        for (let i = 0; i < seedStr.length; i++) {
+            hash = (hash * 31 + seedStr.charCodeAt(i)) | 0;
+        }
+        return kvinImages[Math.abs(hash) % kvinImages.length];
+    }
+
+    // Check for TRC Brand / Pipe
+    const isTrc = brand === 'TRC' || brand.includes('TRC') || name.includes('TRC') || sku.includes('TRC');
+
+    if (isTrc) {
+        const trcImages = [
+            '/images/products/trc_pipe_1.png',
+            '/images/products/trc_pipe_2.png',
+            '/images/products/trc_pipe_3.png'
+        ];
+        // Hash product identity to consistently distribute varied images across different products
+        const seedStr = String(product.id || '') + String(product.name || product.product_name || product.sku || '');
+        let hash = 0;
+        for (let i = 0; i < seedStr.length; i++) {
+            hash = (hash * 31 + seedStr.charCodeAt(i)) | 0;
+        }
+        return trcImages[Math.abs(hash) % trcImages.length];
+    }
+
+    // Check for MT8 Brand / Pipe
+    const isMt8 = brand === 'MT8' || brand.includes('MT8') || brand.includes('MT-8') || brand.includes('MT 8') ||
+                  name.includes('MT8') || name.includes('MT-8') || name.includes('MT 8') ||
+                  sku.includes('MT8') || sku.includes('MT-8');
+
+    if (isMt8) {
+        const mt8Images = [
+            '/images/products/mt8_pipe_1.png',
+            '/images/products/mt8_pipe_2.png',
+            '/images/products/mt8_pipe_3.png'
+        ];
+        // Hash product identity to consistently distribute varied images across different products
+        const seedStr = String(product.id || '') + String(product.name || product.product_name || product.sku || '');
+        let hash = 0;
+        for (let i = 0; i < seedStr.length; i++) {
+            hash = (hash * 31 + seedStr.charCodeAt(i)) | 0;
+        }
+        return mt8Images[Math.abs(hash) % mt8Images.length];
+    }
+
+    return '';
+}
+
+function saveProductImagePreview(cardId, dataUrl) {
+    // Store image ONLY by product ID to prevent cross-product image conflicts.
+    // Do NOT store by SKU or name since multiple products can share the same values.
+    const key = String(cardId);
     try {
-        posState.productImages[cardId] = dataUrl;
-        if (sku) posState.productImages[sku] = dataUrl;
-        if (name) posState.productImages[name] = dataUrl;
+        posState.productImages[key] = dataUrl;
         const serialized = JSON.stringify(posState.productImages);
         const sizeInMB = new Blob([serialized]).size / (1024 * 1024);
         console.log(`Saving ${Object.keys(posState.productImages).length} images, total size: ${sizeInMB.toFixed(2)}MB`);
 
         localStorage.setItem('posProductImages', JSON.stringify(posState.productImages));
-        console.log('✓ Saved product image for card:', cardId);
+        console.log('✓ Saved product image for card:', key);
     } catch (error) {
         console.error('Failed to save product image preview:', error.message);
         if (error.name === 'QuotaExceededError') {
@@ -344,9 +434,7 @@ function saveProductImagePreview(cardId, dataUrl, sku = null, name = null) {
             posState.productImages = {};
             try {
                 localStorage.setItem('posProductImages', JSON.stringify({}));
-                posState.productImages[cardId] = dataUrl;
-                if (sku) posState.productImages[sku] = dataUrl;
-                if (name) posState.productImages[name] = dataUrl;
+                posState.productImages[key] = dataUrl;
                 localStorage.setItem('posProductImages', JSON.stringify(posState.productImages));
                 console.log('✓ Saved after clearing');
             } catch (retryError) {
@@ -358,6 +446,16 @@ function saveProductImagePreview(cardId, dataUrl, sku = null, name = null) {
 
 function loadProductImagePreviews() {
     try {
+        // One-time migration: clear all old uploaded images to fix cross-product image conflicts.
+        // Remove this block once the migration has run (after first page load).
+        if (!localStorage.getItem('posProductImages_v2')) {
+            localStorage.removeItem('posProductImages');
+            localStorage.setItem('posProductImages_v2', '1');
+            posState.productImages = {};
+            console.log('🔄 Cleared all old product images (one-time migration)');
+            return;
+        }
+
         const stored = localStorage.getItem('posProductImages');
         posState.productImages = stored ? JSON.parse(stored) : {};
         console.log(`Loaded ${Object.keys(posState.productImages).length} product images from storage`);
@@ -922,7 +1020,9 @@ async function searchProducts(query = '', page = 1) {
             const includedVat = sellingPrice * (12 / 112);
             const vatableSales = sellingPrice - includedVat;
 
-            const cardImage = product.image || posState.productImages[product.id] || (product.sku && posState.productImages[product.sku]) || (productName && posState.productImages[productName]) || '';
+            // Retrieve image: custom uploaded by product ID -> product DB image -> brand default image -> empty
+            const defaultImage = getProductDefaultImage(product);
+            const cardImage = posState.productImages[String(product.id)] || product.image || defaultImage || '';
 
             card.innerHTML = `
                 <div class="flex-shrink-0">
@@ -2297,12 +2397,9 @@ function setupPosEvents() {
                     placeholder.classList.add('hidden');
                 }
 
-                // Save compressed version
+                // Save compressed version — keyed only by product ID to avoid cross-product conflicts
                 if (input.dataset.id) {
-                    const card = input.closest('.pos-image-upload-card');
-                    const sku = card?.dataset.sku || '';
-                    const name = card?.dataset.name || '';
-                    saveProductImagePreview(input.dataset.id, compressedDataUrl, sku, name);
+                    saveProductImagePreview(input.dataset.id, compressedDataUrl);
                 }
             };
             img.src = reader.result;

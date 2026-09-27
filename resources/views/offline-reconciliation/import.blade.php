@@ -1,13 +1,12 @@
 <x-layouts.app :title="__('Import Data')">
 
     <x-slot name="header">
-        <div class="flex items-center justify-between w-full">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
             <div>
-                <h1 class="text-lg font-bold text-slate-900 leading-tight">Import Data</h1>
-                <p class="text-xs text-slate-500 mt-0.5">Import offline transactions from CSV or Excel files.</p>
-
+                <h1 class="text-2xl sm:text-[26px] font-bold text-slate-900 tracking-tight leading-tight">Import Data</h1>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1">Import offline transactions from CSV or Excel files.</p>
             </div>
-            <a href="{{ Route::has('offline.reconciliation') ? route('offline.reconciliation') : url('/offline-reconciliation') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus:outline-none transition-all duration-200">
+            <a href="{{ Route::has('offline.reconciliation') ? route('offline.reconciliation') : url('/offline-reconciliation') }}" class="inline-flex items-center gap-1.5 rounded-[12px] border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus:outline-none transition-all duration-200 cursor-pointer">
                 <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>

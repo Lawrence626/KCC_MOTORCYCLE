@@ -1,13 +1,12 @@
 <x-layouts.app :title="__('Pending Imports')">
 
     <x-slot name="header">
-        <div class="flex items-center justify-between w-full">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
             <div>
-                <h1 class="text-lg font-bold text-slate-900 leading-tight">Pending Imports</h1>
-                <p class="text-xs text-slate-500 mt-0.5">Review and approve offline data imports.</p>
-
+                <h1 class="text-2xl sm:text-[26px] font-bold text-slate-900 tracking-tight leading-tight">Pending Imports</h1>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1">Review and approve offline data imports.</p>
             </div>
-            <a href="{{ Route::has('offline.reconciliation') ? route('offline.reconciliation') : url('/offline-reconciliation') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus:outline-none transition-all duration-200">
+            <a href="{{ Route::has('offline.reconciliation') ? route('offline.reconciliation') : url('/offline-reconciliation') }}" class="inline-flex items-center gap-1.5 rounded-[12px] border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus:outline-none transition-all duration-200 cursor-pointer">
                 <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
@@ -153,28 +152,28 @@
                             <span>Clear Filter</span>
                         </button>
                     @endif
-                    <div class="relative z-[20] min-w-[140px]" data-dropdown-wrapper="pendingStatusFilter">
+                    <div class="relative z-[20] min-w-[160px]" data-dropdown-wrapper="pendingStatusFilter">
                         <input type="hidden" id="pendingStatusFilter" value="{{ $activeStatus }}" />
-                        <button type="button" id="pendingStatusFilterButton" onclick="togglePendingStatusDropdown()" class="w-full px-3 py-2 rounded-[12px] border border-slate-300 bg-white text-left text-xs text-slate-900 flex items-center justify-between hover:border-slate-400 focus:outline-none transition shadow-sm">
-                            <span id="pendingStatusFilterLabel" class="font-medium">{{ $activeStatusLabel }}</span>
-                            <svg class="w-4 h-4 text-slate-500 ml-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                        <button type="button" id="pendingStatusFilterButton" onclick="toggleDropdown('pendingStatusFilterDropdown', event)" class="w-full px-3.5 py-2 rounded-[14px] border border-slate-300 bg-white text-left text-xs sm:text-[13px] text-slate-800 flex items-center justify-between hover:border-slate-400 focus:outline-none transition shadow-2xs cursor-pointer">
+                            <span id="pendingStatusFilterLabel" class="font-medium truncate">{{ $activeStatusLabel }}</span>
+                            <svg class="w-4 h-4 text-slate-500 transition-transform duration-200 shrink-0 ml-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <div id="pendingStatusFilterDropdown" class="hidden absolute top-full right-0 z-[30] mt-1 w-full min-w-[150px] rounded-[12px] border border-slate-200 bg-white shadow-xl p-1 space-y-0.5">
-                            <button type="button" onclick="selectPendingStatus('', 'All Status')" class="w-full px-3 py-1.5 text-left text-xs rounded-[8px] flex items-center justify-between {{ $activeStatus === '' ? 'bg-slate-100 font-bold text-slate-900' : 'text-slate-700 hover:bg-slate-50' }}">
+                        <div id="pendingStatusFilterDropdown" class="dropdown-menu hidden absolute top-full right-0 z-[50] mt-1.5 w-full min-w-[160px] rounded-[14px] border border-slate-200/90 bg-white shadow-xl shadow-slate-200/60 p-1.5 space-y-0.5">
+                            <button type="button" onclick="selectPendingStatus('', 'All Status')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] rounded-lg flex items-center justify-between transition cursor-pointer {{ $activeStatus === '' ? 'bg-slate-100 font-semibold text-slate-900' : 'text-slate-700 hover:bg-slate-50' }}">
                                 <span>All Status</span>
                                 @if($activeStatus === '') <svg class="w-3.5 h-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> @endif
                             </button>
-                            <button type="button" onclick="selectPendingStatus('pending', 'Pending')" class="w-full px-3 py-1.5 text-left text-xs rounded-[8px] flex items-center justify-between {{ $activeStatus === 'pending' ? 'bg-amber-50 font-bold text-amber-900' : 'text-slate-700 hover:bg-slate-50' }}">
+                            <button type="button" onclick="selectPendingStatus('pending', 'Pending')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] rounded-lg flex items-center justify-between transition cursor-pointer {{ $activeStatus === 'pending' ? 'bg-amber-50 font-semibold text-amber-900' : 'text-slate-700 hover:bg-slate-50' }}">
                                 <span>Pending</span>
                                 @if($activeStatus === 'pending') <svg class="w-3.5 h-3.5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> @endif
                             </button>
-                            <button type="button" onclick="selectPendingStatus('approved', 'Approved')" class="w-full px-3 py-1.5 text-left text-xs rounded-[8px] flex items-center justify-between {{ $activeStatus === 'approved' ? 'bg-green-50 font-bold text-green-900' : 'text-slate-700 hover:bg-slate-50' }}">
+                            <button type="button" onclick="selectPendingStatus('approved', 'Approved')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] rounded-lg flex items-center justify-between transition cursor-pointer {{ $activeStatus === 'approved' ? 'bg-green-50 font-semibold text-green-900' : 'text-slate-700 hover:bg-slate-50' }}">
                                 <span>Approved</span>
                                 @if($activeStatus === 'approved') <svg class="w-3.5 h-3.5 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> @endif
                             </button>
-                            <button type="button" onclick="selectPendingStatus('rejected', 'Rejected')" class="w-full px-3 py-1.5 text-left text-xs rounded-[8px] flex items-center justify-between {{ $activeStatus === 'rejected' ? 'bg-red-50 font-bold text-red-900' : 'text-slate-700 hover:bg-slate-50' }}">
+                            <button type="button" onclick="selectPendingStatus('rejected', 'Rejected')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] rounded-lg flex items-center justify-between transition cursor-pointer {{ $activeStatus === 'rejected' ? 'bg-red-50 font-semibold text-red-900' : 'text-slate-700 hover:bg-slate-50' }}">
                                 <span>Rejected</span>
                                 @if($activeStatus === 'rejected') <svg class="w-3.5 h-3.5 text-red-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> @endif
                             </button>
@@ -183,8 +182,17 @@
                 </div>
             </div>
             <div class="overflow-hidden rounded-[10px] border border-slate-200">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full text-left text-xs text-slate-700">
+                    <table class="table-fixed w-full text-left text-xs text-slate-700">
+                        <colgroup>
+                            <col class="w-[22%]">
+                            <col class="w-[13%]">
+                            <col class="w-[7%]">
+                            <col class="w-[7%]">
+                            <col class="w-[7%]">
+                            <col class="w-[9%]">
+                            <col class="w-[10%]">
+                            <col class="w-[25%]">
+                        </colgroup>
                         <thead class="border-b border-slate-200 bg-[#0f172a] text-xs uppercase tracking-wider text-white">
                             <tr>
                                 <th class="px-3 py-3 text-left font-semibold text-white">File Name</th>
@@ -192,66 +200,86 @@
                                 <th class="px-3 py-3 text-right font-semibold text-white">Total</th>
                                 <th class="px-3 py-3 text-right font-semibold text-white">Valid</th>
                                 <th class="px-3 py-3 text-right font-semibold text-white">Invalid</th>
-                                <th class="px-3 py-3 text-right font-semibold text-white">Duplicates</th>
+                                <th class="px-3 py-3 text-right font-semibold text-white">Dupes</th>
                                 <th class="px-3 py-3 text-left font-semibold text-white">Status</th>
                                 <th class="px-3 py-3 text-left font-semibold text-white">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-200 bg-white">
+                        <tbody class="divide-y divide-slate-100 bg-white">
                             @forelse($pendingImports as $pending)
-                            <tr>
-                                <td class="px-3 py-2 text-slate-900 font-medium">{{ $pending->file_name }}</td>
-                                <td class="px-3 py-2 text-slate-600">{{ $pending->uploadedBy?->name ?? '-' }}</td>
-                                <td class="px-3 py-2 text-right text-slate-900 font-medium">{{ $pending->total_records }}</td>
-                                <td class="px-3 py-2 text-right text-green-600 font-medium">{{ $pending->valid_records }}</td>
-                                <td class="px-3 py-2 text-right text-red-600 font-medium">{{ $pending->invalid_records }}</td>
-                                <td class="px-3 py-2 text-right text-amber-600 font-medium">{{ $pending->duplicate_records }}</td>
-                                <td class="px-3 py-2">
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium @if($pending->status == 'pending') bg-amber-100 text-amber-700 @elseif($pending->status == 'approved') bg-green-100 text-green-700 @else bg-red-100 text-red-700 @endif">
-                                        {{ ucfirst($pending->status) }}
-                                    </span>
-                                </td>
-                                <td class="px-3 py-2">
+                            <tr class="hover:bg-slate-50 transition-colors duration-150">
+                                <td class="px-3 py-2.5 text-slate-900 font-medium truncate" title="{{ $pending->file_name }}">{{ $pending->file_name }}</td>
+                                <td class="px-3 py-2.5 text-slate-500 truncate">{{ $pending->uploadedBy?->name ?? '—' }}</td>
+                                <td class="px-3 py-2.5 text-right text-slate-700 font-semibold tabular-nums">{{ $pending->total_records }}</td>
+                                <td class="px-3 py-2.5 text-right text-emerald-600 font-semibold tabular-nums">{{ $pending->valid_records }}</td>
+                                <td class="px-3 py-2.5 text-right text-rose-500 font-semibold tabular-nums">{{ $pending->invalid_records }}</td>
+                                <td class="px-3 py-2.5 text-right text-amber-500 font-semibold tabular-nums">{{ $pending->duplicate_records }}</td>
+                                <td class="px-3 py-2.5">
                                     @if($pending->status == 'pending')
-                                    <div class="flex gap-1">
-                                        <button onclick="reviewImport({{ $pending->id }})" class="text-cyan-600 hover:text-cyan-700" title="Review">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>Pending
+                                        </span>
+                                    @elseif($pending->status == 'approved')
+                                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>Approved
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-600">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0"></span>Rejected
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="px-3 py-2.5">
+                                    @if($pending->status == 'pending')
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <button onclick="reviewImport({{ $pending->id }})"
+                                            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-[8px] border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:border-slate-300 transition-colors duration-150 cursor-pointer">
+                                            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                             </svg>
+                                            Review
                                         </button>
-                                        <form action="{{ route('offline.pending.approve', $pending->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to approve this import?');">
+                                        <form action="{{ route('offline.pending.approve', $pending->id) }}" method="POST" onsubmit="return confirm('Approve this import?');" class="contents">
                                             @csrf
-                                            <button type="submit" class="text-green-600 hover:text-green-700" title="Approve">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                            <button type="submit"
+                                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-[8px] border border-emerald-200 bg-emerald-50 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 hover:border-emerald-300 transition-colors duration-150 cursor-pointer">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
                                                 </svg>
+                                                Approve
                                             </button>
                                         </form>
-                                        <form action="{{ route('offline.pending.reject', $pending->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to reject this import?');">
+                                        <form action="{{ route('offline.pending.reject', $pending->id) }}" method="POST" onsubmit="return confirm('Reject this import?');" class="contents">
                                             @csrf
-                                            <button type="submit" class="text-red-600 hover:text-red-700" title="Reject">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                            <button type="submit"
+                                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-[8px] border border-rose-200 bg-rose-50 text-xs font-semibold text-rose-600 hover:bg-rose-100 hover:border-rose-300 transition-colors duration-150 cursor-pointer">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18 6L6 18M6 6l12 12"/>
                                                 </svg>
+                                                Reject
                                             </button>
                                         </form>
                                     </div>
                                     @elseif($pending->status == 'approved')
-                                    <span class="text-green-600 text-xs">Approved by {{ $pending->reviewedBy?->name ?? '-' }}</span>
+                                    <span class="inline-flex items-center gap-1 text-xs text-slate-500">
+                                        <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                        </svg>
+                                        {{ $pending->reviewedBy?->name ?? '—' }}
+                                    </span>
                                     @else
-                                    <span class="text-red-600 text-xs">Rejected</span>
+                                    <span class="text-xs text-slate-400 italic">No action</span>
                                     @endif
                                 </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="8" class="px-3 py-8 text-center text-slate-500">No pending imports found</td>
+                                <td colspan="8" class="px-3 py-10 text-center text-slate-400 text-xs">No import records found</td>
                             </tr>
                             @endforelse
                         </tbody>
                     </table>
-                </div>
 
                 <!-- Pagination -->
                 <div class="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-3 py-2 text-xs">

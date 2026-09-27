@@ -89,49 +89,60 @@
             if ($estDate === null) {
                 $estColor = 'slate';
                 $estBg = 'bg-slate-50 border-slate-200';
-                $estBadgeBg = 'bg-slate-100 text-slate-600';
+                $estBadgeBg = 'bg-slate-100 text-slate-600 border border-slate-200/80';
                 $estLabel = 'Not yet provided';
-                $estIcon = '⏳';
+                $estIconType = 'pending';
             } elseif ($isCompleted) {
                 $estColor = 'emerald';
-                $estBg = 'bg-emerald-50 border-emerald-200';
-                $estBadgeBg = 'bg-emerald-100 text-emerald-700';
+                $estBg = 'bg-emerald-50/60 border-emerald-200';
+                $estBadgeBg = 'bg-emerald-100 text-emerald-700 border border-emerald-200/80';
                 $estLabel = 'Delivered';
-                $estIcon = '✅';
+                $estIconType = 'delivered';
             } elseif ($daysRemaining < 0) {
                 $estColor = 'rose';
-                $estBg = 'bg-rose-50 border-rose-200';
-                $estBadgeBg = 'bg-rose-100 text-rose-700';
+                $estBg = 'bg-rose-50/60 border-rose-200';
+                $estBadgeBg = 'bg-rose-100 text-rose-700 border border-rose-200/80';
                 $estLabel = abs($daysRemaining) . ' ' . Str::plural('day', abs($daysRemaining)) . ' overdue';
-                $estIcon = '🔴';
+                $estIconType = 'overdue';
             } elseif ($daysRemaining <= 2) {
                 $estColor = 'amber';
-                $estBg = 'bg-amber-50 border-amber-200';
-                $estBadgeBg = 'bg-amber-100 text-amber-700';
+                $estBg = 'bg-amber-50/60 border-amber-200';
+                $estBadgeBg = 'bg-amber-100 text-amber-700 border border-amber-200/80';
                 $estLabel = $daysRemaining === 0 ? 'Due today' : 'Arriving in ' . $daysRemaining . ' ' . Str::plural('day', $daysRemaining);
-                $estIcon = '🟡';
+                $estIconType = 'soon';
             } else {
                 $estColor = 'emerald';
-                $estBg = 'bg-emerald-50 border-emerald-200';
-                $estBadgeBg = 'bg-emerald-100 text-emerald-700';
+                $estBg = 'bg-emerald-50/60 border-emerald-200';
+                $estBadgeBg = 'bg-emerald-100 text-emerald-700 border border-emerald-200/80';
                 $estLabel = 'Arriving in ' . $daysRemaining . ' ' . Str::plural('day', $daysRemaining);
-                $estIcon = '🟢';
+                $estIconType = 'ontrack';
             }
 
             $isReceivingStage = in_array($purchaseOrder->status, ['in transit', 'partially received', 'awaiting confirmation', 'completed', 'delivered'], true);
         @endphp
-        <div class="rounded-[26px] border {{ $estBg }} p-6 shadow-sm">
+        <div class="rounded-[20px] border {{ $estBg }} p-5 shadow-sm">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                <div class="space-y-3">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Estimated Delivery Date</p>
+                <div class="space-y-2">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Estimated Delivery Date</p>
                     <div class="flex items-center gap-3">
-                        <span class="text-2xl">{{ $estIcon }}</span>
+                        <div class="w-10 h-10 rounded-[10px] flex items-center justify-center flex-shrink-0 {{ $estColor === 'rose' ? 'bg-rose-100 text-rose-600' : ($estColor === 'amber' ? 'bg-amber-100 text-amber-600' : ($estColor === 'emerald' ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-500')) }}">
+                            @if($estIconType === 'delivered')
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            @elseif($estIconType === 'overdue')
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            @elseif($estIconType === 'soon')
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                            @else
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            @endif
+                        </div>
                         <div>
-                            <p class="text-xl font-semibold text-slate-900">
+                            <p class="text-lg font-bold text-slate-900 leading-tight">
                                 {{ $estDate ? $estDate->format('M j, Y') : 'Not yet provided' }}
                             </p>
-                            <span class="mt-1 inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold {{ $estBadgeBg }}">
-                                {{ $estLabel }}
+                            <span class="mt-1 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold {{ $estBadgeBg }}">
+                                <span class="w-1.5 h-1.5 rounded-full {{ $estColor === 'rose' ? 'bg-rose-500' : ($estColor === 'amber' ? 'bg-amber-500' : ($estColor === 'emerald' ? 'bg-emerald-500' : 'bg-slate-400')) }}"></span>
+                                <span>{{ $estLabel }}</span>
                             </span>
                         </div>
                     </div>

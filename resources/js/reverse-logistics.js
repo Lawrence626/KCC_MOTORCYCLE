@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('/api/reverse-logistics');
             const result = await response.json();
-            
+
             if (result.data) {
                 records = result.data;
                 filteredRecords = [...records];
@@ -54,12 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function saveRecord(recordData) {
         try {
-            const url = editingId 
+            const url = editingId
                 ? `/api/reverse-logistics/${editingId}`
                 : '/api/reverse-logistics';
-            
+
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-            
+
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -69,9 +69,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify(recordData)
             });
-            
+
             const result = await response.json();
-            
+
             if (result.success) {
                 await loadRecords();
                 return true;
@@ -96,9 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Accept': 'application/json',
                 },
             });
-            
+
             const result = await response.json();
-            
+
             if (result.success) {
                 await loadRecords();
                 return true;
@@ -122,13 +122,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getStatusBadge(status) {
         const classes = {
-            'Under Review': 'bg-[#105f68] text-white',
-            'Pending Repair': 'bg-blue-600 text-white',
-            'Ready for Restock': 'bg-[#6EC1D1] text-black',
-            'Restocked': 'bg-emerald-600 text-white',
-            'Disposed': 'bg-[#0f172a] text-white',
+            'Under Review': 'bg-amber-50 text-amber-700 border border-amber-200/80',
+            'Pending Repair': 'bg-sky-50 text-sky-700 border border-sky-200/80',
+            'Ready for Restock': 'bg-teal-50 text-teal-700 border border-teal-200/80',
+            'Restocked': 'bg-emerald-50 text-emerald-700 border border-emerald-200/80',
+            'Disposed': 'bg-rose-50 text-rose-700 border border-rose-200/80',
         };
-        return `<span class="inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${classes[status] || 'bg-slate-200 text-slate-700'}">${status}</span>`;
+        return `<span class="inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${classes[status] || 'bg-slate-100 text-slate-700 border border-slate-200'}">${status}</span>`;
     }
 
     function renderStats() {
@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const menu = document.getElementById(id);
         if (!menu) return;
         const isHidden = menu.classList.contains('hidden');
-        
+
         document.querySelectorAll('.custom-calendar-card').forEach(c => c.classList.add('hidden'));
         document.querySelectorAll('.dropdown-menu').forEach(m => {
             m.classList.add('hidden');
@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.getElementById(bId);
             if (btn) btn.classList.remove('ring-1', 'ring-black/35', 'border-transparent');
         });
-        
+
         if (isHidden) {
             menu.classList.remove('hidden');
             const bId = id.replace('Dropdown', 'Button');
@@ -391,20 +391,20 @@ document.addEventListener('DOMContentLoaded', () => {
     function toggleActionMenu(id) {
         const menu = document.getElementById(`action-menu-${id}`);
         const allMenus = document.querySelectorAll('[id^="action-menu-"]');
-        
+
         allMenus.forEach(m => {
             if (m.id !== `action-menu-${id}`) {
                 m.classList.add('hidden');
             }
         });
-        
+
         if (menu) menu.classList.toggle('hidden');
     }
 
     function viewDetails(id) {
         const record = records.find(item => item.id === id);
         if (!record) return;
-        
+
         alert(`Product: ${record.product_name || record.productName}\nSKU: ${record.sku}\nReason: ${record.return_reason || record.returnReason}\nCondition: ${record.condition}\nQuantity: ${record.quantity}\nWarehouse: ${record.warehouse}\nStatus: ${record.status}\nNotes: ${record.notes || 'None'}`);
     }
 
@@ -429,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 const result = await response.json();
-                
+
                 if (result.success) {
                     alert('Item successfully added to Item Disposal module.');
                 } else {
@@ -493,7 +493,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error processing restock:', error);
             alert('Error processing restock: ' + error.message);
         }
-        
+
         document.querySelectorAll('[id^="action-menu-"]').forEach(m => m.classList.add('hidden'));
     }
 
@@ -532,7 +532,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (inputs.productName) {
-        inputs.productName.addEventListener('input', function() {
+        inputs.productName.addEventListener('input', function () {
             const productName = this.value.trim();
             if (productName) {
                 const generatedSku = `KCC_${productName.replace(/[^A-Za-z0-9\-\+]/g, '')}`;
@@ -568,7 +568,7 @@ document.addEventListener('DOMContentLoaded', () => {
         element.addEventListener('change', applyFilters);
     });
 
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('[data-action-toggle]') && !e.target.closest('[id^="action-menu-"]')) {
             document.querySelectorAll('[id^="action-menu-"]').forEach(m => {
                 m.classList.add('hidden');

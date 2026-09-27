@@ -1,21 +1,20 @@
 <x-layouts.app :title="__('Export Data')">
 
     <x-slot name="header">
-        <div class="flex items-center justify-between w-full">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
             <div>
-                <h1 class="text-lg font-bold text-slate-900 leading-tight">Export Data</h1>
-                <p class="text-xs text-slate-500 mt-0.5">Select and export local offline purchase orders to CSV for synchronization.</p>
+                <h1 class="text-2xl sm:text-[26px] font-bold text-slate-900 tracking-tight leading-tight">Export Data</h1>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1">Select and export local offline purchase orders to CSV for synchronization.</p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
-                <a href="{{ Route::has('offline.reconciliation') ? route('offline.reconciliation') : url('/offline-reconciliation') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus:outline-none transition-all duration-200">
+                <a href="{{ Route::has('offline.reconciliation') ? route('offline.reconciliation') : url('/offline-reconciliation') }}" class="inline-flex items-center gap-1.5 rounded-[12px] border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus:outline-none transition-all duration-200 cursor-pointer">
                     <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                     <span>Back to Overview</span>
                 </a>
-                <a href="{{ route('offline.purchase-orders') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200">
+                <a href="{{ route('offline.purchase-orders') }}" class="inline-flex items-center gap-1.5 rounded-[12px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3.5 py-2 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200 cursor-pointer">
                     <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
                     </svg>
                     <span>Create Offline PO</span>
@@ -111,14 +110,80 @@
 
                     <!-- Date Range Inputs & Search -->
                     <div class="flex items-center gap-2 flex-wrap">
-                        <div class="flex items-center gap-1.5 bg-white px-2 py-1 rounded-[10px] border border-slate-300 shadow-2xs">
-                            <label for="filterDateFrom" class="text-[11px] font-semibold text-slate-500">From:</label>
-                            <input type="date" id="filterDateFrom" onchange="applyFilters()" class="text-xs text-slate-800 bg-transparent focus:outline-none cursor-pointer">
+                        <!-- Hidden value inputs used by applyFilters() -->
+                        <input type="hidden" id="filterDateFrom">
+                        <input type="hidden" id="filterDateTo">
+
+                        <!-- From Date Picker Trigger -->
+                        <div class="relative" id="calFromWrapper">
+                            <button type="button" onclick="toggleCalendar('from', event)" class="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-[10px] border border-slate-300 shadow-2xs hover:border-slate-400 transition cursor-pointer">
+                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <span class="text-[11px] font-semibold text-slate-500">From:</span>
+                                <span id="calFromLabel" class="text-xs text-slate-800">Any date</span>
+                            </button>
+                            <div id="calFromDropdown" class="hidden absolute top-full left-0 z-[100] mt-1.5 bg-white rounded-[16px] border border-slate-200 shadow-xl p-3 w-[260px] select-none">
+                                <!-- Calendar Header -->
+                                <div class="flex items-center justify-between mb-2 px-1">
+                                    <button type="button" onclick="calNav('from',-1)" class="p-1 rounded-md hover:bg-slate-100 transition cursor-pointer text-slate-600">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                    </button>
+                                    <button type="button" onclick="calNavYear('from')" id="calFromTitle" class="text-sm font-bold text-slate-800 hover:text-slate-600 transition cursor-pointer px-2"></button>
+                                    <button type="button" onclick="calNav('from',1)" class="p-1 rounded-md hover:bg-slate-100 transition cursor-pointer text-slate-600">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </button>
+                                </div>
+                                <!-- Day Labels -->
+                                <div class="grid grid-cols-7 text-center mb-1">
+                                    <span class="text-[10px] font-semibold text-slate-400">Su</span>
+                                    <span class="text-[10px] font-semibold text-slate-400">Mo</span>
+                                    <span class="text-[10px] font-semibold text-slate-400">Tu</span>
+                                    <span class="text-[10px] font-semibold text-slate-400">We</span>
+                                    <span class="text-[10px] font-semibold text-slate-400">Th</span>
+                                    <span class="text-[10px] font-semibold text-slate-400">Fr</span>
+                                    <span class="text-[10px] font-semibold text-slate-400">Sa</span>
+                                </div>
+                                <!-- Day Grid -->
+                                <div id="calFromGrid" class="grid grid-cols-7 gap-y-0.5 text-center text-xs"></div>
+                                <!-- Footer -->
+                                <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
+                                    <button type="button" onclick="calClear('from')" class="text-xs text-slate-500 hover:text-slate-800 transition cursor-pointer font-medium">Clear</button>
+                                    <button type="button" onclick="calToday('from')" class="text-xs font-semibold text-[#105f68] hover:text-[#0d4d54] transition cursor-pointer">Today</button>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="flex items-center gap-1.5 bg-white px-2 py-1 rounded-[10px] border border-slate-300 shadow-2xs">
-                            <label for="filterDateTo" class="text-[11px] font-semibold text-slate-500">To:</label>
-                            <input type="date" id="filterDateTo" onchange="applyFilters()" class="text-xs text-slate-800 bg-transparent focus:outline-none cursor-pointer">
+                        <!-- To Date Picker Trigger -->
+                        <div class="relative" id="calToWrapper">
+                            <button type="button" onclick="toggleCalendar('to', event)" class="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-[10px] border border-slate-300 shadow-2xs hover:border-slate-400 transition cursor-pointer">
+                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <span class="text-[11px] font-semibold text-slate-500">To:</span>
+                                <span id="calToLabel" class="text-xs text-slate-800">Any date</span>
+                            </button>
+                            <div id="calToDropdown" class="hidden absolute top-full left-0 z-[100] mt-1.5 bg-white rounded-[16px] border border-slate-200 shadow-xl p-3 w-[260px] select-none">
+                                <div class="flex items-center justify-between mb-2 px-1">
+                                    <button type="button" onclick="calNav('to',-1)" class="p-1 rounded-md hover:bg-slate-100 transition cursor-pointer text-slate-600">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                    </button>
+                                    <button type="button" onclick="calNavYear('to')" id="calToTitle" class="text-sm font-bold text-slate-800 hover:text-slate-600 transition cursor-pointer px-2"></button>
+                                    <button type="button" onclick="calNav('to',1)" class="p-1 rounded-md hover:bg-slate-100 transition cursor-pointer text-slate-600">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </button>
+                                </div>
+                                <div class="grid grid-cols-7 text-center mb-1">
+                                    <span class="text-[10px] font-semibold text-slate-400">Su</span>
+                                    <span class="text-[10px] font-semibold text-slate-400">Mo</span>
+                                    <span class="text-[10px] font-semibold text-slate-400">Tu</span>
+                                    <span class="text-[10px] font-semibold text-slate-400">We</span>
+                                    <span class="text-[10px] font-semibold text-slate-400">Th</span>
+                                    <span class="text-[10px] font-semibold text-slate-400">Fr</span>
+                                    <span class="text-[10px] font-semibold text-slate-400">Sa</span>
+                                </div>
+                                <div id="calToGrid" class="grid grid-cols-7 gap-y-0.5 text-center text-xs"></div>
+                                <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
+                                    <button type="button" onclick="calClear('to')" class="text-xs text-slate-500 hover:text-slate-800 transition cursor-pointer font-medium">Clear</button>
+                                    <button type="button" onclick="calToday('to')" class="text-xs font-semibold text-[#105f68] hover:text-[#0d4d54] transition cursor-pointer">Today</button>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="relative min-w-[180px]">
@@ -911,5 +976,143 @@
             alert('Failed to delete archived order: ' + (error.message || 'Unknown error'));
         }
     }
+
+    // ─── Custom Calendar Picker ────────────────────────────────────────────────
+    const CAL_STATE = {
+        from: { year: null, month: null, selected: null },
+        to:   { year: null, month: null, selected: null },
+    };
+
+    (function initCalendars() {
+        const now = new Date();
+        ['from','to'].forEach(k => {
+            CAL_STATE[k].year  = now.getFullYear();
+            CAL_STATE[k].month = now.getMonth();
+        });
+        renderCalendar('from');
+        renderCalendar('to');
+    })();
+
+    function toggleCalendar(which, e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        const otherId = which === 'from' ? 'calToDropdown' : 'calFromDropdown';
+        document.getElementById(otherId)?.classList.add('hidden');
+        const drop = document.getElementById('cal' + cap(which) + 'Dropdown');
+        if (drop) drop.classList.toggle('hidden');
+        renderCalendar(which);
+    }
+
+    document.addEventListener('click', function(e) {
+        ['from','to'].forEach(k => {
+            const wrap = document.getElementById('cal' + cap(k) + 'Wrapper');
+            const drop = document.getElementById('cal' + cap(k) + 'Dropdown');
+            if (drop && wrap && !wrap.contains(e.target)) drop.classList.add('hidden');
+        });
+    });
+
+    function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+    function calNav(which, delta) {
+        const s = CAL_STATE[which];
+        s.month += delta;
+        if (s.month < 0)  { s.month = 11; s.year--; }
+        if (s.month > 11) { s.month = 0;  s.year++; }
+        renderCalendar(which);
+    }
+
+    function calNavYear(which) {
+        // Cycle back 1 year for quick navigation
+        CAL_STATE[which].year--;
+        renderCalendar(which);
+    }
+
+    function calToday(which) {
+        const today = new Date();
+        const ymd = toYMD(today);
+        CAL_STATE[which].selected = ymd;
+        CAL_STATE[which].year  = today.getFullYear();
+        CAL_STATE[which].month = today.getMonth();
+        applyCalendarValue(which, ymd);
+        renderCalendar(which);
+    }
+
+    function calClear(which) {
+        CAL_STATE[which].selected = null;
+        applyCalendarValue(which, '');
+        renderCalendar(which);
+    }
+
+    function calSelect(which, ymd) {
+        CAL_STATE[which].selected = ymd;
+        applyCalendarValue(which, ymd);
+        renderCalendar(which);
+        document.getElementById('cal' + cap(which) + 'Dropdown')?.classList.add('hidden');
+    }
+
+    function applyCalendarValue(which, ymd) {
+        const hidden = document.getElementById('filterDate' + cap(which));
+        const label  = document.getElementById('cal' + cap(which) + 'Label');
+        if (hidden) hidden.value = ymd;
+        if (label)  label.textContent = ymd ? formatDisplayDate(ymd) : 'Any date';
+        applyFilters();
+    }
+
+    function renderCalendar(which) {
+        const s = CAL_STATE[which];
+        const titleEl = document.getElementById('cal' + cap(which) + 'Title');
+        const gridEl  = document.getElementById('cal' + cap(which) + 'Grid');
+        if (!titleEl || !gridEl) return;
+
+        const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        titleEl.textContent = months[s.month] + ' ' + s.year;
+
+        // First day of month
+        const first = new Date(s.year, s.month, 1);
+        const startDay = first.getDay(); // 0=Sun
+        const daysInMonth = new Date(s.year, s.month + 1, 0).getDate();
+        const todayYMD = toYMD(new Date());
+
+        let html = '';
+        // Empty cells before first day
+        for (let i = 0; i < startDay; i++) {
+            const prevDate = new Date(s.year, s.month, -startDay + i + 1);
+            html += `<button type="button" class="h-8 w-8 mx-auto text-slate-300 text-xs rounded-full cursor-default">${prevDate.getDate()}</button>`;
+        }
+        // Day buttons
+        for (let d = 1; d <= daysInMonth; d++) {
+            const ymd = s.year + '-' + String(s.month + 1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+            const isSelected = ymd === s.selected;
+            const isToday    = ymd === todayYMD;
+            let cls = 'h-8 w-8 mx-auto text-xs rounded-full flex items-center justify-center transition cursor-pointer font-medium ';
+            if (isSelected) {
+                cls += 'bg-[#105f68] text-white font-bold shadow-sm';
+            } else if (isToday) {
+                cls += 'text-[#105f68] font-bold hover:bg-[#105f68]/10';
+            } else {
+                cls += 'text-slate-700 hover:bg-slate-100';
+            }
+            html += `<button type="button" onclick="calSelect('${which}','${ymd}')" class="${cls}">${d}</button>`;
+        }
+        // Trailing cells
+        const totalCells = startDay + daysInMonth;
+        const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+        for (let i = 1; i <= remaining; i++) {
+            html += `<button type="button" class="h-8 w-8 mx-auto text-slate-300 text-xs rounded-full cursor-default">${i}</button>`;
+        }
+
+        gridEl.innerHTML = html;
+    }
+
+    function toYMD(date) {
+        return date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
+    }
+
+    function formatDisplayDate(ymd) {
+        if (!ymd) return 'Any date';
+        const [y, m, d] = ymd.split('-');
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return months[parseInt(m)-1] + ' ' + parseInt(d) + ', ' + y;
+    }
+    // ─────────────────────────────────────────────────────────────────────────
     </script>
 </x-layouts.app>

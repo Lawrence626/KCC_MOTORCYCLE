@@ -1,15 +1,14 @@
 <x-layouts.app :title="__('Offline Reconciliation')">
 
     <x-slot name="header">
-        <div class="flex items-center justify-between w-full">
-
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
             <div>
-                <h1 class="text-lg font-bold text-slate-900 leading-tight">Offline Reconciliation</h1>
-                <p class="text-xs text-slate-500 mt-0.5">Manage offline data synchronization and system logs.</p>
+                <h1 class="text-2xl sm:text-[26px] font-bold text-slate-900 tracking-tight leading-tight">Offline Reconciliation</h1>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1">Manage offline data synchronization and system logs.</p>
             </div>
             <div class="flex items-center gap-2">
                 <div id="offline-indicator" class="hidden"></div>
-                <button onclick="window.offlineManager && window.offlineManager.manualSync ? window.offlineManager.manualSync() : alert('Sync in progress...')" class="inline-flex items-center gap-1.5 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200 cursor-pointer">
+                <button onclick="window.offlineManager && window.offlineManager.manualSync ? window.offlineManager.manualSync() : alert('Sync in progress...')" class="inline-flex items-center gap-1.5 rounded-[12px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3.5 py-2 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200 cursor-pointer">
                     <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                     </svg>
@@ -206,29 +205,47 @@
                 </div>
 
                 <!-- Search & Filters -->
-                <form method="GET" action="{{ route('offline.reconciliation') }}" class="flex flex-wrap items-center gap-2">
+                <form method="GET" action="{{ route('offline.reconciliation') }}" id="filterForm" class="flex flex-wrap items-center gap-2.5">
                     <div class="relative min-w-[220px]">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search PO # or supplier..." class="w-full pl-8 pr-3 py-1.5 rounded-[10px] border border-slate-300 bg-white text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-2xs">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search PO # or supplier..." class="w-full pl-8 pr-3 py-2.5 rounded-[14px] border border-slate-300 bg-white text-xs sm:text-[13px] text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 hover:border-slate-400 transition shadow-2xs">
                         <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </div>
 
-                    <select name="sync_status" onchange="this.form.submit()" class="px-3 py-1.5 rounded-[10px] border border-slate-300 bg-white text-xs text-slate-700 focus:outline-none shadow-2xs cursor-pointer">
-                        <option value="">All Sync Status</option>
-                        <option value="pending_sync" {{ request('sync_status') == 'pending_sync' ? 'selected' : '' }}>Pending Sync</option>
-                        <option value="exported" {{ request('sync_status') == 'exported' ? 'selected' : '' }}>Exported</option>
-                        <option value="imported" {{ request('sync_status') == 'imported' ? 'selected' : '' }}>Imported</option>
-                        <option value="synchronized" {{ request('sync_status') == 'synchronized' ? 'selected' : '' }}>Synchronized</option>
-                        <option value="duplicate" {{ request('sync_status') == 'duplicate' ? 'selected' : '' }}>Duplicate</option>
-                        <option value="failed" {{ request('sync_status') == 'failed' ? 'selected' : '' }}>Failed</option>
-                    </select>
+                    @php
+                        $syncOptions = [
+                            '' => 'All Sync Status',
+                            'pending_sync' => 'Pending Sync',
+                            'exported' => 'Exported',
+                            'imported' => 'Imported',
+                            'synchronized' => 'Synchronized',
+                            'duplicate' => 'Duplicate',
+                            'failed' => 'Failed',
+                        ];
+                        $selectedSync = request('sync_status', '');
+                        $selectedSyncLabel = $syncOptions[$selectedSync] ?? 'All Sync Status';
+                    @endphp
+                    <div class="relative min-w-[170px]" data-dropdown-wrapper="syncStatusFilter">
+                        <input type="hidden" name="sync_status" id="syncStatusFilter" value="{{ $selectedSync }}" />
+                        <button type="button" id="syncStatusFilterButton" onclick="toggleDropdown('syncStatusFilterDropdown', event)" class="w-full px-3.5 py-2.5 rounded-[14px] border border-slate-300 bg-white text-left text-xs sm:text-[13px] text-slate-800 flex items-center justify-between hover:border-slate-400 focus:outline-none transition shadow-2xs cursor-pointer">
+                            <span id="syncStatusFilterLabel" class="truncate">{{ $selectedSyncLabel }}</span>
+                            <svg class="w-4 h-4 text-slate-500 transition-transform duration-200 shrink-0 ml-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div id="syncStatusFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[50] mt-1.5 w-full min-w-[170px] rounded-[14px] border border-slate-200/90 bg-white shadow-xl shadow-slate-200/60 p-1.5 space-y-0.5">
+                            @foreach($syncOptions as $val => $lbl)
+                                <button type="button" onclick="selectSyncStatus('{{ $val }}', '{{ $lbl }}', event)" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer {{ $selectedSync === $val ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">{{ $lbl }}</button>
+                            @endforeach
+                        </div>
+                    </div>
 
-                    <button type="submit" class="px-3.5 py-1.5 rounded-[10px] border border-slate-200 bg-slate-100 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition cursor-pointer">
+                    <button type="submit" class="px-4 py-2.5 rounded-[14px] border border-slate-300 bg-white text-xs sm:text-[13px] font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition shadow-2xs cursor-pointer">
                         Filter
                     </button>
                     @if(request('search') || request('sync_status'))
-                        <a href="{{ route('offline.reconciliation') }}" class="px-3 py-1.5 rounded-[10px] border border-slate-200 bg-white text-xs font-semibold text-slate-500 hover:bg-slate-50 transition">
+                        <a href="{{ route('offline.reconciliation') }}" class="px-4 py-2.5 rounded-[14px] border border-slate-300 bg-white text-xs sm:text-[13px] font-semibold text-slate-500 hover:bg-slate-50 hover:border-slate-400 transition shadow-2xs">
                             Clear
                         </a>
                     @endif
@@ -481,37 +498,46 @@
                 });
         });
 
-        // Notification panel toggle
-        window.toggleNotificationPanel = function(e) {
-            if (e) e.stopPropagation();
-            var panel = document.getElementById('notification-panel');
-            if (!panel) return;
-
-            // Close profile dropdown first if open
-            var profileDropdown = document.getElementById('dashboardProfileDropdown');
-            if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
-                profileDropdown.classList.add('hidden');
-                profileDropdown.classList.add('opacity-0', 'scale-95');
+        // Custom Dropdown toggle helper
+        window.toggleDropdown = function(menuId, e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
             }
+            const menu = document.getElementById(menuId);
+            if (!menu) return;
+            const isHidden = menu.classList.contains('hidden');
+            
+            // Close all other dropdown menus
+            document.querySelectorAll('.dropdown-menu').forEach(m => {
+                if (m.id !== menuId) m.classList.add('hidden');
+            });
 
-            const isOpen = !panel.classList.contains('hidden');
-            if (isOpen) {
-                panel.classList.add('hidden');
+            if (isHidden) {
+                menu.classList.remove('hidden');
             } else {
-                panel.classList.remove('hidden');
+                menu.classList.add('hidden');
             }
         };
 
-        // Mark all notifications as read
-        window.markAllNotificationsRead = function() {
-            // Implementation for marking notifications as read
-            console.log('Mark all notifications as read');
+        // Select Sync Status filter
+        window.selectSyncStatus = function(val, label, e) {
+            if (e) e.stopPropagation();
+            const input = document.getElementById('syncStatusFilter');
+            const labelEl = document.getElementById('syncStatusFilterLabel');
+            const menu = document.getElementById('syncStatusFilterDropdown');
+            if (input) input.value = val;
+            if (labelEl) labelEl.textContent = label;
+            if (menu) menu.classList.add('hidden');
+            const form = document.getElementById('filterForm');
+            if (form) form.submit();
         };
 
-        // Open all notifications modal
-        window.openAllNotificationsModal = function() {
-            // Implementation for opening all notifications modal
-            console.log('Open all notifications modal');
-        };
+        // Close dropdowns on outside click
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('[data-dropdown-wrapper]') && !e.target.closest('.dropdown-menu')) {
+                document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.add('hidden'));
+            }
+        });
     </script>
 </x-layouts.app>

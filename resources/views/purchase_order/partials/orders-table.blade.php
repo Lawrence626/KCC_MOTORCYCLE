@@ -35,37 +35,15 @@
                     };
 
                     $dateValue = match($dateType) {
-                        'received' => optional($order->completed_at)->format('M j') ?? optional($order->updated_at)->format('M j'),
-                        'created' => optional($order->created_at)->format('M j'),
-                        default => optional($order->estimated_delivery_date ?? $order->expected_delivery_date)->format('M j') ?? 'Not yet provided',
+                        'received' => optional($order->completed_at)->format('M j, Y') ?? optional($order->updated_at)->format('M j, Y'),
+                        'created' => optional($order->created_at)->format('M j, Y'),
+                        default => optional($order->estimated_delivery_date ?? $order->expected_delivery_date)->format('M j, Y') ?? 'Not yet provided',
                     };
 
                     // Estimated delivery date logic
                     $estDate = $order->estimated_delivery_date ?? $order->expected_delivery_date;
                     $isOrderCompleted = in_array($order->status, ['completed', 'archived']);
                     $estDaysRemaining = $estDate ? (int) now()->startOfDay()->diffInDays($estDate->startOfDay(), false) : null;
-
-                    if ($estDate === null) {
-                        $estBadgeClass = 'bg-slate-100 text-slate-500';
-                        $estText = 'Not yet provided';
-                        $estIcon = '';
-                    } elseif ($isOrderCompleted) {
-                        $estBadgeClass = 'bg-emerald-100 text-emerald-700';
-                        $estText = $estDate->format('M j');
-                        $estIcon = '✅';
-                    } elseif ($estDaysRemaining < 0) {
-                        $estBadgeClass = 'bg-rose-100 text-rose-700';
-                        $estText = $estDate->format('M j');
-                        $estIcon = '🔴';
-                    } elseif ($estDaysRemaining <= 2) {
-                        $estBadgeClass = 'bg-amber-100 text-amber-700';
-                        $estText = $estDate->format('M j');
-                        $estIcon = '🟡';
-                    } else {
-                        $estBadgeClass = 'bg-emerald-100 text-emerald-700';
-                        $estText = $estDate->format('M j');
-                        $estIcon = '🟢';
-                    }
                 @endphp
                 <tr class="hover:bg-slate-50">
                     <td class="px-4 py-3 font-semibold">
@@ -91,22 +69,24 @@
                         </div>
                     </td>
                     <td class="px-4 py-3">{{ $order->supplier_name }}</td>
-                    <td class="px-4 py-3">{{ $dateValue }}</td>
+                    <td class="px-4 py-3 text-slate-700 font-medium">{{ $dateValue }}</td>
                     <td class="px-4 py-3">
                         @if($estDate)
-                            <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold {{ $estBadgeClass }}">
-                                {{ $estIcon }} {{ $estText }}
-                            </span>
+                            <div class="font-medium text-slate-900">{{ $estDate->format('M j, Y') }}</div>
                             @if(!$isOrderCompleted && $estDaysRemaining !== null)
-                                <span class="block mt-0.5 text-[10px] {{ $estDaysRemaining < 0 ? 'text-rose-500' : ($estDaysRemaining <= 2 ? 'text-amber-500' : 'text-emerald-500') }}">
-                                    @if($estDaysRemaining < 0)
+                                @if($estDaysRemaining < 0)
+                                    <div class="text-[11px] font-medium text-red-600">
                                         {{ abs($estDaysRemaining) }} {{ Str::plural('day', abs($estDaysRemaining)) }} overdue
-                                    @elseif($estDaysRemaining === 0)
+                                    </div>
+                                @elseif($estDaysRemaining === 0)
+                                    <div class="text-[11px] font-medium text-amber-600">
                                         Due today
-                                    @else
+                                    </div>
+                                @else
+                                    <div class="text-[11px] text-slate-400">
                                         In {{ $estDaysRemaining }} {{ Str::plural('day', $estDaysRemaining) }}
-                                    @endif
-                                </span>
+                                    </div>
+                                @endif
                             @endif
                         @else
                             <span class="text-xs text-slate-400 italic">Not yet provided</span>
