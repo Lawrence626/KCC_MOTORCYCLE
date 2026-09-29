@@ -886,6 +886,7 @@ function addProductToCart(product) {
     const productName = product.name || product.product_name || 'Product';
 
     if (availableStock <= 0) {
+        playScanErrorSound();
         showNotification(`Cannot add item. ${productName} is out of stock.`, 'error');
         return false;
     }
@@ -896,13 +897,16 @@ function addProductToCart(product) {
         if (product.discount_type !== undefined) existing.discount_type = product.discount_type;
         if (product.discount_value !== undefined) existing.discount_value = Number(product.discount_value || 0);
         if (existing.quantity + 1 > availableStock) {
+            playScanErrorSound();
             showNotification(`Insufficient stock. Only ${availableStock} item(s) available.`, 'error');
             return false;
         }
         existing.quantity += 1;
+        playScanSuccessSound();
         showNotification(`Added ${existing.name} (Qty: ${existing.quantity})`, 'success');
     } else {
         if (1 > availableStock) {
+            playScanErrorSound();
             showNotification(`Insufficient stock. Only ${availableStock} item(s) available.`, 'error');
             return false;
         }
@@ -920,6 +924,7 @@ function addProductToCart(product) {
             discount_value: Number(product.discount_value || 0),
             quantity: 1,
         });
+        playScanSuccessSound();
         showNotification(`Added ${productName} to cart`, 'success');
     }
 
@@ -3318,12 +3323,108 @@ function handleStorageChange(event) {
     }
 }
 
+let posAudioCtx = null;
+
+function getPosAudioContext() {
+    try {
+        if (!posAudioCtx) {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (AudioContextClass) {
+                posAudioCtx = new AudioContextClass();
+            }
+        }
+        if (posAudioCtx && posAudioCtx.state === 'suspended') {
+            posAudioCtx.resume().catch(() => {});
+        }
+    } catch (e) {
+        console.warn('Audio context init warning:', e);
+    }
+    return posAudioCtx;
+}
+
+// Unlock audio on any early user interaction
+if (typeof window !== 'undefined') {
+    ['click', 'touchstart', 'keydown', 'mousedown'].forEach(evt => {
+        document.addEventListener(evt, () => {
+            getPosAudioContext();
+        }, { passive: true });
+    });
+}
+
+function playScanSuccessSound() {
+    try {
+        const ctx = getPosAudioContext();
+        if (!ctx) return;
+
+        const now = ctx.currentTime;
+
+        // Tone 1: 880 Hz (A5)
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(880, now);
+        gain1.gain.setValueAtTime(0.001, now);
+        gain1.gain.exponentialRampToValueAtTime(0.25, now + 0.02);
+        gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.09);
+
+        // Tone 2: 1320 Hz (E6) - crisp positive chime
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(1320, now + 0.08);
+        gain2.gain.setValueAtTime(0.001, now + 0.08);
+        gain2.gain.exponentialRampToValueAtTime(0.3, now + 0.10);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(now + 0.08);
+        osc2.stop(now + 0.23);
+    } catch (e) {
+        console.warn('Error playing scan sound:', e);
+    }
+
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        try { navigator.vibrate(60); } catch(e) {}
+    }
+}
+
+function playScanErrorSound() {
+    try {
+        const ctx = getPosAudioContext();
+        if (!ctx) return;
+
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(350, now);
+        osc.frequency.setValueAtTime(220, now + 0.09);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.20);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.21);
+    } catch (e) {}
+
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        try { navigator.vibrate([80, 50, 80]); } catch(e) {}
+    }
+}
+
+function playScanNotification() {
+    playScanSuccessSound();
+}
+
 async function handleScannedCode(code) {
     if (!code) return;
     const rawCode = String(code).trim();
     if (!rawCode) return;
 
-    playScanNotification();
     console.log('Processing scanned code:', rawCode);
 
     const statusEl = document.getElementById('posDesktopScannerStatus');
@@ -3391,7 +3492,7 @@ async function handleScannedCode(code) {
     try {
         if (statusEl) {
             statusEl.textContent = `Looking up item: "${cleanQuery}"...`;
-            statusEl.className = 'rounded-lg bg-blue-50 px-3 py-2 text-center text-xs font-medium text-blue-700 border border-blue-200 transition-all';
+            statusEl.className = 'rounded-xl bg-blue-50 px-4 py-2.5 text-center text-xs font-medium text-blue-700 border border-blue-200 transition-all';
         }
 
         // Search API with exact search query for maximum speed and accuracy
@@ -3432,10 +3533,11 @@ async function handleScannedCode(code) {
             const pName = matchedProduct.product_name || matchedProduct.name || 'Product';
 
             if (stock <= 0) {
+                playScanErrorSound();
                 showNotification(`Out of Stock: ${pName} has 0 stock available.`, 'error');
                 if (statusEl) {
                     statusEl.textContent = `Out of Stock: ${pName}`;
-                    statusEl.className = 'rounded-lg bg-amber-50 px-3 py-2 text-center text-xs font-bold text-amber-800 border border-amber-300 transition-all';
+                    statusEl.className = 'rounded-xl bg-amber-50 px-4 py-2.5 text-center text-xs font-bold text-amber-800 border border-amber-300 transition-all';
                 }
                 return;
             }
@@ -3461,7 +3563,7 @@ async function handleScannedCode(code) {
 
                 if (statusEl) {
                     statusEl.textContent = `✓ Added to Cart: ${pName} (₱${Number(matchedProduct.unit_price || 0).toFixed(2)})`;
-                    statusEl.className = 'rounded-lg bg-emerald-100 px-3 py-2 text-center text-xs font-bold text-emerald-800 border border-emerald-300 transition-all';
+                    statusEl.className = 'rounded-xl bg-emerald-100 px-4 py-2.5 text-center text-xs font-bold text-emerald-800 border border-emerald-300 transition-all';
                 }
                 if (mobileStatus) {
                     mobileStatus.textContent = `✓ Added: ${pName}`;
@@ -3469,36 +3571,22 @@ async function handleScannedCode(code) {
                 }
             }
         } else {
+            playScanErrorSound();
             showNotification(`Product not found for: "${cleanQuery}"`, 'error');
             if (statusEl) {
                 statusEl.textContent = `Product not found for: "${cleanQuery}"`;
-                statusEl.className = 'rounded-lg bg-red-50 px-3 py-2 text-center text-xs font-medium text-red-700 border border-red-200 transition-all';
+                statusEl.className = 'rounded-xl bg-red-50 px-4 py-2.5 text-center text-xs font-medium text-red-700 border border-red-200 transition-all';
             }
         }
     } catch (error) {
         console.error('Error in handleScannedCode:', error);
+        playScanErrorSound();
         showNotification('Failed to lookup product. Please check your connection.', 'error');
         if (statusEl) {
             statusEl.textContent = 'Failed to lookup product. Please check your connection.';
-            statusEl.className = 'rounded-lg bg-red-50 px-3 py-2 text-center text-xs font-medium text-red-700 border border-red-200 transition-all';
+            statusEl.className = 'rounded-xl bg-red-50 px-4 py-2.5 text-center text-xs font-medium text-red-700 border border-red-200 transition-all';
         }
     }
-}
-
-function playScanNotification() {
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    oscillator.frequency.value = 600;
-    oscillator.type = 'sine';
-    gainNode.gain.value = 0.15;
-
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.15);
 }
 
 function showNotification(message, type = 'success') {
