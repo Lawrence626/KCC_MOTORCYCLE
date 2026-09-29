@@ -5,10 +5,9 @@
             <div>
                 <h1 class="text-lg font-bold text-slate-900 leading-tight">Supplier Assessment</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Track supplier performance, manage supplier records, and inspect products with pricing at a glance.</p>
-
             </div>
             <div class="flex flex-wrap items-center gap-2">
-                <button id="openSupplierModal" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all duration-200">
+                <button type="button" id="openSupplierModal" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all duration-200 cursor-pointer">
                     <svg class="h-3.5 w-3.5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
@@ -52,6 +51,7 @@
             </div>
         @endif
 
+        <!-- Quick Top Stats Cards -->
         <div class="grid gap-4 sm:grid-cols-3">
             <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
                 <div class="flex items-start justify-between gap-2">
@@ -59,7 +59,7 @@
                         <p class="text-black text-xs font-semibold">Active Suppliers</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ number_format($quickStats['activeSuppliers']) }}</p>
-                            <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Currently active supplier records.</p>
+                            <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Currently active supplier partners.</p>
                         </div>
                     </div>
                     <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
@@ -76,7 +76,7 @@
                         <p class="text-black text-xs font-semibold">Tracked Products</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">{{ number_format($quickStats['trackedProducts']) }}</p>
-                            <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Total products linked across suppliers.</p>
+                            <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Catalog items linked across suppliers.</p>
                         </div>
                     </div>
                     <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
@@ -90,10 +90,10 @@
             <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
                 <div class="flex items-start justify-between gap-2">
                     <div class="flex-1 min-w-0">
-                        <p class="text-black text-xs font-semibold">Supplier Products Value</p>
+                        <p class="text-black text-xs font-semibold">Supplier Stock Value</p>
                         <div class="mt-1">
                             <p class="text-2xl font-bold text-black">&#8369;{{ number_format($quickStats['stockValue'], 2) }}</p>
-                            <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Combined value of supplier stock.</p>
+                            <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Combined inventory value of supplier stock.</p>
                         </div>
                     </div>
                     <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
@@ -105,41 +105,139 @@
             </div>
         </div>
 
-        <section class="rounded-[15px] border border-slate-200 bg-white overflow-hidden shadow-sm">
-            <!-- Section Header Bar (matching All Stocks design) -->
+        <!-- Supplier Dropdown Selector Section (Clean & Space-Saving) -->
+        <section class="relative z-30 rounded-[15px] border border-slate-200 bg-white shadow-sm">
             <div class="bg-[#0f172a] px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-slate-800 rounded-t-[15px]">
                 <div>
-                    <h2 class="text-lg font-bold text-white">Select a Supplier</h2>
-                    <p class="text-xs text-slate-300">Search and pick a supplier partner to inspect details below</p>
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="relative w-72 md:w-80">
-                        <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/>
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <svg class="h-5 w-5 text-[#6EC1D1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0v-4m0 4h4m-4-4l4 4"/>
                         </svg>
-                        <input id="supplierSearch" type="search" placeholder="Search supplier, contact, email..." class="w-full rounded-[10px] border border-slate-700 bg-slate-800/90 pl-10 pr-4 py-2 text-xs text-white placeholder:text-slate-300 focus:outline-none focus:ring-1 focus:ring-[#6EC1D1]" />
-                    </div>
-                    <span id="supplierListCount" class="rounded-[10px] bg-[#6EC1D1] px-3 py-2 text-xs font-bold text-slate-900 shadow-sm whitespace-nowrap">{{ number_format($supplierSummaries->count()) }} shown</span>
+                        Supplier Selection
+                    </h2>
+                    <p class="text-xs text-slate-300">Select a supplier from the dropdown below to evaluate performance, pricing, and fast/slow moving items</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="rounded-[10px] bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm whitespace-nowrap">
+                        {{ number_format($supplierSummaries->count()) }} Active Suppliers
+                    </span>
                 </div>
             </div>
 
-            <div class="p-5 space-y-4">
-                <div id="supplierList" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
-                <div id="supplierPagination" class="mt-4 flex flex-col items-center gap-2 sm:flex-row sm:justify-between border-t border-slate-100 pt-3"></div>
+            <div class="p-5 space-y-4 rounded-b-[15px]">
+                <div class="flex flex-col md:flex-row md:items-center gap-3">
+                    <div class="relative flex-1">
+                        <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Select Supplier Partner</label>
+                        
+                        <!-- Custom Searchable Dropdown Trigger -->
+                        <div class="relative">
+                            <button id="supplierDropdownBtn" type="button" class="w-full flex items-center justify-between gap-3 rounded-[12px] border border-slate-300 bg-slate-50/70 px-4 py-3 text-left text-sm font-semibold text-slate-900 hover:bg-slate-100 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] transition-all duration-200 cursor-pointer">
+                                <div class="flex items-center gap-3 min-w-0 flex-1">
+                                    <div class="w-8 h-8 rounded-[8px] bg-[#6EC1D1]/20 flex items-center justify-center flex-shrink-0 text-slate-900">
+                                        <svg class="w-4 h-4 text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0v-4m0 4h4m-4-4l4 4"/>
+                                        </svg>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <p id="dropdownSelectedName" class="text-sm font-bold text-slate-900 truncate">Choose a supplier to inspect...</p>
+                                        <p id="dropdownSelectedMeta" class="text-xs text-slate-500 truncate">Click to search and select supplier partner</p>
+                                    </div>
+                                </div>
+                                <svg id="dropdownChevron" class="h-5 w-5 text-slate-500 transition-transform duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+
+                            <!-- Dropdown Menu (Floating with high z-index and shadow) -->
+                            <div id="supplierDropdownMenu" class="hidden absolute top-full left-0 right-0 z-50 mt-1.5 rounded-[12px] border border-slate-300 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.2)] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
+                                <div class="p-2.5 border-b border-slate-200 bg-slate-50/90">
+                                    <div class="relative">
+                                        <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/>
+                                        </svg>
+                                        <input id="supplierDropdownSearch" type="search" placeholder="Type supplier name, contact, email..." class="w-full rounded-[8px] border border-slate-200 bg-white pl-9 pr-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#6EC1D1]" />
+                                    </div>
+                                </div>
+                                <div id="supplierDropdownOptions" class="max-h-72 overflow-y-auto divide-y divide-slate-100 bg-white">
+                                    @foreach($supplierSummaries as $supplierItem)
+                                        <div data-supplier-name="{{ $supplierItem->name }}" class="supplier-option-item p-3.5 hover:bg-slate-50 transition cursor-pointer flex items-center justify-between gap-3">
+                                            <div class="min-w-0 flex-1">
+                                                <div class="flex items-center gap-2">
+                                                    <p class="text-xs font-bold text-slate-900 truncate">{{ $supplierItem->name }}</p>
+                                                    <span class="rounded-[6px] bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-600">{{ $supplierItem->contact_position ?? 'Supplier' }}</span>
+                                                </div>
+                                                <p class="text-[11px] text-slate-500 truncate mt-0.5">{{ $supplierItem->contact_person ?? 'No contact' }} · {{ $supplierItem->email ?? ($supplierItem->phone ?? 'No contact info') }}</p>
+                                            </div>
+                                            <div class="flex items-center gap-1.5 flex-shrink-0">
+                                                <span class="rounded-[6px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 text-[10px] font-bold">🔥 {{ $supplierItem->fast_moving_count }}</span>
+                                                <span class="rounded-[6px] bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 text-[10px] font-bold">⏳ {{ $supplierItem->slow_moving_count }}</span>
+                                                <span class="rounded-[6px] bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 text-[10px] font-semibold">{{ $supplierItem->product_count }} items</span>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Supplier Action Buttons when selected -->
+                    <div id="supplierActionButtons" class="hidden flex items-end gap-2 pt-2 md:pt-0">
+                        <button id="quickEditBtn" type="button" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-4 py-3 text-xs font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all whitespace-nowrap cursor-pointer">
+                            <svg class="h-4 w-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                            Edit Supplier
+                        </button>
+                        <button id="quickArchiveBtn" type="button" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-4 py-3 text-xs font-semibold text-slate-700 shadow-sm hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 transition-all whitespace-nowrap cursor-pointer">
+                            <svg class="h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                            </svg>
+                            Archive
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Selected Supplier Quick Summary Ribbon -->
+                <div id="selectedSupplierRibbon" class="hidden rounded-[12px] bg-slate-50 border border-slate-200/80 p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-slate-600">
+                        <div class="flex items-center gap-2">
+                            <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                            <span class="font-bold text-slate-900 text-sm" id="ribbonSupplierName">-</span>
+                            <span class="rounded-[6px] bg-slate-200 px-2 py-0.5 text-[10px] font-semibold text-slate-700" id="ribbonSupplierRole">Supplier</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-slate-700">
+                            <svg class="h-3.5 w-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            <span id="ribbonContactPerson">No contact person</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-slate-700">
+                            <svg class="h-3.5 w-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            <span id="ribbonContactEmail">No email</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-slate-700">
+                            <svg class="h-3.5 w-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <span id="ribbonAddress">No address provided</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
+        <!-- Supplier Details Main Section -->
         <main id="supplierDetailsContainer" class="rounded-[15px] border border-slate-200 bg-white shadow-sm min-h-[350px] overflow-hidden">
+            <!-- Empty State Placeholder -->
             <div id="supplierDetailPlaceholder" class="p-6 py-16 text-center text-slate-500">
-                <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0v-4m0 4h4m-4-4l4 4"/>
-                </svg>
-                <p class="mt-4 text-lg font-semibold text-slate-900">Supplier details will appear here</p>
-                <p class="mt-2 text-sm text-slate-500 max-w-md mx-auto">Click a supplier card from above to inspect pricing, performance, delivery reliability, and linked products.</p>
+                <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400 mb-3">
+                    <svg class="h-8 w-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0v-4m0 4h4m-4-4l4 4"/>
+                    </svg>
+                </div>
+                <p class="text-lg font-semibold text-slate-900">Select a Supplier from the dropdown</p>
+                <p class="mt-1 text-sm text-slate-500 max-w-md mx-auto">Choose a supplier above to inspect performance score, fast &amp; slow moving items, delivery reliability, and product price list.</p>
             </div>
 
+            <!-- Detail Panel (Shown when supplier is selected) -->
             <section id="supplierDetailPanel" class="hidden space-y-6">
-                <!-- Section Header Bar (matching All Stocks design) -->
+                <!-- Supplier Overview Header -->
                 <div class="bg-[#0f172a] px-6 py-5 border-b border-slate-800 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between rounded-t-[15px]">
                     <div>
                         <p class="text-xs uppercase tracking-wider font-semibold text-[#6EC1D1]">Supplier overview</p>
@@ -157,11 +255,11 @@
                             <p id="detailSupplierContact" class="mt-0.5 font-medium text-white text-[11px] leading-tight"></p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button id="detailEditSupplierButton" type="button" class="inline-flex items-center gap-1.5 rounded-[8px] bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all duration-200">
+                            <button id="detailEditSupplierButton" type="button" class="inline-flex items-center gap-1.5 rounded-[8px] bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all duration-200 cursor-pointer">
                                 <svg class="h-3.5 w-3.5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                 Edit
                             </button>
-                            <button id="detailArchiveSupplierButton" type="button" class="inline-flex items-center gap-1.5 rounded-[8px] border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-slate-700 transition-all duration-200">
+                            <button id="detailArchiveSupplierButton" type="button" class="inline-flex items-center gap-1.5 rounded-[8px] border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-slate-700 transition-all duration-200 cursor-pointer">
                                 <svg class="h-3.5 w-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
                                 Archive
                             </button>
@@ -170,145 +268,238 @@
                 </div>
 
                 <div class="p-6 pt-0 space-y-6">
-
-                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
-                        <div class="flex items-start justify-between gap-2">
-                            <div class="flex-1 min-w-0">
-                                <p class="text-black text-xs font-semibold">Performance Score</p>
-                                <div class="mt-1">
-                                    <p id="detailPerformanceScore" class="text-2xl font-bold text-black"></p>
-                                    <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Overall vendor rating score.</p>
-                                </div>
-                            </div>
-                            <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                                <svg class="w-5 h-5 text-[#145a66]" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
-                        <div class="flex items-start justify-between gap-2">
-                            <div class="flex-1 min-w-0">
-                                <p class="text-black text-xs font-semibold">On-Time Delivery</p>
-                                <div class="mt-1">
-                                    <p id="detailOnTimeRate" class="text-2xl font-bold text-black"></p>
-                                    <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Punctual shipment rate.</p>
-                                </div>
-                            </div>
-                            <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                                <svg class="w-5 h-5 text-[#145a66]" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <circle cx="12" cy="12" r="8.5"/>
-                                    <polyline points="12 7 12 12 15.5 14.5"/>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
-                        <div class="flex items-start justify-between gap-2">
-                            <div class="flex-1 min-w-0">
-                                <p class="text-black text-xs font-semibold">Order Completion</p>
-                                <div class="mt-1">
-                                    <p id="detailCompletionRate" class="text-2xl font-bold text-black"></p>
-                                    <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Fulfilled orders without issues.</p>
-                                </div>
-                            </div>
-                            <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                                <svg class="w-5 h-5 text-[#145a66]" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M7 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2.18a3 3 0 0 0-5.64 0H7zm5 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2zM7 9h10v1.5H7V9zm0 3h10v1.5H7V12zm0 3h6v1.5H7V15z"/>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
-                        <div class="flex items-start justify-between gap-2">
-                            <div class="flex-1 min-w-0">
-                                <p class="text-black text-xs font-semibold">Total Products</p>
-                                <div class="mt-1">
-                                    <p id="detailProductCount" class="text-2xl font-bold text-black"></p>
-                                    <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Supplied catalog items.</p>
-                                </div>
-                            </div>
-                            <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                                <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
-                                    <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="border-t border-slate-200 pt-6">
-                    <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700">Performance summary</p>
-                            <h3 class="mt-1 text-lg font-semibold text-slate-900">Delivery & Order Reliability</h3>
-                        </div>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="rounded-[8px] bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200" id="detailDeliveredCount"></span>
-                            <span class="rounded-[8px] bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 border border-slate-200" id="detailOrdersCount"></span>
-                        </div>
-                    </div>
-
-                    <div class="mt-4 grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700 mb-3">Latest Orders</p>
-                            <div id="detailOrderHistory" class="space-y-2.5"></div>
-                        </div>
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700 mb-3">Delivery Reliability</p>
-                            <div class="space-y-4 rounded-[16px] bg-slate-50/70 border border-slate-200/80 p-4">
-                                <div>
-                                    <div class="flex justify-between text-xs text-slate-600 font-medium mb-1">
-                                        <span>On-time deliveries</span>
-                                        <span id="detailOnTimeText">0%</span>
-                                    </div>
-                                    <div class="h-2.5 overflow-hidden rounded-full bg-slate-200">
-                                        <div id="detailOnTimeBar" class="h-full rounded-full bg-[#6EC1D1]" style="width: 0%"></div>
+                    <!-- Key Assessment Metric Cards (Including Fast & Slow Moving) -->
+                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        <!-- Performance Score -->
+                        <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-black text-xs font-semibold">Performance Score</p>
+                                    <div class="mt-1">
+                                        <p id="detailPerformanceScore" class="text-2xl font-bold text-black">0/100</p>
+                                        <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Overall vendor rating score.</p>
                                     </div>
                                 </div>
-                                <div>
-                                    <div class="flex justify-between text-xs text-slate-600 font-medium mb-1">
-                                        <span>Order completion</span>
-                                        <span id="detailCompletionText">0%</span>
+                                <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                                    <svg class="w-5 h-5 text-[#145a66]" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fast Moving Items Count -->
+                        <div class="border border-emerald-200 p-4 bg-emerald-50/40 shadow-sm" style="border-radius: 20px;">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                        <p class="text-emerald-950 text-xs font-bold">Fast Moving Items</p>
                                     </div>
-                                    <div class="h-2.5 overflow-hidden rounded-full bg-slate-200">
-                                        <div id="detailCompletionBar" class="h-full rounded-full bg-slate-900" style="width: 0%"></div>
+                                    <div class="mt-1">
+                                        <p id="detailFastMovingCount" class="text-2xl font-bold text-emerald-700">0</p>
+                                        <p class="text-emerald-700/80 text-[10px] mt-1 font-medium leading-tight">High demand &amp; sales velocity.</p>
+                                    </div>
+                                </div>
+                                <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 rounded-[10px] bg-emerald-100 text-emerald-800">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slow Moving Items Count -->
+                        <div class="border border-amber-200 p-4 bg-amber-50/40 shadow-sm" style="border-radius: 20px;">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="inline-block w-2 h-2 rounded-full bg-amber-500"></span>
+                                        <p class="text-amber-950 text-xs font-bold">Slow Moving Items</p>
+                                    </div>
+                                    <div class="mt-1">
+                                        <p id="detailSlowMovingCount" class="text-2xl font-bold text-amber-700">0</p>
+                                        <p class="text-amber-700/80 text-[10px] mt-1 font-medium leading-tight">Low turnover / zero recent sales.</p>
+                                    </div>
+                                </div>
+                                <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 rounded-[10px] bg-amber-100 text-amber-800">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Total Products Count -->
+                        <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-black text-xs font-semibold">Total Supplied Catalog</p>
+                                    <div class="mt-1">
+                                        <p id="detailProductCount" class="text-2xl font-bold text-black">0</p>
+                                        <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Total products from this supplier.</p>
+                                    </div>
+                                </div>
+                                <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
+                                    <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                                        <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fast & Slow Moving Products Breakdown for this Supplier -->
+                    <div class="border-t border-slate-200 pt-6">
+                        <div class="mb-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <p class="text-xs uppercase tracking-wider font-semibold text-[#145a66]">Movement Analysis Per Supplier</p>
+                                <h3 class="text-lg font-bold text-slate-900">Fast &amp; Slow Moving Products</h3>
+                            </div>
+                            <span class="text-xs text-slate-500">Classified based on POS transaction sales velocity &amp; turnover rate</span>
+                        </div>
+
+                        <div class="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
+                            <!-- Left Column: Fast Moving Items -->
+                            <div class="rounded-[16px] border border-emerald-200 bg-white shadow-sm overflow-hidden flex flex-col">
+                                <div class="bg-gradient-to-r from-emerald-600 to-teal-700 px-5 py-3.5 flex items-center justify-between text-white">
+                                    <div class="flex items-center gap-2">
+                                        <svg class="h-4 w-4 text-emerald-200" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.527.82-1.17 2.05-1.785 3.322-.44.912-.86 1.874-1.25 2.766-.39.892-.74 1.705-1.03 2.378a9.42 9.42 0 00-.73 2.152A6.993 6.993 0 005 16a7 7 0 0013.93-1.03c.047-.328.07-.663.07-1.002 0-2.316-.95-4.408-2.484-5.91a8.96 8.96 0 00-2.348-1.572c-.596-.282-1.182-.628-1.773-1.026v-.907z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span class="font-bold text-sm">🔥 Fast Moving Products</span>
+                                    </div>
+                                    <span id="fastMovingBadgeCount" class="rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-semibold backdrop-blur-sm">0 items</span>
+                                </div>
+                                <div id="fastMovingContainer" class="p-4 space-y-2.5 flex-1 max-h-72 overflow-y-auto">
+                                    <!-- Populated via JavaScript -->
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Slow Moving Items -->
+                            <div class="rounded-[16px] border border-amber-200 bg-white shadow-sm overflow-hidden flex flex-col">
+                                <div class="bg-gradient-to-r from-amber-600 to-orange-700 px-5 py-3.5 flex items-center justify-between text-white">
+                                    <div class="flex items-center gap-2">
+                                        <svg class="h-4 w-4 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <span class="font-bold text-sm">⏳ Slow Moving Products</span>
+                                    </div>
+                                    <span id="slowMovingBadgeCount" class="rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-semibold backdrop-blur-sm">0 items</span>
+                                </div>
+                                <div id="slowMovingContainer" class="p-4 space-y-2.5 flex-1 max-h-72 overflow-y-auto">
+                                    <!-- Populated via JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance & Delivery Reliability Section -->
+                    <div class="border-t border-slate-200 pt-6">
+                        <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                            <div>
+                                <p class="text-xs uppercase tracking-wider font-semibold text-slate-500">Performance Summary</p>
+                                <h3 class="mt-0.5 text-lg font-bold text-slate-900">Delivery &amp; Order Reliability</h3>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="rounded-[8px] bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200" id="detailDeliveredCount">0 delivered</span>
+                                <span class="rounded-[8px] bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 border border-slate-200" id="detailOrdersCount">0 orders</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
+                            <div>
+                                <p class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2.5">Latest Purchase Orders</p>
+                                <div id="detailOrderHistory" class="space-y-2.5"></div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2.5">Fulfillment &amp; Accuracy Metrics</p>
+                                <div class="space-y-4 rounded-[16px] bg-slate-50/70 border border-slate-200/80 p-4">
+                                    <div>
+                                        <div class="flex justify-between text-xs text-slate-600 font-medium mb-1">
+                                            <span>On-Time Delivery</span>
+                                            <span id="detailOnTimeText" class="font-bold text-slate-900">0%</span>
+                                        </div>
+                                        <div class="h-2.5 overflow-hidden rounded-full bg-slate-200">
+                                            <div id="detailOnTimeBar" class="h-full rounded-full bg-[#6EC1D1]" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs text-slate-600 font-medium mb-1">
+                                            <span>Order Completion</span>
+                                            <span id="detailCompletionText" class="font-bold text-slate-900">0%</span>
+                                        </div>
+                                        <div class="h-2.5 overflow-hidden rounded-full bg-slate-200">
+                                            <div id="detailCompletionBar" class="h-full rounded-full bg-slate-900" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="pt-2 border-t border-slate-200/60 flex items-center justify-between text-xs">
+                                        <span class="text-slate-500">Quality &amp; Defect Rating:</span>
+                                        <span id="detailQualityScore" class="font-bold text-emerald-700">100/100 Quality</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="border-t border-slate-200 pt-6">
-                    <div class="mb-4 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700">Supplier pricing</p>
-                            <h3 class="mt-1 text-lg font-semibold text-slate-900">Product Price List</h3>
+                    <!-- Product Price List Table with Movement Filter Tabs -->
+                    <div class="border-t border-slate-200 pt-6">
+                        <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                            <div>
+                                <p class="text-xs uppercase tracking-wider font-semibold text-slate-500">Catalog &amp; Pricing</p>
+                                <h3 class="mt-0.5 text-lg font-bold text-slate-900">Product Price List</h3>
+                            </div>
+
+                            <div class="flex flex-wrap items-center gap-2">
+                                <!-- Filter Tabs (All / Fast / Slow) -->
+                                <div class="flex items-center rounded-[10px] bg-slate-100 p-1 border border-slate-200 text-xs">
+                                    <button type="button" onclick="setProductFilter('all')" id="filterTabAll" class="rounded-[8px] px-3 py-1 font-bold transition-all bg-white text-slate-900 shadow-sm cursor-pointer">
+                                        All (<span id="tabCountAll">0</span>)
+                                    </button>
+                                    <button type="button" onclick="setProductFilter('fast_moving')" id="filterTabFast" class="rounded-[8px] px-3 py-1 font-semibold transition-all text-slate-600 hover:text-slate-900 cursor-pointer">
+                                        🔥 Fast (<span id="tabCountFast">0</span>)
+                                    </button>
+                                    <button type="button" onclick="setProductFilter('slow_moving')" id="filterTabSlow" class="rounded-[8px] px-3 py-1 font-semibold transition-all text-slate-600 hover:text-slate-900 cursor-pointer">
+                                        ⏳ Slow (<span id="tabCountSlow">0</span>)
+                                    </button>
+                                </div>
+
+                                <!-- Product Search Box -->
+                                <div class="relative w-48 sm:w-60">
+                                    <svg class="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/>
+                                    </svg>
+                                    <input id="productSearchInput" type="search" placeholder="Search product / SKU..." class="w-full rounded-[10px] border border-slate-200 bg-white pl-8 pr-3 py-1.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#6EC1D1]" />
+                                </div>
+
+                                <span id="detailTotalValue" class="rounded-[10px] bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-900 border border-slate-200 whitespace-nowrap">₱0.00</span>
+                            </div>
                         </div>
-                        <span id="detailTotalValue" class="rounded-[10px] bg-slate-100 px-3 py-1 text-xs font-bold text-slate-900 border border-slate-200"></span>
+
+                        <div class="overflow-x-auto rounded-[10px] border border-slate-200">
+                            <table class="min-w-full text-left text-sm text-slate-700">
+                                <thead class="bg-[#0f172a] border-b border-slate-200 text-xs font-semibold text-white uppercase tracking-wider">
+                                    <tr>
+                                        <th class="px-4 py-3 font-semibold text-white">Product</th>
+                                        <th class="px-4 py-3 font-semibold text-white">SKU</th>
+                                        <th class="px-4 py-3 font-semibold text-white">Category</th>
+                                        <th class="px-4 py-3 font-semibold text-white">Stock</th>
+                                        <th class="px-4 py-3 font-semibold text-white">Unit Price</th>
+                                        <th class="px-4 py-3 font-semibold text-white">Units Sold</th>
+                                        <th class="px-4 py-3 font-semibold text-white">Movement Status</th>
+                                        <th class="px-4 py-3 font-semibold text-white">Last Restock</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detailProductTable" class="divide-y divide-slate-200 bg-white"></tbody>
+                            </table>
+                        </div>
+                        <div id="productPagination" class="mt-4 flex flex-col items-center gap-2 sm:flex-row sm:justify-between"></div>
                     </div>
-                    <div class="overflow-x-auto rounded-[10px] border border-slate-200">
-                        <table class="min-w-full text-left text-sm text-slate-700">
-                            <thead class="bg-[#0f172a] border-b border-slate-200 text-xs font-semibold text-white uppercase tracking-wider">
-                                <tr>
-                                    <th class="px-4 py-3 font-semibold text-white">Product</th>
-                                    <th class="px-4 py-3 font-semibold text-white">SKU</th>
-                                    <th class="px-4 py-3 font-semibold text-white">Category</th>
-                                    <th class="px-4 py-3 font-semibold text-white">Stock</th>
-                                    <th class="px-4 py-3 font-semibold text-white">Unit Price</th>
-                                    <th class="px-4 py-3 font-semibold text-white">Restock</th>
-                                </tr>
-                            </thead>
-                            <tbody id="detailProductTable" class="divide-y divide-slate-200 bg-white"></tbody>
-                        </table>
-                    </div>
-                    <div id="productPagination" class="mt-4 flex flex-col items-center gap-2 sm:flex-row sm:justify-between"></div>
                 </div>
             </section>
+        </main>
 
+        <!-- Add / Edit Supplier Modal -->
         <div id="supplierModal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-4">
             <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" data-action="close-modal"></div>
             <div class="relative w-full max-w-2xl overflow-hidden rounded-[28px] bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
@@ -317,7 +508,7 @@
                         <h2 id="supplierModalTitle" class="text-xl font-bold text-black">Add supplier</h2>
                         <p id="supplierModalSubtitle" class="text-sm text-slate-900 font-medium">Create a supplier record and link products automatically.</p>
                     </div>
-                    <button type="button" id="closeSupplierModal" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
+                    <button type="button" id="closeSupplierModal" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
@@ -329,90 +520,53 @@
 
                     <div class="grid gap-4 sm:grid-cols-2">
                         <label class="block text-sm font-medium text-slate-700">
-                            Supplier name
-                            <input id="supplierNameInput" name="name" type="text" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" required />
+                            Supplier name <span class="text-rose-500">*</span>
+                            <input id="supplierNameInput" name="name" type="text" placeholder="e.g. Honda Philippines" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" required />
                         </label>
                         <label class="block text-sm font-medium text-slate-700">
                             Contact person
-                            <input id="supplierContactInput" name="contact_person" type="text" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
+                            <input id="supplierContactInput" name="contact_person" type="text" placeholder="e.g. Juan Dela Cruz" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
                         </label>
                     </div>
 
                     <div class="grid gap-4 sm:grid-cols-2">
                         <label class="block text-sm font-medium text-slate-700">
                             Email address
-                            <input id="supplierEmailInput" name="email" type="email" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
+                            <input id="supplierEmailInput" name="email" type="email" placeholder="e.g. vendor@supplier.com" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
                         </label>
                         <label class="block text-sm font-medium text-slate-700">
                             Phone number
-                            <input id="supplierPhoneInput" name="phone" type="text" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
+                            <input id="supplierPhoneInput" name="phone" type="text" placeholder="e.g. +63 912 345 6789" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
                         </label>
                     </div>
 
                     <div class="grid gap-4 sm:grid-cols-2">
                         <label class="block text-sm font-medium text-slate-700">
                             Contact position
-                            <input id="supplierPositionInput" name="contact_position" type="text" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
+                            <input id="supplierPositionInput" name="contact_position" type="text" placeholder="e.g. Sales Manager" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
                         </label>
                         <label class="block text-sm font-medium text-slate-700">
                             Address
-                            <input id="supplierAddressInput" name="address" type="text" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
+                            <input id="supplierAddressInput" name="address" type="text" placeholder="e.g. Quezon City, Metro Manila" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
                         </label>
                     </div>
 
                     <div class="grid gap-4 sm:grid-cols-1">
                         <label class="block text-sm font-medium text-slate-700">
                             Notes
-                            <input id="supplierNotesInput" name="notes" type="text" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
+                            <textarea id="supplierNotesInput" name="notes" rows="2" placeholder="Key vendor terms, delivery schedule, payment conditions..." class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35"></textarea>
                         </label>
                     </div>
 
-                    <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
-                        <button type="button" id="cancelSupplierModal" class="rounded-[10px] border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all">Cancel</button>
-                        <button type="submit" id="supplierModalSubmit" class="rounded-[10px] bg-[#6EC1D1] px-5 py-2.5 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all">Save supplier</button>
+                    <div class="flex flex-col gap-3 sm:flex-row sm:justify-end pt-2">
+                        <button type="button" id="cancelSupplierModal" class="rounded-[10px] border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-100 transition-all cursor-pointer">Cancel</button>
+                        <button type="submit" id="supplierModalSubmit" class="rounded-[10px] bg-[#6EC1D1] px-5 py-2.5 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all cursor-pointer">Save supplier</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <div id="productsModal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-4">
-            <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" data-action="close-modal"></div>
-            <div class="relative w-full max-w-4xl overflow-hidden rounded-[28px] bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
-                <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
-                    <div>
-                        <h2 id="productsModalTitle" class="text-xl font-bold text-black">Supplier products</h2>
-                        <p id="productsModalSubtitle" class="text-sm text-slate-900 font-medium">Review the products, pricing, and stock linked to this supplier.</p>
-                    </div>
-                    <button type="button" id="closeProductsModal" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
-                </div>
-
-                <div class="p-6">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full text-left text-sm text-slate-700">
-                            <thead class="bg-slate-50 text-xs font-semibold text-slate-700 border-b border-slate-200">
-                                <tr>
-                                    <th class="px-4 py-3">Product</th>
-                                    <th class="px-4 py-3">SKU</th>
-                                    <th class="px-4 py-3">Category</th>
-                                    <th class="px-4 py-3">Stock</th>
-                                    <th class="px-4 py-3">Unit price</th>
-                                    <th class="px-4 py-3">Restock</th>
-                                </tr>
-                            </thead>
-                            <tbody id="productsModalTableBody" class="divide-y divide-slate-200 bg-white"></tbody>
-                        </table>
-                    </div>
-
-                    <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <p class="text-sm text-slate-900">Prices and stock are pulled from current product records.</p>
-                        <button type="button" id="closeProductsModalButton" class="rounded-[10px] border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+        <!-- Hidden Archive Supplier Form -->
         <form id="archiveSupplierForm" method="POST" class="hidden">
             @csrf
             @method('DELETE')
@@ -420,9 +574,11 @@
 
         @push('scripts')
             <script>
-                const supplierSummaries = @json($supplierSummaries);
+                const rawSummaries = @json($supplierSummaries);
+                const supplierSummaries = Array.isArray(rawSummaries) ? rawSummaries : Object.values(rawSummaries);
+
+                // Modal elements
                 const supplierModal = document.getElementById('supplierModal');
-                const productsModal = document.getElementById('productsModal');
                 const supplierForm = document.getElementById('supplierForm');
                 const supplierModalTitle = document.getElementById('supplierModalTitle');
                 const supplierModalSubtitle = document.getElementById('supplierModalSubtitle');
@@ -439,26 +595,40 @@
                 const openSupplierModalButton = document.getElementById('openSupplierModal');
                 const closeSupplierModalButton = document.getElementById('closeSupplierModal');
                 const cancelSupplierModalButton = document.getElementById('cancelSupplierModal');
-                const supplierSearch = document.getElementById('supplierSearch');
-                const productsModalTitle = document.getElementById('productsModalTitle');
-                const productsModalSubtitle = document.getElementById('productsModalSubtitle');
-                const productsModalTableBody = document.getElementById('productsModalTableBody');
-                const closeProductsModal = document.getElementById('closeProductsModal');
-                const closeProductsModalButton = document.getElementById('closeProductsModalButton');
-                const supplierList = document.getElementById('supplierList');
-                const supplierListCount = document.getElementById('supplierListCount');
-                const supplierPagination = document.getElementById('supplierPagination');
-                const supplierDetailPanel = document.getElementById('supplierDetailPanel');
-                const supplierDetailPlaceholder = document.getElementById('supplierDetailPlaceholder');
+                const archiveSupplierForm = document.getElementById('archiveSupplierForm');
+
+                // Dropdown elements
+                const supplierDropdownBtn = document.getElementById('supplierDropdownBtn');
+                const supplierDropdownMenu = document.getElementById('supplierDropdownMenu');
+                const supplierDropdownSearch = document.getElementById('supplierDropdownSearch');
+                const supplierDropdownOptions = document.getElementById('supplierDropdownOptions');
+                const dropdownChevron = document.getElementById('dropdownChevron');
+                const dropdownSelectedName = document.getElementById('dropdownSelectedName');
+                const dropdownSelectedMeta = document.getElementById('dropdownSelectedMeta');
+
+                // Ribbon & Action elements
+                const selectedSupplierRibbon = document.getElementById('selectedSupplierRibbon');
+                const supplierActionButtons = document.getElementById('supplierActionButtons');
+                const quickEditBtn = document.getElementById('quickEditBtn');
+                const quickArchiveBtn = document.getElementById('quickArchiveBtn');
+                const ribbonSupplierName = document.getElementById('ribbonSupplierName');
+                const ribbonSupplierRole = document.getElementById('ribbonSupplierRole');
+                const ribbonContactPerson = document.getElementById('ribbonContactPerson');
+                const ribbonContactEmail = document.getElementById('ribbonContactEmail');
+                const ribbonAddress = document.getElementById('ribbonAddress');
+
+                // Detail elements
                 const supplierDetailsContainer = document.getElementById('supplierDetailsContainer');
+                const supplierDetailPlaceholder = document.getElementById('supplierDetailPlaceholder');
+                const supplierDetailPanel = document.getElementById('supplierDetailPanel');
                 const detailSupplierName = document.getElementById('detailSupplierName');
                 const detailSupplierNotes = document.getElementById('detailSupplierNotes');
                 const detailSupplierPosition = document.getElementById('detailSupplierPosition');
                 const detailSupplierAddress = document.getElementById('detailSupplierAddress');
                 const detailSupplierContact = document.getElementById('detailSupplierContact');
                 const detailPerformanceScore = document.getElementById('detailPerformanceScore');
-                const detailOnTimeRate = document.getElementById('detailOnTimeRate');
-                const detailCompletionRate = document.getElementById('detailCompletionRate');
+                const detailFastMovingCount = document.getElementById('detailFastMovingCount');
+                const detailSlowMovingCount = document.getElementById('detailSlowMovingCount');
                 const detailProductCount = document.getElementById('detailProductCount');
                 const detailDeliveredCount = document.getElementById('detailDeliveredCount');
                 const detailOrdersCount = document.getElementById('detailOrdersCount');
@@ -467,17 +637,32 @@
                 const detailCompletionBar = document.getElementById('detailCompletionBar');
                 const detailOnTimeText = document.getElementById('detailOnTimeText');
                 const detailCompletionText = document.getElementById('detailCompletionText');
-                const detailProductTable = document.getElementById('detailProductTable');
+                const detailQualityScore = document.getElementById('detailQualityScore');
                 const detailTotalValue = document.getElementById('detailTotalValue');
-                const productPagination = document.getElementById('productPagination');
                 const detailEditSupplierButton = document.getElementById('detailEditSupplierButton');
                 const detailArchiveSupplierButton = document.getElementById('detailArchiveSupplierButton');
-                const archiveSupplierForm = document.getElementById('archiveSupplierForm');
+
+                // Fast & Slow moving widgets
+                const fastMovingBadgeCount = document.getElementById('fastMovingBadgeCount');
+                const fastMovingContainer = document.getElementById('fastMovingContainer');
+                const slowMovingBadgeCount = document.getElementById('slowMovingBadgeCount');
+                const slowMovingContainer = document.getElementById('slowMovingContainer');
+
+                // Product table & filter elements
+                const detailProductTable = document.getElementById('detailProductTable');
+                const productPagination = document.getElementById('productPagination');
+                const productSearchInput = document.getElementById('productSearchInput');
+                const tabCountAll = document.getElementById('tabCountAll');
+                const tabCountFast = document.getElementById('tabCountFast');
+                const tabCountSlow = document.getElementById('tabCountSlow');
+                const filterTabAll = document.getElementById('filterTabAll');
+                const filterTabFast = document.getElementById('filterTabFast');
+                const filterTabSlow = document.getElementById('filterTabSlow');
+
                 let activeSupplier = null;
-                let currentPage = 1;
-                const itemsPerPage = 6;
                 let currentProductPage = 1;
                 const productsPerPage = 10;
+                let currentProductFilter = 'all'; // 'all', 'fast_moving', 'slow_moving'
 
                 function openModal(modal) {
                     modal.classList.remove('hidden');
@@ -531,141 +716,125 @@
                     supplierModalSubmit.textContent = supplier.id ? 'Update supplier' : 'Save supplier';
                 }
 
-                function renderSupplierList() {
-                    supplierList.innerHTML = '';
-                    let visibleCount = 0;
-                    const filteredSuppliers = [];
+                // Render Searchable Dropdown Options
+                function renderDropdownOptions() {
+                    const searchTerm = (supplierDropdownSearch.value || '').trim().toLowerCase();
+                    supplierDropdownOptions.innerHTML = '';
 
-                    supplierSummaries.forEach(supplier => {
-                        const name = supplier.name.toLowerCase();
-                        const contact = (supplier.contact_person || '').toLowerCase();
-                        const contactPosition = (supplier.contact_position || '').toLowerCase();
-                        const email = (supplier.email || supplier.phone || supplier.address || '').toLowerCase();
-                        const searchValue = supplierSearch.value.trim().toLowerCase();
-
-                        const matchesSearch = [name, contact, contactPosition, email].some(value => value.includes(searchValue));
-                        if (matchesSearch) {
-                            filteredSuppliers.push(supplier);
-                        }
+                    const filtered = supplierSummaries.filter(s => {
+                        const name = (s.name || '').toLowerCase();
+                        const contact = (s.contact_person || '').toLowerCase();
+                        const email = (s.email || '').toLowerCase();
+                        return name.includes(searchTerm) || contact.includes(searchTerm) || email.includes(searchTerm);
                     });
 
-                    const totalPages = Math.ceil(filteredSuppliers.length / itemsPerPage);
-                    currentPage = Math.min(currentPage, totalPages) || 1;
-                    const startIndex = (currentPage - 1) * itemsPerPage;
-                    const endIndex = startIndex + itemsPerPage;
-                    const paginatedSuppliers = filteredSuppliers.slice(startIndex, endIndex);
-
-                    paginatedSuppliers.forEach(supplier => {
-                        visibleCount += 1;
-                        const card = document.createElement('div');
-                        card.dataset.supplierName = supplier.name;
-                        card.className = 'supplier-card w-full rounded-[10px] border border-slate-200 bg-white p-4 text-left shadow-sm transition-all duration-200 hover:border-slate-300 hover:shadow-md cursor-pointer';
-                        card.innerHTML = `
-                            <div class="flex items-start justify-between gap-2">
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-bold text-slate-900 truncate">${supplier.name}</p>
-                                    <p class="mt-0.5 text-xs text-slate-500 truncate">${supplier.contact_person || 'No contact'} · ${supplier.email || supplier.phone || 'No email'}</p>
-                                </div>
-                                <span class="rounded-[8px] bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600 whitespace-nowrap border border-slate-200">${supplier.contact_position || 'Supplier'}</span>
-                            </div>
-                            <div class="mt-3 grid gap-2 sm:grid-cols-2">
-                                <div class="rounded-[10px] border border-slate-100 p-2 text-xs text-slate-600" style="background: linear-gradient(50deg, #ffffff 0%, rgba(110, 193, 209, 0.12) 50%);">
-                                    <p class="font-bold text-slate-900 text-xs">${supplier.product_count ?? 0}</p>
-                                    <p class="text-[11px]">Products</p>
-                                </div>
-                                <div class="rounded-[10px] border border-slate-100 p-2 text-xs text-slate-600" style="background: linear-gradient(50deg, #ffffff 0%, rgba(110, 193, 209, 0.12) 50%);">
-                                    <p class="font-bold text-slate-900 text-xs">${supplier.performance_score ?? 0}</p>
-                                    <p class="text-[11px]">Performance</p>
-                                </div>
+                    if (filtered.length === 0) {
+                        supplierDropdownOptions.innerHTML = `
+                            <div class="p-4 text-center text-xs text-slate-500">
+                                No suppliers matching "${searchTerm}"
                             </div>
                         `;
-                        supplierList.appendChild(card);
-                    });
-
-                    supplierListCount.textContent = `${visibleCount} shown`;
-
-                    // Render pagination
-                    if (totalPages > 1) {
-                        supplierPagination.innerHTML = `
-                            <div class="text-xs text-slate-500">
-                                Page ${currentPage} of ${totalPages}
-                            </div>
-                            <div class="flex items-center gap-1.5 flex-wrap justify-center">
-                                <button data-page="${currentPage - 1}" class="pagination-btn px-2.5 py-1 text-xs rounded-[8px] border border-slate-200 transition-all ${currentPage === 1 ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-700 bg-white hover:bg-slate-100'}" ${currentPage === 1 ? 'disabled' : ''}>Prev</button>
-                                ${Array.from({length: totalPages}, (_, i) => i + 1).map(page => `
-                                    <button data-page="${page}" class="pagination-btn px-2.5 py-1 text-xs rounded-[8px] transition-all ${page === currentPage ? 'font-bold text-slate-900 bg-[#6EC1D1] border border-slate-200 shadow-sm' : 'text-slate-700 border border-slate-200 bg-white hover:bg-slate-100'}">${page}</button>
-                                `).join('')}
-                                <button data-page="${currentPage + 1}" class="pagination-btn px-2.5 py-1 text-xs rounded-[8px] border border-slate-200 transition-all ${currentPage === totalPages ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-700 bg-white hover:bg-slate-100'}" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
-                            </div>
-                        `;
-                    } else {
-                        supplierPagination.innerHTML = '';
-                    }
-                }
-
-                window.changePage = function(page) {
-                    currentPage = page;
-                    renderSupplierList();
-                }
-
-                window.changeProductPage = function(page) {
-                    currentProductPage = page;
-                    if (activeSupplier) {
-                        setSupplierDetail(activeSupplier.name);
-                    }
-                }
-
-                supplierList.addEventListener('click', event => {
-                    const card = event.target.closest('.supplier-card');
-                    if (card) {
-                        setSupplierDetail(card.dataset.supplierName, true);
-                    }
-                });
-
-                detailEditSupplierButton.addEventListener('click', () => {
-                    if (!activeSupplier) return;
-                    fillSupplierForm(activeSupplier);
-                    openModal(supplierModal);
-                });
-
-                detailArchiveSupplierButton.addEventListener('click', () => {
-                    if (!activeSupplier) return;
-                    if (!activeSupplier.id) {
-                        showToast('This supplier is not yet saved as a record and cannot be archived. Please add it first.', 'error');
                         return;
                     }
-                    archiveSupplierForm.action = '{{ url('supplier-assessment/suppliers') }}/' + activeSupplier.id;
-                    if (confirm(`Archive "${activeSupplier.name}"? This will remove it from active supplier listings.`)) {
-                        archiveSupplierForm.submit();
+
+                    filtered.forEach(supplier => {
+                        const isSelected = activeSupplier && activeSupplier.name === supplier.name;
+                        const optionItem = document.createElement('div');
+                        optionItem.dataset.supplierName = supplier.name;
+                        optionItem.className = `supplier-option-item p-3.5 hover:bg-slate-50 transition cursor-pointer flex items-center justify-between gap-3 ${isSelected ? 'bg-teal-50/70 border-l-4 border-[#6EC1D1]' : ''}`;
+                        optionItem.innerHTML = `
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-2">
+                                    <p class="text-xs font-bold text-slate-900 truncate">${supplier.name}</p>
+                                    <span class="rounded-[6px] bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-600">${supplier.contact_position || 'Supplier'}</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 truncate mt-0.5">${supplier.contact_person || 'No contact'} · ${supplier.email || supplier.phone || 'No direct info'}</p>
+                            </div>
+                            <div class="flex items-center gap-1.5 flex-shrink-0">
+                                <span class="rounded-[6px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 text-[10px] font-bold">🔥 ${supplier.fast_moving_count ?? 0}</span>
+                                <span class="rounded-[6px] bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 text-[10px] font-bold">⏳ ${supplier.slow_moving_count ?? 0}</span>
+                                <span class="rounded-[6px] bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 text-[10px] font-semibold">${supplier.product_count ?? 0} items</span>
+                            </div>
+                        `;
+
+                        optionItem.addEventListener('click', () => {
+                            setSupplierDetail(supplier.name, true);
+                            closeDropdown();
+                        });
+
+                        supplierDropdownOptions.appendChild(optionItem);
+                    });
+                }
+
+                function toggleDropdown() {
+                    const isHidden = supplierDropdownMenu.classList.contains('hidden');
+                    if (isHidden) {
+                        openDropdown();
+                    } else {
+                        closeDropdown();
+                    }
+                }
+
+                function openDropdown() {
+                    supplierDropdownMenu.classList.remove('hidden');
+                    dropdownChevron.classList.add('rotate-180');
+                    renderDropdownOptions();
+                    setTimeout(() => supplierDropdownSearch.focus(), 50);
+                }
+
+                function closeDropdown() {
+                    supplierDropdownMenu.classList.add('hidden');
+                    dropdownChevron.classList.remove('rotate-180');
+                }
+
+                // Global document click to close dropdown
+                document.addEventListener('click', (e) => {
+                    if (!supplierDropdownBtn.contains(e.target) && !supplierDropdownMenu.contains(e.target)) {
+                        closeDropdown();
                     }
                 });
 
+                supplierDropdownBtn.addEventListener('click', toggleDropdown);
+                supplierDropdownSearch.addEventListener('input', renderDropdownOptions);
+
+                // Option click delegation
+                supplierDropdownOptions.addEventListener('click', (e) => {
+                    const item = e.target.closest('.supplier-option-item');
+                    if (item && item.dataset.supplierName) {
+                        setSupplierDetail(item.dataset.supplierName, true);
+                        closeDropdown();
+                    }
+                });
+
+                // Set Active Supplier and Render Full Assessment Details
                 function setSupplierDetail(supplierName, shouldScroll = false) {
                     const supplier = supplierSummaries.find(item => item.name === supplierName);
                     if (!supplier) return;
 
-                    document.querySelectorAll('.supplier-card').forEach(card => {
-                        if (card.dataset.supplierName === supplierName) {
-                            card.classList.add('border-slate-400', 'bg-slate-50/70', 'shadow-md');
-                            card.classList.remove('border-slate-200', 'bg-white');
-                        } else {
-                            card.classList.remove('border-slate-400', 'bg-slate-50/70', 'shadow-md');
-                            card.classList.add('border-slate-200', 'bg-white');
-                        }
-                    });
+                    activeSupplier = supplier;
+                    currentProductPage = 1;
 
+                    // Update Trigger Label
+                    dropdownSelectedName.textContent = supplier.name;
+                    dropdownSelectedMeta.textContent = `${supplier.product_count ?? 0} products · 🔥 ${supplier.fast_moving_count ?? 0} Fast Moving · ⏳ ${supplier.slow_moving_count ?? 0} Slow Moving · Score: ${supplier.performance_score ?? 0}/100`;
+
+                    // Update Summary Ribbon
+                    selectedSupplierRibbon.classList.remove('hidden');
+                    supplierActionButtons.classList.remove('hidden');
+                    ribbonSupplierName.textContent = supplier.name;
+                    ribbonSupplierRole.textContent = supplier.contact_position || 'Supplier';
+                    ribbonContactPerson.textContent = supplier.contact_person ? `${supplier.contact_person} (${supplier.contact_position || 'Contact'})` : 'No contact person assigned';
+                    ribbonContactEmail.textContent = supplier.email ? supplier.email : (supplier.phone || 'No email/phone recorded');
+                    ribbonAddress.textContent = supplier.address || 'No physical address specified';
+
+                    // Show Main Detail Panel
                     supplierDetailPlaceholder.classList.add('hidden');
                     supplierDetailPanel.classList.remove('hidden');
-
-                    if (activeSupplier && activeSupplier.name !== supplierName) {
-                        currentProductPage = 1;
-                    }
 
                     detailSupplierName.textContent = supplier.name;
                     detailSupplierNotes.textContent = supplier.notes || 'No additional notes provided.';
                     detailSupplierPosition.textContent = supplier.contact_position || 'Supplier';
 
-                    // Location pin icon replaces the emoji, rendered via innerHTML
                     detailSupplierAddress.innerHTML = supplier.address
                         ? `<span class="inline-flex items-center gap-1.5">
                              <svg class="h-4 w-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -676,21 +845,119 @@
                            </span>`
                         : '';
 
-                    detailSupplierContact.textContent = supplier.contact_person ? `${supplier.contact_person} · ${supplier.email || supplier.phone || 'No contact info'}` : (supplier.email || supplier.phone || 'No contact info');
-                    activeSupplier = supplier;
+                    detailSupplierContact.textContent = supplier.contact_person
+                        ? `${supplier.contact_person} · ${supplier.email || supplier.phone || 'No contact info'}`
+                        : (supplier.email || supplier.phone || 'No contact info');
 
+                    // Metric Cards
                     detailPerformanceScore.textContent = `${supplier.performance_score ?? 0}/100`;
-                    detailOnTimeRate.textContent = `${supplier.on_time_rate ?? 0}%`;
-                    detailCompletionRate.textContent = `${supplier.completion_rate ?? 0}%`;
+                    detailFastMovingCount.textContent = `${supplier.fast_moving_count ?? 0}`;
+                    detailSlowMovingCount.textContent = `${supplier.slow_moving_count ?? 0}`;
                     detailProductCount.textContent = supplier.product_count ?? 0;
                     detailDeliveredCount.textContent = `${supplier.delivered_orders_count ?? 0} delivered`;
                     detailOrdersCount.textContent = `${supplier.orders_count ?? 0} orders`;
+
+                    // Progress Bars
                     detailOnTimeBar.style.width = `${Math.min(100, Math.max(0, supplier.on_time_rate || 0))}%`;
                     detailCompletionBar.style.width = `${Math.min(100, Math.max(0, supplier.completion_rate || 0))}%`;
                     if (detailOnTimeText) detailOnTimeText.textContent = `${supplier.on_time_rate ?? 0}%`;
                     if (detailCompletionText) detailCompletionText.textContent = `${supplier.completion_rate ?? 0}%`;
+                    if (detailQualityScore) detailQualityScore.textContent = `${supplier.quality_score ?? 100}/100 Quality (Defect: ${supplier.defect_rate ?? 0}%)`;
                     detailTotalValue.textContent = `₱${Number(supplier.total_value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
+                    // Render Fast & Slow Moving Lists
+                    renderFastSlowMovingBreakdown(supplier);
+
+                    // Render Order History
+                    renderOrderHistory(supplier);
+
+                    // Render Product Price List Table
+                    renderProductTable();
+
+                    if (shouldScroll) {
+                        supplierDetailsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+
+                // Render Fast and Slow Moving Lists for Active Supplier
+                function renderFastSlowMovingBreakdown(supplier) {
+                    const fastProducts = supplier.fast_moving_products || [];
+                    const slowProducts = supplier.slow_moving_products || [];
+
+                    fastMovingBadgeCount.textContent = `${fastProducts.length} item${fastProducts.length === 1 ? '' : 's'}`;
+                    slowMovingBadgeCount.textContent = `${slowProducts.length} item${slowProducts.length === 1 ? '' : 's'}`;
+
+                    // Render Fast Moving List
+                    fastMovingContainer.innerHTML = '';
+                    if (fastProducts.length === 0) {
+                        fastMovingContainer.innerHTML = `
+                            <div class="py-8 text-center text-xs text-slate-500">
+                                <svg class="w-8 h-8 mx-auto text-emerald-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                                No fast-moving products recorded for this supplier.
+                            </div>
+                        `;
+                    } else {
+                        fastProducts.forEach(prod => {
+                            const card = document.createElement('div');
+                            card.className = 'rounded-[12px] border border-emerald-100 bg-emerald-50/40 p-3 hover:bg-emerald-50/80 transition flex items-center justify-between gap-3';
+                            card.innerHTML = `
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <p class="text-xs font-bold text-slate-900 truncate">${prod.name}</p>
+                                        <span class="rounded-[6px] bg-white text-emerald-800 border border-emerald-200 px-1.5 py-0.5 text-[10px] font-semibold">${prod.category || 'General'}</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 truncate mt-0.5">SKU: ${prod.sku || 'N/A'} · Stock: <span class="font-bold text-slate-800">${prod.stock_quantity}</span></p>
+                                </div>
+                                <div class="text-right flex-shrink-0">
+                                    <span class="inline-flex items-center gap-1 rounded-[8px] bg-emerald-600 text-white px-2 py-0.5 text-[10px] font-bold shadow-xs">
+                                        🔥 ${prod.units_sold} sold
+                                    </span>
+                                    <p class="text-xs font-bold text-slate-900 mt-1">₱${Number(prod.price).toFixed(2)}</p>
+                                </div>
+                            `;
+                            fastMovingContainer.appendChild(card);
+                        });
+                    }
+
+                    // Render Slow Moving List
+                    slowMovingContainer.innerHTML = '';
+                    if (slowProducts.length === 0) {
+                        slowMovingContainer.innerHTML = `
+                            <div class="py-8 text-center text-xs text-slate-500">
+                                <svg class="w-8 h-8 mx-auto text-amber-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                No slow-moving products for this supplier.
+                            </div>
+                        `;
+                    } else {
+                        slowProducts.forEach(prod => {
+                            const card = document.createElement('div');
+                            card.className = 'rounded-[12px] border border-amber-100 bg-amber-50/40 p-3 hover:bg-amber-50/80 transition flex items-center justify-between gap-3';
+                            card.innerHTML = `
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <p class="text-xs font-bold text-slate-900 truncate">${prod.name}</p>
+                                        <span class="rounded-[6px] bg-white text-amber-800 border border-amber-200 px-1.5 py-0.5 text-[10px] font-semibold">${prod.category || 'General'}</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 truncate mt-0.5">SKU: ${prod.sku || 'N/A'} · Current Stock: <span class="font-bold text-slate-800">${prod.stock_quantity}</span></p>
+                                </div>
+                                <div class="text-right flex-shrink-0">
+                                    <span class="inline-flex items-center gap-1 rounded-[8px] bg-amber-100 text-amber-800 border border-amber-200 px-2 py-0.5 text-[10px] font-bold">
+                                        ⏳ ${prod.units_sold} sold
+                                    </span>
+                                    <p class="text-xs font-bold text-slate-900 mt-1">₱${Number(prod.price).toFixed(2)}</p>
+                                </div>
+                            `;
+                            slowMovingContainer.appendChild(card);
+                        });
+                    }
+                }
+
+                // Render Latest Orders
+                function renderOrderHistory(supplier) {
                     detailOrderHistory.innerHTML = '';
                     if (!supplier.orders || !supplier.orders.length) {
                         detailOrderHistory.innerHTML = '<div class="rounded-[12px] border border-slate-200/80 bg-slate-50/70 p-3.5 text-xs text-slate-500">No order history available for this supplier.</div>';
@@ -711,89 +978,157 @@
                                         <span class="text-[10px] font-semibold px-2 py-0.5 rounded-[6px] ${statusBadgeClass}">${order.status}</span>
                                     </div>
                                     <div class="mt-1 text-[11px] text-slate-500">
-                                        Expected: ${order.expected_delivery_date || 'Not yet provided'} · Received: ${receivedDisplay}
+                                        Expected: ${order.expected_delivery_date || 'Not specified'} · Received: ${receivedDisplay}
                                     </div>
                                     <div class="mt-1.5 text-xs font-bold text-slate-900">₱${Number(order.total_amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                                 </div>
                             `);
                         });
                     }
+                }
+
+                // Filter & Render Product Price List Table
+                function setProductFilter(filterType) {
+                    currentProductFilter = filterType;
+                    currentProductPage = 1;
+
+                    // Update Tab UI
+                    [filterTabAll, filterTabFast, filterTabSlow].forEach(tab => {
+                        tab.classList.remove('bg-white', 'text-slate-900', 'shadow-sm', 'font-bold');
+                        tab.classList.add('text-slate-600', 'font-semibold');
+                    });
+
+                    if (filterType === 'all') {
+                        filterTabAll.classList.add('bg-white', 'text-slate-900', 'shadow-sm', 'font-bold');
+                        filterTabAll.classList.remove('text-slate-600');
+                    } else if (filterType === 'fast_moving') {
+                        filterTabFast.classList.add('bg-white', 'text-slate-900', 'shadow-sm', 'font-bold');
+                        filterTabFast.classList.remove('text-slate-600');
+                    } else if (filterType === 'slow_moving') {
+                        filterTabSlow.classList.add('bg-white', 'text-slate-900', 'shadow-sm', 'font-bold');
+                        filterTabSlow.classList.remove('text-slate-600');
+                    }
+
+                    renderProductTable();
+                }
+
+                window.setProductFilter = setProductFilter;
+
+                function renderProductTable() {
+                    if (!activeSupplier) return;
+
+                    const allProducts = activeSupplier.products || [];
+                    const fastCount = (activeSupplier.fast_moving_products || []).length;
+                    const slowCount = (activeSupplier.slow_moving_products || []).length;
+
+                    tabCountAll.textContent = allProducts.length;
+                    tabCountFast.textContent = fastCount;
+                    tabCountSlow.textContent = slowCount;
+
+                    const search = (productSearchInput.value || '').trim().toLowerCase();
+
+                    // Apply filters
+                    let filtered = allProducts.filter(p => {
+                        if (currentProductFilter !== 'all' && p.movement_category !== currentProductFilter) {
+                            return false;
+                        }
+                        if (search) {
+                            const name = (p.name || '').toLowerCase();
+                            const sku = (p.sku || '').toLowerCase();
+                            const cat = (p.category || '').toLowerCase();
+                            return name.includes(search) || sku.includes(search) || cat.includes(search);
+                        }
+                        return true;
+                    });
 
                     detailProductTable.innerHTML = '';
-                    if (!supplier.products.length) {
-                        detailProductTable.innerHTML = '<tr><td colspan="6" class="px-4 py-6 text-center text-sm text-slate-500">No product records linked to this supplier.</td></tr>';
+                    if (filtered.length === 0) {
+                        detailProductTable.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-sm text-slate-500">No products match the selected filter.</td></tr>';
                         productPagination.innerHTML = '';
-                    } else {
-                        const totalProductPages = Math.ceil(supplier.products.length / productsPerPage);
-                        const productStartIndex = (currentProductPage - 1) * productsPerPage;
-                        const productEndIndex = productStartIndex + productsPerPage;
-                        const paginatedProducts = supplier.products.slice(productStartIndex, productEndIndex);
-
-                        paginatedProducts.forEach(product => {
-                            detailProductTable.insertAdjacentHTML('beforeend', `
-                                <tr class="border-b border-slate-200 hover:bg-slate-50/50">
-                                    <td class="px-4 py-3 font-semibold text-slate-900">${product.name}</td>
-                                    <td class="px-4 py-3 text-slate-600">${product.sku}</td>
-                                    <td class="px-4 py-3 text-slate-600">${product.category || 'Uncategorized'}</td>
-                                    <td class="px-4 py-3 font-semibold text-slate-900">${product.stock_quantity}</td>
-                                    <td class="px-4 py-3 font-semibold text-slate-900">₱${Number(product.price).toFixed(2)}</td>
-                                    <td class="px-4 py-3 text-slate-600">${product.last_restock_date || 'N/A'}</td>
-                                </tr>
-                            `);
-                        });
-
-                        // Render product pagination
-                        if (totalProductPages > 1) {
-                            productPagination.innerHTML = `
-                                <div class="text-xs text-slate-500">
-                                    Page ${currentProductPage} of ${totalProductPages}
-                                </div>
-                                <div class="flex items-center gap-1.5 flex-wrap justify-center">
-                                    <button type="button" onclick="window.changeProductPage(${currentProductPage - 1})" ${currentProductPage === 1 ? 'disabled' : ''} class="px-2.5 py-1 text-xs rounded-[8px] border border-slate-200 transition-all ${currentProductPage === 1 ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-700 bg-white hover:bg-slate-100'}">Prev</button>
-                                    ${Array.from({length: totalProductPages}, (_, i) => i + 1).map(page => `
-                                        <button type="button" onclick="window.changeProductPage(${page})" class="px-2.5 py-1 text-xs rounded-[8px] transition-all ${page === currentProductPage ? 'font-bold text-slate-900 bg-[#6EC1D1] border border-slate-200 shadow-sm' : 'text-slate-700 border border-slate-200 bg-white hover:bg-slate-100'}">${page}</button>
-                                    `).join('')}
-                                    <button type="button" onclick="window.changeProductPage(${currentProductPage + 1})" ${currentProductPage === totalProductPages ? 'disabled' : ''} class="px-2.5 py-1 text-xs rounded-[8px] border border-slate-200 transition-all ${currentProductPage === totalProductPages ? 'disabled' : ''} ${currentProductPage === totalProductPages ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-700 bg-white hover:bg-slate-100'}">Next</button>
-                                </div>
-                            `;
-                        } else {
-                            productPagination.innerHTML = '';
-                        }
+                        return;
                     }
 
-                    if (shouldScroll) {
-                        supplierDetailsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    const totalPages = Math.ceil(filtered.length / productsPerPage);
+                    currentProductPage = Math.min(currentProductPage, totalPages) || 1;
+                    const startIndex = (currentProductPage - 1) * productsPerPage;
+                    const endIndex = startIndex + productsPerPage;
+                    const paginated = filtered.slice(startIndex, endIndex);
+
+                    paginated.forEach(product => {
+                        const isFast = product.movement_category === 'fast_moving';
+                        const badge = isFast
+                            ? '<span class="inline-flex items-center gap-1 rounded-[6px] bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] font-bold text-emerald-700">🔥 Fast Moving</span>'
+                            : '<span class="inline-flex items-center gap-1 rounded-[6px] bg-amber-50 border border-amber-200 px-2 py-0.5 text-[10px] font-bold text-amber-700">⏳ Slow Moving</span>';
+
+                        detailProductTable.insertAdjacentHTML('beforeend', `
+                            <tr class="border-b border-slate-200 hover:bg-slate-50/60 transition">
+                                <td class="px-4 py-3 font-semibold text-slate-900">${product.name}</td>
+                                <td class="px-4 py-3 text-slate-600 font-mono text-xs">${product.sku || 'N/A'}</td>
+                                <td class="px-4 py-3 text-slate-600">${product.category || 'Uncategorized'}</td>
+                                <td class="px-4 py-3 font-semibold text-slate-900">${product.stock_quantity}</td>
+                                <td class="px-4 py-3 font-semibold text-slate-900">₱${Number(product.price).toFixed(2)}</td>
+                                <td class="px-4 py-3 font-bold text-slate-800">${product.units_sold ?? 0}</td>
+                                <td class="px-4 py-3">${badge}</td>
+                                <td class="px-4 py-3 text-slate-500 text-xs">${product.last_restock_date || 'N/A'}</td>
+                            </tr>
+                        `);
+                    });
+
+                    // Render pagination
+                    if (totalPages > 1) {
+                        productPagination.innerHTML = `
+                            <div class="text-xs text-slate-500">
+                                Showing ${startIndex + 1} to ${Math.min(endIndex, filtered.length)} of ${filtered.length} products
+                            </div>
+                            <div class="flex items-center gap-1.5 flex-wrap justify-center">
+                                <button type="button" onclick="window.changeProductPage(${currentProductPage - 1})" ${currentProductPage === 1 ? 'disabled' : ''} class="px-2.5 py-1 text-xs rounded-[8px] border border-slate-200 transition-all cursor-pointer ${currentProductPage === 1 ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-700 bg-white hover:bg-slate-100'}">Prev</button>
+                                ${Array.from({length: totalPages}, (_, i) => i + 1).map(page => `
+                                    <button type="button" onclick="window.changeProductPage(${page})" class="px-2.5 py-1 text-xs rounded-[8px] transition-all cursor-pointer ${page === currentProductPage ? 'font-bold text-slate-900 bg-[#6EC1D1] border border-slate-200 shadow-sm' : 'text-slate-700 border border-slate-200 bg-white hover:bg-slate-100'}">${page}</button>
+                                `).join('')}
+                                <button type="button" onclick="window.changeProductPage(${currentProductPage + 1})" ${currentProductPage === totalPages ? 'disabled' : ''} class="px-2.5 py-1 text-xs rounded-[8px] border border-slate-200 transition-all cursor-pointer ${currentProductPage === totalPages ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-700 bg-white hover:bg-slate-100'}">Next</button>
+                            </div>
+                        `;
+                    } else {
+                        productPagination.innerHTML = '';
                     }
                 }
 
-                function openProductsModal(supplierName) {
-                    const supplier = supplierSummaries.find(item => item.name === supplierName);
-                    if (!supplier) return;
+                window.changeProductPage = function(page) {
+                    currentProductPage = page;
+                    renderProductTable();
+                };
 
-                    productsModalTitle.textContent = `Products from ${supplier.name}`;
-                    productsModalSubtitle.textContent = `${supplier.product_count} product${supplier.product_count === 1 ? '' : 's'} linked to this supplier.`;
-                    productsModalTableBody.innerHTML = '';
+                productSearchInput.addEventListener('input', () => {
+                    currentProductPage = 1;
+                    renderProductTable();
+                });
 
-                    if (!supplier.products.length) {
-                        productsModalTableBody.innerHTML = '<tr><td colspan="6" class="px-4 py-6 text-center text-sm text-slate-500">No product records are currently linked to this supplier.</td></tr>';
-                    } else {
-                        supplier.products.forEach(product => {
-                            productsModalTableBody.insertAdjacentHTML('beforeend', `
-                                <tr class="border-b border-slate-200">
-                                    <td class="px-4 py-3 font-semibold text-slate-900">${product.name}</td>
-                                    <td class="px-4 py-3 text-slate-600">${product.sku}</td>
-                                    <td class="px-4 py-3 text-slate-600">${product.category}</td>
-                                    <td class="px-4 py-3 font-semibold text-slate-900">${product.stock_quantity}</td>
-                                    <td class="px-4 py-3 font-semibold text-slate-900">₱${Number(product.price).toFixed(2)}</td>
-                                    <td class="px-4 py-3 text-slate-600">${product.last_restock_date || 'N/A'}</td>
-                                </tr>
-                            `);
-                        });
-                    }
-
-                    openModal(productsModal);
+                // Edit & Archive Handlers
+                function handleEditActiveSupplier() {
+                    if (!activeSupplier) return;
+                    fillSupplierForm(activeSupplier);
+                    openModal(supplierModal);
                 }
 
+                function handleArchiveActiveSupplier() {
+                    if (!activeSupplier) return;
+                    if (!activeSupplier.id) {
+                        showToast('This supplier record is not yet saved to the database.', 'error');
+                        return;
+                    }
+                    archiveSupplierForm.action = '{{ url('supplier-assessment/suppliers') }}/' + activeSupplier.id;
+                    if (confirm(`Archive "${activeSupplier.name}"? This will remove it from the active supplier list.`)) {
+                        archiveSupplierForm.submit();
+                    }
+                }
+
+                detailEditSupplierButton.addEventListener('click', handleEditActiveSupplier);
+                quickEditBtn.addEventListener('click', handleEditActiveSupplier);
+
+                detailArchiveSupplierButton.addEventListener('click', handleArchiveActiveSupplier);
+                quickArchiveBtn.addEventListener('click', handleArchiveActiveSupplier);
+
+                // Add Supplier Modal Trigger
                 openSupplierModalButton.addEventListener('click', () => {
                     resetSupplierForm();
                     openModal(supplierModal);
@@ -803,34 +1138,15 @@
                     button.addEventListener('click', () => closeModal(supplierModal));
                 });
 
-                supplierSearch.addEventListener('input', renderSupplierList);
+                // Populate dropdown options on load
+                renderDropdownOptions();
 
-                // Event delegation for supplier pagination
-                supplierPagination.addEventListener('click', (e) => {
-                    const button = e.target.closest('.pagination-btn');
-                    if (button) {
-                        e.preventDefault();
-                        const page = parseInt(button.dataset.page);
-                        if (page >= 1 && page <= Math.ceil(supplierSummaries.length / itemsPerPage)) {
-                            currentPage = page;
-                            renderSupplierList();
-                        }
-                    }
-                });
-
-                [closeProductsModal, closeProductsModalButton].forEach(button => {
-                    button.addEventListener('click', () => closeModal(productsModal));
-                });
-
-                renderSupplierList();
-
-                // Auto-select supplier if passed in URL
+                // Initial Load: Auto-select supplier ONLY if specifically requested via URL query param
                 const urlParams = new URLSearchParams(window.location.search);
-                const selectedSupplier = urlParams.get('selected_supplier');
-                if (selectedSupplier) {
-                    setTimeout(() => {
-                        setSupplierDetail(selectedSupplier);
-                    }, 100);
+                const selectedSupplierParam = urlParams.get('selected_supplier');
+
+                if (selectedSupplierParam) {
+                    setSupplierDetail(selectedSupplierParam);
                 }
             </script>
         @endpush

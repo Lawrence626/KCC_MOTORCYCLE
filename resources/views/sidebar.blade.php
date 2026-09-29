@@ -71,7 +71,6 @@
                 </a>
             </div>
         </div>
-
         @elseif(auth()->user() && (auth()->user()->role === 'cashier' || auth()->user()->role === 'warehouse_personnel'))
         @php
             $isInventoryStaffActive = request()->routeIs('inventory.monitoring')
@@ -116,6 +115,8 @@
             </div>
         </div>
         @endif
+
+
 
         @if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'cashier'))
         @php
@@ -611,7 +612,6 @@
             }
             updateGroupState(group);
         });
-
         allGroups.forEach(group => {
             const button = group.querySelector('.sidebar-group-toggle');
             const content = group.querySelector('.sidebar-group-content');

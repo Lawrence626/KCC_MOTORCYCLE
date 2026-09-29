@@ -1066,8 +1066,10 @@ async function loadProducts(page = 1) {
 
                 const stockLevel = product.stock_quantity || 0;
                 const reorderLevel = product.reorder_level || 10;
-                const isLowStock = stockLevel <= reorderLevel && stockLevel > 0;
+                const maxStock = 50;
                 const isOutOfStock = stockLevel <= 0;
+                const isLowStock = !isOutOfStock && stockLevel <= reorderLevel;
+                const isOverStock = stockLevel > maxStock;
 
                 // Calculate VAT breakdown (assuming 12% VAT)
                 const unitPrice = parseFloat(product.unit_price || 0);
@@ -1084,6 +1086,8 @@ async function loadProducts(page = 1) {
                     statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">No Stock</span>';
                 } else if (isLowStock) {
                     statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">Low Stock</span>';
+                } else if (isOverStock) {
+                    statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 font-semibold">Overstock</span>';
                 } else {
                     statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">Available</span>';
                 }
@@ -1112,9 +1116,9 @@ async function loadProducts(page = 1) {
                         </div>
                     </td>
                     <td class="px-4 py-3">
-                        <div class="text-sm font-medium text-slate-900">${stockLevel} / ${reorderLevel}</div>
+                        <div class="text-sm font-medium text-slate-900">${stockLevel} / ${maxStock}</div>
                         <div class="w-24 bg-slate-100 rounded-full h-1.5 mt-1 overflow-hidden">
-                            <div class="${isLowStock || isOutOfStock ? 'bg-orange-500' : 'bg-emerald-500'} h-full rounded-full" style="width: ${Math.min(100, (stockLevel / Math.max(1, reorderLevel)) * 100)}%"></div>
+                            <div class="${isOutOfStock ? 'bg-red-500' : (isLowStock ? 'bg-orange-500' : (isOverStock ? 'bg-purple-500' : 'bg-emerald-500'))} h-full rounded-full" style="width: ${Math.min(100, (stockLevel / maxStock) * 100)}%"></div>
                         </div>
                     </td>
                     <td class="px-4 py-3">

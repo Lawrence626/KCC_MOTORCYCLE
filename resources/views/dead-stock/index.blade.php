@@ -9,7 +9,14 @@
                     Inventory items without sales for <span class="text-slate-900 font-semibold">{{ $thresholdDays }} days</span> or more.
                 </p>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 pr-4">
+                <a href="{{ route('dss.recommendations.index') }}"
+                   class="inline-flex items-center gap-2 rounded-[10px] border border-amber-300 bg-amber-50/80 px-3.5 py-2 text-sm font-semibold text-amber-900 shadow-sm hover:bg-amber-100 focus:outline-none transition-all duration-200">
+                    <svg class="h-4 w-4 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.516 0c.85.493 1.508 1.333 1.508 2.316V18"/>
+                    </svg>
+                    <span>DSS Recommendations</span>
+                </a>
                 <div class="relative" data-dropdown-wrapper="exportMenu">
                     <button type="button"
                             id="exportDropdownBtn"

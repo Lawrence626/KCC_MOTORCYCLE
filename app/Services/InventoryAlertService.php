@@ -224,6 +224,29 @@ class InventoryAlertService
         $product = $notification->product;
         $productName = $product ? ($product->product_name ?? $product->name) : 'Unknown Product';
 
+        // Check for active DSS Recommendation for this product
+        $dssRec = \App\Models\DSSRecommendation::where('product_id', $notification->product_id)
+            ->where('is_active', true)
+            ->whereIn('recommendation_type', ['reorder_level', 'inventory_reorder'])
+            ->first();
+
+        $dssSuggestion = null;
+        if ($dssRec) {
+            $meta = $dssRec->metadata ?? [];
+            $dssSuggestion = [
+                'is_fast_moving' => true,
+                'title' => $dssRec->title,
+                'description' => $dssRec->description,
+                'priority' => $dssRec->priority,
+                'suggested_reorder_level' => $dssRec->getSuggestedReorderLevel(),
+                'suggested_stock_quantity' => $dssRec->getSuggestedStockQuantity(),
+                'sales_this_month' => $meta['sales_this_month'] ?? null,
+                'sales_velocity' => $meta['sales_velocity'] ?? null,
+                'stockout_risk' => $meta['stockout_risk'] ?? null,
+                'recommendation_id' => $dssRec->id,
+            ];
+        }
+
         return [
             'id' => $notification->id,
             'product_id' => $notification->product_id,
@@ -240,6 +263,7 @@ class InventoryAlertService
             'created_at' => $notification->created_at->toISOString(),
             'updated_at' => $notification->updated_at->toISOString(),
             'order_url' => route('order.create', ['product_id' => $notification->product_id]),
+            'dss_suggestion' => $dssSuggestion,
         ];
     }
 

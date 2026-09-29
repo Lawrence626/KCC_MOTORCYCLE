@@ -126,7 +126,7 @@
                                                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-4m0-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                              </svg>
                                              <div class="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 hidden group-hover:block w-48 rounded-xl bg-slate-900 px-3 py-2 text-[10px] font-semibold normal-case tracking-normal text-white text-center shadow-xl z-20">
-                                                 <span class="relative z-10">Maximum Stock (100) − Current Stock</span>
+                                                 <span class="relative z-10">Maximum Stock (50) − Current Stock</span>
                                                  <div class="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-slate-900"></div>
                                              </div>
                                          </div>

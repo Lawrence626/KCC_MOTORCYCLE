@@ -11,7 +11,6 @@
     <!-- Center: Navigation Tabs (Pill Container Centered in Middle) -->
     @php
         $isPosActive = request()->routeIs('pos.terminal') || request()->routeIs('replacing.items') || request()->is('pos*') || request()->is('replacing*') || request()->is('replacing-items*');
-        $isInvActive = request()->routeIs('inventory.monitoring') || request()->routeIs('allstocks') || request()->routeIs('product.categorization') || request()->routeIs('item.disposal') || request()->routeIs('reverse-logistics') || request()->is('inventory*') || request()->is('product*');
         $isAnalyticsActive = request()->routeIs('sales.analytics') || request()->routeIs('pricing.module') || request()->routeIs('overstocking.report') || request()->routeIs('out.of.stock') || request()->routeIs('dss.dead-stock*');
     @endphp
     <nav class="hidden md:flex items-center gap-1.5 border border-slate-700/60 rounded-full p-1 px-2 shadow-md mx-auto whitespace-nowrap flex-shrink-0" style="background: linear-gradient(90deg, #000000, #2b2b2b);">
@@ -83,99 +82,7 @@
         </div>
         @endif
 
-        <!-- Inventory Management Dropdown (Click to Toggle) -->
-        <div class="relative" id="invDropdownContainer">
-            <button type="button" 
-                    id="invDropdownBtn"
-                    onclick="toggleInvDropdown(event)"
-                    @class([
-                        'rounded-full px-5 py-2 text-sm transition-all duration-200 flex items-center gap-2 cursor-pointer whitespace-nowrap flex-shrink-0',
-                        'bg-[#00ddd2] text-black font-semibold shadow-md' => $isInvActive,
-                        'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium' => !$isInvActive
-                    ])>
-                <svg id="invDropdownIcon" class="w-4 h-4 {{ $isInvActive ? 'text-black' : 'text-slate-300' }}" viewBox="0 0 24 24" fill="currentColor">
-                    <rect x="3" y="7" width="18" height="11" rx="1.2" />
-                    <rect x="8" y="3.8" width="8" height="2" rx="0.6" />
-                    <rect x="4.5" y="10.4" width="15" height="1.2" rx="0.4" />
-                </svg>
-                <span>Inventory Management</span>
-                <svg id="invDropdownArrow" class="w-3.5 h-3.5 {{ $isInvActive ? 'text-black' : 'text-slate-300' }}" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M7 10l5 5 5-5H7z" />
-                </svg>
-            </button>
 
-            <div id="invDropdownMenu" class="hidden absolute left-0 top-full mt-2 w-max min-w-[250px] rounded-[15px] shadow-2xl border border-slate-700/80 p-2 z-50 transition-all duration-200 origin-top-left text-white" style="background: linear-gradient(135deg, #000000, #2b2b2b);">
-                <a href="{{ route('inventory.monitoring') }}" 
-                   @class([
-                       'flex items-center gap-3 px-4 py-2 text-sm transition-all duration-200 rounded-full whitespace-nowrap',
-                       'font-semibold text-white bg-slate-700/70 shadow-xs' => request()->routeIs('inventory.monitoring'),
-                       'text-slate-300 hover:bg-slate-700/60 hover:text-white font-medium' => !request()->routeIs('inventory.monitoring')
-                   ])>
-                    <span @class([
-                        'w-2 h-2 rounded-full transition-colors flex-shrink-0',
-                        'bg-[#00ddd2]' => request()->routeIs('inventory.monitoring'),
-                        'bg-slate-400' => !request()->routeIs('inventory.monitoring')
-                    ])></span>
-                    <span>Inventory Monitoring</span>
-                </a>
-                @if(auth()->check() && (auth()->user()->role === 'inventory_clerk' || auth()->user()->role === 'admin' || auth()->user()->role === 'warehouse_personnel'))
-                <a href="{{ route('allstocks') }}" 
-                   @class([
-                       'flex items-center gap-3 px-4 py-2 text-sm transition-all duration-200 rounded-full mt-1 whitespace-nowrap',
-                       'font-semibold text-white bg-slate-700/70 shadow-xs' => request()->routeIs('allstocks'),
-                       'text-slate-300 hover:bg-slate-700/60 hover:text-white font-medium' => !request()->routeIs('allstocks')
-                   ])>
-                    <span @class([
-                        'w-2 h-2 rounded-full transition-colors flex-shrink-0',
-                        'bg-[#00ddd2]' => request()->routeIs('allstocks'),
-                        'bg-slate-400' => !request()->routeIs('allstocks')
-                    ])></span>
-                    <span>All Stocks</span>
-                </a>
-                @endif
-                <a href="{{ route('product.categorization') }}" 
-                   @class([
-                       'flex items-center gap-3 px-4 py-2 text-sm transition-all duration-200 rounded-full mt-1 whitespace-nowrap',
-                       'font-semibold text-white bg-slate-700/70 shadow-xs' => request()->routeIs('product.categorization'),
-                       'text-slate-300 hover:bg-slate-700/60 hover:text-white font-medium' => !request()->routeIs('product.categorization')
-                   ])>
-                    <span @class([
-                        'w-2 h-2 rounded-full transition-colors flex-shrink-0',
-                        'bg-[#00ddd2]' => request()->routeIs('product.categorization'),
-                        'bg-slate-400' => !request()->routeIs('product.categorization')
-                    ])></span>
-                    <span>Product Categorization</span>
-                </a>
-                @if(auth()->check() && (auth()->user()->role === 'inventory_clerk' || auth()->user()->role === 'admin'))
-                <a href="{{ route('item.disposal') }}" 
-                   @class([
-                       'flex items-center gap-3 px-4 py-2 text-sm transition-all duration-200 rounded-full mt-1 whitespace-nowrap',
-                       'font-semibold text-white bg-slate-700/70 shadow-xs' => request()->routeIs('item.disposal'),
-                       'text-slate-300 hover:bg-slate-700/60 hover:text-white font-medium' => !request()->routeIs('item.disposal')
-                   ])>
-                    <span @class([
-                        'w-2 h-2 rounded-full transition-colors flex-shrink-0',
-                        'bg-[#00ddd2]' => request()->routeIs('item.disposal'),
-                        'bg-slate-400' => !request()->routeIs('item.disposal')
-                    ])></span>
-                    <span>Item Disposal List</span>
-                </a>
-                <a href="{{ route('reverse-logistics') }}" 
-                   @class([
-                       'flex items-center gap-3 px-4 py-2 text-sm transition-all duration-200 rounded-full mt-1 whitespace-nowrap',
-                       'font-semibold text-white bg-slate-700/70 shadow-xs' => request()->routeIs('reverse-logistics'),
-                       'text-slate-300 hover:bg-slate-700/60 hover:text-white font-medium' => !request()->routeIs('reverse-logistics')
-                   ])>
-                    <span @class([
-                        'w-2 h-2 rounded-full transition-colors flex-shrink-0',
-                        'bg-[#00ddd2]' => request()->routeIs('reverse-logistics'),
-                        'bg-slate-400' => !request()->routeIs('reverse-logistics')
-                    ])></span>
-                    <span>Reverse Logistics</span>
-                </a>
-                @endif
-            </div>
-        </div>
 
         <!-- Data Analytics (Dropdown for Inventory Clerk / Admin) vs Sales Analytics (Cashier / Warehouse Personnel) -->
         @if(auth()->check() && (auth()->user()->role === 'inventory_clerk' || auth()->user()->role === 'admin'))
@@ -494,25 +401,6 @@
         </a>
 
         <div class="border-t border-slate-800 my-1"></div>
-        <div class="px-4 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Inventory</div>
-        <a href="{{ route('inventory.monitoring') }}" 
-           @class([
-               'px-4 py-2 rounded-xl text-sm font-medium transition pl-6 flex items-center gap-2',
-               'text-[#00ddd2] font-semibold' => request()->routeIs('inventory.monitoring'),
-               'text-slate-300 hover:bg-slate-800 hover:text-white' => !request()->routeIs('inventory.monitoring')
-           ])>
-            <span>• Inventory Monitoring</span>
-        </a>
-        <a href="{{ route('product.categorization') }}" 
-           @class([
-               'px-4 py-2 rounded-xl text-sm font-medium transition pl-6 flex items-center gap-2',
-               'text-[#00ddd2] font-semibold' => request()->routeIs('product.categorization'),
-               'text-slate-300 hover:bg-slate-800 hover:text-white' => !request()->routeIs('product.categorization')
-           ])>
-            <span>• Product Categorization</span>
-        </a>
-
-        <div class="border-t border-slate-800 my-1"></div>
         <a href="{{ route('sales.analytics') }}" 
            @class([
                'px-4 py-2.5 rounded-xl text-sm font-medium transition flex items-center gap-3',
@@ -526,7 +414,6 @@
 
 <script>
     const isPosRouteActive = @json((bool)$isPosActive);
-    const isInvRouteActive = @json((bool)$isInvActive);
     const isAnalyticsRouteActive = @json(request()->routeIs('sales.analytics') || request()->routeIs('pricing.module') || request()->routeIs('overstocking.report') || request()->routeIs('out.of.stock') || request()->routeIs('dss.dead-stock*'));
 
     function setBtnActive(btn, arrow, svgIcon, isActive) {
@@ -559,21 +446,15 @@
     function togglePosDropdown(event) {
         if (event) event.stopPropagation();
         const posMenu = document.getElementById('posDropdownMenu');
-        const invMenu = document.getElementById('invDropdownMenu');
         const analyticsMenu = document.getElementById('analyticsDropdownMenu');
         const posBtn = document.getElementById('posDropdownBtn');
-        const invBtn = document.getElementById('invDropdownBtn');
         const analyticsBtn = document.getElementById('analyticsDropdownBtn');
         const posArrow = document.getElementById('posDropdownArrow');
-        const invArrow = document.getElementById('invDropdownArrow');
         const analyticsArrow = document.getElementById('analyticsDropdownArrow');
         const posIcon = document.getElementById('posDropdownIcon');
-        const invIcon = document.getElementById('invDropdownIcon');
         const analyticsIcon = document.getElementById('analyticsDropdownIcon');
 
-        if (invMenu) invMenu.classList.add('hidden');
         if (analyticsMenu) analyticsMenu.classList.add('hidden');
-        setBtnActive(invBtn, invArrow, invIcon, isInvRouteActive);
         setBtnActive(analyticsBtn, analyticsArrow, analyticsIcon, isAnalyticsRouteActive);
 
         if (posMenu) {
@@ -583,52 +464,19 @@
         }
     }
 
-    function toggleInvDropdown(event) {
-        if (event) event.stopPropagation();
-        const posMenu = document.getElementById('posDropdownMenu');
-        const invMenu = document.getElementById('invDropdownMenu');
-        const analyticsMenu = document.getElementById('analyticsDropdownMenu');
-        const posBtn = document.getElementById('posDropdownBtn');
-        const invBtn = document.getElementById('invDropdownBtn');
-        const analyticsBtn = document.getElementById('analyticsDropdownBtn');
-        const posArrow = document.getElementById('posDropdownArrow');
-        const invArrow = document.getElementById('invDropdownArrow');
-        const analyticsArrow = document.getElementById('analyticsDropdownArrow');
-        const posIcon = document.getElementById('posDropdownIcon');
-        const invIcon = document.getElementById('invDropdownIcon');
-        const analyticsIcon = document.getElementById('analyticsDropdownIcon');
-
-        if (posMenu) posMenu.classList.add('hidden');
-        if (analyticsMenu) analyticsMenu.classList.add('hidden');
-        setBtnActive(posBtn, posArrow, posIcon, isPosRouteActive);
-        setBtnActive(analyticsBtn, analyticsArrow, analyticsIcon, isAnalyticsRouteActive);
-
-        if (invMenu) {
-            const isOpening = invMenu.classList.contains('hidden');
-            invMenu.classList.toggle('hidden');
-            setBtnActive(invBtn, invArrow, invIcon, isOpening || isInvRouteActive);
-        }
-    }
-
     function toggleAnalyticsDropdown(event) {
         if (event) event.stopPropagation();
         const posMenu = document.getElementById('posDropdownMenu');
-        const invMenu = document.getElementById('invDropdownMenu');
         const analyticsMenu = document.getElementById('analyticsDropdownMenu');
         const posBtn = document.getElementById('posDropdownBtn');
-        const invBtn = document.getElementById('invDropdownBtn');
         const analyticsBtn = document.getElementById('analyticsDropdownBtn');
         const posArrow = document.getElementById('posDropdownArrow');
-        const invArrow = document.getElementById('invDropdownArrow');
         const analyticsArrow = document.getElementById('analyticsDropdownArrow');
         const posIcon = document.getElementById('posDropdownIcon');
-        const invIcon = document.getElementById('invDropdownIcon');
         const analyticsIcon = document.getElementById('analyticsDropdownIcon');
 
         if (posMenu) posMenu.classList.add('hidden');
-        if (invMenu) invMenu.classList.add('hidden');
         setBtnActive(posBtn, posArrow, posIcon, isPosRouteActive);
-        setBtnActive(invBtn, invArrow, invIcon, isInvRouteActive);
 
         if (analyticsMenu) {
             const isOpening = analyticsMenu.classList.contains('hidden');
@@ -639,28 +487,19 @@
 
     document.addEventListener('click', function(event) {
         const posMenu = document.getElementById('posDropdownMenu');
-        const invMenu = document.getElementById('invDropdownMenu');
         const analyticsMenu = document.getElementById('analyticsDropdownMenu');
         const posContainer = document.getElementById('posDropdownContainer');
-        const invContainer = document.getElementById('invDropdownContainer');
         const analyticsContainer = document.getElementById('analyticsDropdownContainer');
         const posBtn = document.getElementById('posDropdownBtn');
-        const invBtn = document.getElementById('invDropdownBtn');
         const analyticsBtn = document.getElementById('analyticsDropdownBtn');
         const posArrow = document.getElementById('posDropdownArrow');
-        const invArrow = document.getElementById('invDropdownArrow');
         const analyticsArrow = document.getElementById('analyticsDropdownArrow');
         const posIcon = document.getElementById('posDropdownIcon');
-        const invIcon = document.getElementById('invDropdownIcon');
         const analyticsIcon = document.getElementById('analyticsDropdownIcon');
 
         if (posMenu && posContainer && !posContainer.contains(event.target)) {
             posMenu.classList.add('hidden');
             setBtnActive(posBtn, posArrow, posIcon, isPosRouteActive);
-        }
-        if (invMenu && invContainer && !invContainer.contains(event.target)) {
-            invMenu.classList.add('hidden');
-            setBtnActive(invBtn, invArrow, invIcon, isInvRouteActive);
         }
         if (analyticsMenu && analyticsContainer && !analyticsContainer.contains(event.target)) {
             analyticsMenu.classList.add('hidden');

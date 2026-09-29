@@ -11,16 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_warehouse_stock', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->string('warehouse'); // SHOP, Warehouse A, Warehouse B, Warehouse C
-            $table->integer('quantity')->default(0);
-            $table->timestamps();
-            
-            // Ensure unique combination of product and warehouse
-            $table->unique(['product_id', 'warehouse']);
-        });
+        if (!Schema::hasTable('product_warehouse_stock')) {
+            Schema::create('product_warehouse_stock', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('product_id')->constrained()->onDelete('cascade');
+                $table->string('warehouse'); // SHOP, Warehouse A, Warehouse B, Warehouse C
+                $table->integer('quantity')->default(0);
+                $table->timestamps();
+                
+                // Ensure unique combination of product and warehouse
+                $table->unique(['product_id', 'warehouse']);
+            });
+        }
     }
 
     /**

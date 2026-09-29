@@ -58,11 +58,28 @@ class LoginOtpController extends Controller
             'remember' => $request->boolean('remember'),
         ], now()->addMinutes(10));
 
-        Mail::to($user->email)->send(new LoginOtpCodeMail($user, $otpCode));
+        $isOffline = false;
+        try {
+            Mail::to($user->email)->send(new LoginOtpCodeMail($user, $otpCode));
+        } catch (\Throwable $e) {
+            $isOffline = true;
+            \Illuminate\Support\Facades\Log::warning("Offline / SMTP failure sending OTP to {$user->email}. OTP Code: {$otpCode}. Error: " . $e->getMessage());
+        }
 
-        return response()->json([
-            'message' => 'A 6-digit verification code has been sent to your email address.',
-        ]);
+        $responseData = [
+            'is_offline' => $isOffline,
+            'message' => $isOffline
+                ? 'Offline Mode: No internet connection detected. Local security code generated.'
+                : 'A 6-digit verification code has been sent to your email address.',
+        ];
+
+        // When offline or in local/debug environment, provide the code directly so offline operations are never blocked
+        if ($isOffline || app()->environment('local') || config('app.debug')) {
+            $responseData['offline_otp'] = $otpCode;
+            $responseData['debug_otp'] = $otpCode;
+        }
+
+        return response()->json($responseData);
     }
 
     public function verify(Request $request): JsonResponse

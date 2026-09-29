@@ -624,35 +624,64 @@
 
                 list.innerHTML = notifications.map(function(n) {
                     var isCritical = n.notification_type === 'out_of_stock';
+                    var dss = n.dss_suggestion;
+                    var isFastMoving = dss && dss.is_fast_moving;
+
                     var iconSVG = isCritical 
-                        ? '<svg class="w-4 h-4 text-red-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>'
-                        : '<svg class="w-4 h-4 text-amber-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>';
-                    var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
+                        ? '<svg class="w-4 h-4 text-red-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>'
+                        : (isFastMoving 
+                            ? '<svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg>'
+                            : '<svg class="w-4 h-4 text-amber-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>');
+
+                    var typeLabel = isCritical ? 'Out of Stock' : (isFastMoving ? 'Fast-Moving Stock Alert' : 'Low Stock');
                     var ago = _timeAgo(n.created_at);
                     var stockText = isCritical ? '0 remaining' : (n.current_stock || 0) + ' remaining';
                     var isUnread = n.status === 'unread';
-                    var bgClass = isUnread ? '' : (n.status === 'resolved' ? 'opacity-60' : '');
+                    var bgClass = isUnread ? 'bg-slate-900/40' : (n.status === 'resolved' ? 'opacity-60' : '');
                     var resolvedMark = n.status === 'resolved'
                         ? '<span class="text-[10px] text-emerald-400 font-medium">✓ Resolved</span>'
                         : '';
+
+                    var orderBtnText = isFastMoving && dss.suggested_reorder_level
+                        ? 'Direct PO (' + dss.suggested_reorder_level + ' pcs)'
+                        : 'Order Now';
+
                     var orderBtn = n.status !== 'resolved'
-                        ? '<a href="' + (n.order_url || '/purchase-order/create') + '" class="rounded-lg bg-emerald-600 px-2.5 py-1.5 text-[10px] font-semibold text-white transition hover:bg-emerald-700">Order Now</a>'
+                        ? '<a href="' + (n.order_url || '/purchase-order/create') + '" class="rounded-lg bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 text-[11px] font-bold text-white transition shadow-sm flex items-center gap-1.5">' +
+                              '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>' +
+                              orderBtnText +
+                          '</a>'
                         : resolvedMark;
 
-                    return '<div class="border-b border-slate-800/40 px-4 py-3 last:border-b-0 ' + bgClass + '" data-header-notif-id="' + n.id + '">' +
+                    var dssCard = '';
+                    if (isFastMoving) {
+                        dssCard = '<div class="mt-2 p-2.5 rounded-lg bg-gradient-to-br from-amber-950/40 to-slate-900/60 border border-amber-500/30 text-xs space-y-1">' +
+                            '<div class="flex items-center justify-between font-bold text-amber-300">' +
+                                '<span>DSS Reorder Rec: <span class="text-white underline">' + (dss.suggested_reorder_level || n.reorder_point) + ' units</span></span>' +
+                                (dss.sales_this_month ? '<span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-200">' + dss.sales_this_month + ' sold this mo.</span>' : '') +
+                            '</div>' +
+                            '<p class="text-[10px] text-slate-300 leading-snug">' + (dss.description || 'High sales velocity detected. Increasing stock and reorder point recommended.') + '</p>' +
+                        '</div>';
+                    }
+
+                    return '<div class="border-b border-slate-800/60 px-4 py-3.5 last:border-b-0 ' + bgClass + '" data-header-notif-id="' + n.id + '">' +
                         '<div class="flex items-start gap-3">' +
-                            '<div class="mt-0.5 flex-shrink-0 w-8 h-8 flex items-center justify-center" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">' +
+                            '<div class="mt-0.5 flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg ' + (isCritical ? 'bg-red-500/20' : (isFastMoving ? 'bg-amber-500/20' : 'bg-cyan-500/20')) + '">' +
                                 iconSVG +
                             '</div>' +
                             '<div class="flex-1 min-w-0">' +
-                                '<div class="flex items-center justify-between">' +
-                                    '<span class="text-[9px] font-bold uppercase tracking-wider text-slate-700">' + typeLabel + '</span>' +
-                                    (isUnread ? '<span class="w-2 h-2 rounded-full bg-blue-400 flex-shrink-0"></span>' : '') +
+                                '<div class="flex items-center justify-between gap-1">' +
+                                    '<div class="flex items-center gap-1.5 flex-wrap">' +
+                                        '<span class="text-[9px] font-bold uppercase tracking-wider ' + (isCritical ? 'text-red-400' : (isFastMoving ? 'text-amber-400' : 'text-cyan-400')) + '">' + typeLabel + '</span>' +
+                                        (isFastMoving ? '<span class="text-[8px] font-bold uppercase tracking-wider px-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">DSS Recommendation</span>' : '') +
+                                    '</div>' +
+                                    (isUnread ? '<span class="w-2 h-2 rounded-full bg-cyan-400 flex-shrink-0"></span>' : '') +
                                 '</div>' +
                                 '<p class="text-[13px] font-semibold text-white mt-0.5 truncate">' + (n.product_name || 'Product') + '</p>' +
-                                '<p class="text-[10px] text-slate-400 mt-0.5">SKU: ' + (n.sku || '') + ' · ' + stockText + '</p>' +
-                                '<div class="flex items-center justify-between mt-2">' +
-                                    '<span class="text-[10px] ' + (isUnread ? 'font-bold text-white' : 'text-slate-500') + '">' + ago + '</span>' +
+                                '<p class="text-[10px] text-slate-400 mt-0.5">SKU: ' + (n.sku || '') + ' · <span class="' + (isCritical ? 'text-red-300 font-bold' : 'text-slate-300') + '">' + stockText + '</span> (Reorder point: ' + (n.reorder_point || 0) + ')</p>' +
+                                dssCard +
+                                '<div class="flex items-center justify-between mt-2.5 pt-1 border-t border-slate-800/30">' +
+                                    '<span class="text-[10px] ' + (isUnread ? 'font-bold text-slate-300' : 'text-slate-500') + '">' + ago + '</span>' +
                                     orderBtn +
                                 '</div>' +
                             '</div>' +

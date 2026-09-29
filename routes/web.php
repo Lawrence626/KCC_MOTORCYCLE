@@ -15,8 +15,6 @@ use App\Http\Controllers\InventoryNotificationController;
 Route::view('/', 'login')->name('home');
 Route::view('/login', 'login')->name('login');
 
-Route::view('/forgot-password', 'forgot-password')->name('forgot-password');
-
 // Forgot Password routes (public)
 Route::post('/forgot-password/send', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendResetCode'])->name('password.send-code');
 Route::post('/forgot-password/verify', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'verifyCode'])->name('password.verify-code');
@@ -24,15 +22,13 @@ Route::post('/forgot-password/reset', [App\Http\Controllers\Auth\ForgotPasswordC
 
 Route::get('/reset-password/{token}', function ($token) {
     return view('auth.reset-password', ['token' => $token]);
-})->name('password.reset');
+})->name('password.reset.token');
 
 // Login routes
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login.store');
 Route::post('/login/otp/send', [App\Http\Controllers\Auth\LoginOtpController::class, 'send'])->name('login.otp.send');
 Route::post('/login/otp/verify', [App\Http\Controllers\Auth\LoginOtpController::class, 'verify'])->name('login.otp.verify');
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
-Route::post('/password/email', [App\Http\Controllers\Auth\PasswordResetController::class, 'sendResetLink'])->name('password.email');
-Route::post('/password/reset', [App\Http\Controllers\Auth\PasswordResetController::class, 'reset'])->name('password.update');
 
 // Forgot Password routes
 Route::get('/forgot-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'showForgotPassword'])->name('forgot-password');
@@ -336,8 +332,10 @@ Route::middleware(['auth'])->group(function () {
 
             // Recommendation Routes
             Route::get('recommendations', [App\Http\Controllers\DSSRecommendationController::class, 'index'])->name('dss.recommendations.index');
+            Route::post('recommendations/recalculate', [App\Http\Controllers\DSSRecommendationController::class, 'recalculate'])->name('dss.recommendations.recalculate');
             Route::get('recommendations/{id}', [App\Http\Controllers\DSSRecommendationController::class, 'show'])->name('dss.recommendations.show');
             Route::post('recommendations/{id}/action', [App\Http\Controllers\DSSRecommendationController::class, 'markActioned'])->name('dss.recommendations.action');
+            Route::post('recommendations/{id}/apply-reorder', [App\Http\Controllers\DSSRecommendationController::class, 'applyReorderLevel'])->name('dss.recommendations.apply-reorder');
 
             // Settings Routes
             Route::get('settings', [App\Http\Controllers\DSSSettingsController::class, 'index'])->name('dss.settings.index');
@@ -360,10 +358,12 @@ Route::middleware(['auth'])->group(function () {
             Route::get('top-fast-moving', [App\Http\Controllers\Api\DeadStockApiController::class, 'getTopFastMoving'])->name('api.dss.top-fast-moving');
 
             // Recommendation API
+            Route::post('recommendations/recalculate', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'recalculate'])->name('api.dss.recommendations.recalculate');
             Route::get('recommendations/product/{productId}', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'getByProduct'])->name('api.dss.recommendations.by-product');
             Route::get('recommendations/pending', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'getPending'])->name('api.dss.recommendations.pending');
             Route::get('recommendations/type/{type}', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'getByType'])->name('api.dss.recommendations.by-type');
             Route::post('recommendations/{id}/action', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'markActioned'])->name('api.dss.recommendations.action');
+            Route::post('recommendations/{id}/apply-reorder', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'applyReorderLevel'])->name('api.dss.recommendations.apply-reorder');
             Route::get('recommendations/pending-count', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'pendingCount'])->name('api.dss.recommendations.pending-count');
             Route::get('recommendations/count-by-type', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'countByType'])->name('api.dss.recommendations.count-by-type');
         });

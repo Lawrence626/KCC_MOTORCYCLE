@@ -287,6 +287,18 @@
                 }
 
                 showOtpModal();
+
+                if (data.debug_otp) {
+                    const debugDigits = data.debug_otp.split('');
+                    debugDigits.forEach((char, i) => {
+                        if (i < otpDigits.length) otpDigits[i].value = char;
+                    });
+                    otpStatus.textContent = data.message || 'Verification code auto-filled for local/offline testing.';
+                    otpStatus.classList.remove('hidden');
+                } else if (data.message && data.message.includes('Offline')) {
+                    otpStatus.textContent = data.message;
+                    otpStatus.classList.remove('hidden');
+                }
             } catch (error) {
                 loginError.textContent = 'Unable to send verification code. Please try again.';
                 loginError.classList.remove('hidden');
@@ -369,10 +381,18 @@
                     return;
                 }
 
-                otpStatus.textContent = '✓ Verification code sent successfully!';
+                if (data.offline_otp || data.debug_otp) {
+                    const debugDigits = (data.offline_otp || data.debug_otp).split('');
+                    debugDigits.forEach((char, i) => {
+                        if (i < otpDigits.length) otpDigits[i].value = char;
+                    });
+                    otpStatus.textContent = data.message || 'Verification code auto-filled for local/offline testing.';
+                } else {
+                    otpStatus.textContent = '✓ Verification code sent successfully!';
+                    clearOtpFields();
+                    otpDigits[0].focus();
+                }
                 otpStatus.classList.remove('hidden');
-                clearOtpFields();
-                otpDigits[0].focus();
 
                 setTimeout(() => {
                     otpResendButton.disabled = false;
