@@ -261,6 +261,10 @@
             loginError.classList.add('hidden');
             otpError.classList.add('hidden');
             otpStatus.classList.add('hidden');
+            const originalText = loginButton.textContent;
+            loginButton.disabled = true;
+            loginButton.textContent = 'Verifying & Sending Code...';
+
             const payload = {
                 email: emailInput.value.trim(),
                 password: passwordInput.value,
@@ -303,6 +307,9 @@
             } catch (error) {
                 loginError.textContent = 'Unable to send verification code. Please try again.';
                 loginError.classList.remove('hidden');
+            } finally {
+                loginButton.disabled = false;
+                loginButton.textContent = originalText;
             }
         }
 
