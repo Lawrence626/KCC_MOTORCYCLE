@@ -59,22 +59,28 @@ class LoginOtpController extends Controller
         ], now()->addMinutes(10));
 
         $isOffline = false;
-        try {
-            Mail::to($user->email)->send(new LoginOtpCodeMail($user, $otpCode));
-        } catch (\Throwable $e) {
+        $isLogDriver = config('mail.default') === 'log' || empty(config('mail.mailers.smtp.host')) || config('mail.mailers.smtp.host') === '127.0.0.1';
+
+        if (! $isLogDriver) {
+            try {
+                Mail::to($user->email)->send(new LoginOtpCodeMail($user, $otpCode));
+            } catch (\Throwable $e) {
+                $isOffline = true;
+                \Illuminate\Support\Facades\Log::warning("Offline / SMTP failure sending OTP to {$user->email}. OTP Code: {$otpCode}. Error: " . $e->getMessage());
+            }
+        } else {
             $isOffline = true;
-            \Illuminate\Support\Facades\Log::warning("Offline / SMTP failure sending OTP to {$user->email}. OTP Code: {$otpCode}. Error: " . $e->getMessage());
         }
 
         $responseData = [
             'is_offline' => $isOffline,
             'message' => $isOffline
-                ? 'Offline Mode: No internet connection detected. Local security code generated.'
+                ? "Security code ({$otpCode}) generated and auto-filled."
                 : 'A 6-digit verification code has been sent to your email address.',
         ];
 
-        // When offline or in local/debug environment, provide the code directly so offline operations are never blocked
-        if ($isOffline || app()->environment('local') || config('app.debug')) {
+        // When offline, log driver, or local/debug, return the code directly so logins are never blocked
+        if ($isOffline || $isLogDriver || app()->environment('local') || config('app.debug')) {
             $responseData['offline_otp'] = $otpCode;
             $responseData['debug_otp'] = $otpCode;
         }

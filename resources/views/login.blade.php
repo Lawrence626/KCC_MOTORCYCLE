@@ -288,15 +288,16 @@
 
                 showOtpModal();
 
-                if (data.debug_otp) {
-                    const debugDigits = data.debug_otp.split('');
+                const otpCode = data.offline_otp || data.debug_otp;
+                if (otpCode) {
+                    const debugDigits = String(otpCode).split('');
                     debugDigits.forEach((char, i) => {
                         if (i < otpDigits.length) otpDigits[i].value = char;
                     });
-                    otpStatus.textContent = data.message || 'Verification code auto-filled for local/offline testing.';
+                    otpStatus.textContent = data.message || 'Security code: ' + otpCode + ' (Auto-filled)';
                     otpStatus.classList.remove('hidden');
-                } else if (data.message && data.message.includes('Offline')) {
-                    otpStatus.textContent = data.message;
+                } else {
+                    otpStatus.textContent = data.message || 'Verification code sent to email.';
                     otpStatus.classList.remove('hidden');
                 }
             } catch (error) {
@@ -381,12 +382,13 @@
                     return;
                 }
 
-                if (data.offline_otp || data.debug_otp) {
-                    const debugDigits = (data.offline_otp || data.debug_otp).split('');
+                const otpCode = data.offline_otp || data.debug_otp;
+                if (otpCode) {
+                    const debugDigits = String(otpCode).split('');
                     debugDigits.forEach((char, i) => {
                         if (i < otpDigits.length) otpDigits[i].value = char;
                     });
-                    otpStatus.textContent = data.message || 'Verification code auto-filled for local/offline testing.';
+                    otpStatus.textContent = data.message || 'Security code: ' + otpCode + ' (Auto-filled)';
                 } else {
                     otpStatus.textContent = '✓ Verification code sent successfully!';
                     clearOtpFields();
