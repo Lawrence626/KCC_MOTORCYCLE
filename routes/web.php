@@ -133,8 +133,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('api/stats', [App\Http\Controllers\StockImportController::class, 'getStats'])->name('api.stats');
     Route::get('api/movements', [App\Http\Controllers\StockImportController::class, 'getMovements'])->name('api.movements');
 
-    // POS API for mobile scanner sync
+    // POS API for mobile scanner & live cross-device cart sync
     Route::get('api/pos/check-scan', [App\Http\Controllers\PosController::class, 'checkScan'])->name('api.pos.check-scan');
+    Route::post('api/pos/sync-cart', [App\Http\Controllers\PosController::class, 'syncCart'])->name('api.pos.sync-cart');
+    Route::get('api/pos/sync-cart', [App\Http\Controllers\PosController::class, 'getActiveCart'])->name('api.pos.get-cart');
 
 
     // POS Transaction APIs - Admin and Cashier only

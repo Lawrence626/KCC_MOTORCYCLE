@@ -26,6 +26,37 @@ const posState = {
     categories: ['All', 'Exhaust', 'Tires', 'Brakes', 'Oils', 'Accessories'],
 };
 
+const posClientId = 'pos_' + Math.random().toString(36).substring(2, 10) + '_' + Date.now();
+let lastLocalCartUpdate = Date.now();
+let lastSyncedCartTimestamp = 0;
+let cartSyncDebounceTimer = null;
+
+function broadcastCartState() {
+    lastLocalCartUpdate = Date.now();
+    if (cartSyncDebounceTimer) clearTimeout(cartSyncDebounceTimer);
+    cartSyncDebounceTimer = setTimeout(async () => {
+        try {
+            await fetch('/api/pos/sync-cart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                },
+                body: JSON.stringify({
+                    cart: posState.cart,
+                    services: Array.from(posState.selectedServices),
+                    discount: posState.discount,
+                    extraCharge: posState.extraCharge,
+                    clientId: posClientId,
+                    timestamp: lastLocalCartUpdate
+                })
+            });
+        } catch (e) {
+            // Quiet sync warning
+        }
+    }, 200);
+}
+
 function loadTransactionHistory() {
     try {
         const stored = localStorage.getItem('posTransactionHistory');
@@ -930,12 +961,14 @@ function addProductToCart(product) {
 
     renderCart();
     goToCart();
+    broadcastCartState();
     return true;
 }
 
 function removeCartItem(productId) {
     posState.cart = posState.cart.filter(item => item.id !== productId);
     renderCart();
+    broadcastCartState();
 }
 
 function changeCartQuantity(productId, delta) {
@@ -958,6 +991,7 @@ function changeCartQuantity(productId, delta) {
     }
 
     renderCart();
+    broadcastCartState();
 }
 
 function clearCart() {
@@ -969,6 +1003,7 @@ function clearCart() {
     const removeBtn = document.getElementById('posRemoveDiscountBtn');
     if (removeBtn) removeBtn.classList.add('hidden');
     renderCart();
+    broadcastCartState();
 }
 
 async function searchProducts(query = '', page = 1) {
@@ -2725,11 +2760,31 @@ function initializePos() {
     applyProductImagePreviews();
     updateInvestmentLabels();
 
-    // Start polling for mobile scans
+    // Start polling for mobile scans and real-time cart sync
     startScanPolling();
 
     // Listen for localStorage changes (same-browser sync)
     window.addEventListener('storage', handleStorageChange);
+
+    // Fetch initial active cart from server if available
+    fetch('/api/pos/sync-cart').then(res => res.json()).then(data => {
+        if (data && data.cart && Array.isArray(data.cart.cart) && data.cart.cart.length > 0 && posState.cart.length === 0) {
+            posState.cart = data.cart.cart;
+            lastSyncedCartTimestamp = Number(data.cart.timestamp || 0);
+            if (Array.isArray(data.cart.services)) {
+                posState.selectedServices = new Set(data.cart.services);
+            }
+            if (data.cart.discount !== undefined) {
+                posState.discount = Number(data.cart.discount);
+            }
+            if (data.cart.extraCharge !== undefined) {
+                posState.extraCharge = Number(data.cart.extraCharge);
+            }
+            renderCart();
+            recalculateAutoDiscount();
+            updateTotals();
+        }
+    }).catch(() => {});
 }
 
 // Expose functions globally for onclick handlers
@@ -3284,13 +3339,14 @@ function startScanPolling() {
         clearInterval(scanPollingInterval);
     }
 
-    // Poll server for new mobile scans every 1.5 seconds
+    // Poll server for new mobile scans and real-time cart sync every 1.2 seconds
     scanPollingInterval = setInterval(async () => {
         try {
             const response = await fetch('/api/pos/check-scan');
             if (!response.ok) return;
             const data = await response.json();
 
+            // 1. Process new scan if present
             if (data.success && data.scan && data.scan.code) {
                 const scanId = data.scan.id || null;
                 const scanTimestamp = new Date(data.scan.timestamp).getTime();
@@ -3304,10 +3360,45 @@ function startScanPolling() {
                     handleScannedCode(data.scan.code);
                 }
             }
+
+            // 2. Real-time Cross-Device Cart Synchronization
+            if (data.cart && data.cart.clientId && data.cart.clientId !== posClientId) {
+                const remoteTimestamp = Number(data.cart.timestamp || 0);
+                if (remoteTimestamp > lastSyncedCartTimestamp && remoteTimestamp > lastLocalCartUpdate) {
+                    lastSyncedCartTimestamp = remoteTimestamp;
+                    const previousCount = posState.cart.reduce((sum, i) => sum + (Number(i.quantity) || 1), 0);
+                    const newCart = Array.isArray(data.cart.cart) ? data.cart.cart : [];
+                    const newCount = newCart.reduce((sum, i) => sum + (Number(i.quantity) || 1), 0);
+
+                    posState.cart = newCart;
+                    if (Array.isArray(data.cart.services)) {
+                        posState.selectedServices = new Set(data.cart.services);
+                    }
+                    if (data.cart.discount !== undefined) {
+                        posState.discount = Number(data.cart.discount);
+                        const discountInput = document.getElementById('posDiscountInput');
+                        if (discountInput) discountInput.value = posState.discount.toFixed(2);
+                    }
+                    if (data.cart.extraCharge !== undefined) {
+                        posState.extraCharge = Number(data.cart.extraCharge);
+                        const extraInput = document.getElementById('posExtraChargeInput');
+                        if (extraInput) extraInput.value = posState.extraCharge.toFixed(2);
+                    }
+
+                    renderCart();
+                    recalculateAutoDiscount();
+                    updateTotals();
+
+                    if (newCount > previousCount) {
+                        playScanSuccessSound();
+                        showNotification('✓ Cart updated from mobile device', 'success');
+                    }
+                }
+            }
         } catch (error) {
-            // Quiet polling error
+            // Quiet polling warning
         }
-    }, 1500);
+    }, 1200);
 }
 
 function handleStorageChange(event) {
