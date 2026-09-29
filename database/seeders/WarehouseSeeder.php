@@ -17,6 +17,7 @@ class WarehouseSeeder extends Seeder
             ['name' => 'Warehouse A', 'code' => 'WH-A'],
             ['name' => 'Warehouse B', 'code' => 'WH-B'],
             ['name' => 'Warehouse C', 'code' => 'WH-C'],
+            ['name' => 'Warehouse D', 'code' => 'WH-D'],
         ];
 
         foreach ($defaultWarehouses as $warehouse) {

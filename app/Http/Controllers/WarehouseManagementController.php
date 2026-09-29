@@ -17,6 +17,30 @@ class WarehouseManagementController extends Controller
 {
     public function index()
     {
+        // Ensure default warehouses exist (Warehouse A, B, C, D)
+        $defaultWarehouses = [
+            ['name' => 'Warehouse A', 'code' => 'WH-A'],
+            ['name' => 'Warehouse B', 'code' => 'WH-B'],
+            ['name' => 'Warehouse C', 'code' => 'WH-C'],
+            ['name' => 'Warehouse D', 'code' => 'WH-D'],
+        ];
+
+        foreach ($defaultWarehouses as $default) {
+            Warehouse::firstOrCreate(
+                ['code' => $default['code']],
+                ['name' => $default['name'], 'is_active' => true]
+            );
+        }
+
+        // Auto-initialize warehouse stock distribution if none exists yet and active products exist
+        if (ProductWarehouseStock::count() === 0 && Product::where('is_archived', false)->where('stock_quantity', '>', 0)->exists()) {
+            try {
+                (new \Database\Seeders\LocationDistributionSeeder())->run();
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('Auto location distribution skipped: ' . $e->getMessage());
+            }
+        }
+
         // Load all products (not filtered by warehouse stock)
         $products = Product::where('is_archived', false)
             ->with('productCatalog')
@@ -31,24 +55,8 @@ class WarehouseManagementController extends Controller
             ->get();
         $totalWarehouses = $warehouses->count();
 
-        if ($totalWarehouses === 0) {
-            // Create default warehouses if none exist
-            $defaultWarehouses = [
-                ['name' => 'Warehouse A', 'code' => 'WH-A'],
-                ['name' => 'Warehouse B', 'code' => 'WH-B'],
-                ['name' => 'Warehouse C', 'code' => 'WH-C'],
-            ];
-
-            foreach ($defaultWarehouses as $default) {
-                Warehouse::create($default);
-            }
-
-            $warehouses = Warehouse::active()->orderBy('name')->get();
-            $totalWarehouses = 3;
-        }
-
         $totalProducts = $products->count();
-        $productsPerWarehouse = ceil($totalProducts / $totalWarehouses);
+        $productsPerWarehouse = ceil($totalProducts / max(1, $totalWarehouses));
         $shelvesPerWarehouse = max(1, ceil($productsPerWarehouse / 10));
 
         $savedShelvesByWarehouse = WarehouseShelf::all()
@@ -211,6 +219,48 @@ class WarehouseManagementController extends Controller
             $visibleSavedShelves = $warehouseSavedShelves->filter(function ($shelf) {
                 return !$shelf->archived;
             })->sortBy('slot_index');
+
+            // If this warehouse has allocated products in ProductWarehouseStock but no shelves yet, auto-generate initial shelves
+            if ($visibleSavedShelves->isEmpty() && $warehouseProducts->isNotEmpty()) {
+                $slotIdx = 0;
+                foreach ($chunkedProducts as $chunk) {
+                    $shelfProducts = $chunk->map(function ($p) {
+                        return [
+                            'id'               => $p->id,
+                            'sku'              => $p->sku ?? '',
+                            'name'             => $p->name ?? 'Unknown',
+                            'description'      => $p->description ?? '',
+                            'brand'            => $p->brand ?? '',
+                            'compatible_model' => $p->compatible_model ?? '',
+                            'qty'              => $p->stock_quantity ?? 1,
+                            'price'            => $p->unit_price ?? 0,
+                            'category'         => $p->category ?? '',
+                        ];
+                    })->values()->toArray();
+
+                    WarehouseShelf::firstOrCreate(
+                        [
+                            'warehouse_id' => $warehouse->id,
+                            'slot_index'   => $slotIdx,
+                        ],
+                        [
+                            'warehouse_code'  => $warehouse->code ?: ('WH-' . $warehouse->id),
+                            'warehouse_index' => 0,
+                            'sort_order'      => $slotIdx,
+                            'name'            => $warehouse->name . ' - Shelf ' . ($slotIdx + 1),
+                            'capacity'        => 10,
+                            'products'        => $shelfProducts,
+                            'archived'        => false,
+                        ]
+                    );
+                    $slotIdx++;
+                }
+
+                $warehouseSavedShelves = WarehouseShelf::where('warehouse_id', $warehouse->id)->get();
+                $visibleSavedShelves = $warehouseSavedShelves->filter(function ($shelf) {
+                    return !$shelf->archived;
+                })->sortBy('slot_index');
+            }
 
             // Only include saved (non-archived) shelves as locations.
             // Do not show default/empty shelves — user will add shelves manually.

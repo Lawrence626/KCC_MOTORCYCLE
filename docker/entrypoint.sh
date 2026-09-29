@@ -26,9 +26,10 @@ php artisan view:cache || true
 echo "Running database migrations..."
 php artisan migrate --force || true
 
-# Seed required initial users
-echo "Seeding users..."
+# Seed required initial users and warehouses
+echo "Seeding initial users and warehouses..."
 php artisan db:seed --class=UserSeeder --force || true
+php artisan db:seed --class=WarehouseSeeder --force || true
 
 # Start supervisor
 echo "Starting Supervisor (Nginx + PHP-FPM)..."
