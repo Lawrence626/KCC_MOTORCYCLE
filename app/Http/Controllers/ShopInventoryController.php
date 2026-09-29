@@ -649,145 +649,252 @@ class ShopInventoryController extends Controller
             );
         }
 
-        // Get all active warehouses (excluding SHOP)
+        // Load all active products with catalog and warehouse stocks
+        $products = \App\Models\Product::where('is_archived', false)
+            ->with('productCatalog')
+            ->with('warehouseStocks')
+            ->orderBy('description')
+            ->orderBy('brand')
+            ->get();
+
         $warehouses = \App\Models\Warehouse::active()
             ->where('name', '!=', 'SHOP')
             ->orderBy('name')
             ->get();
+        $totalWarehouses = $warehouses->count();
 
-        $warehouseShelves = \App\Models\WarehouseShelf::where('archived', false)
-            ->whereNotNull('warehouse_id')
-            ->orderBy('slot_index')
-            ->get()
+        $savedShelvesByWarehouse = \App\Models\WarehouseShelf::all()
             ->groupBy('warehouse_id');
 
-        $activeProducts = \App\Models\Product::where('is_archived', false)
-            ->with('productCatalog')
-            ->get();
+        // Map warehouse names / codes to index
+        $warehouseNameToIndex = [];
+        foreach ($warehouses as $index => $warehouse) {
+            $warehouseNameToIndex[$warehouse->name] = $index;
+            $warehouseNameToIndex[$warehouse->code] = $index;
+            $warehouseNameToIndex[strtoupper(trim($warehouse->name))] = $index;
+            $warehouseNameToIndex[strtoupper(trim($warehouse->code))] = $index;
+            $warehouseNameToIndex[strtolower(trim($warehouse->name))] = $index;
+            $warehouseNameToIndex[strtolower(trim($warehouse->code))] = $index;
+            if (preg_match('/warehouse\s+([a-z0-9]+)/i', $warehouse->name, $m)) {
+                $warehouseNameToIndex['WH-' . strtoupper($m[1])] = $index;
+                $warehouseNameToIndex[strtoupper($m[1])] = $index;
+            }
+        }
+
+        $warehouseAssignments = [];
+        for ($i = 0; $i < $totalWarehouses; $i++) {
+            $warehouseAssignments[] = collect();
+        }
+
+        foreach ($products as $product) {
+            if ($product->productCatalog) {
+                $productDescription = $product->productCatalog->product_description;
+                $brand = $product->productCatalog->brand;
+                $sku = $product->productCatalog->sku;
+                $compatibility = $product->productCatalog->product_name;
+            } else {
+                $productDescription = $product->description ?? $product->product_name ?? $product->name;
+                $brand = $product->brand;
+                $sku = $product->sku;
+                $compatibility = $product->compatibility;
+            }
+
+            $warehouseStocks = $product->warehouseStocks ?? [];
+            foreach ($warehouseStocks as $stock) {
+                if (strtoupper(trim($stock->warehouse)) === 'SHOP') {
+                    continue;
+                }
+
+                $whKey = trim($stock->warehouse);
+                $warehouseIndex = $warehouseNameToIndex[$whKey] 
+                    ?? $warehouseNameToIndex[strtoupper($whKey)] 
+                    ?? $warehouseNameToIndex[strtolower($whKey)] 
+                    ?? -1;
+
+                if ($warehouseIndex >= 0 && $stock->quantity > 0 && isset($warehouseAssignments[$warehouseIndex])) {
+                    $warehouseAssignments[$warehouseIndex]->push([
+                        'id'               => $product->id,
+                        'sku'              => $sku ?: ('PROD-' . $product->id),
+                        'name'             => $productDescription,
+                        'description'      => $productDescription,
+                        'brand'            => $brand,
+                        'compatible_model' => $compatibility,
+                        'qty'              => (int) $stock->quantity,
+                        'stock_quantity'   => (int) $stock->quantity,
+                        'price'            => (float) ($product->unit_price ?? 0),
+                        'category'         => $productDescription,
+                    ]);
+                }
+            }
+        }
+
+        // Build catalog lookup for enrichment
+        $catalogBySku = [];
+        $catalogByDescription = [];
+        $catalogByCompatible = [];
+        foreach ($products as $p) {
+            if ($p->productCatalog) {
+                $cat = $p->productCatalog;
+                $entry = [
+                    'description'      => $cat->product_description,
+                    'brand'            => $cat->brand,
+                    'compatible_model' => $cat->product_name,
+                    'sku'              => $cat->sku,
+                    'price'            => $p->unit_price ?? 0,
+                    'product_name'     => $p->product_name ?? $p->name,
+                ];
+                if ($cat->sku) $catalogBySku[strtolower(trim($cat->sku))] = $entry;
+                if ($cat->product_description) $catalogByDescription[strtolower(trim($cat->product_description))] = $entry;
+                if ($cat->product_name) $catalogByCompatible[strtolower(trim($cat->product_name))] = $entry;
+            } else {
+                $sku  = $p->sku;
+                $desc = $p->description ?? $p->product_name ?? $p->name;
+                $entry = [
+                    'description'      => $desc,
+                    'brand'            => $p->brand,
+                    'compatible_model' => $p->compatibility,
+                    'sku'              => $sku,
+                    'price'            => $p->unit_price ?? 0,
+                    'product_name'     => $p->product_name ?? $p->name,
+                ];
+                if ($sku) $catalogBySku[strtolower(trim($sku))] = $entry;
+            }
+        }
+
+        $enrichProduct = function (array $storedProduct) use ($catalogBySku, $catalogByDescription, $catalogByCompatible): array {
+            $storedSku  = strtolower(trim($storedProduct['sku'] ?? ''));
+            $storedName = strtolower(trim($storedProduct['name'] ?? $storedProduct['description'] ?? ''));
+
+            $cat = null;
+            if ($storedSku && isset($catalogBySku[$storedSku])) {
+                $cat = $catalogBySku[$storedSku];
+            }
+            if (!$cat && $storedName && isset($catalogByCompatible[$storedName])) {
+                $cat = $catalogByCompatible[$storedName];
+            }
+            if (!$cat && $storedName && isset($catalogByDescription[$storedName])) {
+                $cat = $catalogByDescription[$storedName];
+            }
+
+            if ($cat) {
+                return array_merge($storedProduct, [
+                    'description'      => $cat['description'],
+                    'brand'            => $cat['brand'],
+                    'compatible_model' => $cat['compatible_model'],
+                    'sku'              => $cat['sku'] ?: ($storedProduct['sku'] ?? ''),
+                    'product_name'     => $cat['product_name'],
+                ]);
+            }
+
+            return $storedProduct;
+        };
 
         $warehousesGrouped = [];
 
         foreach ($warehouses as $warehouseIndex => $warehouse) {
-            $shelves = $warehouseShelves->get($warehouse->id, collect());
+            $warehouseSavedShelves = $savedShelvesByWarehouse->get($warehouse->id, collect());
+            $visibleSavedShelves = $warehouseSavedShelves->filter(function ($shelf) {
+                return !$shelf->archived;
+            })->sortBy('slot_index');
 
-            // Check if existing shelves have any products
             $hasAnyProducts = false;
-            foreach ($shelves as $s) {
-                $prods = is_string($s->products) ? json_decode($s->products, true) : ($s->products ?? []);
-                if (!empty($prods) && is_array($prods)) {
+            foreach ($visibleSavedShelves as $s) {
+                $pList = is_string($s->products) ? json_decode($s->products, true) : ($s->products ?? []);
+                if (!empty($pList) && is_array($pList) && count($pList) > 0) {
                     $hasAnyProducts = true;
                     break;
                 }
             }
 
-            // If this warehouse has no shelves in DB or all shelves are empty, auto-populate shelves
-            if ($shelves->isEmpty() || !$hasAnyProducts) {
-                $whStocks = \App\Models\ProductWarehouseStock::where('warehouse', $warehouse->name)
-                    ->where('quantity', '>', 0)
-                    ->with('product.productCatalog')
+            $allocatedProducts = ($warehouseAssignments[$warehouseIndex] ?? collect())->values();
+
+            // Auto-create/sync shelves in DB if missing or empty
+            if (($visibleSavedShelves->isEmpty() || !$hasAnyProducts) && $allocatedProducts->isNotEmpty()) {
+                $chunkedProducts = $allocatedProducts->chunk(10);
+                $slotIdx = 0;
+                foreach ($chunkedProducts as $chunk) {
+                    $shelfProducts = $chunk->values()->toArray();
+                    try {
+                        \App\Models\WarehouseShelf::updateOrCreate(
+                            [
+                                'warehouse_id' => $warehouse->id,
+                                'slot_index'   => $slotIdx,
+                            ],
+                            [
+                                'warehouse_code'  => $warehouse->code ?: ('WH-' . $warehouse->id),
+                                'warehouse_index' => $warehouseIndex,
+                                'sort_order'      => $slotIdx,
+                                'name'            => $warehouse->name . ' - Shelf ' . ($slotIdx + 1),
+                                'capacity'        => 10,
+                                'products'        => $shelfProducts,
+                                'archived'        => false,
+                            ]
+                        );
+                    } catch (\Throwable $e) {}
+                    $slotIdx++;
+                }
+
+                $visibleSavedShelves = \App\Models\WarehouseShelf::where('warehouse_id', $warehouse->id)
+                    ->where('archived', false)
+                    ->orderBy('slot_index')
                     ->get();
-
-                $productsToShelf = collect();
-
-                if ($whStocks->isNotEmpty()) {
-                    foreach ($whStocks as $stock) {
-                        $product = $stock->product;
-                        if ($product) {
-                            $productsToShelf->push([
-                                'id'          => $product->id,
-                                'sku'         => $product->sku ?? ($product->productCatalog ? $product->productCatalog->sku : ''),
-                                'name'        => $product->productCatalog ? $product->productCatalog->product_description : ($product->name ?? $product->description ?? 'Unknown'),
-                                'description' => $product->description ?? '',
-                                'brand'       => $product->brand ?? ($product->productCatalog ? $product->productCatalog->brand : ''),
-                                'qty'         => max(1, (int) $stock->quantity),
-                                'price'       => (float) ($product->unit_price ?? 0),
-                            ]);
-                        }
-                    }
-                } elseif ($activeProducts->isNotEmpty() && $warehouses->count() > 0) {
-                    // Distribute slice of active products to this warehouse
-                    $chunkSize = max(1, (int) ceil($activeProducts->count() / max(1, $warehouses->count())));
-                    $productSlice = $activeProducts->slice($warehouseIndex * $chunkSize, $chunkSize)->values();
-                    if ($productSlice->isEmpty()) {
-                        $productSlice = $activeProducts->take(10);
-                    }
-                    foreach ($productSlice as $product) {
-                        $productsToShelf->push([
-                            'id'          => $product->id,
-                            'sku'         => $product->sku ?? ($product->productCatalog ? $product->productCatalog->sku : ''),
-                            'name'        => $product->productCatalog ? $product->productCatalog->product_description : ($product->name ?? $product->description ?? 'Unknown'),
-                            'description' => $product->description ?? '',
-                            'brand'       => $product->brand ?? ($product->productCatalog ? $product->productCatalog->brand : ''),
-                            'qty'         => max(1, (int) ($product->stock_quantity > 0 ? $product->stock_quantity : 5)),
-                            'price'       => (float) ($product->unit_price ?? 0),
-                        ]);
-                    }
-                }
-
-                if ($productsToShelf->isNotEmpty()) {
-                    $slotIdx = 0;
-                    $chunks = $productsToShelf->chunk(10);
-                    foreach ($chunks as $chunk) {
-                        $shelfProducts = $chunk->values()->toArray();
-
-                        if ($shelves->isNotEmpty() && $slotIdx < $shelves->count()) {
-                            $existingShelf = $shelves[$slotIdx];
-                            $existingShelf->products = $shelfProducts;
-                            $existingShelf->save();
-                        } else {
-                            try {
-                                \App\Models\WarehouseShelf::create(
-                                    [
-                                        'warehouse_id'    => $warehouse->id,
-                                        'slot_index'      => $slotIdx,
-                                        'warehouse_code'  => $warehouse->code ?: ('WH-' . $warehouse->id),
-                                        'warehouse_index' => $warehouseIndex,
-                                        'sort_order'      => $slotIdx,
-                                        'name'            => $warehouse->name . ' - Shelf ' . ($slotIdx + 1),
-                                        'capacity'        => 10,
-                                        'products'        => $shelfProducts,
-                                        'archived'        => false,
-                                    ]
-                                );
-                            } catch (\Throwable $e) {
-                                // Ignore unique constraint or duplicate error
-                            }
-                        }
-                        $slotIdx++;
-                    }
-
-                    $shelves = \App\Models\WarehouseShelf::where('warehouse_id', $warehouse->id)
-                        ->where('archived', false)
-                        ->orderBy('slot_index')
-                        ->get();
-                }
             }
 
-            $formattedShelves = $shelves->map(function ($shelf) {
-                $products = is_string($shelf->products) ? json_decode($shelf->products, true) : ($shelf->products ?? []);
-                if (!is_array($products)) {
-                    $products = [];
-                }
-                $normalizedProducts = array_map(function ($p) {
-                    return [
-                        'id'          => $p['id'] ?? null,
-                        'sku'         => $p['sku'] ?? '',
-                        'name'        => $p['name'] ?? $p['description'] ?? $p['product_name'] ?? 'Product',
-                        'description' => $p['description'] ?? '',
-                        'brand'       => $p['brand'] ?? '',
-                        'qty'         => max(1, (int) ($p['qty'] ?? $p['stock_quantity'] ?? 1)),
-                        'price'       => (float) ($p['price'] ?? $p['unit_price'] ?? 0),
-                    ];
-                }, array_values($products));
+            $formattedShelves = [];
 
-                return [
-                    'id'           => $shelf->id,
-                    'warehouse_id' => $shelf->warehouse_id,
-                    'name'         => $shelf->name,
-                    'slot_index'   => $shelf->slot_index,
-                    'products'     => $normalizedProducts,
-                ];
-            })->values()->toArray();
+            if ($visibleSavedShelves->isNotEmpty()) {
+                foreach ($visibleSavedShelves as $shelf) {
+                    $products = is_string($shelf->products) ? json_decode($shelf->products, true) : ($shelf->products ?? []);
+                    if (!is_array($products)) {
+                        $products = [];
+                    }
+                    $normalizedProducts = array_map(function ($p) use ($enrichProduct) {
+                        $enriched = $enrichProduct($p);
+                        return [
+                            'id'          => $enriched['id'] ?? $p['id'] ?? null,
+                            'sku'         => $enriched['sku'] ?? $p['sku'] ?? '',
+                            'name'        => $enriched['description'] ?? $enriched['name'] ?? $p['name'] ?? $p['description'] ?? 'Product',
+                            'description' => $enriched['description'] ?? $p['description'] ?? '',
+                            'brand'       => $enriched['brand'] ?? $p['brand'] ?? '',
+                            'qty'         => max(1, (int) ($p['qty'] ?? $p['stock_quantity'] ?? $p['quantity'] ?? 1)),
+                            'price'       => (float) ($enriched['price'] ?? $p['price'] ?? $p['unit_price'] ?? 0),
+                        ];
+                    }, array_values($products));
+
+                    $formattedShelves[] = [
+                        'id'           => $shelf->id,
+                        'warehouse_id' => $shelf->warehouse_id,
+                        'name'         => $shelf->name,
+                        'slot_index'   => $shelf->slot_index,
+                        'products'     => $normalizedProducts,
+                    ];
+                }
+            } elseif ($allocatedProducts->isNotEmpty()) {
+                // If DB shelf write was pending, chunk in-memory so shelves are ALWAYS present
+                $chunked = $allocatedProducts->chunk(10);
+                foreach ($chunked as $slotIdx => $chunk) {
+                    $normalizedProducts = $chunk->map(function ($p) use ($enrichProduct) {
+                        $enriched = $enrichProduct((array)$p);
+                        return [
+                            'id'          => $enriched['id'] ?? $p['id'] ?? null,
+                            'sku'         => $enriched['sku'] ?? $p['sku'] ?? '',
+                            'name'        => $enriched['description'] ?? $enriched['name'] ?? $p['name'] ?? $p['description'] ?? 'Product',
+                            'description' => $enriched['description'] ?? $p['description'] ?? '',
+                            'brand'       => $enriched['brand'] ?? $p['brand'] ?? '',
+                            'qty'         => max(1, (int) ($p['qty'] ?? $p['stock_quantity'] ?? 1)),
+                            'price'       => (float) ($enriched['price'] ?? $p['price'] ?? $p['unit_price'] ?? 0),
+                        ];
+                    })->values()->toArray();
+
+                    $formattedShelves[] = [
+                        'id'           => 'temp_' . $warehouse->id . '_' . $slotIdx,
+                        'warehouse_id' => $warehouse->id,
+                        'name'         => $warehouse->name . ' - Shelf ' . ($slotIdx + 1),
+                        'slot_index'   => $slotIdx,
+                        'products'     => $normalizedProducts,
+                    ];
+                }
+            }
 
             $warehousesGrouped[] = [
                 'id'      => $warehouse->id,
@@ -867,6 +974,27 @@ class ShopInventoryController extends Controller
                 $productSku = $transfer['product_id'];
                 $quantity = $transfer['quantity'];
                 $warehouseShelfId = $transfer['warehouse_shelf_id'];
+
+                // Handle temporary shelf IDs if any
+                if (is_string($warehouseShelfId) && str_starts_with($warehouseShelfId, 'temp_')) {
+                    $parts = explode('_', $warehouseShelfId);
+                    $whId = $parts[1] ?? null;
+                    $sIdx = (int) ($parts[2] ?? 0);
+                    $whRecord = \App\Models\Warehouse::find($whId);
+                    $tempShelf = \App\Models\WarehouseShelf::firstOrCreate(
+                        ['warehouse_id' => $whId, 'slot_index' => $sIdx],
+                        [
+                            'warehouse_code'  => $whRecord ? $whRecord->code : ('WH-' . $whId),
+                            'warehouse_index' => 0,
+                            'sort_order'      => $sIdx,
+                            'name'            => ($whRecord ? $whRecord->name : 'Warehouse') . ' - Shelf ' . ($sIdx + 1),
+                            'capacity'        => 10,
+                            'products'        => [],
+                            'archived'        => false,
+                        ]
+                    );
+                    $warehouseShelfId = $tempShelf->id;
+                }
 
                 // Find or create product by SKU or ID
                 $product = Product::where('sku', $productSku)->first();

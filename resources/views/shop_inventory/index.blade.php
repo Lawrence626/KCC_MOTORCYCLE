@@ -1522,7 +1522,7 @@
 
         // Handle warehouse selection
         document.getElementById('warehouse-select').addEventListener('change', function() {
-            const warehouseId = parseInt(this.value);
+            const warehouseId = this.value;
             const shelfSelect = document.getElementById('warehouse-shelf-select');
             const productSelect = document.getElementById('warehouse-product-select');
             const quantityInput = document.getElementById('transfer-quantity');
@@ -1537,12 +1537,12 @@
             quantityInput.value = 1;
             addButton.disabled = true;
 
-            if (!warehouseId && warehouseId !== 0) {
+            if (!warehouseId) {
                 return;
             }
 
             // Populate shelf dropdown for selected warehouse
-            const warehouse = (window.warehouseData || []).find(w => w.id === warehouseId);
+            const warehouse = (window.warehouseData || []).find(w => String(w.id) === String(warehouseId));
             if (warehouse && warehouse.shelves && warehouse.shelves.length > 0) {
                 shelfSelect.innerHTML = '<option value="">Select shelf</option>';
                 warehouse.shelves.forEach(shelf => {
@@ -1565,8 +1565,8 @@
 
         // Handle warehouse shelf selection
         document.getElementById('warehouse-shelf-select').addEventListener('change', function() {
-            const shelfId = parseInt(this.value);
-            const warehouseId = parseInt(document.getElementById('warehouse-select').value);
+            const shelfId = this.value;
+            const warehouseId = document.getElementById('warehouse-select').value;
             const productSelect = document.getElementById('warehouse-product-select');
             const quantityInput = document.getElementById('transfer-quantity');
             const addButton = document.getElementById('add-to-transfer');
@@ -1582,8 +1582,8 @@
             }
 
             // Find the shelf in warehouse data
-            const warehouse = (window.warehouseData || []).find(w => w.id === warehouseId);
-            const selectedShelf = warehouse && warehouse.shelves ? warehouse.shelves.find(s => s.id === shelfId) : null;
+            const warehouse = (window.warehouseData || []).find(w => String(w.id) === String(warehouseId));
+            const selectedShelf = warehouse && warehouse.shelves ? warehouse.shelves.find(s => String(s.id) === String(shelfId)) : null;
 
             if (selectedShelf) {
                 let products = [];
