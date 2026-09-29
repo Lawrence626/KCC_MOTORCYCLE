@@ -1,62 +1,79 @@
-<x-layouts.app :title="__('Mobile Scanner')">
-    <div class="min-h-screen bg-slate-900 flex items-center justify-center p-3 sm:p-6 font-sans selection:bg-[#6EC1D1]/30">
-        <!-- Main Scanner Card matching POS theme -->
-        <div class="w-full max-w-md bg-slate-800 rounded-3xl overflow-hidden shadow-2xl border border-slate-700/60 flex flex-col">
-            <!-- Header -->
-            <div class="bg-slate-800 px-5 py-4 flex items-center justify-between border-b border-slate-700/60">
-                <div>
-                    <h1 class="text-xl font-bold text-white tracking-tight">POS Scanner</h1>
-                    <p class="text-xs text-slate-400 mt-0.5">Scan QR codes to add items to cart</p>
-                </div>
-                <button onclick="window.location.href='{{ route('pos.terminal') }}'" class="rounded-full bg-[#6EC1D1] px-4 py-1.5 text-xs font-bold text-slate-900 hover:bg-[#59b2c2] active:scale-95 transition shadow-sm cursor-pointer">
-                    Close
-                </button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>POS Scanner - KCC Motorcycle</title>
+    @include('partials.head')
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <style>
+        #reader video {
+            object-fit: cover !important;
+            border-radius: 1rem !important;
+        }
+        #reader {
+            border: none !important;
+        }
+        #reader__scan_region {
+            background: transparent !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-3 sm:p-6 font-sans">
+    <!-- Main Modal Card matching user screenshot -->
+    <div class="w-full max-w-md bg-slate-800 rounded-3xl overflow-hidden shadow-2xl border border-slate-700/60 flex flex-col">
+        <!-- Card Header -->
+        <div class="bg-slate-800 px-5 py-4 flex items-center justify-between border-b border-slate-700/60">
+            <div>
+                <h1 class="text-xl font-bold text-white tracking-tight">POS Scanner</h1>
+                <p class="text-xs text-slate-400 mt-0.5">Scan QR codes to add items to cart</p>
             </div>
+            <button onclick="window.location.href='{{ route('pos.terminal') }}'" class="rounded-full bg-[#6EC1D1] px-4 py-1.5 text-xs font-bold text-slate-900 hover:bg-[#59b2c2] active:scale-95 transition shadow-sm cursor-pointer">
+                Close
+            </button>
+        </div>
 
-            <!-- Scanner Area -->
-            <div class="p-4 flex flex-col items-center justify-center">
-                <div class="relative w-full aspect-square bg-black rounded-2xl overflow-hidden border border-slate-700 shadow-inner flex items-center justify-center">
-                    <div id="reader" class="w-full h-full"></div>
-                </div>
-                <div id="scanner-status" class="mt-4 text-center text-sm font-medium text-slate-400 transition-all">
-                    Position QR code within the frame
-                </div>
+        <!-- Scanner Viewport Area -->
+        <div class="p-4 flex flex-col items-center justify-center">
+            <div class="relative w-full aspect-square bg-black rounded-2xl overflow-hidden border border-slate-700 shadow-inner flex items-center justify-center">
+                <div id="reader" class="w-full h-full"></div>
             </div>
-
-            <!-- Recent Scans -->
-            <div class="bg-slate-800/90 px-5 py-3 border-t border-slate-700/60">
-                <div class="flex items-center justify-between mb-2">
-                    <h2 class="text-sm font-bold text-white">Recent Scans</h2>
-                    <button onclick="clearRecentScans()" class="text-xs text-slate-400 hover:text-red-400 transition cursor-pointer">Clear</button>
-                </div>
-                <div id="recent-scans" class="space-y-2 max-h-40 overflow-y-auto pr-1">
-                    <div class="text-center py-4 text-xs text-slate-500">No items scanned yet</div>
-                </div>
+            <div id="scanner-status" class="mt-4 text-center text-sm font-medium text-slate-400 transition-all">
+                Position QR code within the frame
             </div>
+        </div>
 
-            <!-- Connection Status Bar -->
-            <div class="bg-slate-900 px-5 py-3 border-t border-slate-700/80 flex items-center justify-between text-xs">
-                <span class="text-slate-400">Connection:</span>
-                <div class="flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse" id="conn-dot"></span>
-                    <span id="connection-status" class="text-green-400 font-medium">Connected</span>
-                </div>
+        <!-- Recent Scans -->
+        <div class="bg-slate-800/90 px-5 py-3 border-t border-slate-700/60">
+            <div class="flex items-center justify-between mb-2">
+                <h2 class="text-sm font-bold text-white">Recent Scans</h2>
+                <button onclick="clearScannedList()" class="text-xs text-slate-400 hover:text-red-400 transition cursor-pointer">Clear</button>
+            </div>
+            <div id="recent-scans" class="space-y-2 max-h-40 overflow-y-auto pr-1">
+                <div class="text-center py-4 text-xs text-slate-500">No items scanned yet</div>
+            </div>
+        </div>
+
+        <!-- Connection Status Bar -->
+        <div class="bg-slate-900 px-5 py-3 border-t border-slate-700/80 flex items-center justify-between text-xs">
+            <span class="text-slate-400">Connection:</span>
+            <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse" id="conn-dot"></span>
+                <span id="connection-status" class="text-green-400 font-medium">Connected</span>
             </div>
         </div>
     </div>
 
-    <!-- html5-qrcode library -->
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    
     <script>
         let html5QrcodeScanner = null;
         let scannedItems = [];
-        let isScanLocked = false;
-        let lastScannedCode = '';
-        let scanCooldownTimer = null;
+        let isScanningPaused = false;
+        let lastScannedText = '';
+        let pauseTimeout = null;
         let audioCtx = null;
 
-        // Mobile audio unlocking
+        // Unlock audio for mobile browser
         function getAudioContext() {
             try {
                 if (!audioCtx) {
@@ -76,12 +93,12 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             getAudioContext();
-            loadRecentScans();
+            loadScannedList();
             initScanner();
             checkConnection();
         });
 
-        function playScanBeep() {
+        function playBeep(isWarning = false) {
             try {
                 const ctx = getAudioContext();
                 if (ctx) {
@@ -90,30 +107,35 @@
                     osc.connect(gain);
                     gain.connect(ctx.destination);
 
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(900, ctx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(1300, ctx.currentTime + 0.1);
-
-                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
-
-                    osc.start(ctx.currentTime);
-                    osc.stop(ctx.currentTime + 0.12);
+                    if (isWarning) {
+                        osc.type = 'square';
+                        osc.frequency.setValueAtTime(440, ctx.currentTime);
+                        osc.frequency.setValueAtTime(330, ctx.currentTime + 0.08);
+                        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.18);
+                        osc.start(ctx.currentTime);
+                        osc.stop(ctx.currentTime + 0.18);
+                    } else {
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(880, ctx.currentTime);
+                        osc.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.1);
+                        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
+                        osc.start(ctx.currentTime);
+                        osc.stop(ctx.currentTime + 0.12);
+                    }
                 }
             } catch (e) {
                 console.warn(e);
             }
 
             if (navigator.vibrate) {
-                navigator.vibrate(60);
+                navigator.vibrate(isWarning ? [100, 50, 100] : 60);
             }
         }
 
         function initScanner() {
             html5QrcodeScanner = new Html5Qrcode("reader", {
-                experimentalFeatures: {
-                    useBarCodeDetectorIfSupported: true
-                },
                 verbose: false
             });
             
@@ -149,7 +171,7 @@
             });
         }
 
-        function parseCodeDetails(rawCode) {
+        function parseCode(rawCode) {
             const raw = String(rawCode || '').trim();
             try {
                 const parsed = JSON.parse(raw);
@@ -174,35 +196,67 @@
         }
 
         function onScanSuccess(decodedText, decodedResult) {
-            // Strict 1-QR-per-scan lock: ignore frames while locked or same code in quick succession
-            if (isScanLocked) return;
+            // Strict 1-QR-per-scan lock: ignore frames while paused
+            if (isScanningPaused) return;
 
-            isScanLocked = true;
-            lastScannedCode = decodedText;
+            isScanningPaused = true;
+            lastScannedText = decodedText;
 
-            const item = parseCodeDetails(decodedText);
-
-            // Play clean beep sound
-            playScanBeep();
-
-            // Update status text on screen
+            const item = parseCode(decodedText);
             const statusEl = document.getElementById('scanner-status');
-            if (statusEl) {
-                statusEl.textContent = `✓ Scanned: ${item.name} (${item.sku || 'Added'})`;
-                statusEl.className = 'mt-4 text-center text-sm font-bold text-green-400 transition-all';
+
+            // Check if already scanned in current session list
+            const existing = scannedItems.find(i => 
+                (item.sku && i.sku && i.sku.toLowerCase() === item.sku.toLowerCase()) ||
+                (item.id && i.id && String(item.id) === String(item.id)) ||
+                (i.raw === decodedText)
+            );
+
+            if (existing) {
+                // Already scanned
+                existing.count = (existing.count || 1) + 1;
+                existing.timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+                playBeep(true); // Warning beep
+
+                if (statusEl) {
+                    statusEl.textContent = 'This item already scanned';
+                    statusEl.className = 'mt-4 text-center text-sm font-bold text-amber-400 transition-all';
+                }
+            } else {
+                // New scan
+                scannedItems.unshift({
+                    name: item.name,
+                    sku: item.sku,
+                    id: item.id,
+                    raw: decodedText,
+                    count: 1,
+                    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+                });
+
+                playBeep(false); // Success beep
+
+                if (statusEl) {
+                    statusEl.textContent = `✓ Scanned: ${item.name} (${item.sku || 'Added'})`;
+                    statusEl.className = 'mt-4 text-center text-sm font-bold text-green-400 transition-all';
+                }
             }
 
-            // Add to recent scans list
-            addToRecentScans(item, decodedText);
+            if (scannedItems.length > 20) {
+                scannedItems.pop();
+            }
 
-            // Sync to POS terminal
+            saveScans();
+            renderScans();
+
+            // Sync to POS Terminal
             sendToTerminal(decodedText);
             sendToServer(decodedText);
 
-            // Lock for 2.5 seconds to prevent unli-scan on the same item
-            if (scanCooldownTimer) clearTimeout(scanCooldownTimer);
-            scanCooldownTimer = setTimeout(() => {
-                isScanLocked = false;
+            // Cooldown 2.5s before allowing next scan (avoids continuous unli-scan)
+            if (pauseTimeout) clearTimeout(pauseTimeout);
+            pauseTimeout = setTimeout(() => {
+                isScanningPaused = false;
                 if (statusEl) {
                     statusEl.textContent = 'Position QR code within the frame';
                     statusEl.className = 'mt-4 text-center text-sm font-medium text-slate-400 transition-all';
@@ -214,39 +268,7 @@
             // Ignore normal frame noise
         }
 
-        function addToRecentScans(item, rawCode) {
-            const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
-            // Check if already in list to increment count instead of duplicate raw JSON
-            const existing = scannedItems.find(i => 
-                (item.id && i.id && String(i.id) === String(item.id)) ||
-                (item.sku && i.sku && i.sku.toLowerCase() === item.sku.toLowerCase()) ||
-                (i.raw === rawCode)
-            );
-
-            if (existing) {
-                existing.count = (existing.count || 1) + 1;
-                existing.timestamp = timestamp;
-            } else {
-                scannedItems.unshift({
-                    name: item.name,
-                    sku: item.sku,
-                    id: item.id,
-                    raw: rawCode,
-                    count: 1,
-                    timestamp: timestamp
-                });
-            }
-
-            if (scannedItems.length > 20) {
-                scannedItems.pop();
-            }
-
-            saveRecentScans();
-            renderRecentScans();
-        }
-
-        function renderRecentScans() {
+        function renderScans() {
             const container = document.getElementById('recent-scans');
             if (!container) return;
 
@@ -272,26 +294,26 @@
             `).join('');
         }
 
-        function saveRecentScans() {
+        function saveScans() {
             try {
                 localStorage.setItem('pos_recent_mobile_scans', JSON.stringify(scannedItems));
             } catch (e) {}
         }
 
-        function loadRecentScans() {
+        function loadScannedList() {
             try {
                 const stored = localStorage.getItem('pos_recent_mobile_scans');
                 if (stored) {
                     scannedItems = JSON.parse(stored);
-                    renderRecentScans();
+                    renderScans();
                 }
             } catch (e) {}
         }
 
-        function clearRecentScans() {
+        function clearScannedList() {
             scannedItems = [];
-            saveRecentScans();
-            renderRecentScans();
+            saveScans();
+            renderScans();
         }
 
         function sendToTerminal(code) {
@@ -354,4 +376,5 @@
             }
         });
     </script>
-</x-layouts.app>
+</body>
+</html>
