@@ -838,61 +838,7 @@
         </div>
     </div>
 
-    <!-- QR Code Scanner Modal -->
-    <div id="wm-scan-modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-4" style="display: none;">
-        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="wmCloseScanner()"></div>
-        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-4">
-            <div class="bg-[#105f68] px-6 py-4 rounded-t-2xl">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="bg-white/20 rounded-lg p-2">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                        </div>
-                        <h2 class="text-xl font-bold text-white">QR Code Scanner</h2>
-                    </div>
-                    <button onclick="wmCloseScanner()" class="text-white/80 hover:text-white transition">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
 
-            <div class="flex flex-col md:flex-row p-6 gap-6">
-                <!-- Scanner Section -->
-                <div class="flex-1 min-w-0">
-                    <div id="wm-scanner-reader" class="w-full bg-black rounded-xl overflow-hidden min-h-[400px]"></div>
-                    <div id="wm-scanner-status" class="text-center text-sm text-slate-600 mt-2">Position QR code within the frame</div>
-                </div>
-
-                <!-- Scanned Items Section -->
-                <div class="w-full md:w-80">
-                    <div id="wm-scanned-items" class="hidden">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-sm font-semibold text-slate-700">Scanned Items (<span id="wm-scan-count">0</span>)</h3>
-                            <button onclick="wmClearScannedItems()" class="text-xs text-red-500 hover:text-red-700">Clear All</button>
-                        </div>
-                        <div id="wm-scan-list" class="max-h-48 overflow-y-auto space-y-2"></div>
-
-                        <!-- Pagination -->
-                        <div id="wm-scan-pagination" class="hidden flex items-center justify-between mt-3 pt-3 border-t border-slate-200">
-                            <button onclick="wmScanPrevPage()" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" id="wm-scan-prev-page">Previous</button>
-                            <span id="wm-scan-page-info" class="text-xs text-slate-600">Page 1 of 1</span>
-                            <button onclick="wmScanNextPage()" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" id="wm-scan-next-page">Next</button>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-3 mt-4">
-                        <button onclick="wmCloseScanner()" class="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200 transition">Cancel</button>
-                        <button onclick="wmProceedToDetails()" class="flex-1 px-4 py-3 rounded-xl bg-[#105f68] text-white font-semibold hover:bg-[#0d4f56] transition shadow-md" id="wm-proceed-btn" disabled>Proceed to Details</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>

@@ -50,7 +50,7 @@
 
 
         <!-- KPI Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
                 <div class="flex items-start justify-between gap-2">
                     <div class="flex-1 min-w-0">
@@ -114,28 +114,6 @@
                     <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
                         <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M4.47 21h15.06c1.54 0 2.5-1.67 1.73-3L13.73 4.99c-.77-1.33-2.69-1.33-3.46 0L2.74 18c-.77 1.33.19 3 1.73 3zM13 18h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
-                <div class="flex items-start justify-between gap-2">
-                    <div class="flex-1 min-w-0">
-                        <p class="text-black text-xs font-semibold">Warehouse Dist.</p>
-                        <div class="mt-1">
-                            <p id="stat-warehouse-dist" class="text-2xl font-bold text-black">--</p>
-                            <div class="flex flex-wrap items-center gap-1.5 mt-1 text-xs font-medium">
-                                <div class="flex items-center gap-1" title="Shop"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span><span id="stat-shop" class="text-slate-900 font-semibold">--</span></div>
-                                <div class="flex items-center gap-1" title="Warehouse A"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span><span id="stat-warehouse-a" class="text-slate-900 font-semibold">--</span></div>
-                                <div class="flex items-center gap-1" title="Warehouse B"><span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span><span id="stat-warehouse-b" class="text-slate-900 font-semibold">--</span></div>
-                                <div class="flex items-center gap-1" title="Warehouse C"><span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span><span id="stat-warehouse-c" class="text-slate-900 font-semibold">--</span></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
-                            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
                         </svg>
                     </div>
                 </div>
