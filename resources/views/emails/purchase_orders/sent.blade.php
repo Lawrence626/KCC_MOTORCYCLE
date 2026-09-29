@@ -1,6 +1,6 @@
 <div style="font-family:Arial,Helvetica,sans-serif;color:#111;line-height:1.5;">
     <h1 style="font-size:20px;margin-bottom:16px;">Purchase Order {{ $purchaseOrder->order_number }}</h1>
-    <p style="margin-bottom:8px;">Hello {{ $purchaseOrder->supplier_name }},</p>
+    <p style="margin-bottom:8px;">Hello {{ $purchaseOrder->supplier_name ?? $purchaseOrder->supplier?->name ?? 'Supplier' }},</p>
     <p style="margin-bottom:16px;">Please find the purchase order details below for your attention.</p>
     <table cellpadding="8" cellspacing="0" border="1" style="border-collapse:collapse;width:100%;margin-bottom:16px;">
         <tr style="background:#f4f4f4;font-weight:bold;">
@@ -9,7 +9,19 @@
         </tr>
         <tr>
             <td>Expected delivery date</td>
-            <td>{{ optional($purchaseOrder->estimated_delivery_date ?? $purchaseOrder->expected_delivery_date)->format('M j, Y') ?? 'TBD' }}</td>
+            <td>
+                @php
+                    $deliveryDate = $purchaseOrder->estimated_delivery_date ?? $purchaseOrder->expected_delivery_date;
+                    if ($deliveryDate instanceof \DateTimeInterface) {
+                        $formattedDate = $deliveryDate->format('M j, Y');
+                    } elseif ($deliveryDate && strtotime((string)$deliveryDate)) {
+                        $formattedDate = date('M j, Y', strtotime((string)$deliveryDate));
+                    } else {
+                        $formattedDate = 'TBD';
+                    }
+                @endphp
+                {{ $formattedDate }}
+            </td>
         </tr>
         <tr>
             <td>Status</td>
@@ -17,7 +29,7 @@
         </tr>
         <tr>
             <td>Total amount</td>
-            <td>₱{{ number_format($purchaseOrder->total_amount, 2) }}</td>
+            <td>₱{{ number_format((float) ($purchaseOrder->total_amount ?? 0), 2) }}</td>
         </tr>
     </table>
 
@@ -34,12 +46,16 @@
         </thead>
         <tbody>
             @foreach($purchaseOrder->items as $item)
+                @php
+                    $uPrice = (float) ($item->unit_price ?? 0);
+                    $totPrice = (float) ($item->total_price ?? ($uPrice * (int) ($item->quantity ?? 0)));
+                @endphp
                 <tr>
-                    <td>{{ $item->product_name }}</td>
-                    <td>{{ $item->sku }}</td>
-                    <td>{{ $item->quantity }}</td>
-                    <td>₱{{ number_format($item->unit_price, 2) }}</td>
-                    <td>₱{{ number_format($item->total_price, 2) }}</td>
+                    <td>{{ $item->product_name ?? $item->product?->name ?? 'Product' }}</td>
+                    <td>{{ $item->sku ?? $item->product?->sku ?? 'N/A' }}</td>
+                    <td>{{ $item->quantity ?? 0 }}</td>
+                    <td>₱{{ number_format($uPrice, 2) }}</td>
+                    <td>₱{{ number_format($totPrice, 2) }}</td>
                 </tr>
             @endforeach
         </tbody>

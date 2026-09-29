@@ -803,10 +803,27 @@ $replacementBackOrders = Schema::hasTable('defective_return_requests')
             'sent_to_supplier_at' => now(),
         ]);
 
-        if ($purchaseOrder->supplier && $purchaseOrder->supplier->email) {
-            Mail::to($purchaseOrder->supplier->email)->send(new PurchaseOrderSentMail($purchaseOrder));
+        $purchaseOrder->loadMissing(['supplier', 'items.product']);
 
-            return redirect()->route('order.show', $purchaseOrder)->with('success', 'Purchase order sent to supplier by email.');
+        $supplierEmail = $purchaseOrder->supplier?->email;
+        if (! $supplierEmail && $purchaseOrder->supplier_id) {
+            $supplierEmail = \App\Models\Supplier::find($purchaseOrder->supplier_id)?->email;
+        }
+
+        if ($supplierEmail) {
+            try {
+                Mail::to($supplierEmail)->send(new PurchaseOrderSentMail($purchaseOrder));
+
+                return redirect()->route('order.show', $purchaseOrder)->with('success', 'Purchase order status updated and successfully sent to supplier (' . $supplierEmail . ').');
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to send purchase order email to supplier: ' . $e->getMessage(), [
+                    'purchase_order_id' => $purchaseOrder->id,
+                    'supplier_email' => $supplierEmail,
+                    'error' => $e->getMessage(),
+                ]);
+
+                return redirect()->route('order.show', $purchaseOrder)->with('warning', 'Purchase order marked as "Sent to Supplier", but email delivery failed (' . $e->getMessage() . ').');
+            }
         }
 
         return redirect()->route('order.show', $purchaseOrder)->with('warning', 'Purchase order marked as sent, but supplier has no email address.');

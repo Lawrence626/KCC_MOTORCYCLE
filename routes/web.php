@@ -282,7 +282,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::post('purchase-order/{purchaseOrder}/approve', [PurchaseOrderController::class, 'approve'])->name('order.approve');
         Route::post('purchase-order/{purchaseOrder}/reject', [PurchaseOrderController::class, 'reject'])->name('order.reject');
-        Route::post('purchase-order/{purchaseOrder}/send', [PurchaseOrderController::class, 'sendToSupplier'])->name('order.send');
+        Route::match(['get', 'post'], 'purchase-order/{purchaseOrder}/send', [PurchaseOrderController::class, 'sendToSupplier'])->name('order.send');
         Route::post('purchase-order/{purchaseOrder}/in-transit', [PurchaseOrderController::class, 'markInTransit'])->name('order.in_transit');
         Route::put('purchase-order/{purchaseOrder}/estimated-delivery-date', [PurchaseOrderController::class, 'updateEstimatedDeliveryDate'])->name('order.update_estimated_delivery');
     });
