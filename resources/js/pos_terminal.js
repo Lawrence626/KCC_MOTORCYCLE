@@ -2961,14 +2961,15 @@ async function initDesktopScanner() {
 
     if (statusEl) {
         statusEl.textContent = 'Initializing camera...';
-        statusEl.className = 'rounded-lg bg-blue-50 px-3 py-2 text-center text-xs font-medium text-blue-700 border border-blue-200 transition-all';
+        statusEl.className = 'rounded-xl bg-blue-50 px-4 py-2.5 text-center text-xs font-semibold text-blue-700 border border-blue-200 transition-all';
     }
 
     if (typeof Html5Qrcode === 'undefined') {
         if (statusEl) {
-            statusEl.textContent = 'QR Scanner library not loaded. Please refresh the page.';
-            statusEl.className = 'rounded-lg bg-red-50 px-3 py-2 text-center text-xs font-medium text-red-700 border border-red-200 transition-all';
+            statusEl.textContent = 'Scanner library loading... Please wait a moment.';
+            statusEl.className = 'rounded-xl bg-amber-50 px-4 py-2.5 text-center text-xs font-semibold text-amber-700 border border-amber-200 transition-all';
         }
+        setTimeout(initDesktopScanner, 300);
         return;
     }
 
@@ -2989,19 +2990,18 @@ async function initDesktopScanner() {
         const readerEl = document.getElementById('posDesktopScannerReader');
         if (readerEl) readerEl.innerHTML = '';
 
+        const formats = typeof Html5QrcodeSupportedFormats !== 'undefined' ? [
+            Html5QrcodeSupportedFormats.QR_CODE,
+            Html5QrcodeSupportedFormats.CODE_128,
+            Html5QrcodeSupportedFormats.CODE_39,
+            Html5QrcodeSupportedFormats.EAN_13,
+            Html5QrcodeSupportedFormats.EAN_8,
+            Html5QrcodeSupportedFormats.UPC_A,
+            Html5QrcodeSupportedFormats.UPC_E,
+        ] : undefined;
+
         desktopScanner = new Html5Qrcode("posDesktopScannerReader", {
-            formatsToSupport: typeof Html5QrcodeSupportedFormats !== 'undefined' ? [
-                Html5QrcodeSupportedFormats.QR_CODE,
-                Html5QrcodeSupportedFormats.CODE_128,
-                Html5QrcodeSupportedFormats.CODE_39,
-                Html5QrcodeSupportedFormats.EAN_13,
-                Html5QrcodeSupportedFormats.EAN_8,
-                Html5QrcodeSupportedFormats.UPC_A,
-                Html5QrcodeSupportedFormats.UPC_E,
-            ] : undefined,
-            experimentalFeatures: {
-                useBarCodeDetectorIfSupported: true
-            },
+            formatsToSupport: formats,
             verbose: false
         });
 
@@ -3045,8 +3045,8 @@ async function initDesktopScanner() {
     } catch (err) {
         console.error("Scanner init error:", err);
         if (statusEl) {
-            statusEl.textContent = 'Camera access denied or unavailable. You can type/paste the SKU/Barcode below.';
-            statusEl.className = 'rounded-lg bg-red-50 px-3 py-2 text-center text-xs font-medium text-red-700 border border-red-200 transition-all';
+            statusEl.textContent = 'Camera access denied or unavailable. You can type/paste SKU or Barcode below.';
+            statusEl.className = 'rounded-xl bg-red-50 px-4 py-2.5 text-center text-xs font-semibold text-red-700 border border-red-200 transition-all';
         }
     }
 }
@@ -3055,7 +3055,16 @@ async function startDesktopScannerWithCamera(cameraId) {
     if (!desktopScanner) return;
     const statusEl = document.getElementById('posDesktopScannerStatus');
     const config = {
-        fps: 20,
+        fps: 25,
+        qrbox: (viewfinderWidth, viewfinderHeight) => {
+            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+            const qrboxSize = Math.floor(minEdge * 0.75);
+            return {
+                width: Math.max(180, Math.min(qrboxSize, 300)),
+                height: Math.max(180, Math.min(qrboxSize, 300))
+            };
+        },
+        aspectRatio: 1.0,
         videoConstraints: {
             deviceId: { exact: cameraId },
             width: { ideal: 1280 },
@@ -3071,8 +3080,8 @@ async function startDesktopScannerWithCamera(cameraId) {
             onDesktopScanFailure
         );
         if (statusEl) {
-            statusEl.textContent = 'Camera active. Point at QR code or Barcode.';
-            statusEl.className = 'rounded-lg bg-emerald-50 px-3 py-2 text-center text-xs font-medium text-emerald-700 border border-emerald-200 transition-all';
+            statusEl.textContent = 'Camera active. Point QR code or barcode at camera.';
+            statusEl.className = 'rounded-xl bg-emerald-50 px-4 py-2.5 text-center text-xs font-bold text-emerald-800 border border-emerald-200 transition-all';
         }
     } catch (err) {
         console.warn('Failed to start with camera ID, falling back to facingMode:', err);
@@ -3084,9 +3093,18 @@ async function startDesktopScannerWithFacingMode() {
     if (!desktopScanner) return;
     const statusEl = document.getElementById('posDesktopScannerStatus');
     const config = {
-        fps: 20,
+        fps: 25,
+        qrbox: (viewfinderWidth, viewfinderHeight) => {
+            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+            const qrboxSize = Math.floor(minEdge * 0.75);
+            return {
+                width: Math.max(180, Math.min(qrboxSize, 300)),
+                height: Math.max(180, Math.min(qrboxSize, 300))
+            };
+        },
+        aspectRatio: 1.0,
         videoConstraints: {
-            facingMode: "environment",
+            facingMode: { ideal: "environment" },
             width: { ideal: 1280 },
             height: { ideal: 720 }
         }
@@ -3095,14 +3113,14 @@ async function startDesktopScannerWithFacingMode() {
     try {
         // Try environment (back) camera first
         await desktopScanner.start(
-            { facingMode: "environment" },
+            { facingMode: { ideal: "environment" } },
             config,
             onDesktopScanSuccess,
             onDesktopScanFailure
         );
         if (statusEl) {
-            statusEl.textContent = 'Camera active. Point at QR code or Barcode.';
-            statusEl.className = 'rounded-lg bg-emerald-50 px-3 py-2 text-center text-xs font-medium text-emerald-700 border border-emerald-200 transition-all';
+            statusEl.textContent = 'Camera active. Point QR code or barcode at camera.';
+            statusEl.className = 'rounded-xl bg-emerald-50 px-4 py-2.5 text-center text-xs font-bold text-emerald-800 border border-emerald-200 transition-all';
         }
     } catch (envErr) {
         console.warn('Environment camera unavailable, falling back to user facing camera:', envErr);
@@ -3114,14 +3132,14 @@ async function startDesktopScannerWithFacingMode() {
                 onDesktopScanFailure
             );
             if (statusEl) {
-                statusEl.textContent = 'Webcam active. Point QR code or Barcode at camera.';
-                statusEl.className = 'rounded-lg bg-emerald-50 px-3 py-2 text-center text-xs font-medium text-emerald-700 border border-emerald-200 transition-all';
+                statusEl.textContent = 'Webcam active. Point QR code or barcode at camera.';
+                statusEl.className = 'rounded-xl bg-emerald-50 px-4 py-2.5 text-center text-xs font-bold text-emerald-800 border border-emerald-200 transition-all';
             }
         } catch (userErr) {
             console.error('All camera start attempts failed:', userErr);
             if (statusEl) {
                 statusEl.textContent = 'Camera permission required. Please allow camera access in browser settings.';
-                statusEl.className = 'rounded-lg bg-red-50 px-3 py-2 text-center text-xs font-medium text-red-700 border border-red-200 transition-all';
+                statusEl.className = 'rounded-xl bg-red-50 px-4 py-2.5 text-center text-xs font-semibold text-red-700 border border-red-200 transition-all';
             }
         }
     }
@@ -3163,7 +3181,7 @@ async function closeDesktopScanner() {
     const statusEl = document.getElementById('posDesktopScannerStatus');
     if (statusEl) {
         statusEl.textContent = 'Position QR code or barcode within the camera view';
-        statusEl.className = 'rounded-lg bg-slate-100 px-3 py-2 text-center text-xs font-medium text-slate-700 border border-slate-200 transition-all';
+        statusEl.className = 'rounded-xl bg-slate-100 px-4 py-2.5 text-center text-xs font-semibold text-slate-700 border border-slate-200 transition-all';
     }
 }
 
@@ -3174,7 +3192,7 @@ let desktopScanCooldownTimer = null;
 function onDesktopScanSuccess(decodedText, decodedResult) {
     if (isDesktopScanLocked) return;
 
-    // Strict 1-QR-per-scan lock
+    // Strict 1-QR-per-scan lock (1.5s lock)
     isDesktopScanLocked = true;
     lastDesktopScannedCode = decodedText;
 
@@ -3183,7 +3201,7 @@ function onDesktopScanSuccess(decodedText, decodedResult) {
     const statusEl = document.getElementById('posDesktopScannerStatus');
     if (statusEl) {
         statusEl.textContent = `✓ Scanned: ${decodedText}`;
-        statusEl.className = 'rounded-lg bg-emerald-100 px-3 py-2 text-center text-xs font-bold text-emerald-800 border border-emerald-300 transition-all';
+        statusEl.className = 'rounded-xl bg-emerald-100 px-4 py-2.5 text-center text-xs font-bold text-emerald-900 border border-emerald-300 transition-all';
     }
 
     handleScannedCode(decodedText);
@@ -3192,10 +3210,10 @@ function onDesktopScanSuccess(decodedText, decodedResult) {
     desktopScanCooldownTimer = setTimeout(() => {
         isDesktopScanLocked = false;
         if (statusEl) {
-            statusEl.textContent = 'Camera active. Point at QR code or Barcode.';
-            statusEl.className = 'rounded-lg bg-emerald-50 px-3 py-2 text-center text-xs font-medium text-emerald-700 border border-emerald-200 transition-all';
+            statusEl.textContent = 'Camera active. Point QR code or barcode at camera.';
+            statusEl.className = 'rounded-xl bg-emerald-50 px-4 py-2.5 text-center text-xs font-bold text-emerald-800 border border-emerald-200 transition-all';
         }
-    }, 2500);
+    }, 1800);
 }
 
 function onDesktopScanFailure(error) {
@@ -3250,24 +3268,41 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
+let lastProcessedScanId = null;
+
 function startScanPolling() {
-    // Poll server for new scans every 2 seconds
+    if (!lastScanTimestamp) {
+        lastScanTimestamp = Date.now() - 500;
+    }
+
+    if (scanPollingInterval) {
+        clearInterval(scanPollingInterval);
+    }
+
+    // Poll server for new mobile scans every 1.5 seconds
     scanPollingInterval = setInterval(async () => {
         try {
             const response = await fetch('/api/pos/check-scan');
+            if (!response.ok) return;
             const data = await response.json();
 
-            if (data.success && data.scan) {
+            if (data.success && data.scan && data.scan.code) {
+                const scanId = data.scan.id || null;
                 const scanTimestamp = new Date(data.scan.timestamp).getTime();
-                if (scanTimestamp > lastScanTimestamp) {
-                    lastScanTimestamp = scanTimestamp;
+
+                const isNewId = scanId && scanId !== lastProcessedScanId;
+                const isNewTime = !isNaN(scanTimestamp) && scanTimestamp > lastScanTimestamp;
+
+                if (isNewId || isNewTime) {
+                    if (scanId) lastProcessedScanId = scanId;
+                    if (!isNaN(scanTimestamp)) lastScanTimestamp = scanTimestamp;
                     handleScannedCode(data.scan.code);
                 }
             }
         } catch (error) {
-            console.error('Error polling for scans:', error);
+            // Quiet polling error
         }
-    }, 2000);
+    }, 1500);
 }
 
 function handleStorageChange(event) {

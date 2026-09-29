@@ -6,7 +6,7 @@
     <title>POS Scanner - KCC Motorcycle</title>
     @include('partials.head')
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" onerror="this.onerror=null;this.src='https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js';"></script>
     <style>
         #reader video {
             object-fit: cover !important;
@@ -134,41 +134,111 @@
             }
         }
 
-        function initScanner() {
-            html5QrcodeScanner = new Html5Qrcode("reader", {
-                verbose: false
-            });
-            
-            const config = { 
-                fps: 20,
-                videoConstraints: {
-                    facingMode: "environment",
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 }
-                }
-            };
+        async function initScanner() {
+            if (typeof Html5Qrcode === 'undefined') {
+                setTimeout(initScanner, 300);
+                return;
+            }
 
-            html5QrcodeScanner.start(
-                { facingMode: "environment" },
-                config,
-                onScanSuccess,
-                onScanFailure
-            ).catch(err => {
-                console.warn("Back camera failed, trying user camera:", err);
-                html5QrcodeScanner.start(
-                    { facingMode: "user" },
-                    config,
-                    onScanSuccess,
-                    onScanFailure
-                ).catch(userErr => {
-                    console.error("Scanner error:", userErr);
-                    const status = document.getElementById('scanner-status');
-                    if (status) {
-                        status.textContent = 'Camera access denied or unavailable.';
-                        status.className = 'mt-4 text-center text-sm font-medium text-red-400';
-                    }
+            try {
+                if (html5QrcodeScanner) {
+                    try {
+                        if (html5QrcodeScanner.isScanning) await html5QrcodeScanner.stop();
+                        html5QrcodeScanner.clear();
+                    } catch (e) {}
+                    html5QrcodeScanner = null;
+                }
+
+                const formats = typeof Html5QrcodeSupportedFormats !== 'undefined' ? [
+                    Html5QrcodeSupportedFormats.QR_CODE,
+                    Html5QrcodeSupportedFormats.CODE_128,
+                    Html5QrcodeSupportedFormats.CODE_39,
+                    Html5QrcodeSupportedFormats.EAN_13,
+                    Html5QrcodeSupportedFormats.EAN_8,
+                    Html5QrcodeSupportedFormats.UPC_A,
+                    Html5QrcodeSupportedFormats.UPC_E,
+                ] : undefined;
+
+                html5QrcodeScanner = new Html5Qrcode("reader", {
+                    formatsToSupport: formats,
+                    verbose: false
                 });
-            });
+
+                const config = { 
+                    fps: 25,
+                    qrbox: (viewfinderWidth, viewfinderHeight) => {
+                        const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+                        const qrboxSize = Math.floor(minEdge * 0.75);
+                        return {
+                            width: Math.max(180, Math.min(qrboxSize, 300)),
+                            height: Math.max(180, Math.min(qrboxSize, 300))
+                        };
+                    },
+                    aspectRatio: 1.0,
+                    videoConstraints: {
+                        facingMode: { ideal: "environment" },
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+
+                let cameras = [];
+                try {
+                    cameras = await Html5Qrcode.getCameras();
+                } catch (e) {
+                    cameras = [];
+                }
+
+                if (cameras && cameras.length > 0) {
+                    const rearCam = cameras.find(c =>
+                        (c.label || '').toLowerCase().includes('back') ||
+                        (c.label || '').toLowerCase().includes('rear') ||
+                        (c.label || '').toLowerCase().includes('environment')
+                    ) || cameras[0];
+
+                    try {
+                        await html5QrcodeScanner.start(
+                            rearCam.id,
+                            config,
+                            onScanSuccess,
+                            onScanFailure
+                        );
+                        return;
+                    } catch (camErr) {
+                        console.warn("Camera start by ID failed, falling back to facingMode:", camErr);
+                    }
+                }
+
+                // Fallback 1: environment facingMode
+                try {
+                    await html5QrcodeScanner.start(
+                        { facingMode: { ideal: "environment" } },
+                        config,
+                        onScanSuccess,
+                        onScanFailure
+                    );
+                } catch (envErr) {
+                    console.warn("Environment camera failed, falling back to user facing camera:", envErr);
+                    // Fallback 2: user facing camera
+                    try {
+                        await html5QrcodeScanner.start(
+                            { facingMode: "user" },
+                            config,
+                            onScanSuccess,
+                            onScanFailure
+                        );
+                    } catch (userErr) {
+                        console.error("All camera starts failed:", userErr);
+                        const status = document.getElementById('scanner-status');
+                        if (status) {
+                            status.textContent = 'Camera permission required. Please allow camera access in browser.';
+                            status.className = 'mt-4 text-center text-sm font-medium text-red-400';
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Scanner init error:", err);
+            }
         }
 
         function parseCode(rawCode) {

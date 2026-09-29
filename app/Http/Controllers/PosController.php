@@ -12,10 +12,18 @@ class PosController extends Controller
      */
     public function handleScan(Request $request)
     {
-        $code = $request->input('code');
+        $code = trim((string) $request->input('code', ''));
+        if (empty($code)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Empty scan code'
+            ], 422);
+        }
+
         $userId = Auth::id() ?? 0;
         
         $scanData = [
+            'id' => (string) \Illuminate\Support\Str::uuid(),
             'code' => $code,
             'timestamp' => now()->toISOString(),
             'user_id' => $userId,
@@ -46,7 +54,7 @@ class PosController extends Controller
             $scanData = cache()->get("pos_scan_latest");
         }
         
-        if ($scanData) {
+        if ($scanData && !empty($scanData['code'])) {
             return response()->json([
                 'success' => true,
                 'scan' => $scanData
