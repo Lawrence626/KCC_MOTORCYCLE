@@ -13,21 +13,24 @@ class PosController extends Controller
     public function handleScan(Request $request)
     {
         $code = $request->input('code');
+        $userId = Auth::id() ?? 0;
         
-        // Store the scan in cache for the current user's session
-        // This allows the terminal to poll for new scans
         $scanData = [
             'code' => $code,
             'timestamp' => now()->toISOString(),
-            'user_id' => Auth::id(),
+            'user_id' => $userId,
         ];
         
-        // Store in cache with user-specific key
-        cache()->put("pos_scan_{$scanData['user_id']}", $scanData, 60);
+        // Store in cache with user-specific key and global latest key
+        if ($userId) {
+            cache()->put("pos_scan_{$userId}", $scanData, 120);
+        }
+        cache()->put("pos_scan_latest", $scanData, 120);
         
         return response()->json([
             'success' => true,
-            'message' => 'Scan received'
+            'message' => 'Scan received',
+            'data' => $scanData
         ]);
     }
 
@@ -37,7 +40,11 @@ class PosController extends Controller
     public function checkScan(Request $request)
     {
         $userId = Auth::id();
-        $scanData = cache()->get("pos_scan_{$userId}");
+        $scanData = $userId ? cache()->get("pos_scan_{$userId}") : null;
+        
+        if (!$scanData) {
+            $scanData = cache()->get("pos_scan_latest");
+        }
         
         if ($scanData) {
             return response()->json([

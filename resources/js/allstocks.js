@@ -1617,15 +1617,19 @@ function generateQRCodes(products) {
             });
 
             const qrCard = document.createElement('div');
-            qrCard.className = 'border border-slate-200 rounded-lg p-4 bg-white';
+            qrCard.className = 'border border-slate-200 rounded-xl p-4 bg-white shadow-sm';
             qrCard.innerHTML = `
-                <div class="flex items-start gap-4">
-                    <div id="qr-${product.id}" class="w-24 h-24 shrink-0 flex-none flex items-center justify-center bg-white overflow-hidden rounded-md"></div>
+                <div class="flex items-center gap-4">
+                    <div id="qr-${product.id}" class="w-36 h-36 shrink-0 flex-none flex items-center justify-center bg-white p-1 border border-slate-100 rounded-lg shadow-sm"></div>
                     <div class="flex-1 min-w-0">
-                        <h3 class="font-semibold text-slate-900 text-sm truncate" title="${product.product_name || product.name || 'N/A'}">${product.product_name || product.name || 'N/A'}</h3>
-                        <p class="text-xs text-slate-600 truncate" title="${product.sku}">SKU: ${product.sku}</p>
-                        <p class="text-xs text-slate-600">Restock: ${product.last_restock_date ? window.formatDateWithTime ? window.formatDateWithTime(product.last_restock_date) : product.last_restock_date : 'N/A'}</p>
-                        <p class="text-xs text-slate-500 mt-1">Scan to add to cart</p>
+                        <h3 class="font-bold text-slate-900 text-sm leading-snug mb-1" title="${product.product_name || product.name || 'N/A'}">${product.product_name || product.name || 'N/A'}</h3>
+                        <p class="text-xs text-slate-700 font-medium">SKU: <span class="font-mono font-bold text-slate-900">${product.sku || 'N/A'}</span></p>
+                        <p class="text-xs text-slate-600 mt-0.5">Price: <span class="font-semibold text-emerald-700">₱${Number(product.unit_price || 0).toFixed(2)}</span></p>
+                        <p class="text-xs text-slate-500 mt-0.5">Stock: ${product.stock_quantity ?? product.stock ?? 0} units</p>
+                        <div class="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-medium border border-emerald-200">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Ready to scan for POS
+                        </div>
                     </div>
                 </div>
             `;
@@ -1642,8 +1646,8 @@ function generateQRCodes(products) {
 
                 new QRCode(qrElement, {
                     text: qrData,
-                    width: 96,
-                    height: 96,
+                    width: 136,
+                    height: 136,
                     colorDark: "#000000",
                     colorLight: "#ffffff",
                     correctLevel: QRCode.CorrectLevel.M
@@ -1654,14 +1658,14 @@ function generateQRCodes(products) {
                     const canvas = qrElement.querySelector('canvas');
                     if (canvas) {
                         canvas.style.display = 'block';
-                        canvas.style.width = '96px';
-                        canvas.style.height = '96px';
+                        canvas.style.width = '136px';
+                        canvas.style.height = '136px';
                     }
                     const img = qrElement.querySelector('img');
                     if (img) {
                         img.style.display = 'block';
-                        img.style.width = '96px';
-                        img.style.height = '96px';
+                        img.style.width = '136px';
+                        img.style.height = '136px';
                     }
                 }, 50);
             } catch (error) {
@@ -1833,12 +1837,12 @@ function printQRCodes() {
                         padding: 15px;
                         margin: 10px;
                         display: inline-block;
-                        width: 200px;
+                        width: 260px;
                         page-break-inside: avoid;
                     }
-                    .qr-card canvas {
-                        width: 96px;
-                        height: 96px;
+                    .qr-card canvas, .qr-card img {
+                        width: 136px !important;
+                        height: 136px !important;
                     }
                     .product-name {
                         font-weight: bold;

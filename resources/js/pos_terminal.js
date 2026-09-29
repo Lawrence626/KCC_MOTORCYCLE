@@ -2817,17 +2817,19 @@ function initMobileScanner() {
             Html5QrcodeSupportedFormats.UPC_A,
             Html5QrcodeSupportedFormats.UPC_E,
         ] : undefined,
+        experimentalFeatures: {
+            useBarCodeDetectorIfSupported: true
+        },
         verbose: false
     });
 
     const config = {
-        fps: 15,
-        qrbox: (viewfinderWidth, viewfinderHeight) => {
-            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-            const qrboxSize = Math.floor(minEdge * 0.75);
-            return { width: Math.max(qrboxSize, 180), height: Math.max(qrboxSize, 180) };
-        },
-        aspectRatio: 1.0
+        fps: 20,
+        videoConstraints: {
+            facingMode: "environment",
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+        }
     };
 
     mobileHtml5QrcodeScanner.start(
@@ -2846,7 +2848,7 @@ function initMobileScanner() {
             console.error("Mobile scanner error:", finalErr);
             const status = document.getElementById('posMobileScannerStatus');
             if (status) {
-                status.textContent = 'Camera access denied or not available';
+                status.textContent = 'Camera access denied or not available. Check browser permissions.';
                 status.classList.add('text-red-400');
             }
         });
@@ -2989,6 +2991,9 @@ async function initDesktopScanner() {
                 Html5QrcodeSupportedFormats.UPC_A,
                 Html5QrcodeSupportedFormats.UPC_E,
             ] : undefined,
+            experimentalFeatures: {
+                useBarCodeDetectorIfSupported: true
+            },
             verbose: false
         });
 
@@ -3042,13 +3047,12 @@ async function startDesktopScannerWithCamera(cameraId) {
     if (!desktopScanner) return;
     const statusEl = document.getElementById('posDesktopScannerStatus');
     const config = {
-        fps: 15,
-        qrbox: (viewfinderWidth, viewfinderHeight) => {
-            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-            const qrboxSize = Math.floor(minEdge * 0.75);
-            return { width: Math.max(qrboxSize, 180), height: Math.max(qrboxSize, 180) };
-        },
-        aspectRatio: 1.777778
+        fps: 20,
+        videoConstraints: {
+            deviceId: { exact: cameraId },
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+        }
     };
 
     try {
@@ -3072,9 +3076,12 @@ async function startDesktopScannerWithFacingMode() {
     if (!desktopScanner) return;
     const statusEl = document.getElementById('posDesktopScannerStatus');
     const config = {
-        fps: 15,
-        qrbox: { width: 250, height: 250 },
-        aspectRatio: 1.777778
+        fps: 20,
+        videoConstraints: {
+            facingMode: "environment",
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+        }
     };
 
     try {
@@ -3268,11 +3275,17 @@ async function handleScannedCode(code) {
     playScanNotification();
     console.log('Processing scanned code:', rawCode);
 
+    const statusEl = document.getElementById('posDesktopScannerStatus');
+    const mobileStatus = document.getElementById('posMobileScannerStatus');
+
     let searchCode = rawCode;
+    let parsedJson = null;
+
     // 1. Check if the scanned string is JSON (e.g. from generated QR stickers)
     try {
         const parsed = JSON.parse(rawCode);
         if (parsed && typeof parsed === 'object') {
+            parsedJson = parsed;
             if (parsed.sku) searchCode = String(parsed.sku).trim();
             else if (parsed.product_id) searchCode = String(parsed.product_id).trim();
             else if (parsed.id) searchCode = String(parsed.id).trim();
@@ -3300,6 +3313,23 @@ async function handleScannedCode(code) {
         const pQr = String(p.qr_code || '').trim().toLowerCase();
         const pName = String(p.product_name || p.name || '').trim().toLowerCase();
 
+        // 1. Exact match with JSON payload fields if parsed
+        if (parsedJson) {
+            if (parsedJson.product_id && String(p.id) === String(parsedJson.product_id).trim()) {
+                return true;
+            }
+            if (parsedJson.id && String(p.id) === String(parsedJson.id).trim()) {
+                return true;
+            }
+            if (parsedJson.sku && pSku === String(parsedJson.sku).trim().toLowerCase()) {
+                return true;
+            }
+            if (parsedJson.barcode && pBarcode === String(parsedJson.barcode).trim().toLowerCase()) {
+                return true;
+            }
+        }
+
+        // 2. Exact match against query string
         return pSku === queryLower ||
                pBarcode === queryLower ||
                pId === cleanQuery ||
@@ -3308,6 +3338,11 @@ async function handleScannedCode(code) {
     };
 
     try {
+        if (statusEl) {
+            statusEl.textContent = `Looking up item: "${cleanQuery}"...`;
+            statusEl.className = 'rounded-lg bg-blue-50 px-3 py-2 text-center text-xs font-medium text-blue-700 border border-blue-200 transition-all';
+        }
+
         // Search API with exact search query for maximum speed and accuracy
         const searchUrl = new URL(posState.apiProductsUrl, window.location.origin);
         searchUrl.searchParams.set('search', cleanQuery);
@@ -3328,7 +3363,8 @@ async function handleScannedCode(code) {
 
         // If not found via search query, fallback to full active product list
         if (!matchedProduct) {
-            const fullResp = await fetch(posState.apiProductsUrl);
+            const fullUrl = posState.apiProductsUrl + (posState.apiProductsUrl.includes('?') ? '&' : '?') + 'per_page=1000';
+            const fullResp = await fetch(fullUrl);
             if (fullResp.ok) {
                 const fullResult = await fullResp.json();
                 let fullList = [];
@@ -3346,6 +3382,10 @@ async function handleScannedCode(code) {
 
             if (stock <= 0) {
                 showNotification(`Out of Stock: ${pName} has 0 stock available.`, 'error');
+                if (statusEl) {
+                    statusEl.textContent = `Out of Stock: ${pName}`;
+                    statusEl.className = 'rounded-lg bg-amber-50 px-3 py-2 text-center text-xs font-bold text-amber-800 border border-amber-300 transition-all';
+                }
                 return;
             }
 
@@ -3367,13 +3407,30 @@ async function handleScannedCode(code) {
                 // Clear manual input if present
                 const manualInput = document.getElementById('posManualBarcodeInput');
                 if (manualInput) manualInput.value = '';
+
+                if (statusEl) {
+                    statusEl.textContent = `✓ Added to Cart: ${pName} (₱${Number(matchedProduct.unit_price || 0).toFixed(2)})`;
+                    statusEl.className = 'rounded-lg bg-emerald-100 px-3 py-2 text-center text-xs font-bold text-emerald-800 border border-emerald-300 transition-all';
+                }
+                if (mobileStatus) {
+                    mobileStatus.textContent = `✓ Added: ${pName}`;
+                    mobileStatus.classList.add('text-green-400');
+                }
             }
         } else {
             showNotification(`Product not found for: "${cleanQuery}"`, 'error');
+            if (statusEl) {
+                statusEl.textContent = `Product not found for: "${cleanQuery}"`;
+                statusEl.className = 'rounded-lg bg-red-50 px-3 py-2 text-center text-xs font-medium text-red-700 border border-red-200 transition-all';
+            }
         }
     } catch (error) {
         console.error('Error in handleScannedCode:', error);
         showNotification('Failed to lookup product. Please check your connection.', 'error');
+        if (statusEl) {
+            statusEl.textContent = 'Failed to lookup product. Please check your connection.';
+            statusEl.className = 'rounded-lg bg-red-50 px-3 py-2 text-center text-xs font-medium text-red-700 border border-red-200 transition-all';
+        }
     }
 }
 

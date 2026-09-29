@@ -48,13 +48,24 @@
             checkConnection();
         });
 
+        let lastMobileScanTime = 0;
+        let lastMobileScannedText = '';
+
         function initScanner() {
-            html5QrcodeScanner = new Html5Qrcode("reader");
+            html5QrcodeScanner = new Html5Qrcode("reader", {
+                experimentalFeatures: {
+                    useBarCodeDetectorIfSupported: true
+                },
+                verbose: false
+            });
             
             const config = { 
-                fps: 10, 
-                qrbox: { width: 250, height: 250 },
-                aspectRatio: 1.0
+                fps: 20,
+                videoConstraints: {
+                    facingMode: "environment",
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                }
             };
 
             html5QrcodeScanner.start(
@@ -63,13 +74,28 @@
                 onScanSuccess,
                 onScanFailure
             ).catch(err => {
-                console.error("Scanner error:", err);
-                document.getElementById('scanner-status').textContent = 'Camera access denied or not available';
-                document.getElementById('scanner-status').classList.add('text-red-400');
+                console.warn("Back camera failed, trying front/default camera:", err);
+                html5QrcodeScanner.start(
+                    { facingMode: "user" },
+                    config,
+                    onScanSuccess,
+                    onScanFailure
+                ).catch(userErr => {
+                    console.error("Scanner error:", userErr);
+                    document.getElementById('scanner-status').textContent = 'Camera access denied or not available. Please allow camera permissions.';
+                    document.getElementById('scanner-status').classList.add('text-red-400');
+                });
             });
         }
 
         function onScanSuccess(decodedText, decodedResult) {
+            const now = Date.now();
+            if (decodedText === lastMobileScannedText && (now - lastMobileScanTime) < 1500) {
+                return;
+            }
+            lastMobileScanTime = now;
+            lastMobileScannedText = decodedText;
+
             // Play beep sound
             playBeep();
 
