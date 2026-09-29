@@ -2793,14 +2793,40 @@ let mobileScannedItems = [];
 
 function initMobileScanner() {
     if (mobileHtml5QrcodeScanner) {
-        mobileHtml5QrcodeScanner.stop().catch(err => console.error(err));
+        try {
+            if (mobileHtml5QrcodeScanner.isScanning) {
+                mobileHtml5QrcodeScanner.stop();
+            }
+            mobileHtml5QrcodeScanner.clear();
+        } catch (e) {
+            console.warn(e);
+        }
+        mobileHtml5QrcodeScanner = null;
     }
 
-    mobileHtml5QrcodeScanner = new Html5Qrcode("posMobileScannerReader");
+    const readerEl = document.getElementById('posMobileScannerReader');
+    if (readerEl) readerEl.innerHTML = '';
+
+    mobileHtml5QrcodeScanner = new Html5Qrcode("posMobileScannerReader", {
+        formatsToSupport: typeof Html5QrcodeSupportedFormats !== 'undefined' ? [
+            Html5QrcodeSupportedFormats.QR_CODE,
+            Html5QrcodeSupportedFormats.CODE_128,
+            Html5QrcodeSupportedFormats.CODE_39,
+            Html5QrcodeSupportedFormats.EAN_13,
+            Html5QrcodeSupportedFormats.EAN_8,
+            Html5QrcodeSupportedFormats.UPC_A,
+            Html5QrcodeSupportedFormats.UPC_E,
+        ] : undefined,
+        verbose: false
+    });
 
     const config = {
-        fps: 10,
-        qrbox: { width: 250, height: 250 },
+        fps: 15,
+        qrbox: (viewfinderWidth, viewfinderHeight) => {
+            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+            const qrboxSize = Math.floor(minEdge * 0.75);
+            return { width: Math.max(qrboxSize, 180), height: Math.max(qrboxSize, 180) };
+        },
         aspectRatio: 1.0
     };
 
@@ -2810,18 +2836,33 @@ function initMobileScanner() {
         onMobileScanSuccess,
         onMobileScanFailure
     ).catch(err => {
-        console.error("Mobile scanner error:", err);
-        const status = document.getElementById('posMobileScannerStatus');
-        if (status) {
-            status.textContent = 'Camera access denied or not available';
-            status.classList.add('text-red-400');
-        }
+        console.warn("Environment camera failed, trying user camera:", err);
+        mobileHtml5QrcodeScanner.start(
+            { facingMode: "user" },
+            config,
+            onMobileScanSuccess,
+            onMobileScanFailure
+        ).catch(finalErr => {
+            console.error("Mobile scanner error:", finalErr);
+            const status = document.getElementById('posMobileScannerStatus');
+            if (status) {
+                status.textContent = 'Camera access denied or not available';
+                status.classList.add('text-red-400');
+            }
+        });
     });
 }
 
 function stopMobileScanner() {
     if (mobileHtml5QrcodeScanner) {
-        mobileHtml5QrcodeScanner.stop().catch(err => console.error(err));
+        try {
+            if (mobileHtml5QrcodeScanner.isScanning) {
+                mobileHtml5QrcodeScanner.stop();
+            }
+            mobileHtml5QrcodeScanner.clear();
+        } catch (err) {
+            console.warn('Error stopping mobile scanner:', err);
+        }
         mobileHtml5QrcodeScanner = null;
     }
 }
@@ -2851,19 +2892,23 @@ function onMobileScanFailure(error) {
 }
 
 function playMobileBeep() {
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
 
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
 
-    oscillator.frequency.value = 800;
-    oscillator.type = 'sine';
-    gainNode.gain.value = 0.1;
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        gainNode.gain.value = 0.1;
 
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.1);
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.1);
+    } catch (e) {
+        console.warn(e);
+    }
 }
 
 function addToMobileRecentScans(code) {
@@ -2882,18 +2927,13 @@ function addToMobileRecentScans(code) {
                 <div class="text-xs font-medium text-white">${item.code}</div>
                 <div class="text-[10px] text-slate-400">${item.timestamp}</div>
             </div>
-            <span class="text-green-400 text-xs">✓</span>
+            <span class="text-green-400 text-xs font-bold">✓ Added</span>
         </div>
     `).join('');
 }
 
 function sendMobileScanToTerminal(code) {
-    // Add product to cart
-    const scanInput = document.getElementById('posScanInput');
-    if (scanInput) {
-        scanInput.value = code;
-        scanProduct();
-    }
+    handleScannedCode(code);
 }
 
 // ==========================================
