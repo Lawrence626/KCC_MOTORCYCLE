@@ -58,14 +58,8 @@ class LoginOtpController extends Controller
             'remember' => $request->boolean('remember'),
         ], now()->addMinutes(10));
 
-        // Always attempt sending email to user's inbox
-        $isSent = false;
-        try {
-            Mail::to($user->email)->send(new LoginOtpCodeMail($user, $otpCode));
-            $isSent = true;
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning("SMTP dispatch to {$user->email} failed: " . $e->getMessage());
-        }
+        // Dispatch email via Resend API (HTTP Port 443) or Laravel Mail
+        $isSent = \App\Services\ResendEmailService::sendLoginOtp($user, $otpCode);
 
         return response()->json([
             'success' => true,

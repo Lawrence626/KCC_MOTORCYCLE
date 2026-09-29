@@ -604,32 +604,58 @@
         </div>
     </div>
 
-    <!-- Desktop QR Scanner Modal -->
+    <!-- Desktop QR / Barcode Scanner Modal -->
     <div id="posDesktopScannerModal" class="fixed inset-0 hidden items-center justify-center z-50 px-4 py-6" style="display: none;">
-        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('posDesktopScannerModal').style.display='none'"></div>
-        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4">
-            <div class="bg-[#6EC1D1] px-6 py-4 rounded-t-2xl">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" id="posDesktopScannerBackdrop"></div>
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden border border-slate-200">
+            <div class="bg-[#0f172a] px-6 py-4 border-b border-slate-800">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="bg-black/10 rounded-lg p-2">
-                            <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812-1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <div class="bg-[#6EC1D1]/20 rounded-lg p-2 text-[#6EC1D1]">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
                             </svg>
                         </div>
-                        <h2 class="text-xl font-bold text-black">QR Code Scanner</h2>
+                        <div>
+                            <h2 class="text-base font-bold text-white leading-tight">POS QR & Barcode Scanner</h2>
+                            <p class="text-xs text-slate-400">Position the QR code or Barcode in front of the camera</p>
+                        </div>
                     </div>
-                    <button id="posCloseDesktopScannerButton" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button id="posCloseDesktopScannerButton" type="button" class="rounded-[10px] p-2 text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                     </button>
                 </div>
             </div>
 
-            <div class="p-6">
-                <div id="posDesktopScannerReader" class="w-full bg-black rounded-xl overflow-hidden mb-4"></div>
-                <div id="posDesktopScannerStatus" class="text-center text-sm text-slate-600">Position QR code within the frame</div>
+            <div class="p-5 space-y-4">
+                <!-- Camera Selection (if multiple devices available) -->
+                <div id="posCameraSelectWrapper" class="hidden flex items-center gap-2">
+                    <label for="posCameraSelect" class="text-xs font-semibold text-slate-700 whitespace-nowrap">Camera:</label>
+                    <select id="posCameraSelect" class="w-full rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#6EC1D1]">
+                    </select>
+                </div>
+
+                <!-- Video Viewport -->
+                <div class="relative rounded-xl overflow-hidden bg-slate-950 border border-slate-200 aspect-video flex items-center justify-center">
+                    <div id="posDesktopScannerReader" class="w-full h-full"></div>
+                </div>
+
+                <!-- Status Banner -->
+                <div id="posDesktopScannerStatus" class="rounded-lg bg-slate-100 px-3 py-2 text-center text-xs font-medium text-slate-700 border border-slate-200 transition-all">
+                    Position QR code or barcode within the camera view
+                </div>
+
+                <!-- Manual Input Fallback -->
+                <div class="pt-2 border-t border-slate-200">
+                    <form id="posManualScanForm" onsubmit="event.preventDefault();" class="flex items-center gap-2">
+                        <input id="posManualBarcodeInput" type="text" placeholder="Or type/paste SKU or Barcode..." class="flex-1 rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#6EC1D1]" />
+                        <button id="posManualBarcodeBtn" type="button" class="rounded-[10px] bg-[#6EC1D1] px-4 py-2 text-xs font-bold text-slate-900 hover:bg-[#59b2c2] transition shadow-sm">
+                            Add
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

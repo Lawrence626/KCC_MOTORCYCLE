@@ -2297,6 +2297,16 @@ function setupPosEvents() {
                 searchProducts(event.target.value);
             }, 250);
         });
+
+        searchInput.addEventListener('keydown', event => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const query = event.target.value.trim();
+                if (query) {
+                    handleScannedCode(query);
+                }
+            }
+        });
     }
 
     document.getElementById('posProductGrid')?.addEventListener('click', event => {
@@ -2557,6 +2567,28 @@ function setupPosEvents() {
     // Desktop QR Scanner
     document.getElementById('posOpenDesktopScannerButton')?.addEventListener('click', openDesktopScanner);
     document.getElementById('posCloseDesktopScannerButton')?.addEventListener('click', closeDesktopScanner);
+    document.getElementById('posDesktopScannerBackdrop')?.addEventListener('click', closeDesktopScanner);
+
+    // Camera Switcher
+    document.getElementById('posCameraSelect')?.addEventListener('change', (event) => {
+        if (event.target.value && desktopScanner) {
+            startDesktopScannerWithCamera(event.target.value);
+        }
+    });
+
+    // Manual Barcode / SKU Input inside modal
+    document.getElementById('posManualBarcodeBtn')?.addEventListener('click', () => {
+        const val = document.getElementById('posManualBarcodeInput')?.value.trim();
+        if (val) handleScannedCode(val);
+    });
+
+    document.getElementById('posManualBarcodeInput')?.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            const val = event.target.value.trim();
+            if (val) handleScannedCode(val);
+        }
+    });
 
     // Price Breakdown Toggle (Floating popover)
     let currentFloatingBreakdown = null;
@@ -2864,68 +2896,296 @@ function sendMobileScanToTerminal(code) {
     }
 }
 
+// ==========================================
+// DESKTOP & MOBILE QR / BARCODE SCANNER
+// ==========================================
 let desktopScanner = null;
+let availableCameras = [];
+let selectedCameraId = null;
+let isScannerStarting = false;
+
+async function initDesktopScanner() {
+    const statusEl = document.getElementById('posDesktopScannerStatus');
+    const cameraSelectWrapper = document.getElementById('posCameraSelectWrapper');
+    const cameraSelect = document.getElementById('posCameraSelect');
+
+    if (statusEl) {
+        statusEl.textContent = 'Initializing camera...';
+        statusEl.className = 'rounded-lg bg-blue-50 px-3 py-2 text-center text-xs font-medium text-blue-700 border border-blue-200 transition-all';
+    }
+
+    if (typeof Html5Qrcode === 'undefined') {
+        if (statusEl) {
+            statusEl.textContent = 'QR Scanner library not loaded. Please refresh the page.';
+            statusEl.className = 'rounded-lg bg-red-50 px-3 py-2 text-center text-xs font-medium text-red-700 border border-red-200 transition-all';
+        }
+        return;
+    }
+
+    try {
+        // Clean up previous instance if any
+        if (desktopScanner) {
+            try {
+                if (desktopScanner.isScanning) {
+                    await desktopScanner.stop();
+                }
+                desktopScanner.clear();
+            } catch (e) {
+                console.warn('Scanner cleanup warning:', e);
+            }
+            desktopScanner = null;
+        }
+
+        const readerEl = document.getElementById('posDesktopScannerReader');
+        if (readerEl) readerEl.innerHTML = '';
+
+        desktopScanner = new Html5Qrcode("posDesktopScannerReader", {
+            formatsToSupport: typeof Html5QrcodeSupportedFormats !== 'undefined' ? [
+                Html5QrcodeSupportedFormats.QR_CODE,
+                Html5QrcodeSupportedFormats.CODE_128,
+                Html5QrcodeSupportedFormats.CODE_39,
+                Html5QrcodeSupportedFormats.EAN_13,
+                Html5QrcodeSupportedFormats.EAN_8,
+                Html5QrcodeSupportedFormats.UPC_A,
+                Html5QrcodeSupportedFormats.UPC_E,
+            ] : undefined,
+            verbose: false
+        });
+
+        // Enumerate video devices
+        try {
+            availableCameras = await Html5Qrcode.getCameras();
+        } catch (e) {
+            console.warn('Could not enumerate cameras:', e);
+            availableCameras = [];
+        }
+
+        if (availableCameras && availableCameras.length > 0) {
+            if (cameraSelect && cameraSelectWrapper) {
+                cameraSelect.innerHTML = availableCameras.map((cam, idx) => `
+                    <option value="${cam.id}">${cam.label || `Camera ${idx + 1}`}</option>
+                `).join('');
+
+                // Select rear/environment camera if available, otherwise default
+                const rearCam = availableCameras.find(c =>
+                    (c.label || '').toLowerCase().includes('back') ||
+                    (c.label || '').toLowerCase().includes('rear') ||
+                    (c.label || '').toLowerCase().includes('environment')
+                );
+                selectedCameraId = rearCam ? rearCam.id : availableCameras[0].id;
+                cameraSelect.value = selectedCameraId;
+
+                if (availableCameras.length > 1) {
+                    cameraSelectWrapper.classList.remove('hidden');
+                } else {
+                    cameraSelectWrapper.classList.add('hidden');
+                }
+            } else {
+                selectedCameraId = availableCameras[0].id;
+            }
+
+            await startDesktopScannerWithCamera(selectedCameraId);
+        } else {
+            // Fallback to facingMode constraint (works on laptops & mobile browsers)
+            await startDesktopScannerWithFacingMode();
+        }
+    } catch (err) {
+        console.error("Scanner init error:", err);
+        if (statusEl) {
+            statusEl.textContent = 'Camera access denied or unavailable. You can type/paste the SKU/Barcode below.';
+            statusEl.className = 'rounded-lg bg-red-50 px-3 py-2 text-center text-xs font-medium text-red-700 border border-red-200 transition-all';
+        }
+    }
+}
+
+async function startDesktopScannerWithCamera(cameraId) {
+    if (!desktopScanner) return;
+    const statusEl = document.getElementById('posDesktopScannerStatus');
+    const config = {
+        fps: 15,
+        qrbox: (viewfinderWidth, viewfinderHeight) => {
+            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+            const qrboxSize = Math.floor(minEdge * 0.75);
+            return { width: Math.max(qrboxSize, 180), height: Math.max(qrboxSize, 180) };
+        },
+        aspectRatio: 1.777778
+    };
+
+    try {
+        await desktopScanner.start(
+            cameraId,
+            config,
+            onDesktopScanSuccess,
+            onDesktopScanFailure
+        );
+        if (statusEl) {
+            statusEl.textContent = 'Camera active. Point at QR code or Barcode.';
+            statusEl.className = 'rounded-lg bg-emerald-50 px-3 py-2 text-center text-xs font-medium text-emerald-700 border border-emerald-200 transition-all';
+        }
+    } catch (err) {
+        console.warn('Failed to start with camera ID, falling back to facingMode:', err);
+        await startDesktopScannerWithFacingMode();
+    }
+}
+
+async function startDesktopScannerWithFacingMode() {
+    if (!desktopScanner) return;
+    const statusEl = document.getElementById('posDesktopScannerStatus');
+    const config = {
+        fps: 15,
+        qrbox: { width: 250, height: 250 },
+        aspectRatio: 1.777778
+    };
+
+    try {
+        // Try environment (back) camera first
+        await desktopScanner.start(
+            { facingMode: "environment" },
+            config,
+            onDesktopScanSuccess,
+            onDesktopScanFailure
+        );
+        if (statusEl) {
+            statusEl.textContent = 'Camera active. Point at QR code or Barcode.';
+            statusEl.className = 'rounded-lg bg-emerald-50 px-3 py-2 text-center text-xs font-medium text-emerald-700 border border-emerald-200 transition-all';
+        }
+    } catch (envErr) {
+        console.warn('Environment camera unavailable, falling back to user facing camera:', envErr);
+        try {
+            await desktopScanner.start(
+                { facingMode: "user" },
+                config,
+                onDesktopScanSuccess,
+                onDesktopScanFailure
+            );
+            if (statusEl) {
+                statusEl.textContent = 'Webcam active. Point QR code or Barcode at camera.';
+                statusEl.className = 'rounded-lg bg-emerald-50 px-3 py-2 text-center text-xs font-medium text-emerald-700 border border-emerald-200 transition-all';
+            }
+        } catch (userErr) {
+            console.error('All camera start attempts failed:', userErr);
+            if (statusEl) {
+                statusEl.textContent = 'Camera permission required. Please allow camera access in browser settings.';
+                statusEl.className = 'rounded-lg bg-red-50 px-3 py-2 text-center text-xs font-medium text-red-700 border border-red-200 transition-all';
+            }
+        }
+    }
+}
 
 function openDesktopScanner() {
     const modal = document.getElementById('posDesktopScannerModal');
+    if (!modal) return;
     modal.style.display = 'flex';
     modal.classList.remove('hidden');
 
-    // Initialize scanner
-    if (!desktopScanner) {
-        desktopScanner = new Html5Qrcode("posDesktopScannerReader");
-    }
+    initDesktopScanner();
 
-    const config = {
-        fps: 10,
-        qrbox: { width: 250, height: 250 },
-        aspectRatio: 1.0
-    };
-
-    desktopScanner.start(
-        { facingMode: "environment" },
-        config,
-        onDesktopScanSuccess,
-        onDesktopScanFailure
-    ).catch(err => {
-        console.error("Desktop scanner error:", err);
-        document.getElementById('posDesktopScannerStatus').textContent = 'Camera access denied or not available';
-        document.getElementById('posDesktopScannerStatus').classList.add('text-red-400');
-    });
+    // Focus manual input for quick keyboard typing
+    setTimeout(() => {
+        document.getElementById('posManualBarcodeInput')?.focus();
+    }, 300);
 }
 
-function closeDesktopScanner() {
+async function closeDesktopScanner() {
     const modal = document.getElementById('posDesktopScannerModal');
-    modal.style.display = 'none';
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.add('hidden');
+    }
 
     if (desktopScanner) {
-        desktopScanner.stop().catch(err => console.error(err));
+        try {
+            if (desktopScanner.isScanning) {
+                await desktopScanner.stop();
+            }
+            desktopScanner.clear();
+        } catch (err) {
+            console.warn('Error stopping scanner:', err);
+        }
+        desktopScanner = null;
     }
 
-    document.getElementById('posDesktopScannerStatus').textContent = 'Position QR code within the frame';
-    document.getElementById('posDesktopScannerStatus').classList.remove('text-red-400');
+    const statusEl = document.getElementById('posDesktopScannerStatus');
+    if (statusEl) {
+        statusEl.textContent = 'Position QR code or barcode within the camera view';
+        statusEl.className = 'rounded-lg bg-slate-100 px-3 py-2 text-center text-xs font-medium text-slate-700 border border-slate-200 transition-all';
+    }
 }
 
+let lastScanTime = 0;
+let lastScannedText = '';
+
 function onDesktopScanSuccess(decodedText, decodedResult) {
-    // Play notification sound
+    const now = Date.now();
+    // Debounce duplicate scans within 1.5 seconds
+    if (decodedText === lastScannedText && (now - lastScanTime) < 1500) {
+        return;
+    }
+    lastScanTime = now;
+    lastScannedText = decodedText;
+
     playScanNotification();
 
-    // Update status
-    document.getElementById('posDesktopScannerStatus').textContent = 'Scanned: ' + decodedText;
-    document.getElementById('posDesktopScannerStatus').classList.add('text-green-400');
+    const statusEl = document.getElementById('posDesktopScannerStatus');
+    if (statusEl) {
+        statusEl.textContent = `Scanned: ${decodedText}`;
+        statusEl.className = 'rounded-lg bg-emerald-100 px-3 py-2 text-center text-xs font-bold text-emerald-800 border border-emerald-300 transition-all';
+    }
 
-    setTimeout(() => {
-        document.getElementById('posDesktopScannerStatus').classList.remove('text-green-400');
-        document.getElementById('posDesktopScannerStatus').textContent = 'Position QR code within the frame';
-    }, 2000);
-
-    // Handle the scanned code
     handleScannedCode(decodedText);
 }
 
 function onDesktopScanFailure(error) {
-    // Ignore scan failures, they're normal
+    // Normal frame scanning noise — ignore
 }
+
+// Hardware USB / Wireless Barcode Scanner Gun Keypress Buffer
+let scannerKeyBuffer = '';
+let lastKeyTimestamp = 0;
+
+document.addEventListener('keydown', (event) => {
+    const activeEl = document.activeElement;
+    const isEditingField = activeEl && (
+        activeEl.id === 'posAmountTenderedInput' ||
+        activeEl.id === 'posExtraChargeInput' ||
+        activeEl.id === 'posDiscountInput'
+    );
+
+    if (isEditingField) return;
+
+    const now = Date.now();
+    const timeDiff = now - lastKeyTimestamp;
+    lastKeyTimestamp = now;
+
+    if (event.key === 'Enter') {
+        if (scannerKeyBuffer.length >= 2 && timeDiff < 90) {
+            // Scanner gun detected!
+            event.preventDefault();
+            const scannedCode = scannerKeyBuffer.trim();
+            scannerKeyBuffer = '';
+            if (scannedCode) {
+                handleScannedCode(scannedCode);
+            }
+            return;
+        }
+        scannerKeyBuffer = '';
+        return;
+    }
+
+    if (event.key === 'Escape') {
+        closeDesktopScanner();
+        closeMobileScanner();
+        return;
+    }
+
+    // Accumulate printable characters if typing speed is rapid (< 80ms between keys)
+    if (event.key.length === 1 && !event.ctrlKey && !event.altKey && !event.metaKey) {
+        if (timeDiff > 120 && scannerKeyBuffer.length > 0) {
+            scannerKeyBuffer = ''; // Reset buffer if normal slow typing
+        }
+        scannerKeyBuffer += event.key;
+    }
+});
 
 function startScanPolling() {
     // Poll server for new scans every 2 seconds
@@ -2961,81 +3221,119 @@ function handleStorageChange(event) {
 }
 
 async function handleScannedCode(code) {
-    // Play notification sound
+    if (!code) return;
+    const rawCode = String(code).trim();
+    if (!rawCode) return;
+
     playScanNotification();
+    console.log('Processing scanned code:', rawCode);
 
-    console.log('Scanned code:', code);
-
-    // Try to parse code as JSON (for QR codes with product data)
-    let searchCode = code;
+    let searchCode = rawCode;
+    // 1. Check if the scanned string is JSON (e.g. from generated QR stickers)
     try {
-        const parsed = JSON.parse(code);
-        console.log('Parsed QR data:', parsed);
-        if (parsed.sku) {
-            searchCode = parsed.sku;
-            console.log('Using SKU from QR:', searchCode);
-        } else if (parsed.product_id) {
-            searchCode = parsed.product_id.toString();
-            console.log('Using product_id from QR:', searchCode);
+        const parsed = JSON.parse(rawCode);
+        if (parsed && typeof parsed === 'object') {
+            if (parsed.sku) searchCode = String(parsed.sku).trim();
+            else if (parsed.product_id) searchCode = String(parsed.product_id).trim();
+            else if (parsed.id) searchCode = String(parsed.id).trim();
+            else if (parsed.barcode) searchCode = String(parsed.barcode).trim();
+            else if (parsed.name) searchCode = String(parsed.name).trim();
+            else if (parsed.product_name) searchCode = String(parsed.product_name).trim();
         }
     } catch (e) {
-        console.log('Not JSON, using original code');
-        // Not JSON, use original code
+        // Not JSON - check if it's a URL like http.../product/123
+        const urlMatch = rawCode.match(/(?:products?|item)\/([^\/?#]+)/i);
+        if (urlMatch && urlMatch[1]) {
+            searchCode = urlMatch[1].trim();
+        }
     }
 
-    // Try to find product by SKU or QR code
-    try {
-        const response = await fetch(posState.apiProductsUrl);
-        const result = await response.json();
+    const cleanQuery = searchCode.replace(/^["']|["']$/g, '').trim();
+    const queryLower = cleanQuery.toLowerCase();
 
-        // Handle different response structures
-        let products = [];
-        if (Array.isArray(result)) {
-            products = result;
-        } else if (result.data && Array.isArray(result.data)) {
-            products = result.data;
-        } else if (result.products && Array.isArray(result.products)) {
-            products = result.products;
+    // Helper matcher function
+    const matchesProduct = (p) => {
+        if (!p) return false;
+        const pSku = String(p.sku || '').trim().toLowerCase();
+        const pBarcode = String(p.barcode || '').trim().toLowerCase();
+        const pId = String(p.id || '').trim();
+        const pQr = String(p.qr_code || '').trim().toLowerCase();
+        const pName = String(p.product_name || p.name || '').trim().toLowerCase();
+
+        return pSku === queryLower ||
+               pBarcode === queryLower ||
+               pId === cleanQuery ||
+               pQr === queryLower ||
+               pName === queryLower;
+    };
+
+    try {
+        // Search API with exact search query for maximum speed and accuracy
+        const searchUrl = new URL(posState.apiProductsUrl, window.location.origin);
+        searchUrl.searchParams.set('search', cleanQuery);
+        searchUrl.searchParams.set('per_page', '50');
+
+        let matchedProduct = null;
+
+        const response = await fetch(searchUrl.toString());
+        if (response.ok) {
+            const result = await response.json();
+            let list = [];
+            if (Array.isArray(result)) list = result;
+            else if (result.data && Array.isArray(result.data)) list = result.data;
+            else if (result.products && Array.isArray(result.products)) list = result.products;
+
+            matchedProduct = list.find(matchesProduct) || (list.length === 1 ? list[0] : null);
         }
 
-        console.log('API response:', result);
-        console.log('Loaded products:', products.length);
-        console.log('Searching for:', searchCode);
+        // If not found via search query, fallback to full active product list
+        if (!matchedProduct) {
+            const fullResp = await fetch(posState.apiProductsUrl);
+            if (fullResp.ok) {
+                const fullResult = await fullResp.json();
+                let fullList = [];
+                if (Array.isArray(fullResult)) fullList = fullResult;
+                else if (fullResult.data && Array.isArray(fullResult.data)) fullList = fullResult.data;
+                else if (fullResult.products && Array.isArray(fullResult.products)) fullList = fullResult.products;
 
-        const product = products.find(p =>
-            p.sku === searchCode ||
-            p.qr_code === searchCode ||
-            p.id.toString() === searchCode
-        );
+                matchedProduct = fullList.find(matchesProduct) || null;
+            }
+        }
 
-        console.log('Found product:', product);
+        if (matchedProduct) {
+            const stock = Number(matchedProduct.stock_quantity ?? matchedProduct.stock ?? 0);
+            const pName = matchedProduct.product_name || matchedProduct.name || 'Product';
 
-        if (product) {
-            const stock = Number(product.stock_quantity ?? product.stock ?? 0);
-            const pName = product.product_name || product.name || 'Product';
             if (stock <= 0) {
-                showNotification(`Cannot add item. ${pName} is out of stock.`, 'error');
+                showNotification(`Out of Stock: ${pName} has 0 stock available.`, 'error');
                 return;
             }
-            addProductToCart({
-                id: product.id,
+
+            const added = addProductToCart({
+                id: matchedProduct.id,
                 name: pName,
-                sku: product.sku || '',
-                product_description: product.product_description || product.category || '',
-                brand: product.brand || '',
-                compatibility: product.compatibility || '',
-                category: product.category || 'Uncategorized',
+                sku: matchedProduct.sku || '',
+                product_description: matchedProduct.product_description || matchedProduct.category || '',
+                brand: matchedProduct.brand || '',
+                compatibility: matchedProduct.compatibility || '',
+                category: matchedProduct.category || 'Uncategorized',
                 stock_quantity: stock,
-                unit_price: Number(product.unit_price || 0),
-                discount_type: product.discount_type || null,
-                discount_value: Number(product.discount_value || 0)
+                unit_price: Number(matchedProduct.unit_price || 0),
+                discount_type: matchedProduct.discount_type || null,
+                discount_value: Number(matchedProduct.discount_value || 0)
             });
+
+            if (added) {
+                // Clear manual input if present
+                const manualInput = document.getElementById('posManualBarcodeInput');
+                if (manualInput) manualInput.value = '';
+            }
         } else {
-            showNotification(`Product not found: ${searchCode}`, 'error');
+            showNotification(`Product not found for: "${cleanQuery}"`, 'error');
         }
     } catch (error) {
-        console.error('Error searching for product:', error);
-        showNotification('Error searching for product', 'error');
+        console.error('Error in handleScannedCode:', error);
+        showNotification('Failed to lookup product. Please check your connection.', 'error');
     }
 }
 

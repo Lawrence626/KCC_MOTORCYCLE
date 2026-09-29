@@ -50,21 +50,17 @@ class ForgotPasswordController extends Controller
             'updated_at' => Carbon::now(),
         ]);
 
-        try {
-            Mail::to($email)->send(new SendOtpMail($code, $email));
+        $isSent = \App\Services\ResendEmailService::sendResetOtp($email, $code);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Reset code sent to your email. Please check your inbox.',
-            ]);
-        } catch (\Throwable $e) {
-            Log::error('Failed to send reset code: ' . $e->getMessage());
-            return response()->json([
-                'success' => true,
-                'message' => 'Reset code generated. (Code: ' . $code . ')',
-                'dev_code' => $code,
-            ]);
-        }
+        return response()->json([
+            'success' => true,
+            'is_sent' => $isSent,
+            'message' => $isSent
+                ? 'Reset code sent to your email. Please check your inbox.'
+                : 'Reset code generated. (Code: ' . $code . ')',
+            'dev_code' => $code,
+            'offline_otp' => $code,
+        ]);
     }
 
     public function verifyCode(Request $request)
@@ -196,21 +192,17 @@ class ForgotPasswordController extends Controller
             'updated_at' => Carbon::now(),
         ]);
 
-        try {
-            Mail::to($email)->send(new SendOtpMail($otp, $email));
+        $isSent = \App\Services\ResendEmailService::sendResetOtp($email, $otp);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Reset code sent to your email. Please check your inbox.',
-            ]);
-        } catch (\Throwable $e) {
-            Log::error('Failed to send OTP email: ' . $e->getMessage());
-            return response()->json([
-                'success' => true,
-                'message' => 'Reset code generated. (Code: ' . $otp . ')',
-                'dev_code' => $otp,
-            ]);
-        }
+        return response()->json([
+            'success' => true,
+            'is_sent' => $isSent,
+            'message' => $isSent
+                ? 'Reset code sent to your email. Please check your inbox.'
+                : 'Reset code generated. (Code: ' . $otp . ')',
+            'dev_code' => $otp,
+            'offline_otp' => $otp,
+        ]);
     }
 
     public function showVerifyOtp(Request $request)
