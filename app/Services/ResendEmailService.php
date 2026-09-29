@@ -10,11 +10,12 @@ use Illuminate\Support\Facades\Mail;
 class ResendEmailService
 {
     /**
-     * Send email via Resend HTTP API (Port 443) or Laravel SMTP fallback.
+     * Send email via Resend HTTP API (Port 443) with auto test-mode routing and Laravel SMTP fallback.
      */
     public static function send(string $toEmail, string $subject, string $htmlContent): bool
     {
         $resendApiKey = env('RESEND_API_KEY');
+        $testFallbackEmail = env('RESEND_TEST_RECIPIENT', 'ilanolawrencebryan@gmail.com');
 
         // If Resend API Key is configured, use Resend API directly over HTTPS Port 443 (Render-compatible)
         if (!empty($resendApiKey)) {
@@ -36,9 +37,32 @@ class ResendEmailService
                 if ($response->successful()) {
                     Log::info("Email sent via Resend API to {$toEmail}: ID " . ($response->json('id') ?? 'success'));
                     return true;
-                } else {
-                    Log::warning("Resend API failed ({$response->status()}): " . $response->body());
                 }
+
+                // If Resend 403 (Test mode restriction: can only send to registered Resend email)
+                $body = $response->body();
+                if ($response->status() === 403 && str_contains($body, 'only send testing emails to your own email address')) {
+                    Log::info("Resend is in test mode. Forwarding OTP to account owner ({$testFallbackEmail}) for target: {$toEmail}");
+                    
+                    $fwdSubject = "[For {$toEmail}] " . $subject;
+                    $fwdHtml = "<div style='padding:12px;background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;margin-bottom:16px;color:#92400e;font-size:13px;'><strong>Notice:</strong> This verification code was requested for account <code>{$toEmail}</code>.</div>" . $htmlContent;
+
+                    $fwdResponse = Http::withToken($resendApiKey)
+                        ->timeout(10)
+                        ->post('https://api.resend.com/emails', [
+                            'from'    => $fromAddress,
+                            'to'      => [$testFallbackEmail],
+                            'subject' => $fwdSubject,
+                            'html'    => $fwdHtml,
+                        ]);
+
+                    if ($fwdResponse->successful()) {
+                        Log::info("Forwarded test email via Resend to {$testFallbackEmail} for {$toEmail}");
+                        return true;
+                    }
+                }
+
+                Log::warning("Resend API failed ({$response->status()}): " . $body);
             } catch (\Throwable $e) {
                 Log::warning("Resend API exception: " . $e->getMessage());
             }
