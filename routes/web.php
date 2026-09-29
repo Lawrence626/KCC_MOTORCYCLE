@@ -24,6 +24,37 @@ Route::get('/reset-password/{token}', function ($token) {
     return view('auth.reset-password', ['token' => $token]);
 })->name('password.reset.token');
 
+// Diagnostic route to test and debug live email delivery directly from Render
+Route::get('/api/test-email', function (\Illuminate\Http\Request $request) {
+    $targetEmail = $request->query('to', 'ilanolawrence04@gmail.com');
+    $config = [
+        'default_mailer' => config('mail.default'),
+        'smtp_host'      => config('mail.mailers.smtp.host'),
+        'smtp_port'      => config('mail.mailers.smtp.port'),
+        'encryption'     => config('mail.mailers.smtp.encryption'),
+        'username'       => config('mail.mailers.smtp.username'),
+        'from'           => config('mail.from'),
+    ];
+
+    try {
+        \Illuminate\Support\Facades\Mail::raw("Live test email from KCC Motorcycle Render Cloud. Security Code: " . rand(100000, 999999), function ($msg) use ($targetEmail) {
+            $msg->to($targetEmail)
+                ->subject('KCC Motorcycle Live Cloud Email Test');
+        });
+        return response()->json([
+            'success'     => true,
+            'message'     => "Email sent successfully to {$targetEmail}!",
+            'config_used' => $config,
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'success'     => false,
+            'error'       => $e->getMessage(),
+            'config_used' => $config,
+        ], 500);
+    }
+});
+
 // Login routes
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login.store');
 Route::post('/login/otp/send', [App\Http\Controllers\Auth\LoginOtpController::class, 'send'])->name('login.otp.send');
