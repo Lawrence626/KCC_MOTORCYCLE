@@ -57,20 +57,24 @@ class LocationDistributionSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->command->info('Starting Location Distribution Seeder...');
+        $this->command?->info('Starting Location Distribution Seeder...');
 
         // ─── 1. Ensure warehouses exist ──────────────────────────────────────
         $this->ensureWarehousesExist();
 
         // ─── 2. Clear existing distribution data ─────────────────────────────
-        $this->command->info('Clearing existing distribution data...');
-        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        $this->command?->info('Clearing existing distribution data...');
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        }
         ShopInventoryHistory::query()->delete();
         ShopInventory::query()->delete();
         ShopShelf::query()->delete();
         ProductWarehouseStock::query()->delete();
         WarehouseShelf::query()->delete();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        }
 
         // ─── 3. Load all active products ─────────────────────────────────────
         $products = Product::where('is_archived', false)
@@ -78,7 +82,7 @@ class LocationDistributionSeeder extends Seeder
             ->where('stock_quantity', '>', 0)
             ->get();
 
-        $this->command->info("Found {$products->count()} active products to distribute.");
+        $this->command?->info("Found {$products->count()} active products to distribute.");
 
         // ─── 4. Distribute each product across locations ──────────────────────
         $distributionSummary = [
@@ -104,20 +108,20 @@ class LocationDistributionSeeder extends Seeder
             }
         }
 
-        $this->command->info('Location distribution complete:');
+        $this->command?->info('Location distribution complete:');
         foreach ($distributionSummary as $location => $total) {
-            $this->command->line("  {$location}: {$total} units");
+            $this->command?->line("  {$location}: {$total} units");
         }
 
         // ─── 5. Create shop shelves and populate shop_inventory ──────────────
-        $this->command->info('Populating Shop Inventory from SHOP allocations...');
+        $this->command?->info('Populating Shop Inventory from SHOP allocations...');
         $this->populateShopInventory();
 
         // ─── 6. Create warehouse shelves and populate them ───────────────────
-        $this->command->info('Populating Warehouse Shelves...');
+        $this->command?->info('Populating Warehouse Shelves...');
         $this->populateWarehouseShelves();
 
-        $this->command->info('Location Distribution Seeder completed successfully!');
+        $this->command?->info('Location Distribution Seeder completed successfully!');
     }
 
     /**
@@ -321,7 +325,7 @@ class LocationDistributionSeeder extends Seeder
             }
         }
 
-        $this->command->info("  Created {$totalShelves} shop shelves with {$totalProducts} product allocations.");
+        $this->command?->info("  Created {$totalShelves} shop shelves with {$totalProducts} product allocations.");
     }
 
     /**
@@ -339,7 +343,7 @@ class LocationDistributionSeeder extends Seeder
                 ->get();
 
             if ($warehouseStocks->isEmpty()) {
-                $this->command->line("  {$warehouse->name}: No products to distribute.");
+                $this->command?->line("  {$warehouse->name}: No products to distribute.");
                 continue;
             }
 
@@ -375,7 +379,7 @@ class LocationDistributionSeeder extends Seeder
                 $slotIndex++;
             }
 
-            $this->command->info("  {$warehouse->name}: {$warehouseStocks->count()} products across {$slotIndex} shelves.");
+            $this->command?->info("  {$warehouse->name}: {$warehouseStocks->count()} products across {$slotIndex} shelves.");
         }
     }
 }

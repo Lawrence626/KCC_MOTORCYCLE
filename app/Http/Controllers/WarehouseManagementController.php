@@ -32,16 +32,7 @@ class WarehouseManagementController extends Controller
             );
         }
 
-        // Auto-initialize warehouse stock distribution if none exists yet and active products exist
-        if (ProductWarehouseStock::count() === 0 && Product::where('is_archived', false)->where('stock_quantity', '>', 0)->exists()) {
-            try {
-                (new \Database\Seeders\LocationDistributionSeeder())->run();
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::warning('Auto location distribution skipped: ' . $e->getMessage());
-            }
-        }
-
-        // Load all products (not filtered by warehouse stock)
+        // Load all active products (not filtered by warehouse stock)
         $products = Product::where('is_archived', false)
             ->with('productCatalog')
             ->with('warehouseStocks')
@@ -83,10 +74,8 @@ class WarehouseManagementController extends Controller
                 $productDescription = $product->productCatalog->product_description;
                 $brand = $product->productCatalog->brand;
                 $sku = $product->productCatalog->sku;
-                // Use product_name from catalog as compatible model (it contains the motorcycle model)
                 $compatibility = $product->productCatalog->product_name;
             } else {
-                // Fallback to Product data if no catalog relationship
                 $productDescription = $product->description ?? $product->product_name ?? $product->name;
                 $brand = $product->brand;
                 $sku = $product->sku;
@@ -105,7 +94,7 @@ class WarehouseManagementController extends Controller
                 $warehouseName = $stock->warehouse;
                 $warehouseIndex = $warehouseNameToIndex[$warehouseName] ?? -1;
                 
-                if ($warehouseIndex >= 0 && $stock->quantity > 0) {
+                if ($warehouseIndex >= 0 && $stock->quantity > 0 && isset($warehouseAssignments[$warehouseIndex])) {
                     $warehouseAssignments[$warehouseIndex]->push((object) [
                         'id' => $product->id,
                         'sku' => $sku,
@@ -117,6 +106,45 @@ class WarehouseManagementController extends Controller
                         'unit_price' => $product->unit_price ?? 0,
                         'category' => $productDescription,
                     ]);
+                }
+            }
+        }
+
+        // Fallback: If no products were assigned via product_warehouse_stock, distribute products evenly across warehouses
+        $totalAssigned = 0;
+        foreach ($warehouseAssignments as $assignment) {
+            $totalAssigned += $assignment->count();
+        }
+
+        if ($totalAssigned === 0 && $products->isNotEmpty() && $totalWarehouses > 0) {
+            $chunkSize = max(1, (int) ceil($totalProducts / $totalWarehouses));
+            foreach ($warehouses as $index => $warehouse) {
+                $slice = $products->slice($index * $chunkSize, $chunkSize)->values();
+                foreach ($slice as $product) {
+                    if ($product->productCatalog) {
+                        $pDesc = $product->productCatalog->product_description;
+                        $pBrand = $product->productCatalog->brand;
+                        $pSku = $product->productCatalog->sku;
+                        $pCompat = $product->productCatalog->product_name;
+                    } else {
+                        $pDesc = $product->description ?? $product->product_name ?? $product->name;
+                        $pBrand = $product->brand;
+                        $pSku = $product->sku;
+                        $pCompat = $product->compatibility;
+                    }
+                    if (isset($warehouseAssignments[$index])) {
+                        $warehouseAssignments[$index]->push((object) [
+                            'id' => $product->id,
+                            'sku' => $pSku,
+                            'name' => $pDesc,
+                            'description' => $pDesc,
+                            'brand' => $pBrand,
+                            'compatible_model' => $pCompat,
+                            'stock_quantity' => max(1, (int)($product->stock_quantity ?? 1)),
+                            'unit_price' => $product->unit_price ?? 0,
+                            'category' => $pDesc,
+                        ]);
+                    }
                 }
             }
         }
@@ -166,7 +194,6 @@ class WarehouseManagementController extends Controller
 
         /**
          * Enrich a single stored shelf-product array with full catalog data.
-         * Priority: exact SKU match → partial SKU match → name matches compatible_model → name matches description.
          */
         $enrichProduct = function (array $storedProduct) use ($catalogBySku, $catalogByDescription, $catalogByCompatible): array {
             $storedSku  = strtolower(trim($storedProduct['sku'] ?? ''));
@@ -174,12 +201,10 @@ class WarehouseManagementController extends Controller
 
             $cat = null;
 
-            // 1. Exact SKU match
             if ($storedSku && isset($catalogBySku[$storedSku])) {
                 $cat = $catalogBySku[$storedSku];
             }
 
-            // 2. Partial SKU match (catalog SKU contains stored SKU or vice-versa)
             if (!$cat && $storedSku && strlen($storedSku) > 3) {
                 foreach ($catalogBySku as $catSku => $entry) {
                     if (str_contains($catSku, $storedSku) || str_contains($storedSku, $catSku)) {
@@ -189,12 +214,10 @@ class WarehouseManagementController extends Controller
                 }
             }
 
-            // 3. Stored name matches a product's compatible_model (e.g. "SNIPER 150/155")
             if (!$cat && $storedName && isset($catalogByCompatible[$storedName])) {
                 $cat = $catalogByCompatible[$storedName];
             }
 
-            // 4. Stored name matches a product's description (e.g. "CALIPER")
             if (!$cat && $storedName && isset($catalogByDescription[$storedName])) {
                 $cat = $catalogByDescription[$storedName];
             }
@@ -213,73 +236,105 @@ class WarehouseManagementController extends Controller
         };
 
         $warehousesData = $warehouses->map(function ($warehouse, $warehouseIndex) use ($warehouseAssignments, $savedShelvesByWarehouse, $enrichProduct) {
-            $warehouseProducts = $warehouseAssignments[$warehouseIndex]->values();
+            $warehouseProducts = ($warehouseAssignments[$warehouseIndex] ?? collect())->values();
             $chunkedProducts = $warehouseProducts->chunk(10);
             $warehouseSavedShelves = $savedShelvesByWarehouse->get($warehouse->id, collect());
             $visibleSavedShelves = $warehouseSavedShelves->filter(function ($shelf) {
                 return !$shelf->archived;
             })->sortBy('slot_index');
 
-            // If this warehouse has allocated products in ProductWarehouseStock but no shelves yet, auto-generate initial shelves
+            // If this warehouse has allocated products but no saved shelves in DB yet, auto-create initial shelves
             if ($visibleSavedShelves->isEmpty() && $warehouseProducts->isNotEmpty()) {
                 $slotIdx = 0;
                 foreach ($chunkedProducts as $chunk) {
                     $shelfProducts = $chunk->map(function ($p) {
                         return [
-                            'id'               => $p->id,
+                            'id'               => $p->id ?? null,
                             'sku'              => $p->sku ?? '',
-                            'name'             => $p->name ?? 'Unknown',
+                            'name'             => $p->name ?? $p->description ?? 'Unknown',
                             'description'      => $p->description ?? '',
                             'brand'            => $p->brand ?? '',
                             'compatible_model' => $p->compatible_model ?? '',
-                            'qty'              => $p->stock_quantity ?? 1,
-                            'price'            => $p->unit_price ?? 0,
-                            'category'         => $p->category ?? '',
+                            'qty'              => $p->stock_quantity ?? $p->qty ?? 1,
+                            'price'            => $p->unit_price ?? $p->price ?? 0,
+                            'category'         => $p->category ?? $p->description ?? '',
                         ];
                     })->values()->toArray();
 
-                    WarehouseShelf::firstOrCreate(
-                        [
-                            'warehouse_id' => $warehouse->id,
-                            'slot_index'   => $slotIdx,
-                        ],
-                        [
-                            'warehouse_code'  => $warehouse->code ?: ('WH-' . $warehouse->id),
-                            'warehouse_index' => 0,
-                            'sort_order'      => $slotIdx,
-                            'name'            => $warehouse->name . ' - Shelf ' . ($slotIdx + 1),
-                            'capacity'        => 10,
-                            'products'        => $shelfProducts,
-                            'archived'        => false,
-                        ]
-                    );
+                    try {
+                        WarehouseShelf::firstOrCreate(
+                            [
+                                'warehouse_id' => $warehouse->id,
+                                'slot_index'   => $slotIdx,
+                            ],
+                            [
+                                'warehouse_code'  => $warehouse->code ?: ('WH-' . $warehouse->id),
+                                'warehouse_index' => $warehouseIndex,
+                                'sort_order'      => $slotIdx,
+                                'name'            => $warehouse->name . ' - Shelf ' . ($slotIdx + 1),
+                                'capacity'        => 10,
+                                'products'        => $shelfProducts,
+                                'archived'        => false,
+                            ]
+                        );
+                    } catch (\Throwable $e) {
+                        \Illuminate\Support\Facades\Log::warning('Auto shelf creation skipped: ' . $e->getMessage());
+                    }
                     $slotIdx++;
                 }
 
-                $warehouseSavedShelves = WarehouseShelf::where('warehouse_id', $warehouse->id)->get();
-                $visibleSavedShelves = $warehouseSavedShelves->filter(function ($shelf) {
-                    return !$shelf->archived;
-                })->sortBy('slot_index');
+                // Re-fetch saved shelves if created
+                $refreshedShelves = WarehouseShelf::where('warehouse_id', $warehouse->id)->get();
+                if ($refreshedShelves->isNotEmpty()) {
+                    $warehouseSavedShelves = $refreshedShelves;
+                    $visibleSavedShelves = $warehouseSavedShelves->filter(function ($shelf) {
+                        return !$shelf->archived;
+                    })->sortBy('slot_index');
+                }
             }
 
-            // Only include saved (non-archived) shelves as locations.
-            // Do not show default/empty shelves — user will add shelves manually.
-            $locations = $visibleSavedShelves->map(function ($shelf) use ($enrichProduct) {
-                $products = $shelf->products ?? [];
-                if (is_string($products)) {
-                    $products = json_decode($products, true);
-                }
-                if (!is_array($products)) {
-                    $products = [];
-                }
-                $enrichedProducts = array_map($enrichProduct, array_values($products));
-                return [
-                    'name'       => $shelf->name,
-                    'products'   => $enrichedProducts,
-                    'archived'   => $shelf->archived,
-                    'slot_index' => $shelf->slot_index,
-                ];
-            })->values()->toArray();
+            // If shelves exist in DB, map them. Otherwise, fall back to chunked product locations
+            if ($visibleSavedShelves->isNotEmpty()) {
+                $locations = $visibleSavedShelves->map(function ($shelf) use ($enrichProduct) {
+                    $products = $shelf->products ?? [];
+                    if (is_string($products)) {
+                        $products = json_decode($products, true);
+                    }
+                    if (!is_array($products)) {
+                        $products = [];
+                    }
+                    $enrichedProducts = array_map($enrichProduct, array_values($products));
+                    return [
+                        'name'       => $shelf->name,
+                        'products'   => $enrichedProducts,
+                        'archived'   => $shelf->archived,
+                        'slot_index' => $shelf->slot_index,
+                    ];
+                })->values()->toArray();
+            } else {
+                $locations = $chunkedProducts->values()->map(function ($chunk, $slotIndex) use ($warehouse, $enrichProduct) {
+                    $shelfProducts = $chunk->map(function ($p) {
+                        return [
+                            'id'               => $p->id ?? null,
+                            'sku'              => $p->sku ?? '',
+                            'name'             => $p->name ?? $p->description ?? 'Unknown',
+                            'description'      => $p->description ?? '',
+                            'brand'            => $p->brand ?? '',
+                            'compatible_model' => $p->compatible_model ?? '',
+                            'qty'              => $p->stock_quantity ?? $p->qty ?? 1,
+                            'price'            => $p->unit_price ?? $p->price ?? 0,
+                            'category'         => $p->category ?? $p->description ?? '',
+                        ];
+                    })->values()->toArray();
+                    $enrichedProducts = array_map($enrichProduct, $shelfProducts);
+                    return [
+                        'name'       => $warehouse->name . ' - Shelf ' . ($slotIndex + 1),
+                        'products'   => $enrichedProducts,
+                        'archived'   => false,
+                        'slot_index' => $slotIndex,
+                    ];
+                })->values()->toArray();
+            }
 
             $archivedShelves = $warehouseSavedShelves->filter(function ($shelf) {
                 return $shelf->archived;
