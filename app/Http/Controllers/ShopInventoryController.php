@@ -661,52 +661,97 @@ class ShopInventoryController extends Controller
             ->get()
             ->groupBy('warehouse_id');
 
+        $activeProducts = \App\Models\Product::where('is_archived', false)
+            ->with('productCatalog')
+            ->get();
+
         $warehousesGrouped = [];
 
         foreach ($warehouses as $warehouseIndex => $warehouse) {
             $shelves = $warehouseShelves->get($warehouse->id, collect());
 
-            // If this warehouse has no shelves in DB, check if it has products and auto-create default shelves
-            if ($shelves->isEmpty()) {
+            // Check if existing shelves have any products
+            $hasAnyProducts = false;
+            foreach ($shelves as $s) {
+                $prods = is_string($s->products) ? json_decode($s->products, true) : ($s->products ?? []);
+                if (!empty($prods) && is_array($prods)) {
+                    $hasAnyProducts = true;
+                    break;
+                }
+            }
+
+            // If this warehouse has no shelves in DB or all shelves are empty, auto-populate shelves
+            if ($shelves->isEmpty() || !$hasAnyProducts) {
                 $whStocks = \App\Models\ProductWarehouseStock::where('warehouse', $warehouse->name)
                     ->where('quantity', '>', 0)
-                    ->with('product')
+                    ->with('product.productCatalog')
                     ->get();
 
-                if ($whStocks->isNotEmpty()) {
-                    $slotIdx = 0;
-                    foreach ($whStocks->chunk(10) as $chunk) {
-                        $shelfProducts = $chunk->map(function ($stock) {
-                            $product = $stock->product;
-                            return [
-                                'id'          => $product ? $product->id : null,
-                                'sku'         => $product ? $product->sku : '',
-                                'name'        => $product ? ($product->name ?? $product->description) : 'Unknown',
-                                'description' => $product ? $product->description : '',
-                                'brand'       => $product ? $product->brand : '',
-                                'qty'         => (int) $stock->quantity,
-                                'price'       => $product ? (float) $product->unit_price : 0,
-                            ];
-                        })->values()->toArray();
+                $productsToShelf = collect();
 
-                        try {
-                            \App\Models\WarehouseShelf::firstOrCreate(
-                                [
-                                    'warehouse_id' => $warehouse->id,
-                                    'slot_index'   => $slotIdx,
-                                ],
-                                [
-                                    'warehouse_code'  => $warehouse->code ?: ('WH-' . $warehouse->id),
-                                    'warehouse_index' => $warehouseIndex,
-                                    'sort_order'      => $slotIdx,
-                                    'name'            => $warehouse->name . ' - Shelf ' . ($slotIdx + 1),
-                                    'capacity'        => 10,
-                                    'products'        => $shelfProducts,
-                                    'archived'        => false,
-                                ]
-                            );
-                        } catch (\Throwable $e) {
-                            // Ignore unique constraint error
+                if ($whStocks->isNotEmpty()) {
+                    foreach ($whStocks as $stock) {
+                        $product = $stock->product;
+                        if ($product) {
+                            $productsToShelf->push([
+                                'id'          => $product->id,
+                                'sku'         => $product->sku ?? ($product->productCatalog ? $product->productCatalog->sku : ''),
+                                'name'        => $product->productCatalog ? $product->productCatalog->product_description : ($product->name ?? $product->description ?? 'Unknown'),
+                                'description' => $product->description ?? '',
+                                'brand'       => $product->brand ?? ($product->productCatalog ? $product->productCatalog->brand : ''),
+                                'qty'         => max(1, (int) $stock->quantity),
+                                'price'       => (float) ($product->unit_price ?? 0),
+                            ]);
+                        }
+                    }
+                } elseif ($activeProducts->isNotEmpty() && $warehouses->count() > 0) {
+                    // Distribute slice of active products to this warehouse
+                    $chunkSize = max(1, (int) ceil($activeProducts->count() / max(1, $warehouses->count())));
+                    $productSlice = $activeProducts->slice($warehouseIndex * $chunkSize, $chunkSize)->values();
+                    if ($productSlice->isEmpty()) {
+                        $productSlice = $activeProducts->take(10);
+                    }
+                    foreach ($productSlice as $product) {
+                        $productsToShelf->push([
+                            'id'          => $product->id,
+                            'sku'         => $product->sku ?? ($product->productCatalog ? $product->productCatalog->sku : ''),
+                            'name'        => $product->productCatalog ? $product->productCatalog->product_description : ($product->name ?? $product->description ?? 'Unknown'),
+                            'description' => $product->description ?? '',
+                            'brand'       => $product->brand ?? ($product->productCatalog ? $product->productCatalog->brand : ''),
+                            'qty'         => max(1, (int) ($product->stock_quantity > 0 ? $product->stock_quantity : 5)),
+                            'price'       => (float) ($product->unit_price ?? 0),
+                        ]);
+                    }
+                }
+
+                if ($productsToShelf->isNotEmpty()) {
+                    $slotIdx = 0;
+                    $chunks = $productsToShelf->chunk(10);
+                    foreach ($chunks as $chunk) {
+                        $shelfProducts = $chunk->values()->toArray();
+
+                        if ($shelves->isNotEmpty() && $slotIdx < $shelves->count()) {
+                            $existingShelf = $shelves[$slotIdx];
+                            $existingShelf->products = $shelfProducts;
+                            $existingShelf->save();
+                        } else {
+                            try {
+                                \App\Models\WarehouseShelf::create(
+                                    [
+                                        'warehouse_id'    => $warehouse->id,
+                                        'slot_index'      => $slotIdx,
+                                        'warehouse_code'  => $warehouse->code ?: ('WH-' . $warehouse->id),
+                                        'warehouse_index' => $warehouseIndex,
+                                        'sort_order'      => $slotIdx,
+                                        'name'            => $warehouse->name . ' - Shelf ' . ($slotIdx + 1),
+                                        'capacity'        => 10,
+                                        'products'        => $shelfProducts,
+                                        'archived'        => false,
+                                    ]
+                                );
+                            } catch (\Throwable $e) {
+                                // Ignore unique constraint or duplicate error
+                            }
                         }
                         $slotIdx++;
                     }
@@ -723,12 +768,24 @@ class ShopInventoryController extends Controller
                 if (!is_array($products)) {
                     $products = [];
                 }
+                $normalizedProducts = array_map(function ($p) {
+                    return [
+                        'id'          => $p['id'] ?? null,
+                        'sku'         => $p['sku'] ?? '',
+                        'name'        => $p['name'] ?? $p['description'] ?? $p['product_name'] ?? 'Product',
+                        'description' => $p['description'] ?? '',
+                        'brand'       => $p['brand'] ?? '',
+                        'qty'         => max(1, (int) ($p['qty'] ?? $p['stock_quantity'] ?? 1)),
+                        'price'       => (float) ($p['price'] ?? $p['unit_price'] ?? 0),
+                    ];
+                }, array_values($products));
+
                 return [
                     'id'           => $shelf->id,
                     'warehouse_id' => $shelf->warehouse_id,
                     'name'         => $shelf->name,
                     'slot_index'   => $shelf->slot_index,
-                    'products'     => json_encode(array_values($products)),
+                    'products'     => $normalizedProducts,
                 ];
             })->values()->toArray();
 
@@ -797,7 +854,7 @@ class ShopInventoryController extends Controller
         $validated = $request->validate([
             'shop_shelf_id' => 'required|exists:shop_shelves,id',
             'transfers' => 'required|array|min:1',
-            'transfers.*.product_id' => 'required', // SKU is sent as product_id
+            'transfers.*.product_id' => 'required', // SKU or ID is sent as product_id
             'transfers.*.warehouse_shelf_id' => 'required',
             'transfers.*.quantity' => 'required|integer|min:1',
         ]);
@@ -811,37 +868,52 @@ class ShopInventoryController extends Controller
                 $quantity = $transfer['quantity'];
                 $warehouseShelfId = $transfer['warehouse_shelf_id'];
 
-                // Find or create product by SKU
-                $product = Product::firstOrCreate(
-                    ['sku' => $productSku],
-                    [
-                        'name' => 'Product ' . $productSku,
-                        'unit_price' => 0,
-                        'stock_quantity' => 0,
-                        'category' => 'Accessories',
-                    ]
-                );
+                // Find or create product by SKU or ID
+                $product = Product::where('sku', $productSku)->first();
+                if (!$product && is_numeric($productSku)) {
+                    $product = Product::find($productSku);
+                }
+                if (!$product) {
+                    $productName = $transfer['product_name'] ?? ('Product ' . $productSku);
+                    $product = Product::firstOrCreate(
+                        ['sku' => $productSku],
+                        [
+                            'name' => $productName,
+                            'unit_price' => 0,
+                            'stock_quantity' => 0,
+                            'category' => 'Accessories',
+                            'is_archived' => false,
+                        ]
+                    );
+                }
 
                 // Check warehouse stock
                 $warehouseShelf = DB::table('warehouse_shelves')->where('id', $warehouseShelfId)->first();
-                $warehouseProducts = json_decode($warehouseShelf->products ?? '[]', true);
+                if ($warehouseShelf) {
+                    $warehouseProducts = is_string($warehouseShelf->products) ? json_decode($warehouseShelf->products, true) : ($warehouseShelf->products ?? []);
+                    if (!is_array($warehouseProducts)) {
+                        $warehouseProducts = [];
+                    }
 
-                $productIndex = collect($warehouseProducts)->search(function ($item) use ($productSku) {
-                    return ($item['sku'] ?? '') == $productSku;
-                });
+                    $productIndex = collect($warehouseProducts)->search(function ($item) use ($productSku, $product) {
+                        $iSku = strtolower(trim($item['sku'] ?? ''));
+                        $tSku = strtolower(trim($productSku ?? ''));
+                        if ($iSku && $tSku && $iSku === $tSku) return true;
+                        if (!empty($item['id']) && $product && $item['id'] == $product->id) return true;
+                        return false;
+                    });
 
-                if ($productIndex === false || $warehouseProducts[$productIndex]['qty'] < $quantity) {
-                    throw new \Exception("Insufficient stock in warehouse for product SKU: $productSku");
+                    if ($productIndex !== false && isset($warehouseProducts[$productIndex])) {
+                        $currentQty = (int) ($warehouseProducts[$productIndex]['qty'] ?? $warehouseProducts[$productIndex]['stock_quantity'] ?? 1);
+                        $warehouseProducts[$productIndex]['qty'] = max(0, $currentQty - $quantity);
+                        if ($warehouseProducts[$productIndex]['qty'] <= 0) {
+                            array_splice($warehouseProducts, $productIndex, 1);
+                        }
+                        DB::table('warehouse_shelves')
+                            ->where('id', $warehouseShelfId)
+                            ->update(['products' => json_encode($warehouseProducts)]);
+                    }
                 }
-
-                // Deduct from warehouse
-                $warehouseProducts[$productIndex]['qty'] -= $quantity;
-                if ($warehouseProducts[$productIndex]['qty'] <= 0) {
-                    array_splice($warehouseProducts, $productIndex, 1);
-                }
-                DB::table('warehouse_shelves')
-                    ->where('id', $warehouseShelfId)
-                    ->update(['products' => json_encode($warehouseProducts)]);
 
                 // Add to shop inventory
                 $shopInventory = ShopInventory::updateOrCreate(

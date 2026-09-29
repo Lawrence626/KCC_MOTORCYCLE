@@ -329,61 +329,75 @@
     </div>
 
     <!-- Transfer from Warehouse Modal -->
-    <div id="transfer-warehouse-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 py-6">
-        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="document.getElementById('transfer-warehouse-modal').classList.add('hidden')"></div>
-        <div class="relative modal-panel p-8 bg-white rounded-2xl shadow-xl max-w-2xl w-full">
-            <h2 class="text-2xl font-bold text-slate-900 mb-6">Transfer from Warehouse to Shop</h2>
-            <form id="transfer-warehouse-form" class="space-y-4">
-                <div class="modal-field">
-                    <label class="block text-sm font-medium mb-2">Destination Shop Shelf</label>
-                    <select name="shop_shelf_id" required class="w-full px-4 py-3">
+    <div id="transfer-warehouse-modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeTransferWarehouseModal()"></div>
+        <div class="relative modal-panel w-full max-w-2xl overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
+                <div>
+                    <h2 class="text-xl font-bold text-black">Transfer from Warehouse to Shop</h2>
+                    <p class="text-sm text-slate-900 font-medium">Select a warehouse, shelf, and product to transfer items into shop shelves.</p>
+                </div>
+                <button type="button" onclick="closeTransferWarehouseModal()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form id="transfer-warehouse-form" class="px-6 py-6 space-y-5">
+                <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
+                    <label class="block text-sm font-semibold text-slate-900 mb-2">Destination Shop Shelf</label>
+                    <select name="shop_shelf_id" required class="block w-full rounded-[12px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 transition shadow-sm">
                         <option value="">Select a shelf</option>
                     </select>
                 </div>
-                <div class="space-y-3">
-                    <label class="text-sm font-medium">Products to Transfer</label>
 
-                    <!-- Shelf and Product Selection -->
-                    <div class="flex gap-3">
-                        <div class="flex-1 min-w-0">
-                            <label class="block text-xs text-gray-500 mb-1">Warehouse</label>
-                            <select id="warehouse-select" class="w-full px-3 py-2 border rounded-lg text-sm">
+                <div class="rounded-[28px] border border-slate-200 p-4 bg-white space-y-3">
+                    <label class="block text-sm font-semibold text-slate-900">Select Warehouse & Products</label>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">1. Warehouse</label>
+                            <select id="warehouse-select" class="block w-full rounded-[12px] border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 transition shadow-sm">
                                 <option value="">Select warehouse</option>
                             </select>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <label class="block text-xs text-gray-500 mb-1">Warehouse Shelf</label>
-                            <select id="warehouse-shelf-select" class="w-full px-3 py-2 border rounded-lg text-sm" disabled>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">2. Warehouse Shelf</label>
+                            <select id="warehouse-shelf-select" class="block w-full rounded-[12px] border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 transition shadow-sm" disabled>
                                 <option value="">Select shelf</option>
                             </select>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <label class="block text-xs text-gray-500 mb-1">Product</label>
-                            <select id="warehouse-product-select" class="w-full px-3 py-2 border rounded-lg text-sm" disabled>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-2 items-end">
+                        <div class="sm:col-span-7">
+                            <label class="block text-xs font-medium text-slate-600 mb-1">3. Product</label>
+                            <select id="warehouse-product-select" class="block w-full rounded-[12px] border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 transition shadow-sm" disabled>
                                 <option value="">Select product</option>
                             </select>
                         </div>
-                        <div class="w-24">
-                            <label class="block text-xs text-gray-500 mb-1">Quantity</label>
-                            <input type="number" id="transfer-quantity" class="w-full px-3 py-2 border rounded-lg text-sm" min="1" value="1" disabled>
+                        <div class="sm:col-span-3">
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Quantity</label>
+                            <input type="number" id="transfer-quantity" class="block w-full rounded-[12px] border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 transition shadow-sm" min="1" value="1" disabled>
                         </div>
-                        <div class="flex items-end">
-                            <button type="button" id="add-to-transfer" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                                Add
+                        <div class="sm:col-span-2">
+                            <button type="button" id="add-to-transfer" class="w-full rounded-[10px] bg-[#0f172a] px-3 py-2 text-sm font-bold text-white shadow-sm hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition cursor-pointer" disabled>
+                                + Add
                             </button>
                         </div>
                     </div>
 
                     <!-- Selected Products List -->
-                    <div id="selected-products-list" class="space-y-2 mt-3">
-                        <!-- Selected products will be shown here -->
+                    <div class="mt-4 pt-3 border-t border-slate-100">
+                        <label class="block text-xs font-semibold text-slate-700 mb-2 uppercase tracking-wider">Items to Transfer:</label>
+                        <div id="selected-products-list" class="space-y-2 max-h-48 overflow-y-auto"></div>
+                        <p id="no-products-selected" class="text-slate-400 text-xs text-center py-4 bg-slate-50 rounded-xl border border-dashed border-slate-200">No products added yet. Select a warehouse, shelf, product and click "+ Add".</p>
                     </div>
-
-                    <p id="no-products-selected" class="text-gray-500 text-sm text-center py-4">No products selected for transfer</p>
                 </div>
-                <div class="modal-actions flex justify-end gap-3">
-                    <button type="button" id="cancel-transfer-warehouse" class="modal-footer-button secondary">Cancel</button>
-                    <button type="submit" class="modal-footer-button primary">Transfer Products</button>
+
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+                    <button type="button" id="cancel-transfer-warehouse" onclick="closeTransferWarehouseModal()" class="rounded-[10px] bg-black/10 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-black/20 transition cursor-pointer">Cancel</button>
+                    <button type="submit" id="submit-transfer-warehouse-btn" class="rounded-[10px] bg-[#6EC1D1] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300 transition cursor-pointer flex items-center gap-2">
+                        <span>Transfer Products</span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -1421,6 +1435,21 @@
         let selectedTransferProducts = [];
 
         async function openTransferWarehouseModal() {
+            const transferBtn = document.getElementById('transfer-from-warehouse');
+            const originalBtnHtml = transferBtn ? transferBtn.innerHTML : '';
+
+            if (transferBtn) {
+                transferBtn.disabled = true;
+                transferBtn.classList.add('opacity-75', 'cursor-wait');
+                transferBtn.innerHTML = `
+                    <svg class="animate-spin h-3.5 w-3.5 text-white inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    <span>Loading...</span>
+                `;
+            }
+
             try {
                 // Reset state
                 selectedTransferProducts = [];
@@ -1434,7 +1463,7 @@
                 const shelves = Array.isArray(shelvesData.data) ? shelvesData.data : (Array.isArray(shelvesData) ? shelvesData : []);
 
                 const shelfSelect = document.querySelector('#transfer-warehouse-form select[name="shop_shelf_id"]');
-                shelfSelect.innerHTML = '<option value="">Select a shelf</option>';
+                shelfSelect.innerHTML = '<option value="">Select destination shop shelf</option>';
                 shelves.forEach(shelf => {
                     shelfSelect.innerHTML += `<option value="${shelf.id}">${shelf.name} (${shelf.location || 'No location'})</option>`;
                 });
@@ -1444,16 +1473,18 @@
                     headers: { 'Accept': 'application/json' }
                 });
                 const warehouseData = await warehouseResponse.json();
+                const warehouses = Array.isArray(warehouseData.data) ? warehouseData.data : (Array.isArray(warehouseData) ? warehouseData : []);
+
+                // Store warehouse data for later use
+                window.warehouseData = warehouses;
 
                 // Populate warehouse dropdown
                 const warehouseSelect = document.getElementById('warehouse-select');
                 warehouseSelect.innerHTML = '<option value="">Select warehouse</option>';
-                warehouseData.data.forEach(warehouse => {
-                    warehouseSelect.innerHTML += `<option value="${warehouse.id}">${warehouse.name}</option>`;
+                warehouses.forEach(warehouse => {
+                    const shelfCount = warehouse.shelves ? warehouse.shelves.length : 0;
+                    warehouseSelect.innerHTML += `<option value="${warehouse.id}">${warehouse.name} (${shelfCount} shelves)</option>`;
                 });
-
-                // Store warehouse data for later use
-                window.warehouseData = warehouseData.data;
 
                 // Reset shelf dropdown
                 const warehouseShelfSelect = document.getElementById('warehouse-shelf-select');
@@ -1472,13 +1503,20 @@
                 quantityInput.max = 1;
 
                 // Reset add button
-                document.getElementById('add-to-transfer').disabled = true;
+                const addBtn = document.getElementById('add-to-transfer');
+                if (addBtn) addBtn.disabled = true;
 
                 document.getElementById('transfer-warehouse-modal').classList.remove('hidden');
                 document.getElementById('transfer-warehouse-modal').classList.add('flex');
             } catch (error) {
                 console.error('Error loading transfer data:', error);
-                alert('Error loading transfer data: ' + error.message);
+                showToast('Error loading warehouse data: ' + error.message, 'error');
+            } finally {
+                if (transferBtn) {
+                    transferBtn.disabled = false;
+                    transferBtn.classList.remove('opacity-75', 'cursor-wait');
+                    transferBtn.innerHTML = originalBtnHtml;
+                }
             }
         }
 
@@ -1504,63 +1542,65 @@
             }
 
             // Populate shelf dropdown for selected warehouse
-            const warehouse = window.warehouseData.find(w => w.id === warehouseId);
-            if (warehouse && warehouse.shelves) {
+            const warehouse = (window.warehouseData || []).find(w => w.id === warehouseId);
+            if (warehouse && warehouse.shelves && warehouse.shelves.length > 0) {
                 shelfSelect.innerHTML = '<option value="">Select shelf</option>';
                 warehouse.shelves.forEach(shelf => {
                     let products = [];
-                    try {
-                        products = typeof shelf.products === 'string' ? JSON.parse(shelf.products || '[]') : (shelf.products || []);
-                    } catch (e) {
-                        products = [];
+                    if (typeof shelf.products === 'string') {
+                        try { products = JSON.parse(shelf.products); } catch (e) { products = []; }
+                    } else if (Array.isArray(shelf.products)) {
+                        products = shelf.products;
                     }
-                    if (products && products.length > 0) {
-                        shelfSelect.innerHTML += `<option value="${shelf.id}">${shelf.name} (${products.length} products)</option>`;
-                    } else {
-                        shelfSelect.innerHTML += `<option value="${shelf.id}">${shelf.name} (Empty)</option>`;
-                    }
+                    const count = products.length;
+                    const countLabel = count > 0 ? ` (${count} product${count > 1 ? 's' : ''})` : ' (Empty)';
+                    shelfSelect.innerHTML += `<option value="${shelf.id}">${shelf.name}${countLabel}</option>`;
                 });
                 shelfSelect.disabled = false;
+            } else {
+                shelfSelect.innerHTML = '<option value="">No shelves in this warehouse</option>';
+                shelfSelect.disabled = true;
             }
         });
 
         // Handle warehouse shelf selection
         document.getElementById('warehouse-shelf-select').addEventListener('change', function() {
-            const shelfId = this.value;
+            const shelfId = parseInt(this.value);
+            const warehouseId = parseInt(document.getElementById('warehouse-select').value);
             const productSelect = document.getElementById('warehouse-product-select');
             const quantityInput = document.getElementById('transfer-quantity');
             const addButton = document.getElementById('add-to-transfer');
 
+            productSelect.innerHTML = '<option value="">Select product</option>';
+            productSelect.disabled = true;
+            quantityInput.disabled = true;
+            quantityInput.value = 1;
+            addButton.disabled = true;
+
             if (!shelfId) {
-                productSelect.innerHTML = '<option value="">Select product</option>';
-                productSelect.disabled = true;
-                quantityInput.disabled = true;
-                quantityInput.value = 1;
-                addButton.disabled = true;
                 return;
             }
 
             // Find the shelf in warehouse data
-            let selectedShelf = null;
-            window.warehouseData.forEach(warehouse => {
-                const shelf = warehouse.shelves.find(s => s.id === parseInt(shelfId));
-                if (shelf) selectedShelf = shelf;
-            });
+            const warehouse = (window.warehouseData || []).find(w => w.id === warehouseId);
+            const selectedShelf = warehouse && warehouse.shelves ? warehouse.shelves.find(s => s.id === shelfId) : null;
 
             if (selectedShelf) {
                 let products = [];
-                try {
-                    products = typeof selectedShelf.products === 'string' ? JSON.parse(selectedShelf.products || '[]') : (selectedShelf.products || []);
-                } catch (e) {
-                    products = [];
+                if (typeof selectedShelf.products === 'string') {
+                    try { products = JSON.parse(selectedShelf.products); } catch (e) { products = []; }
+                } else if (Array.isArray(selectedShelf.products)) {
+                    products = selectedShelf.products;
                 }
-                productSelect.innerHTML = '<option value="">Select product</option>';
+
                 if (products && products.length > 0) {
-                    products.forEach(product => {
+                    productSelect.innerHTML = '<option value="">Select product</option>';
+                    products.forEach((product, idx) => {
                         const pName = product.name || product.description || 'Product';
-                        const pSku = product.sku || '';
-                        const pQty = product.qty ?? product.stock_quantity ?? 0;
-                        productSelect.innerHTML += `<option value="${pSku}" data-qty="${pQty}" data-name="${pName}" data-shelf-id="${selectedShelf.id}">${pName} (${pSku}) - Qty: ${pQty}</option>`;
+                        const pSku = product.sku || ('PROD-' + (product.id || idx));
+                        const pQty = parseInt(product.qty ?? product.stock_quantity ?? product.quantity ?? 1);
+                        const safeName = pName.replace(/"/g, '&quot;');
+                        productSelect.innerHTML += `<option value="${pSku}" data-qty="${pQty}" data-name="${safeName}" data-shelf-id="${selectedShelf.id}" data-product-id="${product.id || ''}">${pName} (${pSku}) — Stock: ${pQty}</option>`;
                     });
                     productSelect.disabled = false;
                 } else {
@@ -1568,16 +1608,12 @@
                     productSelect.disabled = true;
                 }
             }
-
-            quantityInput.disabled = true;
-            quantityInput.value = 1;
-            addButton.disabled = true;
         });
 
         // Handle product selection
         document.getElementById('warehouse-product-select').addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
-            const maxQty = selectedOption.dataset.qty;
+            const maxQty = parseInt(selectedOption?.dataset?.qty) || 1;
             const quantityInput = document.getElementById('transfer-quantity');
             const addButton = document.getElementById('add-to-transfer');
 
@@ -1588,6 +1624,7 @@
             }
 
             quantityInput.max = maxQty;
+            quantityInput.min = 1;
             quantityInput.value = 1;
             quantityInput.disabled = false;
             addButton.disabled = false;
@@ -1599,18 +1636,38 @@
             const selectedOption = productSelect.options[productSelect.selectedIndex];
             const quantityInput = document.getElementById('transfer-quantity');
 
+            if (!productSelect.value || !selectedOption) {
+                showToast('Please select a product', 'error');
+                return;
+            }
+
+            const maxQty = parseInt(selectedOption.dataset.qty) || 1;
+            let qty = parseInt(quantityInput.value) || 1;
+            if (qty < 1) qty = 1;
+            if (qty > maxQty) {
+                showToast(`Max available quantity is ${maxQty}`, 'error');
+                qty = maxQty;
+            }
+
             const product = {
-                id: productSelect.value,
+                id: selectedOption.dataset.productId || productSelect.value,
                 name: selectedOption.dataset.name,
                 sku: productSelect.value,
-                quantity: parseInt(quantityInput.value),
-                warehouse_shelf_id: selectedOption.dataset.shelfId
+                quantity: qty,
+                warehouse_shelf_id: selectedOption.dataset.shelfId,
+                max_qty: maxQty
             };
 
-            // Check if product already in list
-            const existingIndex = selectedTransferProducts.findIndex(p => p.id === product.id);
+            // Check if product already in list from this shelf
+            const existingIndex = selectedTransferProducts.findIndex(p => p.sku === product.sku && p.warehouse_shelf_id === product.warehouse_shelf_id);
             if (existingIndex >= 0) {
-                selectedTransferProducts[existingIndex].quantity += product.quantity;
+                const newTotal = selectedTransferProducts[existingIndex].quantity + product.quantity;
+                if (newTotal > maxQty) {
+                    showToast(`Cannot transfer more than total stock (${maxQty})`, 'error');
+                    selectedTransferProducts[existingIndex].quantity = maxQty;
+                } else {
+                    selectedTransferProducts[existingIndex].quantity = newTotal;
+                }
             } else {
                 selectedTransferProducts.push(product);
             }
@@ -1639,13 +1696,13 @@
 
             selectedTransferProducts.forEach((product, index) => {
                 const productRow = document.createElement('div');
-                productRow.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg';
+                productRow.className = 'flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl';
                 productRow.innerHTML = `
                     <div class="flex-1 min-w-0">
-                        <p class="font-medium text-sm">${product.name}</p>
-                        <p class="text-xs text-gray-500">SKU: ${product.sku} | Qty: ${product.quantity}</p>
+                        <p class="font-bold text-xs text-slate-900 truncate">${product.name}</p>
+                        <p class="text-[11px] text-slate-500 mt-0.5">SKU: <span class="font-mono text-cyan-700 font-semibold">${product.sku}</span> | Transfer Qty: <span class="font-bold text-slate-900">${product.quantity}</span></p>
                     </div>
-                    <button type="button" onclick="removeFromTransfer(${index})" class="text-red-600 hover:text-red-700 text-sm">Remove</button>
+                    <button type="button" onclick="removeFromTransfer(${index})" class="text-xs font-semibold text-red-600 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 transition cursor-pointer">Remove</button>
                 `;
                 container.appendChild(productRow);
             });
@@ -1732,14 +1789,10 @@
                     url += '?' + params.toString();
                 }
 
-                console.log('Fetching history with URL:', url);
-
                 const response = await fetch(url, {
                     headers: { 'Accept': 'application/json' }
                 });
                 const history = await response.json();
-
-                console.log('History response:', history);
 
                 const container = document.getElementById('history-container');
                 container.innerHTML = '';
@@ -1794,7 +1847,7 @@
                 document.getElementById('history-modal').classList.remove('hidden');
                 document.getElementById('history-modal').classList.add('flex');
             } catch (error) {
-                alert('Error loading history: ' + error.message);
+                showToast('Error loading history: ' + error.message, 'error');
             }
         }
 
@@ -1812,19 +1865,21 @@
             e.preventDefault();
             const formData = new FormData(e.target);
             const shopShelfId = formData.get('shop_shelf_id');
+            const submitBtn = document.getElementById('submit-transfer-warehouse-btn') || e.target.querySelector('button[type="submit"]');
+            const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '';
 
             if (!shopShelfId) {
-                alert('Please select a destination shelf');
+                showToast('Please select a destination shop shelf', 'error');
                 return;
             }
 
             if (selectedTransferProducts.length === 0) {
-                alert('Please select at least one product to transfer');
+                showToast('Please select at least one product to transfer', 'error');
                 return;
             }
 
             const transfers = selectedTransferProducts.map(product => ({
-                product_id: product.id,
+                product_id: product.sku || product.id,
                 product_name: product.name,
                 warehouse_shelf_id: product.warehouse_shelf_id,
                 quantity: product.quantity
@@ -1835,6 +1890,17 @@
                 shop_shelf_id: shopShelfId,
                 transfers: transfers
             };
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `
+                    <svg class="animate-spin h-4 w-4 text-black inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    <span>Transferring...</span>
+                `;
+            }
 
             try {
                 const response = await fetch('/api/shop-inventory/transfer-from-warehouse', {
@@ -1848,19 +1914,24 @@
 
                 const data = await response.json();
                 if (data.success) {
-                    showToast(data.message || 'Transfer successful', 'success');
+                    showToast(data.message || 'Products transferred to shop shelf successfully!', 'success');
                     closeTransferWarehouseModal();
-                    window.location.reload();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
                 } else {
                     showToast(data.message || 'Transfer failed', 'error');
                 }
             } catch (error) {
-                showToast('Error transferring products', 'error');
+                showToast('Error transferring products: ' + error.message, 'error');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnHtml;
+                }
             }
         }
     </script>
-
-    <script src="/js/shop_inventory.js"></script>
 
     <!-- Add Shelf Modal -->
     <div id="add-shelf-modal-backdrop" class="fixed inset-0 hidden items-center justify-center z-[100000002] px-4 py-6">
