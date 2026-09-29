@@ -1,81 +1,48 @@
-<x-layouts.app :title="__('POS Mobile Scanner')">
-    <div class="min-h-screen bg-[#0f172a] text-slate-100 flex flex-col font-sans selection:bg-[#6EC1D1]/30">
-        <!-- Header -->
-        <header class="bg-[#1e293b]/90 backdrop-blur-md px-4 py-3 border-b border-slate-700/80 sticky top-0 z-30 flex items-center justify-between shadow-md">
-            <div class="flex items-center gap-2.5">
-                <div class="bg-[#6EC1D1]/20 p-2 rounded-xl text-[#6EC1D1]">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
-                    </svg>
-                </div>
+<x-layouts.app :title="__('Mobile Scanner')">
+    <div class="min-h-screen bg-slate-900 flex items-center justify-center p-3 sm:p-6 font-sans selection:bg-[#6EC1D1]/30">
+        <!-- Main Scanner Card matching POS theme -->
+        <div class="w-full max-w-md bg-slate-800 rounded-3xl overflow-hidden shadow-2xl border border-slate-700/60 flex flex-col">
+            <!-- Header -->
+            <div class="bg-slate-800 px-5 py-4 flex items-center justify-between border-b border-slate-700/60">
                 <div>
-                    <h1 class="text-sm font-bold text-white leading-tight">POS Mobile Scanner</h1>
-                    <p class="text-[11px] text-slate-400">Scan QR codes to add items to cart</p>
+                    <h1 class="text-xl font-bold text-white tracking-tight">POS Scanner</h1>
+                    <p class="text-xs text-slate-400 mt-0.5">Scan QR codes to add items to cart</p>
                 </div>
-            </div>
-            <div class="flex items-center gap-2">
-                <button onclick="window.location.href='{{ route('pos.terminal') }}'" class="rounded-xl bg-[#6EC1D1] px-3.5 py-1.5 text-xs font-bold text-slate-950 hover:bg-[#59b2c2] active:scale-95 transition shadow-sm flex items-center gap-1.5 cursor-pointer">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                    <span>Terminal</span>
+                <button onclick="window.location.href='{{ route('pos.terminal') }}'" class="rounded-full bg-[#6EC1D1] px-4 py-1.5 text-xs font-bold text-slate-900 hover:bg-[#59b2c2] active:scale-95 transition shadow-sm cursor-pointer">
+                    Close
                 </button>
             </div>
-        </header>
 
-        <!-- Scanner Viewport Area -->
-        <main class="flex-1 flex flex-col items-center justify-start p-4 max-w-lg w-full mx-auto space-y-4">
-            <!-- Toast notification container -->
-            <div id="toast-container" class="fixed top-16 left-4 right-4 z-50 flex flex-col items-center pointer-events-none space-y-2"></div>
-
-            <!-- Video Scanner Frame -->
-            <div class="relative w-full aspect-square max-w-[340px] rounded-2xl overflow-hidden bg-black border-2 border-slate-700 shadow-2xl flex items-center justify-center">
-                <div id="reader" class="w-full h-full"></div>
-                
-                <!-- Target Overlay Corners -->
-                <div class="absolute inset-0 pointer-events-none p-6 flex flex-col justify-between">
-                    <div class="flex justify-between">
-                        <div class="w-8 h-8 border-t-4 border-l-4 border-[#6EC1D1] rounded-tl-lg"></div>
-                        <div class="w-8 h-8 border-t-4 border-r-4 border-[#6EC1D1] rounded-tr-lg"></div>
-                    </div>
-                    <div class="flex justify-between">
-                        <div class="w-8 h-8 border-b-4 border-l-4 border-[#6EC1D1] rounded-bl-lg"></div>
-                        <div class="w-8 h-8 border-b-4 border-r-4 border-[#6EC1D1] rounded-br-lg"></div>
-                    </div>
+            <!-- Scanner Area -->
+            <div class="p-4 flex flex-col items-center justify-center">
+                <div class="relative w-full aspect-square bg-black rounded-2xl overflow-hidden border border-slate-700 shadow-inner flex items-center justify-center">
+                    <div id="reader" class="w-full h-full"></div>
+                </div>
+                <div id="scanner-status" class="mt-4 text-center text-sm font-medium text-slate-400 transition-all">
+                    Position QR code within the frame
                 </div>
             </div>
 
-            <!-- Status Banner -->
-            <div id="scanner-status" class="w-full max-w-[340px] rounded-xl bg-slate-800/90 border border-slate-700 px-4 py-2.5 text-center text-xs font-semibold text-slate-300 transition-all duration-300 shadow-sm">
-                Position QR code within camera frame
-            </div>
-
-            <!-- Scanned Items History Section -->
-            <div class="w-full bg-[#1e293b] rounded-2xl p-4 border border-slate-700/80 shadow-lg space-y-3">
-                <div class="flex items-center justify-between border-b border-slate-700 pb-2.5">
-                    <div class="flex items-center gap-2">
-                        <h2 class="text-xs font-bold text-white uppercase tracking-wider">Recent Scans</h2>
-                        <span id="scan-count-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#6EC1D1]/20 text-[#6EC1D1]">0</span>
-                    </div>
-                    <button onclick="clearScannedHistory()" class="text-[11px] font-semibold text-slate-400 hover:text-red-400 active:scale-95 transition cursor-pointer">
-                        Clear All
-                    </button>
+            <!-- Recent Scans -->
+            <div class="bg-slate-800/90 px-5 py-3 border-t border-slate-700/60">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-sm font-bold text-white">Recent Scans</h2>
+                    <button onclick="clearRecentScans()" class="text-xs text-slate-400 hover:text-red-400 transition cursor-pointer">Clear</button>
                 </div>
-
-                <div id="recent-scans" class="space-y-2 max-h-56 overflow-y-auto pr-1">
-                    <div class="text-center py-6 text-xs text-slate-500">
-                        No items scanned yet. Point camera at product QR code.
-                    </div>
+                <div id="recent-scans" class="space-y-2 max-h-40 overflow-y-auto pr-1">
+                    <div class="text-center py-4 text-xs text-slate-500">No items scanned yet</div>
                 </div>
             </div>
-        </main>
 
-        <!-- Footer / Connection Status -->
-        <footer class="bg-[#1e293b]/90 border-t border-slate-800 px-4 py-2.5 text-xs text-slate-400 flex items-center justify-between mt-auto">
-            <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" id="connection-dot"></span>
-                <span id="connection-status" class="font-medium text-emerald-400">Online & Connected</span>
+            <!-- Connection Status Bar -->
+            <div class="bg-slate-900 px-5 py-3 border-t border-slate-700/80 flex items-center justify-between text-xs">
+                <span class="text-slate-400">Connection:</span>
+                <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse" id="conn-dot"></span>
+                    <span id="connection-status" class="text-green-400 font-medium">Connected</span>
+                </div>
             </div>
-            <div class="text-[10px] text-slate-500">Auto-syncs to POS Cart</div>
-        </footer>
+        </div>
     </div>
 
     <!-- html5-qrcode library -->
@@ -84,87 +51,61 @@
     <script>
         let html5QrcodeScanner = null;
         let scannedItems = [];
-        let audioContext = null;
-        let lastScannedRaw = '';
-        let lastScanTimestamp = 0;
+        let isScanLocked = false;
+        let lastScannedCode = '';
+        let scanCooldownTimer = null;
+        let audioCtx = null;
 
-        // Unlock audio context on any user interaction (essential for mobile Safari/Chrome)
-        function initAudioContext() {
+        // Mobile audio unlocking
+        function getAudioContext() {
             try {
-                if (!audioContext) {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 }
-                if (audioContext && audioContext.state === 'suspended') {
-                    audioContext.resume();
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
                 }
             } catch (e) {
-                console.warn('AudioContext init error:', e);
+                console.warn('Audio unlock warning:', e);
             }
+            return audioCtx;
         }
 
-        document.addEventListener('touchstart', initAudioContext, { passive: true });
-        document.addEventListener('click', initAudioContext, { passive: true });
+        document.addEventListener('touchstart', getAudioContext, { passive: true });
+        document.addEventListener('click', getAudioContext, { passive: true });
 
         document.addEventListener('DOMContentLoaded', function() {
-            initAudioContext();
-            loadScannedHistory();
+            getAudioContext();
+            loadRecentScans();
             initScanner();
             checkConnection();
         });
 
-        function playSuccessBeep() {
+        function playScanBeep() {
             try {
-                initAudioContext();
-                if (audioContext) {
-                    const osc = audioContext.createOscillator();
-                    const gain = audioContext.createGain();
+                const ctx = getAudioContext();
+                if (ctx) {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
                     osc.connect(gain);
-                    gain.connect(audioContext.destination);
+                    gain.connect(ctx.destination);
 
                     osc.type = 'sine';
-                    osc.frequency.setValueAtTime(880, audioContext.currentTime); // A5
-                    osc.frequency.exponentialRampToValueAtTime(1320, audioContext.currentTime + 0.12); // E6
+                    osc.frequency.setValueAtTime(900, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(1300, ctx.currentTime + 0.1);
 
-                    gain.gain.setValueAtTime(0.2, audioContext.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
 
-                    osc.start(audioContext.currentTime);
-                    osc.stop(audioContext.currentTime + 0.15);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.12);
                 }
             } catch (e) {
-                console.warn('Beep error:', e);
+                console.warn(e);
             }
 
             if (navigator.vibrate) {
-                navigator.vibrate(70);
-            }
-        }
-
-        function playWarningBeep() {
-            try {
-                initAudioContext();
-                if (audioContext) {
-                    const osc = audioContext.createOscillator();
-                    const gain = audioContext.createGain();
-                    osc.connect(gain);
-                    gain.connect(audioContext.destination);
-
-                    osc.type = 'square';
-                    osc.frequency.setValueAtTime(440, audioContext.currentTime); // A4
-                    osc.frequency.setValueAtTime(330, audioContext.currentTime + 0.08); // E4
-
-                    gain.gain.setValueAtTime(0.15, audioContext.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-
-                    osc.start(audioContext.currentTime);
-                    osc.stop(audioContext.currentTime + 0.2);
-                }
-            } catch (e) {
-                console.warn('Warning beep error:', e);
-            }
-
-            if (navigator.vibrate) {
-                navigator.vibrate([100, 60, 100]);
+                navigator.vibrate(60);
             }
         }
 
@@ -177,7 +118,7 @@
             });
             
             const config = { 
-                fps: 25,
+                fps: 20,
                 videoConstraints: {
                     facingMode: "environment",
                     width: { ideal: 1280 },
@@ -199,7 +140,11 @@
                     onScanFailure
                 ).catch(userErr => {
                     console.error("Scanner error:", userErr);
-                    setBanner('Camera access denied. Please allow camera permissions.', 'error');
+                    const status = document.getElementById('scanner-status');
+                    if (status) {
+                        status.textContent = 'Camera access denied or unavailable.';
+                        status.className = 'mt-4 text-center text-sm font-medium text-red-400';
+                    }
                 });
             });
         }
@@ -229,180 +174,124 @@
         }
 
         function onScanSuccess(decodedText, decodedResult) {
-            const now = Date.now();
-            // Debounce rapid frame repeats within 1.2s
-            if (decodedText === lastScannedRaw && (now - lastScanTimestamp) < 1200) {
-                return;
-            }
-            lastScanTimestamp = now;
-            lastScannedRaw = decodedText;
+            // Strict 1-QR-per-scan lock: ignore frames while locked or same code in quick succession
+            if (isScanLocked) return;
 
-            const itemDetails = parseCodeDetails(decodedText);
+            isScanLocked = true;
+            lastScannedCode = decodedText;
 
-            // Check if this item is already scanned in the recent list
-            const existingIndex = scannedItems.findIndex(item => 
-                (itemDetails.id && item.id && String(item.id) === String(itemDetails.id)) ||
-                (itemDetails.sku && item.sku && item.sku.toLowerCase() === itemDetails.sku.toLowerCase()) ||
-                (item.raw === itemDetails.raw)
-            );
+            const item = parseCodeDetails(decodedText);
 
-            if (existingIndex !== -1) {
-                // Item ALREADY SCANNED!
-                playWarningBeep();
-                scannedItems[existingIndex].count = (scannedItems[existingIndex].count || 1) + 1;
-                scannedItems[existingIndex].timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                
-                // Move to top of list
-                const duplicateItem = scannedItems.splice(existingIndex, 1)[0];
-                scannedItems.unshift(duplicateItem);
-                
-                saveScannedHistory();
-                renderScannedList();
+            // Play clean beep sound
+            playScanBeep();
 
-                setBanner(`⚠️ This item is already scanned! (Count: ${duplicateItem.count})`, 'warning');
-                showToast(`This item already scanned (${itemDetails.name})`, 'warning');
-
-                // Sync to terminal (it will increment qty in POS Cart)
-                sendToTerminal(decodedText);
-                sendToServer(decodedText);
-                return;
+            // Update status text on screen
+            const statusEl = document.getElementById('scanner-status');
+            if (statusEl) {
+                statusEl.textContent = `✓ Scanned: ${item.name} (${item.sku || 'Added'})`;
+                statusEl.className = 'mt-4 text-center text-sm font-bold text-green-400 transition-all';
             }
 
-            // NEW ITEM SCANNED!
-            playSuccessBeep();
-            scannedItems.unshift({
-                name: itemDetails.name,
-                sku: itemDetails.sku,
-                id: itemDetails.id,
-                price: itemDetails.price,
-                raw: itemDetails.raw,
-                count: 1,
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-            });
+            // Add to recent scans list
+            addToRecentScans(item, decodedText);
 
-            if (scannedItems.length > 25) {
-                scannedItems.pop();
-            }
-
-            saveScannedHistory();
-            renderScannedList();
-
-            setBanner(`✓ Scanned: ${itemDetails.name} ${itemDetails.sku ? `(${itemDetails.sku})` : ''}`, 'success');
-            showToast(`✓ Added: ${itemDetails.name}`, 'success');
-
-            // Send to terminal via localStorage (for same browser)
+            // Sync to POS terminal
             sendToTerminal(decodedText);
-
-            // Also send via API (for cross-device mobile-to-terminal sync)
             sendToServer(decodedText);
-        }
 
-        function onScanFailure(error) {
-            // Normal scan noise — ignore
-        }
-
-        function setBanner(message, type = 'info') {
-            const banner = document.getElementById('scanner-status');
-            if (!banner) return;
-
-            banner.textContent = message;
-            if (type === 'success') {
-                banner.className = 'w-full max-w-[340px] rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-300 px-4 py-2.5 text-center text-xs font-bold transition-all duration-300 shadow-md';
-            } else if (type === 'warning') {
-                banner.className = 'w-full max-w-[340px] rounded-xl bg-amber-950/80 border border-amber-500 text-amber-300 px-4 py-2.5 text-center text-xs font-bold transition-all duration-300 shadow-md';
-            } else if (type === 'error') {
-                banner.className = 'w-full max-w-[340px] rounded-xl bg-red-950/80 border border-red-500 text-red-300 px-4 py-2.5 text-center text-xs font-bold transition-all duration-300 shadow-md';
-            } else {
-                banner.className = 'w-full max-w-[340px] rounded-xl bg-slate-800/90 border border-slate-700 text-slate-300 px-4 py-2.5 text-center text-xs font-semibold transition-all duration-300 shadow-sm';
-            }
-
-            setTimeout(() => {
-                banner.textContent = 'Position QR code within camera frame';
-                banner.className = 'w-full max-w-[340px] rounded-xl bg-slate-800/90 border border-slate-700 text-slate-300 px-4 py-2.5 text-center text-xs font-semibold transition-all duration-300 shadow-sm';
-            }, 3500);
-        }
-
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            if (!container) return;
-
-            const toast = document.createElement('div');
-            const bgClass = type === 'warning' ? 'bg-amber-500 text-slate-950 border-amber-400' : (type === 'error' ? 'bg-red-600 text-white border-red-400' : 'bg-[#6EC1D1] text-slate-950 border-[#88d6e4]');
-            toast.className = `px-4 py-2 rounded-xl text-xs font-bold shadow-2xl border flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0 ${bgClass}`;
-            toast.innerHTML = `
-                <span>${message}</span>
-            `;
-
-            container.appendChild(toast);
-            requestAnimationFrame(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            });
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0', '-translate-y-2');
-                setTimeout(() => toast.remove(), 300);
+            // Lock for 2.5 seconds to prevent unli-scan on the same item
+            if (scanCooldownTimer) clearTimeout(scanCooldownTimer);
+            scanCooldownTimer = setTimeout(() => {
+                isScanLocked = false;
+                if (statusEl) {
+                    statusEl.textContent = 'Position QR code within the frame';
+                    statusEl.className = 'mt-4 text-center text-sm font-medium text-slate-400 transition-all';
+                }
             }, 2500);
         }
 
-        function renderScannedList() {
-            const container = document.getElementById('recent-scans');
-            const countBadge = document.getElementById('scan-count-badge');
-            if (countBadge) countBadge.textContent = scannedItems.length;
+        function onScanFailure(error) {
+            // Ignore normal frame noise
+        }
 
+        function addToRecentScans(item, rawCode) {
+            const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+            // Check if already in list to increment count instead of duplicate raw JSON
+            const existing = scannedItems.find(i => 
+                (item.id && i.id && String(i.id) === String(item.id)) ||
+                (item.sku && i.sku && i.sku.toLowerCase() === item.sku.toLowerCase()) ||
+                (i.raw === rawCode)
+            );
+
+            if (existing) {
+                existing.count = (existing.count || 1) + 1;
+                existing.timestamp = timestamp;
+            } else {
+                scannedItems.unshift({
+                    name: item.name,
+                    sku: item.sku,
+                    id: item.id,
+                    raw: rawCode,
+                    count: 1,
+                    timestamp: timestamp
+                });
+            }
+
+            if (scannedItems.length > 20) {
+                scannedItems.pop();
+            }
+
+            saveRecentScans();
+            renderRecentScans();
+        }
+
+        function renderRecentScans() {
+            const container = document.getElementById('recent-scans');
             if (!container) return;
 
             if (scannedItems.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-6 text-xs text-slate-500">
-                        No items scanned yet. Point camera at product QR code.
-                    </div>
-                `;
+                container.innerHTML = '<div class="text-center py-4 text-xs text-slate-500">No items scanned yet</div>';
                 return;
             }
 
             container.innerHTML = scannedItems.map(item => `
-                <div class="flex items-center justify-between bg-slate-800/80 border border-slate-700/60 rounded-xl px-3.5 py-2.5 transition">
+                <div class="flex items-center justify-between bg-slate-700/80 rounded-xl px-3 py-2 border border-slate-600/50">
                     <div class="min-w-0 flex-1 pr-2">
                         <div class="flex items-center gap-2">
-                            <h4 class="text-xs font-bold text-white truncate">${item.name || 'Product'}</h4>
-                            ${item.count > 1 ? `<span class="px-1.5 py-0.2 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/30">x${item.count}</span>` : ''}
+                            <span class="text-xs font-bold text-white truncate">${item.name}</span>
+                            ${item.count > 1 ? `<span class="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold">x${item.count}</span>` : ''}
                         </div>
-                        <div class="flex items-center gap-2 text-[11px] text-slate-400 mt-0.5">
+                        <div class="text-[10px] text-slate-400 mt-0.5">
                             ${item.sku ? `<span class="font-mono text-slate-300">${item.sku}</span> • ` : ''}
                             <span>${item.timestamp}</span>
                         </div>
                     </div>
-                    <div class="flex items-center gap-1.5 shrink-0">
-                        <span class="px-2 py-0.5 rounded-lg bg-emerald-500/15 text-emerald-400 text-[11px] font-bold border border-emerald-500/30 flex items-center gap-1">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            In Cart
-                        </span>
-                    </div>
+                    <span class="text-green-400 text-xs font-bold shrink-0">✓ Added</span>
                 </div>
             `).join('');
         }
 
-        function saveScannedHistory() {
+        function saveRecentScans() {
             try {
-                localStorage.setItem('pos_mobile_scanned_history', JSON.stringify(scannedItems));
+                localStorage.setItem('pos_recent_mobile_scans', JSON.stringify(scannedItems));
             } catch (e) {}
         }
 
-        function loadScannedHistory() {
+        function loadRecentScans() {
             try {
-                const stored = localStorage.getItem('pos_mobile_scanned_history');
+                const stored = localStorage.getItem('pos_recent_mobile_scans');
                 if (stored) {
                     scannedItems = JSON.parse(stored);
-                    renderScannedList();
+                    renderRecentScans();
                 }
             } catch (e) {}
         }
 
-        function clearScannedHistory() {
+        function clearRecentScans() {
             scannedItems = [];
-            saveScannedHistory();
-            renderScannedList();
-            showToast('Scan history cleared', 'info');
+            saveRecentScans();
+            renderRecentScans();
         }
 
         function sendToTerminal(code) {
@@ -434,29 +323,29 @@
         }
 
         function checkConnection() {
-            const dot = document.getElementById('connection-dot');
             const status = document.getElementById('connection-status');
-            
-            const updateStatus = () => {
+            const dot = document.getElementById('conn-dot');
+
+            const update = () => {
                 if (navigator.onLine) {
                     if (status) {
-                        status.textContent = 'Online & Connected';
-                        status.className = 'font-medium text-emerald-400';
+                        status.textContent = 'Connected';
+                        status.className = 'text-green-400 font-medium';
                     }
-                    if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+                    if (dot) dot.className = 'w-2 h-2 rounded-full bg-green-400 animate-pulse';
                 } else {
                     if (status) {
                         status.textContent = 'Offline';
-                        status.className = 'font-medium text-red-400';
+                        status.className = 'text-red-400 font-medium';
                     }
                     if (dot) dot.className = 'w-2 h-2 rounded-full bg-red-400';
                 }
             };
 
-            window.addEventListener('online', updateStatus);
-            window.addEventListener('offline', updateStatus);
-            setInterval(updateStatus, 5000);
-            updateStatus();
+            window.addEventListener('online', update);
+            window.addEventListener('offline', update);
+            setInterval(update, 5000);
+            update();
         }
 
         window.addEventListener('beforeunload', function() {

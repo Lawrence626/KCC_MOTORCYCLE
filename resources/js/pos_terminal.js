@@ -2869,24 +2869,32 @@ function stopMobileScanner() {
     }
 }
 
+let isMobileModalScanLocked = false;
+let mobileModalCooldownTimer = null;
+
 function onMobileScanSuccess(decodedText, decodedResult) {
+    if (isMobileModalScanLocked) return;
+
+    isMobileModalScanLocked = true;
     playMobileBeep();
 
     const status = document.getElementById('posMobileScannerStatus');
     if (status) {
-        status.textContent = 'Scanned: ' + decodedText;
+        status.textContent = '✓ Scanned: ' + decodedText;
         status.classList.add('text-green-400');
     }
 
-    setTimeout(() => {
+    addToMobileRecentScans(decodedText);
+    sendMobileScanToTerminal(decodedText);
+
+    if (mobileModalCooldownTimer) clearTimeout(mobileModalCooldownTimer);
+    mobileModalCooldownTimer = setTimeout(() => {
+        isMobileModalScanLocked = false;
         if (status) {
             status.classList.remove('text-green-400');
             status.textContent = 'Position QR code within the frame';
         }
-    }, 2000);
-
-    addToMobileRecentScans(decodedText);
-    sendMobileScanToTerminal(decodedText);
+    }, 2500);
 }
 
 function onMobileScanFailure(error) {
@@ -2914,7 +2922,7 @@ function playMobileBeep() {
 }
 
 function addToMobileRecentScans(code) {
-    const timestamp = new Date().toLocaleTimeString();
+    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     mobileScannedItems.unshift({ code, timestamp });
 
     if (mobileScannedItems.length > 10) {
@@ -3159,27 +3167,35 @@ async function closeDesktopScanner() {
     }
 }
 
-let lastScanTime = 0;
-let lastScannedText = '';
+let isDesktopScanLocked = false;
+let lastDesktopScannedCode = '';
+let desktopScanCooldownTimer = null;
 
 function onDesktopScanSuccess(decodedText, decodedResult) {
-    const now = Date.now();
-    // Debounce duplicate scans within 1.5 seconds
-    if (decodedText === lastScannedText && (now - lastScanTime) < 1500) {
-        return;
-    }
-    lastScanTime = now;
-    lastScannedText = decodedText;
+    if (isDesktopScanLocked) return;
+
+    // Strict 1-QR-per-scan lock
+    isDesktopScanLocked = true;
+    lastDesktopScannedCode = decodedText;
 
     playScanNotification();
 
     const statusEl = document.getElementById('posDesktopScannerStatus');
     if (statusEl) {
-        statusEl.textContent = `Scanned: ${decodedText}`;
+        statusEl.textContent = `✓ Scanned: ${decodedText}`;
         statusEl.className = 'rounded-lg bg-emerald-100 px-3 py-2 text-center text-xs font-bold text-emerald-800 border border-emerald-300 transition-all';
     }
 
     handleScannedCode(decodedText);
+
+    if (desktopScanCooldownTimer) clearTimeout(desktopScanCooldownTimer);
+    desktopScanCooldownTimer = setTimeout(() => {
+        isDesktopScanLocked = false;
+        if (statusEl) {
+            statusEl.textContent = 'Camera active. Point at QR code or Barcode.';
+            statusEl.className = 'rounded-lg bg-emerald-50 px-3 py-2 text-center text-xs font-medium text-emerald-700 border border-emerald-200 transition-all';
+        }
+    }, 2500);
 }
 
 function onDesktopScanFailure(error) {
