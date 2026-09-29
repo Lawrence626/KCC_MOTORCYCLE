@@ -451,12 +451,16 @@
 
         function updateOfflineBanner() {
             const banner = document.getElementById('offline-banner');
-            if (offlineManager && offlineManager.isOffline()) {
-                banner.classList.remove('hidden');
-            } else {
-                banner.classList.add('hidden');
+            const isOnline = (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean') ? navigator.onLine : true;
+            if (banner) {
+                if (isOnline) {
+                    banner.classList.add('hidden');
+                } else {
+                    banner.classList.remove('hidden');
+                }
             }
         }
+        updateOfflineBanner();
         window.addEventListener('online', updateOfflineBanner);
         window.addEventListener('offline', updateOfflineBanner);
 

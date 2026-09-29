@@ -85,9 +85,12 @@ class OfflineManager {
     }
 
     updateStatusIndicator() {
+        const isOnline = (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean') ? navigator.onLine : true;
+        this.isOnline = isOnline;
+
         const indicator = document.getElementById('offline-indicator');
         if (indicator) {
-            if (this.isOnline) {
+            if (isOnline) {
                 indicator.className = 'hidden';
             } else {
                 indicator.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-100 border border-amber-300 rounded-[10px] text-xs font-semibold text-amber-900 shadow-sm';
@@ -97,6 +100,15 @@ class OfflineManager {
                     </svg>
                     <span>Offline Mode</span>
                 `;
+            }
+        }
+
+        const banner = document.getElementById('offline-banner');
+        if (banner) {
+            if (isOnline) {
+                banner.classList.add('hidden');
+            } else {
+                banner.classList.remove('hidden');
             }
         }
     }
