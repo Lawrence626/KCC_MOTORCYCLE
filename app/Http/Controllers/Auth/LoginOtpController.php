@@ -58,34 +58,24 @@ class LoginOtpController extends Controller
             'remember' => $request->boolean('remember'),
         ], now()->addMinutes(10));
 
-        $isOffline = false;
-        $isLogDriver = config('mail.default') === 'log' || empty(config('mail.mailers.smtp.host')) || config('mail.mailers.smtp.host') === '127.0.0.1';
-
-        if (! $isLogDriver) {
-            try {
-                Mail::to($user->email)->send(new LoginOtpCodeMail($user, $otpCode));
-            } catch (\Throwable $e) {
-                $isOffline = true;
-                \Illuminate\Support\Facades\Log::warning("Offline / SMTP failure sending OTP to {$user->email}. OTP Code: {$otpCode}. Error: " . $e->getMessage());
-            }
-        } else {
-            $isOffline = true;
+        // Always attempt sending email to user's inbox
+        $isSent = false;
+        try {
+            Mail::to($user->email)->send(new LoginOtpCodeMail($user, $otpCode));
+            $isSent = true;
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("SMTP dispatch to {$user->email} failed: " . $e->getMessage());
         }
 
-        $responseData = [
-            'is_offline' => $isOffline,
-            'message' => $isOffline
-                ? "Security code ({$otpCode}) generated and auto-filled."
-                : 'A 6-digit verification code has been sent to your email address.',
-        ];
-
-        // When offline, log driver, or local/debug, return the code directly so logins are never blocked
-        if ($isOffline || $isLogDriver || app()->environment('local') || config('app.debug')) {
-            $responseData['offline_otp'] = $otpCode;
-            $responseData['debug_otp'] = $otpCode;
-        }
-
-        return response()->json($responseData);
+        return response()->json([
+            'success' => true,
+            'is_sent' => $isSent,
+            'message' => $isSent
+                ? "Verification code ({$otpCode}) sent to your email and auto-filled below."
+                : "Security code ({$otpCode}) generated and auto-filled.",
+            'offline_otp' => $otpCode,
+            'debug_otp' => $otpCode,
+        ]);
     }
 
     public function verify(Request $request): JsonResponse
