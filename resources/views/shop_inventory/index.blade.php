@@ -1508,10 +1508,16 @@
             if (warehouse && warehouse.shelves) {
                 shelfSelect.innerHTML = '<option value="">Select shelf</option>';
                 warehouse.shelves.forEach(shelf => {
-                    const products = JSON.parse(shelf.products || '[]');
-                    const hasProducts = products && products.length > 0;
-                    if (hasProducts) {
+                    let products = [];
+                    try {
+                        products = typeof shelf.products === 'string' ? JSON.parse(shelf.products || '[]') : (shelf.products || []);
+                    } catch (e) {
+                        products = [];
+                    }
+                    if (products && products.length > 0) {
                         shelfSelect.innerHTML += `<option value="${shelf.id}">${shelf.name} (${products.length} products)</option>`;
+                    } else {
+                        shelfSelect.innerHTML += `<option value="${shelf.id}">${shelf.name} (Empty)</option>`;
                     }
                 });
                 shelfSelect.disabled = false;
@@ -1542,12 +1548,25 @@
             });
 
             if (selectedShelf) {
-                const products = JSON.parse(selectedShelf.products || '[]');
+                let products = [];
+                try {
+                    products = typeof selectedShelf.products === 'string' ? JSON.parse(selectedShelf.products || '[]') : (selectedShelf.products || []);
+                } catch (e) {
+                    products = [];
+                }
                 productSelect.innerHTML = '<option value="">Select product</option>';
-                products.forEach(product => {
-                    productSelect.innerHTML += `<option value="${product.sku}" data-qty="${product.qty}" data-name="${product.name}" data-shelf-id="${selectedShelf.id}">${product.name} (${product.sku}) - Qty: ${product.qty}</option>`;
-                });
-                productSelect.disabled = false;
+                if (products && products.length > 0) {
+                    products.forEach(product => {
+                        const pName = product.name || product.description || 'Product';
+                        const pSku = product.sku || '';
+                        const pQty = product.qty ?? product.stock_quantity ?? 0;
+                        productSelect.innerHTML += `<option value="${pSku}" data-qty="${pQty}" data-name="${pName}" data-shelf-id="${selectedShelf.id}">${pName} (${pSku}) - Qty: ${pQty}</option>`;
+                    });
+                    productSelect.disabled = false;
+                } else {
+                    productSelect.innerHTML = '<option value="">No products on this shelf</option>';
+                    productSelect.disabled = true;
+                }
             }
 
             quantityInput.disabled = true;

@@ -630,39 +630,115 @@ class ShopInventoryController extends Controller
     }
 
     /**
-     * Get warehouse shelves for return to warehouse
+     * Get warehouse shelves for transfer to shop and return to warehouse
      */
     public function getWarehouseShelves()
     {
-        $warehouseShelves = DB::table('warehouse_shelves')
-            ->where('archived', false)
-            ->whereNotNull('warehouse_id')
-            ->get();
+        // Ensure default warehouses exist (Warehouse A, B, C, D)
+        $defaultWarehouses = [
+            ['name' => 'Warehouse A', 'code' => 'WH-A'],
+            ['name' => 'Warehouse B', 'code' => 'WH-B'],
+            ['name' => 'Warehouse C', 'code' => 'WH-C'],
+            ['name' => 'Warehouse D', 'code' => 'WH-D'],
+        ];
 
-        // Get all active warehouses
-        $warehouses = DB::table('warehouses')
-            ->where('is_active', true)
-            ->get()
-            ->keyBy('id');
-
-        // Group by warehouse_id
-        $warehousesGrouped = [];
-        foreach ($warehouseShelves as $shelf) {
-            $warehouseId = $shelf->warehouse_id;
-            if (!isset($warehousesGrouped[$warehouseId])) {
-                $warehouse = $warehouses[$warehouseId] ?? null;
-                $warehousesGrouped[$warehouseId] = [
-                    'id' => $warehouseId,
-                    'name' => $warehouse ? $warehouse->name : "Unknown Warehouse",
-                    'code' => $warehouse ? $warehouse->code : "Unknown",
-                    'shelves' => []
-                ];
-            }
-            $warehousesGrouped[$warehouseId]['shelves'][] = $shelf;
+        foreach ($defaultWarehouses as $default) {
+            \App\Models\Warehouse::firstOrCreate(
+                ['code' => $default['code']],
+                ['name' => $default['name'], 'is_active' => true]
+            );
         }
 
-        // Re-index array
-        $warehousesGrouped = array_values($warehousesGrouped);
+        // Get all active warehouses (excluding SHOP)
+        $warehouses = \App\Models\Warehouse::active()
+            ->where('name', '!=', 'SHOP')
+            ->orderBy('name')
+            ->get();
+
+        $warehouseShelves = \App\Models\WarehouseShelf::where('archived', false)
+            ->whereNotNull('warehouse_id')
+            ->orderBy('slot_index')
+            ->get()
+            ->groupBy('warehouse_id');
+
+        $warehousesGrouped = [];
+
+        foreach ($warehouses as $warehouseIndex => $warehouse) {
+            $shelves = $warehouseShelves->get($warehouse->id, collect());
+
+            // If this warehouse has no shelves in DB, check if it has products and auto-create default shelves
+            if ($shelves->isEmpty()) {
+                $whStocks = \App\Models\ProductWarehouseStock::where('warehouse', $warehouse->name)
+                    ->where('quantity', '>', 0)
+                    ->with('product')
+                    ->get();
+
+                if ($whStocks->isNotEmpty()) {
+                    $slotIdx = 0;
+                    foreach ($whStocks->chunk(10) as $chunk) {
+                        $shelfProducts = $chunk->map(function ($stock) {
+                            $product = $stock->product;
+                            return [
+                                'id'          => $product ? $product->id : null,
+                                'sku'         => $product ? $product->sku : '',
+                                'name'        => $product ? ($product->name ?? $product->description) : 'Unknown',
+                                'description' => $product ? $product->description : '',
+                                'brand'       => $product ? $product->brand : '',
+                                'qty'         => (int) $stock->quantity,
+                                'price'       => $product ? (float) $product->unit_price : 0,
+                            ];
+                        })->values()->toArray();
+
+                        try {
+                            \App\Models\WarehouseShelf::firstOrCreate(
+                                [
+                                    'warehouse_id' => $warehouse->id,
+                                    'slot_index'   => $slotIdx,
+                                ],
+                                [
+                                    'warehouse_code'  => $warehouse->code ?: ('WH-' . $warehouse->id),
+                                    'warehouse_index' => $warehouseIndex,
+                                    'sort_order'      => $slotIdx,
+                                    'name'            => $warehouse->name . ' - Shelf ' . ($slotIdx + 1),
+                                    'capacity'        => 10,
+                                    'products'        => $shelfProducts,
+                                    'archived'        => false,
+                                ]
+                            );
+                        } catch (\Throwable $e) {
+                            // Ignore unique constraint error
+                        }
+                        $slotIdx++;
+                    }
+
+                    $shelves = \App\Models\WarehouseShelf::where('warehouse_id', $warehouse->id)
+                        ->where('archived', false)
+                        ->orderBy('slot_index')
+                        ->get();
+                }
+            }
+
+            $formattedShelves = $shelves->map(function ($shelf) {
+                $products = is_string($shelf->products) ? json_decode($shelf->products, true) : ($shelf->products ?? []);
+                if (!is_array($products)) {
+                    $products = [];
+                }
+                return [
+                    'id'           => $shelf->id,
+                    'warehouse_id' => $shelf->warehouse_id,
+                    'name'         => $shelf->name,
+                    'slot_index'   => $shelf->slot_index,
+                    'products'     => json_encode(array_values($products)),
+                ];
+            })->values()->toArray();
+
+            $warehousesGrouped[] = [
+                'id'      => $warehouse->id,
+                'name'    => $warehouse->name,
+                'code'    => $warehouse->code,
+                'shelves' => $formattedShelves,
+            ];
+        }
 
         return response()->json(['data' => $warehousesGrouped]);
     }
