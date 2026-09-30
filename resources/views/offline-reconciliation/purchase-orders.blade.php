@@ -1116,7 +1116,7 @@
                 supplier_name: selectedSupplier.name,
                 notes: notes,
                 total_amount: totalAmount,
-                status: 'pending',
+                status: 'approved',
                 sync_status: 'pending_sync',
                 items: selectedItems.map(i => ({
                     product_id: i.product_id,
