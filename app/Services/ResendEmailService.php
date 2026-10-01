@@ -42,7 +42,21 @@ class ResendEmailService
                 // If Resend 403 (Test mode restriction: can only send to registered Resend email)
                 $body = $response->body();
                 if ($response->status() === 403 && str_contains($body, 'only send testing emails to your own email address')) {
-                    Log::info("Resend is in test mode. Forwarding OTP to account owner ({$testFallbackEmail}) for target: {$toEmail}");
+                    Log::info("Resend is in test mode (onboarding domain). Attempting direct delivery to {$toEmail} via SMTP first...");
+                    
+                    // Try direct delivery via SMTP to the actual user
+                    try {
+                        Mail::html($htmlContent, function ($msg) use ($toEmail, $subject) {
+                            $msg->to($toEmail)->subject($subject);
+                        });
+                        Log::info("Email successfully sent directly to {$toEmail} via SMTP.");
+                        return true;
+                    } catch (\Throwable $smtpErr) {
+                        Log::warning("SMTP delivery failed for {$toEmail}: " . $smtpErr->getMessage());
+                    }
+
+                    // Fallback to account owner forwarding only if SMTP also fails
+                    Log::info("Forwarding OTP to account owner ({$testFallbackEmail}) for target: {$toEmail}");
                     
                     $fwdSubject = "[For {$toEmail}] " . $subject;
                     $fwdHtml = "<div style='padding:12px;background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;margin-bottom:16px;color:#92400e;font-size:13px;'><strong>Notice:</strong> This verification code was requested for account <code>{$toEmail}</code>.</div>" . $htmlContent;
