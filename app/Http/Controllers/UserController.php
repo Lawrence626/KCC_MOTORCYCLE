@@ -66,8 +66,30 @@ class UserController extends Controller
 
     public function updateStatus(Request $request, User $user)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized action. Only administrators can archive users.');
+        }
+
+        if (auth()->id() === $user->id) {
+            return redirect()->back()->with('error', 'You cannot archive your own administrator account.');
+        }
+
         $user->is_active = ! ($user->is_active ?? true);
+
+        if (! $user->is_active) {
+            $user->remember_token = null;
+        }
+
         $user->save();
+
+        // If the user was archived/deactivated, instantly delete all active sessions from the DB
+        if (! $user->is_active) {
+            try {
+                \Illuminate\Support\Facades\DB::table('sessions')->where('user_id', $user->id)->delete();
+            } catch (\Throwable $e) {
+                // Ignore if sessions table not present or file driver
+            }
+        }
 
         $message = $user->is_active ? 'User restored successfully.' : 'User archived successfully.';
 
@@ -165,18 +187,19 @@ class UserController extends Controller
             ];
         }
 
-        // Only add avatar rule when a valid file is actually present.
-        // isValid() ensures the PHP upload succeeded and the temp path is not empty —
-        // calling store() on an invalid file throws ValueError("Path must not be empty").
-        $hasValidAvatar = $request->hasFile('avatar') && $request->file('avatar')->isValid();
-        if ($hasValidAvatar) {
-            $rules['avatar'] = 'image|max:5120';
+        if ($request->hasFile('avatar')) {
+            $rules['avatar'] = 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120';
         }
 
         $data = $request->validate($rules, [
             'password.regex'     => 'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character.',
             'password.confirmed' => 'The password confirmation does not match.',
+            'avatar.max'         => 'The profile picture must not be larger than 5MB. Please select a smaller file.',
+            'avatar.image'       => 'The profile picture must be a valid image file (JPG, PNG, GIF, WEBP).',
+            'avatar.mimes'       => 'The profile picture must be a file of type: jpeg, png, jpg, gif, webp.',
         ]);
+
+        $hasValidAvatar = $request->hasFile('avatar') && $request->file('avatar')->isValid();
 
         // ALWAYS remove avatar from $data immediately — it may contain an UploadedFile
         // object which, if passed to update(), gets cast to the raw Windows temp path.
@@ -247,8 +270,21 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        $user->delete();
-        return redirect()->back()->with('success', 'User deleted.');
+        if (auth()->id() === $user->id) {
+            return redirect()->back()->with('error', 'You cannot delete your own account.');
+        }
+
+        try {
+            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+
+            $user->delete();
+            return redirect()->back()->with('success', 'User permanently deleted successfully.');
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('User deletion failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to delete user: ' . $e->getMessage());
+        }
     }
 
     public function archived(Request $request)

@@ -17,6 +17,22 @@ class CheckRole
             return redirect()->route('login');
         }
 
+        if (! ($user->is_active ?? true)) {
+            \Illuminate\Support\Facades\Auth::logout();
+            if ($request->hasSession()) {
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            }
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'deactivated' => true,
+                    'message'     => 'Your account has been deactivated. Please contact the administrator.',
+                    'redirectUrl' => url('/login'),
+                ], 401);
+            }
+            return redirect()->route('login')->with('error', 'Your account has been deactivated. Please contact the administrator.');
+        }
+
         // Support comma-separated single parameter and multiple params
         if (count($roles) === 1 && is_string($roles[0]) && str_contains($roles[0], ',')) {
             $roles = array_map('trim', explode(',', $roles[0]));

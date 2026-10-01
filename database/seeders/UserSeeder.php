@@ -13,8 +13,24 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Create primary admin user (Lawrence)
+        User::updateOrCreate(
+            ['email' => 'ilanolawrence04@gmail.com'],
+            [
+                'name' => 'Lawrence Ilano',
+                'password' => Hash::make('Lawrence098*'),
+                'role' => 'admin',
+                'contact' => '09123456789',
+                'address' => 'KCC Motorcycle Shop',
+                'age' => 22,
+                'gender' => 'Male',
+                'is_active' => true,
+                'email_verified_at' => now(),
+            ]
+        );
+
         // Create default admin user
-        User::firstOrCreate(
+        User::updateOrCreate(
             ['email' => 'admin@kcc.local'],
             [
                 'name' => 'Administrator',
@@ -30,7 +46,7 @@ class UserSeeder extends Seeder
         );
 
         // Create default inventory clerk user
-        User::firstOrCreate(
+        User::updateOrCreate(
             ['email' => 'clerk@kcc.local'],
             [
                 'name' => 'Inventory Clerk',
@@ -46,7 +62,7 @@ class UserSeeder extends Seeder
         );
 
         // Create sample users for other roles
-        User::firstOrCreate(
+        User::updateOrCreate(
             ['email' => 'cashier@kcc.local'],
             [
                 'name' => 'Cashier User',
@@ -58,10 +74,11 @@ class UserSeeder extends Seeder
                 'gender' => 'Male',
                 'is_active' => true,
                 'email_verified_at' => now(),
+                'email_verified_at' => now(),
             ]
         );
 
-        User::firstOrCreate(
+        User::updateOrCreate(
             ['email' => 'warehouse@kcc.local'],
             [
                 'name' => 'Warehouse Personnel',

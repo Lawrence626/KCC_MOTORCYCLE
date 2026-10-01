@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KCC - Welcome Page</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/Logo.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/Logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/Logo.png') }}">
     @vite(['resources/css/app.css', 'resources/css/login.css', 'resources/js/login.js'])
 </head>
 <body>
@@ -31,6 +34,21 @@
                 <div class="flex justify-center lg:justify-start">
                     <div class="sign-in-card w-full max-w-md">
                         <h1 class="sign-in-title">Sign in</h1>
+
+                        @if(session('error'))
+                            <div class="mb-5 rounded-xl border border-red-500/50 bg-red-900/40 p-3.5 text-xs font-semibold text-red-200 text-center shadow-lg backdrop-blur-md">
+                                {{ session('error') }}
+                            </div>
+                        @elseif(request('deactivated'))
+                            <div class="mb-5 rounded-xl border border-red-500/50 bg-red-900/40 p-3.5 text-xs font-semibold text-red-200 text-center shadow-lg backdrop-blur-md">
+                                Your account has been deactivated. Please contact the administrator.
+                            </div>
+                        @endif
+                        @if(session('success'))
+                            <div class="mb-5 rounded-xl border border-teal-500/50 bg-teal-900/40 p-3.5 text-xs font-semibold text-teal-200 text-center shadow-lg backdrop-blur-md">
+                                {{ session('success') }}
+                            </div>
+                        @endif
 
                         <form id="loginForm" class="space-y-6" autocomplete="off">
                             @csrf
@@ -105,40 +123,41 @@
                                 Log In
                             </button>
                         </form>
-
-                        <div id="otpModal" class="otp-modal-overlay hidden">
-                            <div class="otp-modal-content">
-                                <div class="otp-modal-header">
-                                    <div class="otp-modal-text">
-                                        <h2 class="otp-modal-title">Enter verification code</h2>
-                                        <p class="otp-modal-description">We sent a 6-digit code to your email. Enter it here to finish login.</p>
-                                    </div>
-                                    <button type="button" class="otp-close-btn" onclick="hideOtpModal()" aria-label="Close verification modal">×</button>
-                                </div>
-
-                                <div class="otp-form-group">
-                                    <label class="otp-label">Verification code</label>
-                                    <div class="otp-inputs">
-                                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" autocomplete="off" />
-                                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" autocomplete="off" />
-                                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" autocomplete="off" />
-                                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" autocomplete="off" />
-                                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" autocomplete="off" />
-                                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" autocomplete="off" />
-                                    </div>
-                                </div>
-
-                                <div id="otpError" class="otp-error hidden"></div>
-                                <div id="otpStatus" class="otp-status hidden"></div>
-
-                                <div class="otp-button-group">
-                                    <button id="otpVerifyButton" type="button" class="otp-button-verify">Verify Code</button>
-                                    <button id="otpResendButton" type="button" class="otp-button-resend">Resend Code</button>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Verification OTP Modal (Centered Overlay) -->
+    <div id="otpModal" class="otp-modal-overlay hidden">
+        <div class="otp-modal-content">
+            <div class="otp-modal-header">
+                <div class="otp-modal-text">
+                    <h2 class="otp-modal-title">Enter verification code</h2>
+                    <p class="otp-modal-description">We sent a 6-digit code to your email. Enter it here to finish login.</p>
+                </div>
+                <button type="button" class="otp-close-btn" onclick="hideOtpModal()" aria-label="Close verification modal">×</button>
+            </div>
+
+            <div class="otp-form-group">
+                <label class="otp-label">Verification code</label>
+                <div class="otp-inputs">
+                    <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" autocomplete="off" />
+                    <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" autocomplete="off" />
+                    <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" autocomplete="off" />
+                    <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" autocomplete="off" />
+                    <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" autocomplete="off" />
+                    <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" autocomplete="off" />
+                </div>
+            </div>
+
+            <div id="otpError" class="otp-error hidden"></div>
+            <div id="otpStatus" class="otp-status hidden"></div>
+
+            <div class="otp-button-group">
+                <button id="otpVerifyButton" type="button" class="otp-button-verify">Verify Code</button>
+                <button id="otpResendButton" type="button" class="otp-button-resend">Resend Code</button>
             </div>
         </div>
     </div>
@@ -244,6 +263,7 @@
 
         function showOtpModal() {
             otpModal.classList.remove('hidden');
+            otpModal.classList.add('show');
             otpError.classList.add('hidden');
             otpStatus.classList.add('hidden');
             clearOtpFields();
@@ -252,15 +272,50 @@
 
         function hideOtpModal() {
             otpModal.classList.add('hidden');
+            otpModal.classList.remove('show');
             otpError.classList.add('hidden');
             otpStatus.classList.add('hidden');
             clearOtpFields();
+        }
+
+        function getWheelLoaderHtml(text) {
+            return `
+                <span class="moto-loader-container">
+                    <span class="moto-3d-wheel">
+                        <svg class="moto-wheel-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="24" cy="24" r="21.5" stroke="#18181b" stroke-width="4.5" stroke-dasharray="3.2 1.8"/>
+                            <circle cx="24" cy="24" r="18.5" stroke="#27272a" stroke-width="1.5"/>
+                            <circle cx="24" cy="24" r="16.5" stroke="#e2e8f0" stroke-width="1.8"/>
+                            <circle cx="24" cy="24" r="11" stroke="#94a3b8" stroke-width="2" stroke-dasharray="2 2"/>
+                            <g class="wheel-spokes">
+                                <line x1="24" y1="24" x2="24" y2="7.5" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>
+                                <line x1="24" y1="24" x2="39.7" y2="18.9" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>
+                                <line x1="24" y1="24" x2="33.7" y2="37.3" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>
+                                <line x1="24" y1="24" x2="14.3" y2="37.3" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>
+                                <line x1="24" y1="24" x2="8.3" y2="18.9" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>
+                                <line x1="24" y1="24" x2="24" y2="11" stroke="#4ea7b2" stroke-width="1.2" stroke-linecap="round"/>
+                                <line x1="24" y1="24" x2="36.4" y2="20" stroke="#4ea7b2" stroke-width="1.2" stroke-linecap="round"/>
+                                <line x1="24" y1="24" x2="31.6" y2="34.5" stroke="#4ea7b2" stroke-width="1.2" stroke-linecap="round"/>
+                                <line x1="24" y1="24" x2="16.4" y2="34.5" stroke="#4ea7b2" stroke-width="1.2" stroke-linecap="round"/>
+                                <line x1="24" y1="24" x2="11.6" y2="20" stroke="#4ea7b2" stroke-width="1.2" stroke-linecap="round"/>
+                            </g>
+                            <circle cx="24" cy="24" r="5" fill="#090a0f" stroke="#e2e8f0" stroke-width="1.2"/>
+                            <circle cx="24" cy="24" r="2.2" fill="#38bdf8"/>
+                        </svg>
+                    </span>
+                    <span>${text}</span>
+                </span>
+            `;
         }
 
         async function sendOtpRequest() {
             loginError.classList.add('hidden');
             otpError.classList.add('hidden');
             otpStatus.classList.add('hidden');
+            const originalHtml = loginButton.innerHTML;
+            loginButton.disabled = true;
+            loginButton.innerHTML = getWheelLoaderHtml('Verifying...');
+
             const payload = {
                 email: emailInput.value.trim(),
                 password: passwordInput.value,
@@ -287,9 +342,25 @@
                 }
 
                 showOtpModal();
+
+                const otpCode = data.offline_otp || data.code;
+                if (otpCode) {
+                    const debugDigits = String(otpCode).split('');
+                    debugDigits.forEach((char, i) => {
+                        if (i < otpDigits.length) otpDigits[i].value = char;
+                    });
+                    otpStatus.textContent = 'Verification code auto-filled: ' + otpCode;
+                    otpStatus.classList.remove('hidden');
+                } else {
+                    otpStatus.textContent = data.message || 'Verification code sent to your email. Please check your inbox.';
+                    otpStatus.classList.remove('hidden');
+                }
             } catch (error) {
                 loginError.textContent = 'Unable to send verification code. Please try again.';
                 loginError.classList.remove('hidden');
+            } finally {
+                loginButton.disabled = false;
+                loginButton.innerHTML = originalHtml;
             }
         }
 
@@ -308,7 +379,9 @@
             }
 
             isVerifyingOtp = true;
+            const origVerifyHtml = otpVerifyButton.innerHTML;
             otpVerifyButton.disabled = true;
+            otpVerifyButton.innerHTML = getWheelLoaderHtml('Verifying...');
 
             try {
                 const response = await fetch('{{ url('/login/otp/verify') }}', {
@@ -328,6 +401,7 @@
                     otpError.classList.remove('hidden');
                     isVerifyingOtp = false;
                     otpVerifyButton.disabled = false;
+                    otpVerifyButton.innerHTML = origVerifyHtml;
                     return;
                 }
 
@@ -337,13 +411,16 @@
                 otpError.classList.remove('hidden');
                 isVerifyingOtp = false;
                 otpVerifyButton.disabled = false;
+                otpVerifyButton.innerHTML = origVerifyHtml;
             }
         }
 
         async function resendOtpCode() {
             otpError.classList.add('hidden');
             otpStatus.classList.add('hidden');
+            const origResendHtml = otpResendButton.innerHTML;
             otpResendButton.disabled = true;
+            otpResendButton.innerHTML = getWheelLoaderHtml('Sending...');
 
             try {
                 const response = await fetch('{{ url('/login/otp/send') }}', {
@@ -366,21 +443,33 @@
                     otpError.textContent = data.message || 'Unable to resend verification code.';
                     otpError.classList.remove('hidden');
                     otpResendButton.disabled = false;
+                    otpResendButton.innerHTML = origResendHtml;
                     return;
                 }
 
-                otpStatus.textContent = '✓ Verification code sent successfully!';
+                const otpCode = data.offline_otp || data.debug_otp;
+                if (otpCode) {
+                    const debugDigits = String(otpCode).split('');
+                    debugDigits.forEach((char, i) => {
+                        if (i < otpDigits.length) otpDigits[i].value = char;
+                    });
+                    otpStatus.textContent = data.message || 'Security code: ' + otpCode + ' (Auto-filled)';
+                } else {
+                    otpStatus.textContent = '✓ Verification code sent successfully!';
+                    clearOtpFields();
+                    otpDigits[0].focus();
+                }
                 otpStatus.classList.remove('hidden');
-                clearOtpFields();
-                otpDigits[0].focus();
 
                 setTimeout(() => {
                     otpResendButton.disabled = false;
+                    otpResendButton.innerHTML = origResendHtml;
                 }, 3000);
             } catch (error) {
                 otpError.textContent = 'Unable to resend verification code. Please try again.';
                 otpError.classList.remove('hidden');
                 otpResendButton.disabled = false;
+                otpResendButton.innerHTML = origResendHtml;
             }
         }
 

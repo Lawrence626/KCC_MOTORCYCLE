@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FastMovingProduct;
+use App\Models\POSTransaction;
 use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\ReverseLogistics;
+use App\Models\SlowMovingProduct;
 use App\Models\StockArrivalNotice;
 use App\Models\Supplier;
 use App\Models\SupplierPriceHistory;
@@ -52,6 +55,42 @@ class SupplierAssessmentController extends Controller
 
         $suppliersByName = $activeSuppliers->keyBy('name');
 
+        // Aggregate product sales from completed POS transactions
+        $completedTransactions = POSTransaction::where('status', 'completed')->get();
+        $salesByProductId = [];
+        $salesBySku = [];
+        $salesByName = [];
+
+        foreach ($completedTransactions as $transaction) {
+            $items = $transaction->items;
+            if (!is_array($items) && is_string($items)) {
+                $items = json_decode($items, true);
+            }
+            if (!is_array($items)) {
+                continue;
+            }
+
+            foreach ($items as $item) {
+                $qty = (int) ($item['quantity'] ?? $item['qty'] ?? 1);
+                $pId = $item['id'] ?? $item['product_id'] ?? null;
+                $sku = $item['sku'] ?? null;
+                $name = $item['name'] ?? $item['product_name'] ?? null;
+
+                if ($pId) {
+                    $salesByProductId[$pId] = ($salesByProductId[$pId] ?? 0) + $qty;
+                }
+                if ($sku) {
+                    $salesBySku[$sku] = ($salesBySku[$sku] ?? 0) + $qty;
+                }
+                if ($name) {
+                    $salesByName[$name] = ($salesByName[$name] ?? 0) + $qty;
+                }
+            }
+        }
+
+        $fastMovingIds = FastMovingProduct::pluck('product_id')->filter()->all();
+        $slowMovingIds = SlowMovingProduct::pluck('product_id')->filter()->all();
+
         $supplierSummaries = $allSupplierNames->map(function ($supplierName) use (
             $products,
             $ordersBySupplierName,
@@ -60,7 +99,12 @@ class SupplierAssessmentController extends Controller
             $performanceService,
             $arrivalNotices,
             $reverseLogistics,
-            $priceHistories
+            $priceHistories,
+            $salesByProductId,
+            $salesBySku,
+            $salesByName,
+            $fastMovingIds,
+            $slowMovingIds
         ) {
             $supplier = $suppliersByName->get($supplierName);
             $group = $products->get($supplierName, collect());
@@ -86,6 +130,43 @@ class SupplierAssessmentController extends Controller
             $priceStdDeviation = $group->count() ? sqrt($group->avg(fn (Product $product) => pow($product->unit_price - $avgPrice, 2))) : 0;
             $lastRestock = $group->max('last_restock_date');
 
+            // Map products with movement classification
+            $mappedProducts = $group->map(function (Product $product) use (
+                $salesByProductId,
+                $salesBySku,
+                $salesByName,
+                $fastMovingIds,
+                $slowMovingIds
+            ) {
+                $unitsSold = $salesByProductId[$product->id]
+                    ?? ($salesBySku[$product->sku]
+                    ?? ($salesByName[$product->product_name ?: $product->name] ?? 0));
+
+                $isExplicitFast = in_array($product->id, $fastMovingIds);
+                $isExplicitSlow = in_array($product->id, $slowMovingIds);
+
+                // Fast moving if units sold >= 10, or explicitly in fast moving products table, or units sold >= 3
+                $isFast = $isExplicitFast || ($unitsSold >= 10) || (!$isExplicitSlow && $unitsSold >= 3);
+                $movementCategory = $isFast ? 'fast_moving' : 'slow_moving';
+                $movementLabel = $isFast ? 'Fast Moving' : 'Slow Moving';
+
+                return [
+                    'id' => $product->id,
+                    'name' => $product->product_name ?: $product->name,
+                    'sku' => $product->sku,
+                    'price' => (float) $product->unit_price,
+                    'stock_quantity' => (int) $product->stock_quantity,
+                    'category' => $product->category,
+                    'last_restock_date' => optional($product->last_restock_date)->toDateString(),
+                    'units_sold' => (int) $unitsSold,
+                    'movement_category' => $movementCategory,
+                    'movement_label' => $movementLabel,
+                ];
+            })->values();
+
+            $fastMovingProducts = $mappedProducts->where('movement_category', 'fast_moving')->sortByDesc('units_sold')->values();
+            $slowMovingProducts = $mappedProducts->where('movement_category', 'slow_moving')->sortByDesc('stock_quantity')->values();
+
             return (object) [
                 'id' => $supplier?->id,
                 'name' => $supplierName,
@@ -97,6 +178,10 @@ class SupplierAssessmentController extends Controller
                 'status' => $supplier?->status ?? 'active',
                 'notes' => $supplier?->notes,
                 'product_count' => $group->count(),
+                'fast_moving_count' => $fastMovingProducts->count(),
+                'slow_moving_count' => $slowMovingProducts->count(),
+                'fast_moving_products' => $fastMovingProducts->all(),
+                'slow_moving_products' => $slowMovingProducts->all(),
                 'total_value' => $totalValue,
                 'avg_price' => $avgPrice,
                 'min_price' => $minPrice,
@@ -104,15 +189,7 @@ class SupplierAssessmentController extends Controller
                 'price_range' => $priceRange,
                 'price_std_deviation' => $priceStdDeviation,
                 'last_restock_date' => $lastRestock ? Carbon::parse($lastRestock)->toDateString() : null,
-                'products' => $group->map(fn (Product $product) => [
-                    'id' => $product->id,
-                    'name' => $product->product_name ?: $product->name,
-                    'sku' => $product->sku,
-                    'price' => $product->unit_price,
-                    'stock_quantity' => $product->stock_quantity,
-                    'category' => $product->category,
-                    'last_restock_date' => optional($product->last_restock_date)->toDateString(),
-                ])->values(),
+                'products' => $mappedProducts->all(),
                 'has_record' => $supplier !== null,
                 'orders_count' => $performance['orders_count'],
                 'delivered_orders_count' => $performance['delivered_orders_count'],
@@ -133,7 +210,7 @@ class SupplierAssessmentController extends Controller
             ];
         });
 
-        $supplierSummaries = $supplierSummaries->filter(fn ($summary) => $summary->status === 'active');
+        $supplierSummaries = $supplierSummaries->filter(fn ($summary) => $summary->status === 'active')->values();
 
         $totalSuppliers = $allSupplierNames->count();
         $totalProducts = Product::whereNotNull('supplier_name')->count();
@@ -183,9 +260,9 @@ class SupplierAssessmentController extends Controller
         ]);
 
         $data['status'] = $data['status'] ?? 'active';
-        Supplier::create($data);
+        $supplier = Supplier::create($data);
 
-        return redirect()->route('supplier.assessment')->with('success', 'Supplier added successfully.');
+        return redirect()->route('supplier.assessment', ['selected_supplier' => $supplier->name])->with('success', 'Supplier added successfully.');
     }
 
     public function update(Request $request, Supplier $supplier)

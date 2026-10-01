@@ -554,7 +554,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        shelvesContainer.classList.add('grid', 'grid-cols-2', 'gap-4');
+        shelvesContainer.classList.add('grid', 'grid-cols-2', 'gap-4', 'items-start');
 
         const query = warehouseSearchQuery.trim().toLowerCase();
         const productDesc = productDescriptionFilter.trim();
@@ -601,7 +601,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             <summary class="chip-header cursor-pointer select-none">
                                 <div class="chip-desc flex items-center justify-between">
                                     <span>${finalTitle}</span>
-                                    <svg class="w-4 h-4 text-emerald-700 transition-transform duration-200 details-arrow flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    <svg class="w-4 h-4 text-black transition-transform duration-200 details-arrow flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                                 </div>
                             </summary>
                             <div class="chip-body">
@@ -647,7 +647,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 </div>
                             </div>
                         </div>
-                        <div class="mt-4 grid gap-2 grid-cols-2">
+                        <div class="mt-4 grid gap-2 grid-cols-2 items-start">
                             ${productsHtml}
                         </div>
                     </div>
@@ -660,12 +660,20 @@ document.addEventListener('DOMContentLoaded', function () {
         if (prevButton) {
             prevButton.innerHTML = '← Prev';
             prevButton.disabled = warehousePage[warehouseIndex] === 0;
-            prevButton.className = 'prev-page rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition';
+            if (prevButton.disabled) {
+                prevButton.className = 'prev-page inline-flex items-center justify-center h-8 rounded-[10px] border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-400 opacity-50 cursor-not-allowed';
+            } else {
+                prevButton.className = 'prev-page inline-flex items-center justify-center h-8 rounded-[10px] border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer';
+            }
         }
         if (nextButton) {
             nextButton.innerHTML = 'Next →';
             nextButton.disabled = warehousePage[warehouseIndex] === totalPages - 1;
-            nextButton.className = 'next-page rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition';
+            if (nextButton.disabled) {
+                nextButton.className = 'next-page inline-flex items-center justify-center h-8 rounded-[10px] border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-400 opacity-50 cursor-not-allowed';
+            } else {
+                nextButton.className = 'next-page inline-flex items-center justify-center h-8 rounded-[10px] border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer';
+            }
         }
 
         const warehouseCard = document.querySelector(`.wh-card[data-id="${warehouse.id}"]`);
@@ -675,17 +683,21 @@ document.addEventListener('DOMContentLoaded', function () {
         if (showingInfoContainer) {
             const startItem = totalItems > 0 ? (warehousePage[warehouseIndex] * SHELVES_PER_PAGE) + 1 : 0;
             const endItem = Math.min((warehousePage[warehouseIndex] + 1) * SHELVES_PER_PAGE, totalItems);
-            showingInfoContainer.textContent = `Showing ${startItem} - ${endItem} of ${totalItems} shelves`;
+            showingInfoContainer.textContent = `Showing ${startItem}-${endItem} of ${totalItems} entries`;
         }
 
         const pageNumbersContainer = warehouseCard ? warehouseCard.querySelector('.page-numbers') : null;
         if (pageNumbersContainer) {
             let numsHtml = '';
-            for (let p = 1; p <= totalPages; p++) {
-                if (p === currentPageNum) {
-                    numsHtml += `<button type="button" disabled class="rounded-[10px] bg-slate-200 border border-slate-300 px-2.5 py-1 text-xs font-bold text-slate-900">${p}</button>`;
-                } else {
-                    numsHtml += `<button type="button" onclick="window.goToWarehousePage(${warehouseIndex}, ${p - 1})" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer">${p}</button>`;
+            if (totalPages <= 1) {
+                numsHtml = `<span class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">1</span>`;
+            } else {
+                for (let p = 1; p <= totalPages; p++) {
+                    if (p === currentPageNum) {
+                        numsHtml += `<span class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">${p}</span>`;
+                    } else {
+                        numsHtml += `<button type="button" onclick="window.goToWarehousePage(${warehouseIndex}, ${p - 1})" class="inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50 transition cursor-pointer">${p}</button>`;
+                    }
                 }
             }
             pageNumbersContainer.innerHTML = numsHtml;

@@ -41,7 +41,7 @@ class DSSRecommendationController extends Controller
             $query->whereNotNull('action_taken_at');
         }
 
-        $recommendations = $query->with('product')
+        $recommendations = $query->with(['product'])
             ->orderBy('priority', 'desc')
             ->orderBy('generated_at', 'desc')
             ->paginate(20);
@@ -50,6 +50,7 @@ class DSSRecommendationController extends Controller
             'total' => DSSRecommendation::where('is_active', true)->count(),
             'pending' => DSSRecommendation::where('is_active', true)->whereNull('action_taken_at')->count(),
             'actioned' => DSSRecommendation::where('is_active', true)->whereNotNull('action_taken_at')->count(),
+            'fast_moving' => DSSRecommendation::where('is_active', true)->whereIn('recommendation_type', ['reorder_level', 'inventory_reorder'])->count(),
         ];
 
         return view('dss.recommendations.index', [
@@ -63,14 +64,19 @@ class DSSRecommendationController extends Controller
      */
     public function show(int $id): View
     {
-        $recommendation = DSSRecommendation::findOrFail($id);
+        $recommendation = DSSRecommendation::with(['product.suppliers'])->findOrFail($id);
         $deadStock = DeadStock::where('product_id', $recommendation->product_id)
             ->where('is_active', true)
             ->first();
 
+        $metrics = $recommendation->product
+            ? $this->recommendationService->getProductSalesMetrics($recommendation->product)
+            : [];
+
         return view('dss.recommendations.show', [
             'recommendation' => $recommendation,
             'deadStock' => $deadStock,
+            'metrics' => $metrics,
         ]);
     }
 
@@ -86,6 +92,30 @@ class DSSRecommendationController extends Controller
         $this->recommendationService->markAsActioned($id, $request->input('action_notes'));
 
         return redirect()->back()->with('success', 'Recommendation marked as actioned.');
+    }
+
+    /**
+     * Apply suggested reorder level from recommendation.
+     */
+    public function applyReorderLevel(int $id)
+    {
+        $success = $this->recommendationService->applyReorderLevel($id);
+
+        if (!$success) {
+            return redirect()->back()->with('error', 'Unable to apply reorder level for this recommendation.');
+        }
+
+        return redirect()->back()->with('success', 'Suggested reorder level successfully applied to product inventory.');
+    }
+
+    /**
+     * Recalculate DSS recommendations for all products.
+     */
+    public function recalculate()
+    {
+        $this->recommendationService->generateAllRecommendations();
+
+        return redirect()->back()->with('success', 'DSS recommendations have been successfully recalculated based on current sales and stock data.');
     }
 
     /**

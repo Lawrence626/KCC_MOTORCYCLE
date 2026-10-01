@@ -85,9 +85,12 @@ class OfflineManager {
     }
 
     updateStatusIndicator() {
+        const isOnline = (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean') ? navigator.onLine : true;
+        this.isOnline = isOnline;
+
         const indicator = document.getElementById('offline-indicator');
         if (indicator) {
-            if (this.isOnline) {
+            if (isOnline) {
                 indicator.className = 'hidden';
             } else {
                 indicator.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-100 border border-amber-300 rounded-[10px] text-xs font-semibold text-amber-900 shadow-sm';
@@ -97,6 +100,15 @@ class OfflineManager {
                     </svg>
                     <span>Offline Mode</span>
                 `;
+            }
+        }
+
+        const banner = document.getElementById('offline-banner');
+        if (banner) {
+            if (isOnline) {
+                banner.classList.add('hidden');
+            } else {
+                banner.classList.remove('hidden');
             }
         }
     }
@@ -496,20 +508,36 @@ class OfflineManager {
             }
         }
 
+        // Generate filename corresponding to PO numbers
+        const poNumbers = orders.map(o => o.order_number || o.po_number || '').filter(Boolean);
+        let poPart = '';
+        if (poNumbers.length === 1) {
+            poPart = `_${String(poNumbers[0]).replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+        } else if (poNumbers.length > 1 && poNumbers.length <= 3) {
+            poPart = `_${poNumbers.map(p => String(p).replace(/[^a-zA-Z0-9_-]/g, '_')).join('_')}`;
+        } else if (poNumbers.length > 3) {
+            const first = String(poNumbers[0]).replace(/[^a-zA-Z0-9_-]/g, '_');
+            const last = String(poNumbers[poNumbers.length - 1]).replace(/[^a-zA-Z0-9_-]/g, '_');
+            poPart = `_${first}_to_${last}_(${poNumbers.length}_orders)`;
+        } else {
+            const ymd = new Date().toISOString().slice(0, 10).replace(/-/g, '_');
+            poPart = `_ORDERS_${ymd}`;
+        }
+
+        const fileName = `KCC_MOTORCYCLE${poPart}.csv`;
+
         const csvContent = rows.join('\r\n');
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        const ymd = new Date().toISOString().slice(0, 10).replace(/-/g, '_');
         a.href = url;
-        a.download = `offline_transactions_${ymd}.csv`;
+        a.download = fileName;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        alert(`Export Successful! ${orders.length} offline purchase order${orders.length === 1 ? '' : 's'} exported to CSV. File download has started.`);
-        return orders.length;
+        return { count: orders.length, fileName: fileName };
     }
 
     getPendingOrders() {

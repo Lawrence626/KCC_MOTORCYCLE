@@ -123,7 +123,8 @@ class InventoryNotification extends Model
         return match ($this->notification_type) {
             'out_of_stock' => 'Out of Stock',
             'low_stock' => 'Low Stock',
-            default => 'Unknown',
+            'fast_moving' => 'Fast Moving Alert',
+            default => ucwords(str_replace('_', ' ', $this->notification_type)),
         };
     }
 
@@ -134,6 +135,7 @@ class InventoryNotification extends Model
     {
         return match ($this->notification_type) {
             'out_of_stock' => 'critical',
+            'fast_moving' => 'high',
             'low_stock' => 'warning',
             default => 'info',
         };

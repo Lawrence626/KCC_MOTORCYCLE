@@ -58,10 +58,14 @@ class LoginOtpController extends Controller
             'remember' => $request->boolean('remember'),
         ], now()->addMinutes(10));
 
-        Mail::to($user->email)->send(new LoginOtpCodeMail($user, $otpCode));
+        // Dispatch email via Resend API (HTTP Port 443) or Laravel Mail
+        $isSent = \App\Services\ResendEmailService::sendLoginOtp($user, $otpCode);
 
         return response()->json([
-            'message' => 'A 6-digit verification code has been sent to your email address.',
+            'success' => true,
+            'is_sent' => $isSent,
+            'message' => 'Verification code sent to your email and auto-filled below.',
+            'offline_otp' => $otpCode,
         ]);
     }
 

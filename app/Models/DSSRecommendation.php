@@ -88,6 +88,10 @@ class DSSRecommendation extends Model
     public function getTypeLabel(): string
     {
         return match ($this->recommendation_type) {
+            'reorder_level' => 'Reorder Level Adjustment',
+            'inventory_reorder' => 'Reorder Level Adjustment',
+            'normal_stock' => 'Normal Stock Maintenance',
+            'low_sales_review' => 'Low Sales Stock Review',
             'promotion' => 'Promotional Campaign',
             'discount' => 'Price Reduction',
             'bundle' => 'Bundle Offer',
@@ -95,8 +99,40 @@ class DSSRecommendation extends Model
             'featured_display' => 'Featured Display',
             'social_media' => 'Social Media Campaign',
             'supplier_return' => 'Supplier Return',
-            default => $this->recommendation_type,
+            default => ucwords(str_replace('_', ' ', $this->recommendation_type)),
         };
+    }
+
+    /**
+     * Check if this recommendation is a reorder level recommendation.
+     */
+    public function isReorderRecommendation(): bool
+    {
+        return in_array($this->recommendation_type, ['reorder_level', 'inventory_reorder']);
+    }
+
+    /**
+     * Get suggested reorder level from metadata.
+     */
+    public function getSuggestedReorderLevel(): ?int
+    {
+        return isset($this->metadata['suggested_reorder_level']) ? (int) $this->metadata['suggested_reorder_level'] : null;
+    }
+
+    /**
+     * Get suggested stock quantity from metadata.
+     */
+    public function getSuggestedStockQuantity(): ?int
+    {
+        return isset($this->metadata['suggested_stock_quantity']) ? (int) $this->metadata['suggested_stock_quantity'] : null;
+    }
+
+    /**
+     * Check if this recommendation warns of stockout risk.
+     */
+    public function hasStockoutRisk(): bool
+    {
+        return ($this->metadata['stockout_risk'] ?? '') === 'high';
     }
 
     /**

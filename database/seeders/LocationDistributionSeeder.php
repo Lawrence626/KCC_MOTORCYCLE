@@ -57,20 +57,24 @@ class LocationDistributionSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->command->info('Starting Location Distribution Seeder...');
+        $this->command?->info('Starting Location Distribution Seeder...');
 
         // ─── 1. Ensure warehouses exist ──────────────────────────────────────
         $this->ensureWarehousesExist();
 
         // ─── 2. Clear existing distribution data ─────────────────────────────
-        $this->command->info('Clearing existing distribution data...');
-        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        $this->command?->info('Clearing existing distribution data...');
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        }
         ShopInventoryHistory::query()->delete();
         ShopInventory::query()->delete();
         ShopShelf::query()->delete();
         ProductWarehouseStock::query()->delete();
         WarehouseShelf::query()->delete();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        }
 
         // ─── 3. Load all active products ─────────────────────────────────────
         $products = Product::where('is_archived', false)
@@ -78,7 +82,7 @@ class LocationDistributionSeeder extends Seeder
             ->where('stock_quantity', '>', 0)
             ->get();
 
-        $this->command->info("Found {$products->count()} active products to distribute.");
+        $this->command?->info("Found {$products->count()} active products to distribute.");
 
         // ─── 4. Distribute each product across locations ──────────────────────
         $distributionSummary = [
@@ -86,6 +90,7 @@ class LocationDistributionSeeder extends Seeder
             'Warehouse A' => 0,
             'Warehouse B' => 0,
             'Warehouse C' => 0,
+            'Warehouse D' => 0,
         ];
 
         foreach ($products as $product) {
@@ -103,20 +108,20 @@ class LocationDistributionSeeder extends Seeder
             }
         }
 
-        $this->command->info('Location distribution complete:');
+        $this->command?->info('Location distribution complete:');
         foreach ($distributionSummary as $location => $total) {
-            $this->command->line("  {$location}: {$total} units");
+            $this->command?->line("  {$location}: {$total} units");
         }
 
         // ─── 5. Create shop shelves and populate shop_inventory ──────────────
-        $this->command->info('Populating Shop Inventory from SHOP allocations...');
+        $this->command?->info('Populating Shop Inventory from SHOP allocations...');
         $this->populateShopInventory();
 
         // ─── 6. Create warehouse shelves and populate them ───────────────────
-        $this->command->info('Populating Warehouse Shelves...');
+        $this->command?->info('Populating Warehouse Shelves...');
         $this->populateWarehouseShelves();
 
-        $this->command->info('Location Distribution Seeder completed successfully!');
+        $this->command?->info('Location Distribution Seeder completed successfully!');
     }
 
     /**
@@ -140,19 +145,19 @@ class LocationDistributionSeeder extends Seeder
         // ── Determine distribution ratios based on product type ──
         if ($this->matchesKeywords($searchText, $this->expirableKeywords)) {
             // Expirable products: mostly SHOP, some reserve in warehouses
-            $ratios = ['SHOP' => 0.45, 'Warehouse A' => 0.25, 'Warehouse B' => 0.17, 'Warehouse C' => 0.13];
+            $ratios = ['SHOP' => 0.40, 'Warehouse A' => 0.20, 'Warehouse B' => 0.15, 'Warehouse C' => 0.15, 'Warehouse D' => 0.10];
         } elseif ($this->matchesKeywords($searchText, $this->fastMovingKeywords)) {
             // Fast-moving consumables: more in SHOP
-            $ratios = ['SHOP' => 0.35, 'Warehouse A' => 0.30, 'Warehouse B' => 0.20, 'Warehouse C' => 0.15];
+            $ratios = ['SHOP' => 0.30, 'Warehouse A' => 0.25, 'Warehouse B' => 0.20, 'Warehouse C' => 0.15, 'Warehouse D' => 0.10];
         } elseif ($this->matchesKeywords($searchText, $this->heavyKeywords)) {
             // Heavy / large items: mostly Warehouse A
-            $ratios = ['SHOP' => 0.10, 'Warehouse A' => 0.50, 'Warehouse B' => 0.25, 'Warehouse C' => 0.15];
+            $ratios = ['SHOP' => 0.10, 'Warehouse A' => 0.40, 'Warehouse B' => 0.25, 'Warehouse C' => 0.15, 'Warehouse D' => 0.10];
         } elseif ($this->matchesKeywords($searchText, $this->largeKeywords)) {
             // Large items / overflow: mostly Warehouse B
-            $ratios = ['SHOP' => 0.12, 'Warehouse A' => 0.28, 'Warehouse B' => 0.38, 'Warehouse C' => 0.22];
+            $ratios = ['SHOP' => 0.10, 'Warehouse A' => 0.20, 'Warehouse B' => 0.35, 'Warehouse C' => 0.20, 'Warehouse D' => 0.15];
         } else {
             // Default: balanced with slight SHOP preference
-            $ratios = ['SHOP' => 0.20, 'Warehouse A' => 0.30, 'Warehouse B' => 0.27, 'Warehouse C' => 0.23];
+            $ratios = ['SHOP' => 0.20, 'Warehouse A' => 0.25, 'Warehouse B' => 0.25, 'Warehouse C' => 0.15, 'Warehouse D' => 0.15];
         }
 
         return $this->applyRatios($total, $ratios);
@@ -183,10 +188,10 @@ class LocationDistributionSeeder extends Seeder
 
         // For very small quantities, ensure at least 1 in SHOP
         if ($total === 1) {
-            return ['SHOP' => 1, 'Warehouse A' => 0, 'Warehouse B' => 0, 'Warehouse C' => 0];
+            return ['SHOP' => 1, 'Warehouse A' => 0, 'Warehouse B' => 0, 'Warehouse C' => 0, 'Warehouse D' => 0];
         }
 
-        if ($total <= 3) {
+        if ($total <= 4) {
             // Distribute minimally: at least 1 SHOP, rest to WH-A
             $shopQty = 1;
             $remainder = $total - $shopQty;
@@ -195,6 +200,7 @@ class LocationDistributionSeeder extends Seeder
                 'Warehouse A' => $remainder,
                 'Warehouse B' => 0,
                 'Warehouse C' => 0,
+                'Warehouse D' => 0,
             ];
         }
 
@@ -216,11 +222,11 @@ class LocationDistributionSeeder extends Seeder
         // SHOP gets the remainder (may be slightly more or less than ratio)
         $shopQty = max(1, $total - $allocated);
 
-        // Safety check: if over-allocated, reduce WH-C then WH-B then WH-A
+        // Safety check: if over-allocated, reduce WH-D then WH-C then WH-B then WH-A
         if ($allocated >= $total) {
             $shopQty = 1;
             $excess = $allocated - ($total - $shopQty);
-            foreach (['Warehouse C', 'Warehouse B', 'Warehouse A'] as $loc) {
+            foreach (['Warehouse D', 'Warehouse C', 'Warehouse B', 'Warehouse A'] as $loc) {
                 if ($excess <= 0) break;
                 $reduce = min($distribution[$loc] - 1, $excess);
                 $distribution[$loc] -= $reduce;
@@ -239,7 +245,7 @@ class LocationDistributionSeeder extends Seeder
     }
 
     /**
-     * Ensure the three warehouses exist in the database.
+     * Ensure the four warehouses exist in the database.
      */
     protected function ensureWarehousesExist(): void
     {
@@ -247,6 +253,7 @@ class LocationDistributionSeeder extends Seeder
             ['name' => 'Warehouse A', 'code' => 'WH-A'],
             ['name' => 'Warehouse B', 'code' => 'WH-B'],
             ['name' => 'Warehouse C', 'code' => 'WH-C'],
+            ['name' => 'Warehouse D', 'code' => 'WH-D'],
         ];
 
         foreach ($defaultWarehouses as $wh) {
@@ -318,7 +325,7 @@ class LocationDistributionSeeder extends Seeder
             }
         }
 
-        $this->command->info("  Created {$totalShelves} shop shelves with {$totalProducts} product allocations.");
+        $this->command?->info("  Created {$totalShelves} shop shelves with {$totalProducts} product allocations.");
     }
 
     /**
@@ -336,7 +343,7 @@ class LocationDistributionSeeder extends Seeder
                 ->get();
 
             if ($warehouseStocks->isEmpty()) {
-                $this->command->line("  {$warehouse->name}: No products to distribute.");
+                $this->command?->line("  {$warehouse->name}: No products to distribute.");
                 continue;
             }
 
@@ -372,7 +379,7 @@ class LocationDistributionSeeder extends Seeder
                 $slotIndex++;
             }
 
-            $this->command->info("  {$warehouse->name}: {$warehouseStocks->count()} products across {$slotIndex} shelves.");
+            $this->command?->info("  {$warehouse->name}: {$warehouseStocks->count()} products across {$slotIndex} shelves.");
         }
     }
 }

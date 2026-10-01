@@ -277,6 +277,57 @@
                         }
                     }
                 } catch (e) {}
+                const brand = String(p.brand || '').trim().toUpperCase();
+                const desc = String(p.product_description || p.category || '').trim().toUpperCase();
+                const name = String(p.product_name || p.name || '').trim().toUpperCase();
+                const isApido = brand.includes('APIDO') || name.includes('APIDO');
+                const isPipe = desc.includes('PIPE') || name.includes('PIPE') || desc.includes('EXHAUST') || name.includes('EXHAUST');
+                if (isApido || (isPipe && brand.includes('APIDO'))) {
+                    const apidoImages = ['/images/products/apido_pipe_1.png', '/images/products/apido_pipe_2.png', '/images/products/apido_pipe_3.png'];
+                    const seedStr = String(p.id || p.product_id || '') + String(p.name || p.product_name || p.sku || '');
+                    let hash = 0;
+                    for (let i = 0; i < seedStr.length; i++) {
+                        hash = (hash * 31 + seedStr.charCodeAt(i)) | 0;
+                    }
+                    return apidoImages[Math.abs(hash) % apidoImages.length];
+                }
+
+                const isKvin = brand.includes('KVIN') || brand.includes('K-VIN') || brand.includes('K VIN') ||
+                               name.includes('KVIN') || name.includes('K-VIN') || name.includes('K VIN');
+                if (isKvin) {
+                    const kvinImages = ['/images/products/kvin_pipe_1.png', '/images/products/kvin_pipe_2.png'];
+                    const seedStr = String(p.id || p.product_id || '') + String(p.name || p.product_name || p.sku || '');
+                    let hash = 0;
+                    for (let i = 0; i < seedStr.length; i++) {
+                        hash = (hash * 31 + seedStr.charCodeAt(i)) | 0;
+                    }
+                    return kvinImages[Math.abs(hash) % kvinImages.length];
+                }
+
+                const isTrc = brand === 'TRC' || brand.includes('TRC') || name.includes('TRC') || String(p.sku || '').toUpperCase().includes('TRC');
+                if (isTrc) {
+                    const trcImages = ['/images/products/trc_pipe_1.png', '/images/products/trc_pipe_2.png', '/images/products/trc_pipe_3.png'];
+                    const seedStr = String(p.id || p.product_id || '') + String(p.name || p.product_name || p.sku || '');
+                    let hash = 0;
+                    for (let i = 0; i < seedStr.length; i++) {
+                        hash = (hash * 31 + seedStr.charCodeAt(i)) | 0;
+                    }
+                    return trcImages[Math.abs(hash) % trcImages.length];
+                }
+
+                const isMt8 = brand === 'MT8' || brand.includes('MT8') || brand.includes('MT-8') || brand.includes('MT 8') ||
+                              name.includes('MT8') || name.includes('MT-8') || name.includes('MT 8') ||
+                              String(p.sku || '').toUpperCase().includes('MT8') || String(p.sku || '').toUpperCase().includes('MT-8');
+                if (isMt8) {
+                    const mt8Images = ['/images/products/mt8_pipe_1.png', '/images/products/mt8_pipe_2.png', '/images/products/mt8_pipe_3.png'];
+                    const seedStr = String(p.id || p.product_id || '') + String(p.name || p.product_name || p.sku || '');
+                    let hash = 0;
+                    for (let i = 0; i < seedStr.length; i++) {
+                        hash = (hash * 31 + seedStr.charCodeAt(i)) | 0;
+                    }
+                    return mt8Images[Math.abs(hash) % mt8Images.length];
+                }
+
                 return null;
             };
 

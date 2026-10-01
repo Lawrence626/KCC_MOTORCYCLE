@@ -184,21 +184,84 @@ body{
 
 /* Button */
 .login-button{
-    width:160px;
-    height:34px;
-    display:block;
-    margin:35px auto 0;
-    border:none;
-    border-radius:50px;
-    background:#4A9CA5;
-    color:#fff;
-    font-weight:600;
-    cursor:pointer;
-    transition:.3s;
+    min-width: 150px;
+    width: auto;
+    max-width: 100%;
+    height: 36px;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 30px auto 0;
+    border: none;
+    border-radius: 50px;
+    background: #4A9CA5;
+    color: #fff;
+    font-weight: 600;
+    font-size: 15px;
+    text-align: center;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all .3s ease;
+    box-sizing: border-box;
 }
 
 .login-button:hover{
-    background:#005f57;
+    background: #005f57;
+}
+
+.login-button:disabled{
+    opacity: 0.85;
+    cursor: not-allowed;
+}
+
+/* 3D Motorcycle Wheel Loader */
+.moto-loader-container{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    perspective: 500px;
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+.moto-3d-wheel{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    transform-style: preserve-3d;
+    transform: rotateY(-24deg) rotateX(12deg);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+    animation: motoWheelTilt 1.2s ease-in-out infinite alternate;
+}
+
+.moto-wheel-svg{
+    width: 20px;
+    height: 20px;
+    display: block;
+    animation: motoWheelSpin 0.35s linear infinite;
+    transform-origin: center center;
+}
+
+@keyframes motoWheelSpin{
+    from{
+        transform: rotate(0deg);
+    }
+    to{
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes motoWheelTilt{
+    0%{
+        transform: rotateY(-28deg) rotateX(14deg);
+    }
+    100%{
+        transform: rotateY(-16deg) rotateX(8deg);
+    }
 }
 
 /* Errors */
@@ -233,14 +296,18 @@ body{
 /* OTP Modal */
 .otp-modal-overlay{
     position:fixed;
-    border-radius:30px;
     inset:0;
-    background:rgba(0,0,0,.5);
-    z-index:50;
+    width:100vw;
+    height:100vh;
+    background:rgba(0,0,0,.75);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    z-index:9999;
     display:flex;
     align-items:center;
     justify-content:center;
     padding:20px;
+    box-sizing:border-box;
 }
 
 .otp-modal-overlay.hidden{
@@ -263,19 +330,20 @@ body{
 }
 
 .otp-modal-content{
+    width:100%;
     max-width:400px;
-    padding:60px 40px 115px;
+    padding:40px 36px 36px;
     border-radius:30px;
     background:linear-gradient(
         180deg,
         rgba(5,5,5,.96) 0%,
         rgba(15,15,15,.95) 60%,
         rgba(150,150,150,.45) 100%
-        
     );
     backdrop-filter:blur(18px);
-    box-shadow:0 20px 50px rgba(43, 55, 56, 0.65);
+    box-shadow:0 20px 60px rgba(0,0,0,.65);
     position:relative;
+    box-sizing:border-box;
 }
 
 .otp-modal-header{
@@ -307,24 +375,34 @@ body{
 }
 
 .otp-close-btn{
-    background:none;
+    background:transparent;
     border:none;
     color:#fff;
-    font-size:24px;
+    font-size:22px;
+    line-height:1;
     cursor:pointer;
     padding:0;
-    width:20px;
-    height:20px;
+    width:32px;
+    height:32px;
+    border-radius:10px;
     display:flex;
     align-items:center;
     justify-content:center;
-    opacity:0.6;
-    transition:opacity 0.2s;
+    opacity:0.7;
+    transition:all 0.2s ease;
     flex-shrink:0;
 }
 
 .otp-close-btn:hover{
     opacity:1;
+    background:rgba(255, 255, 255, 0.12);
+    border-radius:10px;
+    color:#fff;
+}
+
+.otp-close-btn:active{
+    background:rgba(255, 255, 255, 0.2);
+    transform:scale(0.95);
 }
 
 .otp-form-group{
@@ -403,36 +481,51 @@ body{
 
 .otp-button-verify{
     width:100%;
-    height:34px;
+    height:36px;
+    padding:0 16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     border:none;
     border-radius:50px;
     background:#4A9CA5;
     color:#fff;
     font-weight:600;
-    font-size:12px;
+    font-size:13px;
     cursor:pointer;
     transition:.3s;
     font-family:inherit;
+    box-sizing:border-box;
 }
 
 .otp-button-verify:hover{
     background:#005f57;
 }
 
+.otp-button-verify:disabled{
+    opacity:0.75;
+    cursor:not-allowed;
+}
+
 .otp-button-resend{
     width:100%;
-    height:34px;
+    height:36px;
+    padding:0 16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     border:none;
     border-radius:50px;
     background:transparent;
     color:#fff;
     font-weight:600;
-    font-size:12px;
+    font-size:13px;
     cursor:pointer;
     transition:.3s;
     font-family:inherit;
     border:1px solid rgba(255,255,255,.3);
     opacity:0.85;
+    box-sizing:border-box;
 }
 
 .otp-button-resend:hover{

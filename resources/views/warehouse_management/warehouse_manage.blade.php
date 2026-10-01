@@ -20,21 +20,23 @@
         .wm-badge { background: linear-gradient(90deg,var(--brand),var(--brand-dark)); color: #fff; box-shadow: 0 10px 30px rgba(15,118,110,0.08); }
         .wm-card { border: 1px solid var(--border); background: var(--card-bg); box-shadow: 0 12px 30px rgba(15,23,42,0.06); }
         .wm-location { background: #f8fafc; border: 1px dashed rgba(15,118,110,0.16); }
-        .product-chip { background: #ffffff; border: 1px solid rgba(16,185,129,0.18); color: var(--brand-dark); border-radius: 0.9rem; display:flex; flex-direction:column; gap:0; overflow:hidden; box-shadow: 0 2px 8px rgba(15,118,110,0.06); }
+        .product-chip { background: #ffffff; border: 1px solid rgba(16,185,129,0.18); color: var(--brand-dark); border-radius: 0.9rem; display:flex; flex-direction:column; gap:0; overflow:hidden; box-shadow: 0 2px 8px rgba(15,118,110,0.06); align-self: start; }
         .product-chip summary { list-style: none; outline: none; }
         .product-chip summary::-webkit-details-marker { display: none; }
+        .product-chip .details-arrow { color: #000000; }
         .product-chip[open] .details-arrow { transform: rotate(180deg); }
-        .product-chip .chip-header { background: linear-gradient(90deg, #ecfdf5, #d1fae5); padding: 0.45rem 0.75rem; border-bottom: 1px solid rgba(16,185,129,0.14); }
+        .product-chip .chip-header { background: linear-gradient(90deg, #ecfdf5, #d1fae5); padding: 0.45rem 0.75rem; }
+        .product-chip[open] .chip-header { border-bottom: 1px solid rgba(16,185,129,0.14); }
         .product-chip .chip-body { padding: 0.5rem 0.75rem; display:flex; flex-direction:column; gap:0.18rem; }
         .product-chip .chip-row { display:flex; align-items:baseline; gap:0.3rem; font-size:0.72rem; }
         .product-chip .chip-label { color:#64748b; font-weight:600; min-width:4.8rem; flex-shrink:0; }
-        .product-chip .chip-value { color:#0f172a; font-weight:500; word-break:break-word; }
-        .product-chip .chip-value.sku { font-family: monospace; font-size:0.68rem; color:#0f766e; font-weight:700; }
-        .product-chip .chip-value.price { color:#065f46; font-weight:700; }
-        .product-chip .chip-value.qty { color:#1e40af; font-weight:700; }
+        .product-chip .chip-value { color:#000000; font-weight:500; word-break:break-word; }
+        .product-chip .chip-value.sku { font-family: monospace; font-size:0.68rem; color:#000000; font-weight:700; }
+        .product-chip .chip-value.price { color:#000000; font-weight:700; }
+        .product-chip .chip-value.qty { color:#000000; font-weight:700; }
         .product-chip .chip-desc { font-size:0.78rem; font-weight:700; color:#0f172a; }
-        .warehouse-shelves { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(220px, auto); }
-        .map-unit { min-height: 220px; }
+        .warehouse-shelves { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+        .map-unit { align-self: start; }
         .modal-panel { width: min(100%, 960px); border-radius: 1.5rem; background: #ffffff; box-shadow: 0 28px 80px rgba(15,23,42,0.18); }
         .modal-field { border: 1px solid rgba(148,163,184,0.35); background: #f8fafc; border-radius: 10px; }
         .modal-field input,
@@ -314,13 +316,13 @@
 
                     <div class="p-4">
                         <div class="map-container border border-slate-200 rounded-[14px] p-3 bg-slate-50">
-                            <div class="warehouse-shelves grid gap-4" data-id="{{ $wh['id'] }}"></div>
+                            <div class="warehouse-shelves grid gap-4 items-start" data-id="{{ $wh['id'] }}"></div>
                             <div class="pagination mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-slate-600 border-t border-slate-200/80 pt-3">
-                                <div class="showing-info text-slate-500 font-medium text-xs" data-id="{{ $wh['id'] }}">Showing shelves</div>
+                                <div class="showing-info text-slate-600 text-xs" data-id="{{ $wh['id'] }}">Showing shelves</div>
                                 <div class="flex items-center gap-1">
-                                    <button type="button" class="prev-page rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" data-id="{{ $wh['id'] }}">â† Prev</button>
+                                    <button type="button" class="prev-page inline-flex items-center justify-center h-8 rounded-[10px] border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" data-id="{{ $wh['id'] }}">â† Prev</button>
                                     <div class="page-numbers flex items-center gap-1" data-id="{{ $wh['id'] }}"></div>
-                                    <button type="button" class="next-page rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" data-id="{{ $wh['id'] }}">Next â†’</button>
+                                    <button type="button" class="next-page inline-flex items-center justify-center h-8 rounded-[10px] border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" data-id="{{ $wh['id'] }}">Next â†’</button>
                                 </div>
                             </div>
                         </div>

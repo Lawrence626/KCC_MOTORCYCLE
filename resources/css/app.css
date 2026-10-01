@@ -251,3 +251,64 @@ html.dark ::-webkit-scrollbar-thumb {
 html.dark ::-webkit-scrollbar-thumb:hover {
     background: #334a6e;
 }
+
+/* ==========================================================================
+   DEFAULT MODERN DROPDOWN DESIGN SYSTEM
+   ========================================================================== */
+
+.dropdown-menu,
+[data-dropdown-wrapper] .dropdown-menu {
+    border-radius: 14px !important;
+    border: 1px solid #e2e8f0 !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04) !important;
+    padding: 6px !important;
+}
+
+.dropdown-menu button,
+.dropdown-menu a,
+[data-dropdown-wrapper] .dropdown-menu button,
+[data-dropdown-wrapper] .dropdown-menu a {
+    border-radius: 8px !important;
+    padding: 9px 14px !important;
+    font-size: 13px !important;
+    color: #334155 !important;
+    text-align: left !important;
+    width: 100% !important;
+    font-weight: 400 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    transition: background-color 0.15s ease, color 0.15s ease !important;
+}
+
+.dropdown-menu button:hover,
+.dropdown-menu a:hover,
+[data-dropdown-wrapper] .dropdown-menu button:hover,
+[data-dropdown-wrapper] .dropdown-menu a:hover {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+}
+
+/* Dark Mode Dropdowns */
+html.dark .dropdown-menu,
+html.dark [data-dropdown-wrapper] .dropdown-menu {
+    background-color: #0d1624 !important;
+    border-color: #1e2c42 !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6) !important;
+}
+
+html.dark .dropdown-menu button,
+html.dark .dropdown-menu a,
+html.dark [data-dropdown-wrapper] .dropdown-menu button,
+html.dark [data-dropdown-wrapper] .dropdown-menu a {
+    color: #cbd5e1 !important;
+}
+
+html.dark .dropdown-menu button:hover,
+html.dark .dropdown-menu a:hover,
+html.dark [data-dropdown-wrapper] .dropdown-menu button:hover,
+html.dark [data-dropdown-wrapper] .dropdown-menu a:hover {
+    background-color: #182335 !important;
+    color: #ffffff !important;
+}

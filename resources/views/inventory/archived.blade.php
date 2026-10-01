@@ -79,25 +79,25 @@
 
             <div class="flex gap-3 items-end">
                 <div class="flex-1 relative">
-                    <label class="block text-slate-600 font-medium mb-1.5 text-sm">Category</label>
+                    <label class="block text-slate-600 font-medium mb-1.5 text-xs sm:text-[13px]">Category</label>
                     <input type="hidden" id="categoryFilter" value="" />
-                    <button type="button" id="categoryDropdownBtn" onclick="toggleCategoryDropdown()" class="w-full px-4 py-3 rounded-[10px] border border-slate-200 bg-white text-sm text-left text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent hover:border-slate-400 flex items-center justify-between transition">
+                    <button type="button" id="categoryDropdownBtn" onclick="toggleCategoryDropdown()" class="w-full px-3.5 py-2.5 rounded-[14px] border border-slate-300 bg-white text-xs sm:text-[13px] text-left text-slate-800 shadow-2xs focus:outline-none focus:ring-1 focus:ring-slate-400 hover:border-slate-400 flex items-center justify-between transition cursor-pointer">
                         <span id="categoryLabel">All Categories</span>
-                        <svg class="w-3.5 h-3.5 text-slate-400 flex-shrink-0" id="categoryChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <svg class="w-4 h-4 text-slate-500 flex-shrink-0 transition-transform duration-200" id="categoryChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 9l-7 7-7-7"/></svg>
                     </button>
-                    <div id="categoryDropdown" class="hidden absolute top-full mt-2 right-0 left-auto w-[270px] bg-white border border-slate-100 rounded-[18px] shadow-[0_16px_40px_rgba(0,0,0,0.12)] z-50 p-3 space-y-1 max-h-48 overflow-y-auto">
-                        <button type="button" onclick="selectCategory('', 'All Categories')" class="w-full px-4 py-2 text-left text-sm bg-slate-100 text-slate-900 font-semibold rounded-[10px] category-option" data-value="">All Categories</button>
-                        <button type="button" onclick="selectCategory('Exhaust', 'Exhaust')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="Exhaust">Exhaust</button>
-                        <button type="button" onclick="selectCategory('Helmets', 'Helmets')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="Helmets">Helmets</button>
-                        <button type="button" onclick="selectCategory('Tires', 'Tires')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="Tires">Tires</button>
-                        <button type="button" onclick="selectCategory('Brakes', 'Brakes')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="Brakes">Brakes</button>
-                        <button type="button" onclick="selectCategory('Oils', 'Oils')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="Oils">Oils</button>
-                        <button type="button" onclick="selectCategory('Batteries', 'Batteries')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="Batteries">Batteries</button>
-                        <button type="button" onclick="selectCategory('Accessories', 'Accessories')" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] category-option" data-value="Accessories">Accessories</button>
+                    <div id="categoryDropdown" class="dropdown-menu hidden absolute top-full mt-1.5 left-0 w-full bg-white border border-slate-200/90 rounded-[14px] shadow-xl shadow-slate-200/60 z-50 p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
+                        <button type="button" onclick="selectCategory('', 'All Categories')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] hover:bg-slate-50 text-slate-900 font-normal rounded-lg category-option cursor-pointer" data-value="">All Categories</button>
+                        <button type="button" onclick="selectCategory('Exhaust', 'Exhaust')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg category-option cursor-pointer" data-value="Exhaust">Exhaust</button>
+                        <button type="button" onclick="selectCategory('Helmets', 'Helmets')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg category-option cursor-pointer" data-value="Helmets">Helmets</button>
+                        <button type="button" onclick="selectCategory('Tires', 'Tires')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg category-option cursor-pointer" data-value="Tires">Tires</button>
+                        <button type="button" onclick="selectCategory('Brakes', 'Brakes')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg category-option cursor-pointer" data-value="Brakes">Brakes</button>
+                        <button type="button" onclick="selectCategory('Oils', 'Oils')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg category-option cursor-pointer" data-value="Oils">Oils</button>
+                        <button type="button" onclick="selectCategory('Batteries', 'Batteries')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg category-option cursor-pointer" data-value="Batteries">Batteries</button>
+                        <button type="button" onclick="selectCategory('Accessories', 'Accessories')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg category-option cursor-pointer" data-value="Accessories">Accessories</button>
                     </div>
                 </div>
-                <button id="applyFilter" class="h-[46px] px-6 rounded-[10px] border border-slate-300 bg-white text-sm font-semibold text-slate-700 hover:bg-black/10 transition whitespace-nowrap flex items-center justify-center">Apply</button>
-                <button id="resetFilter" class="h-[46px] px-6 rounded-[10px] border border-slate-300 bg-white text-sm font-semibold text-slate-600 hover:bg-black/10 transition whitespace-nowrap flex items-center justify-center">Reset</button>
+                <button id="applyFilter" class="h-10 px-5 rounded-[14px] border border-slate-300 bg-white text-xs sm:text-[13px] font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition shadow-2xs whitespace-nowrap flex items-center justify-center cursor-pointer">Apply</button>
+                <button id="resetFilter" class="h-10 px-5 rounded-[14px] border border-slate-300 bg-white text-xs sm:text-[13px] font-semibold text-slate-600 hover:bg-slate-50 hover:border-slate-400 transition shadow-2xs whitespace-nowrap flex items-center justify-center cursor-pointer">Reset</button>
             </div>
         </div>
 

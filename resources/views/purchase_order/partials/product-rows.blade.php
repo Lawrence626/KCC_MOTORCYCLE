@@ -4,7 +4,7 @@
         data-product-id="{{ $product->id }}"
         data-product-name="{{ $product->product_name ?? $product->name }}"
         data-sku="{{ $product->sku }}"
-        data-default-quantity="{{ max(1, 100 - $product->stock_quantity) }}"
+        data-default-quantity="{{ max(1, 50 - $product->stock_quantity) }}"
         data-default-unit-price="{{ $product->unit_price }}">
         <td class="px-4 py-3">
             <input type="checkbox"
@@ -59,7 +59,7 @@
         <td class="px-4 py-3">
             <input name="products[{{ $idx }}][quantity]"
                    type="number" min="1"
-                   value="{{ old('products.' . $idx . '.quantity', max(1, 100 - $product->stock_quantity)) }}"
+                   value="{{ old('products.' . $idx . '.quantity', max(1, 50 - $product->stock_quantity)) }}"
                    class="w-20 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:outline-none focus:ring-1 focus:ring-black/35" />
         </td>
         <td class="px-4 py-3">

@@ -71,7 +71,6 @@
                 </a>
             </div>
         </div>
-
         @elseif(auth()->user() && (auth()->user()->role === 'cashier' || auth()->user()->role === 'warehouse_personnel'))
         @php
             $isInventoryStaffActive = request()->routeIs('inventory.monitoring')
@@ -116,6 +115,8 @@
             </div>
         </div>
         @endif
+
+
 
         @if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'cashier'))
         @php
@@ -316,8 +317,8 @@
         overflow-y: scroll !important;
         scrollbar-width: thin;
         scrollbar-color: rgba(148, 163, 184, 0.7) transparent;
-        margin-right: 0px;
-        padding-right: 0px;
+        margin-right: -2px;
+        padding-right: 2px;
     }
     .sidebar-scroll::-webkit-scrollbar {
         width: 5px !important;
@@ -611,7 +612,6 @@
             }
             updateGroupState(group);
         });
-
         allGroups.forEach(group => {
             const button = group.querySelector('.sidebar-group-toggle');
             const content = group.querySelector('.sidebar-group-content');

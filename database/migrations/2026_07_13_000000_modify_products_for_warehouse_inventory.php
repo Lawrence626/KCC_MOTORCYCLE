@@ -11,25 +11,26 @@ return new class extends Migration
      */
     public function up(): void
     {
+        try {
+            Schema::table('products', function (Blueprint $table) {
+                $table->dropUnique(['sku']);
+            });
+        } catch (\Throwable $e) {
+            // Ignore if index doesn't exist
+        }
+
         Schema::table('products', function (Blueprint $table) {
-            // Drop the unique constraint on sku
-            $table->dropUnique(['sku']);
+            if (!Schema::hasColumn('products', 'product_catalog_id')) {
+                $table->foreignId('product_catalog_id')->nullable()->after('id')->constrained('product_catalog')->onDelete('cascade');
+            }
             
-            // Add foreign key to product_catalog
-            $table->foreignId('product_catalog_id')->nullable()->after('id')->constrained('product_catalog')->onDelete('cascade');
+            if (!Schema::hasColumn('products', 'batch_lot_number')) {
+                $table->string('batch_lot_number')->nullable()->after('expiry_date');
+            }
             
-            // Add unique constraint on (sku, warehouse) combination
-            $table->unique(['sku', 'warehouse']);
-            
-            // Add batch number for expirable products
-            $table->string('batch_lot_number')->nullable()->after('expiry_date');
-            
-            // Add manufacturing date for expirable products
-            $table->date('manufacturing_date')->nullable()->after('batch_lot_number');
-            
-            // Add indexes for better performance
-            $table->index('warehouse');
-            $table->index('product_catalog_id');
+            if (!Schema::hasColumn('products', 'manufacturing_date')) {
+                $table->date('manufacturing_date')->nullable()->after('batch_lot_number');
+            }
         });
     }
 

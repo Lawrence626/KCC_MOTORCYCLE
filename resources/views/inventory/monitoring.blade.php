@@ -9,7 +9,7 @@
     </x-slot>
     <div class="space-y-4">
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
                 <div class="flex items-start justify-between gap-2">
                     <div class="flex-1 min-w-0">
@@ -77,99 +77,73 @@
                     </div>
                 </div>
             </div>
-
-            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
-                <div class="flex items-start justify-between gap-2">
-                    <div class="flex-1 min-w-0">
-                        <p class="text-black text-xs font-semibold">Warehouse Dist.</p>
-                        <div class="mt-1">
-                            <p id="stat-warehouse-dist" class="text-2xl font-bold text-black">--</p>
-                            <div class="flex flex-wrap items-center gap-2 mt-1 text-xs text-slate-600">
-                                <span class="inline-flex h-2.5 w-2.5 rounded-full bg-blue-500"></span>
-                                <span>0</span>
-                                <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
-                                <span>0</span>
-                                <span class="inline-flex h-2.5 w-2.5 rounded-full bg-amber-500"></span>
-                                <span>0</span>
-                                <span class="inline-flex h-2.5 w-2.5 rounded-full bg-violet-500"></span>
-                                <span>0</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                        <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
-                            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Filters & Search -->
         <div class="rounded-[10px] border border-slate-200 bg-white p-3 shadow-sm">
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-2">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-2.5">
                 <div class="md:col-span-2">
-                    <input id="searchInput" type="search" placeholder="Search by product name, SKU, brand, or category..." class="w-full px-3 py-[11px] rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm" />
+                    <input id="searchInput" type="search" placeholder="Search by product name, SKU, brand, or category..." class="w-full px-3.5 py-2.5 rounded-[14px] border border-slate-300 bg-white text-xs sm:text-[13px] text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 hover:border-slate-400 transition shadow-2xs" />
                 </div>
 
                 <div class="relative z-[10]" data-dropdown-wrapper="statusFilter">
                     <input type="hidden" id="statusFilter" value="" />
-                    <button type="button" id="statusFilterButton" onclick="toggleDropdown('statusFilterDropdown')" class="w-full px-3 py-[11px] rounded-[12px] border border-slate-300 bg-white text-left text-xs text-slate-900 flex items-center justify-between hover:border-slate-400 focus:outline-none transition shadow-sm">
+                    <button type="button" id="statusFilterButton" onclick="toggleDropdown('statusFilterDropdown')" class="w-full px-3.5 py-2.5 rounded-[14px] border border-slate-300 bg-white text-left text-xs sm:text-[13px] text-slate-800 flex items-center justify-between hover:border-slate-400 focus:outline-none transition shadow-2xs cursor-pointer">
                         <span>All Stock Status</span>
-                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                        <svg class="w-4 h-4 text-slate-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
-                    <div id="statusFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[20] mt-2 w-full rounded-[12px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
-                        <button type="button" onclick="selectDropdownOption('statusFilter', '', 'All Stock Status', 'statusFilterDropdown')" class="w-full px-4 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">All Stock Status</button>
-                        <button type="button" onclick="selectDropdownOption('statusFilter', 'active', 'Active', 'statusFilterDropdown')" class="w-full px-4 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">Active</button>
-                        <button type="button" onclick="selectDropdownOption('statusFilter', 'low', 'Low Stock', 'statusFilterDropdown')" class="w-full px-4 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">Low Stock</button>
-                        <button type="button" onclick="selectDropdownOption('statusFilter', 'out', 'Out of Stock', 'statusFilterDropdown')" class="w-full px-4 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">Out of Stock</button>
+                    <div id="statusFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[20] mt-1.5 w-full rounded-[14px] border border-slate-200/90 bg-white shadow-xl shadow-slate-200/60 p-1.5 space-y-0.5">
+                        <button type="button" onclick="selectDropdownOption('statusFilter', '', 'All Stock Status', 'statusFilterDropdown')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">All Stock Status</button>
+                        <button type="button" onclick="selectDropdownOption('statusFilter', 'active', 'Active', 'statusFilterDropdown')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">Active</button>
+                        <button type="button" onclick="selectDropdownOption('statusFilter', 'low', 'Low Stock', 'statusFilterDropdown')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">Low Stock</button>
+                        <button type="button" onclick="selectDropdownOption('statusFilter', 'out', 'Out of Stock', 'statusFilterDropdown')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">Out of Stock</button>
                     </div>
                 </div>
 
                 <div class="relative z-[10]" data-dropdown-wrapper="expiryStatusFilter">
                     <input type="hidden" id="expiryStatusFilter" value="" />
-                    <button type="button" id="expiryStatusFilterButton" onclick="toggleDropdown('expiryStatusFilterDropdown')" class="w-full px-3 py-[11px] rounded-[12px] border border-slate-300 bg-white text-left text-xs text-slate-900 flex items-center justify-between hover:border-slate-400 focus:outline-none transition shadow-sm">
+                    <button type="button" id="expiryStatusFilterButton" onclick="toggleDropdown('expiryStatusFilterDropdown')" class="w-full px-3.5 py-2.5 rounded-[14px] border border-slate-300 bg-white text-left text-xs sm:text-[13px] text-slate-800 flex items-center justify-between hover:border-slate-400 focus:outline-none transition shadow-2xs cursor-pointer">
                         <span>All Expiry Status</span>
-                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                        <svg class="w-4 h-4 text-slate-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
-                    <div id="expiryStatusFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[20] mt-2 w-full rounded-[12px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
-                        <button type="button" onclick="selectDropdownOption('expiryStatusFilter', '', 'All Expiry Status', 'expiryStatusFilterDropdown')" class="w-full px-4 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">All Expiry Status</button>
-                        <button type="button" onclick="selectDropdownOption('expiryStatusFilter', 'non_expiring', 'Non-expiring', 'expiryStatusFilterDropdown')" class="w-full px-4 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">Non-expiring</button>
-                        <button type="button" onclick="selectDropdownOption('expiryStatusFilter', 'expiring', 'Expiring Soon', 'expiryStatusFilterDropdown')" class="w-full px-4 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">Expiring Soon</button>
-                        <button type="button" onclick="selectDropdownOption('expiryStatusFilter', 'expired', 'Expired', 'expiryStatusFilterDropdown')" class="w-full px-4 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px]">Expired</button>
+                    <div id="expiryStatusFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[20] mt-1.5 w-full rounded-[14px] border border-slate-200/90 bg-white shadow-xl shadow-slate-200/60 p-1.5 space-y-0.5">
+                        <button type="button" onclick="selectDropdownOption('expiryStatusFilter', '', 'All Expiry Status', 'expiryStatusFilterDropdown')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">All Expiry Status</button>
+                        <button type="button" onclick="selectDropdownOption('expiryStatusFilter', 'non_expiring', 'Non-expiring', 'expiryStatusFilterDropdown')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">Non-expiring</button>
+                        <button type="button" onclick="selectDropdownOption('expiryStatusFilter', 'expiring', 'Expiring Soon', 'expiryStatusFilterDropdown')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">Expiring Soon</button>
+                        <button type="button" onclick="selectDropdownOption('expiryStatusFilter', 'expired', 'Expired', 'expiryStatusFilterDropdown')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">Expired</button>
                     </div>
                 </div>
 
                 <div>
-                    <input id="restockDateFilter" type="date" class="w-full px-3 py-[11px] rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition shadow-sm" />
+                    <input id="restockDateFilter" type="date" class="w-full px-3.5 py-2.5 rounded-[14px] border border-slate-300 bg-white text-xs sm:text-[13px] text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 hover:border-slate-400 transition shadow-2xs" />
                 </div>
             </div>
         </div>
         <!-- Inventory Table -->
         <div class="overflow-hidden rounded-[14px] border border-slate-200 bg-white shadow-[0_14px_40px_-24px_rgba(0,0,0,0.32)]">
-            <div class="w-full overflow-hidden rounded-[14px]">
-                <table class="w-full text-left text-[11px] divide-y divide-slate-200 table-fixed">
+            <div class="w-full overflow-hidden">
+                <table class="w-full table-fixed text-left text-[11px] divide-y divide-slate-200">
                     <thead class="border-b border-slate-200 bg-[#0f172a] rounded-t-[14px] text-[10px] uppercase tracking-wider text-white">
                         <tr>
-                            <th class="w-[3.5%] px-2 py-3 text-center font-semibold text-white rounded-tl-[14px]">
+                            <th class="w-[3%] px-1.5 py-3 text-center font-semibold text-white rounded-tl-[14px]">
                                 <input type="checkbox" id="selectAllCheckbox" class="rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1] cursor-pointer" />
                             </th>
-                            <th class="w-[15%] px-2.5 py-3 text-left font-semibold text-white truncate" title="Motorcycle Compatibility">Motorcycle Compatibility</th>
-                            <th class="w-[10%] px-2 py-3 text-left font-semibold text-white truncate" title="Product Name">Product Name</th>
-                            <th class="w-[12%] px-2 py-3 text-left font-semibold text-white truncate" title="SKU">SKU</th>
-                            <th class="w-[8%] px-2 py-3 text-left font-semibold text-white truncate" title="Brand">Brand</th>
-                            <th class="w-[5%] px-1.5 py-3 text-center font-semibold text-white truncate" title="Size">Size</th>
-                            <th class="w-[5%] px-1.5 py-3 text-center font-semibold text-white truncate" title="Color">Color</th>
-                            <th class="w-[6%] px-2 py-3 text-center font-semibold text-white truncate" title="Stock">Stock</th>
-                            <th class="w-[9%] px-2 py-3 text-right font-semibold text-white truncate" title="Unit Price">Unit Price</th>
-                            <th class="w-[11%] px-2 py-3 text-left font-semibold text-white truncate" title="Supplier">Supplier</th>
-                            <th class="w-[8.5%] px-2 py-3 text-left font-semibold text-white truncate" title="Last Restock">Last Restock</th>
-                            <th class="w-[9%] px-2 py-3 text-left font-semibold text-white truncate" title="Expiry">Expiry</th>
-                            <th class="w-[8%] px-2 py-3 text-center font-semibold text-white rounded-tr-[14px] truncate" title="Actions">Actions</th>
+                            <th class="w-[14%] px-2 py-3 text-left font-semibold text-white truncate" title="Motorcycle Compatibility">Compatibility</th>
+                            <th class="w-[11%] px-2 py-3 text-left font-semibold text-white truncate" title="Product Name">Product Name</th>
+                            <th class="w-[9.5%] px-2 py-3 text-left font-semibold text-white truncate" title="SKU">SKU</th>
+                            <th class="w-[7.5%] px-1.5 py-3 text-left font-semibold text-white truncate" title="Brand">Brand</th>
+                            <th class="w-[4.5%] px-1 py-3 text-center font-semibold text-white truncate" title="Size">Size</th>
+                            <th class="w-[4.5%] px-1 py-3 text-center font-semibold text-white truncate" title="Color">Color</th>
+                            <th class="w-[5.5%] px-1.5 py-3 text-center font-semibold text-white truncate" title="Stock">Stock</th>
+                            <th class="w-[8%] px-2 py-3 text-right font-semibold text-white truncate" title="Unit Price">Unit Price</th>
+                            <th class="w-[9.5%] px-2 py-3 text-left font-semibold text-white truncate" title="Supplier">Supplier</th>
+                            <th class="w-[7.5%] px-1.5 py-3 text-left font-semibold text-white truncate" title="Last Restock">Restock</th>
+                            <th class="w-[7.5%] px-1.5 py-3 text-left font-semibold text-white truncate" title="Expiry">Expiry</th>
+                            <th class="w-[8%] px-1.5 py-3 text-center font-semibold text-white rounded-tr-[14px] truncate" title="Actions">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 bg-white text-[11px]">
@@ -181,14 +155,14 @@
             </div>
 
             <!-- Pagination -->
-            <div class="flex items-center justify-between border-t border-slate-200 bg-slate-50/80 px-3 py-2 text-xs">
+            <div class="flex flex-col sm:flex-row items-center justify-between border-t border-slate-200 bg-slate-50/70 px-4 py-3 gap-3 text-xs">
                 <p id="paginationInfo" class="text-slate-600 font-medium">Showing 0 of 0 items</p>
-                <div id="paginationControls" class="flex gap-1">
-                    <button class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">← Prev</button>
-                    <button class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">1</button>
-                    <button class="inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50">2</button>
-                    <button class="inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50">3</button>
-                    <button class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">Next →</button>
+                <div id="paginationControls" class="flex items-center gap-1.5">
+                    <button class="rounded-[8px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">← Prev</button>
+                    <button class="inline-flex items-center justify-center rounded-[8px] bg-[#0f172a] text-white w-8 h-8 text-xs font-semibold shadow-sm">1</button>
+                    <button class="inline-flex items-center justify-center rounded-[8px] border border-slate-200 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50">2</button>
+                    <button class="inline-flex items-center justify-center rounded-[8px] border border-slate-200 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50">3</button>
+                    <button class="rounded-[8px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">Next →</button>
                 </div>
             </div>
         </div>
@@ -269,32 +243,32 @@
                 </div>
             </div>
             <div class="w-full overflow-hidden">
-                <table class="w-full text-xs text-left divide-y divide-slate-200 table-fixed">
+                <table class="w-full table-fixed text-xs text-left divide-y divide-slate-200">
                     <thead class="bg-[#0f172a] text-xs font-semibold uppercase tracking-wider text-white border-b border-slate-200">
                         <tr>
-                            <th class="w-[18%] px-3 py-3 text-left font-semibold text-white">Date</th>
-                            <th class="w-[32%] px-3 py-3 text-left font-semibold text-white">Product</th>
-                            <th class="w-[15%] px-3 py-3 text-left font-semibold text-white">Type</th>
-                            <th class="w-[10%] px-3 py-3 text-center font-semibold text-white">Qty</th>
-                            <th class="w-[25%] px-3 py-3 text-left font-semibold text-white">Details</th>
+                            <th class="w-[18%] px-3 py-3 text-left font-semibold text-white truncate">Date</th>
+                            <th class="w-[32%] px-3 py-3 text-left font-semibold text-white truncate">Product</th>
+                            <th class="w-[15%] px-3 py-3 text-left font-semibold text-white truncate">Type</th>
+                            <th class="w-[10%] px-3 py-3 text-center font-semibold text-white truncate">Qty</th>
+                            <th class="w-[25%] px-3 py-3 text-left font-semibold text-white truncate">Details</th>
                         </tr>
                     </thead>
                     <tbody id="movementFeed" class="bg-white divide-y divide-slate-100">
                         <tr>
-                            <td colspan="5" class="px-3 py-8 text-center text-slate-500">Loading recent movements...</td>
+                            <td colspan="5" class="px-3.5 py-8 text-center text-slate-500">Loading recent movements...</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <!-- Movements Pagination -->
-            <div class="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-3 py-2 text-xs">
-                <p id="movementPaginationInfo" class="text-slate-600">Showing 0 of 0 movements</p>
-                <div id="movementPaginationControls" class="flex gap-1">
-                    <button class="movement-prev rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">← Prev</button>
-                    <button class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">1</button>
-                    <button class="inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50">2</button>
-                    <button class="inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50">3</button>
-                    <button class="movement-next rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">Next →</button>
+            <div class="flex flex-col sm:flex-row items-center justify-between border-t border-slate-200 bg-slate-50/70 px-4 py-3 gap-3 text-xs">
+                <p id="movementPaginationInfo" class="text-slate-600 font-medium">Showing 0 of 0 movements</p>
+                <div id="movementPaginationControls" class="flex items-center gap-1.5">
+                    <button class="movement-prev rounded-[8px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-sm">← Prev</button>
+                    <button class="inline-flex items-center justify-center rounded-[8px] bg-[#0f172a] text-white w-8 h-8 text-xs font-semibold shadow-sm">1</button>
+                    <button class="inline-flex items-center justify-center rounded-[8px] border border-slate-200 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50 transition shadow-sm">2</button>
+                    <button class="inline-flex items-center justify-center rounded-[8px] border border-slate-200 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50 transition shadow-sm">3</button>
+                    <button class="movement-next rounded-[8px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-sm">Next →</button>
                 </div>
             </div>
         </div>

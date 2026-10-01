@@ -43,7 +43,19 @@ class DSSRecommendationApiController extends Controller
      */
     public function getByType(string $type, Request $request)
     {
-        $validTypes = ['promotion', 'discount', 'bundle', 'relocate', 'featured_display', 'social_media', 'supplier_return'];
+        $validTypes = [
+            'reorder_level',
+            'inventory_reorder',
+            'normal_stock',
+            'low_sales_review',
+            'promotion',
+            'discount',
+            'bundle',
+            'relocate',
+            'featured_display',
+            'social_media',
+            'supplier_return'
+        ];
 
         if (!in_array($type, $validTypes)) {
             return response()->json(['error' => 'Invalid recommendation type'], 400);
@@ -76,6 +88,36 @@ class DSSRecommendationApiController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Recommendation marked as actioned.',
+        ]);
+    }
+
+    /**
+     * Apply suggested reorder level.
+     */
+    public function applyReorderLevel(int $id)
+    {
+        $success = $this->recommendationService->applyReorderLevel($id);
+
+        if (!$success) {
+            return response()->json(['error' => 'Unable to apply reorder level for this recommendation.'], 400);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Suggested reorder level successfully applied.',
+        ]);
+    }
+
+    /**
+     * Recalculate DSS recommendations.
+     */
+    public function recalculate()
+    {
+        $this->recommendationService->generateAllRecommendations();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'DSS recommendations successfully recalculated.',
         ]);
     }
 

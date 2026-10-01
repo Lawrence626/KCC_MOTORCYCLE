@@ -58,7 +58,7 @@ let products = [
     { id: 48, name: 'MAXXIS', category: 'TIRE', sku: 'TIRE-MAXXIS', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
     { id: 49, name: 'APC', category: 'TIRE', sku: 'TIRE-APC', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
     { id: 50, name: 'ARISUN', category: 'TIRE', sku: 'TIRE-ARISUN', models: [], reorder_level: 10, deleted: false, warehouse: 'Warehouse B' },
-    { id: 51, name: 'JOURNEY', category: 'TIRE', sku: 'TIRE-JOURNEY', models: [], reorder_level: 100, deleted: false, warehouse: 'Warehouse B' },
+    { id: 51, name: 'JOURNEY', category: 'TIRE', sku: 'TIRE-JOURNEY', models: [], reorder_level: 50, deleted: false, warehouse: 'Warehouse B' },
 ];
 
 function getCategorizationProductImage(p) {

@@ -26,6 +26,37 @@ const posState = {
     categories: ['All', 'Exhaust', 'Tires', 'Brakes', 'Oils', 'Accessories'],
 };
 
+const posClientId = 'pos_' + Math.random().toString(36).substring(2, 10) + '_' + Date.now();
+let lastLocalCartUpdate = Date.now();
+let lastSyncedCartTimestamp = 0;
+let cartSyncDebounceTimer = null;
+
+function broadcastCartState() {
+    lastLocalCartUpdate = Date.now();
+    if (cartSyncDebounceTimer) clearTimeout(cartSyncDebounceTimer);
+    cartSyncDebounceTimer = setTimeout(async () => {
+        try {
+            await fetch('/api/pos/sync-cart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                },
+                body: JSON.stringify({
+                    cart: posState.cart,
+                    services: Array.from(posState.selectedServices),
+                    discount: posState.discount,
+                    extraCharge: posState.extraCharge,
+                    clientId: posClientId,
+                    timestamp: lastLocalCartUpdate
+                })
+            });
+        } catch (e) {
+            // Quiet sync warning
+        }
+    }, 200);
+}
+
 function loadTransactionHistory() {
     try {
         const stored = localStorage.getItem('posTransactionHistory');
@@ -326,17 +357,107 @@ function updateTotals() {
     if (posTotalSummaryEl) posTotalSummaryEl.textContent = formatCurrency(total);
 }
 
-function saveProductImagePreview(cardId, dataUrl, sku = null, name = null) {
+function getProductDefaultImage(product) {
+    if (!product) return '';
+    const brand = String(product.brand || '').trim().toUpperCase();
+    const desc = String(product.product_description || product.category || '').trim().toUpperCase();
+    const name = String(product.product_name || product.name || '').trim().toUpperCase();
+    const compat = String(product.compatibility || '').trim().toUpperCase();
+    const sku = String(product.sku || '').trim().toUpperCase();
+
+    // Check for Apido Brand / Pipe
+    const isApido = brand.includes('APIDO') || name.includes('APIDO') || sku.includes('APIDO');
+    const isPipe = desc.includes('PIPE') || name.includes('PIPE') || compat.includes('PIPE') || sku.includes('PIPE') ||
+                   desc.includes('EXHAUST') || name.includes('EXHAUST') || compat.includes('EXHAUST') || sku.includes('EXHAUST') ||
+                   desc.includes('MUFFLER') || name.includes('MUFFLER') || compat.includes('MUFFLER') || sku.includes('MUFFLER');
+
+    if (isApido || (isPipe && brand.includes('APIDO'))) {
+        const apidoImages = [
+            '/images/products/apido_pipe_1.png',
+            '/images/products/apido_pipe_2.png',
+            '/images/products/apido_pipe_3.png'
+        ];
+        // Hash product identity to consistently distribute varied images across different products
+        const seedStr = String(product.id || '') + String(product.name || product.product_name || product.sku || '');
+        let hash = 0;
+        for (let i = 0; i < seedStr.length; i++) {
+            hash = (hash * 31 + seedStr.charCodeAt(i)) | 0;
+        }
+        return apidoImages[Math.abs(hash) % apidoImages.length];
+    }
+
+    // Check for KVIN Brand / Pipe
+    const isKvin = brand.includes('KVIN') || brand.includes('K-VIN') || brand.includes('K VIN') ||
+                   name.includes('KVIN') || name.includes('K-VIN') || name.includes('K VIN') ||
+                   sku.includes('KVIN') || sku.includes('K-VIN');
+
+    if (isKvin) {
+        const kvinImages = [
+            '/images/products/kvin_pipe_1.png',
+            '/images/products/kvin_pipe_2.png'
+        ];
+        // Hash product identity to consistently distribute varied images across different products
+        const seedStr = String(product.id || '') + String(product.name || product.product_name || product.sku || '');
+        let hash = 0;
+        for (let i = 0; i < seedStr.length; i++) {
+            hash = (hash * 31 + seedStr.charCodeAt(i)) | 0;
+        }
+        return kvinImages[Math.abs(hash) % kvinImages.length];
+    }
+
+    // Check for TRC Brand / Pipe
+    const isTrc = brand === 'TRC' || brand.includes('TRC') || name.includes('TRC') || sku.includes('TRC');
+
+    if (isTrc) {
+        const trcImages = [
+            '/images/products/trc_pipe_1.png',
+            '/images/products/trc_pipe_2.png',
+            '/images/products/trc_pipe_3.png'
+        ];
+        // Hash product identity to consistently distribute varied images across different products
+        const seedStr = String(product.id || '') + String(product.name || product.product_name || product.sku || '');
+        let hash = 0;
+        for (let i = 0; i < seedStr.length; i++) {
+            hash = (hash * 31 + seedStr.charCodeAt(i)) | 0;
+        }
+        return trcImages[Math.abs(hash) % trcImages.length];
+    }
+
+    // Check for MT8 Brand / Pipe
+    const isMt8 = brand === 'MT8' || brand.includes('MT8') || brand.includes('MT-8') || brand.includes('MT 8') ||
+                  name.includes('MT8') || name.includes('MT-8') || name.includes('MT 8') ||
+                  sku.includes('MT8') || sku.includes('MT-8');
+
+    if (isMt8) {
+        const mt8Images = [
+            '/images/products/mt8_pipe_1.png',
+            '/images/products/mt8_pipe_2.png',
+            '/images/products/mt8_pipe_3.png'
+        ];
+        // Hash product identity to consistently distribute varied images across different products
+        const seedStr = String(product.id || '') + String(product.name || product.product_name || product.sku || '');
+        let hash = 0;
+        for (let i = 0; i < seedStr.length; i++) {
+            hash = (hash * 31 + seedStr.charCodeAt(i)) | 0;
+        }
+        return mt8Images[Math.abs(hash) % mt8Images.length];
+    }
+
+    return '';
+}
+
+function saveProductImagePreview(cardId, dataUrl) {
+    // Store image ONLY by product ID to prevent cross-product image conflicts.
+    // Do NOT store by SKU or name since multiple products can share the same values.
+    const key = String(cardId);
     try {
-        posState.productImages[cardId] = dataUrl;
-        if (sku) posState.productImages[sku] = dataUrl;
-        if (name) posState.productImages[name] = dataUrl;
+        posState.productImages[key] = dataUrl;
         const serialized = JSON.stringify(posState.productImages);
         const sizeInMB = new Blob([serialized]).size / (1024 * 1024);
         console.log(`Saving ${Object.keys(posState.productImages).length} images, total size: ${sizeInMB.toFixed(2)}MB`);
 
         localStorage.setItem('posProductImages', JSON.stringify(posState.productImages));
-        console.log('✓ Saved product image for card:', cardId);
+        console.log('✓ Saved product image for card:', key);
     } catch (error) {
         console.error('Failed to save product image preview:', error.message);
         if (error.name === 'QuotaExceededError') {
@@ -344,9 +465,7 @@ function saveProductImagePreview(cardId, dataUrl, sku = null, name = null) {
             posState.productImages = {};
             try {
                 localStorage.setItem('posProductImages', JSON.stringify({}));
-                posState.productImages[cardId] = dataUrl;
-                if (sku) posState.productImages[sku] = dataUrl;
-                if (name) posState.productImages[name] = dataUrl;
+                posState.productImages[key] = dataUrl;
                 localStorage.setItem('posProductImages', JSON.stringify(posState.productImages));
                 console.log('✓ Saved after clearing');
             } catch (retryError) {
@@ -358,6 +477,16 @@ function saveProductImagePreview(cardId, dataUrl, sku = null, name = null) {
 
 function loadProductImagePreviews() {
     try {
+        // One-time migration: clear all old uploaded images to fix cross-product image conflicts.
+        // Remove this block once the migration has run (after first page load).
+        if (!localStorage.getItem('posProductImages_v2')) {
+            localStorage.removeItem('posProductImages');
+            localStorage.setItem('posProductImages_v2', '1');
+            posState.productImages = {};
+            console.log('🔄 Cleared all old product images (one-time migration)');
+            return;
+        }
+
         const stored = localStorage.getItem('posProductImages');
         posState.productImages = stored ? JSON.parse(stored) : {};
         console.log(`Loaded ${Object.keys(posState.productImages).length} product images from storage`);
@@ -788,6 +917,7 @@ function addProductToCart(product) {
     const productName = product.name || product.product_name || 'Product';
 
     if (availableStock <= 0) {
+        playScanErrorSound();
         showNotification(`Cannot add item. ${productName} is out of stock.`, 'error');
         return false;
     }
@@ -798,13 +928,16 @@ function addProductToCart(product) {
         if (product.discount_type !== undefined) existing.discount_type = product.discount_type;
         if (product.discount_value !== undefined) existing.discount_value = Number(product.discount_value || 0);
         if (existing.quantity + 1 > availableStock) {
+            playScanErrorSound();
             showNotification(`Insufficient stock. Only ${availableStock} item(s) available.`, 'error');
             return false;
         }
         existing.quantity += 1;
+        playScanSuccessSound();
         showNotification(`Added ${existing.name} (Qty: ${existing.quantity})`, 'success');
     } else {
         if (1 > availableStock) {
+            playScanErrorSound();
             showNotification(`Insufficient stock. Only ${availableStock} item(s) available.`, 'error');
             return false;
         }
@@ -822,17 +955,20 @@ function addProductToCart(product) {
             discount_value: Number(product.discount_value || 0),
             quantity: 1,
         });
+        playScanSuccessSound();
         showNotification(`Added ${productName} to cart`, 'success');
     }
 
     renderCart();
     goToCart();
+    broadcastCartState();
     return true;
 }
 
 function removeCartItem(productId) {
     posState.cart = posState.cart.filter(item => item.id !== productId);
     renderCart();
+    broadcastCartState();
 }
 
 function changeCartQuantity(productId, delta) {
@@ -855,6 +991,7 @@ function changeCartQuantity(productId, delta) {
     }
 
     renderCart();
+    broadcastCartState();
 }
 
 function clearCart() {
@@ -866,6 +1003,7 @@ function clearCart() {
     const removeBtn = document.getElementById('posRemoveDiscountBtn');
     if (removeBtn) removeBtn.classList.add('hidden');
     renderCart();
+    broadcastCartState();
 }
 
 async function searchProducts(query = '', page = 1) {
@@ -922,7 +1060,9 @@ async function searchProducts(query = '', page = 1) {
             const includedVat = sellingPrice * (12 / 112);
             const vatableSales = sellingPrice - includedVat;
 
-            const cardImage = product.image || posState.productImages[product.id] || (product.sku && posState.productImages[product.sku]) || (productName && posState.productImages[productName]) || '';
+            // Retrieve image: custom uploaded by product ID -> product DB image -> brand default image -> empty
+            const defaultImage = getProductDefaultImage(product);
+            const cardImage = posState.productImages[String(product.id)] || product.image || defaultImage || '';
 
             card.innerHTML = `
                 <div class="flex-shrink-0">
@@ -2197,6 +2337,16 @@ function setupPosEvents() {
                 searchProducts(event.target.value);
             }, 250);
         });
+
+        searchInput.addEventListener('keydown', event => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const query = event.target.value.trim();
+                if (query) {
+                    handleScannedCode(query);
+                }
+            }
+        });
     }
 
     document.getElementById('posProductGrid')?.addEventListener('click', event => {
@@ -2297,12 +2447,9 @@ function setupPosEvents() {
                     placeholder.classList.add('hidden');
                 }
 
-                // Save compressed version
+                // Save compressed version — keyed only by product ID to avoid cross-product conflicts
                 if (input.dataset.id) {
-                    const card = input.closest('.pos-image-upload-card');
-                    const sku = card?.dataset.sku || '';
-                    const name = card?.dataset.name || '';
-                    saveProductImagePreview(input.dataset.id, compressedDataUrl, sku, name);
+                    saveProductImagePreview(input.dataset.id, compressedDataUrl);
                 }
             };
             img.src = reader.result;
@@ -2460,6 +2607,28 @@ function setupPosEvents() {
     // Desktop QR Scanner
     document.getElementById('posOpenDesktopScannerButton')?.addEventListener('click', openDesktopScanner);
     document.getElementById('posCloseDesktopScannerButton')?.addEventListener('click', closeDesktopScanner);
+    document.getElementById('posDesktopScannerBackdrop')?.addEventListener('click', closeDesktopScanner);
+
+    // Camera Switcher
+    document.getElementById('posCameraSelect')?.addEventListener('change', (event) => {
+        if (event.target.value && desktopScanner) {
+            startDesktopScannerWithCamera(event.target.value);
+        }
+    });
+
+    // Manual Barcode / SKU Input inside modal
+    document.getElementById('posManualBarcodeBtn')?.addEventListener('click', () => {
+        const val = document.getElementById('posManualBarcodeInput')?.value.trim();
+        if (val) handleScannedCode(val);
+    });
+
+    document.getElementById('posManualBarcodeInput')?.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            const val = event.target.value.trim();
+            if (val) handleScannedCode(val);
+        }
+    });
 
     // Price Breakdown Toggle (Floating popover)
     let currentFloatingBreakdown = null;
@@ -2591,11 +2760,31 @@ function initializePos() {
     applyProductImagePreviews();
     updateInvestmentLabels();
 
-    // Start polling for mobile scans
+    // Start polling for mobile scans and real-time cart sync
     startScanPolling();
 
     // Listen for localStorage changes (same-browser sync)
     window.addEventListener('storage', handleStorageChange);
+
+    // Fetch initial active cart from server if available
+    fetch('/api/pos/sync-cart').then(res => res.json()).then(data => {
+        if (data && data.cart && Array.isArray(data.cart.cart) && data.cart.cart.length > 0 && posState.cart.length === 0) {
+            posState.cart = data.cart.cart;
+            lastSyncedCartTimestamp = Number(data.cart.timestamp || 0);
+            if (Array.isArray(data.cart.services)) {
+                posState.selectedServices = new Set(data.cart.services);
+            }
+            if (data.cart.discount !== undefined) {
+                posState.discount = Number(data.cart.discount);
+            }
+            if (data.cart.extraCharge !== undefined) {
+                posState.extraCharge = Number(data.cart.extraCharge);
+            }
+            renderCart();
+            recalculateAutoDiscount();
+            updateTotals();
+        }
+    }).catch(() => {});
 }
 
 // Expose functions globally for onclick handlers
@@ -2664,15 +2853,43 @@ let mobileScannedItems = [];
 
 function initMobileScanner() {
     if (mobileHtml5QrcodeScanner) {
-        mobileHtml5QrcodeScanner.stop().catch(err => console.error(err));
+        try {
+            if (mobileHtml5QrcodeScanner.isScanning) {
+                mobileHtml5QrcodeScanner.stop();
+            }
+            mobileHtml5QrcodeScanner.clear();
+        } catch (e) {
+            console.warn(e);
+        }
+        mobileHtml5QrcodeScanner = null;
     }
 
-    mobileHtml5QrcodeScanner = new Html5Qrcode("posMobileScannerReader");
+    const readerEl = document.getElementById('posMobileScannerReader');
+    if (readerEl) readerEl.innerHTML = '';
+
+    mobileHtml5QrcodeScanner = new Html5Qrcode("posMobileScannerReader", {
+        formatsToSupport: typeof Html5QrcodeSupportedFormats !== 'undefined' ? [
+            Html5QrcodeSupportedFormats.QR_CODE,
+            Html5QrcodeSupportedFormats.CODE_128,
+            Html5QrcodeSupportedFormats.CODE_39,
+            Html5QrcodeSupportedFormats.EAN_13,
+            Html5QrcodeSupportedFormats.EAN_8,
+            Html5QrcodeSupportedFormats.UPC_A,
+            Html5QrcodeSupportedFormats.UPC_E,
+        ] : undefined,
+        experimentalFeatures: {
+            useBarCodeDetectorIfSupported: true
+        },
+        verbose: false
+    });
 
     const config = {
-        fps: 10,
-        qrbox: { width: 250, height: 250 },
-        aspectRatio: 1.0
+        fps: 20,
+        videoConstraints: {
+            facingMode: "environment",
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+        }
     };
 
     mobileHtml5QrcodeScanner.start(
@@ -2681,40 +2898,63 @@ function initMobileScanner() {
         onMobileScanSuccess,
         onMobileScanFailure
     ).catch(err => {
-        console.error("Mobile scanner error:", err);
-        const status = document.getElementById('posMobileScannerStatus');
-        if (status) {
-            status.textContent = 'Camera access denied or not available';
-            status.classList.add('text-red-400');
-        }
+        console.warn("Environment camera failed, trying user camera:", err);
+        mobileHtml5QrcodeScanner.start(
+            { facingMode: "user" },
+            config,
+            onMobileScanSuccess,
+            onMobileScanFailure
+        ).catch(finalErr => {
+            console.error("Mobile scanner error:", finalErr);
+            const status = document.getElementById('posMobileScannerStatus');
+            if (status) {
+                status.textContent = 'Camera access denied or not available. Check browser permissions.';
+                status.classList.add('text-red-400');
+            }
+        });
     });
 }
 
 function stopMobileScanner() {
     if (mobileHtml5QrcodeScanner) {
-        mobileHtml5QrcodeScanner.stop().catch(err => console.error(err));
+        try {
+            if (mobileHtml5QrcodeScanner.isScanning) {
+                mobileHtml5QrcodeScanner.stop();
+            }
+            mobileHtml5QrcodeScanner.clear();
+        } catch (err) {
+            console.warn('Error stopping mobile scanner:', err);
+        }
         mobileHtml5QrcodeScanner = null;
     }
 }
 
+let isMobileModalScanLocked = false;
+let mobileModalCooldownTimer = null;
+
 function onMobileScanSuccess(decodedText, decodedResult) {
+    if (isMobileModalScanLocked) return;
+
+    isMobileModalScanLocked = true;
     playMobileBeep();
 
     const status = document.getElementById('posMobileScannerStatus');
     if (status) {
-        status.textContent = 'Scanned: ' + decodedText;
+        status.textContent = '✓ Scanned: ' + decodedText;
         status.classList.add('text-green-400');
     }
 
-    setTimeout(() => {
+    addToMobileRecentScans(decodedText);
+    sendMobileScanToTerminal(decodedText);
+
+    if (mobileModalCooldownTimer) clearTimeout(mobileModalCooldownTimer);
+    mobileModalCooldownTimer = setTimeout(() => {
+        isMobileModalScanLocked = false;
         if (status) {
             status.classList.remove('text-green-400');
             status.textContent = 'Position QR code within the frame';
         }
-    }, 2000);
-
-    addToMobileRecentScans(decodedText);
-    sendMobileScanToTerminal(decodedText);
+    }, 2500);
 }
 
 function onMobileScanFailure(error) {
@@ -2722,23 +2962,27 @@ function onMobileScanFailure(error) {
 }
 
 function playMobileBeep() {
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
 
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
 
-    oscillator.frequency.value = 800;
-    oscillator.type = 'sine';
-    gainNode.gain.value = 0.1;
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        gainNode.gain.value = 0.1;
 
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.1);
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.1);
+    } catch (e) {
+        console.warn(e);
+    }
 }
 
 function addToMobileRecentScans(code) {
-    const timestamp = new Date().toLocaleTimeString();
+    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     mobileScannedItems.unshift({ code, timestamp });
 
     if (mobileScannedItems.length > 10) {
@@ -2753,101 +2997,408 @@ function addToMobileRecentScans(code) {
                 <div class="text-xs font-medium text-white">${item.code}</div>
                 <div class="text-[10px] text-slate-400">${item.timestamp}</div>
             </div>
-            <span class="text-green-400 text-xs">✓</span>
+            <span class="text-green-400 text-xs font-bold">✓ Added</span>
         </div>
     `).join('');
 }
 
 function sendMobileScanToTerminal(code) {
-    // Add product to cart
-    const scanInput = document.getElementById('posScanInput');
-    if (scanInput) {
-        scanInput.value = code;
-        scanProduct();
+    handleScannedCode(code);
+}
+
+// ==========================================
+// DESKTOP & MOBILE QR / BARCODE SCANNER
+// ==========================================
+let desktopScanner = null;
+let availableCameras = [];
+let selectedCameraId = null;
+let isScannerStarting = false;
+
+async function initDesktopScanner() {
+    const statusEl = document.getElementById('posDesktopScannerStatus');
+    const cameraSelectWrapper = document.getElementById('posCameraSelectWrapper');
+    const cameraSelect = document.getElementById('posCameraSelect');
+
+    if (statusEl) {
+        statusEl.textContent = 'Initializing camera...';
+        statusEl.className = 'rounded-xl bg-blue-50 px-4 py-2.5 text-center text-xs font-semibold text-blue-700 border border-blue-200 transition-all';
+    }
+
+    if (typeof Html5Qrcode === 'undefined') {
+        if (statusEl) {
+            statusEl.textContent = 'Scanner library loading... Please wait a moment.';
+            statusEl.className = 'rounded-xl bg-amber-50 px-4 py-2.5 text-center text-xs font-semibold text-amber-700 border border-amber-200 transition-all';
+        }
+        setTimeout(initDesktopScanner, 300);
+        return;
+    }
+
+    try {
+        // Clean up previous instance if any
+        if (desktopScanner) {
+            try {
+                if (desktopScanner.isScanning) {
+                    await desktopScanner.stop();
+                }
+                desktopScanner.clear();
+            } catch (e) {
+                console.warn('Scanner cleanup warning:', e);
+            }
+            desktopScanner = null;
+        }
+
+        const readerEl = document.getElementById('posDesktopScannerReader');
+        if (readerEl) readerEl.innerHTML = '';
+
+        const formats = typeof Html5QrcodeSupportedFormats !== 'undefined' ? [
+            Html5QrcodeSupportedFormats.QR_CODE,
+            Html5QrcodeSupportedFormats.CODE_128,
+            Html5QrcodeSupportedFormats.CODE_39,
+            Html5QrcodeSupportedFormats.EAN_13,
+            Html5QrcodeSupportedFormats.EAN_8,
+            Html5QrcodeSupportedFormats.UPC_A,
+            Html5QrcodeSupportedFormats.UPC_E,
+        ] : undefined;
+
+        desktopScanner = new Html5Qrcode("posDesktopScannerReader", {
+            formatsToSupport: formats,
+            verbose: false
+        });
+
+        // Enumerate video devices
+        try {
+            availableCameras = await Html5Qrcode.getCameras();
+        } catch (e) {
+            console.warn('Could not enumerate cameras:', e);
+            availableCameras = [];
+        }
+
+        if (availableCameras && availableCameras.length > 0) {
+            if (cameraSelect && cameraSelectWrapper) {
+                cameraSelect.innerHTML = availableCameras.map((cam, idx) => `
+                    <option value="${cam.id}">${cam.label || `Camera ${idx + 1}`}</option>
+                `).join('');
+
+                // Select rear/environment camera if available, otherwise default
+                const rearCam = availableCameras.find(c =>
+                    (c.label || '').toLowerCase().includes('back') ||
+                    (c.label || '').toLowerCase().includes('rear') ||
+                    (c.label || '').toLowerCase().includes('environment')
+                );
+                selectedCameraId = rearCam ? rearCam.id : availableCameras[0].id;
+                cameraSelect.value = selectedCameraId;
+
+                if (availableCameras.length > 1) {
+                    cameraSelectWrapper.classList.remove('hidden');
+                } else {
+                    cameraSelectWrapper.classList.add('hidden');
+                }
+            } else {
+                selectedCameraId = availableCameras[0].id;
+            }
+
+            await startDesktopScannerWithCamera(selectedCameraId);
+        } else {
+            // Fallback to facingMode constraint (works on laptops & mobile browsers)
+            await startDesktopScannerWithFacingMode();
+        }
+    } catch (err) {
+        console.error("Scanner init error:", err);
+        if (statusEl) {
+            statusEl.textContent = 'Camera access denied or unavailable. You can type/paste SKU or Barcode below.';
+            statusEl.className = 'rounded-xl bg-red-50 px-4 py-2.5 text-center text-xs font-semibold text-red-700 border border-red-200 transition-all';
+        }
     }
 }
 
-let desktopScanner = null;
+async function startDesktopScannerWithCamera(cameraId) {
+    if (!desktopScanner) return;
+    const statusEl = document.getElementById('posDesktopScannerStatus');
+    const config = {
+        fps: 25,
+        qrbox: (viewfinderWidth, viewfinderHeight) => {
+            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+            const qrboxSize = Math.floor(minEdge * 0.75);
+            return {
+                width: Math.max(180, Math.min(qrboxSize, 300)),
+                height: Math.max(180, Math.min(qrboxSize, 300))
+            };
+        },
+        aspectRatio: 1.0,
+        videoConstraints: {
+            deviceId: { exact: cameraId },
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+        }
+    };
+
+    try {
+        await desktopScanner.start(
+            cameraId,
+            config,
+            onDesktopScanSuccess,
+            onDesktopScanFailure
+        );
+        if (statusEl) {
+            statusEl.textContent = 'Camera active. Point QR code or barcode at camera.';
+            statusEl.className = 'rounded-xl bg-emerald-50 px-4 py-2.5 text-center text-xs font-bold text-emerald-800 border border-emerald-200 transition-all';
+        }
+    } catch (err) {
+        console.warn('Failed to start with camera ID, falling back to facingMode:', err);
+        await startDesktopScannerWithFacingMode();
+    }
+}
+
+async function startDesktopScannerWithFacingMode() {
+    if (!desktopScanner) return;
+    const statusEl = document.getElementById('posDesktopScannerStatus');
+    const config = {
+        fps: 25,
+        qrbox: (viewfinderWidth, viewfinderHeight) => {
+            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+            const qrboxSize = Math.floor(minEdge * 0.75);
+            return {
+                width: Math.max(180, Math.min(qrboxSize, 300)),
+                height: Math.max(180, Math.min(qrboxSize, 300))
+            };
+        },
+        aspectRatio: 1.0,
+        videoConstraints: {
+            facingMode: { ideal: "environment" },
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+        }
+    };
+
+    try {
+        // Try environment (back) camera first
+        await desktopScanner.start(
+            { facingMode: { ideal: "environment" } },
+            config,
+            onDesktopScanSuccess,
+            onDesktopScanFailure
+        );
+        if (statusEl) {
+            statusEl.textContent = 'Camera active. Point QR code or barcode at camera.';
+            statusEl.className = 'rounded-xl bg-emerald-50 px-4 py-2.5 text-center text-xs font-bold text-emerald-800 border border-emerald-200 transition-all';
+        }
+    } catch (envErr) {
+        console.warn('Environment camera unavailable, falling back to user facing camera:', envErr);
+        try {
+            await desktopScanner.start(
+                { facingMode: "user" },
+                config,
+                onDesktopScanSuccess,
+                onDesktopScanFailure
+            );
+            if (statusEl) {
+                statusEl.textContent = 'Webcam active. Point QR code or barcode at camera.';
+                statusEl.className = 'rounded-xl bg-emerald-50 px-4 py-2.5 text-center text-xs font-bold text-emerald-800 border border-emerald-200 transition-all';
+            }
+        } catch (userErr) {
+            console.error('All camera start attempts failed:', userErr);
+            if (statusEl) {
+                statusEl.textContent = 'Camera permission required. Please allow camera access in browser settings.';
+                statusEl.className = 'rounded-xl bg-red-50 px-4 py-2.5 text-center text-xs font-semibold text-red-700 border border-red-200 transition-all';
+            }
+        }
+    }
+}
 
 function openDesktopScanner() {
     const modal = document.getElementById('posDesktopScannerModal');
+    if (!modal) return;
     modal.style.display = 'flex';
     modal.classList.remove('hidden');
 
-    // Initialize scanner
-    if (!desktopScanner) {
-        desktopScanner = new Html5Qrcode("posDesktopScannerReader");
-    }
+    initDesktopScanner();
 
-    const config = {
-        fps: 10,
-        qrbox: { width: 250, height: 250 },
-        aspectRatio: 1.0
-    };
-
-    desktopScanner.start(
-        { facingMode: "environment" },
-        config,
-        onDesktopScanSuccess,
-        onDesktopScanFailure
-    ).catch(err => {
-        console.error("Desktop scanner error:", err);
-        document.getElementById('posDesktopScannerStatus').textContent = 'Camera access denied or not available';
-        document.getElementById('posDesktopScannerStatus').classList.add('text-red-400');
-    });
+    // Focus manual input for quick keyboard typing
+    setTimeout(() => {
+        document.getElementById('posManualBarcodeInput')?.focus();
+    }, 300);
 }
 
-function closeDesktopScanner() {
+async function closeDesktopScanner() {
     const modal = document.getElementById('posDesktopScannerModal');
-    modal.style.display = 'none';
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.add('hidden');
+    }
 
     if (desktopScanner) {
-        desktopScanner.stop().catch(err => console.error(err));
+        try {
+            if (desktopScanner.isScanning) {
+                await desktopScanner.stop();
+            }
+            desktopScanner.clear();
+        } catch (err) {
+            console.warn('Error stopping scanner:', err);
+        }
+        desktopScanner = null;
     }
 
-    document.getElementById('posDesktopScannerStatus').textContent = 'Position QR code within the frame';
-    document.getElementById('posDesktopScannerStatus').classList.remove('text-red-400');
+    const statusEl = document.getElementById('posDesktopScannerStatus');
+    if (statusEl) {
+        statusEl.textContent = 'Position QR code or barcode within the camera view';
+        statusEl.className = 'rounded-xl bg-slate-100 px-4 py-2.5 text-center text-xs font-semibold text-slate-700 border border-slate-200 transition-all';
+    }
 }
 
+let isDesktopScanLocked = false;
+let lastDesktopScannedCode = '';
+let desktopScanCooldownTimer = null;
+
 function onDesktopScanSuccess(decodedText, decodedResult) {
-    // Play notification sound
+    if (isDesktopScanLocked) return;
+
+    // Strict 1-QR-per-scan lock (1.5s lock)
+    isDesktopScanLocked = true;
+    lastDesktopScannedCode = decodedText;
+
     playScanNotification();
 
-    // Update status
-    document.getElementById('posDesktopScannerStatus').textContent = 'Scanned: ' + decodedText;
-    document.getElementById('posDesktopScannerStatus').classList.add('text-green-400');
+    const statusEl = document.getElementById('posDesktopScannerStatus');
+    if (statusEl) {
+        statusEl.textContent = `✓ Scanned: ${decodedText}`;
+        statusEl.className = 'rounded-xl bg-emerald-100 px-4 py-2.5 text-center text-xs font-bold text-emerald-900 border border-emerald-300 transition-all';
+    }
 
-    setTimeout(() => {
-        document.getElementById('posDesktopScannerStatus').classList.remove('text-green-400');
-        document.getElementById('posDesktopScannerStatus').textContent = 'Position QR code within the frame';
-    }, 2000);
-
-    // Handle the scanned code
     handleScannedCode(decodedText);
+
+    if (desktopScanCooldownTimer) clearTimeout(desktopScanCooldownTimer);
+    desktopScanCooldownTimer = setTimeout(() => {
+        isDesktopScanLocked = false;
+        if (statusEl) {
+            statusEl.textContent = 'Camera active. Point QR code or barcode at camera.';
+            statusEl.className = 'rounded-xl bg-emerald-50 px-4 py-2.5 text-center text-xs font-bold text-emerald-800 border border-emerald-200 transition-all';
+        }
+    }, 1800);
 }
 
 function onDesktopScanFailure(error) {
-    // Ignore scan failures, they're normal
+    // Normal frame scanning noise — ignore
 }
 
+// Hardware USB / Wireless Barcode Scanner Gun Keypress Buffer
+let scannerKeyBuffer = '';
+let lastKeyTimestamp = 0;
+
+document.addEventListener('keydown', (event) => {
+    const activeEl = document.activeElement;
+    const isEditingField = activeEl && (
+        activeEl.id === 'posAmountTenderedInput' ||
+        activeEl.id === 'posExtraChargeInput' ||
+        activeEl.id === 'posDiscountInput'
+    );
+
+    if (isEditingField) return;
+
+    const now = Date.now();
+    const timeDiff = now - lastKeyTimestamp;
+    lastKeyTimestamp = now;
+
+    if (event.key === 'Enter') {
+        if (scannerKeyBuffer.length >= 2 && timeDiff < 90) {
+            // Scanner gun detected!
+            event.preventDefault();
+            const scannedCode = scannerKeyBuffer.trim();
+            scannerKeyBuffer = '';
+            if (scannedCode) {
+                handleScannedCode(scannedCode);
+            }
+            return;
+        }
+        scannerKeyBuffer = '';
+        return;
+    }
+
+    if (event.key === 'Escape') {
+        closeDesktopScanner();
+        closeMobileScanner();
+        return;
+    }
+
+    // Accumulate printable characters if typing speed is rapid (< 80ms between keys)
+    if (event.key.length === 1 && !event.ctrlKey && !event.altKey && !event.metaKey) {
+        if (timeDiff > 120 && scannerKeyBuffer.length > 0) {
+            scannerKeyBuffer = ''; // Reset buffer if normal slow typing
+        }
+        scannerKeyBuffer += event.key;
+    }
+});
+
+let lastProcessedScanId = null;
+
 function startScanPolling() {
-    // Poll server for new scans every 2 seconds
+    if (!lastScanTimestamp) {
+        lastScanTimestamp = Date.now() - 500;
+    }
+
+    if (scanPollingInterval) {
+        clearInterval(scanPollingInterval);
+    }
+
+    // Poll server for new mobile scans and real-time cart sync every 1.2 seconds
     scanPollingInterval = setInterval(async () => {
         try {
             const response = await fetch('/api/pos/check-scan');
+            if (!response.ok) return;
             const data = await response.json();
 
-            if (data.success && data.scan) {
+            // 1. Process new scan if present
+            if (data.success && data.scan && data.scan.code) {
+                const scanId = data.scan.id || null;
                 const scanTimestamp = new Date(data.scan.timestamp).getTime();
-                if (scanTimestamp > lastScanTimestamp) {
-                    lastScanTimestamp = scanTimestamp;
+
+                const isNewId = scanId && scanId !== lastProcessedScanId;
+                const isNewTime = !isNaN(scanTimestamp) && scanTimestamp > lastScanTimestamp;
+
+                if (isNewId || isNewTime) {
+                    if (scanId) lastProcessedScanId = scanId;
+                    if (!isNaN(scanTimestamp)) lastScanTimestamp = scanTimestamp;
                     handleScannedCode(data.scan.code);
                 }
             }
+
+            // 2. Real-time Cross-Device Cart Synchronization
+            if (data.cart && data.cart.clientId && data.cart.clientId !== posClientId) {
+                const remoteTimestamp = Number(data.cart.timestamp || 0);
+                if (remoteTimestamp > lastSyncedCartTimestamp && remoteTimestamp > lastLocalCartUpdate) {
+                    lastSyncedCartTimestamp = remoteTimestamp;
+                    const previousCount = posState.cart.reduce((sum, i) => sum + (Number(i.quantity) || 1), 0);
+                    const newCart = Array.isArray(data.cart.cart) ? data.cart.cart : [];
+                    const newCount = newCart.reduce((sum, i) => sum + (Number(i.quantity) || 1), 0);
+
+                    posState.cart = newCart;
+                    if (Array.isArray(data.cart.services)) {
+                        posState.selectedServices = new Set(data.cart.services);
+                    }
+                    if (data.cart.discount !== undefined) {
+                        posState.discount = Number(data.cart.discount);
+                        const discountInput = document.getElementById('posDiscountInput');
+                        if (discountInput) discountInput.value = posState.discount.toFixed(2);
+                    }
+                    if (data.cart.extraCharge !== undefined) {
+                        posState.extraCharge = Number(data.cart.extraCharge);
+                        const extraInput = document.getElementById('posExtraChargeInput');
+                        if (extraInput) extraInput.value = posState.extraCharge.toFixed(2);
+                    }
+
+                    renderCart();
+                    recalculateAutoDiscount();
+                    updateTotals();
+
+                    if (newCount > previousCount) {
+                        playScanSuccessSound();
+                        showNotification('✓ Cart updated from mobile device', 'success');
+                    }
+                }
+            }
         } catch (error) {
-            console.error('Error polling for scans:', error);
+            // Quiet polling warning
         }
-    }, 2000);
+    }, 1200);
 }
 
 function handleStorageChange(event) {
@@ -2863,99 +3414,270 @@ function handleStorageChange(event) {
     }
 }
 
-async function handleScannedCode(code) {
-    // Play notification sound
-    playScanNotification();
+let posAudioCtx = null;
 
-    console.log('Scanned code:', code);
-
-    // Try to parse code as JSON (for QR codes with product data)
-    let searchCode = code;
+function getPosAudioContext() {
     try {
-        const parsed = JSON.parse(code);
-        console.log('Parsed QR data:', parsed);
-        if (parsed.sku) {
-            searchCode = parsed.sku;
-            console.log('Using SKU from QR:', searchCode);
-        } else if (parsed.product_id) {
-            searchCode = parsed.product_id.toString();
-            console.log('Using product_id from QR:', searchCode);
+        if (!posAudioCtx) {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (AudioContextClass) {
+                posAudioCtx = new AudioContextClass();
+            }
+        }
+        if (posAudioCtx && posAudioCtx.state === 'suspended') {
+            posAudioCtx.resume().catch(() => {});
         }
     } catch (e) {
-        console.log('Not JSON, using original code');
-        // Not JSON, use original code
+        console.warn('Audio context init warning:', e);
+    }
+    return posAudioCtx;
+}
+
+// Unlock audio on any early user interaction
+if (typeof window !== 'undefined') {
+    ['click', 'touchstart', 'keydown', 'mousedown'].forEach(evt => {
+        document.addEventListener(evt, () => {
+            getPosAudioContext();
+        }, { passive: true });
+    });
+}
+
+function playScanSuccessSound() {
+    try {
+        const ctx = getPosAudioContext();
+        if (!ctx) return;
+
+        const now = ctx.currentTime;
+
+        // Tone 1: 880 Hz (A5)
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(880, now);
+        gain1.gain.setValueAtTime(0.001, now);
+        gain1.gain.exponentialRampToValueAtTime(0.25, now + 0.02);
+        gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.09);
+
+        // Tone 2: 1320 Hz (E6) - crisp positive chime
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(1320, now + 0.08);
+        gain2.gain.setValueAtTime(0.001, now + 0.08);
+        gain2.gain.exponentialRampToValueAtTime(0.3, now + 0.10);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(now + 0.08);
+        osc2.stop(now + 0.23);
+    } catch (e) {
+        console.warn('Error playing scan sound:', e);
     }
 
-    // Try to find product by SKU or QR code
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        try { navigator.vibrate(60); } catch(e) {}
+    }
+}
+
+function playScanErrorSound() {
     try {
-        const response = await fetch(posState.apiProductsUrl);
-        const result = await response.json();
+        const ctx = getPosAudioContext();
+        if (!ctx) return;
 
-        // Handle different response structures
-        let products = [];
-        if (Array.isArray(result)) {
-            products = result;
-        } else if (result.data && Array.isArray(result.data)) {
-            products = result.data;
-        } else if (result.products && Array.isArray(result.products)) {
-            products = result.products;
-        }
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(350, now);
+        osc.frequency.setValueAtTime(220, now + 0.09);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.20);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.21);
+    } catch (e) {}
 
-        console.log('API response:', result);
-        console.log('Loaded products:', products.length);
-        console.log('Searching for:', searchCode);
-
-        const product = products.find(p =>
-            p.sku === searchCode ||
-            p.qr_code === searchCode ||
-            p.id.toString() === searchCode
-        );
-
-        console.log('Found product:', product);
-
-        if (product) {
-            const stock = Number(product.stock_quantity ?? product.stock ?? 0);
-            const pName = product.product_name || product.name || 'Product';
-            if (stock <= 0) {
-                showNotification(`Cannot add item. ${pName} is out of stock.`, 'error');
-                return;
-            }
-            addProductToCart({
-                id: product.id,
-                name: pName,
-                sku: product.sku || '',
-                product_description: product.product_description || product.category || '',
-                brand: product.brand || '',
-                compatibility: product.compatibility || '',
-                category: product.category || 'Uncategorized',
-                stock_quantity: stock,
-                unit_price: Number(product.unit_price || 0),
-                discount_type: product.discount_type || null,
-                discount_value: Number(product.discount_value || 0)
-            });
-        } else {
-            showNotification(`Product not found: ${searchCode}`, 'error');
-        }
-    } catch (error) {
-        console.error('Error searching for product:', error);
-        showNotification('Error searching for product', 'error');
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        try { navigator.vibrate([80, 50, 80]); } catch(e) {}
     }
 }
 
 function playScanNotification() {
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+    playScanSuccessSound();
+}
 
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+async function handleScannedCode(code) {
+    if (!code) return;
+    const rawCode = String(code).trim();
+    if (!rawCode) return;
 
-    oscillator.frequency.value = 600;
-    oscillator.type = 'sine';
-    gainNode.gain.value = 0.15;
+    console.log('Processing scanned code:', rawCode);
 
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.15);
+    const statusEl = document.getElementById('posDesktopScannerStatus');
+    const mobileStatus = document.getElementById('posMobileScannerStatus');
+
+    let searchCode = rawCode;
+    let parsedJson = null;
+
+    // 1. Check if the scanned string is JSON (e.g. from generated QR stickers)
+    try {
+        const parsed = JSON.parse(rawCode);
+        if (parsed && typeof parsed === 'object') {
+            parsedJson = parsed;
+            if (parsed.sku) searchCode = String(parsed.sku).trim();
+            else if (parsed.product_id) searchCode = String(parsed.product_id).trim();
+            else if (parsed.id) searchCode = String(parsed.id).trim();
+            else if (parsed.barcode) searchCode = String(parsed.barcode).trim();
+            else if (parsed.name) searchCode = String(parsed.name).trim();
+            else if (parsed.product_name) searchCode = String(parsed.product_name).trim();
+        }
+    } catch (e) {
+        // Not JSON - check if it's a URL like http.../product/123
+        const urlMatch = rawCode.match(/(?:products?|item)\/([^\/?#]+)/i);
+        if (urlMatch && urlMatch[1]) {
+            searchCode = urlMatch[1].trim();
+        }
+    }
+
+    const cleanQuery = searchCode.replace(/^["']|["']$/g, '').trim();
+    const queryLower = cleanQuery.toLowerCase();
+
+    // Helper matcher function
+    const matchesProduct = (p) => {
+        if (!p) return false;
+        const pSku = String(p.sku || '').trim().toLowerCase();
+        const pBarcode = String(p.barcode || '').trim().toLowerCase();
+        const pId = String(p.id || '').trim();
+        const pQr = String(p.qr_code || '').trim().toLowerCase();
+        const pName = String(p.product_name || p.name || '').trim().toLowerCase();
+
+        // 1. Exact match with JSON payload fields if parsed
+        if (parsedJson) {
+            if (parsedJson.product_id && String(p.id) === String(parsedJson.product_id).trim()) {
+                return true;
+            }
+            if (parsedJson.id && String(p.id) === String(parsedJson.id).trim()) {
+                return true;
+            }
+            if (parsedJson.sku && pSku === String(parsedJson.sku).trim().toLowerCase()) {
+                return true;
+            }
+            if (parsedJson.barcode && pBarcode === String(parsedJson.barcode).trim().toLowerCase()) {
+                return true;
+            }
+        }
+
+        // 2. Exact match against query string
+        return pSku === queryLower ||
+               pBarcode === queryLower ||
+               pId === cleanQuery ||
+               pQr === queryLower ||
+               pName === queryLower;
+    };
+
+    try {
+        if (statusEl) {
+            statusEl.textContent = `Looking up item: "${cleanQuery}"...`;
+            statusEl.className = 'rounded-xl bg-blue-50 px-4 py-2.5 text-center text-xs font-medium text-blue-700 border border-blue-200 transition-all';
+        }
+
+        // Search API with exact search query for maximum speed and accuracy
+        const searchUrl = new URL(posState.apiProductsUrl, window.location.origin);
+        searchUrl.searchParams.set('search', cleanQuery);
+        searchUrl.searchParams.set('per_page', '50');
+
+        let matchedProduct = null;
+
+        const response = await fetch(searchUrl.toString());
+        if (response.ok) {
+            const result = await response.json();
+            let list = [];
+            if (Array.isArray(result)) list = result;
+            else if (result.data && Array.isArray(result.data)) list = result.data;
+            else if (result.products && Array.isArray(result.products)) list = result.products;
+
+            matchedProduct = list.find(matchesProduct) || (list.length === 1 ? list[0] : null);
+        }
+
+        // If not found via search query, fallback to full active product list
+        if (!matchedProduct) {
+            const fullUrl = posState.apiProductsUrl + (posState.apiProductsUrl.includes('?') ? '&' : '?') + 'per_page=1000';
+            const fullResp = await fetch(fullUrl);
+            if (fullResp.ok) {
+                const fullResult = await fullResp.json();
+                let fullList = [];
+                if (Array.isArray(fullResult)) fullList = fullResult;
+                else if (fullResult.data && Array.isArray(fullResult.data)) fullList = fullResult.data;
+                else if (fullResult.products && Array.isArray(fullResult.products)) fullList = fullResult.products;
+
+                matchedProduct = fullList.find(matchesProduct) || null;
+            }
+        }
+
+        if (matchedProduct) {
+            const stock = Number(matchedProduct.stock_quantity ?? matchedProduct.stock ?? 0);
+            const pName = matchedProduct.product_name || matchedProduct.name || 'Product';
+
+            if (stock <= 0) {
+                playScanErrorSound();
+                showNotification(`Out of Stock: ${pName} has 0 stock available.`, 'error');
+                if (statusEl) {
+                    statusEl.textContent = `Out of Stock: ${pName}`;
+                    statusEl.className = 'rounded-xl bg-amber-50 px-4 py-2.5 text-center text-xs font-bold text-amber-800 border border-amber-300 transition-all';
+                }
+                return;
+            }
+
+            const added = addProductToCart({
+                id: matchedProduct.id,
+                name: pName,
+                sku: matchedProduct.sku || '',
+                product_description: matchedProduct.product_description || matchedProduct.category || '',
+                brand: matchedProduct.brand || '',
+                compatibility: matchedProduct.compatibility || '',
+                category: matchedProduct.category || 'Uncategorized',
+                stock_quantity: stock,
+                unit_price: Number(matchedProduct.unit_price || 0),
+                discount_type: matchedProduct.discount_type || null,
+                discount_value: Number(matchedProduct.discount_value || 0)
+            });
+
+            if (added) {
+                // Clear manual input if present
+                const manualInput = document.getElementById('posManualBarcodeInput');
+                if (manualInput) manualInput.value = '';
+
+                if (statusEl) {
+                    statusEl.textContent = `✓ Added to Cart: ${pName} (₱${Number(matchedProduct.unit_price || 0).toFixed(2)})`;
+                    statusEl.className = 'rounded-xl bg-emerald-100 px-4 py-2.5 text-center text-xs font-bold text-emerald-800 border border-emerald-300 transition-all';
+                }
+                if (mobileStatus) {
+                    mobileStatus.textContent = `✓ Added: ${pName}`;
+                    mobileStatus.classList.add('text-green-400');
+                }
+            }
+        } else {
+            playScanErrorSound();
+            showNotification(`Product not found for: "${cleanQuery}"`, 'error');
+            if (statusEl) {
+                statusEl.textContent = `Product not found for: "${cleanQuery}"`;
+                statusEl.className = 'rounded-xl bg-red-50 px-4 py-2.5 text-center text-xs font-medium text-red-700 border border-red-200 transition-all';
+            }
+        }
+    } catch (error) {
+        console.error('Error in handleScannedCode:', error);
+        playScanErrorSound();
+        showNotification('Failed to lookup product. Please check your connection.', 'error');
+        if (statusEl) {
+            statusEl.textContent = 'Failed to lookup product. Please check your connection.';
+            statusEl.className = 'rounded-xl bg-red-50 px-4 py-2.5 text-center text-xs font-medium text-red-700 border border-red-200 transition-all';
+        }
+    }
 }
 
 function showNotification(message, type = 'success') {

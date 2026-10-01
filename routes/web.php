@@ -15,8 +15,6 @@ use App\Http\Controllers\InventoryNotificationController;
 Route::view('/', 'login')->name('home');
 Route::view('/login', 'login')->name('login');
 
-Route::view('/forgot-password', 'forgot-password')->name('forgot-password');
-
 // Forgot Password routes (public)
 Route::post('/forgot-password/send', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendResetCode'])->name('password.send-code');
 Route::post('/forgot-password/verify', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'verifyCode'])->name('password.verify-code');
@@ -24,15 +22,38 @@ Route::post('/forgot-password/reset', [App\Http\Controllers\Auth\ForgotPasswordC
 
 Route::get('/reset-password/{token}', function ($token) {
     return view('auth.reset-password', ['token' => $token]);
-})->name('password.reset');
+})->name('password.reset.token');
+
+// Diagnostic route to test and debug live email delivery directly from Render
+Route::get('/api/test-email', function (\Illuminate\Http\Request $request) {
+    $targetEmail = $request->query('to', 'ilanolawrence04@gmail.com');
+    $resendApiKey = env('RESEND_API_KEY');
+    $config = [
+        'resend_configured' => !empty($resendApiKey),
+        'resend_key_prefix' => !empty($resendApiKey) ? substr($resendApiKey, 0, 7) . '...' : 'NONE',
+        'default_mailer'    => config('mail.default'),
+        'smtp_host'         => config('mail.mailers.smtp.host'),
+        'smtp_port'         => config('mail.mailers.smtp.port'),
+        'from'              => config('mail.from'),
+    ];
+
+    $testCode = (string) rand(100000, 999999);
+    $html = "<p>Live test email from KCC Motorcycle Cloud System.</p><p><strong>Test Security Code: {$testCode}</strong></p>";
+    $sent = \App\Services\ResendEmailService::send($targetEmail, 'KCC Motorcycle Live Cloud Email Test', $html);
+
+    return response()->json([
+        'success'     => $sent,
+        'message'     => $sent ? "Email sent successfully to {$targetEmail}!" : "Failed to send email to {$targetEmail}.",
+        'test_code'   => $testCode,
+        'config_used' => $config,
+    ]);
+});
 
 // Login routes
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login.store');
 Route::post('/login/otp/send', [App\Http\Controllers\Auth\LoginOtpController::class, 'send'])->name('login.otp.send');
 Route::post('/login/otp/verify', [App\Http\Controllers\Auth\LoginOtpController::class, 'verify'])->name('login.otp.verify');
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
-Route::post('/password/email', [App\Http\Controllers\Auth\PasswordResetController::class, 'sendResetLink'])->name('password.email');
-Route::post('/password/reset', [App\Http\Controllers\Auth\PasswordResetController::class, 'reset'])->name('password.update');
 
 // Forgot Password routes
 Route::get('/forgot-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'showForgotPassword'])->name('forgot-password');
@@ -56,6 +77,20 @@ Route::middleware(['auth'])->group(function () {
     Route::post('api/inventory-notifications/{id}/read', [InventoryNotificationController::class, 'markAsRead'])->name('api.inventory-notifications.read');
     Route::post('api/inventory-notifications/mark-all-read', [InventoryNotificationController::class, 'markAllAsRead'])->name('api.inventory-notifications.mark-all-read');
     Route::post('api/inventory-notifications/sync', [InventoryNotificationController::class, 'sync'])->name('api.inventory-notifications.sync');
+
+    // Active status heartbeat check
+    Route::get('api/user/active-status', function(\Illuminate\Http\Request $request) {
+        $user = $request->user();
+        if ($user && ! ($user->is_active ?? true)) {
+            \Illuminate\Support\Facades\Auth::logout();
+            if ($request->hasSession()) {
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            }
+            return response()->json(['deactivated' => true, 'message' => 'Your account has been deactivated.'], 401);
+        }
+        return response()->json(['active' => true]);
+    })->name('api.user.active-status');
 
     // Profile update for authenticated users
     Route::match(['patch','post'], 'profile', [UserController::class, 'updateProfile'])->name('profile.update');
@@ -112,8 +147,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('api/stats', [App\Http\Controllers\StockImportController::class, 'getStats'])->name('api.stats');
     Route::get('api/movements', [App\Http\Controllers\StockImportController::class, 'getMovements'])->name('api.movements');
 
-    // POS API for mobile scanner sync
+    // POS API for mobile scanner & live cross-device cart sync
     Route::get('api/pos/check-scan', [App\Http\Controllers\PosController::class, 'checkScan'])->name('api.pos.check-scan');
+    Route::post('api/pos/sync-cart', [App\Http\Controllers\PosController::class, 'syncCart'])->name('api.pos.sync-cart');
+    Route::get('api/pos/sync-cart', [App\Http\Controllers\PosController::class, 'getActiveCart'])->name('api.pos.get-cart');
 
 
     // POS Transaction APIs - Admin and Cashier only
@@ -259,7 +296,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::post('purchase-order/{purchaseOrder}/approve', [PurchaseOrderController::class, 'approve'])->name('order.approve');
         Route::post('purchase-order/{purchaseOrder}/reject', [PurchaseOrderController::class, 'reject'])->name('order.reject');
-        Route::post('purchase-order/{purchaseOrder}/send', [PurchaseOrderController::class, 'sendToSupplier'])->name('order.send');
+        Route::match(['get', 'post'], 'purchase-order/{purchaseOrder}/send', [PurchaseOrderController::class, 'sendToSupplier'])->name('order.send');
         Route::post('purchase-order/{purchaseOrder}/in-transit', [PurchaseOrderController::class, 'markInTransit'])->name('order.in_transit');
         Route::put('purchase-order/{purchaseOrder}/estimated-delivery-date', [PurchaseOrderController::class, 'updateEstimatedDeliveryDate'])->name('order.update_estimated_delivery');
     });
@@ -336,8 +373,10 @@ Route::middleware(['auth'])->group(function () {
 
             // Recommendation Routes
             Route::get('recommendations', [App\Http\Controllers\DSSRecommendationController::class, 'index'])->name('dss.recommendations.index');
+            Route::post('recommendations/recalculate', [App\Http\Controllers\DSSRecommendationController::class, 'recalculate'])->name('dss.recommendations.recalculate');
             Route::get('recommendations/{id}', [App\Http\Controllers\DSSRecommendationController::class, 'show'])->name('dss.recommendations.show');
             Route::post('recommendations/{id}/action', [App\Http\Controllers\DSSRecommendationController::class, 'markActioned'])->name('dss.recommendations.action');
+            Route::post('recommendations/{id}/apply-reorder', [App\Http\Controllers\DSSRecommendationController::class, 'applyReorderLevel'])->name('dss.recommendations.apply-reorder');
 
             // Settings Routes
             Route::get('settings', [App\Http\Controllers\DSSSettingsController::class, 'index'])->name('dss.settings.index');
@@ -360,10 +399,12 @@ Route::middleware(['auth'])->group(function () {
             Route::get('top-fast-moving', [App\Http\Controllers\Api\DeadStockApiController::class, 'getTopFastMoving'])->name('api.dss.top-fast-moving');
 
             // Recommendation API
+            Route::post('recommendations/recalculate', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'recalculate'])->name('api.dss.recommendations.recalculate');
             Route::get('recommendations/product/{productId}', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'getByProduct'])->name('api.dss.recommendations.by-product');
             Route::get('recommendations/pending', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'getPending'])->name('api.dss.recommendations.pending');
             Route::get('recommendations/type/{type}', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'getByType'])->name('api.dss.recommendations.by-type');
             Route::post('recommendations/{id}/action', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'markActioned'])->name('api.dss.recommendations.action');
+            Route::post('recommendations/{id}/apply-reorder', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'applyReorderLevel'])->name('api.dss.recommendations.apply-reorder');
             Route::get('recommendations/pending-count', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'pendingCount'])->name('api.dss.recommendations.pending-count');
             Route::get('recommendations/count-by-type', [App\Http\Controllers\Api\DSSRecommendationApiController::class, 'countByType'])->name('api.dss.recommendations.count-by-type');
         });

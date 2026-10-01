@@ -230,7 +230,7 @@ class OfflineReconciliationService
                     $type = $record['type'] ?? 'purchase_order';
 
                     if ($type === 'purchase_order') {
-                        $this->importPurchaseOrder($record);
+                        $this->importPurchaseOrder($record, $importedBy);
                         $importedCount++;
                     } else {
                         $skippedCount++;
@@ -259,7 +259,7 @@ class OfflineReconciliationService
     /**
      * Import a purchase order with items
      */
-    protected function importPurchaseOrder(array $record): void
+    protected function importPurchaseOrder(array $record, ?int $importedBy = null): void
     {
         // Resolve supplier
         $supplierId = $record['supplier_id'] ?? null;
@@ -270,11 +270,21 @@ class OfflineReconciliationService
             $supplierId = $foundSupplier?->id;
         }
 
+        $rawStatus = strtolower(trim($record['status'] ?? 'approved'));
+        $finalStatus = in_array($rawStatus, ['approved', 'pending approval', 'sent to supplier', 'in transit', 'completed'], true)
+            ? $rawStatus
+            : 'approved';
+
+        $userId = $importedBy ?? auth()->id();
+
         $purchaseOrder = PurchaseOrder::create([
             'order_number' => $record['order_number'],
             'supplier_id' => $supplierId,
             'supplier_name' => $supplierName,
-            'status' => $record['status'] ?? 'pending',
+            'user_id' => $userId,
+            'created_by_role' => 'admin',
+            'status' => $finalStatus,
+            'approved_at' => ($finalStatus === 'approved') ? now() : null,
             'sync_status' => 'synchronized',
             'notes' => $record['notes'] ?? null,
             'total_amount' => $record['total_amount'] ?? 0,

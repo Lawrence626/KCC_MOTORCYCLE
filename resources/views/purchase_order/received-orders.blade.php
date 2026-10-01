@@ -14,13 +14,7 @@
                     </svg>
                     Generate QR Codes
                 </button>
-                <button id="ro-scan-qr" type="button" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 transition-all duration-200">
-                    <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
-                    Scan QR
-                </button>
+
                 <button id="ro-mobile-scanner" type="button" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 transition-all duration-200">
                     <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
@@ -405,53 +399,7 @@
         </div>
     </div>
 
-    <!-- QR Code Scanner Modal -->
-    <div id="ro-scan-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 py-6" style="display: none;">
-        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="roCloseScanner()"></div>
-        <div class="relative w-full max-w-[500px] overflow-hidden rounded-[32px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.18)]">
-            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
-                <div>
-                    <h2 class="text-xl font-bold text-black">QR Code Scanner</h2>
-                    <p class="text-sm text-slate-900 font-medium">Scan QR codes to add products.</p>
-                </div>
-                <button onclick="roCloseScanner()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-            
-            <div class="px-6 py-6 flex flex-col">
-                <!-- Scanner Section -->
-                <div class="flex justify-center">
-                    <div id="ro-scanner-reader" class="w-full max-w-[500px] bg-black rounded-xl overflow-hidden min-h-[400px]"></div>
-                </div>
-                <div id="ro-scanner-status" class="text-center text-sm text-slate-600 mt-2">Position QR code within the frame</div>
-                
-                <!-- Scanned Items Section -->
-                <div id="ro-scanned-items" class="hidden mt-6">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-sm font-semibold text-slate-700">Scanned Items (<span id="ro-scan-count">0</span>)</h3>
-                        <button onclick="roClearScannedItems()" class="text-xs text-red-500 hover:text-red-700">Clear All</button>
-                    </div>
-                    <div id="ro-scan-list" class="max-h-48 overflow-y-auto space-y-2"></div>
-                    
-                    <!-- Pagination -->
-                    <div id="ro-scan-pagination" class="hidden flex items-center justify-between mt-3 pt-3 border-t border-slate-200">
-                        <button onclick="roScanPrevPage()" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" id="ro-scan-prev-page">Previous</button>
-                        <span id="ro-scan-page-info" class="text-xs text-slate-600">Page 1 of 1</span>
-                        <button onclick="roScanNextPage()" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" id="ro-scan-next-page">Next</button>
-                    </div>
-                </div>
-                
-                <!-- Action Buttons -->
-                <div class="flex justify-end gap-3 mt-6">
-                    <button onclick="roCloseScanner()" class="rounded-[10px] bg-black/10 px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-black/20">Cancel</button>
-                    <button onclick="roProceedToDetails()" class="rounded-[10px] bg-[#6EC1D1] px-4 py-3 text-sm font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300" id="ro-proceed-btn" disabled>Proceed to Details</button>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
