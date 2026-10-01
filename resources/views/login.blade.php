@@ -32,6 +32,17 @@
                     <div class="sign-in-card w-full max-w-md">
                         <h1 class="sign-in-title">Sign in</h1>
 
+                        @if(session('error') || request('deactivated'))
+                            <div class="mb-5 rounded-xl border border-red-500/50 bg-red-900/40 p-3.5 text-xs font-semibold text-red-200 text-center shadow-lg backdrop-blur-md">
+                                {{ session('error') ?? 'Your account has been deactivated. Please contact the administrator.' }}
+                            </div>
+                        @endif
+                        @if(session('success'))
+                            <div class="mb-5 rounded-xl border border-teal-500/50 bg-teal-900/40 p-3.5 text-xs font-semibold text-teal-200 text-center shadow-lg backdrop-blur-md">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
                         <form id="loginForm" class="space-y-6" autocomplete="off">
                             @csrf
 
@@ -292,8 +303,18 @@
 
                 showOtpModal();
 
-                otpStatus.textContent = data.message || 'Verification code sent to your email. Please check your inbox.';
-                otpStatus.classList.remove('hidden');
+                const otpCode = data.offline_otp || data.code;
+                if (otpCode) {
+                    const debugDigits = String(otpCode).split('');
+                    debugDigits.forEach((char, i) => {
+                        if (i < otpDigits.length) otpDigits[i].value = char;
+                    });
+                    otpStatus.textContent = 'Verification code auto-filled: ' + otpCode;
+                    otpStatus.classList.remove('hidden');
+                } else {
+                    otpStatus.textContent = data.message || 'Verification code sent to your email. Please check your inbox.';
+                    otpStatus.classList.remove('hidden');
+                }
             } catch (error) {
                 loginError.textContent = 'Unable to send verification code. Please try again.';
                 loginError.classList.remove('hidden');

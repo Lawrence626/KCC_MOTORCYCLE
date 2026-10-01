@@ -78,6 +78,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('api/inventory-notifications/mark-all-read', [InventoryNotificationController::class, 'markAllAsRead'])->name('api.inventory-notifications.mark-all-read');
     Route::post('api/inventory-notifications/sync', [InventoryNotificationController::class, 'sync'])->name('api.inventory-notifications.sync');
 
+    // Active status heartbeat check
+    Route::get('api/user/active-status', function() {
+        return response()->json(['active' => true]);
+    })->name('api.user.active-status');
+
     // Profile update for authenticated users
     Route::match(['patch','post'], 'profile', [UserController::class, 'updateProfile'])->name('profile.update');
     // Profile display

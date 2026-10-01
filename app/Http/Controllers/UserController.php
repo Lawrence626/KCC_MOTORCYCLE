@@ -66,8 +66,30 @@ class UserController extends Controller
 
     public function updateStatus(Request $request, User $user)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized action. Only administrators can archive users.');
+        }
+
+        if (auth()->id() === $user->id) {
+            return redirect()->back()->with('error', 'You cannot archive your own administrator account.');
+        }
+
         $user->is_active = ! ($user->is_active ?? true);
+
+        if (! $user->is_active) {
+            $user->remember_token = null;
+        }
+
         $user->save();
+
+        // If the user was archived/deactivated, instantly delete all active sessions from the DB
+        if (! $user->is_active) {
+            try {
+                \Illuminate\Support\Facades\DB::table('sessions')->where('user_id', $user->id)->delete();
+            } catch (\Throwable $e) {
+                // Ignore if sessions table not present or file driver
+            }
+        }
 
         $message = $user->is_active ? 'User restored successfully.' : 'User archived successfully.';
 

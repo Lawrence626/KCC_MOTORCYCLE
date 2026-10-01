@@ -1113,6 +1113,50 @@
                 });
             }
         });
+
+        // Real-time Active Account Status Monitor
+        (function() {
+            let isLoggedOut = false;
+            function handleDeactivation() {
+                if (isLoggedOut) return;
+                isLoggedOut = true;
+                window.location.href = "{{ route('login') }}?deactivated=1";
+            }
+
+            // Intercept all native fetch responses
+            const originalFetch = window.fetch;
+            window.fetch = async function(...args) {
+                try {
+                    const response = await originalFetch.apply(this, args);
+                    if (response.status === 401) {
+                        try {
+                            const clone = response.clone();
+                            const data = await clone.json();
+                            if (data && (data.deactivated || data.message?.includes('deactivated'))) {
+                                handleDeactivation();
+                            }
+                        } catch (err) {}
+                    }
+                    return response;
+                } catch (err) {
+                    throw err;
+                }
+            };
+
+            // Lightweight periodic heartbeat every 8 seconds
+            setInterval(function() {
+                if (isLoggedOut) return;
+                originalFetch("{{ route('api.user.active-status') }}", {
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(function(res) {
+                    if (res.status === 401) {
+                        handleDeactivation();
+                    }
+                })
+                .catch(function() {});
+            }, 8000);
+        })();
     </script>
 
     @stack('scripts')
