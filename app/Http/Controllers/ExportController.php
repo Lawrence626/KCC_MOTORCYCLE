@@ -41,23 +41,21 @@ class ExportController extends Controller
         $exportType = $request->input('type', 'purchase_orders');
         $syncStatus = $request->input('sync_status', 'pending_sync');
 
-        $fileName = 'offline_transactions_' . date('Y_m_d') . '.csv';
+        $records = $this->getExportRecords($exportType, $syncStatus);
+        $fileName = $this->generateExportFileName($records, 'csv');
 
         // Create synchronization history record
         $syncHistory = SynchronizationHistory::create([
             'file_name' => $fileName,
             'export_date' => now(),
             'exported_by' => Auth::id(),
-            'total_records' => 0,
+            'total_records' => count($records),
             'imported_records' => 0,
             'duplicate_records' => 0,
             'failed_records' => 0,
             'skipped_records' => 0,
             'synchronization_status' => 'pending',
         ]);
-
-        $records = $this->getExportRecords($exportType, $syncStatus);
-        $syncHistory->update(['total_records' => count($records)]);
 
         // Mark records as exported
         $this->markRecordsAsExported($records);
@@ -73,14 +71,15 @@ class ExportController extends Controller
         $exportType = $request->input('type', 'purchase_orders');
         $syncStatus = $request->input('sync_status', 'pending_sync');
 
-        $fileName = 'offline_transactions_' . date('Y_m_d') . '.xlsx';
+        $records = $this->getExportRecords($exportType, $syncStatus);
+        $fileName = $this->generateExportFileName($records, 'xlsx');
 
         // Create synchronization history record
         $syncHistory = SynchronizationHistory::create([
             'file_name' => $fileName,
             'export_date' => now(),
             'exported_by' => Auth::id(),
-            'total_records' => 0,
+            'total_records' => count($records),
             'imported_records' => 0,
             'duplicate_records' => 0,
             'failed_records' => 0,
@@ -88,13 +87,39 @@ class ExportController extends Controller
             'synchronization_status' => 'pending',
         ]);
 
-        $records = $this->getExportRecords($exportType, $syncStatus);
-        $syncHistory->update(['total_records' => count($records)]);
-
         // Mark records as exported
         $this->markRecordsAsExported($records);
 
         return Excel::download(new OfflineTransactionsExport($records), $fileName);
+    }
+
+    /**
+     * Generate standard filename corresponding to PO numbers
+     */
+    protected function generateExportFileName(array $records, string $extension = 'csv'): string
+    {
+        $poNumbers = [];
+        foreach ($records as $record) {
+            if (!empty($record['order_number'])) {
+                $cleanPo = preg_replace('/[^A-Za-z0-9_-]/', '_', (string) $record['order_number']);
+                if ($cleanPo !== '') {
+                    $poNumbers[$cleanPo] = true;
+                }
+            }
+        }
+
+        $poList = array_keys($poNumbers);
+        if (count($poList) === 1) {
+            $poPart = '_' . $poList[0];
+        } elseif (count($poList) > 1 && count($poList) <= 3) {
+            $poPart = '_' . implode('_', $poList);
+        } elseif (count($poList) > 3) {
+            $poPart = '_' . $poList[0] . '_to_' . end($poList) . '_(' . count($poList) . '_orders)';
+        } else {
+            $poPart = '_ORDERS_' . date('Y_m_d');
+        }
+
+        return 'KCC_MOTORCYCLE' . $poPart . '.' . $extension;
     }
 
     /**

@@ -640,9 +640,10 @@
             return;
         }
 
-        const exportedCount = offlineManager.exportOrdersToCsv(ordersToExport);
-        const ymd = new Date().toISOString().slice(0, 10).replace(/-/g, '_');
-        const fileName = `offline_transactions_${ymd}.csv`;
+        const exportResult = offlineManager.exportOrdersToCsv(ordersToExport);
+        const fileName = (typeof exportResult === 'object' && exportResult.fileName) 
+            ? exportResult.fileName 
+            : `KCC_MOTORCYCLE_${(ordersToExport[0]?.order_number || 'ORDERS').replace(/[^a-zA-Z0-9_-]/g, '_')}.csv`;
 
         let totalItems = 0;
         let totalAmount = 0;
