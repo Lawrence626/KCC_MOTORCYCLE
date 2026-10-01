@@ -32,9 +32,13 @@
                     <div class="sign-in-card w-full max-w-md">
                         <h1 class="sign-in-title">Sign in</h1>
 
-                        @if(session('error') || request('deactivated'))
+                        @if(session('error'))
                             <div class="mb-5 rounded-xl border border-red-500/50 bg-red-900/40 p-3.5 text-xs font-semibold text-red-200 text-center shadow-lg backdrop-blur-md">
-                                {{ session('error') ?? 'Your account has been deactivated. Please contact the administrator.' }}
+                                {{ session('error') }}
+                            </div>
+                        @elseif(request('deactivated'))
+                            <div class="mb-5 rounded-xl border border-red-500/50 bg-red-900/40 p-3.5 text-xs font-semibold text-red-200 text-center shadow-lg backdrop-blur-md">
+                                Your account has been deactivated. Please contact the administrator.
                             </div>
                         @endif
                         @if(session('success'))
