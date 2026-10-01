@@ -113,8 +113,8 @@
         </div>
 
         <!-- Supplier Dropdown Selector Section (Clean & Space-Saving) -->
-        <section class="relative z-30 rounded-[20px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="bg-[#0f172a] px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-slate-800">
+        <section class="relative z-30 rounded-[20px] border border-slate-200 bg-white shadow-sm">
+            <div class="bg-[#0f172a] px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-slate-800 rounded-t-[20px]">
                 <div>
                     <h2 class="text-base font-bold text-white flex items-center gap-2">
                         <svg class="h-4 w-4 text-[#6EC1D1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -131,7 +131,7 @@
                 </div>
             </div>
 
-            <div class="p-5 space-y-4">
+            <div class="p-5 space-y-4 rounded-b-[20px]">
                 <div class="flex flex-col md:flex-row md:items-center gap-3">
                     <div class="relative flex-1">
                         <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Select Supplier Partner</label>
@@ -1148,12 +1148,14 @@
                 // Populate dropdown options on load
                 renderDropdownOptions();
 
-                // Initial Load: Auto-select supplier ONLY if specifically requested via URL query param
+                // Initial Load: Auto-select supplier if requested via query param or default to first supplier
                 const urlParams = new URLSearchParams(window.location.search);
                 const selectedSupplierParam = urlParams.get('selected_supplier');
 
                 if (selectedSupplierParam) {
                     setSupplierDetail(selectedSupplierParam);
+                } else if (supplierSummaries && supplierSummaries.length > 0) {
+                    setSupplierDetail(supplierSummaries[0].name);
                 }
             </script>
         @endpush
