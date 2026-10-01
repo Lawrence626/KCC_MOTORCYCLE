@@ -387,7 +387,7 @@
             }
         });
     </script>
-    <script src="{{ asset('js/offline-manager.js') }}"></script>
+    <script src="{{ asset('js/offline-manager.js') }}?v={{ time() }}"></script>
     <script>
     let localPendingOrders = [];
     let filteredOrders = [];
