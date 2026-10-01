@@ -1,20 +1,30 @@
-<x-layouts.app :title="__('Export Data')">
-    <div class="space-y-4">
-        <!-- Header -->
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
+﻿<x-layouts.app :title="__('Export Data')">
+
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-3xl font-bold text-slate-900">Export Data</h1>
-                <p class="text-gray-600 text-xs mt-1">Select and export local offline purchase orders to CSV for synchronization</p>
+                <p class="text-xs text-slate-500 mt-0.5">Select and export local offline purchase orders to CSV for synchronization.</p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
-                <a href="{{ route('offline.purchase-orders') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-4 py-2 text-sm font-bold text-black shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <a href="{{ Route::has('offline.reconciliation') ? route('offline.reconciliation') : url('/offline-reconciliation') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
+                    <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    <span>Back to Overview</span>
+                </a>
+                <a href="{{ route('offline.purchase-orders') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200">
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
                     </svg>
                     <span>Create Offline PO</span>
                 </a>
             </div>
         </div>
+    </x-slot>
+
+    <div class="space-y-4">
 
         @include('partials.offline-submenu')
 
@@ -43,7 +53,7 @@
             <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Total Offline Value</p>
                 <div class="mt-1">
-                    <p id="stat-total-value" class="text-2xl font-bold text-slate-900 font-mono">₱0.00</p>
+                    <p id="stat-total-value" class="text-2xl font-bold text-slate-900 font-mono">â‚±0.00</p>
                     <p class="text-slate-500 text-[10px] leading-tight mt-1 font-medium">Cumulative order amount</p>
                 </div>
             </div>
@@ -161,7 +171,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-t border-slate-200 bg-slate-50 px-4 py-3 text-xs gap-2">
                     <div class="text-slate-600">
                         <span>Showing <strong id="showingCountText" class="text-slate-900 font-bold">0</strong> orders</span>
-                        <span class="text-slate-400 mx-1">•</span>
+                        <span class="text-slate-400 mx-1">â€¢</span>
                         <span><strong id="selectedCountFooter" class="text-cyan-800 font-bold">0</strong> selected for export</span>
                     </div>
                     <div class="flex items-center gap-2">
@@ -366,7 +376,7 @@
 
         document.getElementById('stat-total-orders').textContent = totalCount;
         document.getElementById('stat-total-items').textContent = totalItems;
-        document.getElementById('stat-total-value').textContent = '₱' + totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('stat-total-value').textContent = 'â‚±' + totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     function applyFilters() {
@@ -464,7 +474,7 @@
                     <td class="px-3.5 py-3 text-center text-slate-600">
                         <span class="font-bold text-slate-800">${itemsCount}</span> <span class="text-[11px] text-slate-400">(${totalUnits} pcs)</span>
                     </td>
-                    <td class="px-3.5 py-3 text-right font-mono font-bold text-slate-900">₱${totalFormatted}</td>
+                    <td class="px-3.5 py-3 text-right font-mono font-bold text-slate-900">â‚±${totalFormatted}</td>
                     <td class="px-3.5 py-3 text-slate-600">${dateStr}</td>
                     <td class="px-3.5 py-3 text-center" onclick="event.stopPropagation()">
                         <div class="inline-flex items-center gap-1.5 justify-center">
@@ -596,7 +606,7 @@
                                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-200 text-emerald-900">${ordersToExport.length} Order${ordersToExport.length === 1 ? '' : 's'}</span>
                             </h3>
                             <p class="text-xs text-emerald-800 mt-1">
-                                Successfully generated and exported <strong>${ordersToExport.length}</strong> purchase order${ordersToExport.length === 1 ? '' : 's'} (${totalItems} product item${totalItems === 1 ? '' : 's'}, Total Amount: ₱${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}) into <code class="px-1.5 py-0.5 rounded bg-emerald-100 font-mono text-[11px] text-emerald-950 font-bold">${fileName}</code>.
+                                Successfully generated and exported <strong>${ordersToExport.length}</strong> purchase order${ordersToExport.length === 1 ? '' : 's'} (${totalItems} product item${totalItems === 1 ? '' : 's'}, Total Amount: â‚±${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}) into <code class="px-1.5 py-0.5 rounded bg-emerald-100 font-mono text-[11px] text-emerald-950 font-bold">${fileName}</code>.
                             </p>
                             <p class="text-[11px] text-emerald-700 mt-0.5 font-medium">
                                 The CSV file has started downloading to your device and is ready to be transferred to the online system.
@@ -705,9 +715,9 @@
                     <tr class="border-b border-slate-100">
                         <td class="px-3 py-2.5 font-bold text-slate-800">${escapeHtml(item.product_name || 'Product #' + (idx+1))}</td>
                         <td class="px-3 py-2.5 text-slate-600 font-mono">${escapeHtml(item.sku || 'N/A')}</td>
-                        <td class="px-3 py-2.5 text-right font-mono">₱${unitPrice}</td>
+                        <td class="px-3 py-2.5 text-right font-mono">â‚±${unitPrice}</td>
                         <td class="px-3 py-2.5 text-center font-bold text-slate-900">${item.quantity}</td>
-                        <td class="px-3 py-2.5 text-right font-mono font-bold text-slate-900">₱${subtotal}</td>
+                        <td class="px-3 py-2.5 text-right font-mono font-bold text-slate-900">â‚±${subtotal}</td>
                     </tr>
                 `;
             }).join('');
@@ -724,7 +734,7 @@
                     </div>
                     <div>
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Amount</p>
-                        <p class="text-sm font-extrabold text-slate-950 font-mono mt-0.5">₱${totalAmt}</p>
+                        <p class="text-sm font-extrabold text-slate-950 font-mono mt-0.5">â‚±${totalAmt}</p>
                     </div>
                 </div>
 
@@ -846,7 +856,7 @@
                                 <tr class="hover:bg-slate-50 transition">
                                     <td class="px-3.5 py-3 font-mono font-bold text-slate-900">${escapeHtml(order.order_number || 'N/A')}</td>
                                     <td class="px-3.5 py-3 text-slate-700 font-semibold">${escapeHtml(order.supplier_name || 'N/A')}</td>
-                                    <td class="px-3.5 py-3 text-right font-mono font-bold text-slate-900">₱${Number(order.total_amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                    <td class="px-3.5 py-3 text-right font-mono font-bold text-slate-900">â‚±${Number(order.total_amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                     <td class="px-3.5 py-3 text-slate-500 text-[11px]">${order.archived_at ? new Date(order.archived_at).toLocaleString() : '-'}</td>
                                     <td class="px-3.5 py-3 text-center">
                                         <div class="inline-flex items-center gap-1.5 justify-center">
@@ -903,3 +913,4 @@
     }
     </script>
 </x-layouts.app>
+

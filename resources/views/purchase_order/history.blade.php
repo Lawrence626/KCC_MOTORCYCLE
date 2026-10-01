@@ -1,11 +1,12 @@
 <x-layouts.app :title="__('Purchase Order History')">
-    <div class="space-y-5">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div class="space-y-2">
-                <h1 class="text-3xl font-bold text-slate-900">Purchase Order History</h1>
-                <p class="max-w-2xl text-sm text-slate-500">Review completed and archived purchase orders for historical reference.</p>
-            </div>
+    <x-slot name="header">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-900">Purchase Order History</h1>
+            <p class="text-xs text-slate-500 mt-0.5">Review completed and archived purchase orders for historical reference.</p>
         </div>
+    </x-slot>
+
+    <div class="space-y-4">
 
         <div class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
             <form method="GET" action="{{ route('order.history') }}" class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

@@ -1,6 +1,6 @@
 /* Thin sidebar scrollbar styling */
 .sidebar-scroll::-webkit-scrollbar {
-    width: 4px;
+    width: 3.5px;
 }
 
 .sidebar-scroll::-webkit-scrollbar-track {
@@ -8,17 +8,19 @@
 }
 
 .sidebar-scroll::-webkit-scrollbar-thumb {
-    background: rgba(148, 163, 184, 0.4);
-    border-radius: 2px;
+    background: rgba(148, 163, 184, 0.35);
+    border-radius: 4px;
 }
 
 .sidebar-scroll::-webkit-scrollbar-thumb:hover {
-    background: rgba(148, 163, 184, 0.6);
+    background: rgba(148, 163, 184, 0.65);
 }
 
 .sidebar-scroll {
     scrollbar-width: thin;
-    scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+    scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+    margin-right: -2px;
+    padding-right: 2px;
 }
 
 /* Professional sidebar styling */

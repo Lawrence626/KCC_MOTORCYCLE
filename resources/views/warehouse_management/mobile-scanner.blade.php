@@ -3,7 +3,7 @@
         <!-- Header -->
         <div class="bg-slate-800 px-4 py-3 flex items-center justify-between">
             <div>
-                <h1 class="text-lg font-bold text-white">Warehouse Scanner</h1>
+                <h1 class="text-3xl font-bold text-white">Warehouse Scanner</h1>
                 <p class="text-xs text-slate-400">Scan QR codes to add new stock</p>
             </div>
             <button onclick="window.location.href='{{ route('warehouse.management') }}'" class="rounded-full bg-[#6EC1D1] px-3 py-1.5 text-[11px] font-bold text-slate-900 hover:bg-[#59b2c2] transition cursor-pointer shadow-sm">

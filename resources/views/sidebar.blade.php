@@ -1,5 +1,5 @@
-<div class="w-full md:w-70 text-white flex flex-col h-full min-h-full shadow-2xl border-r border-slate-700 "
-     style="background: linear-gradient( #000000, #2b2b2b); position: relative;">
+<div class="w-full md:w-[270px] text-white flex flex-col h-full min-h-full shadow-2xl border-r border-slate-700/60"
+     style="background: linear-gradient(to bottom, #000000, #2b2b2b); position: relative;">
 
     <a href="{{ route('dashboard') }}" class="px-6 py-5 flex-shrink-0">
         <div class="flex flex-col items-center justify-center">
@@ -311,24 +311,24 @@
 </div>
 
 <style>
-    /* Force sidebar scrollbar to always be visible on the right side */
+    /* Force sidebar scrollbar to always be visible on the right side flush against main screen */
     .sidebar-scroll {
         overflow-y: scroll !important;
         scrollbar-width: thin;
-        scrollbar-color: rgba(148, 163, 184, 0.7) rgba(30, 41, 59, 0.5);
-        margin-right: 10px;
+        scrollbar-color: rgba(148, 163, 184, 0.7) transparent;
+        margin-right: 0px;
+        padding-right: 0px;
     }
     .sidebar-scroll::-webkit-scrollbar {
-        width: 6px !important;
+        width: 5px !important;
         display: block !important;
     }
     .sidebar-scroll::-webkit-scrollbar-track {
-        background: rgba(30, 41, 59, 0.5) !important;
-        border-radius: 3px;
+        background: transparent !important;
     }
     .sidebar-scroll::-webkit-scrollbar-thumb {
-        background: rgba(148, 163, 184, 0.7) !important;
-        border-radius: 3px;
+        background: rgba(148, 163, 184, 0.6) !important;
+        border-radius: 9999px;
     }
     .sidebar-scroll::-webkit-scrollbar-thumb:hover {
         background: rgba(148, 163, 184, 0.9) !important;

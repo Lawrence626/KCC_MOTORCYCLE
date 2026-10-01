@@ -1,21 +1,31 @@
-<x-layouts.app :title="__('Offline Purchase Orders')">
-    <div class="space-y-4">
-        <!-- Header -->
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
+﻿<x-layouts.app :title="__('Offline Purchase Orders')">
+
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-3xl font-bold text-slate-900">Offline Purchase Orders</h1>
-                <p class="text-gray-600 text-xs mt-1">Generate and manage complete purchase orders locally during internet outages</p>
+                <p class="text-xs text-slate-500 mt-0.5">Generate and manage complete purchase orders locally during internet outages.</p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 <div id="offline-indicator" class="hidden"></div>
-                <a href="{{ route('offline.export') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-4 py-2 text-sm font-bold text-black shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <a href="{{ Route::has('offline.reconciliation') ? route('offline.reconciliation') : url('/offline-reconciliation') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
+                    <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    <span>Back to Offline Home</span>
+                </a>
+                <a href="{{ route('offline.export') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200">
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                     </svg>
                     <span>Go to Export Data</span>
                 </a>
             </div>
         </div>
+    </x-slot>
+
+    <div class="space-y-4">
 
         @include('partials.offline-submenu')
 
@@ -43,7 +53,7 @@
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-4">
                 <div class="flex items-center gap-4 flex-wrap">
                     <div>
-                        <h2 class="text-lg font-bold text-slate-900">Create Purchase Order (Offline)</h2>
+                        <h2 class="text-3xl font-bold text-slate-900">Create Purchase Order (Offline)</h2>
                         <p class="text-xs text-slate-500 mt-0.5">Select products, set order quantities, choose an authorized supplier, and save locally</p>
                     </div>
                     <div class="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-[12px] border border-slate-200">
@@ -155,9 +165,9 @@
                                     <th class="px-3 py-3 text-left font-semibold text-white">Product</th>
                                     <th class="px-3 py-3 text-left font-semibold text-white">SKU</th>
                                     <th class="px-3 py-3 text-center font-semibold text-white">Current Stock</th>
-                                    <th class="px-3 py-3 text-right font-semibold text-white" style="width: 170px;">Unit Price (₱)</th>
+                                    <th class="px-3 py-3 text-right font-semibold text-white" style="width: 170px;">Unit Price (â‚±)</th>
                                     <th class="px-3 py-3 text-center font-semibold text-white" style="width: 170px;">Quantity to Order</th>
-                                    <th class="px-3 py-3 text-right font-semibold text-white" style="width: 170px;">Subtotal (₱)</th>
+                                    <th class="px-3 py-3 text-right font-semibold text-white" style="width: 170px;">Subtotal (â‚±)</th>
                                     <th class="px-3 py-3 text-center font-semibold text-white" style="width: 70px;">Action</th>
                                 </tr>
                             </thead>
@@ -181,7 +191,7 @@
                                         <span class="text-slate-800 font-bold uppercase tracking-wider">Grand Total Amount:</span>
                                     </td>
                                     <td colspan="3" class="px-4 py-3 text-right">
-                                        <div class="text-base font-extrabold text-slate-950 font-mono" id="grandTotalDisplay">₱0.00</div>
+                                        <div class="text-base font-extrabold text-slate-950 font-mono" id="grandTotalDisplay">â‚±0.00</div>
                                         <div class="text-[10px] text-slate-500 font-normal">[Auto-calculated from items]</div>
                                     </td>
                                 </tr>
@@ -620,7 +630,7 @@
                         </td>
                         <td class="px-3 py-2 text-right">
                             ${hasValidPrice ? `
-                                <div class="font-mono font-bold text-slate-900">₱${applicablePrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                                <div class="font-mono font-bold text-slate-900">â‚±${applicablePrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
                                 <div class="text-[9px] text-slate-400 font-medium">Auto-retrieved</div>
                             ` : `
                                 <span class="text-xs font-semibold text-red-500 italic">No price set</span>
@@ -783,7 +793,7 @@
             if (count === 0) {
                 clearBtn.classList.add('hidden');
                 totalUnitsEl.textContent = '0';
-                grandTotalEl.textContent = '₱0.00';
+                grandTotalEl.textContent = 'â‚±0.00';
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="7" class="px-3 py-8 text-center text-slate-500">
@@ -818,7 +828,7 @@
                         <td class="px-3 py-2.5 font-mono text-slate-600 font-medium">${escapeHtml(item.sku)}</td>
                         <td class="px-3 py-2.5 text-center font-bold text-slate-700">${item.current_stock}</td>
                         <td class="px-3 py-2.5 text-right">
-                            <div class="font-mono font-bold text-slate-900">₱${item.unit_price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                            <div class="font-mono font-bold text-slate-900">â‚±${item.unit_price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
                             <div class="text-[9px] text-slate-400 font-medium">[Auto-generated]</div>
                         </td>
                         <td class="px-3 py-2.5 text-center">
@@ -830,7 +840,7 @@
                             ${item.quantity === 0 ? `<div class="text-[9px] font-semibold text-amber-600 mt-0.5">Enter quantity</div>` : ''}
                         </td>
                         <td class="px-3 py-2.5 text-right">
-                            <div class="font-mono font-extrabold text-slate-900">₱${item.subtotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                            <div class="font-mono font-extrabold text-slate-900">â‚±${item.subtotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
                             <div class="text-[9px] text-slate-400 font-medium">[Auto-calculated]</div>
                         </td>
                         <td class="px-3 py-2.5 text-center">
@@ -845,7 +855,7 @@
             }).join('');
 
             totalUnitsEl.textContent = totalUnits.toLocaleString();
-            grandTotalEl.textContent = `₱${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            grandTotalEl.textContent = `â‚±${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
         }
 
         // Supplier Selection & Eligibility Filtering Logic
@@ -1101,7 +1111,7 @@
                                         <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-200 text-emerald-900 font-mono">${poNumber}</span>
                                     </h3>
                                     <p class="text-xs text-emerald-800 mt-1">
-                                        Order <strong>${poNumber}</strong> with <strong>${selectedItems.length}</strong> product line item${selectedItems.length === 1 ? '' : 's'} (Total: ₱${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}) has been stored in local browser storage.
+                                        Order <strong>${poNumber}</strong> with <strong>${selectedItems.length}</strong> product line item${selectedItems.length === 1 ? '' : 's'} (Total: â‚±${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}) has been stored in local browser storage.
                                     </p>
                                     <p class="text-[11px] text-emerald-700 mt-0.5 font-medium">
                                         You can review and export it anytime on the <a href="{{ route('offline.export') }}" class="underline font-bold text-emerald-900">Export Data</a> page.
@@ -1185,3 +1195,4 @@
         }
     </script>
 </x-layouts.app>
+

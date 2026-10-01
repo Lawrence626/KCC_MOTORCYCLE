@@ -1,14 +1,22 @@
-<x-layouts.app :title="__('Pending Imports')">
-    <div class="space-y-4">
-        <!-- Header -->
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
+﻿<x-layouts.app :title="__('Pending Imports')">
+
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-3xl font-bold text-slate-900">Pending Imports</h1>
-                <p class="text-gray-600 text-xs mt-1">Review and approve offline data imports</p>
+                <p class="text-xs text-slate-500 mt-0.5">Review and approve offline data imports.</p>
+
             </div>
-            <div class="flex flex-wrap items-center gap-2">
-            </div>
+            <a href="{{ Route::has('offline.reconciliation') ? route('offline.reconciliation') : url('/offline-reconciliation') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
+                <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                <span>Back to Offline Home</span>
+            </a>
         </div>
+    </x-slot>
+
+    <div class="space-y-4">
 
         @include('partials.offline-submenu')
 
@@ -253,9 +261,9 @@
                     @if($pendingImports->hasPages())
                         <div class="flex gap-1">
                             @if ($pendingImports->onFirstPage())
-                                <button disabled class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 opacity-50 cursor-not-allowed">← Prev</button>
+                                <button disabled class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 opacity-50 cursor-not-allowed">â† Prev</button>
                             @else
-                                <a href="{{ $pendingImports->previousPageUrl() }}" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">← Prev</a>
+                                <a href="{{ $pendingImports->previousPageUrl() }}" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">â† Prev</a>
                             @endif
 
                             @foreach ($pendingImports->getUrlRange(1, $pendingImports->lastPage()) as $page => $url)
@@ -267,16 +275,16 @@
                             @endforeach
 
                             @if ($pendingImports->hasMorePages())
-                                <a href="{{ $pendingImports->nextPageUrl() }}" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">Next →</a>
+                                <a href="{{ $pendingImports->nextPageUrl() }}" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">Next â†’</a>
                             @else
-                                <button disabled class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 opacity-50 cursor-not-allowed">Next →</button>
+                                <button disabled class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 opacity-50 cursor-not-allowed">Next â†’</button>
                             @endif
                         </div>
                     @else
                         <div class="flex gap-1">
-                            <button disabled class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 opacity-50 cursor-not-allowed">← Prev</button>
+                            <button disabled class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 opacity-50 cursor-not-allowed">â† Prev</button>
                             <button class="rounded-[10px] bg-slate-200 border border-slate-300 px-2.5 py-1 text-xs font-bold text-slate-900">1</button>
-                            <button disabled class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 opacity-50 cursor-not-allowed">Next →</button>
+                            <button disabled class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 opacity-50 cursor-not-allowed">Next â†’</button>
                         </div>
                     @endif
                 </div>
@@ -377,3 +385,4 @@
         });
     </script>
 </x-layouts.app>
+

@@ -1,9 +1,10 @@
-<x-layouts.app :title="__('User Management')">
-    <div class="space-y-5">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
-            <div class="pl-3 lg:pl-1">
+﻿<x-layouts.app :title="__('User Management')">
+
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
+            <div>
                 <h1 class="text-3xl font-bold text-slate-900">User Management</h1>
-                <p class="text-gray-600 text-xs mt-1">Manage user accounts, roles, and access across the system.</p>
+                <p class="text-xs text-slate-500 mt-0.5">Manage user accounts, roles, and access across the system.</p>
             </div>
             <div class="flex flex-wrap items-center gap-3">
                 @if(!($showArchived ?? false))
@@ -13,15 +14,25 @@
                         </svg>
                         Add User
                     </button>
-                    <a href="{{ route('user.management.archived') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200">
-                        <svg class="h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('user.management.archived') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200">
+                        <svg class="h-3.5 w-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
                         </svg>
                         Archived
                     </a>
+                @else
+                    <a href="{{ route('user.management') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200">
+                        <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        Back to Active
+                    </a>
                 @endif
             </div>
         </div>
+    </x-slot>
+
+    <div class="space-y-4">
 
         @if(session('success'))
             <div id="pageSuccessAlert" class="rounded-[10px] border border-[#6EC1D1] bg-teal-50 p-4 text-sm font-medium text-slate-900 shadow-sm">
@@ -114,23 +125,23 @@
                                 <div id="add_password_requirements" class="text-[11px] space-y-0.5 mt-1 p-2 bg-white border border-slate-200 rounded-[10px] hidden">
                                     <div class="font-semibold text-slate-900 text-xs">Password must contain:</div>
                                     <div class="flex items-center gap-1" data-requirement="lowercase">
-                                        <span class="text-red-500 text-xs">✕</span>
+                                        <span class="text-red-500 text-xs">âœ•</span>
                                         <span class="text-red-600 text-[10px]">Lowercase letter (a-z)</span>
                                     </div>
                                     <div class="flex items-center gap-1" data-requirement="uppercase">
-                                        <span class="text-red-500 text-xs">✕</span>
+                                        <span class="text-red-500 text-xs">âœ•</span>
                                         <span class="text-red-600 text-[10px]">Uppercase letter (A-Z)</span>
                                     </div>
                                     <div class="flex items-center gap-1" data-requirement="number">
-                                        <span class="text-red-500 text-xs">✕</span>
+                                        <span class="text-red-500 text-xs">âœ•</span>
                                         <span class="text-red-600 text-[10px]">Number (0-9)</span>
                                     </div>
                                     <div class="flex items-center gap-1" data-requirement="special">
-                                        <span class="text-red-500 text-xs">✕</span>
+                                        <span class="text-red-500 text-xs">âœ•</span>
                                         <span class="text-red-600 text-[10px]">Special char (@ $ ! % * # ?)</span>
                                     </div>
                                     <div class="flex items-center gap-1" data-requirement="length">
-                                        <span class="text-red-500 text-xs">✕</span>
+                                        <span class="text-red-500 text-xs">âœ•</span>
                                         <span class="text-red-600 text-[10px]">12+ characters</span>
                                     </div>
                                 </div>
@@ -236,23 +247,23 @@
                                 <div id="edit_password_requirements" class="text-[11px] space-y-0.5 mt-1 p-2 bg-white border border-slate-200 rounded-[10px] hidden">
                                     <div class="font-semibold text-slate-900 text-xs">Password must contain:</div>
                                     <div class="flex items-center gap-1" data-requirement="lowercase">
-                                        <span class="text-red-500 text-xs">✕</span>
+                                        <span class="text-red-500 text-xs">âœ•</span>
                                         <span class="text-red-600 text-[10px]">Lowercase (a-z)</span>
                                     </div>
                                     <div class="flex items-center gap-1" data-requirement="uppercase">
-                                        <span class="text-red-500 text-xs">✕</span>
+                                        <span class="text-red-500 text-xs">âœ•</span>
                                         <span class="text-red-600 text-[10px]">Uppercase (A-Z)</span>
                                     </div>
                                     <div class="flex items-center gap-1" data-requirement="number">
-                                        <span class="text-red-500 text-xs">✕</span>
+                                        <span class="text-red-500 text-xs">âœ•</span>
                                         <span class="text-red-600 text-[10px]">Number (0-9)</span>
                                     </div>
                                     <div class="flex items-center gap-1" data-requirement="special">
-                                        <span class="text-red-500 text-xs">✕</span>
+                                        <span class="text-red-500 text-xs">âœ•</span>
                                         <span class="text-red-600 text-[10px]">Special char (@ $ ! %)</span>
                                     </div>
                                     <div class="flex items-center gap-1" data-requirement="length">
-                                        <span class="text-red-500 text-xs">✕</span>
+                                        <span class="text-red-500 text-xs">âœ•</span>
                                         <span class="text-red-600 text-[10px]">12+ characters</span>
                                     </div>
                                 </div>

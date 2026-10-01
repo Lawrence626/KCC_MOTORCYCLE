@@ -1,8 +1,15 @@
-<x-layouts.app :title="__('My Profile')">
-    <div class="space-y-6">
-        <div class="pl-3 lg:pl-2">
-            <h1 class="text-3xl font-bold text-slate-900">My Profile</h1>
+﻿<x-layouts.app :title="__('My Profile')">
+
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900">My Profile</h1>
+                <p class="text-xs text-slate-500 mt-0.5">Manage your personal information and account settings</p>
+            </div>
         </div>
+    </x-slot>
+
+    <div class="space-y-4">
 
         {{-- Flash messages --}}
         @if(session('success'))

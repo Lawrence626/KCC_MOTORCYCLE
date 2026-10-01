@@ -95,54 +95,66 @@ class DashboardController extends Controller
         $categoryService = new SalesCategoryService();
         $categoryBreakdown = $categoryService->getTodaysCategoryBreakdown();
 
-        $soldItems = $currentTransactions->flatMap(function ($transaction) use ($productCategories, $productsForCat) {
-            return collect($transaction->items ?? [])->map(function ($item) use ($productCategories, $productsForCat) {
+        // Determine transactions to use for movement and top-selling analysis
+        $transactionsForMovement = $currentTransactions->isNotEmpty()
+            ? $currentTransactions
+            : POSTransaction::query()->completed()->get();
+
+        // Get all products (including archived) for historical lookup and active products for catalog/slow moving
+        $allProducts = Product::all()->keyBy('id');
+        $activeProducts = Product::query()->where('is_archived', false)->get();
+
+        $soldItems = $transactionsForMovement->flatMap(function ($transaction) use ($allProducts) {
+            return collect($transaction->items ?? [])->map(function ($item) use ($allProducts) {
                 $quantity = (int) ($item['quantity'] ?? $item['qty'] ?? 0);
-                $productId = $item['id'] ?? null;
-                $product = $productId ? $productsForCat->get($productId) : null;
+                if ($quantity <= 0) {
+                    return null;
+                }
+
+                $productId = $item['id'] ?? $item['product_id'] ?? null;
+                $product = $productId ? $allProducts->get($productId) : null;
 
                 $unitPrice = (float) ($item['unit_price'] ?? $item['price'] ?? 0);
                 if ($unitPrice <= 0 && $product) {
                     $unitPrice = (float) ($product->unit_price ?? 0);
                 }
 
-                $categoryValue = null;
-                if ($productId && isset($productCategories[$productId])) {
-                    $categoryValue = $productCategories[$productId];
-                }
-
-                if (($categoryValue === null || strcasecmp(trim($categoryValue), 'uncategorized') === 0) && isset($item['category'])) {
-                    $categoryValue = $item['category'];
+                $rawCategory = $item['category'] ?? $product?->category ?? null;
+                if (!$rawCategory || strtolower(trim($rawCategory)) === 'uncategorized') {
+                    $rawCategory = $product?->product_name ?: ($product?->name ?? 'Accessories');
                 }
 
                 $name = $item['name'] ?? $product?->product_name ?? $product?->name ?? 'Unknown Product';
+                if ($product && $product->name && $product->product_name && $product->name !== $product->product_name) {
+                    $name = $product->product_name . ' - ' . $product->name;
+                }
+
                 $sku = $item['sku'] ?? $product?->sku ?? '';
 
                 return [
                     'product_id' => $productId,
                     'name' => $name,
-                    'sku' => $sku,
-                    'category' => $this->normalizeCategory($categoryValue),
+                    'sku' => $sku ?: 'N/A',
+                    'category' => $this->normalizeCategory($rawCategory),
                     'quantity' => $quantity,
                     'revenue' => $quantity * $unitPrice,
                 ];
-            });
-        })->filter(fn ($item) => $item['quantity'] > 0);
+            })->filter();
+        });
 
         $groupedSoldItems = $soldItems->groupBy(function ($item) {
-            return $item['product_id'] ?? $item['sku'] ?? $item['name'];
+            return $item['product_id'] ?: ($item['sku'] !== 'N/A' ? $item['sku'] : $item['name']);
         })->map(function ($items) {
+            $first = $items->first();
             return [
-                'product_id' => $items->first()['product_id'] ?? null,
-                'name' => $items->first()['name'],
-                'sku' => $items->first()['sku'] ?? '',
-                'category' => $items->first()['category'],
+                'product_id' => $first['product_id'] ?? null,
+                'name' => $first['name'],
+                'sku' => $first['sku'] ?? 'N/A',
+                'category' => $first['category'],
                 'quantity' => $items->sum('quantity'),
                 'revenue' => $items->sum('revenue'),
             ];
         })->values();
-
-        $topItems = $groupedSoldItems->sortByDesc('quantity')->take(5)->values();
 
         $allFastMoving = $groupedSoldItems->sortByDesc('quantity')->values()->map(function ($item, $index) {
             return [
@@ -152,25 +164,58 @@ class DashboardController extends Controller
                 'name' => $item['name'],
                 'sku' => $item['sku'] ?: 'N/A',
                 'category' => $item['category'] ?? 'General',
+                'qty' => (int) $item['quantity'],
                 'quantity' => (int) $item['quantity'],
                 'revenue' => (float) $item['revenue'],
             ];
         })->all();
 
-        $allSlowMoving = $groupedSoldItems->sortBy('quantity')->values()->map(function ($item, $index) {
-            return [
-                'rank' => $index + 1,
-                'id' => $item['product_id'] ?? null,
-                'product_id' => $item['product_id'] ?? null,
-                'name' => $item['name'],
-                'sku' => $item['sku'] ?: 'N/A',
-                'category' => $item['category'] ?? 'General',
-                'quantity' => (int) $item['quantity'],
-                'revenue' => (float) $item['revenue'],
-            ];
-        })->all();
-
+        $topItems = array_slice($allFastMoving, 0, 5);
         $fastMoving = array_slice($allFastMoving, 0, 5);
+
+        // Build slow moving products from active catalog
+        $soldQtyByProductId = [];
+        $soldQtyBySku = [];
+        foreach ($groupedSoldItems as $item) {
+            if (!empty($item['product_id'])) {
+                $soldQtyByProductId[$item['product_id']] = $item;
+            }
+            if (!empty($item['sku']) && $item['sku'] !== 'N/A') {
+                $soldQtyBySku[$item['sku']] = $item;
+            }
+        }
+
+        $allSlowMoving = $activeProducts->map(function ($product) use ($soldQtyByProductId, $soldQtyBySku) {
+            $sold = $soldQtyByProductId[$product->id] ?? ($product->sku ? ($soldQtyBySku[$product->sku] ?? null) : null);
+            $qty = $sold ? (int) $sold['quantity'] : 0;
+            $revenue = $sold ? (float) $sold['revenue'] : 0;
+
+            $name = $product->product_name ?: $product->name;
+            if ($product->name && $product->product_name && $product->name !== $product->product_name) {
+                $name = $product->product_name . ' - ' . $product->name;
+            }
+
+            return [
+                'id' => $product->id,
+                'product_id' => $product->id,
+                'name' => $name,
+                'sku' => $product->sku ?: 'N/A',
+                'category' => $this->normalizeCategory($product->category),
+                'qty' => $qty,
+                'quantity' => $qty,
+                'revenue' => $revenue,
+                'stock_quantity' => (int) $product->stock_quantity,
+            ];
+        })->sort(function ($a, $b) {
+            if ($a['quantity'] === $b['quantity']) {
+                return $b['stock_quantity'] <=> $a['stock_quantity'];
+            }
+            return $a['quantity'] <=> $b['quantity'];
+        })->values()->map(function ($item, $index) {
+            $item['rank'] = $index + 1;
+            return $item;
+        })->all();
+
         $slowMoving = array_slice($allSlowMoving, 0, 5);
 
         $inventory = [
@@ -221,17 +266,7 @@ class DashboardController extends Controller
             'slow_moving' => $slowMoving,
             'all_fast_moving' => $allFastMoving,
             'all_slow_moving' => $allSlowMoving,
-            'top_items' => $topItems->map(function ($item, $index) {
-                return [
-                    'rank' => $index + 1,
-                    'product_id' => $item['product_id'] ?? null,
-                    'name' => $item['name'],
-                    'sku' => $item['sku'] ?? '',
-                    'category' => $item['category'],
-                    'qty' => $item['quantity'],
-                    'revenue' => $item['revenue'],
-                ];
-            })->values()->all(),
+            'top_items' => $topItems,
             'inventory' => $inventory,
             'range_label' => $startDate->format('M j, Y') . ' - ' . $endDate->format('M j, Y'),
             'inventory_alerts' => $alertService->formatNotifications($dashboardAlerts),

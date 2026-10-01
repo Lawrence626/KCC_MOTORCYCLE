@@ -1,18 +1,21 @@
 <x-layouts.app :title="__('Profile & Settings')">
-    <div class="space-y-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-slate-900">Profile & Settings</h1>
-                <p class="text-[11px] text-slate-500 mt-1">Manage your account, security, and interface preferences</p>
-            </div>
+
+    <x-slot name="header">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-900">Profile & Settings</h1>
+            <p class="text-xs text-slate-500 mt-0.5">Manage your account, security, and interface preferences</p>
+
         </div>
+    </x-slot>
+
+    <div class="space-y-4">
 
         <div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
             <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                 <div class="flex items-center gap-4 border-b border-slate-100 pb-3 mb-6">
                     <button data-tab="preferences" class="settings-tab px-4 py-2 rounded-lg text-sm font-medium bg-cyan-600 text-white transition">Preferences & Appearance</button>
                     <button data-tab="security" class="settings-tab px-4 py-2 rounded-lg text-sm font-medium text-slate-700 bg-slate-50 transition">Security</button>
-                    <a href="{{ route('profile.show') }}" class="ml-auto text-sm text-cyan-600 hover:text-cyan-500 font-medium transition">View Profile &rarr;</a>
+                    <a href="{{ route('profile.show', ['from' => 'settings']) }}" class="ml-auto text-sm text-cyan-600 hover:text-cyan-500 font-medium transition">View Profile &rarr;</a>
                 </div>
 
                 <!-- Preferences Pane -->

@@ -22,7 +22,7 @@
 
     <div class="space-y-4">
         <!-- Header -->
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
+        <div class="module-inline-title flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
             <div class="pl-3 lg:pl-2">
                 <h1 class="text-3xl font-bold text-slate-900">Overstocking Report</h1>
                 <p class="text-xs text-slate-500 mt-1">Identify excess inventory and categories that are tying up working capital.</p>
@@ -37,7 +37,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="module-inline-first grid grid-cols-1 md:grid-cols-3 gap-3">
             <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
                 <div class="flex items-start justify-between gap-2">
                     <div class="flex-1 min-w-0">
@@ -379,21 +379,12 @@
 
                     const imageUrl = getProductImage({ id: productId, sku, name }) || getProductImage({ name: category });
                     if (imageUrl) {
-                        const safeImageUrl = String(imageUrl).replace(/"/g, '%22');
                         imgContainer.innerHTML = '';
-                        imgContainer.className = 'category-img-container w-9 h-9 rounded-[8px] bg-slate-100 border border-slate-200/80 flex-shrink-0 shadow-sm overflow-hidden';
-                        imgContainer.style.backgroundImage = `url("${safeImageUrl}")`;
-                        imgContainer.style.backgroundSize = 'cover';
-                        imgContainer.style.backgroundPosition = 'center';
-                        imgContainer.style.backgroundRepeat = 'no-repeat';
-                        imgContainer.style.backgroundColor = '#f8fafc';
+                        imgContainer.className = 'category-img-container w-9 h-9 rounded-[8px] bg-slate-100 border border-slate-200/80 flex-shrink-0 bg-cover bg-center shadow-sm';
+                        imgContainer.style.backgroundImage = `url('${imageUrl}')`;
                     } else {
                         imgContainer.className = 'category-img-container w-9 h-9 rounded-[8px] bg-slate-50 border border-slate-200/60 flex items-center justify-center flex-shrink-0 text-slate-300 shadow-sm overflow-hidden';
                         imgContainer.style.backgroundImage = 'none';
-                        imgContainer.style.backgroundSize = 'cover';
-                        imgContainer.style.backgroundPosition = 'center';
-                        imgContainer.style.backgroundRepeat = 'no-repeat';
-                        imgContainer.style.backgroundColor = '#f8fafc';
                         imgContainer.innerHTML = `<svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`;
                     }
                 });

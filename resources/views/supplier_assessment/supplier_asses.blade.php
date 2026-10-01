@@ -1,6 +1,6 @@
-<x-layouts.app :title="__('Supplier Assessment')">
+﻿<x-layouts.app :title="__('Supplier Assessment')">
     <div class="space-y-5 px-3 sm:px-4 lg:px-5">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
+        <div class="module-inline-title flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
             <div class="pl-3 lg:pl-1">
                 <h1 class="text-3xl font-bold text-slate-900">Supplier Assessment</h1>
                 <p class="text-gray-600 text-xs mt-1">Track supplier performance, manage supplier records, and inspect products with pricing at a glance.</p>
@@ -13,14 +13,16 @@
                     </svg>
                     Add supplier
                 </button>
-                <a href="{{ route('supplier.assessment.archived') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200">
-                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="{{ route('supplier.assessment.archived') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200">
+                    <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
                     </svg>
                     Archive list
                 </a>
             </div>
         </div>
+
+    <div class="module-inline-first space-y-4">
 
         @if(session('success'))
             <div id="success-toast" class="fixed top-4 right-8 z-50 rounded-[10px] border border-[#6EC1D1] bg-teal-50 p-4 text-sm font-medium text-slate-900 shadow-lg">
@@ -594,7 +596,7 @@
                             <div class="flex items-start justify-between gap-2">
                                 <div class="flex-1 min-w-0">
                                     <p class="text-sm font-bold text-white truncate">${supplier.name}</p>
-                                    <p class="mt-0.5 text-[11px] text-slate-300 truncate">${supplier.contact_person || 'No contact'} · ${supplier.email || supplier.phone || 'No email'}</p>
+                                    <p class="mt-0.5 text-[11px] text-slate-300 truncate">${supplier.contact_person || 'No contact'} Â· ${supplier.email || supplier.phone || 'No email'}</p>
                                 </div>
                                 <span class="rounded-[8px] bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-[#6EC1D1] whitespace-nowrap border border-slate-600">${supplier.contact_position || 'Supplier'}</span>
                             </div>
@@ -718,7 +720,7 @@
                            </span>`
                         : '';
 
-                    detailSupplierContact.textContent = supplier.contact_person ? `${supplier.contact_person} · ${supplier.email || supplier.phone || 'No contact info'}` : (supplier.email || supplier.phone || 'No contact info');
+                    detailSupplierContact.textContent = supplier.contact_person ? `${supplier.contact_person} Â· ${supplier.email || supplier.phone || 'No contact info'}` : (supplier.email || supplier.phone || 'No contact info');
                     activeSupplier = supplier;
 
                     detailPerformanceScore.textContent = `${supplier.performance_score ?? 0}/100`;
@@ -731,7 +733,7 @@
                     detailCompletionBar.style.width = `${Math.min(100, Math.max(0, supplier.completion_rate || 0))}%`;
                     if (detailOnTimeText) detailOnTimeText.textContent = `${supplier.on_time_rate ?? 0}%`;
                     if (detailCompletionText) detailCompletionText.textContent = `${supplier.completion_rate ?? 0}%`;
-                    detailTotalValue.textContent = `₱${Number(supplier.total_value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                    detailTotalValue.textContent = `â‚±${Number(supplier.total_value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
                     detailOrderHistory.innerHTML = '';
                     if (!supplier.orders || !supplier.orders.length) {
@@ -753,9 +755,9 @@
                                         <span class="text-[10px] font-semibold px-2 py-0.5 rounded-[6px] ${statusBadgeClass}">${order.status}</span>
                                     </div>
                                     <div class="mt-1 text-[11px] text-slate-500">
-                                        Expected: ${order.expected_delivery_date || 'Not yet provided'} · Received: ${receivedDisplay}
+                                        Expected: ${order.expected_delivery_date || 'Not yet provided'} Â· Received: ${receivedDisplay}
                                     </div>
-                                    <div class="mt-1.5 text-xs font-bold text-slate-900">₱${Number(order.total_amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                                    <div class="mt-1.5 text-xs font-bold text-slate-900">â‚±${Number(order.total_amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                                 </div>
                             `);
                         });
@@ -778,7 +780,7 @@
                                     <td class="px-4 py-3 text-slate-600">${product.sku}</td>
                                     <td class="px-4 py-3 text-slate-600">${product.category || 'Uncategorized'}</td>
                                     <td class="px-4 py-3 font-semibold text-slate-900">${product.stock_quantity}</td>
-                                    <td class="px-4 py-3 font-semibold text-slate-900">₱${Number(product.price).toFixed(2)}</td>
+                                    <td class="px-4 py-3 font-semibold text-slate-900">â‚±${Number(product.price).toFixed(2)}</td>
                                     <td class="px-4 py-3 text-slate-600">${product.last_restock_date || 'N/A'}</td>
                                 </tr>
                             `);
@@ -826,7 +828,7 @@
                                     <td class="px-4 py-3 text-slate-600">${product.sku}</td>
                                     <td class="px-4 py-3 text-slate-600">${product.category}</td>
                                     <td class="px-4 py-3 font-semibold text-slate-900">${product.stock_quantity}</td>
-                                    <td class="px-4 py-3 font-semibold text-slate-900">₱${Number(product.price).toFixed(2)}</td>
+                                    <td class="px-4 py-3 font-semibold text-slate-900">â‚±${Number(product.price).toFixed(2)}</td>
                                     <td class="px-4 py-3 text-slate-600">${product.last_restock_date || 'N/A'}</td>
                                 </tr>
                             `);

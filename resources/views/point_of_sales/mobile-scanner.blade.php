@@ -3,7 +3,7 @@
         <!-- Header -->
         <div class="bg-slate-800 px-4 py-3 flex items-center justify-between">
             <div>
-                <h1 class="text-lg font-bold text-white">POS Scanner</h1>
+                <h1 class="text-3xl font-bold text-white">POS Scanner</h1>
                 <p class="text-xs text-slate-400">Scan QR codes to add items to cart</p>
             </div>
             <button onclick="window.location.href='{{ route('pos.terminal') }}'" class="rounded-full bg-slate-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-600">

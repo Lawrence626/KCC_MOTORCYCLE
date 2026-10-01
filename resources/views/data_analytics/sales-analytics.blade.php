@@ -50,30 +50,32 @@
         ];
     @endphp
 
-    <div class="space-y-4">
-        <!-- Header -->
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
-            <div class="pl-3 lg:pl-2">
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
+            <div>
                 <h1 class="text-3xl font-bold text-slate-900">Sales Analytics</h1>
-                <p class="text-xs text-slate-500 mt-1">Track revenue performance, product demand, and market momentum in a compact analytics workspace.</p>
+                <p class="text-xs text-slate-500 mt-0.5">Track revenue performance, product demand, and market momentum in a compact analytics workspace.</p>
             </div>
-            <div class="flex flex-col gap-2 sm:flex-row pr-4">
-                    <div class="relative">
-                        <input type="text" id="globalDateRange" readonly
-                               class="inline-flex items-center justify-center rounded-[12px] border border-slate-300 bg-white pl-3 pr-9 py-[11px] text-xs text-slate-900 shadow-sm focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition cursor-pointer w-[260px]"
-                               placeholder="Select date range">
-                        <svg class="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
-                    </div>
-                    <a href="{{ route('analytics.sales.export') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
-                        <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                        </svg>
-                        <span>Export Report</span>
-                    </a>
+            <div class="flex items-center gap-2">
+                <div class="relative">
+                    <input type="text" id="globalDateRange" readonly
+                           class="inline-flex items-center justify-center rounded-[12px] border border-slate-300 bg-white pl-3 pr-9 py-[11px] text-xs text-slate-900 shadow-sm focus:outline-none focus:ring-1 focus:ring-black/35 focus:border-slate-400 hover:border-slate-400 transition cursor-pointer w-[260px]"
+                           placeholder="Select date range">
+                    <svg class="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
                 </div>
+                <a href="{{ route('analytics.sales.export') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200">
+                    <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    <span>Export Report</span>
+                </a>
             </div>
+        </div>
+    </x-slot>
+
+    <div class="space-y-4">
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5">
             <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
@@ -229,7 +231,7 @@
             <!-- Category Distribution -->
             <div class="xl:col-span-1 rounded-[15px] border border-slate-200 bg-white p-4 shadow-sm relative h-[350px] flex flex-col justify-between" id="categoryDistributionSection" style="border-radius: 15px;">
                 <div id="categoryLoadingOverlay" class="hidden absolute inset-0 bg-white/80 rounded-[15px] z-10 flex items-center justify-center">
-                    <div class="flex flex-col items-center gap-2"><svg class="animate-spin h-6 w-6 text-[#105f68]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg><span class="text-xs text-slate-400">Loading…</span></div>
+                    <div class="flex flex-col items-center gap-2"><svg class="animate-spin h-6 w-6 text-[#105f68]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg><span class="text-xs text-slate-400">Loading...</span></div>
                 </div>
                 <div class="flex items-center justify-between">
                     <div>
@@ -373,7 +375,7 @@
         <!-- Row 2: Combined Product Analytics (Full Width, Matching Sales Trend Header & Buttons 1-by-1) -->
         <div class="border border-slate-200 relative overflow-hidden rounded-[28px] bg-white shadow-sm min-h-[340px] flex flex-col justify-start" id="combinedProductsSection">
             <div id="topProductsLoadingOverlay" class="hidden absolute inset-0 bg-white/80 rounded-[28px] z-20 flex items-center justify-center">
-                <div class="flex flex-col items-center gap-2"><svg class="animate-spin h-6 w-6 text-[#105f68]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg><span class="text-xs text-slate-400">Loading…</span></div>
+                <div class="flex flex-col items-center gap-2"><svg class="animate-spin h-6 w-6 text-[#105f68]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg><span class="text-xs text-slate-400">Loading...</span></div>
             </div>
 
             <!-- Header Banner (Clean Light) -->
@@ -939,9 +941,9 @@
             }
         </style>
         <script>
-            // ═══════════════════════════════════════════
+            // -------------------------------------------
             // SALES TREND (independent — NOT date-filtered)
-            // ═══════════════════════════════════════════
+            // -------------------------------------------
             const salesTrendRangeButtons = document.querySelectorAll('.sales-trend-range-btn');
             const salesTrendCtx = document.getElementById('salesTrendChart');
             const posSalesStorageKey = 'posTransactionHistory';
@@ -1195,7 +1197,7 @@
                 });
             });
 
-            // ── Sales Trend Range Dropdown helpers ──
+            // -- Sales Trend Range Dropdown helpers --
             window.toggleSalesTrendRangeDropdown = function (e) {
                 if (e) e.stopPropagation();
                 const dd = document.getElementById('salesTrendRangeDropdown');
@@ -1226,9 +1228,9 @@
 
             setActiveSalesTrendButton('monthly');
 
-            // ═══════════════════════════════════════════
+            // -------------------------------------------
             // CATEGORY CHART (initial render from server)
-            // ═══════════════════════════════════════════
+            // -------------------------------------------
             const CATEGORY_DEFS = [
                 { name: 'Exhaust', color: '#00f700' },
                 { name: 'Helmets', color: '#da0e0e' },
@@ -1411,9 +1413,9 @@
             // Initial category chart from server data
             initCategoryChart(@json($categoryBreakdown['labels']), @json($categoryBreakdown['values']));
 
-            // ═══════════════════════════════════════════
+            // -------------------------------------------
             // GLOBAL DATE RANGE CALENDAR + WIDGET REFRESH
-            // ═══════════════════════════════════════════
+            // -------------------------------------------
             const loadingOverlayIds = [
                 'categoryLoadingOverlay',
                 'topProductsLoadingOverlay',
@@ -1812,3 +1814,4 @@
         </script>
     @endpush
 </x-layouts.app>
+

@@ -5,6 +5,28 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+.module-inline-title + .module-inline-first {
+    margin-top: 12px !important;
+}
+
+#modulePageHeader h1,
+#modulePageHeader h1 + p,
+.module-inline-title h1,
+.module-inline-title h1 + p {
+    margin-left: 4px;
+}
+
+#modulePageHeader a:not(.dropdown-menu a),
+#modulePageHeader button:not(.dropdown-menu button) {
+    box-sizing: border-box;
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 8px 12px !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    white-space: nowrap;
+}
+
 /* Ensure all modal backdrops cover 100% of the viewport height and width without gaps */
 .fixed.inset-0:not(#sidebar-wrapper):not(#dashboardHeader) {
     position: fixed !important;

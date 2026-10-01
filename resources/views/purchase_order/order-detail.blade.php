@@ -1,12 +1,15 @@
-<x-layouts.app :title="__('Purchase Order')">
-    <div class="space-y-5">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div class="space-y-2">
+﻿<x-layouts.app :title="__('Purchase Order')">
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
+            <div>
                 <h1 class="text-3xl font-bold text-slate-900">Purchase Order {{ $purchaseOrder->order_number }}</h1>
-                <p class="max-w-2xl text-sm text-slate-500">Review full purchase order details and manage the lifecycle.</p>
+                <p class="text-xs text-slate-500 mt-0.5">Review full purchase order details and manage the lifecycle.</p>
             </div>
-            <a href="{{ route('order.management') }}" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:border-emerald-500 hover:text-slate-900">Back to Orders</a>
+            <a href="{{ route('order.management') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10">Back to Orders</a>
         </div>
+    </x-slot>
+
+    <div class="space-y-4">
 
         @if(session('success'))
             <div id="orderDetailSuccessAlert" class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">{{ session('success') }}</div>
@@ -55,7 +58,7 @@
                         });
                         $orderTotal = (float) $purchaseOrder->total_amount > 0 ? (float) $purchaseOrder->total_amount : $calculatedTotal;
                     @endphp
-                    <p><span class="font-semibold">Order total:</span> ₱{{ number_format($orderTotal, 2) }}</p>
+                    <p><span class="font-semibold">Order total:</span> â‚±{{ number_format($orderTotal, 2) }}</p>
                 </div>
             </div>
             <div class="rounded-[26px] border border-slate-200 bg-white p-6 shadow-sm">
@@ -88,31 +91,31 @@
                 $estBg = 'bg-slate-50 border-slate-200';
                 $estBadgeBg = 'bg-slate-100 text-slate-600';
                 $estLabel = 'Not yet provided';
-                $estIcon = '⏳';
+                $estIcon = 'â³';
             } elseif ($isCompleted) {
                 $estColor = 'emerald';
                 $estBg = 'bg-emerald-50 border-emerald-200';
                 $estBadgeBg = 'bg-emerald-100 text-emerald-700';
                 $estLabel = 'Delivered';
-                $estIcon = '✅';
+                $estIcon = 'âœ…';
             } elseif ($daysRemaining < 0) {
                 $estColor = 'rose';
                 $estBg = 'bg-rose-50 border-rose-200';
                 $estBadgeBg = 'bg-rose-100 text-rose-700';
                 $estLabel = abs($daysRemaining) . ' ' . Str::plural('day', abs($daysRemaining)) . ' overdue';
-                $estIcon = '🔴';
+                $estIcon = 'ðŸ”´';
             } elseif ($daysRemaining <= 2) {
                 $estColor = 'amber';
                 $estBg = 'bg-amber-50 border-amber-200';
                 $estBadgeBg = 'bg-amber-100 text-amber-700';
                 $estLabel = $daysRemaining === 0 ? 'Due today' : 'Arriving in ' . $daysRemaining . ' ' . Str::plural('day', $daysRemaining);
-                $estIcon = '🟡';
+                $estIcon = 'ðŸŸ¡';
             } else {
                 $estColor = 'emerald';
                 $estBg = 'bg-emerald-50 border-emerald-200';
                 $estBadgeBg = 'bg-emerald-100 text-emerald-700';
                 $estLabel = 'Arriving in ' . $daysRemaining . ' ' . Str::plural('day', $daysRemaining);
-                $estIcon = '🟢';
+                $estIcon = 'ðŸŸ¢';
             }
 
             $isReceivingStage = in_array($purchaseOrder->status, ['in transit', 'partially received', 'awaiting confirmation', 'completed', 'delivered'], true);
@@ -252,8 +255,8 @@
                                         @endif
                                     </td>
                                 @endif
-                                <td class="px-4 py-3">₱{{ number_format($unitPrice, 2) }}</td>
-                                <td class="px-4 py-3 font-semibold text-slate-900">₱{{ number_format($totalPrice, 2) }}</td>
+                                <td class="px-4 py-3">â‚±{{ number_format($unitPrice, 2) }}</td>
+                                <td class="px-4 py-3 font-semibold text-slate-900">â‚±{{ number_format($totalPrice, 2) }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -480,7 +483,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                 </svg>
                             </span>
-                            <h2 class="text-lg font-bold text-slate-900">Defective Products & Supplier Resolution</h2>
+                            <h2 class="text-3xl font-bold text-slate-900">Defective Products & Supplier Resolution</h2>
                         </div>
                         <p class="mt-1 text-xs text-slate-500">Track defect records, supplier resolution decisions, and replacement fulfillment.</p>
                     </div>
@@ -547,7 +550,7 @@
                                                 $rpo = $req->replacementPurchaseOrder;
                                             @endphp
                                             @if($req->status === 'Completed' || ($rpo && $rpo->status === 'completed'))
-                                                <div class="mt-0.5 text-[11px] text-emerald-700 font-medium">✓ Received {{ $req->replacement_received_quantity ?: ($rpo ? $rpo->items->sum('accepted_quantity') : $req->defective_quantity) }} units on {{ optional($req->replacement_received_at ?? ($rpo ? $rpo->completed_at : null))->format('M j, Y') }}</div>
+                                                <div class="mt-0.5 text-[11px] text-emerald-700 font-medium">âœ“ Received {{ $req->replacement_received_quantity ?: ($rpo ? $rpo->items->sum('accepted_quantity') : $req->defective_quantity) }} units on {{ optional($req->replacement_received_at ?? ($rpo ? $rpo->completed_at : null))->format('M j, Y') }}</div>
                                             @elseif($rpo)
                                                 <div class="mt-0.5 text-[11px] text-blue-600 font-medium">PO Status: <span class="font-semibold capitalize">{{ $rpo->status }}</span></div>
                                             @else
@@ -706,7 +709,7 @@
         function openResolveModal(reqId, productName, defQty) {
             const form = document.getElementById('resolveForm');
             form.action = `{{ url('purchase-order/' . $purchaseOrder->id . '/defective-request') }}/${reqId}/resolve`;
-            document.getElementById('resolveModalSubtitle').textContent = `${productName} · ${defQty} defective unit(s)`;
+            document.getElementById('resolveModalSubtitle').textContent = `${productName} Â· ${defQty} defective unit(s)`;
             const modal = document.getElementById('resolveModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -722,7 +725,7 @@
         function openReceiveReplacementModal(reqId, productName, defQty, rboNumber) {
             const form = document.getElementById('receiveReplacementForm');
             form.action = `{{ url('purchase-order/' . $purchaseOrder->id . '/defective-request') }}/${reqId}/receive-replacement`;
-            document.getElementById('receiveReplacementSubtitle').textContent = `${productName} · Ref: ${rboNumber || 'N/A'}`;
+            document.getElementById('receiveReplacementSubtitle').textContent = `${productName} Â· Ref: ${rboNumber || 'N/A'}`;
             const qtyInput = document.getElementById('receiveReplacementQty');
             qtyInput.value = defQty;
             qtyInput.max = defQty;
@@ -777,3 +780,4 @@
         document.addEventListener('DOMContentLoaded', resolvePoDetailImages);
     </script>
 </x-layouts.app>
+

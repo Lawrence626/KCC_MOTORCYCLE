@@ -1,4 +1,4 @@
-<x-layouts.app :title="__('Shop Inventory Management')">
+﻿<x-layouts.app :title="__('Shop Inventory Management')">
     <style>
         :root {
             --brand: #0f172a;
@@ -68,39 +68,42 @@
         }
     </style>
 
-    <div class="space-y-4">
-        <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
-        
-        <!-- Header -->
-        <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between pt-2 pb-1 pl-1">
-            <div class="pl-3 lg:pl-2">
+
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
+            <div>
                 <h1 class="text-3xl font-bold text-slate-900">Shop Inventory Items</h1>
-                <p class="text-xs text-slate-500 mt-1">Track and manage products across shop shelves for POS sales</p>
+                <p class="text-xs text-slate-500 mt-0.5">Track and manage products across shop shelves for POS sales.</p>
+
             </div>
-            <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap pr-4 relative z-[100000001]">
-                <button id="add-shelf-button" type="button" class="inline-flex items-center gap-2 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-2 text-sm font-bold text-black shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap" onclick="openAddShelfModal()">
+            <div class="flex items-center gap-2 flex-wrap">
+                <button id="add-shelf-button" type="button" class="inline-flex items-center gap-1.5 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap" onclick="openAddShelfModal()">
                     + Add Shelf
                 </button>
-                <button id="transfer-from-warehouse" type="button" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-900 bg-[#0f172a] px-3 py-2 text-sm font-bold text-white shadow-sm hover:bg-slate-800 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button id="transfer-from-warehouse" type="button" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-900 bg-[#0f172a] px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-slate-800 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
                     </svg>
                     Transfer from Warehouse
                 </button>
                 <button id="view-history" type="button" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
-                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                     History Logs
                 </button>
                 <a href="{{ route('shop.inventory.archived') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 whitespace-nowrap">
-                    <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
                     </svg>
                     Archive List
                 </a>
             </div>
         </div>
+    </x-slot>
+
+    <div class="space-y-4">
+        <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
         <!-- Metrics Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
@@ -271,12 +274,12 @@
                                                     $p   = $item->product;
                                                     $cat = $p?->productCatalog;
                                                     $desc       = $cat?->product_description ?? $p?->description ?? $p?->name ?? 'Unknown';
-                                                    $brand      = $cat?->brand               ?? $p?->brand       ?? '—';
-                                                    $compatible = $cat?->product_name        ?? $p?->compatibility ?? '—';
-                                                    $sku        = $cat?->sku                 ?? $p?->sku          ?? '—';
+                                                    $brand      = $cat?->brand               ?? $p?->brand       ?? 'â€”';
+                                                    $compatible = $cat?->product_name        ?? $p?->compatibility ?? 'â€”';
+                                                    $sku        = $cat?->sku                 ?? $p?->sku          ?? 'â€”';
                                                     $price      = $p?->unit_price ?? 0;
                                                     $qty        = $item->quantity;
-                                                    $priceFormatted = '₱' . number_format($price, 2);
+                                                    $priceFormatted = 'â‚±' . number_format($price, 2);
                                                     $expiry     = $p?->expiry_date ? \Carbon\Carbon::parse($p->expiry_date)->format('M d, Y') : 'N/A';
                                                     $expiryColor = $p?->expiry_status === 'expired' ? 'text-red-600 font-bold' : ($p?->expiry_status === 'expiring' ? 'text-amber-600 font-semibold' : 'text-slate-700');
                                                 @endphp
@@ -310,8 +313,8 @@
                         <div id="pagination-controls" class="flex items-center justify-between border-t border-slate-200 bg-white px-3 py-2 text-xs rounded-xl mt-3 hidden">
                             <p class="text-slate-600">Page <span id="current-page" class="font-semibold text-slate-900">1</span> of <span id="total-pages" class="font-semibold text-slate-900">1</span></p>
                             <div class="flex gap-1">
-                                <button type="button" id="prev-page" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">← Prev</button>
-                                <button type="button" id="next-page" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">Next →</button>
+                                <button type="button" id="prev-page" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">â† Prev</button>
+                                <button type="button" id="next-page" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">Next â†’</button>
                             </div>
                         </div>
                     </div>
@@ -733,7 +736,7 @@
 
                 // Set shelf source label
                 const sourceLabel = document.getElementById('return-shelf-source-label');
-                const shelfLocation = shelfData.location ? ` — ${shelfData.location}` : '';
+                const shelfLocation = shelfData.location ? ` â€” ${shelfData.location}` : '';
                 sourceLabel.textContent = `From: ${shelfData.name || 'Unknown Shelf'}${shelfLocation}`;
 
                 if (shelfData.shop_inventory && shelfData.shop_inventory.length > 0) {
@@ -904,7 +907,7 @@
             if (!container) return;
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.innerHTML = `<span>${message}</span><button onclick="this.parentElement.remove()">✕</button>`;
+            toast.innerHTML = `<span>${message}</span><button onclick="this.parentElement.remove()">âœ•</button>`;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 5000);
         }
@@ -2009,3 +2012,4 @@
         };
     </script>
 </x-layouts.app>
+

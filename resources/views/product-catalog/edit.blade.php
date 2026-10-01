@@ -1,4 +1,4 @@
-<x-layouts.app :title="__('Edit Product')">
+﻿<x-layouts.app :title="__('Edit Product')">
     <style>
         .motorcycle-group { max-height: 300px; overflow-y: auto; }
         .motorcycle-group::-webkit-scrollbar { width: 6px; }
@@ -7,20 +7,22 @@
         .qr-thumbnail { width: 180px; height: 180px; }
     </style>
 
-    <div class="space-y-4">
-        <!-- Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1 py-1 mb-2">
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-3xl font-bold text-slate-900">Edit Product</h1>
-                <p class="text-sm text-slate-500 mt-1">Update product details, SKU, and motorcycle compatibility.</p>
+                <p class="text-xs text-slate-500 mt-0.5">Update product details, SKU, and motorcycle compatibility.</p>
             </div>
             <div>
-                <a href="{{ route('product-catalog.index') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-50 transition-all">
-                    <svg class="w-4 h-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                <a href="{{ route('product-catalog.index') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all">
+                    <svg class="w-3.5 h-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                     Back to Products
                 </a>
             </div>
         </div>
+    </x-slot>
+
+    <div class="space-y-4">
 
         <!-- Form Card -->
         <div class="rounded-[20px] border border-slate-200 bg-white shadow-sm overflow-hidden">
@@ -735,3 +737,4 @@
         });
     </script>
 </x-layouts.app>
+

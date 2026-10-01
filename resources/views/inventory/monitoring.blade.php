@@ -1,12 +1,13 @@
 <x-layouts.app :title="__('Inventory Monitoring')">
-    <div class="space-y-4">
-        <!-- Header -->
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
-            <div class="pl-3 lg:pl-1">
-                <h1 class="text-3xl font-bold text-slate-900">Inventory Monitoring</h1>
-                <p class="text-sm text-slate-500 mt-1">Real-time tracking of inventory operations and movements</p>
-            </div>
+
+    <x-slot name="header">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-900">Inventory Monitoring</h1>
+            <p class="text-xs text-slate-500 mt-0.5">Real-time tracking of inventory operations and movements</p>
+
         </div>
+    </x-slot>
+    <div class="space-y-4">
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
             <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
@@ -149,29 +150,29 @@
             </div>
         </div>
         <!-- Inventory Table -->
-        <div class="overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-[0_14px_40px_-24px_rgba(0,0,0,0.32)]">
-            <div class="overflow-x-auto rounded-[10px]">
-                <table class="w-full text-left whitespace-nowrap min-w-max text-[11px] divide-y divide-slate-200">
-                    <thead class="border-b border-slate-200 bg-[#0f172a] rounded-t-[10px] text-[10px] uppercase tracking-wider text-white">
+        <div class="overflow-hidden rounded-[14px] border border-slate-200 bg-white shadow-[0_14px_40px_-24px_rgba(0,0,0,0.32)]">
+            <div class="w-full overflow-hidden rounded-[14px]">
+                <table class="w-full text-left text-[11px] divide-y divide-slate-200 table-fixed">
+                    <thead class="border-b border-slate-200 bg-[#0f172a] rounded-t-[14px] text-[10px] uppercase tracking-wider text-white">
                         <tr>
-                            <th class="px-3.5 py-3 text-center font-semibold text-white w-10 rounded-tl-[10px]">
+                            <th class="w-[3.5%] px-2 py-3 text-center font-semibold text-white rounded-tl-[14px]">
                                 <input type="checkbox" id="selectAllCheckbox" class="rounded border-slate-300 text-[#6EC1D1] focus:ring-[#6EC1D1] cursor-pointer" />
                             </th>
-                            <th class="px-3.5 py-3 text-left font-semibold text-white whitespace-nowrap">Motorcycle Compatibility</th>
-                            <th class="px-3.5 py-3 text-left font-semibold text-white whitespace-nowrap">Product Name</th>
-                            <th class="px-3.5 py-3 text-left font-semibold text-white whitespace-nowrap">SKU</th>
-                            <th class="px-3.5 py-3 text-left font-semibold text-white whitespace-nowrap">Brand</th>
-                            <th class="px-3.5 py-3 text-center font-semibold text-white whitespace-nowrap">Size</th>
-                            <th class="px-3.5 py-3 text-center font-semibold text-white whitespace-nowrap">Color</th>
-                            <th class="px-3.5 py-3 text-center font-semibold text-white whitespace-nowrap">Stock</th>
-                            <th class="px-3.5 py-3 text-right font-semibold text-white whitespace-nowrap">Unit Price</th>
-                            <th class="px-3.5 py-3 text-left font-semibold text-white whitespace-nowrap">Supplier</th>
-                            <th class="px-3.5 py-3 text-left font-semibold text-white whitespace-nowrap">Last Restock</th>
-                            <th class="px-3.5 py-3 text-left font-semibold text-white whitespace-nowrap">Expiry</th>
-                            <th class="px-3.5 py-3 text-center font-semibold text-white whitespace-nowrap rounded-tr-[10px]">Actions</th>
+                            <th class="w-[15%] px-2.5 py-3 text-left font-semibold text-white truncate" title="Motorcycle Compatibility">Motorcycle Compatibility</th>
+                            <th class="w-[10%] px-2 py-3 text-left font-semibold text-white truncate" title="Product Name">Product Name</th>
+                            <th class="w-[12%] px-2 py-3 text-left font-semibold text-white truncate" title="SKU">SKU</th>
+                            <th class="w-[8%] px-2 py-3 text-left font-semibold text-white truncate" title="Brand">Brand</th>
+                            <th class="w-[5%] px-1.5 py-3 text-center font-semibold text-white truncate" title="Size">Size</th>
+                            <th class="w-[5%] px-1.5 py-3 text-center font-semibold text-white truncate" title="Color">Color</th>
+                            <th class="w-[6%] px-2 py-3 text-center font-semibold text-white truncate" title="Stock">Stock</th>
+                            <th class="w-[9%] px-2 py-3 text-right font-semibold text-white truncate" title="Unit Price">Unit Price</th>
+                            <th class="w-[11%] px-2 py-3 text-left font-semibold text-white truncate" title="Supplier">Supplier</th>
+                            <th class="w-[8.5%] px-2 py-3 text-left font-semibold text-white truncate" title="Last Restock">Last Restock</th>
+                            <th class="w-[9%] px-2 py-3 text-left font-semibold text-white truncate" title="Expiry">Expiry</th>
+                            <th class="w-[8%] px-2 py-3 text-center font-semibold text-white rounded-tr-[14px] truncate" title="Actions">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-200 bg-white text-[11px]">
+                    <tbody class="divide-y divide-slate-100 bg-white text-[11px]">
                         <tr>
                             <td colspan="13" class="px-4 py-8 text-center text-slate-500">Loading inventory...</td>
                         </tr>
@@ -180,8 +181,8 @@
             </div>
 
             <!-- Pagination -->
-            <div class="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-3 py-2 text-xs">
-                <p id="paginationInfo" class="text-slate-600">Showing 0 of 0 items</p>
+            <div class="flex items-center justify-between border-t border-slate-200 bg-slate-50/80 px-3 py-2 text-xs">
+                <p id="paginationInfo" class="text-slate-600 font-medium">Showing 0 of 0 items</p>
                 <div id="paginationControls" class="flex gap-1">
                     <button class="rounded-[10px] border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">← Prev</button>
                     <button class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">1</button>
@@ -194,7 +195,7 @@
 
         <!-- Legend & Information -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
+            <div class="rounded-[14px] border border-slate-200 bg-white p-3 shadow-sm">
                 <h3 class="mb-2 text-sm font-semibold text-slate-900">Stock Status Legend</h3>
                 <div class="space-y-1.5 text-xs">
                     <div class="flex items-center gap-2">
@@ -216,7 +217,7 @@
                 </div>
             </div>
 
-            <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
+            <div class="rounded-[14px] border border-slate-200 bg-white p-3 shadow-sm">
                 <h3 class="mb-2 text-sm font-semibold text-slate-900">Expiry Tracking</h3>
                 <div class="space-y-1.5 text-xs">
                     <div class="flex items-start gap-2">
@@ -241,8 +242,8 @@
             </div>
         </div>
 
-        <div class="mt-4 rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="flex items-center justify-between border-b border-slate-200 bg-white rounded-t-[15px] px-4 py-4">
+        <div class="mt-4 rounded-[14px] border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div class="flex items-center justify-between border-b border-slate-200 bg-white rounded-t-[14px] px-4 py-4">
                 <div>
                     <h2 class="text-sm font-bold text-slate-900">Recent Inventory Movements</h2>
                     <p class="mt-0.5 text-xs text-slate-500">Latest stock changes, restocks, and price updates.</p>
@@ -267,18 +268,18 @@
                     <button id="refreshMovementsBtn" class="rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-black hover:bg-[#59b2c2] transition shadow-sm cursor-pointer inline-flex items-center justify-center min-w-[130px]">Refresh</button>
                 </div>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-left divide-y divide-slate-200">
+            <div class="w-full overflow-hidden">
+                <table class="w-full text-xs text-left divide-y divide-slate-200 table-fixed">
                     <thead class="bg-[#0f172a] text-xs font-semibold uppercase tracking-wider text-white border-b border-slate-200">
                         <tr>
-                            <th class="px-3 py-3 text-left font-semibold text-white">Date</th>
-                            <th class="px-3 py-3 text-left font-semibold text-white">Product</th>
-                            <th class="px-3 py-3 text-left font-semibold text-white">Type</th>
-                            <th class="px-3 py-3 text-center font-semibold text-white">Qty</th>
-                            <th class="px-3 py-3 text-left font-semibold text-white">Details</th>
+                            <th class="w-[18%] px-3 py-3 text-left font-semibold text-white">Date</th>
+                            <th class="w-[32%] px-3 py-3 text-left font-semibold text-white">Product</th>
+                            <th class="w-[15%] px-3 py-3 text-left font-semibold text-white">Type</th>
+                            <th class="w-[10%] px-3 py-3 text-center font-semibold text-white">Qty</th>
+                            <th class="w-[25%] px-3 py-3 text-left font-semibold text-white">Details</th>
                         </tr>
                     </thead>
-                    <tbody id="movementFeed" class="bg-white">
+                    <tbody id="movementFeed" class="bg-white divide-y divide-slate-100">
                         <tr>
                             <td colspan="5" class="px-3 py-8 text-center text-slate-500">Loading recent movements...</td>
                         </tr>

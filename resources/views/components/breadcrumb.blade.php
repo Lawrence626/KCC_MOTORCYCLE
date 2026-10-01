@@ -14,8 +14,10 @@
     // Determine breadcrumb based on current route
     if ($currentRoute === 'settings.general') {
         $breadcrumbItems[] = ['name' => 'Profile & Settings', 'url' => null, 'active' => true];
-    } elseif ($currentRoute === 'profile.show') {
+    } elseif ($currentRoute === 'profile.show' && request()->query('from') === 'settings') {
         $breadcrumbItems[] = ['name' => 'Profile & Settings', 'url' => route('settings.general'), 'active' => false];
+        $breadcrumbItems[] = ['name' => 'My Profile', 'url' => null, 'active' => true];
+    } elseif ($currentRoute === 'profile.show') {
         $breadcrumbItems[] = ['name' => 'My Profile', 'url' => null, 'active' => true];
     } elseif ($currentRoute === 'inventory.monitoring') {
         $breadcrumbItems[] = ['name' => 'Inventory Management', 'url' => route('inventory.monitoring'), 'active' => false];

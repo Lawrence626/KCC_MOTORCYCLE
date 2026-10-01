@@ -544,30 +544,20 @@ document.addEventListener('DOMContentLoaded', () => {
     window.renderFastSlowMoving = renderFastSlowMoving;
 
     const renderTopItems = (items) => {
-        const body = document.getElementById('topItemsTableBody');
+        if (typeof window.renderTopSellingSlides === 'function') {
+            window.renderTopSellingSlides(items || []);
+        }
+
+        const body = document.getElementById('topItemsModalBody') || document.getElementById('topItemsTableBody');
         if (!body) {
             return;
         }
 
-        if (!items?.length) {
-            body.innerHTML = '<tr><td colspan="5" class="py-2 px-1 text-center text-gray-500 text-xs">No data available</td></tr>';
-            return;
+        const countEl = document.getElementById('topItemsModalItemCount');
+        if (countEl) {
+            const count = items?.length || 0;
+            countEl.textContent = `${count} item${count !== 1 ? 's' : ''}`;
         }
-
-        body.innerHTML = items.map((item) => `
-            <tr class="hover:bg-gray-50 transition">
-                <td class="py-1 px-1"><span class="font-bold text-gray-900">${item.rank}</span></td>
-                <td class="py-1 px-1">
-                    <div class="flex items-center gap-1">
-                        <div class="w-4 h-4 bg-gray-200 rounded"></div>
-                        <span class="text-gray-900 font-medium text-xs">${item.name}</span>
-                    </div>
-                </td>
-                <td class="py-1 px-1 text-gray-600">${item.category}</td>
-                <td class="py-1 px-1 text-gray-900">${item.qty}</td>
-                <td class="py-1 px-1 text-gray-900 font-medium">${currency.format(item.revenue)}</td>
-            </tr>
-        `).join('');
     };
 
     let inventoryChartInstance = null;

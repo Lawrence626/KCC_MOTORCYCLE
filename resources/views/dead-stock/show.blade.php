@@ -1,23 +1,26 @@
 <x-layouts.app :title="__('Dead Stock Detail — ' . ($deadStock->product->name ?? 'Product'))">
-<div class="h-full w-full flex flex-col overflow-hidden">
-    <div class="flex-1 w-full overflow-y-auto px-4 md:px-6 pt-0 pb-5 space-y-4">
 
-        <div class="w-full px-1 pt-2">
-            <div class="flex items-start justify-between">
-                <h1 class="text-3xl font-bold text-slate-900">
-                    {{ $deadStock->product->description ?? $deadStock->product->name ?? 'Product' }}
-                </h1>
-                <a href="{{ route('dss.dead-stock.index') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-50 transition-all shrink-0 self-end">
-                    <svg class="w-4 h-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900">{{ $deadStock->product->description ?? $deadStock->product->name ?? 'Product' }}</h1>
+                <p class="text-xs text-slate-500 mt-0.5">Dead Stock Analysis &amp; Recommendations</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700">
+                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                    {{ $deadStock->days_without_sale }} Days Unsold
+                </span>
+                <a href="{{ route('dss.dead-stock.index') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-all">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+
                     Back
                 </a>
             </div>
-            <p class="text-xs text-slate-500 mt-1">Dead Stock Analysis & Recommendations</p>
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-xs font-bold bg-rose-100 text-rose-700 mt-2">
-                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-                <span>{{ $deadStock->days_without_sale }} Days Unsold</span>
-            </span>
         </div>
+    </x-slot>
+<div class="h-full w-full flex flex-col overflow-hidden">
+    <div class="flex-1 w-full overflow-y-auto px-4 md:px-6 pt-0 pb-5 space-y-4">
 
         @if(session('success'))
         <div id="deadStockShowSuccessAlert" class="rounded-[14px] border border-teal-200 bg-teal-50 px-4 py-3 text-xs font-semibold text-teal-900 flex items-center gap-3">

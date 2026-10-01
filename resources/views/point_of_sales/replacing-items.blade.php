@@ -1,21 +1,22 @@
 <x-layouts.app :title="__('Replacing Items')">
-    <div class="space-y-6">
-        <!-- Header Section -->
-         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
-                <div class="pl-3 lg:pl-1">
-                <h1 class="text-3xl font-bold text-slate-900">Replacing Items</h1>
-                <p class="text-xs text-slate-500 mt-1">Manage returned products and issue replacements.</p>
-            </div>
-        </div>
 
-        <!-- Controls Section -->
-        <div class="flex items-center gap-3 w-full">
-            <button onclick="openNewReplacementModal()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-[#6EC1D1] text-slate-900 rounded-[10px] font-bold text-sm border-2 border-slate-200 hover:bg-[#59b2c2] transition-all">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900">Replacing Items</h1>
+                <p class="text-xs text-slate-500 mt-0.5">Manage returned products and issue replacements.</p>
+
+            </div>
+            <button onclick="openNewReplacementModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#6EC1D1] text-slate-900 rounded-[10px] font-bold text-xs border border-slate-200 hover:bg-[#59b2c2] transition-all">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
                 New Replacement
             </button>
+        </div>
+    </x-slot>
+
+    <div class="space-y-4">
 
             <div class="flex-1 flex items-center gap-3">
                 <div class="flex-1 relative">

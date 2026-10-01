@@ -20,24 +20,25 @@
         }
     </style>
 
-    <div class="space-y-4 max-w-screen-2xl mx-auto w-full">
-        <!-- Header -->
-        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between pt-2 pb-1 pl-1">
-            <div class="pl-3 lg:pl-1">
+
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
+            <div>
                 <h1 class="text-3xl font-bold text-slate-900">All Stocks</h1>
-                <p class="text-xs text-slate-500 mt-1">Complete inventory overview with stock availability and warehouse information.</p>
+                <p class="text-xs text-slate-500 mt-0.5">Complete inventory overview with stock availability and warehouse information.</p>
+
             </div>
             <div class="flex items-center gap-2">
-                <button id="addStockBtn" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#6EC1D1] text-slate-900 text-sm font-semibold hover:bg-[#59b2c2] transition shadow-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                <button id="addStockBtn" class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#6EC1D1] text-slate-900 text-xs font-semibold hover:bg-[#59b2c2] transition shadow-sm">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                     <span>Add Stock</span>
                 </button>
                 <div class="action-dropdown inline-block relative" data-dropdown-wrapper="moreActions">
-                    <button type="button" onclick="toggleDropdown('moreActionsMenu', event)" class="px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition shadow-sm flex items-center justify-between gap-2">
+                    <button type="button" onclick="toggleDropdown('moreActionsMenu', event)" class="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 text-xs font-medium hover:bg-slate-50 transition shadow-sm flex items-center gap-1.5">
                         <span>More Actions</span>
-                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
-                    <div id="moreActionsMenu" class="dropdown-menu hidden absolute left-0 right-0 top-full z-[50] mt-1 w-full min-w-full rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
+                    <div id="moreActionsMenu" class="dropdown-menu hidden absolute right-0 top-full z-[50] mt-1 min-w-[160px] rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
                         <button id="generateQrBtn" type="button" onclick="document.getElementById('moreActionsMenu').classList.add('hidden')" class="w-full px-2 py-1.5 text-left text-[11px] text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-semibold cursor-pointer">Generate QR Codes</button>
                         <button id="exportBtn" type="button" onclick="document.getElementById('moreActionsMenu').classList.add('hidden')" class="w-full px-2 py-1.5 text-left text-[11px] text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-semibold cursor-pointer">Export Inventory</button>
                         <a href="{{ route('archived') }}" onclick="document.getElementById('moreActionsMenu').classList.add('hidden')" class="block w-full px-2 py-1.5 text-left text-[11px] text-slate-700 hover:bg-slate-100 rounded-[8px] transition font-semibold cursor-pointer">Archived Items</a>
@@ -45,6 +46,8 @@
                 </div>
             </div>
         </div>
+    </x-slot>
+
 
         <!-- KPI Cards -->
         <div class="grid grid-cols-1 md:grid-cols-5 gap-4">

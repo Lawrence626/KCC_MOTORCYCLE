@@ -1,4 +1,4 @@
-<x-layouts.app :title="__('Warehouse Management')">
+﻿<x-layouts.app :title="__('Warehouse Management')">
     <style>
         :root {
             --brand: #0f766e; /* professional teal */
@@ -91,22 +91,21 @@
         }
     </style>
 
-    <div class="space-y-4">
-        <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
-        {{-- ═══ HEADER ═══ --}}
-        <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between pt-2 pb-1 pl-1">
-            <div class="pl-3 lg:pl-2">
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
+            <div>
                 <h1 class="text-3xl font-bold text-slate-900">Warehouse Management</h1>
-                <p class="text-xs text-slate-500 mt-1">Track and manage storage locations and products across your warehouses</p>
+                <p class="text-xs text-slate-500 mt-0.5">Track and manage storage locations and products across your warehouses.</p>
+
             </div>
-            <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap pr-4">
+            <div class="flex items-center gap-2 flex-wrap">
                 <button id="add-shelf-button" type="button" onclick="openAddShelfModal()"
-                        class="inline-flex items-center gap-2 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-2 text-sm font-bold text-black shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
+                        class="inline-flex items-center gap-1.5 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
                     + Add Shelf
                 </button>
                 <button id="add-warehouse-button" type="button" onclick="openAddWarehouseModal()"
-                        class="inline-flex items-center gap-2 rounded-[10px] border border-slate-900 bg-[#0f172a] px-3 py-2 text-sm font-bold text-white shadow-sm hover:bg-slate-800 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
+                        class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-900 bg-[#0f172a] px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-slate-800 focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap">
                     + Add Warehouse
                 </button>
                 <button id="view-archived-shelves" type="button" onclick="openArchivedShelvesModal()"
@@ -119,8 +118,12 @@
                 </button>
             </div>
         </div>
+    </x-slot>
 
-        {{-- ═══ FILTERS & STATS ═══ --}}
+    <div class="space-y-4">
+        <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+        {{-- â•â•â• FILTERS & STATS â•â•â• --}}
         <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
             <div class="flex flex-col lg:flex-row lg:items-center gap-2">
                 <div class="flex flex-wrap items-center gap-2 flex-1">
@@ -184,11 +187,11 @@
                 <div class="flex items-center gap-2">
                     <div class="rounded-[12px] border border-slate-200 bg-white px-3.5 py-1.5 shadow-sm min-w-[90px]">
                         <p class="text-xs font-semibold text-slate-700">Products</p>
-                        <p id="selectedWarehouseProducts" class="text-lg font-bold text-slate-900 leading-tight">0</p>
+                        <p id="selectedWarehouseProducts" class="text-3xl font-bold text-slate-900">0</p>
                     </div>
                     <div class="rounded-[12px] border border-slate-200 bg-white px-3.5 py-1.5 shadow-sm min-w-[90px]">
                         <p class="text-xs font-semibold text-slate-700">Empty Slots</p>
-                        <p id="selectedWarehouseEmptySlots" class="text-lg font-bold text-slate-900 leading-tight">0</p>
+                        <p id="selectedWarehouseEmptySlots" class="text-3xl font-bold text-slate-900">0</p>
                     </div>
                 </div>
             </div>
@@ -197,7 +200,7 @@
 
         <div class="grid gap-4 mt-0">
 
-        {{-- ── Pending Warehouse Assignment panel (collapsible) ── --}}
+        {{-- â”€â”€ Pending Warehouse Assignment panel (collapsible) â”€â”€ --}}
         <div id="pending-arrivals-panel" class="rounded-[20px] border border-slate-200 border-l-[5px] border-l-[#6EC1D1] shadow-sm overflow-hidden" style="background: linear-gradient(50deg, #ffffff 0%, rgba(110, 193, 209, 0.12) 50%);">
             {{-- Header / toggle bar --}}
             <button
@@ -244,10 +247,10 @@
                             @foreach($pendingArrivals as $arrival)
                             <tr id="arrival-row-{{ $arrival['id'] }}" class="hover:bg-slate-50 transition">
                                 <td class="px-4 py-3 font-medium text-slate-900">{{ $arrival['product_name'] }}</td>
-                                <td class="px-4 py-3 font-mono text-xs text-slate-600">{{ $arrival['sku'] ?? '—' }}</td>
+                                <td class="px-4 py-3 font-mono text-xs text-slate-600">{{ $arrival['sku'] ?? 'â€”' }}</td>
                                 <td class="px-4 py-3 text-center font-semibold text-slate-800">{{ $arrival['quantity'] }}</td>
-                                <td class="px-4 py-3 text-slate-600">{{ $arrival['purchase_order_number'] ?? '—' }}</td>
-                                <td class="px-4 py-3 text-slate-600">{{ $arrival['supplier_name'] ?? '—' }}</td>
+                                <td class="px-4 py-3 text-slate-600">{{ $arrival['purchase_order_number'] ?? 'â€”' }}</td>
+                                <td class="px-4 py-3 text-slate-600">{{ $arrival['supplier_name'] ?? 'â€”' }}</td>
                                 <td class="px-4 py-3 text-xs text-slate-500">{{ $arrival['arrived_at'] }}</td>
                                 <td class="px-4 py-3 text-center">
                                     <button
@@ -279,7 +282,7 @@
                 @endif
             </div>
         </div>
-        {{-- ── end Pending Warehouse Assignment panel ── --}}
+        {{-- â”€â”€ end Pending Warehouse Assignment panel â”€â”€ --}}
 
             @foreach($warehouses as $wh)
                 <div class="rounded-[15px] border border-slate-200 bg-white overflow-hidden shadow-sm wh-card" data-id="{{ $wh['id'] }}" style="display:none;">
@@ -315,9 +318,9 @@
                             <div class="pagination mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-slate-600 border-t border-slate-200/80 pt-3">
                                 <div class="showing-info text-slate-500 font-medium text-xs" data-id="{{ $wh['id'] }}">Showing shelves</div>
                                 <div class="flex items-center gap-1">
-                                    <button type="button" class="prev-page rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" data-id="{{ $wh['id'] }}">← Prev</button>
+                                    <button type="button" class="prev-page rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" data-id="{{ $wh['id'] }}">â† Prev</button>
                                     <div class="page-numbers flex items-center gap-1" data-id="{{ $wh['id'] }}"></div>
-                                    <button type="button" class="next-page rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" data-id="{{ $wh['id'] }}">Next →</button>
+                                    <button type="button" class="next-page rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" data-id="{{ $wh['id'] }}">Next â†’</button>
                                 </div>
                             </div>
                         </div>
@@ -480,7 +483,7 @@
                 <div class="flex items-center justify-between p-3.5 bg-white rounded-[14px] border border-slate-200 shadow-sm">
                     <div>
                         <p class="text-sm font-semibold text-slate-900">${item.name || 'Unnamed Shelf'}</p>
-                        <p class="text-xs text-slate-500 mt-0.5">${item.warehouseName} • ${item.products ? item.products.length : 0} items</p>
+                        <p class="text-xs text-slate-500 mt-0.5">${item.warehouseName} â€¢ ${item.products ? item.products.length : 0} items</p>
                     </div>
                     <button type="button" onclick="restoreArchivedShelf('${item.slot_index}', '${item.warehouseId}')" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300 transition cursor-pointer">
                         Restore
@@ -551,7 +554,7 @@
                     const submitBtn = addWarehouseForm.querySelector('button[type="submit"]');
                     if (submitBtn) {
                         submitBtn.disabled = true;
-                        submitBtn.textContent = 'Creating…';
+                        submitBtn.textContent = 'Creatingâ€¦';
                     }
 
                     try {
@@ -972,8 +975,8 @@
                 <input type="hidden" id="assign-arrival-id">
 
                 <div id="assign-arrival-info" class="rounded-[20px] bg-amber-50 border border-amber-200 p-4 text-sm">
-                    <p class="font-bold text-amber-900" id="assign-arrival-product-name">—</p>
-                    <p class="text-amber-700 mt-1 font-medium">Qty: <span id="assign-arrival-qty" class="font-bold">—</span></p>
+                    <p class="font-bold text-amber-900" id="assign-arrival-product-name">â€”</p>
+                    <p class="text-amber-700 mt-1 font-medium">Qty: <span id="assign-arrival-qty" class="font-bold">â€”</span></p>
                 </div>
 
                 <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
@@ -1072,7 +1075,7 @@
 
                 const submitBtn = form.querySelector('[type="submit"]');
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Savingâ€¦';
+                submitBtn.textContent = 'SavingÃ¢â‚¬Â¦';
 
                 try {
                     const response = await fetch(`/warehouse-management/stock-arrival/${id}/assign`, {
@@ -1163,3 +1166,4 @@
 
     <script src="{{ asset('js/warehouse_management.js') }}?v={{ time() }}"></script>
 </x-layouts.app>
+

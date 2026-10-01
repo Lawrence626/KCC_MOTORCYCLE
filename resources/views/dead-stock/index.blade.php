@@ -8,7 +8,7 @@
          class="space-y-4">
 
         {{-- ═══ HEADER ═══ --}}
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
+        <div class="module-inline-title flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-2 pb-1 pl-1">
             <div class="pl-3 lg:pl-2">
                 <h1 class="text-3xl font-bold text-slate-900">Dead Stock Analysis</h1>
                 <p class="text-xs text-slate-500 mt-1">
@@ -55,14 +55,14 @@
         </div>
         {{-- ═══ SUCCESS ALERTS ═══ --}}
         @if(session('success'))
-        <div id="deadStockSuccessAlert" class="rounded-[14px] border border-teal-200 bg-teal-50 px-4 py-3 text-xs font-semibold text-teal-900 flex items-center gap-3">
+        <div id="deadStockSuccessAlert" class="module-inline-first rounded-[14px] border border-teal-200 bg-teal-50 px-4 py-3 text-xs font-semibold text-teal-900 flex items-center gap-3">
             <svg class="w-5 h-5 text-teal-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             {{ session('success') }}
         </div>
         @endif
 
         {{-- ═══ KPI CARDS ═══ --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="module-inline-first grid grid-cols-1 sm:grid-cols-2 gap-3">
             {{-- Total Items --}}
             <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
                 <div class="flex items-start justify-between gap-2">
@@ -351,39 +351,10 @@
         }
     }
 
-    function applyThumbImage(container, imageUrl, fallbackSvg) {
-        const safeImageUrl = String(imageUrl || '').replace(/"/g, '%22');
-
-        if (safeImageUrl) {
-            container.innerHTML = '';
-            container.className = 'deadstock-img-thumb w-8 h-8 rounded-[6px] bg-slate-100 border border-slate-200/80 flex-shrink-0 overflow-hidden';
-            container.style.backgroundImage = `url("${safeImageUrl}")`;
-            container.style.backgroundSize = 'cover';
-            container.style.backgroundPosition = 'center';
-            container.style.backgroundRepeat = 'no-repeat';
-            container.style.backgroundColor = '#f8fafc';
-            return;
-        }
-
-        container.className = 'deadstock-img-thumb w-8 h-8 rounded-[6px] bg-slate-50 border border-slate-200/60 flex items-center justify-center flex-shrink-0 text-slate-300 overflow-hidden';
-        container.style.backgroundImage = 'none';
-        container.style.backgroundSize = 'cover';
-        container.style.backgroundPosition = 'center';
-        container.style.backgroundRepeat = 'no-repeat';
-        container.style.backgroundColor = '#f8fafc';
-        container.innerHTML = fallbackSvg;
-    }
-
     function resolveDeadStockImages() {
         try {
             const stored = localStorage.getItem('posProductImages');
-            if (!stored) {
-                document.querySelectorAll('.deadstock-img-thumb').forEach(container => {
-                    applyThumbImage(container, '', '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>');
-                });
-                return;
-            }
-
+            if (!stored) return;
             const images = JSON.parse(stored);
             const keys = Object.keys(images);
 
@@ -407,7 +378,11 @@
                     }
                 }
 
-                applyThumbImage(container, imgUrl, '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>');
+                if (imgUrl) {
+                    container.innerHTML = '';
+                    container.className = 'deadstock-img-thumb w-8 h-8 rounded-[6px] bg-slate-100 border border-slate-200/80 flex-shrink-0 bg-cover bg-center';
+                    container.style.backgroundImage = `url('${imgUrl}')`;
+                }
             });
         } catch(e) {
             console.error('Error resolving dead stock images:', e);

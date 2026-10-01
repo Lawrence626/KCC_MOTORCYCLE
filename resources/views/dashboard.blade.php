@@ -1,17 +1,20 @@
 <x-layouts.app :title="__('Dashboard')">
-    <div id="dashboard-root" data-dashboard-url="{{ route('dashboard.data') }}" data-refresh-interval="15000" class="space-y-4">
-        <!-- Dashboard Title (scrolls with page content) -->
-        <div class="pb-2 pl-2">
-            <h1 class="text-3xl font-bold text-slate-900">Dashboard</h1>
-            <p class="text-gray-600 text-sm mt-1">Overview of sales, inventory and performance insights</p>
-        </div>
 
+    <x-slot name="header">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-900">Dashboard</h1>
+            <p class="text-xs text-slate-500 mt-0.5">Overview of sales, inventory and performance insights</p>
+
+        </div>
+    </x-slot>
+
+    <div id="dashboard-root" data-dashboard-url="{{ route('dashboard.data') }}" data-refresh-interval="15000" class="space-y-4">
         @php
             $canSeeDeadStock = auth()->user() && in_array(auth()->user()->role, ['admin', 'inventory_clerk']);
         @endphp
 
         <!-- Stats Grid -->
-        <div class="w-full mt-2">
+        <div class="w-full">
             <div class="grid grid-cols-1 sm:grid-cols-2 {{ $canSeeDeadStock ? 'lg:grid-cols-3 xl:grid-cols-5' : 'lg:grid-cols-4' }} gap-x-5 gap-y-10">
                 <!-- Total Sales -->
                  <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
@@ -126,7 +129,7 @@
         <!-- Charts Row -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-15 mt-4">
             <!-- Sales Overview Chart -->
-            <div id="salesOverviewCard" class="lg:col-span-2 border border-slate-200 relative overflow-hidden rounded-[15px] bg-white shadow-sm" style="min-height: 360px; box-sizing: border-box; border-radius: 15px;">
+            <div id="salesOverviewCard" class="lg:col-span-2 border border-slate-200 relative overflow-hidden rounded-[15px] bg-white shadow-sm" style="min-height: 390px; box-sizing: border-box; border-radius: 15px;">
 
                 <!-- Header (title + range buttons) -->
                 <div id="salesOverviewHeader" class="bg-[#0f172a] px-6 py-4 flex items-center justify-between border-b border-slate-800">
@@ -162,13 +165,13 @@
                 </div>
 
                 <!-- Body (chart) -->
-                <div id="salesOverviewBody" class="relative w-full p-2.5 pb-1" style="height:280px;">
+                <div id="salesOverviewBody" class="relative w-full p-2.5 pb-1" style="height:310px;">
                     <canvas id="salesChart"></canvas>
                 </div>
             </div>
 
             <!-- Sales by Category (full-circle ring + white knockout center + neon-on-sale legend) -->
-            <div class="border border-gray-200 p-3 rounded-[15px] flex flex-col" style="border-radius: 15px; background-color: #ffffff; min-height: 360px;">
+            <div class="border border-gray-200 p-3 rounded-[15px] flex flex-col" style="border-radius: 15px; background-color: #ffffff; min-height: 390px;">
                 <h2 class="text-sm font-bold text-black mb-2" style="font-family: 'Poppins', sans-serif;">Sales by Category</h2>
                 <div class="flex flex-col items-center gap-3 flex-1">
                     <div style="position: relative; width: 120px; height: 120px; max-width: 120px; max-height: 120px;" class="mx-auto flex items-center justify-center flex-shrink-0">
@@ -186,7 +189,7 @@
                         </div>
                     </div>
 
-                    <div id="categoryLegend" class="w-full space-y-1 text-xs overflow-y-auto flex-1" style="max-height: 160px;"></div>
+                    <div id="categoryLegend" class="w-full space-y-1 text-xs flex-1"></div>
                 </div>
             </div>
         </div>
@@ -916,25 +919,56 @@
                 if (!track) return;
                 track.innerHTML = '';
                 if (dotsWrap) dotsWrap.innerHTML = '';
+
+                if (!items || items.length === 0) {
+                    if (rot) { clearInterval(rot); rot = null; }
+                    track.innerHTML = `
+                        <div class="w-full h-full flex flex-col items-center justify-center bg-slate-50/80 rounded-xl border border-dashed border-slate-200 text-center p-3 select-none">
+                            <div class="w-12 h-12 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center text-slate-400 mb-1.5 shadow-sm">
+                                <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <span class="text-xs font-semibold text-slate-600">No Top Selling Items</span>
+                            <span class="text-[10px] text-slate-400 mt-0.5">Sales data will appear here once items are sold</span>
+                        </div>
+                    `;
+                    idx = 0;
+                    showInfo();
+                    return;
+                }
+
                 const localImages = loadLocalImages();
 
                 items.forEach((it, i) => {
                     const slide = document.createElement('div');
                     slide.className = 'top-slide' + (i === 0 ? ' is-active' : '');
 
-                    const img = document.createElement('img');
                     const found = resolveItemImage(it, localImages);
                     if (found) {
+                        const img = document.createElement('img');
                         img.src = found;
+                        img.alt = it.name || it.item || 'Product';
+                        img.className = 'w-full h-full object-cover';
+                        img.onerror = () => {
+                            slide.innerHTML = `
+                                <div class="w-full h-full flex flex-col items-center justify-center bg-slate-50 border border-slate-200/60 rounded-lg p-2 text-center text-slate-400">
+                                    <svg class="w-7 h-7 text-slate-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    <span class="text-[11px] font-semibold text-slate-700 truncate max-w-[90%]">${escapeHtml(it.name || 'Product')}</span>
+                                </div>`;
+                        };
+                        slide.appendChild(img);
                     } else {
-                        img.src = '/images/placeholder.png';
+                        slide.innerHTML = `
+                            <div class="w-full h-full flex flex-col items-center justify-center bg-slate-50 border border-slate-200/60 rounded-lg p-2 text-center text-slate-400">
+                                <svg class="w-7 h-7 text-slate-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <span class="text-[11px] font-semibold text-slate-700 truncate max-w-[90%]">${escapeHtml(it.name || 'Product')}</span>
+                            </div>`;
                     }
-                    img.alt = it.name || it.item || 'Product';
-                    slide.appendChild(img);
                     track.appendChild(slide);
 
                     // dot indicator (small circle), clickable to jump to that slide
-                    if (dotsWrap) {
+                    if (dotsWrap && items.length > 1) {
                         const dot = document.createElement('span');
                         dot.className = 'top-dot' + (i === 0 ? ' is-active' : '');
                         dot.addEventListener('click', () => { goToSlide(i); startRotate(); });
@@ -948,30 +982,40 @@
 
             function showInfo(){
                 if (!items || items.length === 0) {
-                    placeholder.textContent = 'No top items';
+                    placeholder.innerHTML = '<span class="text-xs text-slate-400 font-medium">No sales recorded yet</span>';
                     return;
                 }
                 const top = items[idx] || items[0];
-                const skuBadge = top.sku ? `<span class="text-xs text-gray-500 font-mono font-normal">(${escapeHtml(top.sku)})</span>` : '';
+                const skuBadge = top.sku && top.sku !== 'N/A' ? `<span class="text-xs text-gray-500 font-mono font-normal">(${escapeHtml(top.sku)})</span>` : '';
                 placeholder.innerHTML = `<div class="font-semibold text-gray-900">${escapeHtml(top.name)} ${skuBadge}</div><div class="text-gray-500">Rank ${idx + 1} • ${escapeHtml(top.category || '')}</div>`;
             }
 
             function startRotate(){
                 if (rot) clearInterval(rot);
+                if (!items || items.length <= 1) return;
                 rot = setInterval(() => { goToSlide(idx + 1); }, 4000);
             }
 
             // Arrow button: fade to the next picture in the slideshow, then open the (centered) modal
             openBtn?.addEventListener('click', ()=>{
-                goToSlide(idx + 1);
-                startRotate();
+                if (items && items.length > 1) {
+                    goToSlide(idx + 1);
+                    startRotate();
+                }
                 openTopItemsModal(items);
             });
 
+            window.renderTopSellingSlides = function(newItems) {
+                items = newItems || [];
+                renderSlides();
+                startRotate();
+            };
+
             fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } }).then(r=>r.json()).then(data=>{
                 items = data.top_items || data.topItems || [];
-                renderSlides(); startRotate();
-            }).catch(()=>{ placeholder.textContent = 'Failed to load'; });
+                renderSlides();
+                startRotate();
+            }).catch(()=>{ placeholder.innerHTML = '<span class="text-xs text-slate-400">Failed to load</span>'; });
 
          function openTopItemsModal(list){
             const modal = document.getElementById('topItemsModal');
@@ -1194,8 +1238,14 @@
                             if (typeof window.renderFastSlowMoving === 'function') {
                                 window.renderFastSlowMoving(data.fast_moving, data.slow_moving, data.all_fast_moving, data.all_slow_moving);
                             }
-                            renderTopItems(data.top_items);
-                            renderInventory(data.inventory);
+                            if (typeof window.renderTopSellingSlides === 'function') {
+                                window.renderTopSellingSlides(data.top_items || []);
+                            } else if (typeof renderTopItems === 'function') {
+                                renderTopItems(data.top_items);
+                            }
+                            if (typeof renderInventory === 'function') {
+                                renderInventory(data.inventory);
+                            }
                         });
                 };
 

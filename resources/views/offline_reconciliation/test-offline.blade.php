@@ -1,18 +1,22 @@
 <x-layouts.app :title="__('Test Offline Mode')">
-    <div class="space-y-4">
-        <!-- Header -->
-        <div class="flex items-center justify-between">
+    <x-slot name="header">
+        <div class="flex items-center justify-between w-full">
             <div>
+
                 <h1 class="text-3xl font-bold text-slate-900">Test Offline Mode</h1>
+
                 <p class="text-xs text-slate-500 mt-0.5">Test offline functionality without going offline</p>
             </div>
             <div class="flex items-center gap-2">
                 <div id="offline-indicator" class="hidden"></div>
-                <a href="{{ route('offline.reconciliation') }}" class="px-4 py-2 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
+                <a href="{{ route('offline.reconciliation') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-all">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                     Back to Dashboard
                 </a>
             </div>
         </div>
+    </x-slot>
+    <div class="space-y-4">
 
         <!-- Connection Status -->
         <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
