@@ -55,11 +55,7 @@ class ForgotPasswordController extends Controller
         return response()->json([
             'success' => true,
             'is_sent' => $isSent,
-            'message' => $isSent
-                ? 'Reset code sent to your email. Please check your inbox.'
-                : 'Reset code generated. (Code: ' . $code . ')',
-            'dev_code' => $code,
-            'offline_otp' => $code,
+            'message' => 'Reset code sent to your email. Please check your inbox.',
         ]);
     }
 
@@ -197,11 +193,7 @@ class ForgotPasswordController extends Controller
         return response()->json([
             'success' => true,
             'is_sent' => $isSent,
-            'message' => $isSent
-                ? 'Reset code sent to your email. Please check your inbox.'
-                : 'Reset code generated. (Code: ' . $otp . ')',
-            'dev_code' => $otp,
-            'offline_otp' => $otp,
+            'message' => 'Reset code sent to your email. Please check your inbox.',
         ]);
     }
 

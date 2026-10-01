@@ -64,11 +64,7 @@ class LoginOtpController extends Controller
         return response()->json([
             'success' => true,
             'is_sent' => $isSent,
-            'message' => $isSent
-                ? "Verification code ({$otpCode}) sent to your email and auto-filled below."
-                : "Security code ({$otpCode}) generated and auto-filled.",
-            'offline_otp' => $otpCode,
-            'debug_otp' => $otpCode,
+            'message' => 'Verification code sent to your email. Please check your inbox.',
         ]);
     }
 

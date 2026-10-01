@@ -292,18 +292,8 @@
 
                 showOtpModal();
 
-                const otpCode = data.offline_otp || data.debug_otp;
-                if (otpCode) {
-                    const debugDigits = String(otpCode).split('');
-                    debugDigits.forEach((char, i) => {
-                        if (i < otpDigits.length) otpDigits[i].value = char;
-                    });
-                    otpStatus.textContent = data.message || 'Security code: ' + otpCode + ' (Auto-filled)';
-                    otpStatus.classList.remove('hidden');
-                } else {
-                    otpStatus.textContent = data.message || 'Verification code sent to email.';
-                    otpStatus.classList.remove('hidden');
-                }
+                otpStatus.textContent = data.message || 'Verification code sent to your email. Please check your inbox.';
+                otpStatus.classList.remove('hidden');
             } catch (error) {
                 loginError.textContent = 'Unable to send verification code. Please try again.';
                 loginError.classList.remove('hidden');
