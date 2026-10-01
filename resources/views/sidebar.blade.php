@@ -1,9 +1,16 @@
 <div class="w-full md:w-[270px] text-white flex flex-col h-full min-h-full shadow-2xl border-r border-slate-700/60"
      style="background: linear-gradient(to bottom, #000000, #2b2b2b); position: relative;">
 
+    <!-- Mobile Close Sidebar Button -->
+    <button type="button" id="mobile-sidebar-close" class="md:hidden absolute top-4 right-3.5 z-50 p-2 rounded-[10px] text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 transition cursor-pointer" aria-label="Close menu">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+    </button>
+
     <a href="{{ route('dashboard') }}" class="px-6 py-5 flex-shrink-0">
         <div class="flex flex-col items-center justify-center">
-            <div class="w-48">
+            <div class="w-44 sm:w-48">
                 <img src="{{ asset('images/Logo.png') }}" alt="KCC Logo" class="w-full h-auto object-contain" />
             </div>
         </div>

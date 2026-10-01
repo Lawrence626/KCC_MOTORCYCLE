@@ -53,7 +53,7 @@
             <div class="rounded-[20px] border border-slate-200 p-4 bg-white shadow-sm">
                 <p class="text-black text-xs font-semibold">Total Offline Value</p>
                 <div class="mt-1">
-                    <p id="stat-total-value" class="text-2xl font-bold text-slate-900 font-mono">â‚±0.00</p>
+                    <p id="stat-total-value" class="text-2xl font-bold text-slate-900 font-mono">₱0.00</p>
                     <p class="text-slate-500 text-[10px] leading-tight mt-1 font-medium">Cumulative order amount</p>
                 </div>
             </div>
@@ -376,7 +376,7 @@
 
         document.getElementById('stat-total-orders').textContent = totalCount;
         document.getElementById('stat-total-items').textContent = totalItems;
-        document.getElementById('stat-total-value').textContent = 'â‚±' + totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('stat-total-value').textContent = '₱' + totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     function applyFilters() {
@@ -474,7 +474,7 @@
                     <td class="px-3.5 py-3 text-center text-slate-600">
                         <span class="font-bold text-slate-800">${itemsCount}</span> <span class="text-[11px] text-slate-400">(${totalUnits} pcs)</span>
                     </td>
-                    <td class="px-3.5 py-3 text-right font-mono font-bold text-slate-900">â‚±${totalFormatted}</td>
+                    <td class="px-3.5 py-3 text-right font-mono font-bold text-slate-900">₱${totalFormatted}</td>
                     <td class="px-3.5 py-3 text-slate-600">${dateStr}</td>
                     <td class="px-3.5 py-3 text-center" onclick="event.stopPropagation()">
                         <div class="inline-flex items-center gap-1.5 justify-center">
@@ -606,7 +606,7 @@
                                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-200 text-emerald-900">${ordersToExport.length} Order${ordersToExport.length === 1 ? '' : 's'}</span>
                             </h3>
                             <p class="text-xs text-emerald-800 mt-1">
-                                Successfully generated and exported <strong>${ordersToExport.length}</strong> purchase order${ordersToExport.length === 1 ? '' : 's'} (${totalItems} product item${totalItems === 1 ? '' : 's'}, Total Amount: â‚±${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}) into <code class="px-1.5 py-0.5 rounded bg-emerald-100 font-mono text-[11px] text-emerald-950 font-bold">${fileName}</code>.
+                                Successfully generated and exported <strong>${ordersToExport.length}</strong> purchase order${ordersToExport.length === 1 ? '' : 's'} (${totalItems} product item${totalItems === 1 ? '' : 's'}, Total Amount: ₱${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}) into <code class="px-1.5 py-0.5 rounded bg-emerald-100 font-mono text-[11px] text-emerald-950 font-bold">${fileName}</code>.
                             </p>
                             <p class="text-[11px] text-emerald-700 mt-0.5 font-medium">
                                 The CSV file has started downloading to your device and is ready to be transferred to the online system.
@@ -715,9 +715,9 @@
                     <tr class="border-b border-slate-100">
                         <td class="px-3 py-2.5 font-bold text-slate-800">${escapeHtml(item.product_name || 'Product #' + (idx+1))}</td>
                         <td class="px-3 py-2.5 text-slate-600 font-mono">${escapeHtml(item.sku || 'N/A')}</td>
-                        <td class="px-3 py-2.5 text-right font-mono">â‚±${unitPrice}</td>
+                        <td class="px-3 py-2.5 text-right font-mono">₱${unitPrice}</td>
                         <td class="px-3 py-2.5 text-center font-bold text-slate-900">${item.quantity}</td>
-                        <td class="px-3 py-2.5 text-right font-mono font-bold text-slate-900">â‚±${subtotal}</td>
+                        <td class="px-3 py-2.5 text-right font-mono font-bold text-slate-900">₱${subtotal}</td>
                     </tr>
                 `;
             }).join('');
@@ -734,7 +734,7 @@
                     </div>
                     <div>
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Amount</p>
-                        <p class="text-sm font-extrabold text-slate-950 font-mono mt-0.5">â‚±${totalAmt}</p>
+                        <p class="text-sm font-extrabold text-slate-950 font-mono mt-0.5">₱${totalAmt}</p>
                     </div>
                 </div>
 
@@ -856,7 +856,7 @@
                                 <tr class="hover:bg-slate-50 transition">
                                     <td class="px-3.5 py-3 font-mono font-bold text-slate-900">${escapeHtml(order.order_number || 'N/A')}</td>
                                     <td class="px-3.5 py-3 text-slate-700 font-semibold">${escapeHtml(order.supplier_name || 'N/A')}</td>
-                                    <td class="px-3.5 py-3 text-right font-mono font-bold text-slate-900">â‚±${Number(order.total_amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                    <td class="px-3.5 py-3 text-right font-mono font-bold text-slate-900">₱${Number(order.total_amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                     <td class="px-3.5 py-3 text-slate-500 text-[11px]">${order.archived_at ? new Date(order.archived_at).toLocaleString() : '-'}</td>
                                     <td class="px-3.5 py-3 text-center">
                                         <div class="inline-flex items-center gap-1.5 justify-center">

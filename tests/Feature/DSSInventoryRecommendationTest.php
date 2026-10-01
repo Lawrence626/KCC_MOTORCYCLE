@@ -259,7 +259,7 @@ test('admin and inventory clerk can view dss recommendations index and show page
     $this->actingAs($admin)
         ->get(route('dss.recommendations.index'))
         ->assertStatus(200)
-        ->assertSee('DSS Inventory Recommendations')
+        ->assertSee('DSS Recommendations')
         ->assertSee('LED Headlight Bulb');
 
     $this->actingAs($admin)

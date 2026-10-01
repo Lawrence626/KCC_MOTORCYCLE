@@ -17,9 +17,9 @@
     </style>
 
     <x-slot name="header">
-        <div class="flex items-center justify-between w-full">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
             <div>
-                <h1 class="text-3xl font-bold text-slate-900">Product Categorization</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">Product Categorization</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Master product catalog with SKU generation, QR codes, and motorcycle compatibility mapping.</p>
             </div>
             <div class="flex items-center gap-2 flex-wrap">

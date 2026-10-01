@@ -22,11 +22,10 @@
 
 
     <x-slot name="header">
-        <div class="flex items-center justify-between w-full">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
             <div>
-                <h1 class="text-3xl font-bold text-slate-900">All Stocks</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">All Stocks</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Complete inventory overview with stock availability and warehouse information.</p>
-
             </div>
             <div class="flex items-center gap-2">
                 <button id="addStockBtn" class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#6EC1D1] text-slate-900 text-xs font-semibold hover:bg-[#59b2c2] transition shadow-sm">

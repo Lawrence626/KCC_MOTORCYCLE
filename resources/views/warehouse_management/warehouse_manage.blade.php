@@ -1,4 +1,4 @@
-﻿<x-layouts.app :title="__('Warehouse Management')">
+<x-layouts.app :title="__('Warehouse Management')">
     <style>
         :root {
             --brand: #0f766e; /* professional teal */
@@ -95,11 +95,10 @@
 
 
     <x-slot name="header">
-        <div class="flex items-center justify-between w-full">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
             <div>
-                <h1 class="text-3xl font-bold text-slate-900">Warehouse Management</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">Warehouse Management</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Track and manage storage locations and products across your warehouses.</p>
-
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <button id="add-shelf-button" type="button" onclick="openAddShelfModal()"

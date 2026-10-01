@@ -3,7 +3,7 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between w-full">
             <div>
-                <h1 class="text-3xl font-bold text-slate-900">Supplier Assessment</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">Supplier Assessment</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Track supplier performance, evaluate inventory turnover, and inspect product pricing.</p>
             </div>
             <div class="flex flex-wrap items-center gap-2">

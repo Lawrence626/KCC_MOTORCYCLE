@@ -1,4 +1,4 @@
-﻿<x-layouts.app :title="__('Shop Inventory Management')">
+<x-layouts.app :title="__('Shop Inventory Management')">
     <style>
         :root {
             --brand: #0f172a;
@@ -70,11 +70,10 @@
 
 
     <x-slot name="header">
-        <div class="flex items-center justify-between w-full">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
             <div>
-                <h1 class="text-3xl font-bold text-slate-900">Shop Inventory Items</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">Shop Inventory Items</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Track and manage products across shop shelves for POS sales.</p>
-
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <button id="add-shelf-button" type="button" class="inline-flex items-center gap-1.5 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200 cursor-pointer whitespace-nowrap" onclick="openAddShelfModal()">
@@ -274,12 +273,12 @@
                                                     $p   = $item->product;
                                                     $cat = $p?->productCatalog;
                                                     $desc       = $cat?->product_description ?? $p?->description ?? $p?->name ?? 'Unknown';
-                                                    $brand      = $cat?->brand               ?? $p?->brand       ?? 'â€”';
-                                                    $compatible = $cat?->product_name        ?? $p?->compatibility ?? 'â€”';
-                                                    $sku        = $cat?->sku                 ?? $p?->sku          ?? 'â€”';
+                                                    $brand      = $cat?->brand               ?? $p?->brand       ?? '—';
+                                                    $compatible = $cat?->product_name        ?? $p?->compatibility ?? '—';
+                                                    $sku        = $cat?->sku                 ?? $p?->sku          ?? '—';
                                                     $price      = $p?->unit_price ?? 0;
                                                     $qty        = $item->quantity;
-                                                    $priceFormatted = 'â‚±' . number_format($price, 2);
+                                                    $priceFormatted = '₱' . number_format($price, 2);
                                                     $expiry     = $p?->expiry_date ? \Carbon\Carbon::parse($p->expiry_date)->format('M d, Y') : 'N/A';
                                                     $expiryColor = $p?->expiry_status === 'expired' ? 'text-red-600 font-bold' : ($p?->expiry_status === 'expiring' ? 'text-amber-600 font-semibold' : 'text-slate-700');
                                                 @endphp
@@ -750,7 +749,7 @@
 
                 // Set shelf source label
                 const sourceLabel = document.getElementById('return-shelf-source-label');
-                const shelfLocation = shelfData.location ? ` â€” ${shelfData.location}` : '';
+                const shelfLocation = shelfData.location ? ` — ${shelfData.location}` : '';
                 sourceLabel.textContent = `From: ${shelfData.name || 'Unknown Shelf'}${shelfLocation}`;
 
                 if (shelfData.shop_inventory && shelfData.shop_inventory.length > 0) {

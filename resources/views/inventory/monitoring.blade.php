@@ -2,9 +2,8 @@
 
     <x-slot name="header">
         <div>
-            <h1 class="text-3xl font-bold text-slate-900">Inventory Monitoring</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">Inventory Monitoring</h1>
             <p class="text-xs text-slate-500 mt-0.5">Real-time tracking of inventory operations and movements</p>
-
         </div>
     </x-slot>
     <div class="space-y-4">

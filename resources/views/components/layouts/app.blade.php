@@ -17,15 +17,8 @@
     @endphp
     <div class="flex h-full relative" style="background: linear-gradient(to bottom, #000000, #2b2b2b);">
         @if(!$hasTopNavbar)
-            <!-- Mobile Menu Toggle -->
-            <button id="mobile-menu-toggle" class="md:hidden fixed top-4 left-4 z-50 p-2 text-white bg-slate-800 rounded-lg hover:bg-slate-700">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            </button>
-
             <!-- Mobile Overlay (backdrop) -->
-            <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden"></div>
+            <div id="mobile-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden md:hidden"></div>
 
             <!-- Sidebar -->
             <div id="sidebar-wrapper" class="fixed top-0 left-0 w-[270px] h-full -translate-x-full md:translate-x-0 transition-transform duration-300 z-50 md:z-30">
@@ -34,13 +27,21 @@
         @endif
 
         <!-- Main Content -->
-        <div class="flex-1 min-w-0 flex flex-col {{ $hasTopNavbar ? 'md:ml-0 bg-white' : 'md:ml-[270px] bg-white rounded-tl-[15px] rounded-bl-[15px] overflow-hidden' }} relative z-40 h-full" style="border-top-left-radius: 15px; border-bottom-left-radius: 15px;">
+        <div class="flex-1 min-w-0 flex flex-col {{ $hasTopNavbar ? 'md:ml-0 bg-white' : 'md:ml-[270px] bg-white rounded-tl-none md:rounded-tl-[15px] rounded-bl-none md:rounded-bl-[15px] overflow-hidden' }} relative z-40 h-full">
             @if(!$hasTopNavbar && auth()->check())
-                <div id="globalHeader" class="flex-shrink-0 bg-white border-b border-slate-200 px-4 sm:px-6 py-2.5 sticky top-0 z-[999] flex items-center justify-between gap-4 rounded-tl-[15px]" style="border-top-left-radius: 15px;">
-                    <div class="flex-1 min-w-0">
-                        <x-breadcrumb />
+                <div id="globalHeader" class="flex-shrink-0 bg-white border-b border-slate-200 px-3 sm:px-6 py-2 sm:py-2.5 sticky top-0 z-[999] flex items-center justify-between gap-2 sm:gap-4 rounded-tl-none md:rounded-tl-[15px]">
+                    <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                        <!-- Mobile Menu Toggle (Inline in Header) -->
+                        <button id="mobile-menu-toggle" type="button" class="md:hidden inline-flex items-center justify-center p-2 rounded-[10px] text-slate-700 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 border border-slate-200 transition flex-shrink-0 cursor-pointer shadow-xs" aria-label="Open sidebar menu">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                        <div class="flex-1 min-w-0 overflow-x-auto no-scrollbar py-0.5">
+                            <x-breadcrumb />
+                        </div>
                     </div>
-                    <div class="flex items-center gap-3 flex-shrink-0">
+                    <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                         @if(!in_array(auth()->user()->role, ['cashier', 'warehouse_personnel']))
                         <div class="relative" id="notification-bell-wrapper">
                             <button
@@ -62,7 +63,7 @@
 
                             <div
                                 id="notification-panel"
-                                class="hidden absolute right-0 top-full mt-2 w-[320px] rounded-xl bg-white border border-slate-200 shadow-2xl z-[9999] flex flex-col"
+                                class="hidden absolute right-0 top-full mt-2 w-[300px] sm:w-[320px] rounded-xl bg-white border border-slate-200 shadow-2xl z-[9999] flex flex-col"
                                 style="max-height: 350px;"
                             >
                                 <div class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b border-slate-800 rounded-t-xl bg-[#0f172a]" style="background-color: #0f172a;">
@@ -94,19 +95,19 @@
                         @endif
 
                         <div class="relative inline-flex items-center text-left">
-                            <button type="button" id="dashboardProfileButton" class="inline-flex items-center gap-2 rounded-[18px] px-2.5 py-1.5 text-left bg-transparent border-none hover:bg-transparent transition-all focus:outline-none cursor-pointer group" aria-label="Open profile menu">
-                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-900 grid place-items-center text-sm font-semibold overflow-hidden border border-slate-300 flex-shrink-0">
+                            <button type="button" id="dashboardProfileButton" class="inline-flex items-center gap-1.5 sm:gap-2 rounded-[18px] p-1 sm:px-2.5 sm:py-1.5 text-left bg-transparent border-none hover:bg-slate-50 transition-all focus:outline-none cursor-pointer group flex-shrink-0" aria-label="Open profile menu">
+                                <span class="inline-flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-slate-100 text-slate-900 text-xs sm:text-sm font-semibold overflow-hidden border border-slate-300 flex-shrink-0">
                                     @if(auth()->user()->avatar)
                                         <img src="{{ asset('storage/' . auth()->user()->avatar) }}?v={{ auth()->user()->updated_at?->timestamp }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover" />
                                     @else
                                         {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
                                     @endif
                                 </span>
-                                <div class="flex flex-col leading-tight text-left min-w-0">
-                                    <span class="text-xs font-semibold text-slate-900 max-w-[130px] truncate">{{ auth()->user()->name ?? 'Admin' }}</span>
-                                    <span class="text-[11px] text-slate-500 max-w-[150px] truncate">{{ auth()->user()->email ?? '' }}</span>
+                                <div class="hidden sm:flex flex-col leading-tight text-left min-w-0">
+                                    <span class="text-xs font-semibold text-slate-900 max-w-[120px] lg:max-w-[140px] truncate">{{ auth()->user()->name ?? 'Admin' }}</span>
+                                    <span class="text-[11px] text-slate-500 max-w-[130px] lg:max-w-[160px] truncate">{{ auth()->user()->email ?? '' }}</span>
                                 </div>
-                                <svg id="dashboardProfileArrow" class="w-5 h-5 text-slate-500 transition-transform duration-200 group-hover:text-slate-700" viewBox="0 0 24 24" fill="currentColor">
+                                <svg id="dashboardProfileArrow" class="w-4 h-4 sm:w-5 sm:h-5 text-slate-500 transition-transform duration-200 group-hover:text-slate-700 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M7 10l5 5 5-5H7z"/>
                                 </svg>
                             </button>
@@ -198,25 +199,40 @@
             const mobileOverlay = document.getElementById('mobile-overlay');
 
             // Toggle sidebar on mobile
-            if (menuToggle && sidebarWrapper && mobileOverlay) {
-                menuToggle.addEventListener('click', function() {
-                    sidebarWrapper.classList.toggle('-translate-x-full');
-                    mobileOverlay.classList.toggle('hidden');
-                });
-
-                // Close sidebar when clicking overlay
-                mobileOverlay.addEventListener('click', function() {
+            if (sidebarWrapper && mobileOverlay) {
+                function closeMobileSidebar() {
                     sidebarWrapper.classList.add('-translate-x-full');
                     mobileOverlay.classList.add('hidden');
-                });
+                }
 
-                // Close sidebar when clicking a link
+                function openMobileSidebar() {
+                    sidebarWrapper.classList.remove('-translate-x-full');
+                    mobileOverlay.classList.remove('hidden');
+                }
+
+                if (menuToggle) {
+                    menuToggle.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        if (sidebarWrapper.classList.contains('-translate-x-full')) {
+                            openMobileSidebar();
+                        } else {
+                            closeMobileSidebar();
+                        }
+                    });
+                }
+
+                const sidebarCloseBtn = document.getElementById('mobile-sidebar-close');
+                if (sidebarCloseBtn) {
+                    sidebarCloseBtn.addEventListener('click', closeMobileSidebar);
+                }
+
+                // Close sidebar when clicking overlay
+                mobileOverlay.addEventListener('click', closeMobileSidebar);
+
+                // Close sidebar when clicking any navigation link
                 const links = sidebarWrapper.querySelectorAll('a');
                 links.forEach(link => {
-                    link.addEventListener('click', function() {
-                        sidebarWrapper.classList.add('-translate-x-full');
-                        mobileOverlay.classList.add('hidden');
-                    });
+                    link.addEventListener('click', closeMobileSidebar);
                 });
             }
 

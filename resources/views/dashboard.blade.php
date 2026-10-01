@@ -2,9 +2,8 @@
 
     <x-slot name="header">
         <div>
-            <h1 class="text-3xl font-bold text-slate-900">Dashboard</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">Dashboard</h1>
             <p class="text-xs text-slate-500 mt-0.5">Overview of sales, inventory and performance insights</p>
-
         </div>
     </x-slot>
 
@@ -15,7 +14,7 @@
 
         <!-- Stats Grid -->
         <div class="w-full">
-            <div class="grid grid-cols-1 sm:grid-cols-2 {{ $canSeeDeadStock ? 'lg:grid-cols-3 xl:grid-cols-5' : 'lg:grid-cols-4' }} gap-x-5 gap-y-10">
+            <div class="grid grid-cols-1 sm:grid-cols-2 {{ $canSeeDeadStock ? 'lg:grid-cols-3 xl:grid-cols-5' : 'lg:grid-cols-4' }} gap-3 sm:gap-4 lg:gap-5">
                 <!-- Total Sales -->
                  <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
                     <div class="flex items-start justify-between gap-2">
@@ -127,20 +126,20 @@
         </script>
 
         <!-- Charts Row -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-15 mt-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 mt-4">
             <!-- Sales Overview Chart -->
             <div id="salesOverviewCard" class="lg:col-span-2 border border-slate-200 relative overflow-hidden rounded-[15px] bg-white shadow-sm" style="min-height: 390px; box-sizing: border-box; border-radius: 15px;">
 
                 <!-- Header (title + range buttons) -->
-                <div id="salesOverviewHeader" class="bg-[#0f172a] px-6 py-4 flex items-center justify-between border-b border-slate-800">
+                <div id="salesOverviewHeader" class="bg-[#0f172a] px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between border-b border-slate-800">
                     <div class="flex items-center gap-2">
-                       <h2 id="salesOverviewTitle" class="font-bold tracking-wide text-white text-lg">Sales Overview</h2>
+                       <h2 id="salesOverviewTitle" class="font-bold tracking-wide text-white text-base sm:text-lg">Sales Overview</h2>
                     </div>
                     {{-- Sales range dropdown card --}}
                     <div class="relative" id="salesRangeWrapper">
                         <button type="button" id="salesRangeDropdownBtn"
                             onclick="toggleSalesRangeDropdown(event)"
-                            class="inline-flex items-center gap-2 rounded-[10px] border border-[#59b2c2] bg-[#6EC1D1] px-3 py-1.5 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all duration-200 min-w-[110px] justify-between">
+                            class="inline-flex items-center gap-2 rounded-[10px] border border-[#59b2c2] bg-[#6EC1D1] px-3 py-1.5 text-xs sm:text-sm font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all duration-200 min-w-[100px] sm:min-w-[110px] justify-between">
                             <span id="salesRangeLabel">Monthly</span>
                             <svg id="salesRangeChevron" class="w-3.5 h-3.5 text-slate-900 transition-transform duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 9l6 6 6-6" />
@@ -195,7 +194,7 @@
         </div>
 
         <!-- Tables Row -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-15 mt-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 mt-4">
 
             <!-- Inventory Levels -->
             <div id="inventoryCardWrap" class="relative">

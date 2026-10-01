@@ -1,4 +1,4 @@
-﻿<x-layouts.app :title="__('Purchase Order')">
+<x-layouts.app :title="__('Purchase Order')">
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div>
@@ -58,7 +58,7 @@
                         });
                         $orderTotal = (float) $purchaseOrder->total_amount > 0 ? (float) $purchaseOrder->total_amount : $calculatedTotal;
                     @endphp
-                    <p><span class="font-semibold">Order total:</span> â‚±{{ number_format($orderTotal, 2) }}</p>
+                    <p><span class="font-semibold">Order total:</span> ₱{{ number_format($orderTotal, 2) }}</p>
                 </div>
             </div>
             <div class="rounded-[26px] border border-slate-200 bg-white p-6 shadow-sm">
@@ -255,8 +255,8 @@
                                         @endif
                                     </td>
                                 @endif
-                                <td class="px-4 py-3">â‚±{{ number_format($unitPrice, 2) }}</td>
-                                <td class="px-4 py-3 font-semibold text-slate-900">â‚±{{ number_format($totalPrice, 2) }}</td>
+                                <td class="px-4 py-3">₱{{ number_format($unitPrice, 2) }}</td>
+                                <td class="px-4 py-3 font-semibold text-slate-900">₱{{ number_format($totalPrice, 2) }}</td>
                             </tr>
                         @endforeach
                     </tbody>

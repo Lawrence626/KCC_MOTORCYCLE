@@ -126,10 +126,10 @@
     $inactiveBreadcrumbClasses = 'text-slate-500 hover:bg-slate-100 hover:text-slate-700';
 @endphp
 
-<nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-1.5 text-sm">
+<nav aria-label="Breadcrumb" class="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm whitespace-nowrap">
     @foreach($breadcrumbItems as $index => $item)
         @if($index > 0)
-            <span class="text-slate-400 text-xs select-none">›</span>
+            <span class="text-slate-400 text-[10px] sm:text-xs select-none">›</span>
         @endif
 
         @if($item['url'])
@@ -138,7 +138,7 @@
                 {{ $item['name'] }}
             </a>
         @else
-            <span class="inline-flex items-center rounded-md px-2 py-1 {{ $item['active'] ? $activeBreadcrumbClasses : 'bg-slate-100 text-slate-800 font-semibold' }}">
+            <span class="inline-flex items-center rounded-md px-2 py-0.5 sm:py-1 {{ $item['active'] ? $activeBreadcrumbClasses : 'bg-slate-100 text-slate-800 font-semibold' }}">
                 {{ $item['name'] }}
             </span>
         @endif

@@ -132,7 +132,7 @@
                                          </div>
                                      </div>
                                  </th>
-                                <th class="px-4 py-3 rounded-tr-[10px]">Unit Price (â‚±)</th>
+                                <th class="px-4 py-3 rounded-tr-[10px]">Unit Price (₱)</th>
                             </tr>
                         </thead>
                         <tbody id="product-table-body" class="divide-y divide-slate-200 text-slate-700">
@@ -213,19 +213,19 @@
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                         <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Supplier Name</p>
-                        <p id="si-name" class="text-sm font-semibold text-slate-800">â€”</p>
+                        <p id="si-name" class="text-sm font-semibold text-slate-800">—</p>
                     </div>
                     <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                         <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Contact Person</p>
-                        <p id="si-contact" class="text-sm text-slate-700">â€”</p>
+                        <p id="si-contact" class="text-sm text-slate-700">—</p>
                     </div>
                     <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                         <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Last Purchase</p>
-                        <p id="si-last-purchase" class="text-sm text-slate-700">â€”</p>
+                        <p id="si-last-purchase" class="text-sm text-slate-700">—</p>
                     </div>
                     <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                         <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Reliability Score</p>
-                        <p id="si-reliability" class="text-sm font-semibold text-slate-800">â€”</p>
+                        <p id="si-reliability" class="text-sm font-semibold text-slate-800">—</p>
                     </div>
                 </div>
             </div>
@@ -265,7 +265,7 @@
                         <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider border-b border-slate-200" style="background-color: #0f172a;">
                             <tr>
                                 <th class="px-4 py-3">Supplier</th>
-                                <th class="px-4 py-3">Total Cost (â‚±)</th>
+                                <th class="px-4 py-3">Total Cost (₱)</th>
                                 <th class="px-4 py-3">Avg Change</th>
                                 <th class="px-4 py-3">Last Purchase</th>
                                 <th class="px-4 py-3">Action</th>
@@ -307,9 +307,9 @@
 
     // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const $el  = (id) => document.getElementById(id);
-    const fmt  = (v) => v != null ? 'â‚±' + Number(v).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'â€”';
-    const fmtP = (v) => v != null ? (v > 0 ? '+' : '') + Number(v).toFixed(2) + '%' : 'â€”';
-    const icon = (t) => ({ increasing: 'ðŸ“ˆ', decreasing: 'ðŸ“‰', stable: 'âž¡ï¸' })[t] ?? '';
+    const fmt  = (v) => v != null ? '₱' + Number(v).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+    const fmtP = (v) => v != null ? (v > 0 ? '+' : '') + Number(v).toFixed(2) + '%' : '—';
+    const icon = (t) => ({ increasing: '↑', decreasing: '↓', stable: 'âž¡ï¸' })[t] ?? '';
 
     function escHtml(str) {
         if (str == null) return '';
@@ -926,8 +926,8 @@
 
     // â”€â”€ Render Step 3 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function renderSupplierInfo(s) {
-        $el('si-name').textContent          = s.name          || 'â€”';
-        $el('si-contact').textContent       = s.contact_person || 'â€”';
+        $el('si-name').textContent          = s.name          || '—';
+        $el('si-contact').textContent       = s.contact_person || '—';
         $el('si-last-purchase').textContent = s.last_purchase_date || 'No orders yet';
 
         const rel = $el('si-reliability');
@@ -976,11 +976,11 @@
             summaryGrid.innerHTML = `
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                     <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Current Cost</p>
-                    <p class="text-base font-bold text-slate-800">${ph.current_cost != null ? fmt(ph.current_cost) : 'â€”'}</p>
+                    <p class="text-base font-bold text-slate-800">${ph.current_cost != null ? fmt(ph.current_cost) : '—'}</p>
                 </div>
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                     <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Previous Cost</p>
-                    <p class="text-base font-bold text-slate-600">${ph.previous_cost != null ? fmt(ph.previous_cost) : 'â€”'}</p>
+                    <p class="text-base font-bold text-slate-600">${ph.previous_cost != null ? fmt(ph.previous_cost) : '—'}</p>
                 </div>
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                     <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Price Change</p>
@@ -1020,8 +1020,8 @@
                         <tbody class="divide-y divide-slate-200 text-slate-700">
                             ${ph.histories.map(h => `
                                 <tr class="hover:bg-slate-50">
-                                    <td class="px-4 py-2">${escHtml(h.date ?? 'â€”')}</td>
-                                    <td class="px-4 py-2 font-mono text-xs text-slate-500">${escHtml(h.po_number ?? 'â€”')}</td>
+                                    <td class="px-4 py-2">${escHtml(h.date ?? '—')}</td>
+                                    <td class="px-4 py-2 font-mono text-xs text-slate-500">${escHtml(h.po_number ?? '—')}</td>
                                     <td class="px-4 py-2 font-semibold">${fmt(h.cost)}</td>
                                 </tr>
                             `).join('')}
@@ -1073,7 +1073,7 @@
 
         const badge = $el('recommended-supplier-badge');
         if (recommended) {
-            badge.innerHTML = `<strong>â­ Recommended Supplier: ${escHtml(recommended.name)}</strong> â€” ${recommended.reasons.map(r => escHtml(r)).join(', ')}`;
+            badge.innerHTML = `<strong>â­ Recommended Supplier: ${escHtml(recommended.name)}</strong> — ${recommended.reasons.map(r => escHtml(r)).join(', ')}`;
             badge.classList.remove('hidden');
         } else {
             badge.classList.add('hidden');
@@ -1094,9 +1094,9 @@
                 <td class="px-4 py-3 font-medium ${isRec ? 'text-emerald-800' : 'text-slate-800'}">
                     ${isRec ? 'â­ ' : ''}${escHtml(r.supplier_name)}
                 </td>
-                <td class="px-4 py-3 font-semibold">${r.has_history ? fmt(r.latest_total_cost) : 'â€”'}</td>
-                <td class="px-4 py-3 ${cc}">${r.has_history ? fmtP(r.avg_change_percentage) : 'â€”'}</td>
-                <td class="px-4 py-3 text-slate-500">${escHtml(r.last_purchase_date ?? 'â€”')}</td>
+                <td class="px-4 py-3 font-semibold">${r.has_history ? fmt(r.latest_total_cost) : '—'}</td>
+                <td class="px-4 py-3 ${cc}">${r.has_history ? fmtP(r.avg_change_percentage) : '—'}</td>
+                <td class="px-4 py-3 text-slate-500">${escHtml(r.last_purchase_date ?? '—')}</td>
                 <td class="px-4 py-3">
                     <button type="button"
                             onclick="window._poSelectSupplier(${r.supplier_id})"

@@ -1,9 +1,9 @@
-﻿<x-layouts.app :title="__('User Management')">
+<x-layouts.app :title="__('User Management')">
 
     <x-slot name="header">
-        <div class="flex items-center justify-between w-full">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
             <div>
-                <h1 class="text-3xl font-bold text-slate-900">User Management</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">User Management</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Manage user accounts, roles, and access across the system.</p>
             </div>
             <div class="flex flex-wrap items-center gap-3">
@@ -317,12 +317,12 @@
                 </div>
                 @endunless
 
-                <div class="flex items-center gap-3">
-                    <form method="GET" action="{{ $managementRoute }}" class="relative" id="userSearchForm">
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <form method="GET" action="{{ $managementRoute }}" class="relative w-full md:w-auto" id="userSearchForm">
                         @if(request('role'))
                             <input type="hidden" name="role" value="{{ request('role') }}">
                         @endif
-                        <input id="userSearchInput" type="search" name="q" value="{{ request('q') }}" placeholder="Search user" class="rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 w-72 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" autocomplete="off" />
+                        <input id="userSearchInput" type="search" name="q" value="{{ request('q') }}" placeholder="Search user" class="rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 w-full sm:w-72 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" autocomplete="off" />
                     </form>
                 </div>
             </div>

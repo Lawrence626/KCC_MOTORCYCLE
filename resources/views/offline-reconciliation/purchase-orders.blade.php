@@ -165,9 +165,9 @@
                                     <th class="px-3 py-3 text-left font-semibold text-white">Product</th>
                                     <th class="px-3 py-3 text-left font-semibold text-white">SKU</th>
                                     <th class="px-3 py-3 text-center font-semibold text-white">Current Stock</th>
-                                    <th class="px-3 py-3 text-right font-semibold text-white" style="width: 170px;">Unit Price (â‚±)</th>
+                                    <th class="px-3 py-3 text-right font-semibold text-white" style="width: 170px;">Unit Price (₱)</th>
                                     <th class="px-3 py-3 text-center font-semibold text-white" style="width: 170px;">Quantity to Order</th>
-                                    <th class="px-3 py-3 text-right font-semibold text-white" style="width: 170px;">Subtotal (â‚±)</th>
+                                    <th class="px-3 py-3 text-right font-semibold text-white" style="width: 170px;">Subtotal (₱)</th>
                                     <th class="px-3 py-3 text-center font-semibold text-white" style="width: 70px;">Action</th>
                                 </tr>
                             </thead>
@@ -191,7 +191,7 @@
                                         <span class="text-slate-800 font-bold uppercase tracking-wider">Grand Total Amount:</span>
                                     </td>
                                     <td colspan="3" class="px-4 py-3 text-right">
-                                        <div class="text-base font-extrabold text-slate-950 font-mono" id="grandTotalDisplay">â‚±0.00</div>
+                                        <div class="text-base font-extrabold text-slate-950 font-mono" id="grandTotalDisplay">₱0.00</div>
                                         <div class="text-[10px] text-slate-500 font-normal">[Auto-calculated from items]</div>
                                     </td>
                                 </tr>
@@ -630,7 +630,7 @@
                         </td>
                         <td class="px-3 py-2 text-right">
                             ${hasValidPrice ? `
-                                <div class="font-mono font-bold text-slate-900">â‚±${applicablePrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                                <div class="font-mono font-bold text-slate-900">₱${applicablePrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
                                 <div class="text-[9px] text-slate-400 font-medium">Auto-retrieved</div>
                             ` : `
                                 <span class="text-xs font-semibold text-red-500 italic">No price set</span>
@@ -793,7 +793,7 @@
             if (count === 0) {
                 clearBtn.classList.add('hidden');
                 totalUnitsEl.textContent = '0';
-                grandTotalEl.textContent = 'â‚±0.00';
+                grandTotalEl.textContent = '₱0.00';
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="7" class="px-3 py-8 text-center text-slate-500">
@@ -828,7 +828,7 @@
                         <td class="px-3 py-2.5 font-mono text-slate-600 font-medium">${escapeHtml(item.sku)}</td>
                         <td class="px-3 py-2.5 text-center font-bold text-slate-700">${item.current_stock}</td>
                         <td class="px-3 py-2.5 text-right">
-                            <div class="font-mono font-bold text-slate-900">â‚±${item.unit_price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                            <div class="font-mono font-bold text-slate-900">₱${item.unit_price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
                             <div class="text-[9px] text-slate-400 font-medium">[Auto-generated]</div>
                         </td>
                         <td class="px-3 py-2.5 text-center">
@@ -840,7 +840,7 @@
                             ${item.quantity === 0 ? `<div class="text-[9px] font-semibold text-amber-600 mt-0.5">Enter quantity</div>` : ''}
                         </td>
                         <td class="px-3 py-2.5 text-right">
-                            <div class="font-mono font-extrabold text-slate-900">â‚±${item.subtotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                            <div class="font-mono font-extrabold text-slate-900">₱${item.subtotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
                             <div class="text-[9px] text-slate-400 font-medium">[Auto-calculated]</div>
                         </td>
                         <td class="px-3 py-2.5 text-center">
@@ -855,7 +855,7 @@
             }).join('');
 
             totalUnitsEl.textContent = totalUnits.toLocaleString();
-            grandTotalEl.textContent = `â‚±${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            grandTotalEl.textContent = `₱${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
         }
 
         // Supplier Selection & Eligibility Filtering Logic
@@ -1111,7 +1111,7 @@
                                         <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-200 text-emerald-900 font-mono">${poNumber}</span>
                                     </h3>
                                     <p class="text-xs text-emerald-800 mt-1">
-                                        Order <strong>${poNumber}</strong> with <strong>${selectedItems.length}</strong> product line item${selectedItems.length === 1 ? '' : 's'} (Total: â‚±${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}) has been stored in local browser storage.
+                                        Order <strong>${poNumber}</strong> with <strong>${selectedItems.length}</strong> product line item${selectedItems.length === 1 ? '' : 's'} (Total: ₱${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}) has been stored in local browser storage.
                                     </p>
                                     <p class="text-[11px] text-emerald-700 mt-0.5 font-medium">
                                         You can review and export it anytime on the <a href="{{ route('offline.export') }}" class="underline font-bold text-emerald-900">Export Data</a> page.

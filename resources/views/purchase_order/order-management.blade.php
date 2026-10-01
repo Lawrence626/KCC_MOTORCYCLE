@@ -1,4 +1,4 @@
-﻿<x-layouts.app :title="__('Order Management')">
+<x-layouts.app :title="__('Order Management')">
     <style>
         input[type="search"]::-webkit-search-cancel-button {
             -webkit-appearance: none;
@@ -19,9 +19,9 @@
     </style>
 
     <x-slot name="header">
-        <div class="flex items-center justify-between w-full">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
             <div>
-                <h1 class="text-3xl font-bold text-slate-900">Order Management</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">Order Management</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Monitor and visualize purchase orders across the ordering lifecycle.</p>
             </div>
 
