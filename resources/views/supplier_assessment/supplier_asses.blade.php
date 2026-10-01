@@ -1148,14 +1148,12 @@
                 // Populate dropdown options on load
                 renderDropdownOptions();
 
-                // Initial Load: Auto-select supplier if requested via query param or default to first supplier
+                // Initial Load: Manual selection only (Do not auto-select unless explicitly in URL)
                 const urlParams = new URLSearchParams(window.location.search);
                 const selectedSupplierParam = urlParams.get('selected_supplier');
 
                 if (selectedSupplierParam) {
                     setSupplierDetail(selectedSupplierParam);
-                } else if (supplierSummaries && supplierSummaries.length > 0) {
-                    setSupplierDetail(supplierSummaries[0].name);
                 }
             </script>
         @endpush
