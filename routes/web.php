@@ -64,7 +64,7 @@ Route::get('/reset-password', [App\Http\Controllers\Auth\ForgotPasswordControlle
 Route::post('/reset-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'resetPassword'])->name('reset-password.update');
 
 
-Route::middleware(['auth', 'active'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     // Dashboard - All authenticated users
     Route::get('dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     Route::get('dashboard/data', [App\Http\Controllers\DashboardController::class, 'data'])->name('dashboard.data');
@@ -79,7 +79,16 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::post('api/inventory-notifications/sync', [InventoryNotificationController::class, 'sync'])->name('api.inventory-notifications.sync');
 
     // Active status heartbeat check
-    Route::get('api/user/active-status', function() {
+    Route::get('api/user/active-status', function(\Illuminate\Http\Request $request) {
+        $user = $request->user();
+        if ($user && ! ($user->is_active ?? true)) {
+            \Illuminate\Support\Facades\Auth::logout();
+            if ($request->hasSession()) {
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            }
+            return response()->json(['deactivated' => true, 'message' => 'Your account has been deactivated.'], 401);
+        }
         return response()->json(['active' => true]);
     })->name('api.user.active-status');
 
