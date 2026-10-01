@@ -330,6 +330,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('supplier-assessment/suppliers/{supplier}/restore', [SupplierAssessmentController::class, 'restore'])->name('supplier.assessment.restore');
         Route::patch('supplier-assessment/suppliers/{supplier}', [SupplierAssessmentController::class, 'update'])->name('supplier.assessment.update');
         Route::delete('supplier-assessment/suppliers/{supplier}', [SupplierAssessmentController::class, 'destroy'])->name('supplier.assessment.destroy');
+        Route::delete('supplier-assessment/suppliers/{supplier}/force-delete', [SupplierAssessmentController::class, 'forceDelete'])->name('supplier.assessment.force-delete');
     });
 
     // User Management Routes (controller-driven) - Admin only

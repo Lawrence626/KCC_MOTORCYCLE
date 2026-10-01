@@ -297,4 +297,22 @@ class SupplierAssessmentController extends Controller
 
         return redirect()->route('supplier.assessment')->with('success', 'Supplier archived successfully.');
     }
+
+    public function forceDelete(Supplier $supplier)
+    {
+        $supplierName = $supplier->name;
+
+        // Unlink products associated with this supplier name
+        Product::where('supplier_name', $supplierName)->update(['supplier_name' => null]);
+
+        // Detach pivot records if relation exists
+        if (method_exists($supplier, 'suppliedProducts')) {
+            $supplier->suppliedProducts()->detach();
+        }
+
+        // Permanently delete supplier
+        $supplier->delete();
+
+        return redirect()->route('supplier.assessment.archived')->with('success', "Supplier \"{$supplierName}\" permanently deleted.");
+    }
 }

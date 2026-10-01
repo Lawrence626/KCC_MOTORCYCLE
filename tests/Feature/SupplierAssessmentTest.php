@@ -112,3 +112,48 @@ test('it prevents adding a duplicate supplier name', function () {
 
     $response->assertSessionHasErrors(['name']);
 });
+
+test('it allows archiving, restoring, and permanently deleting a supplier', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+
+    $supplier = Supplier::create([
+        'name' => 'Temporary Supplier',
+        'status' => 'active',
+    ]);
+
+    $product = Product::create([
+        'name' => 'Test Temp Product',
+        'sku' => 'TEMP-SKU-001',
+        'unit_price' => 100,
+        'stock_quantity' => 5,
+        'supplier_name' => $supplier->name,
+    ]);
+
+    // 1. Archive
+    $archiveResponse = $this->actingAs($admin)->delete(route('supplier.assessment.destroy', ['supplier' => $supplier->id]));
+    $archiveResponse->assertRedirect(route('supplier.assessment'));
+    $this->assertDatabaseHas('suppliers', [
+        'id' => $supplier->id,
+        'status' => 'inactive',
+    ]);
+
+    // 2. Restore
+    $restoreResponse = $this->actingAs($admin)->post(route('supplier.assessment.restore', ['supplier' => $supplier->id]));
+    $restoreResponse->assertRedirect(route('supplier.assessment.archived'));
+    $this->assertDatabaseHas('suppliers', [
+        'id' => $supplier->id,
+        'status' => 'active',
+    ]);
+
+    // 3. Force / Permanent Delete
+    $forceDeleteResponse = $this->actingAs($admin)->delete(route('supplier.assessment.force-delete', ['supplier' => $supplier->id]));
+    $forceDeleteResponse->assertRedirect(route('supplier.assessment.archived'));
+    $forceDeleteResponse->assertSessionHas('success');
+
+    $this->assertDatabaseMissing('suppliers', [
+        'id' => $supplier->id,
+    ]);
+
+    // Product supplier_name unlinked
+    expect($product->fresh()->supplier_name)->toBeNull();
+});

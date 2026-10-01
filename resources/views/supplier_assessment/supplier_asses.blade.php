@@ -55,59 +55,32 @@
             </div>
         @endif
 
-        <!-- Top Overview Stats Cards (Matching Dashboard & Shop Inventory) -->
+        <!-- Top Overview Stats Cards (Clean Modern Slate Palette) -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <!-- Active Suppliers -->
             <div class="border border-gray-200 p-4 bg-white shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
-                <div class="flex items-start justify-between gap-2">
-                    <div class="flex-1 min-w-0">
-                        <p class="text-black text-xs font-semibold truncate">Active Suppliers</p>
-                        <div class="mt-1">
-                            <p class="text-2xl font-bold text-black truncate">{{ number_format($quickStats['activeSuppliers']) }}</p>
-                            <p class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Currently active supplier partners.</p>
-                        </div>
-                    </div>
-                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                        <svg class="w-5 h-5 text-[#145a66]" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-                        </svg>
-                    </div>
+                <p class="text-black text-xs font-semibold truncate">Active Suppliers</p>
+                <div class="mt-1">
+                    <p class="text-2xl font-bold text-black truncate">{{ number_format($quickStats['activeSuppliers']) }}</p>
+                    <p class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Currently active supplier partners.</p>
                 </div>
             </div>
 
             <!-- Tracked Products -->
             <div class="border border-gray-200 p-4 bg-white shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
-                <div class="flex items-start justify-between gap-2">
-                    <div class="flex-1 min-w-0">
-                        <p class="text-black text-xs font-semibold truncate">Tracked Products</p>
-                        <div class="mt-1">
-                            <p class="text-2xl font-bold text-black truncate">{{ number_format($quickStats['trackedProducts']) }}</p>
-                            <p class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Catalog items linked across suppliers.</p>
-                        </div>
-                    </div>
-                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                        <svg class="w-5 h-5 text-[#145a66]" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
-                        </svg>
-                    </div>
+                <p class="text-black text-xs font-semibold truncate">Tracked Products</p>
+                <div class="mt-1">
+                    <p class="text-2xl font-bold text-black truncate">{{ number_format($quickStats['trackedProducts']) }}</p>
+                    <p class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Catalog items linked across suppliers.</p>
                 </div>
             </div>
 
             <!-- Total Supplier Stock Value -->
             <div class="border border-gray-200 p-4 bg-white shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
-                <div class="flex items-start justify-between gap-2">
-                    <div class="flex-1 min-w-0">
-                        <p class="text-black text-xs font-semibold truncate">Supplier Stock Value</p>
-                        <div class="mt-1">
-                            <p class="text-2xl font-bold text-black truncate">&#8369;{{ number_format($quickStats['stockValue'], 2) }}</p>
-                            <p class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Combined inventory value across vendors.</p>
-                        </div>
-                    </div>
-                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                        <svg class="w-5 h-5 text-[#145a66]" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05 1.18 1.91 2.53 1.91 1.29 0 2.13-.59 2.13-1.61 0-1.11-1.02-1.55-2.74-2.02-2.09-.56-3.72-1.35-3.72-3.47 0-1.89 1.45-3.09 3.11-3.43V4h2.67v1.93c1.61.32 2.82 1.43 2.92 3.16h-1.92c-.09-.91-.89-1.63-2.18-1.63-1.12 0-1.86.52-1.86 1.41 0 .96.89 1.38 2.49 1.84 2.19.62 3.97 1.46 3.97 3.65 0 2.01-1.52 3.23-3.32 3.73z"/>
-                        </svg>
-                    </div>
+                <p class="text-black text-xs font-semibold truncate">Supplier Stock Value</p>
+                <div class="mt-1">
+                    <p class="text-2xl font-bold text-black truncate">&#8369;{{ number_format($quickStats['stockValue'], 2) }}</p>
+                    <p class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Combined inventory value across vendors.</p>
                 </div>
             </div>
         </div>
@@ -176,8 +149,8 @@
                                                 <p class="text-[11px] text-slate-500 truncate mt-0.5">{{ $supplierItem->contact_person ?? 'No contact' }} · {{ $supplierItem->email ?? ($supplierItem->phone ?? 'No contact info') }}</p>
                                             </div>
                                             <div class="flex items-center gap-1.5 flex-shrink-0">
-                                                <span class="rounded-[6px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 text-[10px] font-bold">🔥 {{ $supplierItem->fast_moving_count }}</span>
-                                                <span class="rounded-[6px] bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 text-[10px] font-bold">⏳ {{ $supplierItem->slow_moving_count }}</span>
+                                                <span class="rounded-[6px] bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 text-[10px] font-semibold">{{ $supplierItem->fast_moving_count }} Fast</span>
+                                                <span class="rounded-[6px] bg-slate-800 text-slate-200 border border-slate-700 px-2 py-0.5 text-[10px] font-semibold">{{ $supplierItem->slow_moving_count }} Slow</span>
                                                 <span class="rounded-[6px] bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 text-[10px] font-semibold">{{ $supplierItem->product_count }} items</span>
                                             </div>
                                         </div>
@@ -208,7 +181,7 @@
                 <div id="selectedSupplierRibbon" class="hidden rounded-[14px] bg-slate-50 border border-slate-200/80 p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
                     <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-slate-600">
                         <div class="flex items-center gap-2">
-                            <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                            <span class="inline-block w-2.5 h-2.5 rounded-full bg-slate-900"></span>
                             <span class="font-bold text-slate-900 text-sm" id="ribbonSupplierName">-</span>
                             <span class="rounded-[6px] bg-slate-200 px-2 py-0.5 text-[10px] font-semibold text-slate-700" id="ribbonSupplierRole">Supplier</span>
                         </div>
@@ -247,7 +220,7 @@
                 <!-- Supplier Overview Header Banner -->
                 <div class="bg-[#0f172a] px-6 py-5 border-b border-slate-800 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between rounded-t-[20px]">
                     <div>
-                        <p class="text-[11px] uppercase tracking-wider font-bold text-[#6EC1D1]">Supplier Overview</p>
+                        <p class="text-[11px] uppercase tracking-wider font-bold text-[#6EC1D1]">Supplier overview</p>
                         <h2 id="detailSupplierName" class="mt-0.5 text-2xl font-bold text-white"></h2>
                         <p id="detailSupplierNotes" class="mt-1 text-xs text-slate-300"></p>
                         <p id="detailSupplierAddress" class="mt-1 text-xs text-slate-400"></p>
@@ -275,88 +248,46 @@
                 </div>
 
                 <div class="p-6 pt-0 space-y-6">
-                    <!-- Key Assessment Metric Cards (4 Clean Cards matching Dashboard) -->
+                    <!-- Key Assessment Metric Cards (Clean Slate & Monochrome Style) -->
                     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         <!-- Performance Score -->
                         <div class="border border-gray-200 p-4 bg-white shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
-                            <div class="flex items-start justify-between gap-2">
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-black text-xs font-semibold truncate">Performance Score</p>
-                                    <div class="mt-1">
-                                        <p id="detailPerformanceScore" class="text-2xl font-bold text-black truncate">0/100</p>
-                                        <p class="text-gray-500 text-xs mt-1 font-medium leading-tight truncate">Overall vendor rating score.</p>
-                                    </div>
-                                </div>
-                                <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                                    <svg class="w-5 h-5 text-[#145a66]" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                                    </svg>
-                                </div>
+                            <p class="text-black text-xs font-semibold truncate">Performance Score</p>
+                            <div class="mt-1">
+                                <p id="detailPerformanceScore" class="text-2xl font-bold text-black truncate">0/100</p>
+                                <p class="text-gray-500 text-xs mt-1 font-medium leading-tight truncate">Overall vendor rating score.</p>
                             </div>
                         </div>
 
                         <!-- Fast Moving Items Count -->
                         <div class="border border-slate-200 p-4 bg-white shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
-                            <div class="flex items-start justify-between gap-2">
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center gap-1.5">
-                                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                        <p class="text-slate-900 text-xs font-bold truncate">Fast Moving Items</p>
-                                    </div>
-                                    <div class="mt-1">
-                                        <p id="detailFastMovingCount" class="text-2xl font-bold text-emerald-700 truncate">0</p>
-                                        <p class="text-gray-500 text-xs mt-1 font-medium leading-tight truncate">High demand &amp; sales velocity.</p>
-                                    </div>
-                                </div>
-                                <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 rounded-[10px] bg-emerald-50 text-emerald-700 border border-emerald-100">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                                    </svg>
-                                </div>
+                            <p class="text-slate-900 text-xs font-semibold truncate">Fast Moving Items</p>
+                            <div class="mt-1">
+                                <p id="detailFastMovingCount" class="text-2xl font-bold text-slate-900 truncate">0</p>
+                                <p class="text-gray-500 text-xs mt-1 font-medium leading-tight truncate">High demand &amp; sales velocity.</p>
                             </div>
                         </div>
 
                         <!-- Slow Moving Items Count -->
                         <div class="border border-slate-200 p-4 bg-white shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
-                            <div class="flex items-start justify-between gap-2">
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center gap-1.5">
-                                        <span class="inline-block w-2 h-2 rounded-full bg-amber-500"></span>
-                                        <p class="text-slate-900 text-xs font-bold truncate">Slow Moving Items</p>
-                                    </div>
-                                    <div class="mt-1">
-                                        <p id="detailSlowMovingCount" class="text-2xl font-bold text-amber-700 truncate">0</p>
-                                        <p class="text-gray-500 text-xs mt-1 font-medium leading-tight truncate">Low turnover / zero recent sales.</p>
-                                    </div>
-                                </div>
-                                <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 rounded-[10px] bg-amber-50 text-amber-700 border border-amber-100">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                </div>
+                            <p class="text-slate-900 text-xs font-semibold truncate">Slow Moving Items</p>
+                            <div class="mt-1">
+                                <p id="detailSlowMovingCount" class="text-2xl font-bold text-slate-900 truncate">0</p>
+                                <p class="text-gray-500 text-xs mt-1 font-medium leading-tight truncate">Low turnover / zero recent sales.</p>
                             </div>
                         </div>
 
                         <!-- Total Products Count -->
                         <div class="border border-gray-200 p-4 bg-white shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
-                            <div class="flex items-start justify-between gap-2">
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-black text-xs font-semibold truncate">Total Supplied Catalog</p>
-                                    <div class="mt-1">
-                                        <p id="detailProductCount" class="text-2xl font-bold text-black truncate">0</p>
-                                        <p class="text-gray-500 text-xs mt-1 font-medium leading-tight truncate">Total products from this supplier.</p>
-                                    </div>
-                                </div>
-                                <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
-                                    <svg class="w-5 h-5 text-[#145a66]" fill="currentColor" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
-                                        <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
-                                    </svg>
-                                </div>
+                            <p class="text-black text-xs font-semibold truncate">Total Supplied Catalog</p>
+                            <div class="mt-1">
+                                <p id="detailProductCount" class="text-2xl font-bold text-black truncate">0</p>
+                                <p class="text-gray-500 text-xs mt-1 font-medium leading-tight truncate">Total products from this supplier.</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Movement Analysis Breakdown (Clean Modern Card System) -->
+                    <!-- Movement Analysis Breakdown (Clean Modern Dark Header Card System) -->
                     <div class="border-t border-slate-200 pt-6">
                         <div class="mb-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                             <div>
@@ -370,13 +301,8 @@
                             <!-- Left Column: Fast Moving Items -->
                             <div class="rounded-[16px] border border-slate-200 bg-white shadow-sm overflow-hidden flex flex-col">
                                 <div class="bg-[#0f172a] px-5 py-3.5 flex items-center justify-between text-white border-b border-slate-800">
-                                    <div class="flex items-center gap-2">
-                                        <svg class="h-4 w-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.527.82-1.17 2.05-1.785 3.322-.44.912-.86 1.874-1.25 2.766-.39.892-.74 1.705-1.03 2.378a9.42 9.42 0 00-.73 2.152A6.993 6.993 0 005 16a7 7 0 0013.93-1.03c.047-.328.07-.663.07-1.002 0-2.316-.95-4.408-2.484-5.91a8.96 8.96 0 00-2.348-1.572c-.596-.282-1.182-.628-1.773-1.026v-.907z" clip-rule="evenodd"/>
-                                        </svg>
-                                        <span class="font-bold text-sm">🔥 Fast Moving Products</span>
-                                    </div>
-                                    <span id="fastMovingBadgeCount" class="rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 text-xs font-bold">0 items</span>
+                                    <span class="font-bold text-sm">Fast Moving Products</span>
+                                    <span id="fastMovingBadgeCount" class="rounded-full bg-slate-800 text-slate-200 border border-slate-700 px-2.5 py-0.5 text-xs font-semibold">0 items</span>
                                 </div>
                                 <div id="fastMovingContainer" class="p-4 space-y-2.5 flex-1 max-h-80 overflow-y-auto">
                                     <!-- Populated via JavaScript -->
@@ -386,13 +312,8 @@
                             <!-- Right Column: Slow Moving Items -->
                             <div class="rounded-[16px] border border-slate-200 bg-white shadow-sm overflow-hidden flex flex-col">
                                 <div class="bg-[#0f172a] px-5 py-3.5 flex items-center justify-between text-white border-b border-slate-800">
-                                    <div class="flex items-center gap-2">
-                                        <svg class="h-4 w-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                        <span class="font-bold text-sm">⏳ Slow Moving Products</span>
-                                    </div>
-                                    <span id="slowMovingBadgeCount" class="rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-0.5 text-xs font-bold">0 items</span>
+                                    <span class="font-bold text-sm">Slow Moving Products</span>
+                                    <span id="slowMovingBadgeCount" class="rounded-full bg-slate-800 text-slate-200 border border-slate-700 px-2.5 py-0.5 text-xs font-semibold">0 items</span>
                                 </div>
                                 <div id="slowMovingContainer" class="p-4 space-y-2.5 flex-1 max-h-80 overflow-y-auto">
                                     <!-- Populated via JavaScript -->
@@ -409,7 +330,7 @@
                                 <h3 class="mt-0.5 text-lg font-bold text-slate-900">Delivery &amp; Order Reliability</h3>
                             </div>
                             <div class="flex flex-wrap gap-2">
-                                <span class="rounded-[8px] bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200" id="detailDeliveredCount">0 delivered</span>
+                                <span class="rounded-[8px] bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 border border-slate-200" id="detailDeliveredCount">0 delivered</span>
                                 <span class="rounded-[8px] bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 border border-slate-200" id="detailOrdersCount">0 orders</span>
                             </div>
                         </div>
@@ -442,7 +363,7 @@
                                     </div>
                                     <div class="pt-2.5 border-t border-slate-200 flex items-center justify-between text-xs">
                                         <span class="text-slate-500">Quality &amp; Defect Rating:</span>
-                                        <span id="detailQualityScore" class="font-bold text-emerald-700">100/100 Quality</span>
+                                        <span id="detailQualityScore" class="font-bold text-slate-900">100/100 Quality</span>
                                     </div>
                                 </div>
                             </div>
@@ -464,10 +385,10 @@
                                         All (<span id="tabCountAll">0</span>)
                                     </button>
                                     <button type="button" onclick="setProductFilter('fast_moving')" id="filterTabFast" class="rounded-[8px] px-3 py-1 font-semibold transition-all text-slate-600 hover:text-slate-900 cursor-pointer">
-                                        🔥 Fast (<span id="tabCountFast">0</span>)
+                                        Fast (<span id="tabCountFast">0</span>)
                                     </button>
                                     <button type="button" onclick="setProductFilter('slow_moving')" id="filterTabSlow" class="rounded-[8px] px-3 py-1 font-semibold transition-all text-slate-600 hover:text-slate-900 cursor-pointer">
-                                        ⏳ Slow (<span id="tabCountSlow">0</span>)
+                                        Slow (<span id="tabCountSlow">0</span>)
                                     </button>
                                 </div>
 
@@ -758,8 +679,8 @@
                                 <p class="text-[11px] text-slate-500 truncate mt-0.5">${supplier.contact_person || 'No contact'} · ${supplier.email || supplier.phone || 'No direct info'}</p>
                             </div>
                             <div class="flex items-center gap-1.5 flex-shrink-0">
-                                <span class="rounded-[6px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 text-[10px] font-bold">🔥 ${supplier.fast_moving_count ?? 0}</span>
-                                <span class="rounded-[6px] bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 text-[10px] font-bold">⏳ ${supplier.slow_moving_count ?? 0}</span>
+                                <span class="rounded-[6px] bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 text-[10px] font-semibold">${supplier.fast_moving_count ?? 0} Fast</span>
+                                <span class="rounded-[6px] bg-slate-800 text-slate-200 border border-slate-700 px-2 py-0.5 text-[10px] font-semibold">${supplier.slow_moving_count ?? 0} Slow</span>
                                 <span class="rounded-[6px] bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 text-[10px] font-semibold">${supplier.product_count ?? 0} items</span>
                             </div>
                         `;
@@ -823,7 +744,7 @@
 
                     // Update Trigger Label
                     dropdownSelectedName.textContent = supplier.name;
-                    dropdownSelectedMeta.textContent = `${supplier.product_count ?? 0} products · 🔥 ${supplier.fast_moving_count ?? 0} Fast Moving · ⏳ ${supplier.slow_moving_count ?? 0} Slow Moving · Score: ${supplier.performance_score ?? 0}/100`;
+                    dropdownSelectedMeta.textContent = `${supplier.product_count ?? 0} products · ${supplier.fast_moving_count ?? 0} Fast Moving · ${supplier.slow_moving_count ?? 0} Slow Moving · Score: ${supplier.performance_score ?? 0}/100`;
 
                     // Update Summary Ribbon
                     selectedSupplierRibbon.classList.remove('hidden');
@@ -894,32 +815,29 @@
                     fastMovingBadgeCount.textContent = `${fastProducts.length} item${fastProducts.length === 1 ? '' : 's'}`;
                     slowMovingBadgeCount.textContent = `${slowProducts.length} item${slowProducts.length === 1 ? '' : 's'}`;
 
-                    // Render Fast Moving List
+                    // Render Fast Moving List (Light Gray Sold Badge)
                     fastMovingContainer.innerHTML = '';
                     if (fastProducts.length === 0) {
                         fastMovingContainer.innerHTML = `
                             <div class="py-10 text-center text-xs text-slate-500">
-                                <svg class="w-8 h-8 mx-auto text-emerald-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                                </svg>
                                 No fast-moving products recorded for this supplier.
                             </div>
                         `;
                     } else {
                         fastProducts.forEach(prod => {
                             const card = document.createElement('div');
-                            card.className = 'rounded-[12px] border border-slate-200/90 bg-slate-50/50 p-3 hover:bg-white hover:border-[#6EC1D1] hover:shadow-xs transition-all flex items-center justify-between gap-3';
+                            card.className = 'rounded-[12px] border border-slate-200 bg-white p-3 hover:border-slate-400 hover:shadow-xs transition-all flex items-center justify-between gap-3';
                             card.innerHTML = `
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-center gap-2">
                                         <p class="text-xs font-bold text-slate-900 truncate uppercase">${prod.name}</p>
-                                        <span class="rounded-[6px] bg-white text-slate-700 border border-slate-200 px-2 py-0.5 text-[10px] font-semibold">${prod.category || 'General'}</span>
+                                        <span class="rounded-[6px] bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 text-[10px] font-semibold">${prod.category || 'General'}</span>
                                     </div>
-                                    <p class="text-[11px] text-slate-500 truncate mt-1 font-medium">SKU: <span class="font-mono text-cyan-700 font-semibold">${prod.sku || 'N/A'}</span> · Stock: <span class="font-bold text-slate-900">${prod.stock_quantity}</span></p>
+                                    <p class="text-[11px] text-slate-500 truncate mt-1 font-medium">SKU: <span class="font-mono text-slate-700 font-semibold">${prod.sku || 'N/A'}</span> · Stock: <span class="font-bold text-slate-900">${prod.stock_quantity}</span></p>
                                 </div>
                                 <div class="text-right flex-shrink-0">
-                                    <span class="inline-flex items-center gap-1 rounded-[6px] bg-emerald-600 text-white px-2.5 py-0.5 text-[10px] font-bold shadow-xs">
-                                        🔥 ${prod.units_sold} sold
+                                    <span class="inline-flex items-center rounded-[6px] bg-slate-100 text-slate-700 border border-slate-200/90 px-2.5 py-0.5 text-[10px] font-bold shadow-xs">
+                                        ${prod.units_sold} sold
                                     </span>
                                     <p class="text-xs font-bold text-slate-900 mt-1">₱${Number(prod.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                                 </div>
@@ -928,32 +846,29 @@
                         });
                     }
 
-                    // Render Slow Moving List
+                    // Render Slow Moving List (Darker Slate Sold Badge)
                     slowMovingContainer.innerHTML = '';
                     if (slowProducts.length === 0) {
                         slowMovingContainer.innerHTML = `
                             <div class="py-10 text-center text-xs text-slate-500">
-                                <svg class="w-8 h-8 mx-auto text-amber-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
                                 No slow-moving products for this supplier.
                             </div>
                         `;
                     } else {
                         slowProducts.forEach(prod => {
                             const card = document.createElement('div');
-                            card.className = 'rounded-[12px] border border-slate-200/90 bg-slate-50/50 p-3 hover:bg-white hover:border-amber-300 hover:shadow-xs transition-all flex items-center justify-between gap-3';
+                            card.className = 'rounded-[12px] border border-slate-200 bg-white p-3 hover:border-slate-400 hover:shadow-xs transition-all flex items-center justify-between gap-3';
                             card.innerHTML = `
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-center gap-2">
                                         <p class="text-xs font-bold text-slate-900 truncate uppercase">${prod.name}</p>
-                                        <span class="rounded-[6px] bg-white text-slate-700 border border-slate-200 px-2 py-0.5 text-[10px] font-semibold">${prod.category || 'General'}</span>
+                                        <span class="rounded-[6px] bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 text-[10px] font-semibold">${prod.category || 'General'}</span>
                                     </div>
-                                    <p class="text-[11px] text-slate-500 truncate mt-1 font-medium">SKU: <span class="font-mono text-amber-700 font-semibold">${prod.sku || 'N/A'}</span> · Current Stock: <span class="font-bold text-slate-900">${prod.stock_quantity}</span></p>
+                                    <p class="text-[11px] text-slate-500 truncate mt-1 font-medium">SKU: <span class="font-mono text-slate-700 font-semibold">${prod.sku || 'N/A'}</span> · Current Stock: <span class="font-bold text-slate-900">${prod.stock_quantity}</span></p>
                                 </div>
                                 <div class="text-right flex-shrink-0">
-                                    <span class="inline-flex items-center gap-1 rounded-[6px] bg-amber-100 text-amber-900 border border-amber-200 px-2.5 py-0.5 text-[10px] font-bold">
-                                        ⏳ ${prod.units_sold} sold
+                                    <span class="inline-flex items-center rounded-[6px] bg-slate-800 text-slate-200 border border-slate-700 px-2.5 py-0.5 text-[10px] font-bold shadow-xs">
+                                        ${prod.units_sold} sold
                                     </span>
                                     <p class="text-xs font-bold text-slate-900 mt-1">₱${Number(prod.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                                 </div>
@@ -974,8 +889,8 @@
                             const isDelivered = statusLower === 'completed' || statusLower === 'delivered';
                             const isPartiallyReceived = statusLower === 'partially received';
                             const statusBadgeClass = isDelivered
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                : (isPartiallyReceived ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-slate-100 text-slate-600 border border-slate-200');
+                                ? 'bg-slate-100 text-slate-800 border border-slate-200 font-bold'
+                                : (isPartiallyReceived ? 'bg-slate-200 text-slate-800 border border-slate-300 font-bold' : 'bg-slate-100 text-slate-600 border border-slate-200');
                             const receivedDisplay = order.received_date || order.completed_at || 'Pending';
 
                             detailOrderHistory.insertAdjacentHTML('beforeend', `
@@ -1064,8 +979,8 @@
                     paginated.forEach(product => {
                         const isFast = product.movement_category === 'fast_moving';
                         const badge = isFast
-                            ? '<span class="inline-flex items-center gap-1 rounded-[6px] bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] font-bold text-emerald-700">🔥 Fast Moving</span>'
-                            : '<span class="inline-flex items-center gap-1 rounded-[6px] bg-amber-50 border border-amber-200 px-2 py-0.5 text-[10px] font-bold text-amber-700">⏳ Slow Moving</span>';
+                            ? '<span class="inline-flex items-center rounded-[6px] bg-slate-100 border border-slate-200 px-2.5 py-0.5 text-[10px] font-bold text-slate-700">Fast Moving</span>'
+                            : '<span class="inline-flex items-center rounded-[6px] bg-slate-800 border border-slate-700 px-2.5 py-0.5 text-[10px] font-bold text-slate-200">Slow Moving</span>';
 
                         detailProductTable.insertAdjacentHTML('beforeend', `
                             <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition">

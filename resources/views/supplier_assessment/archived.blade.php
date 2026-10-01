@@ -69,12 +69,24 @@
                                     <td class="px-5 py-3.5 text-slate-600 text-xs font-mono">{{ $supplier->phone ?? '-' }}</td>
                                     <td class="px-5 py-3.5 text-slate-600 text-xs">{{ $supplier->address ?? '-' }}</td>
                                     <td class="px-5 py-3.5 text-right">
-                                        <form method="POST" action="{{ route('supplier.assessment.restore', ['supplier' => $supplier->id]) }}">
-                                            @csrf
-                                            <button type="submit" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-3.5 py-1.5 text-xs font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all cursor-pointer">
-                                                Restore
-                                            </button>
-                                        </form>
+                                        <div class="inline-flex items-center justify-end gap-2">
+                                            <form method="POST" action="{{ route('supplier.assessment.restore', ['supplier' => $supplier->id]) }}">
+                                                @csrf
+                                                <button type="submit" class="inline-flex items-center gap-1.5 rounded-[8px] bg-[#6EC1D1] px-3.5 py-1.5 text-xs font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all cursor-pointer">
+                                                    Restore
+                                                </button>
+                                            </form>
+                                            <form method="POST" action="{{ route('supplier.assessment.force-delete', ['supplier' => $supplier->id]) }}" onsubmit="return confirm('Are you sure you want to permanently delete \'{{ addslashes($supplier->name) }}\'? This action cannot be undone.');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="inline-flex items-center gap-1.5 rounded-[8px] bg-rose-50 text-rose-700 border border-rose-200 px-3 py-1.5 text-xs font-semibold hover:bg-rose-100 hover:border-rose-300 transition-all cursor-pointer shadow-xs">
+                                                    <svg class="h-3.5 w-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                    </svg>
+                                                    Delete Permanently
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
