@@ -7,7 +7,7 @@
                 <p class="text-xs text-slate-500 mt-0.5">Track supplier performance, evaluate inventory turnover, and inspect product pricing.</p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
-                <button type="button" id="openSupplierModal" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-3.5 py-2 text-xs font-bold text-slate-900 border border-slate-200/80 shadow-sm hover:bg-[#59b2c2] hover:shadow transition-all duration-200 cursor-pointer">
+                <button type="button" id="openSupplierModal" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-3.5 py-2 text-xs font-bold text-slate-900 border border-slate-200/80 shadow-sm hover:bg-[#59b2c2] transition-all duration-200 cursor-pointer">
                     <svg class="h-3.5 w-3.5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
@@ -55,7 +55,7 @@
             </div>
         @endif
 
-        <!-- Top Overview Stats Cards (Matching Modern Dashboard Palette) -->
+        <!-- Top Overview Stats Cards (Matching Dashboard & Shop Inventory) -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <!-- Active Suppliers -->
             <div class="border border-gray-200 p-4 bg-white shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
@@ -122,7 +122,7 @@
                         </svg>
                         Supplier Selection
                     </h2>
-                    <p class="text-xs text-slate-300 mt-0.5">Select a supplier from the dropdown below to inspect performance score, pricing, and fast/slow moving items.</p>
+                    <p class="text-xs text-slate-300 mt-0.5">Choose a supplier below to inspect performance score, pricing, and fast/slow moving items.</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="rounded-[10px] bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm whitespace-nowrap">
@@ -155,14 +155,14 @@
                                 </svg>
                             </button>
 
-                            <!-- Dropdown Menu (Floating with high z-index and shadow) -->
-                            <div id="supplierDropdownMenu" class="hidden absolute top-full left-0 right-0 z-50 mt-1.5 rounded-[14px] border border-slate-200 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.18)] overflow-hidden">
-                                <div class="p-2.5 border-b border-slate-100 bg-slate-50/90">
+                            <!-- Dropdown Menu (Floating cleanly with shadow) -->
+                            <div id="supplierDropdownMenu" class="hidden absolute top-full left-0 right-0 z-50 mt-2 rounded-[16px] border border-slate-200 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.18)] overflow-hidden">
+                                <div class="p-3 border-b border-slate-100 bg-slate-50/90">
                                     <div class="relative">
                                         <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/>
                                         </svg>
-                                        <input id="supplierDropdownSearch" type="search" placeholder="Type supplier name, contact, email..." class="w-full rounded-[8px] border border-slate-200 bg-white pl-9 pr-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1]" />
+                                        <input id="supplierDropdownSearch" type="search" placeholder="Type supplier name, contact, email..." class="w-full rounded-[10px] border border-slate-200 bg-white pl-9 pr-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1]" />
                                     </div>
                                 </div>
                                 <div id="supplierDropdownOptions" class="max-h-72 overflow-y-auto divide-y divide-slate-100 bg-white">
@@ -229,20 +229,20 @@
             </div>
         </section>
 
-        <!-- Supplier Details Main Section -->
+        <!-- Supplier Details Main Section (Hidden on Initial Load until User Selects) -->
         <main id="supplierDetailsContainer" class="rounded-[20px] border border-slate-200 bg-white shadow-sm min-h-[350px] overflow-hidden">
-            <!-- Empty State Placeholder -->
+            <!-- Empty State Placeholder (Visible by default) -->
             <div id="supplierDetailPlaceholder" class="p-8 py-20 text-center text-slate-500">
                 <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400 mb-3.5">
                     <svg class="h-8 w-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0v-4m0 4h4m-4-4l4 4"/>
                     </svg>
                 </div>
-                <p class="text-lg font-bold text-slate-900">Select a Supplier from the dropdown above</p>
+                <p class="text-lg font-bold text-slate-900">Select a Supplier Partner from the dropdown above</p>
                 <p class="mt-1 text-xs text-slate-500 max-w-md mx-auto">Choose a supplier above to inspect their performance score, fast &amp; slow moving items, delivery reliability, and product price list.</p>
             </div>
 
-            <!-- Detail Panel (Shown when supplier is selected) -->
+            <!-- Detail Panel (Shown ONLY when a supplier is selected) -->
             <section id="supplierDetailPanel" class="hidden space-y-6">
                 <!-- Supplier Overview Header Banner -->
                 <div class="bg-[#0f172a] px-6 py-5 border-b border-slate-800 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between rounded-t-[20px]">
@@ -275,7 +275,7 @@
                 </div>
 
                 <div class="p-6 pt-0 space-y-6">
-                    <!-- Key Assessment Metric Cards (4 Cards matching exactly your screenshot!) -->
+                    <!-- Key Assessment Metric Cards (4 Clean Cards matching Dashboard) -->
                     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         <!-- Performance Score -->
                         <div class="border border-gray-200 p-4 bg-white shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
@@ -296,19 +296,19 @@
                         </div>
 
                         <!-- Fast Moving Items Count -->
-                        <div class="border border-emerald-200/80 p-4 bg-emerald-50/30 shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
+                        <div class="border border-slate-200 p-4 bg-white shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
                             <div class="flex items-start justify-between gap-2">
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-1.5">
                                         <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                        <p class="text-emerald-950 text-xs font-bold truncate">Fast Moving Items</p>
+                                        <p class="text-slate-900 text-xs font-bold truncate">Fast Moving Items</p>
                                     </div>
                                     <div class="mt-1">
                                         <p id="detailFastMovingCount" class="text-2xl font-bold text-emerald-700 truncate">0</p>
-                                        <p class="text-emerald-700/80 text-xs mt-1 font-medium leading-tight truncate">High demand &amp; sales velocity.</p>
+                                        <p class="text-gray-500 text-xs mt-1 font-medium leading-tight truncate">High demand &amp; sales velocity.</p>
                                     </div>
                                 </div>
-                                <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 rounded-[10px] bg-emerald-100 text-emerald-800">
+                                <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 rounded-[10px] bg-emerald-50 text-emerald-700 border border-emerald-100">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                                     </svg>
@@ -317,19 +317,19 @@
                         </div>
 
                         <!-- Slow Moving Items Count -->
-                        <div class="border border-amber-200/80 p-4 bg-amber-50/30 shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
+                        <div class="border border-slate-200 p-4 bg-white shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
                             <div class="flex items-start justify-between gap-2">
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-1.5">
                                         <span class="inline-block w-2 h-2 rounded-full bg-amber-500"></span>
-                                        <p class="text-amber-950 text-xs font-bold truncate">Slow Moving Items</p>
+                                        <p class="text-slate-900 text-xs font-bold truncate">Slow Moving Items</p>
                                     </div>
                                     <div class="mt-1">
                                         <p id="detailSlowMovingCount" class="text-2xl font-bold text-amber-700 truncate">0</p>
-                                        <p class="text-amber-700/80 text-xs mt-1 font-medium leading-tight truncate">Low turnover / zero recent sales.</p>
+                                        <p class="text-gray-500 text-xs mt-1 font-medium leading-tight truncate">Low turnover / zero recent sales.</p>
                                     </div>
                                 </div>
-                                <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 rounded-[10px] bg-amber-100 text-amber-800">
+                                <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 rounded-[10px] bg-amber-50 text-amber-700 border border-amber-100">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
@@ -356,7 +356,7 @@
                         </div>
                     </div>
 
-                    <!-- Fast & Slow Moving Products Breakdown (The 2 Big Beautiful Containers) -->
+                    <!-- Movement Analysis Breakdown (Clean Modern Card System) -->
                     <div class="border-t border-slate-200 pt-6">
                         <div class="mb-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                             <div>
@@ -368,15 +368,15 @@
 
                         <div class="grid gap-5 sm:grid-cols-1 lg:grid-cols-2">
                             <!-- Left Column: Fast Moving Items -->
-                            <div class="rounded-[16px] border border-emerald-200 bg-white shadow-sm overflow-hidden flex flex-col">
-                                <div class="bg-gradient-to-r from-emerald-600 to-teal-700 px-5 py-3.5 flex items-center justify-between text-white">
+                            <div class="rounded-[16px] border border-slate-200 bg-white shadow-sm overflow-hidden flex flex-col">
+                                <div class="bg-[#0f172a] px-5 py-3.5 flex items-center justify-between text-white border-b border-slate-800">
                                     <div class="flex items-center gap-2">
-                                        <svg class="h-4 w-4 text-emerald-200" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg class="h-4 w-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.527.82-1.17 2.05-1.785 3.322-.44.912-.86 1.874-1.25 2.766-.39.892-.74 1.705-1.03 2.378a9.42 9.42 0 00-.73 2.152A6.993 6.993 0 005 16a7 7 0 0013.93-1.03c.047-.328.07-.663.07-1.002 0-2.316-.95-4.408-2.484-5.91a8.96 8.96 0 00-2.348-1.572c-.596-.282-1.182-.628-1.773-1.026v-.907z" clip-rule="evenodd"/>
                                         </svg>
-                                        <span class="font-bold text-sm">Fast Moving Products</span>
+                                        <span class="font-bold text-sm">🔥 Fast Moving Products</span>
                                     </div>
-                                    <span id="fastMovingBadgeCount" class="rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-semibold backdrop-blur-sm">0 items</span>
+                                    <span id="fastMovingBadgeCount" class="rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 text-xs font-bold">0 items</span>
                                 </div>
                                 <div id="fastMovingContainer" class="p-4 space-y-2.5 flex-1 max-h-80 overflow-y-auto">
                                     <!-- Populated via JavaScript -->
@@ -384,15 +384,15 @@
                             </div>
 
                             <!-- Right Column: Slow Moving Items -->
-                            <div class="rounded-[16px] border border-amber-200 bg-white shadow-sm overflow-hidden flex flex-col">
-                                <div class="bg-gradient-to-r from-amber-600 to-orange-700 px-5 py-3.5 flex items-center justify-between text-white">
+                            <div class="rounded-[16px] border border-slate-200 bg-white shadow-sm overflow-hidden flex flex-col">
+                                <div class="bg-[#0f172a] px-5 py-3.5 flex items-center justify-between text-white border-b border-slate-800">
                                     <div class="flex items-center gap-2">
-                                        <svg class="h-4 w-4 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="h-4 w-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
-                                        <span class="font-bold text-sm">Slow Moving Products</span>
+                                        <span class="font-bold text-sm">⏳ Slow Moving Products</span>
                                     </div>
-                                    <span id="slowMovingBadgeCount" class="rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-semibold backdrop-blur-sm">0 items</span>
+                                    <span id="slowMovingBadgeCount" class="rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-0.5 text-xs font-bold">0 items</span>
                                 </div>
                                 <div id="slowMovingContainer" class="p-4 space-y-2.5 flex-1 max-h-80 overflow-y-auto">
                                     <!-- Populated via JavaScript -->
@@ -886,7 +886,7 @@
                     }
                 }
 
-                // Render Fast and Slow Moving Lists for Active Supplier (Matching Screenshot Cards)
+                // Render Fast and Slow Moving Lists for Active Supplier (Refined & Modern Cards)
                 function renderFastSlowMovingBreakdown(supplier) {
                     const fastProducts = supplier.fast_moving_products || [];
                     const slowProducts = supplier.slow_moving_products || [];
@@ -899,7 +899,7 @@
                     if (fastProducts.length === 0) {
                         fastMovingContainer.innerHTML = `
                             <div class="py-10 text-center text-xs text-slate-500">
-                                <svg class="w-8 h-8 mx-auto text-emerald-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-8 h-8 mx-auto text-emerald-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                                 </svg>
                                 No fast-moving products recorded for this supplier.
@@ -908,17 +908,17 @@
                     } else {
                         fastProducts.forEach(prod => {
                             const card = document.createElement('div');
-                            card.className = 'rounded-[14px] border border-emerald-200/80 bg-white p-3.5 hover:bg-emerald-50/40 hover:border-emerald-300 transition-all flex items-center justify-between gap-3 shadow-xs';
+                            card.className = 'rounded-[12px] border border-slate-200/90 bg-slate-50/50 p-3 hover:bg-white hover:border-[#6EC1D1] hover:shadow-xs transition-all flex items-center justify-between gap-3';
                             card.innerHTML = `
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-center gap-2">
                                         <p class="text-xs font-bold text-slate-900 truncate uppercase">${prod.name}</p>
-                                        <span class="rounded-[6px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 text-[10px] font-semibold">${prod.category || 'General'}</span>
+                                        <span class="rounded-[6px] bg-white text-slate-700 border border-slate-200 px-2 py-0.5 text-[10px] font-semibold">${prod.category || 'General'}</span>
                                     </div>
-                                    <p class="text-[11px] text-slate-500 truncate mt-1 font-medium">SKU: <span class="font-mono text-slate-700">${prod.sku || 'N/A'}</span> · Stock: <span class="font-bold text-slate-900">${prod.stock_quantity}</span></p>
+                                    <p class="text-[11px] text-slate-500 truncate mt-1 font-medium">SKU: <span class="font-mono text-cyan-700 font-semibold">${prod.sku || 'N/A'}</span> · Stock: <span class="font-bold text-slate-900">${prod.stock_quantity}</span></p>
                                 </div>
                                 <div class="text-right flex-shrink-0">
-                                    <span class="inline-flex items-center gap-1 rounded-[8px] bg-emerald-600 text-white px-2.5 py-0.5 text-[10px] font-bold shadow-xs">
+                                    <span class="inline-flex items-center gap-1 rounded-[6px] bg-emerald-600 text-white px-2.5 py-0.5 text-[10px] font-bold shadow-xs">
                                         🔥 ${prod.units_sold} sold
                                     </span>
                                     <p class="text-xs font-bold text-slate-900 mt-1">₱${Number(prod.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
@@ -933,7 +933,7 @@
                     if (slowProducts.length === 0) {
                         slowMovingContainer.innerHTML = `
                             <div class="py-10 text-center text-xs text-slate-500">
-                                <svg class="w-8 h-8 mx-auto text-amber-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-8 h-8 mx-auto text-amber-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                                 No slow-moving products for this supplier.
@@ -942,17 +942,17 @@
                     } else {
                         slowProducts.forEach(prod => {
                             const card = document.createElement('div');
-                            card.className = 'rounded-[14px] border border-amber-200/80 bg-white p-3.5 hover:bg-amber-50/40 hover:border-amber-300 transition-all flex items-center justify-between gap-3 shadow-xs';
+                            card.className = 'rounded-[12px] border border-slate-200/90 bg-slate-50/50 p-3 hover:bg-white hover:border-amber-300 hover:shadow-xs transition-all flex items-center justify-between gap-3';
                             card.innerHTML = `
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-center gap-2">
                                         <p class="text-xs font-bold text-slate-900 truncate uppercase">${prod.name}</p>
-                                        <span class="rounded-[6px] bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 text-[10px] font-semibold">${prod.category || 'General'}</span>
+                                        <span class="rounded-[6px] bg-white text-slate-700 border border-slate-200 px-2 py-0.5 text-[10px] font-semibold">${prod.category || 'General'}</span>
                                     </div>
-                                    <p class="text-[11px] text-slate-500 truncate mt-1 font-medium">SKU: <span class="font-mono text-slate-700">${prod.sku || 'N/A'}</span> · Current Stock: <span class="font-bold text-slate-900">${prod.stock_quantity}</span></p>
+                                    <p class="text-[11px] text-slate-500 truncate mt-1 font-medium">SKU: <span class="font-mono text-amber-700 font-semibold">${prod.sku || 'N/A'}</span> · Current Stock: <span class="font-bold text-slate-900">${prod.stock_quantity}</span></p>
                                 </div>
                                 <div class="text-right flex-shrink-0">
-                                    <span class="inline-flex items-center gap-1 rounded-[8px] bg-amber-100 text-amber-900 border border-amber-200 px-2.5 py-0.5 text-[10px] font-bold">
+                                    <span class="inline-flex items-center gap-1 rounded-[6px] bg-amber-100 text-amber-900 border border-amber-200 px-2.5 py-0.5 text-[10px] font-bold">
                                         ⏳ ${prod.units_sold} sold
                                     </span>
                                     <p class="text-xs font-bold text-slate-900 mt-1">₱${Number(prod.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
