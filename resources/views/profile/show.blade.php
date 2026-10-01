@@ -175,9 +175,10 @@
                             <div>
                                 <label class="cursor-pointer">
                                     <span class="inline-flex items-center rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 hover:bg-slate-50 transition">Change Photo</span>
-                                    <input type="file" name="avatar" accept="image/*" class="hidden" />
+                                    <input type="file" name="avatar" id="avatarFileInput" accept="image/png,image/jpeg,image/jpg,image/webp,image/gif" class="hidden" />
                                 </label>
-                                <p class="text-xs text-slate-500 mt-1.5">JPG, PNG or GIF. Max 5MB.</p>
+                                <p class="text-xs text-slate-500 mt-1.5">JPG, PNG, WEBP or GIF. Max 5MB.</p>
+                                <p id="avatarSizeError" class="hidden text-xs text-red-600 font-medium mt-1"></p>
                             </div>
                         </div>
                     </div>
@@ -351,11 +352,30 @@
             if (e.key === 'Escape') closeModal();
         });
 
-        // avatar preview for both profile and modal
+        // avatar preview and validation for both profile and modal
         document.querySelectorAll('input[type=file][name=avatar]').forEach(input => {
             input.addEventListener('change', function(e){
                 const file = e.target.files[0];
-                if (!file) return;
+                const errorEl = document.getElementById('avatarSizeError');
+                if (!file) {
+                    if (errorEl) errorEl.classList.add('hidden');
+                    return;
+                }
+
+                // Check file size (Max 5MB = 5 * 1024 * 1024 bytes)
+                const maxBytes = 5 * 1024 * 1024;
+                if (file.size > maxBytes) {
+                    const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+                    if (errorEl) {
+                        errorEl.textContent = `The selected file is too large (${sizeMB}MB). Maximum allowed is 5MB.`;
+                        errorEl.classList.remove('hidden');
+                    }
+                    input.value = ''; // clear input so form won't submit oversized file
+                    return;
+                }
+
+                if (errorEl) errorEl.classList.add('hidden');
+
                 const reader = new FileReader();
                 reader.onload = function(ev){
                     const large = document.getElementById('avatarLarge');

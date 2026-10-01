@@ -165,18 +165,19 @@ class UserController extends Controller
             ];
         }
 
-        // Only add avatar rule when a valid file is actually present.
-        // isValid() ensures the PHP upload succeeded and the temp path is not empty —
-        // calling store() on an invalid file throws ValueError("Path must not be empty").
-        $hasValidAvatar = $request->hasFile('avatar') && $request->file('avatar')->isValid();
-        if ($hasValidAvatar) {
-            $rules['avatar'] = 'image|max:5120';
+        if ($request->hasFile('avatar')) {
+            $rules['avatar'] = 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120';
         }
 
         $data = $request->validate($rules, [
             'password.regex'     => 'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character.',
             'password.confirmed' => 'The password confirmation does not match.',
+            'avatar.max'         => 'The profile picture must not be larger than 5MB. Please select a smaller file.',
+            'avatar.image'       => 'The profile picture must be a valid image file (JPG, PNG, GIF, WEBP).',
+            'avatar.mimes'       => 'The profile picture must be a file of type: jpeg, png, jpg, gif, webp.',
         ]);
+
+        $hasValidAvatar = $request->hasFile('avatar') && $request->file('avatar')->isValid();
 
         // ALWAYS remove avatar from $data immediately — it may contain an UploadedFile
         // object which, if passed to update(), gets cast to the raw Windows temp path.

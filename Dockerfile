@@ -28,7 +28,10 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
         bcmath \
         gd \
         zip \
-        intl
+        intl \
+    && echo "upload_max_filesize = 64M" > /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "post_max_size = 64M" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "memory_limit = 256M" >> /usr/local/etc/php/conf.d/uploads.ini
 
 # Get Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
