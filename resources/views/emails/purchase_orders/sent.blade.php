@@ -8,26 +8,6 @@
             <td>{{ $purchaseOrder->order_number }}</td>
         </tr>
         <tr>
-            <td>Expected delivery date</td>
-            <td>
-                @php
-                    $deliveryDate = $purchaseOrder->estimated_delivery_date ?? $purchaseOrder->expected_delivery_date;
-                    if ($deliveryDate instanceof \DateTimeInterface) {
-                        $formattedDate = $deliveryDate->format('M j, Y');
-                    } elseif ($deliveryDate && strtotime((string)$deliveryDate)) {
-                        $formattedDate = date('M j, Y', strtotime((string)$deliveryDate));
-                    } else {
-                        $formattedDate = 'TBD';
-                    }
-                @endphp
-                {{ $formattedDate }}
-            </td>
-        </tr>
-        <tr>
-            <td>Status</td>
-            <td>{{ ucfirst($purchaseOrder->status) }}</td>
-        </tr>
-        <tr>
             <td>Total amount</td>
             <td>₱{{ number_format((float) ($purchaseOrder->total_amount ?? 0), 2) }}</td>
         </tr>
