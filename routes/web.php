@@ -64,7 +64,7 @@ Route::get('/reset-password', [App\Http\Controllers\Auth\ForgotPasswordControlle
 Route::post('/reset-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'resetPassword'])->name('reset-password.update');
 
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'active'])->group(function () {
     // Dashboard - All authenticated users
     Route::get('dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     Route::get('dashboard/data', [App\Http\Controllers\DashboardController::class, 'data'])->name('dashboard.data');

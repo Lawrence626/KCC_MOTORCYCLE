@@ -17,9 +17,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'login/otp/*',
             'forgot-password/*',
         ]);
-        $middleware->web(append: [
-            \App\Http\Middleware\EnsureUserIsActive::class,
-        ]);
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
             'active' => \App\Http\Middleware\EnsureUserIsActive::class,
