@@ -1,49 +1,53 @@
 <x-layouts.app :title="__('Supplier Assessment')">
 
     <x-slot name="header">
-        <div class="flex items-center justify-between w-full">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between w-full">
             <div>
-                <h1 class="text-lg font-bold text-slate-900 leading-tight">Supplier Assessment</h1>
-                <p class="text-xs text-slate-500 mt-0.5">Track supplier performance, manage supplier records, and inspect products with pricing at a glance.</p>
+                <h1 class="text-3xl font-bold text-slate-900">Supplier Assessment</h1>
+                <p class="text-xs text-slate-500 mt-0.5">Track supplier performance, evaluate inventory turnover, and inspect product pricing.</p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
-                <button type="button" id="openSupplierModal" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all duration-200 cursor-pointer">
+                <button type="button" id="openSupplierModal" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-3.5 py-2 text-xs font-bold text-slate-900 border border-slate-200/80 shadow-sm hover:bg-[#59b2c2] hover:shadow transition-all duration-200 cursor-pointer">
                     <svg class="h-3.5 w-3.5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
-                    Add supplier
+                    Add Supplier
                 </button>
-                <a href="{{ route('supplier.assessment.archived') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 transition-all duration-200">
-                    <svg class="h-3.5 w-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="{{ route('supplier.assessment.archived') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 hover:text-slate-900 transition-all duration-200">
+                    <svg class="h-3.5 w-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
                     </svg>
-                    Archive list
+                    Archive List
                 </a>
             </div>
         </div>
     </x-slot>
 
-    <div class="space-y-4">
+    <div class="space-y-6">
 
         @if(session('success'))
-            <div id="success-toast" class="fixed top-4 right-8 z-50 rounded-[10px] border border-[#6EC1D1] bg-teal-50 p-4 text-sm font-medium text-slate-900 shadow-lg">
-                {{ session('success') }}
+            <div id="success-toast" class="fixed top-4 right-8 z-50 rounded-[12px] border border-[#6EC1D1] bg-teal-50 px-4 py-3.5 text-sm font-medium text-slate-900 shadow-xl flex items-center gap-2">
+                <svg class="w-4 h-4 text-teal-700" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <span>{{ session('success') }}</span>
             </div>
             <script>
                 setTimeout(() => {
                     const toast = document.getElementById('success-toast');
                     if (toast) {
                         toast.style.opacity = '0';
-                        toast.style.transition = 'opacity 0.5s ease';
-                        setTimeout(() => toast.remove(), 500);
+                        toast.style.transition = 'opacity 0.4s ease';
+                        setTimeout(() => toast.remove(), 400);
                     }
                 }, 3500);
             </script>
         @endif
 
         @if($errors->any())
-            <div class="rounded-[14px] border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
-                <ul class="list-disc pl-5 space-y-1">
+            <div class="rounded-[16px] border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800 shadow-sm">
+                <div class="font-bold mb-1">Please fix the following errors:</div>
+                <ul class="list-disc pl-5 space-y-0.5 text-xs">
                     @foreach($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -51,15 +55,16 @@
             </div>
         @endif
 
-        <!-- Quick Top Stats Cards -->
-        <div class="grid gap-4 sm:grid-cols-3">
-            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+        <!-- Top Overview Stats Cards (Matching Modern Dashboard Palette) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <!-- Active Suppliers -->
+            <div class="border border-gray-200 p-4 bg-white shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
                 <div class="flex items-start justify-between gap-2">
                     <div class="flex-1 min-w-0">
-                        <p class="text-black text-xs font-semibold">Active Suppliers</p>
+                        <p class="text-black text-xs font-semibold truncate">Active Suppliers</p>
                         <div class="mt-1">
-                            <p class="text-2xl font-bold text-black">{{ number_format($quickStats['activeSuppliers']) }}</p>
-                            <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Currently active supplier partners.</p>
+                            <p class="text-2xl font-bold text-black truncate">{{ number_format($quickStats['activeSuppliers']) }}</p>
+                            <p class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Currently active supplier partners.</p>
                         </div>
                     </div>
                     <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
@@ -70,13 +75,14 @@
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+            <!-- Tracked Products -->
+            <div class="border border-gray-200 p-4 bg-white shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
                 <div class="flex items-start justify-between gap-2">
                     <div class="flex-1 min-w-0">
-                        <p class="text-black text-xs font-semibold">Tracked Products</p>
+                        <p class="text-black text-xs font-semibold truncate">Tracked Products</p>
                         <div class="mt-1">
-                            <p class="text-2xl font-bold text-black">{{ number_format($quickStats['trackedProducts']) }}</p>
-                            <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Catalog items linked across suppliers.</p>
+                            <p class="text-2xl font-bold text-black truncate">{{ number_format($quickStats['trackedProducts']) }}</p>
+                            <p class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Catalog items linked across suppliers.</p>
                         </div>
                     </div>
                     <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
@@ -87,13 +93,14 @@
                 </div>
             </div>
 
-            <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+            <!-- Total Supplier Stock Value -->
+            <div class="border border-gray-200 p-4 bg-white shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
                 <div class="flex items-start justify-between gap-2">
                     <div class="flex-1 min-w-0">
-                        <p class="text-black text-xs font-semibold">Supplier Stock Value</p>
+                        <p class="text-black text-xs font-semibold truncate">Supplier Stock Value</p>
                         <div class="mt-1">
-                            <p class="text-2xl font-bold text-black">&#8369;{{ number_format($quickStats['stockValue'], 2) }}</p>
-                            <p class="text-gray-500 text-[11px] leading-tight mt-1 font-medium whitespace-nowrap">Combined inventory value of supplier stock.</p>
+                            <p class="text-2xl font-bold text-black truncate">&#8369;{{ number_format($quickStats['stockValue'], 2) }}</p>
+                            <p class="text-gray-500 text-xs leading-tight mt-1 font-medium truncate">Combined inventory value across vendors.</p>
                         </div>
                     </div>
                     <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
@@ -106,16 +113,16 @@
         </div>
 
         <!-- Supplier Dropdown Selector Section (Clean & Space-Saving) -->
-        <section class="relative z-30 rounded-[15px] border border-slate-200 bg-white shadow-sm">
-            <div class="bg-[#0f172a] px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-slate-800 rounded-t-[15px]">
+        <section class="relative z-30 rounded-[20px] border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div class="bg-[#0f172a] px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-slate-800">
                 <div>
-                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                        <svg class="h-5 w-5 text-[#6EC1D1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <svg class="h-4 w-4 text-[#6EC1D1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0v-4m0 4h4m-4-4l4 4"/>
                         </svg>
                         Supplier Selection
                     </h2>
-                    <p class="text-xs text-slate-300">Select a supplier from the dropdown below to evaluate performance, pricing, and fast/slow moving items</p>
+                    <p class="text-xs text-slate-300 mt-0.5">Select a supplier from the dropdown below to inspect performance score, pricing, and fast/slow moving items.</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="rounded-[10px] bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm whitespace-nowrap">
@@ -124,14 +131,14 @@
                 </div>
             </div>
 
-            <div class="p-5 space-y-4 rounded-b-[15px]">
+            <div class="p-5 space-y-4">
                 <div class="flex flex-col md:flex-row md:items-center gap-3">
                     <div class="relative flex-1">
-                        <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Select Supplier Partner</label>
+                        <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Select Supplier Partner</label>
                         
                         <!-- Custom Searchable Dropdown Trigger -->
                         <div class="relative">
-                            <button id="supplierDropdownBtn" type="button" class="w-full flex items-center justify-between gap-3 rounded-[12px] border border-slate-300 bg-slate-50/70 px-4 py-3 text-left text-sm font-semibold text-slate-900 hover:bg-slate-100 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] transition-all duration-200 cursor-pointer">
+                            <button id="supplierDropdownBtn" type="button" class="w-full flex items-center justify-between gap-3 rounded-[12px] border border-slate-300 bg-slate-50/80 px-4 py-3 text-left text-sm font-semibold text-slate-900 hover:bg-slate-100 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] transition-all duration-200 cursor-pointer shadow-xs">
                                 <div class="flex items-center gap-3 min-w-0 flex-1">
                                     <div class="w-8 h-8 rounded-[8px] bg-[#6EC1D1]/20 flex items-center justify-center flex-shrink-0 text-slate-900">
                                         <svg class="w-4 h-4 text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -149,13 +156,13 @@
                             </button>
 
                             <!-- Dropdown Menu (Floating with high z-index and shadow) -->
-                            <div id="supplierDropdownMenu" class="hidden absolute top-full left-0 right-0 z-50 mt-1.5 rounded-[12px] border border-slate-300 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.2)] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
-                                <div class="p-2.5 border-b border-slate-200 bg-slate-50/90">
+                            <div id="supplierDropdownMenu" class="hidden absolute top-full left-0 right-0 z-50 mt-1.5 rounded-[14px] border border-slate-200 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.18)] overflow-hidden">
+                                <div class="p-2.5 border-b border-slate-100 bg-slate-50/90">
                                     <div class="relative">
                                         <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/>
                                         </svg>
-                                        <input id="supplierDropdownSearch" type="search" placeholder="Type supplier name, contact, email..." class="w-full rounded-[8px] border border-slate-200 bg-white pl-9 pr-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#6EC1D1]" />
+                                        <input id="supplierDropdownSearch" type="search" placeholder="Type supplier name, contact, email..." class="w-full rounded-[8px] border border-slate-200 bg-white pl-9 pr-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1]" />
                                     </div>
                                 </div>
                                 <div id="supplierDropdownOptions" class="max-h-72 overflow-y-auto divide-y divide-slate-100 bg-white">
@@ -198,7 +205,7 @@
                 </div>
 
                 <!-- Selected Supplier Quick Summary Ribbon -->
-                <div id="selectedSupplierRibbon" class="hidden rounded-[12px] bg-slate-50 border border-slate-200/80 p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div id="selectedSupplierRibbon" class="hidden rounded-[14px] bg-slate-50 border border-slate-200/80 p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
                     <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-slate-600">
                         <div class="flex items-center gap-2">
                             <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
@@ -223,25 +230,25 @@
         </section>
 
         <!-- Supplier Details Main Section -->
-        <main id="supplierDetailsContainer" class="rounded-[15px] border border-slate-200 bg-white shadow-sm min-h-[350px] overflow-hidden">
+        <main id="supplierDetailsContainer" class="rounded-[20px] border border-slate-200 bg-white shadow-sm min-h-[350px] overflow-hidden">
             <!-- Empty State Placeholder -->
-            <div id="supplierDetailPlaceholder" class="p-6 py-16 text-center text-slate-500">
-                <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400 mb-3">
+            <div id="supplierDetailPlaceholder" class="p-8 py-20 text-center text-slate-500">
+                <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400 mb-3.5">
                     <svg class="h-8 w-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0v-4m0 4h4m-4-4l4 4"/>
                     </svg>
                 </div>
-                <p class="text-lg font-semibold text-slate-900">Select a Supplier from the dropdown</p>
-                <p class="mt-1 text-sm text-slate-500 max-w-md mx-auto">Choose a supplier above to inspect performance score, fast &amp; slow moving items, delivery reliability, and product price list.</p>
+                <p class="text-lg font-bold text-slate-900">Select a Supplier from the dropdown above</p>
+                <p class="mt-1 text-xs text-slate-500 max-w-md mx-auto">Choose a supplier above to inspect their performance score, fast &amp; slow moving items, delivery reliability, and product price list.</p>
             </div>
 
             <!-- Detail Panel (Shown when supplier is selected) -->
             <section id="supplierDetailPanel" class="hidden space-y-6">
-                <!-- Supplier Overview Header -->
-                <div class="bg-[#0f172a] px-6 py-5 border-b border-slate-800 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between rounded-t-[15px]">
+                <!-- Supplier Overview Header Banner -->
+                <div class="bg-[#0f172a] px-6 py-5 border-b border-slate-800 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between rounded-t-[20px]">
                     <div>
-                        <p class="text-xs uppercase tracking-wider font-semibold text-[#6EC1D1]">Supplier overview</p>
-                        <h2 id="detailSupplierName" class="mt-0.5 text-2xl md:text-2xl font-bold text-white"></h2>
+                        <p class="text-[11px] uppercase tracking-wider font-bold text-[#6EC1D1]">Supplier Overview</p>
+                        <h2 id="detailSupplierName" class="mt-0.5 text-2xl font-bold text-white"></h2>
                         <p id="detailSupplierNotes" class="mt-1 text-xs text-slate-300"></p>
                         <p id="detailSupplierAddress" class="mt-1 text-xs text-slate-400"></p>
                     </div>
@@ -268,16 +275,16 @@
                 </div>
 
                 <div class="p-6 pt-0 space-y-6">
-                    <!-- Key Assessment Metric Cards (Including Fast & Slow Moving) -->
+                    <!-- Key Assessment Metric Cards (4 Cards matching exactly your screenshot!) -->
                     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         <!-- Performance Score -->
-                        <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                        <div class="border border-gray-200 p-4 bg-white shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
                             <div class="flex items-start justify-between gap-2">
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-black text-xs font-semibold">Performance Score</p>
+                                    <p class="text-black text-xs font-semibold truncate">Performance Score</p>
                                     <div class="mt-1">
-                                        <p id="detailPerformanceScore" class="text-2xl font-bold text-black">0/100</p>
-                                        <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Overall vendor rating score.</p>
+                                        <p id="detailPerformanceScore" class="text-2xl font-bold text-black truncate">0/100</p>
+                                        <p class="text-gray-500 text-xs mt-1 font-medium leading-tight truncate">Overall vendor rating score.</p>
                                     </div>
                                 </div>
                                 <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
@@ -289,16 +296,16 @@
                         </div>
 
                         <!-- Fast Moving Items Count -->
-                        <div class="border border-emerald-200 p-4 bg-emerald-50/40 shadow-sm" style="border-radius: 20px;">
+                        <div class="border border-emerald-200/80 p-4 bg-emerald-50/30 shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
                             <div class="flex items-start justify-between gap-2">
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-1.5">
                                         <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                        <p class="text-emerald-950 text-xs font-bold">Fast Moving Items</p>
+                                        <p class="text-emerald-950 text-xs font-bold truncate">Fast Moving Items</p>
                                     </div>
                                     <div class="mt-1">
-                                        <p id="detailFastMovingCount" class="text-2xl font-bold text-emerald-700">0</p>
-                                        <p class="text-emerald-700/80 text-[10px] mt-1 font-medium leading-tight">High demand &amp; sales velocity.</p>
+                                        <p id="detailFastMovingCount" class="text-2xl font-bold text-emerald-700 truncate">0</p>
+                                        <p class="text-emerald-700/80 text-xs mt-1 font-medium leading-tight truncate">High demand &amp; sales velocity.</p>
                                     </div>
                                 </div>
                                 <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 rounded-[10px] bg-emerald-100 text-emerald-800">
@@ -310,16 +317,16 @@
                         </div>
 
                         <!-- Slow Moving Items Count -->
-                        <div class="border border-amber-200 p-4 bg-amber-50/40 shadow-sm" style="border-radius: 20px;">
+                        <div class="border border-amber-200/80 p-4 bg-amber-50/30 shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
                             <div class="flex items-start justify-between gap-2">
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-1.5">
                                         <span class="inline-block w-2 h-2 rounded-full bg-amber-500"></span>
-                                        <p class="text-amber-950 text-xs font-bold">Slow Moving Items</p>
+                                        <p class="text-amber-950 text-xs font-bold truncate">Slow Moving Items</p>
                                     </div>
                                     <div class="mt-1">
-                                        <p id="detailSlowMovingCount" class="text-2xl font-bold text-amber-700">0</p>
-                                        <p class="text-amber-700/80 text-[10px] mt-1 font-medium leading-tight">Low turnover / zero recent sales.</p>
+                                        <p id="detailSlowMovingCount" class="text-2xl font-bold text-amber-700 truncate">0</p>
+                                        <p class="text-amber-700/80 text-xs mt-1 font-medium leading-tight truncate">Low turnover / zero recent sales.</p>
                                     </div>
                                 </div>
                                 <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 rounded-[10px] bg-amber-100 text-amber-800">
@@ -331,13 +338,13 @@
                         </div>
 
                         <!-- Total Products Count -->
-                        <div class="border border-gray-200 p-4 bg-white shadow-sm" style="border-radius: 20px;">
+                        <div class="border border-gray-200 p-4 bg-white shadow-sm hover:shadow-md transition-shadow" style="border-radius: 20px;">
                             <div class="flex items-start justify-between gap-2">
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-black text-xs font-semibold">Total Supplied Catalog</p>
+                                    <p class="text-black text-xs font-semibold truncate">Total Supplied Catalog</p>
                                     <div class="mt-1">
-                                        <p id="detailProductCount" class="text-2xl font-bold text-black">0</p>
-                                        <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Total products from this supplier.</p>
+                                        <p id="detailProductCount" class="text-2xl font-bold text-black truncate">0</p>
+                                        <p class="text-gray-500 text-xs mt-1 font-medium leading-tight truncate">Total products from this supplier.</p>
                                     </div>
                                 </div>
                                 <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="border-radius: 10px; background-color: rgba(110, 193, 209, 0.18);">
@@ -349,17 +356,17 @@
                         </div>
                     </div>
 
-                    <!-- Fast & Slow Moving Products Breakdown for this Supplier -->
+                    <!-- Fast & Slow Moving Products Breakdown (The 2 Big Beautiful Containers) -->
                     <div class="border-t border-slate-200 pt-6">
                         <div class="mb-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                                <p class="text-xs uppercase tracking-wider font-semibold text-[#145a66]">Movement Analysis Per Supplier</p>
+                                <p class="text-[11px] uppercase tracking-wider font-bold text-[#145a66]">Movement Analysis Per Supplier</p>
                                 <h3 class="text-lg font-bold text-slate-900">Fast &amp; Slow Moving Products</h3>
                             </div>
                             <span class="text-xs text-slate-500">Classified based on POS transaction sales velocity &amp; turnover rate</span>
                         </div>
 
-                        <div class="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
+                        <div class="grid gap-5 sm:grid-cols-1 lg:grid-cols-2">
                             <!-- Left Column: Fast Moving Items -->
                             <div class="rounded-[16px] border border-emerald-200 bg-white shadow-sm overflow-hidden flex flex-col">
                                 <div class="bg-gradient-to-r from-emerald-600 to-teal-700 px-5 py-3.5 flex items-center justify-between text-white">
@@ -367,11 +374,11 @@
                                         <svg class="h-4 w-4 text-emerald-200" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.527.82-1.17 2.05-1.785 3.322-.44.912-.86 1.874-1.25 2.766-.39.892-.74 1.705-1.03 2.378a9.42 9.42 0 00-.73 2.152A6.993 6.993 0 005 16a7 7 0 0013.93-1.03c.047-.328.07-.663.07-1.002 0-2.316-.95-4.408-2.484-5.91a8.96 8.96 0 00-2.348-1.572c-.596-.282-1.182-.628-1.773-1.026v-.907z" clip-rule="evenodd"/>
                                         </svg>
-                                        <span class="font-bold text-sm">🔥 Fast Moving Products</span>
+                                        <span class="font-bold text-sm">Fast Moving Products</span>
                                     </div>
                                     <span id="fastMovingBadgeCount" class="rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-semibold backdrop-blur-sm">0 items</span>
                                 </div>
-                                <div id="fastMovingContainer" class="p-4 space-y-2.5 flex-1 max-h-72 overflow-y-auto">
+                                <div id="fastMovingContainer" class="p-4 space-y-2.5 flex-1 max-h-80 overflow-y-auto">
                                     <!-- Populated via JavaScript -->
                                 </div>
                             </div>
@@ -383,11 +390,11 @@
                                         <svg class="h-4 w-4 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
-                                        <span class="font-bold text-sm">⏳ Slow Moving Products</span>
+                                        <span class="font-bold text-sm">Slow Moving Products</span>
                                     </div>
                                     <span id="slowMovingBadgeCount" class="rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-semibold backdrop-blur-sm">0 items</span>
                                 </div>
-                                <div id="slowMovingContainer" class="p-4 space-y-2.5 flex-1 max-h-72 overflow-y-auto">
+                                <div id="slowMovingContainer" class="p-4 space-y-2.5 flex-1 max-h-80 overflow-y-auto">
                                     <!-- Populated via JavaScript -->
                                 </div>
                             </div>
@@ -398,7 +405,7 @@
                     <div class="border-t border-slate-200 pt-6">
                         <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                             <div>
-                                <p class="text-xs uppercase tracking-wider font-semibold text-slate-500">Performance Summary</p>
+                                <p class="text-[11px] uppercase tracking-wider font-bold text-slate-500">Performance Summary</p>
                                 <h3 class="mt-0.5 text-lg font-bold text-slate-900">Delivery &amp; Order Reliability</h3>
                             </div>
                             <div class="flex flex-wrap gap-2">
@@ -414,26 +421,26 @@
                             </div>
                             <div>
                                 <p class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2.5">Fulfillment &amp; Accuracy Metrics</p>
-                                <div class="space-y-4 rounded-[16px] bg-slate-50/70 border border-slate-200/80 p-4">
+                                <div class="space-y-4 rounded-[16px] bg-slate-50/80 border border-slate-200 p-4">
                                     <div>
-                                        <div class="flex justify-between text-xs text-slate-600 font-medium mb-1">
+                                        <div class="flex justify-between text-xs text-slate-600 font-medium mb-1.5">
                                             <span>On-Time Delivery</span>
                                             <span id="detailOnTimeText" class="font-bold text-slate-900">0%</span>
                                         </div>
                                         <div class="h-2.5 overflow-hidden rounded-full bg-slate-200">
-                                            <div id="detailOnTimeBar" class="h-full rounded-full bg-[#6EC1D1]" style="width: 0%"></div>
+                                            <div id="detailOnTimeBar" class="h-full rounded-full bg-[#6EC1D1] transition-all duration-500" style="width: 0%"></div>
                                         </div>
                                     </div>
                                     <div>
-                                        <div class="flex justify-between text-xs text-slate-600 font-medium mb-1">
+                                        <div class="flex justify-between text-xs text-slate-600 font-medium mb-1.5">
                                             <span>Order Completion</span>
                                             <span id="detailCompletionText" class="font-bold text-slate-900">0%</span>
                                         </div>
                                         <div class="h-2.5 overflow-hidden rounded-full bg-slate-200">
-                                            <div id="detailCompletionBar" class="h-full rounded-full bg-slate-900" style="width: 0%"></div>
+                                            <div id="detailCompletionBar" class="h-full rounded-full bg-slate-900 transition-all duration-500" style="width: 0%"></div>
                                         </div>
                                     </div>
-                                    <div class="pt-2 border-t border-slate-200/60 flex items-center justify-between text-xs">
+                                    <div class="pt-2.5 border-t border-slate-200 flex items-center justify-between text-xs">
                                         <span class="text-slate-500">Quality &amp; Defect Rating:</span>
                                         <span id="detailQualityScore" class="font-bold text-emerald-700">100/100 Quality</span>
                                     </div>
@@ -446,7 +453,7 @@
                     <div class="border-t border-slate-200 pt-6">
                         <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                             <div>
-                                <p class="text-xs uppercase tracking-wider font-semibold text-slate-500">Catalog &amp; Pricing</p>
+                                <p class="text-[11px] uppercase tracking-wider font-bold text-slate-500">Catalog &amp; Pricing</p>
                                 <h3 class="mt-0.5 text-lg font-bold text-slate-900">Product Price List</h3>
                             </div>
 
@@ -469,28 +476,28 @@
                                     <svg class="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/>
                                     </svg>
-                                    <input id="productSearchInput" type="search" placeholder="Search product / SKU..." class="w-full rounded-[10px] border border-slate-200 bg-white pl-8 pr-3 py-1.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#6EC1D1]" />
+                                    <input id="productSearchInput" type="search" placeholder="Search product / SKU..." class="w-full rounded-[10px] border border-slate-200 bg-white pl-8 pr-3 py-1.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1]" />
                                 </div>
 
                                 <span id="detailTotalValue" class="rounded-[10px] bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-900 border border-slate-200 whitespace-nowrap">₱0.00</span>
                             </div>
                         </div>
 
-                        <div class="overflow-x-auto rounded-[10px] border border-slate-200">
+                        <div class="overflow-x-auto rounded-[14px] border border-slate-200 shadow-xs">
                             <table class="min-w-full text-left text-sm text-slate-700">
-                                <thead class="bg-[#0f172a] border-b border-slate-200 text-xs font-semibold text-white uppercase tracking-wider">
+                                <thead class="bg-[#0f172a] border-b border-slate-800 text-xs font-semibold text-white uppercase tracking-wider">
                                     <tr>
-                                        <th class="px-4 py-3 font-semibold text-white">Product</th>
-                                        <th class="px-4 py-3 font-semibold text-white">SKU</th>
-                                        <th class="px-4 py-3 font-semibold text-white">Category</th>
-                                        <th class="px-4 py-3 font-semibold text-white">Stock</th>
-                                        <th class="px-4 py-3 font-semibold text-white">Unit Price</th>
-                                        <th class="px-4 py-3 font-semibold text-white">Units Sold</th>
-                                        <th class="px-4 py-3 font-semibold text-white">Movement Status</th>
-                                        <th class="px-4 py-3 font-semibold text-white">Last Restock</th>
+                                        <th class="px-4 py-3.5 font-semibold text-white">Product</th>
+                                        <th class="px-4 py-3.5 font-semibold text-white">SKU</th>
+                                        <th class="px-4 py-3.5 font-semibold text-white">Category</th>
+                                        <th class="px-4 py-3.5 font-semibold text-white">Stock</th>
+                                        <th class="px-4 py-3.5 font-semibold text-white">Unit Price</th>
+                                        <th class="px-4 py-3.5 font-semibold text-white">Units Sold</th>
+                                        <th class="px-4 py-3.5 font-semibold text-white">Movement Status</th>
+                                        <th class="px-4 py-3.5 font-semibold text-white">Last Restock</th>
                                     </tr>
                                 </thead>
-                                <tbody id="detailProductTable" class="divide-y divide-slate-200 bg-white"></tbody>
+                                <tbody id="detailProductTable" class="divide-y divide-slate-100 bg-white"></tbody>
                             </table>
                         </div>
                         <div id="productPagination" class="mt-4 flex flex-col items-center gap-2 sm:flex-row sm:justify-between"></div>
@@ -502,13 +509,13 @@
         <!-- Add / Edit Supplier Modal -->
         <div id="supplierModal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-4">
             <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" data-action="close-modal"></div>
-            <div class="relative w-full max-w-2xl overflow-hidden rounded-[28px] bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] max-h-[90vh] overflow-y-auto">
-                <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
+            <div class="relative w-full max-w-2xl overflow-hidden rounded-[24px] bg-white shadow-[0_30px_80px_rgba(15,23,42,0.22)] max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between border-b border-slate-100 bg-[#0f172a] px-6 py-5">
                     <div>
-                        <h2 id="supplierModalTitle" class="text-xl font-bold text-black">Add supplier</h2>
-                        <p id="supplierModalSubtitle" class="text-sm text-slate-900 font-medium">Create a supplier record and link products automatically.</p>
+                        <h2 id="supplierModalTitle" class="text-lg font-bold text-white">Add Supplier</h2>
+                        <p id="supplierModalSubtitle" class="text-xs text-slate-300">Create a supplier record and link products automatically.</p>
                     </div>
-                    <button type="button" id="closeSupplierModal" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
+                    <button type="button" id="closeSupplierModal" class="rounded-[10px] p-2 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
@@ -519,48 +526,48 @@
                     <input type="hidden" name="supplier_id" id="supplierId" value="" />
 
                     <div class="grid gap-4 sm:grid-cols-2">
-                        <label class="block text-sm font-medium text-slate-700">
-                            Supplier name <span class="text-rose-500">*</span>
-                            <input id="supplierNameInput" name="name" type="text" placeholder="e.g. Honda Philippines" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" required />
+                        <label class="block text-xs font-semibold text-slate-700">
+                            Supplier Name <span class="text-rose-500">*</span>
+                            <input id="supplierNameInput" name="name" type="text" placeholder="e.g. Honda Philippines" class="mt-1.5 w-full rounded-[10px] border border-slate-300 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] focus:bg-white transition" required />
                         </label>
-                        <label class="block text-sm font-medium text-slate-700">
-                            Contact person
-                            <input id="supplierContactInput" name="contact_person" type="text" placeholder="e.g. Juan Dela Cruz" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
-                        </label>
-                    </div>
-
-                    <div class="grid gap-4 sm:grid-cols-2">
-                        <label class="block text-sm font-medium text-slate-700">
-                            Email address
-                            <input id="supplierEmailInput" name="email" type="email" placeholder="e.g. vendor@supplier.com" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
-                        </label>
-                        <label class="block text-sm font-medium text-slate-700">
-                            Phone number
-                            <input id="supplierPhoneInput" name="phone" type="text" placeholder="e.g. +63 912 345 6789" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
+                        <label class="block text-xs font-semibold text-slate-700">
+                            Contact Person
+                            <input id="supplierContactInput" name="contact_person" type="text" placeholder="e.g. Juan Dela Cruz" class="mt-1.5 w-full rounded-[10px] border border-slate-300 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] focus:bg-white transition" />
                         </label>
                     </div>
 
                     <div class="grid gap-4 sm:grid-cols-2">
-                        <label class="block text-sm font-medium text-slate-700">
-                            Contact position
-                            <input id="supplierPositionInput" name="contact_position" type="text" placeholder="e.g. Sales Manager" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
+                        <label class="block text-xs font-semibold text-slate-700">
+                            Email Address
+                            <input id="supplierEmailInput" name="email" type="email" placeholder="e.g. vendor@supplier.com" class="mt-1.5 w-full rounded-[10px] border border-slate-300 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] focus:bg-white transition" />
                         </label>
-                        <label class="block text-sm font-medium text-slate-700">
-                            Address
-                            <input id="supplierAddressInput" name="address" type="text" placeholder="e.g. Quezon City, Metro Manila" class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" />
+                        <label class="block text-xs font-semibold text-slate-700">
+                            Phone Number
+                            <input id="supplierPhoneInput" name="phone" type="text" placeholder="e.g. +63 912 345 6789" class="mt-1.5 w-full rounded-[10px] border border-slate-300 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] focus:bg-white transition" />
+                        </label>
+                    </div>
+
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <label class="block text-xs font-semibold text-slate-700">
+                            Contact Position / Role
+                            <input id="supplierPositionInput" name="contact_position" type="text" placeholder="e.g. Sales Manager" class="mt-1.5 w-full rounded-[10px] border border-slate-300 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] focus:bg-white transition" />
+                        </label>
+                        <label class="block text-xs font-semibold text-slate-700">
+                            Address / Location
+                            <input id="supplierAddressInput" name="address" type="text" placeholder="e.g. Quezon City, Metro Manila" class="mt-1.5 w-full rounded-[10px] border border-slate-300 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] focus:bg-white transition" />
                         </label>
                     </div>
 
                     <div class="grid gap-4 sm:grid-cols-1">
-                        <label class="block text-sm font-medium text-slate-700">
-                            Notes
-                            <textarea id="supplierNotesInput" name="notes" rows="2" placeholder="Key vendor terms, delivery schedule, payment conditions..." class="mt-2 w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35"></textarea>
+                        <label class="block text-xs font-semibold text-slate-700">
+                            Notes / Terms
+                            <textarea id="supplierNotesInput" name="notes" rows="2" placeholder="Key vendor terms, delivery schedule, payment conditions..." class="mt-1.5 w-full rounded-[10px] border border-slate-300 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] focus:bg-white transition"></textarea>
                         </label>
                     </div>
 
-                    <div class="flex flex-col gap-3 sm:flex-row sm:justify-end pt-2">
-                        <button type="button" id="cancelSupplierModal" class="rounded-[10px] border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-100 transition-all cursor-pointer">Cancel</button>
-                        <button type="submit" id="supplierModalSubmit" class="rounded-[10px] bg-[#6EC1D1] px-5 py-2.5 text-sm font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all cursor-pointer">Save supplier</button>
+                    <div class="flex flex-col gap-3 sm:flex-row sm:justify-end pt-3 border-t border-slate-100">
+                        <button type="button" id="cancelSupplierModal" class="rounded-[10px] border border-slate-200 bg-white px-5 py-2 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-100 transition-all cursor-pointer">Cancel</button>
+                        <button type="submit" id="supplierModalSubmit" class="rounded-[10px] bg-[#6EC1D1] px-5 py-2 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all cursor-pointer">Save Supplier</button>
                     </div>
                 </form>
             </div>
@@ -676,7 +683,7 @@
 
                 function showToast(message, type = 'success') {
                     const toast = document.createElement('div');
-                    toast.className = `fixed top-4 right-4 z-50 rounded-[10px] border p-4 text-sm font-medium shadow-lg transition-opacity duration-500 ${type === 'success' ? 'border-[#6EC1D1] bg-teal-50 text-slate-900' : 'border-rose-200 bg-rose-50 text-rose-800'}`;
+                    toast.className = `fixed top-4 right-4 z-50 rounded-[12px] border px-4 py-3 text-xs font-semibold shadow-xl transition-opacity duration-500 ${type === 'success' ? 'border-[#6EC1D1] bg-teal-50 text-slate-900' : 'border-rose-200 bg-rose-50 text-rose-800'}`;
                     toast.textContent = message;
                     document.body.appendChild(toast);
 
@@ -691,13 +698,13 @@
                     supplierForm.action = '{{ route('supplier.assessment.store') }}';
                     supplierFormMethod.value = 'POST';
                     supplierId.value = '';
-                    supplierModalTitle.textContent = 'Add supplier';
+                    supplierModalTitle.textContent = 'Add Supplier';
                     supplierModalSubtitle.textContent = 'Create a supplier record and link products automatically.';
-                    supplierModalSubmit.textContent = 'Save supplier';
+                    supplierModalSubmit.textContent = 'Save Supplier';
                 }
 
                 function fillSupplierForm(supplier) {
-                    supplierModalTitle.textContent = supplier.id ? 'Edit supplier' : 'Add supplier';
+                    supplierModalTitle.textContent = supplier.id ? 'Edit Supplier' : 'Add Supplier';
                     supplierModalSubtitle.textContent = supplier.id
                         ? 'Update the supplier details and product links.'
                         : 'Create a supplier record and keep product links intact.';
@@ -713,7 +720,7 @@
                     supplierForm.action = supplier.id
                         ? '{{ url('supplier-assessment/suppliers') }}/' + supplier.id
                         : '{{ route('supplier.assessment.store') }}';
-                    supplierModalSubmit.textContent = supplier.id ? 'Update supplier' : 'Save supplier';
+                    supplierModalSubmit.textContent = supplier.id ? 'Update Supplier' : 'Save Supplier';
                 }
 
                 // Render Searchable Dropdown Options
@@ -837,7 +844,7 @@
 
                     detailSupplierAddress.innerHTML = supplier.address
                         ? `<span class="inline-flex items-center gap-1.5">
-                             <svg class="h-4 w-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                             <svg class="h-3.5 w-3.5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                              </svg>
@@ -879,7 +886,7 @@
                     }
                 }
 
-                // Render Fast and Slow Moving Lists for Active Supplier
+                // Render Fast and Slow Moving Lists for Active Supplier (Matching Screenshot Cards)
                 function renderFastSlowMovingBreakdown(supplier) {
                     const fastProducts = supplier.fast_moving_products || [];
                     const slowProducts = supplier.slow_moving_products || [];
@@ -891,7 +898,7 @@
                     fastMovingContainer.innerHTML = '';
                     if (fastProducts.length === 0) {
                         fastMovingContainer.innerHTML = `
-                            <div class="py-8 text-center text-xs text-slate-500">
+                            <div class="py-10 text-center text-xs text-slate-500">
                                 <svg class="w-8 h-8 mx-auto text-emerald-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                                 </svg>
@@ -901,20 +908,20 @@
                     } else {
                         fastProducts.forEach(prod => {
                             const card = document.createElement('div');
-                            card.className = 'rounded-[12px] border border-emerald-100 bg-emerald-50/40 p-3 hover:bg-emerald-50/80 transition flex items-center justify-between gap-3';
+                            card.className = 'rounded-[14px] border border-emerald-200/80 bg-white p-3.5 hover:bg-emerald-50/40 hover:border-emerald-300 transition-all flex items-center justify-between gap-3 shadow-xs';
                             card.innerHTML = `
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-center gap-2">
-                                        <p class="text-xs font-bold text-slate-900 truncate">${prod.name}</p>
-                                        <span class="rounded-[6px] bg-white text-emerald-800 border border-emerald-200 px-1.5 py-0.5 text-[10px] font-semibold">${prod.category || 'General'}</span>
+                                        <p class="text-xs font-bold text-slate-900 truncate uppercase">${prod.name}</p>
+                                        <span class="rounded-[6px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 text-[10px] font-semibold">${prod.category || 'General'}</span>
                                     </div>
-                                    <p class="text-[11px] text-slate-500 truncate mt-0.5">SKU: ${prod.sku || 'N/A'} · Stock: <span class="font-bold text-slate-800">${prod.stock_quantity}</span></p>
+                                    <p class="text-[11px] text-slate-500 truncate mt-1 font-medium">SKU: <span class="font-mono text-slate-700">${prod.sku || 'N/A'}</span> · Stock: <span class="font-bold text-slate-900">${prod.stock_quantity}</span></p>
                                 </div>
                                 <div class="text-right flex-shrink-0">
-                                    <span class="inline-flex items-center gap-1 rounded-[8px] bg-emerald-600 text-white px-2 py-0.5 text-[10px] font-bold shadow-xs">
+                                    <span class="inline-flex items-center gap-1 rounded-[8px] bg-emerald-600 text-white px-2.5 py-0.5 text-[10px] font-bold shadow-xs">
                                         🔥 ${prod.units_sold} sold
                                     </span>
-                                    <p class="text-xs font-bold text-slate-900 mt-1">₱${Number(prod.price).toFixed(2)}</p>
+                                    <p class="text-xs font-bold text-slate-900 mt-1">₱${Number(prod.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                                 </div>
                             `;
                             fastMovingContainer.appendChild(card);
@@ -925,7 +932,7 @@
                     slowMovingContainer.innerHTML = '';
                     if (slowProducts.length === 0) {
                         slowMovingContainer.innerHTML = `
-                            <div class="py-8 text-center text-xs text-slate-500">
+                            <div class="py-10 text-center text-xs text-slate-500">
                                 <svg class="w-8 h-8 mx-auto text-amber-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
@@ -935,20 +942,20 @@
                     } else {
                         slowProducts.forEach(prod => {
                             const card = document.createElement('div');
-                            card.className = 'rounded-[12px] border border-amber-100 bg-amber-50/40 p-3 hover:bg-amber-50/80 transition flex items-center justify-between gap-3';
+                            card.className = 'rounded-[14px] border border-amber-200/80 bg-white p-3.5 hover:bg-amber-50/40 hover:border-amber-300 transition-all flex items-center justify-between gap-3 shadow-xs';
                             card.innerHTML = `
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-center gap-2">
-                                        <p class="text-xs font-bold text-slate-900 truncate">${prod.name}</p>
-                                        <span class="rounded-[6px] bg-white text-amber-800 border border-amber-200 px-1.5 py-0.5 text-[10px] font-semibold">${prod.category || 'General'}</span>
+                                        <p class="text-xs font-bold text-slate-900 truncate uppercase">${prod.name}</p>
+                                        <span class="rounded-[6px] bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 text-[10px] font-semibold">${prod.category || 'General'}</span>
                                     </div>
-                                    <p class="text-[11px] text-slate-500 truncate mt-0.5">SKU: ${prod.sku || 'N/A'} · Current Stock: <span class="font-bold text-slate-800">${prod.stock_quantity}</span></p>
+                                    <p class="text-[11px] text-slate-500 truncate mt-1 font-medium">SKU: <span class="font-mono text-slate-700">${prod.sku || 'N/A'}</span> · Current Stock: <span class="font-bold text-slate-900">${prod.stock_quantity}</span></p>
                                 </div>
                                 <div class="text-right flex-shrink-0">
-                                    <span class="inline-flex items-center gap-1 rounded-[8px] bg-amber-100 text-amber-800 border border-amber-200 px-2 py-0.5 text-[10px] font-bold">
+                                    <span class="inline-flex items-center gap-1 rounded-[8px] bg-amber-100 text-amber-900 border border-amber-200 px-2.5 py-0.5 text-[10px] font-bold">
                                         ⏳ ${prod.units_sold} sold
                                     </span>
-                                    <p class="text-xs font-bold text-slate-900 mt-1">₱${Number(prod.price).toFixed(2)}</p>
+                                    <p class="text-xs font-bold text-slate-900 mt-1">₱${Number(prod.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                                 </div>
                             `;
                             slowMovingContainer.appendChild(card);
@@ -960,7 +967,7 @@
                 function renderOrderHistory(supplier) {
                     detailOrderHistory.innerHTML = '';
                     if (!supplier.orders || !supplier.orders.length) {
-                        detailOrderHistory.innerHTML = '<div class="rounded-[12px] border border-slate-200/80 bg-slate-50/70 p-3.5 text-xs text-slate-500">No order history available for this supplier.</div>';
+                        detailOrderHistory.innerHTML = '<div class="rounded-[14px] border border-slate-200 bg-slate-50/70 p-4 text-xs text-slate-500 text-center">No order history available for this supplier.</div>';
                     } else {
                         supplier.orders.slice(0, 5).forEach(order => {
                             const statusLower = (order.status || '').toLowerCase();
@@ -972,9 +979,9 @@
                             const receivedDisplay = order.received_date || order.completed_at || 'Pending';
 
                             detailOrderHistory.insertAdjacentHTML('beforeend', `
-                                <div class="rounded-[12px] border border-slate-200 bg-white p-3.5 shadow-sm">
+                                <div class="rounded-[14px] border border-slate-200 bg-white p-3.5 shadow-xs hover:border-slate-300 transition">
                                     <div class="flex items-center justify-between gap-2">
-                                        <p class="font-bold text-slate-900 text-xs">${order.order_number}</p>
+                                        <p class="font-bold text-slate-900 text-xs font-mono">${order.order_number}</p>
                                         <span class="text-[10px] font-semibold px-2 py-0.5 rounded-[6px] ${statusBadgeClass}">${order.status}</span>
                                     </div>
                                     <div class="mt-1 text-[11px] text-slate-500">
@@ -1043,7 +1050,7 @@
 
                     detailProductTable.innerHTML = '';
                     if (filtered.length === 0) {
-                        detailProductTable.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-sm text-slate-500">No products match the selected filter.</td></tr>';
+                        detailProductTable.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-xs text-slate-500 font-medium">No products match the selected filter.</td></tr>';
                         productPagination.innerHTML = '';
                         return;
                     }
@@ -1061,15 +1068,15 @@
                             : '<span class="inline-flex items-center gap-1 rounded-[6px] bg-amber-50 border border-amber-200 px-2 py-0.5 text-[10px] font-bold text-amber-700">⏳ Slow Moving</span>';
 
                         detailProductTable.insertAdjacentHTML('beforeend', `
-                            <tr class="border-b border-slate-200 hover:bg-slate-50/60 transition">
-                                <td class="px-4 py-3 font-semibold text-slate-900">${product.name}</td>
-                                <td class="px-4 py-3 text-slate-600 font-mono text-xs">${product.sku || 'N/A'}</td>
-                                <td class="px-4 py-3 text-slate-600">${product.category || 'Uncategorized'}</td>
-                                <td class="px-4 py-3 font-semibold text-slate-900">${product.stock_quantity}</td>
-                                <td class="px-4 py-3 font-semibold text-slate-900">₱${Number(product.price).toFixed(2)}</td>
-                                <td class="px-4 py-3 font-bold text-slate-800">${product.units_sold ?? 0}</td>
-                                <td class="px-4 py-3">${badge}</td>
-                                <td class="px-4 py-3 text-slate-500 text-xs">${product.last_restock_date || 'N/A'}</td>
+                            <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition">
+                                <td class="px-4 py-3.5 font-bold text-slate-900 text-xs">${product.name}</td>
+                                <td class="px-4 py-3.5 text-slate-600 font-mono text-xs">${product.sku || 'N/A'}</td>
+                                <td class="px-4 py-3.5 text-slate-600 text-xs">${product.category || 'Uncategorized'}</td>
+                                <td class="px-4 py-3.5 font-bold text-slate-900 text-xs">${product.stock_quantity}</td>
+                                <td class="px-4 py-3.5 font-bold text-slate-900 text-xs">₱${Number(product.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td class="px-4 py-3.5 font-bold text-slate-800 text-xs">${product.units_sold ?? 0}</td>
+                                <td class="px-4 py-3.5">${badge}</td>
+                                <td class="px-4 py-3.5 text-slate-500 text-xs">${product.last_restock_date || 'N/A'}</td>
                             </tr>
                         `);
                     });
@@ -1081,11 +1088,11 @@
                                 Showing ${startIndex + 1} to ${Math.min(endIndex, filtered.length)} of ${filtered.length} products
                             </div>
                             <div class="flex items-center gap-1.5 flex-wrap justify-center">
-                                <button type="button" onclick="window.changeProductPage(${currentProductPage - 1})" ${currentProductPage === 1 ? 'disabled' : ''} class="px-2.5 py-1 text-xs rounded-[8px] border border-slate-200 transition-all cursor-pointer ${currentProductPage === 1 ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-700 bg-white hover:bg-slate-100'}">Prev</button>
+                                <button type="button" onclick="window.changeProductPage(${currentProductPage - 1})" ${currentProductPage === 1 ? 'disabled' : ''} class="px-3 py-1.5 text-xs rounded-[8px] border border-slate-200 transition-all cursor-pointer ${currentProductPage === 1 ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-700 bg-white hover:bg-slate-100'}">Prev</button>
                                 ${Array.from({length: totalPages}, (_, i) => i + 1).map(page => `
-                                    <button type="button" onclick="window.changeProductPage(${page})" class="px-2.5 py-1 text-xs rounded-[8px] transition-all cursor-pointer ${page === currentProductPage ? 'font-bold text-slate-900 bg-[#6EC1D1] border border-slate-200 shadow-sm' : 'text-slate-700 border border-slate-200 bg-white hover:bg-slate-100'}">${page}</button>
+                                    <button type="button" onclick="window.changeProductPage(${page})" class="px-3 py-1.5 text-xs rounded-[8px] transition-all cursor-pointer ${page === currentProductPage ? 'font-bold text-slate-900 bg-[#6EC1D1] border border-slate-200 shadow-sm' : 'text-slate-700 border border-slate-200 bg-white hover:bg-slate-100'}">${page}</button>
                                 `).join('')}
-                                <button type="button" onclick="window.changeProductPage(${currentProductPage + 1})" ${currentProductPage === totalPages ? 'disabled' : ''} class="px-2.5 py-1 text-xs rounded-[8px] border border-slate-200 transition-all cursor-pointer ${currentProductPage === totalPages ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-700 bg-white hover:bg-slate-100'}">Next</button>
+                                <button type="button" onclick="window.changeProductPage(${currentProductPage + 1})" ${currentProductPage === totalPages ? 'disabled' : ''} class="px-3 py-1.5 text-xs rounded-[8px] border border-slate-200 transition-all cursor-pointer ${currentProductPage === totalPages ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-700 bg-white hover:bg-slate-100'}">Next</button>
                             </div>
                         `;
                     } else {
@@ -1151,39 +1158,4 @@
             </script>
         @endpush
     </div>
-
-    <script>
-        // Notification panel toggle
-        window.toggleNotificationPanel = function(e) {
-            if (e) e.stopPropagation();
-            var panel = document.getElementById('notification-panel');
-            if (!panel) return;
-
-            // Close profile dropdown first if open
-            var profileDropdown = document.getElementById('dashboardProfileDropdown');
-            if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
-                profileDropdown.classList.add('hidden');
-                profileDropdown.classList.add('opacity-0', 'scale-95');
-            }
-
-            const isOpen = !panel.classList.contains('hidden');
-            if (isOpen) {
-                panel.classList.add('hidden');
-            } else {
-                panel.classList.remove('hidden');
-            }
-        };
-
-        // Mark all notifications as read
-        window.markAllNotificationsRead = function() {
-            // Implementation for marking notifications as read
-            console.log('Mark all notifications as read');
-        };
-
-        // Open all notifications modal
-        window.openAllNotificationsModal = function() {
-            // Implementation for opening all notifications modal
-            console.log('Open all notifications modal');
-        };
-    </script>
 </x-layouts.app>
