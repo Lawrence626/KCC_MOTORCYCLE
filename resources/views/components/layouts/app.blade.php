@@ -1114,13 +1114,14 @@
             }
         });
 
+        @auth
         // Real-time Active Account Status Monitor
         (function() {
             let isLoggedOut = false;
             function handleDeactivation() {
                 if (isLoggedOut) return;
                 isLoggedOut = true;
-                window.location.href = "{{ route('login') }}?deactivated=1";
+                window.location.href = "{{ url('/login') }}?deactivated=1";
             }
 
             // Intercept all native fetch responses
@@ -1132,7 +1133,7 @@
                         try {
                             const clone = response.clone();
                             const data = await clone.json();
-                            if (data && (data.deactivated || data.message?.includes('deactivated'))) {
+                            if (data && (data.deactivated || (data.message && data.message.includes('deactivated')))) {
                                 handleDeactivation();
                             }
                         } catch (err) {}
@@ -1157,6 +1158,7 @@
                 .catch(function() {});
             }, 8000);
         })();
+        @endauth
     </script>
 
     @stack('scripts')
