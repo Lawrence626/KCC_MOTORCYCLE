@@ -544,7 +544,7 @@ class PurchaseOrderController extends Controller
         return response()->json(['suppliers' => $suppliers, 'message' => null]);
     }
 
-    public function supplierDetails(Request $request): \Illuminate\Http\JsonResponse
+    public function supplierDetails(Request $request, \App\Services\SupplierPerformanceService $performanceService): \Illuminate\Http\JsonResponse
     {
         $supplierId = (int) $request->input('supplier_id');
         $productIds = array_values(array_filter(array_map('intval', (array) $request->input('product_ids', []))));
@@ -558,14 +558,15 @@ class PurchaseOrderController extends Controller
             return response()->json(['error' => 'Supplier not found.'], 404);
         }
 
+        // Calculate full Supplier Assessment performance metrics
+        $supplierProducts = Product::where('supplier_name', $supplier->name)->get();
+        $supplierOrders = PurchaseOrder::with(['items'])->where('supplier_id', $supplierId)->orWhere('supplier_name', $supplier->name)->get();
+        $perfMetrics = $performanceService->calculateForSupplier($supplier, $supplierProducts, $supplierOrders);
+
         $lastPO = PurchaseOrder::where('supplier_id', $supplierId)
             ->whereIn('status', ['completed', 'partially received'])
             ->latest('completed_at')
             ->first();
-
-        $totalOrders    = PurchaseOrder::where('supplier_id', $supplierId)->count();
-        $deliveredOrders = PurchaseOrder::where('supplier_id', $supplierId)->where('status', 'completed')->count();
-        $reliabilityScore = $totalOrders > 0 ? round(($deliveredOrders / $totalOrders) * 100) : null;
 
         $priceHistories = [];
         foreach ($productIds as $productId) {
@@ -624,10 +625,17 @@ class PurchaseOrderController extends Controller
                 'contact_person'     => $supplier->contact_person,
                 'email'              => $supplier->email,
                 'phone'              => $supplier->phone,
+                'address'            => $supplier->address,
                 'last_purchase_date' => $lastPO?->completed_at?->format('M j, Y')
                     ?? $lastPO?->updated_at?->format('M j, Y'),
-                'reliability_score'  => $reliabilityScore,
-                'total_orders'       => $totalOrders,
+                'total_orders'       => $perfMetrics['orders_count'] ?? $supplierOrders->count(),
+                'delivered_orders'   => $perfMetrics['delivered_orders_count'] ?? 0,
+                'performance_score'  => $perfMetrics['performance_score'] ?? 0,
+                'on_time_rate'       => $perfMetrics['on_time_rate'] ?? 0,
+                'completion_rate'    => $perfMetrics['completion_rate'] ?? 0,
+                'quality_score'      => $perfMetrics['quality_score'] ?? 100,
+                'defect_rate'        => $perfMetrics['defect_rate'] ?? 0,
+                'price_stability'    => $perfMetrics['price_stability'] ?? 100,
             ],
             'price_histories' => $priceHistories,
         ]);

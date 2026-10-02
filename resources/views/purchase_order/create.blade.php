@@ -4,7 +4,7 @@
         <div class="flex items-center justify-between w-full">
             <div>
                 <h1 class="text-3xl font-bold text-slate-900">Create Purchase Order</h1>
-                <p class="text-xs text-slate-500 mt-0.5">Select products first, then choose a qualified supplier. Pricing insights update automatically.</p>
+                <p class="text-xs text-slate-500 mt-0.5">Select products first, then compare and choose a qualified supplier. Pricing insights update automatically.</p>
             </div>
             <a href="{{ route('order.management') }}"
                class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all duration-200">
@@ -17,7 +17,6 @@
     </x-slot>
 
     <div class="space-y-4">
-
 
     {{-- Validation Errors --}}
     @if($errors->any())
@@ -50,22 +49,21 @@
         @csrf
         <div id="selected-products-hidden-inputs"></div>
 
-        {{-- 
-             STEP 1 â€“ SELECT PRODUCTS
-         --}}
+        {{-- STEP 1 - SELECT PRODUCTS --}}
         <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">1</span>
                 <div>
                     <h2 class="text-sm font-semibold text-white">Select Products to Reorder</h2>
-                    <p class="text-xs text-slate-300">Choose from low-stock products. The supplier list will update automatically.</p>
+                    <p class="text-xs text-slate-300">Choose from low-stock products. The qualified suppliers will update automatically.</p>
                 </div>
             </div>
 
             <div class="p-6">
                 @if(!empty($selectedProductIds))
-                    <div class="mb-4 rounded-[10px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-                        ✓ Low-stock alert pre-selected products for replenishment. Review and confirm your selection.
+                    <div class="mb-4 rounded-[10px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <span>Low-stock alert pre-selected products for replenishment. Review and confirm your selection.</span>
                     </div>
                 @endif
 
@@ -164,15 +162,48 @@
             </div>
         </div>
 
-        {{-- 
-             STEP 2 â€“ SELECT SUPPLIER
-         --}}
+        {{-- STEP 2 - SUPPLIER COMPARISON (Placed ABOVE Select Supplier for clear decision making) --}}
+        <div id="comparison-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div class="border-b border-slate-800 px-6 py-4 flex items-center justify-between bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
+                <div class="flex items-center gap-3">
+                    <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">2</span>
+                    <div>
+                        <h2 class="text-sm font-semibold text-white">Supplier Comparison</h2>
+                        <p class="text-xs text-slate-300">All qualified suppliers ranked by cost & metrics. Click View to inspect supplier assessment performance.</p>
+                    </div>
+                </div>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#6EC1D1]/20 text-[#6EC1D1] border border-[#6EC1D1]/40">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    Performance Matrix
+                </span>
+            </div>
+            <div class="p-6 space-y-4">
+                <div id="recommended-supplier-badge" class="hidden rounded-[10px] bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800"></div>
+                <div class="overflow-hidden rounded-3xl border border-slate-200">
+                    <table class="min-w-full text-left text-sm">
+                        <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider border-b border-slate-200" style="background-color: #0f172a;">
+                            <tr>
+                                <th class="px-4 py-3">Supplier</th>
+                                <th class="px-4 py-3">Total Cost (₱)</th>
+                                <th class="px-4 py-3">Avg Change</th>
+                                <th class="px-4 py-3">Last Purchase</th>
+                                <th class="px-4 py-3">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparison-table-body" class="divide-y divide-slate-200 text-slate-700">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {{-- STEP 3 - SELECT SUPPLIER (Placed BELOW Supplier Comparison) --}}
         <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">2</span>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">3</span>
                 <div>
                     <h2 class="text-sm font-semibold text-white">Select Supplier</h2>
-                    <p class="text-xs text-slate-300">Only suppliers that can fulfill every selected product are shown.</p>
+                    <p class="text-xs text-slate-300">Choose your preferred supplier directly or select one from the comparison table above.</p>
                 </div>
             </div>
 
@@ -216,12 +247,10 @@
             </div>
         </div>
 
-        {{-- 
-             STEP 3 â€“ SUPPLIER INFORMATION
-         --}}
+        {{-- STEP 4 - SUPPLIER INFORMATION --}}
         <div id="supplier-info-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">3</span>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">4</span>
                 <h2 class="text-sm font-semibold text-white">Supplier Information</h2>
             </div>
             <div class="p-6">
@@ -239,19 +268,17 @@
                         <p id="si-last-purchase" class="text-sm text-slate-700">—</p>
                     </div>
                     <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Reliability Score</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Performance Score</p>
                         <p id="si-reliability" class="text-sm font-semibold text-slate-800">—</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- 
-             STEP 4+5+6 â€“ PRICE HISTORY / SUMMARY / RECOMMENDATIONS
-         --}}
+        {{-- STEP 5 - PRICE HISTORY / SUMMARY / RECOMMENDATIONS --}}
         <div id="price-analysis-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">4</span>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">5</span>
                 <div>
                     <h2 class="text-sm font-semibold text-white">Supplier Price Analysis</h2>
                     <p class="text-xs text-slate-300">Historical costs, trends, and purchasing recommendations per product.</p>
@@ -262,50 +289,17 @@
             </div>
         </div>
 
-        {{-- 
-             BONUS â€“ SUPPLIER COMPARISON TABLE
-         --}}
-        <div id="comparison-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">★</span>
-                <div>
-                    <h2 class="text-sm font-semibold text-white">Supplier Comparison</h2>
-                    <p class="text-xs text-slate-300">All qualified suppliers ranked by cost. Click View to inspect performance and select.</p>
-                </div>
-            </div>
-            <div class="p-6 space-y-4">
-                <div id="recommended-supplier-badge" class="hidden rounded-[10px] bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800"></div>
-                <div class="overflow-hidden rounded-3xl border border-slate-200">
-                    <table class="min-w-full text-left text-sm">
-                        <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider border-b border-slate-200" style="background-color: #0f172a;">
-                            <tr>
-                                <th class="px-4 py-3">Supplier</th>
-                                <th class="px-4 py-3">Total Cost (₱)</th>
-                                <th class="px-4 py-3">Avg Change</th>
-                                <th class="px-4 py-3">Last Purchase</th>
-                                <th class="px-4 py-3">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="comparison-table-body" class="divide-y divide-slate-200 text-slate-700">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        {{-- ==========================================================
-             STEP 5 - DELIVERY SCHEDULE & ORDER NOTES (7 Days Allotted)
-        ========================================================== --}}
+        {{-- STEP 6 - DELIVERY SCHEDULE & ORDER NOTES (7 Days Allotted) --}}
         @php
             $defaultExpectedDelivery = \App\Models\PurchaseOrder::calculateDefaultWorkingDaysDeliveryDate(7)->format('Y-m-d');
         @endphp
         <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center justify-between bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <div class="flex items-center gap-3">
-                    <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">4</span>
+                    <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">6</span>
                     <div>
                         <h2 class="text-sm font-semibold text-white">Delivery Schedule & Order Notes</h2>
-                        <p class="text-xs text-slate-300">Set expected arrival date (auto-allotted 7 working days) and special instructions.</p>
+                        <p class="text-xs text-slate-300">Set expected arrival date (auto-calculated 7 days from today) and special instructions.</p>
                     </div>
                 </div>
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#6EC1D1]/20 text-[#6EC1D1] border border-[#6EC1D1]/40">
@@ -342,8 +336,7 @@
             </div>
         </div>
 
-        
-        {{-- SUPPLIER PERFORMANCE MODAL --}}
+        {{-- SUPPLIER PERFORMANCE MODAL (DIRECT SUPPLIER ASSESSMENT METRICS) --}}
         <div id="supplier-performance-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
             <div class="relative w-full max-w-3xl rounded-[20px] bg-white shadow-2xl overflow-hidden border border-slate-200 my-8">
                 {{-- Modal Header --}}
@@ -354,7 +347,7 @@
                         </div>
                         <div>
                             <h3 class="text-base font-semibold text-white" id="perf-modal-title">Supplier Performance Review</h3>
-                            <p class="text-xs text-slate-300">Track record, reliability metrics, and itemized pricing history</p>
+                            <p class="text-xs text-slate-300">Supplier Assessment evaluation, KPI metrics, and pricing history</p>
                         </div>
                     </div>
                     <button type="button" onclick="window.closeSupplierPerformanceModal()" class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white transition cursor-pointer">
@@ -374,7 +367,7 @@
                         <span>Back to Order</span>
                     </button>
                     <button type="button" id="perf-modal-select-btn" class="inline-flex items-center gap-1.5 rounded-xl bg-[#6EC1D1] px-5 py-2.5 text-xs font-bold text-slate-950 hover:bg-[#5bb0c0] transition shadow-xs cursor-pointer">
-                        <span>✓ Select This Supplier</span>
+                        <span>Select This Supplier</span>
                     </button>
                 </div>
             </div>
@@ -409,16 +402,17 @@
         filteredSuppliers: '{{ route("api.order.filtered_suppliers") }}',
         supplierDetails:   '{{ route("api.order.supplier_details") }}',
         comparison:        '{{ route("api.order.supplier_comparison") }}',
+        productSearch:     '{{ route("order.create") }}'
     };
 
     // Pre-selected IDs passed from the server (low-stock alert redirect)
     const preselectedIds = @json($selectedProductIds);
 
-    // -- Helpers ----------------------------------------------------------------
+    // Helpers
     const $el  = (id) => document.getElementById(id);
     const fmt  = (v) => v != null ? '₱' + Number(v).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
     const fmtP = (v) => v != null ? (v > 0 ? '+' : '') + Number(v).toFixed(2) + '%' : '—';
-    const icon = (t) => ({ increasing: '↑', decreasing: '↓', stable: 'âž¡ï¸' })[t] ?? '';
+    const icon = (t) => ({ increasing: '↑', decreasing: '↓', stable: '→' })[t] ?? '';
 
     function escHtml(str) {
         if (str == null) return '';
@@ -426,121 +420,111 @@
     }
     function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
 
-    // -- State ------------------------------------------------------------------
+    // State
     let selectedProductIds = [];
     const selectedProductsStore = new Map();
     let currentSupplierId  = null;
     let filterTimer        = null;
     let isFetchingPage     = false;
 
-    // -- DOM references --------------------------------------------------------€
+    // DOM references
     const selectAllBox      = $el('select-all-products');
     const supplierSelect    = $el('supplier-select');
-    const productSearch     = $el('product-search');
-    const productTableBody  = $el('product-table-body') || document.querySelector('table tbody');
+    const productTableBody  = $el('product-table-body');
+    const paginationWrap    = $el('pagination-container');
     const poForm            = $el('po-form');
 
-    // -- Dropdown functions --------------------------------------------------------
-    function resetDropdownButtonStyles() {
-        document.querySelectorAll('[id$="Button"]').forEach(btn => {
-            btn.style.borderColor = '';
-            btn.style.borderWidth = '';
-            btn.style.boxShadow = '';
-            btn.style.backgroundColor = '';
-            const chevron = btn.querySelector('.w-4.h-4');
-            if (chevron) chevron.style.color = '';
+    // Dropdown functions
+    window.toggleDropdown = function(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        const button = document.getElementById(dropdownId.replace('Dropdown', 'Button'));
+        
+        document.querySelectorAll('.dropdown-menu').forEach(d => {
+            if (d.id !== dropdownId) d.classList.add('hidden');
         });
-    }
-
-    function toggleDropdown(id) {
-        const dropdown = document.getElementById(id);
-        const allDropdowns = document.querySelectorAll('.dropdown-menu');
-        const button = document.getElementById(id.replace('Dropdown', 'Button'));
-
-        allDropdowns.forEach(d => {
-            if (d.id !== id) d.classList.add('hidden');
-        });
-
-        resetDropdownButtonStyles();
-
-        if (dropdown.classList.contains('hidden')) {
-            dropdown.classList.remove('hidden');
+        
+        if (dropdown) {
+            dropdown.classList.toggle('hidden');
             if (button) {
-                button.style.borderColor = 'rgba(0, 0, 0, 0.35)';
-                button.style.borderWidth = '1px';
-                button.style.boxShadow = 'none';
-                button.style.backgroundColor = '#9ca3af !important';
-                const chevron = button.querySelector('.w-4.h-4');
-                if (chevron) chevron.style.color = 'black';
+                const arrow = button.querySelector('svg');
+                if (arrow) {
+                    arrow.style.transform = dropdown.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+                }
             }
-        } else {
+        }
+    };
+
+    window.selectMovementFilter = function(event, key, label) {
+        event.stopPropagation();
+        
+        const input = document.getElementById('movementFilterInput');
+        const button = document.getElementById('movementFilterButton');
+        const dropdown = document.getElementById('movementFilterDropdown');
+        
+        if (input) input.value = key;
+        if (button) {
+            const span = button.querySelector('span');
+            if (span) span.textContent = label;
+            const arrow = button.querySelector('svg');
+            if (arrow) arrow.style.transform = 'rotate(0deg)';
+        }
+        
+        if (dropdown) {
+            dropdown.querySelectorAll('button').forEach(btn => {
+                btn.className = 'w-full px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]';
+            });
+            event.target.className = 'w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-900 bg-black/10 rounded-[10px]';
             dropdown.classList.add('hidden');
         }
-    }
+        
+        // Trigger filter
+        const searchVal = $el('product-search')?.value.trim() || '';
+        fetchProducts(searchVal, key);
+    };
 
-    function selectMovementFilter(event, value, label) {
-        if (event && typeof event.preventDefault === 'function') {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-
-        document.getElementById('movementFilterInput').value = value;
-        document.getElementById('movementFilterButton').querySelector('span').textContent = label;
-        document.getElementById('movementFilterDropdown').classList.add('hidden');
-        const button = document.getElementById('movementFilterButton');
-        if (button) {
-            button.style.borderColor = '';
-            button.style.borderWidth = '';
-            button.style.boxShadow = '';
-        }
-
-        // Navigate to new URL with filter via AJAX
-        const url = new URL(window.location.href);
-        url.searchParams.set('movement', value);
-        url.searchParams.set('page', '1');
-        fetchProducts(url.toString());
-    }
-
-    // Attach functions to window for inline onclick handlers
-    window.toggleDropdown = toggleDropdown;
-    window.selectMovementFilter = selectMovementFilter;
-
-    // -- Supplier Dropdown Functions ------------------------------------------€
-    function updateSupplierTriggerDisplay(name) {
+    // Supplier Dropdown Functions
+    function updateSupplierSelectButton(name, count) {
         const displaySpan = $el('supplierSelectDisplay');
         const button = $el('supplierSelectButton');
-        if (!displaySpan) return;
+        
+        if (!displaySpan || !button) return;
 
         if (name) {
             displaySpan.textContent = name;
-            displaySpan.className = 'truncate text-slate-900 font-medium text-sm';
-            if (button) button.title = name;
+            displaySpan.className = 'truncate text-slate-900 font-medium';
         } else {
             displaySpan.textContent = 'Select supplier...';
-            displaySpan.className = 'truncate text-slate-400 font-normal text-sm';
-            if (button) button.title = '';
+            displaySpan.className = 'truncate text-slate-400 font-normal';
         }
     }
 
     function selectSupplier(id, name) {
         currentSupplierId = id ? parseInt(id, 10) : null;
+        
         if (supplierSelect) {
             supplierSelect.value = currentSupplierId ? String(currentSupplierId) : '';
         }
 
-        updateSupplierTriggerDisplay(name);
+        updateSupplierSelectButton(name, 0);
 
         const listContainer = $el('supplierSelectList');
         if (listContainer) {
             listContainer.querySelectorAll('button[data-supplier-id]').forEach(btn => {
                 const isSelected = currentSupplierId && parseInt(btn.dataset.supplierId, 10) === currentSupplierId;
                 if (isSelected) {
-                    btn.className = 'w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-900 bg-black/10 rounded-[10px] transition cursor-pointer';
+                    btn.className = 'w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-900 bg-black/10 rounded-[10px] flex items-center justify-between';
+                    if (!btn.querySelector('.check-icon')) {
+                        btn.innerHTML += '<svg class="check-icon w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>';
+                    }
                 } else {
-                    btn.className = 'w-full px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] transition cursor-pointer';
+                    btn.className = 'w-full px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] flex items-center justify-between';
+                    const check = btn.querySelector('.check-icon');
+                    if (check) check.remove();
                 }
             });
         }
+
+        closeSupplierDropdown();
 
         if (currentSupplierId) {
             loadSupplierDetails(currentSupplierId);
@@ -549,42 +533,35 @@
         }
     }
 
-    function toggleSupplierDropdown(e) {
-        if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
+    window.toggleSupplierDropdown = function(event) {
+        event?.stopPropagation();
         const dropdown = $el('supplierSelectDropdown');
         const arrow = $el('supplierSelectArrow');
         if (!dropdown) return;
 
-        const isCurrentlyHidden = dropdown.classList.contains('hidden');
-
+        const isHidden = dropdown.classList.contains('hidden');
+        
         document.querySelectorAll('.dropdown-menu').forEach(d => {
-            if (d !== dropdown) d.classList.add('hidden');
+            if (d.id !== 'supplierSelectDropdown') d.classList.add('hidden');
         });
 
-        if (isCurrentlyHidden) {
+        if (isHidden) {
             dropdown.classList.remove('hidden');
-            if (arrow) arrow.classList.add('rotate-180');
+            if (arrow) arrow.style.transform = 'rotate(180deg)';
         } else {
             dropdown.classList.add('hidden');
-            if (arrow) arrow.classList.remove('rotate-180');
+            if (arrow) arrow.style.transform = 'rotate(0deg)';
         }
-    }
+    };
 
     function closeSupplierDropdown() {
         const dropdown = $el('supplierSelectDropdown');
         const arrow = $el('supplierSelectArrow');
         if (dropdown) dropdown.classList.add('hidden');
-        if (arrow) arrow.classList.remove('rotate-180');
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
     }
 
-    window.toggleSupplierDropdown = toggleSupplierDropdown;
-    window.closeSupplierDropdown = closeSupplierDropdown;
-    window.selectSupplier = selectSupplier;
-
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', (event) => {
         if (!event.target.closest('[data-dropdown-wrapper="supplierSelect"]')) {
             closeSupplierDropdown();
         }
@@ -592,38 +569,44 @@
             document.querySelectorAll('.dropdown-menu').forEach(d => {
                 if (d.id !== 'supplierSelectDropdown') d.classList.add('hidden');
             });
-            resetDropdownButtonStyles();
         }
     });
 
-    // -- Store Synchronisation & State Management ------------------------------
+    // Store Synchronisation & State Management
     function syncVisibleRowsToStore() {
-        const rows = productTableBody ? productTableBody.querySelectorAll('.product-row') : [];
+        if (!productTableBody) return;
+        const rows = productTableBody.querySelectorAll('.product-row');
         rows.forEach(row => {
             const pid = parseInt(row.dataset.productId, 10);
             const cb = row.querySelector('.product-checkbox');
-            if (!pid || !cb) return;
+            const qtyInput = row.querySelector('input[name*="[quantity]"]');
+            const priceInput = row.querySelector('input[name*="[unit_price]"]');
+            const isChecked = cb ? cb.checked : false;
 
-            if (cb.checked) {
-                const qtyInput = row.querySelector('input[name*="[quantity]"]');
-                const priceInput = row.querySelector('input[name*="[unit_price]"]');
-                const prev = selectedProductsStore.get(pid) || {};
+            if (isChecked) {
+                const qty = qtyInput ? (parseInt(qtyInput.value, 10) || 1) : 1;
+                const price = priceInput ? (parseFloat(priceInput.value) || 0) : 0;
+                const name = row.dataset.productName || row.querySelector('td:nth-child(2)')?.textContent?.trim() || '';
+                const sku = row.dataset.sku || row.querySelector('td:nth-child(4)')?.textContent?.trim() || '';
+
                 selectedProductsStore.set(pid, {
                     product_id: pid,
-                    product_name: row.dataset.productName || row.querySelector('td:nth-child(2)')?.textContent?.trim() || prev.product_name || '',
-                    sku: row.dataset.sku || row.querySelector('td:nth-child(4)')?.textContent?.trim() || prev.sku || '',
-                    quantity: qtyInput ? (parseInt(qtyInput.value, 10) || 1) : (prev.quantity || parseInt(row.dataset.defaultQuantity, 10) || 1),
-                    unit_price: priceInput ? (parseFloat(priceInput.value) || 0) : (prev.unit_price !== undefined ? prev.unit_price : (parseFloat(row.dataset.defaultUnitPrice) || 0)),
-                    selected: true,
+                    product_name: name,
+                    sku: sku,
+                    quantity: qty,
+                    unit_price: price,
+                    selected: true
                 });
             } else {
                 selectedProductsStore.delete(pid);
             }
         });
+        selectedProductIds = Array.from(selectedProductsStore.keys());
     }
 
     function applyStoreToVisibleRows() {
-        const rows = productTableBody ? productTableBody.querySelectorAll('.product-row') : [];
+        if (!productTableBody) return;
+        const rows = productTableBody.querySelectorAll('.product-row');
         rows.forEach(row => {
             const pid = parseInt(row.dataset.productId, 10);
             const cb = row.querySelector('.product-checkbox');
@@ -631,323 +614,320 @@
             const priceInput = row.querySelector('input[name*="[unit_price]"]');
 
             if (selectedProductsStore.has(pid)) {
-                const item = selectedProductsStore.get(pid);
+                const stored = selectedProductsStore.get(pid);
                 if (cb) cb.checked = true;
-                if (qtyInput && item.quantity !== undefined) qtyInput.value = item.quantity;
-                if (priceInput && item.unit_price !== undefined) priceInput.value = item.unit_price;
+                if (qtyInput && stored.quantity != null) qtyInput.value = stored.quantity;
+                if (priceInput && stored.unit_price != null) priceInput.value = stored.unit_price;
+                row.classList.add('bg-emerald-50/50');
             } else {
                 if (cb) cb.checked = false;
+                row.classList.remove('bg-emerald-50/50');
             }
         });
     }
 
+    function syncHiddenInputs() {
+        const container = $el('selected-products-hidden-inputs');
+        if (!container) return;
+        container.innerHTML = '';
+
+        let index = 0;
+        selectedProductsStore.forEach((item, pid) => {
+            const pidInput = document.createElement('input');
+            pidInput.type = 'hidden';
+            pidInput.name = `products[${index}][product_id]`;
+            pidInput.value = pid;
+
+            const nameInput = document.createElement('input');
+            nameInput.type = 'hidden';
+            nameInput.name = `products[${index}][product_name]`;
+            nameInput.value = item.product_name;
+
+            const skuInput = document.createElement('input');
+            skuInput.type = 'hidden';
+            skuInput.name = `products[${index}][sku]`;
+            skuInput.value = item.sku;
+
+            const qtyInput = document.createElement('input');
+            qtyInput.type = 'hidden';
+            qtyInput.name = `products[${index}][quantity]`;
+            qtyInput.value = item.quantity;
+
+            const priceInput = document.createElement('input');
+            priceInput.type = 'hidden';
+            priceInput.name = `products[${index}][unit_price]`;
+            priceInput.value = item.unit_price;
+
+            const selInput = document.createElement('input');
+            selInput.type = 'hidden';
+            selInput.name = `products[${index}][selected]`;
+            selInput.value = '1';
+
+            container.appendChild(pidInput);
+            container.appendChild(nameInput);
+            container.appendChild(skuInput);
+            container.appendChild(qtyInput);
+            container.appendChild(priceInput);
+            container.appendChild(selInput);
+
+            index++;
+        });
+    }
+
+    function updateSelectedCountBar() {
+        const countBar = $el('selected-count-bar');
+        const countText = $el('selected-count-text');
+        if (!countBar || !countText) return;
+
+        const count = selectedProductsStore.size;
+        if (count > 0) {
+            countText.textContent = `${count} product${count > 1 ? 's' : ''} selected across all pages for purchase order.`;
+            countBar.classList.remove('hidden');
+        } else {
+            countBar.classList.add('hidden');
+        }
+    }
+
     function updateSelectAllCheckboxState() {
         if (!selectAllBox || !productTableBody) return;
-        const visibleCheckboxes = Array.from(productTableBody.querySelectorAll('.product-checkbox'));
+        const visibleCheckboxes = productTableBody.querySelectorAll('.product-checkbox');
         if (visibleCheckboxes.length === 0) {
             selectAllBox.checked = false;
             selectAllBox.indeterminate = false;
             return;
         }
-        const allChecked = visibleCheckboxes.every(cb => cb.checked);
-        const someChecked = visibleCheckboxes.some(cb => cb.checked);
+
+        let allChecked = true;
+        let noneChecked = true;
+
+        visibleCheckboxes.forEach(cb => {
+            if (cb.checked) {
+                noneChecked = false;
+            } else {
+                allChecked = false;
+            }
+        });
 
         selectAllBox.checked = allChecked;
-        selectAllBox.indeterminate = !allChecked && someChecked;
+        selectAllBox.indeterminate = !allChecked && !noneChecked;
     }
 
-    function handleRowCheckboxChange(cb) {
-        const row = cb.closest('.product-row');
-        if (!row) return;
-        const pid = parseInt(row.dataset.productId, 10);
-        if (!pid) return;
-
-        if (cb.checked) {
-            const qtyInput = row.querySelector('input[name*="[quantity]"]');
-            const priceInput = row.querySelector('input[name*="[unit_price]"]');
-            selectedProductsStore.set(pid, {
-                product_id: pid,
-                product_name: row.dataset.productName || row.querySelector('td:nth-child(2)')?.textContent?.trim() || '',
-                sku: row.dataset.sku || row.querySelector('td:nth-child(4)')?.textContent?.trim() || '',
-                quantity: qtyInput ? (parseInt(qtyInput.value, 10) || 1) : (parseInt(row.dataset.defaultQuantity, 10) || 1),
-                unit_price: priceInput ? (parseFloat(priceInput.value) || 0) : (parseFloat(row.dataset.defaultUnitPrice) || 0),
-                selected: true,
-            });
-        } else {
-            selectedProductsStore.delete(pid);
-        }
-
-        updateSelectAllCheckboxState();
-        onProductSelectionChange();
-    }
-
-    function handleRowInputChange(input) {
-        const row = input.closest('.product-row');
-        if (!row) return;
-        const pid = parseInt(row.dataset.productId, 10);
-        if (!pid) return;
-
-        if (selectedProductsStore.has(pid)) {
-            const item = selectedProductsStore.get(pid);
-            if (input.name.includes('[quantity]')) {
-                item.quantity = parseInt(input.value, 10) || 1;
-            } else if (input.name.includes('[unit_price]')) {
-                item.unit_price = parseFloat(input.value) || 0;
-            }
-        }
-    }
-
-    // -- AJAX Page Fetcher (No reload) ----------------------------------------€
-    async function fetchProducts(targetUrl, updateHistory = true) {
-        if (isFetchingPage) return;
-        isFetchingPage = true;
-
-        syncVisibleRowsToStore();
-
+    // AJAX Page Fetcher (No reload)
+    async function fetchProducts(search = '', movement = 'all', pageUrl = null) {
         const overlay = $el('table-loading-overlay');
         if (overlay) overlay.classList.remove('hidden');
-        if (productTableBody) productTableBody.classList.add('opacity-50');
+        isFetchingPage = true;
 
         try {
-            const fetchUrl = new URL(targetUrl, window.location.origin);
-            const res = await fetch(fetchUrl.toString(), {
+            syncVisibleRowsToStore();
+
+            const url = pageUrl ? new URL(pageUrl, window.location.origin) : new URL(ROUTES.productSearch, window.location.origin);
+            if (!pageUrl) {
+                if (search) url.searchParams.set('search', search);
+                if (movement && movement !== 'all') url.searchParams.set('movement', movement);
+            }
+
+            const res = await fetch(url.toString(), {
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
+                    'Accept': 'text/html',
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             });
 
-            if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
+            if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+
+            const htmlText = await res.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, 'text/html');
+
+            const newTbody = doc.getElementById('product-table-body');
+            const newPagination = doc.getElementById('pagination-container');
+
+            if (newTbody && productTableBody) {
+                productTableBody.innerHTML = newTbody.innerHTML;
             }
 
-            const data = await res.json();
-
-            if (productTableBody && data.table_html !== undefined) {
-                productTableBody.innerHTML = data.table_html;
-                resolvePoProductImages();
-            }
-
-            const paginationContainer = $el('pagination-container');
-            if (paginationContainer && data.pagination_html !== undefined) {
-                paginationContainer.innerHTML = data.pagination_html;
+            if (newPagination && paginationWrap) {
+                paginationWrap.innerHTML = newPagination.innerHTML;
             }
 
             applyStoreToVisibleRows();
             updateSelectAllCheckboxState();
+            updateSelectedCountBar();
+            resolvePoProductImages();
 
-            if (updateHistory) {
-                window.history.pushState({ url: targetUrl }, '', targetUrl);
+            if (pageUrl && window.history) {
+                window.history.pushState({ path: url.toString() }, '', url.toString());
             }
 
         } catch (err) {
-            console.error('Failed to load products page:', err);
+            console.error('Failed to fetch products page:', err);
         } finally {
-            isFetchingPage = false;
             if (overlay) overlay.classList.add('hidden');
-            if (productTableBody) productTableBody.classList.remove('opacity-50');
+            isFetchingPage = false;
         }
     }
 
-    // -- Event Delegation for table rows --------------------------------------€
-    productTableBody?.addEventListener('change', function (e) {
-        if (e.target.matches('.product-checkbox')) {
-            handleRowCheckboxChange(e.target);
-        }
-    });
+    // Event Delegation for table rows
+    if (productTableBody) {
+        productTableBody.addEventListener('change', function(e) {
+            const target = e.target;
+            const row = target.closest('.product-row');
+            if (!row) return;
 
-    productTableBody?.addEventListener('input', function (e) {
-        if (e.target.matches('input[name*="[quantity]"]') || e.target.matches('input[name*="[unit_price]"]')) {
-            handleRowInputChange(e.target);
-        }
-    });
+            syncVisibleRowsToStore();
+            applyStoreToVisibleRows();
+            updateSelectAllCheckboxState();
+            updateSelectedCountBar();
+            syncHiddenInputs();
+            onProductSelectionChange();
+        });
+    }
 
-    // -- Select-all toggle ----------------------------------------------------€
-    selectAllBox?.addEventListener('change', function () {
-        const isChecked = this.checked;
-        const rows = productTableBody ? productTableBody.querySelectorAll('.product-row') : [];
-        rows.forEach(row => {
-            const cb = row.querySelector('.product-checkbox');
-            const pid = parseInt(row.dataset.productId, 10);
-            if (!cb || !pid) return;
+    // Select-all toggle
+    if (selectAllBox) {
+        selectAllBox.addEventListener('change', function() {
+            if (!productTableBody) return;
+            const isChecked = selectAllBox.checked;
+            const visibleCheckboxes = productTableBody.querySelectorAll('.product-checkbox');
 
-            cb.checked = isChecked;
-            if (isChecked) {
-                const qtyInput = row.querySelector('input[name*="[quantity]"]');
-                const priceInput = row.querySelector('input[name*="[unit_price]"]');
-                selectedProductsStore.set(pid, {
-                    product_id: pid,
-                    product_name: row.dataset.productName || row.querySelector('td:nth-child(2)')?.textContent?.trim() || '',
-                    sku: row.dataset.sku || row.querySelector('td:nth-child(4)')?.textContent?.trim() || '',
-                    quantity: qtyInput ? (parseInt(qtyInput.value, 10) || 1) : (parseInt(row.dataset.defaultQuantity, 10) || 1),
-                    unit_price: priceInput ? (parseFloat(priceInput.value) || 0) : (parseFloat(row.dataset.defaultUnitPrice) || 0),
-                    selected: true,
-                });
-            } else {
-                selectedProductsStore.delete(pid);
+            visibleCheckboxes.forEach(cb => {
+                cb.checked = isChecked;
+                const row = cb.closest('.product-row');
+                if (row) {
+                    const pid = parseInt(row.dataset.productId, 10);
+                    if (isChecked) {
+                        const qtyInput = row.querySelector('input[name*="[quantity]"]');
+                        const priceInput = row.querySelector('input[name*="[unit_price]"]');
+                        selectedProductsStore.set(pid, {
+                            product_id: pid,
+                            product_name: row.dataset.productName || '',
+                            sku: row.dataset.sku || '',
+                            quantity: qtyInput ? (parseInt(qtyInput.value, 10) || 1) : 1,
+                            unit_price: priceInput ? (parseFloat(priceInput.value) || 0) : 0,
+                            selected: true
+                        });
+                        row.classList.add('bg-emerald-50/50');
+                    } else {
+                        selectedProductsStore.delete(pid);
+                        row.classList.remove('bg-emerald-50/50');
+                    }
+                }
+            });
+
+            selectedProductIds = Array.from(selectedProductsStore.keys());
+            updateSelectedCountBar();
+            syncHiddenInputs();
+            onProductSelectionChange();
+        });
+    }
+
+    // Intercept pagination clicks without page reload
+    if (paginationWrap) {
+        paginationWrap.addEventListener('click', function(e) {
+            const anchor = e.target.closest('a');
+            if (anchor && anchor.href) {
+                e.preventDefault();
+                fetchProducts('', 'all', anchor.href);
             }
         });
-
-        onProductSelectionChange();
-    });
-
-    // -- Intercept pagination clicks without page reload ----------------------€
-    document.addEventListener('click', function (e) {
-        const pageLink = e.target.closest('#pagination-container a');
-        if (pageLink) {
-            e.preventDefault();
-            const href = pageLink.getAttribute('href');
-            if (href && href !== '#' && href !== 'javascript:void(0)') {
-                fetchProducts(href);
-            }
-        }
-    });
-
-    // -- Browser back/forward navigation --------------------------------------€
-    window.addEventListener('popstate', function () {
-        fetchProducts(window.location.href, false);
-    });
-
-    // -- Product search with debounce ------------------------------------------
-    let searchTimer = null;
-    function triggerSearch(term) {
-        const url = new URL(window.location.href);
-        if (term) {
-            url.searchParams.set('search', term);
-        } else {
-            url.searchParams.delete('search');
-        }
-        url.searchParams.set('page', '1');
-        fetchProducts(url.toString());
     }
 
-    productSearch?.addEventListener('input', function () {
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(() => {
-            triggerSearch(this.value.trim());
-        }, 300);
+    // Browser back/forward navigation
+    window.addEventListener('popstate', function() {
+        fetchProducts('', 'all', window.location.href);
     });
 
-    productSearch?.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            clearTimeout(searchTimer);
-            triggerSearch(this.value.trim());
-        }
-    });
+    // Product search with debounce
+    const searchInput = $el('product-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(filterTimer);
+            filterTimer = setTimeout(() => {
+                const searchVal = searchInput.value.trim();
+                const movementVal = $el('movementFilterInput')?.value || 'all';
+                fetchProducts(searchVal, movementVal);
+            }, 350);
+        });
 
-    // -- Supplier dropdown change ----------------------------------------------
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                clearTimeout(filterTimer);
+                const searchVal = searchInput.value.trim();
+                const movementVal = $el('movementFilterInput')?.value || 'all';
+                fetchProducts(searchVal, movementVal);
+            }
+        });
+    }
+
+    // Supplier dropdown change
     supplierSelect?.addEventListener('change', () => {
         const id = parseInt(supplierSelect.value, 10) || null;
-        currentSupplierId = id;
-        id ? loadSupplierDetails(id) : hideSupplierPanels();
+        if (id) {
+            loadSupplierDetails(id);
+        } else {
+            hideSupplierPanels();
+        }
     });
 
-    // -- Product selection change ----------------------------------------------
+    // Product selection change
     function onProductSelectionChange() {
-        selectedProductIds = Array.from(selectedProductsStore.keys());
+        syncHiddenInputs();
+        updateSelectedCountBar();
 
-        // Count badge
-        const bar = $el('selected-count-bar');
-        const txt = $el('selected-count-text');
-        if (selectedProductIds.length > 0) {
-            txt.textContent = selectedProductIds.length === 1
-                ? '1 product selected'
-                : `${selectedProductIds.length} products selected`;
-            bar.classList.remove('hidden');
-        } else {
-            bar.classList.add('hidden');
+        if (selectedProductIds.length === 0) {
+            $el('no-product-hint').classList.remove('hidden');
+            $el('supplier-dropdown-wrapper').classList.add('hidden');
+            $el('no-supplier-message').classList.add('hidden');
+            $el('comparison-panel').classList.add('hidden');
+            hideSupplierPanels();
+            return;
         }
 
-        clearTimeout(filterTimer);
-        filterTimer = setTimeout(refreshSupplierDropdown, 250);
+        $el('no-product-hint').classList.add('hidden');
+        refreshSuppliers();
+        loadComparison();
     }
 
-    // -- Form submission: submit all selected products from all pages ----------
-    poForm?.addEventListener('submit', function (e) {
-        syncVisibleRowsToStore();
+    // Form submission: submit all selected products from all pages
+    if (poForm) {
+        poForm.addEventListener('submit', function (e) {
+            syncVisibleRowsToStore();
+            syncHiddenInputs();
 
-        if (selectedProductsStore.size === 0) {
-            e.preventDefault();
-            alert('Please select at least one product to order.');
-            return false;
-        }
+            if (selectedProductsStore.size === 0) {
+                e.preventDefault();
+                alert('Please select at least one product to create a purchase order.');
+                return;
+            }
 
-        if (!supplierSelect || !supplierSelect.value) {
-            e.preventDefault();
-            alert('Please select a supplier.');
-            $el('supplierSelectButton')?.focus();
-            return false;
-        }
+            if (!supplierSelect || !supplierSelect.value) {
+                e.preventDefault();
+                alert('Please select a qualified supplier.');
+                $el('supplierSelectButton')?.focus();
+                return;
+            }
+        });
+    }
 
-        const hiddenContainer = $el('selected-products-hidden-inputs');
-        if (hiddenContainer) {
-            hiddenContainer.innerHTML = '';
-            let idx = 0;
-            selectedProductsStore.forEach(item => {
-                const pSelected = document.createElement('input');
-                pSelected.type = 'hidden';
-                pSelected.name = `products[${idx}][selected]`;
-                pSelected.value = '1';
-                hiddenContainer.appendChild(pSelected);
+    // Helper: format select option label
+    function supplierLabel(s) {
+        const parts = [s.name];
+        if (s.contact_person) parts.push(`(${s.contact_person})`);
+        return parts.join(' ');
+    }
 
-                const pId = document.createElement('input');
-                pId.type = 'hidden';
-                pId.name = `products[${idx}][product_id]`;
-                pId.value = item.product_id;
-                hiddenContainer.appendChild(pId);
-
-                const pName = document.createElement('input');
-                pName.type = 'hidden';
-                pName.name = `products[${idx}][product_name]`;
-                pName.value = item.product_name;
-                hiddenContainer.appendChild(pName);
-
-                const pSku = document.createElement('input');
-                pSku.type = 'hidden';
-                pSku.name = `products[${idx}][sku]`;
-                pSku.value = item.sku;
-                hiddenContainer.appendChild(pSku);
-
-                const pQty = document.createElement('input');
-                pQty.type = 'hidden';
-                pQty.name = `products[${idx}][quantity]`;
-                pQty.value = item.quantity;
-                hiddenContainer.appendChild(pQty);
-
-                const pPrice = document.createElement('input');
-                pPrice.type = 'hidden';
-                pPrice.name = `products[${idx}][unit_price]`;
-                pPrice.value = item.unit_price;
-                hiddenContainer.appendChild(pPrice);
-
-                idx++;
-            });
-        }
-
-        // Temporarily disable the inputs in the table body so only hiddenContainer inputs are submitted
-        const tableInputs = productTableBody.querySelectorAll('input, select');
-        tableInputs.forEach(inp => { inp.disabled = true; });
-
-        // Safety timeout to re-enable if submission was interrupted by client-side validation
-        setTimeout(() => {
-            tableInputs.forEach(inp => { inp.disabled = false; });
-        }, 1500);
-    });
-
-    // -- Refresh supplier dropdown --------------------------------------------€
-    async function refreshSupplierDropdown() {
-        hideSupplierPanels();
-        currentSupplierId = null;
-
+    // Refresh supplier dropdown
+    async function refreshSuppliers() {
         $el('no-product-hint').classList.add('hidden');
         $el('no-supplier-message').classList.add('hidden');
         $el('supplier-dropdown-wrapper').classList.add('hidden');
         $el('supplier-loading').classList.add('hidden');
-        $el('comparison-panel').classList.add('hidden');
 
         if (selectedProductIds.length === 0) {
             $el('no-product-hint').classList.remove('hidden');
+            hideSupplierPanels();
             return;
         }
 
@@ -965,54 +945,68 @@
             $el('supplier-loading').classList.add('hidden');
 
             if (!data.suppliers || data.suppliers.length === 0) {
-                const msg = $el('no-supplier-message');
-                msg.textContent = data.message || 'No qualified supplier found for all selected products.';
-                msg.classList.remove('hidden');
+                const msgBox = $el('no-supplier-message');
+                msgBox.textContent = data.message || 'No supplier can fulfill all selected products.';
+                msgBox.classList.remove('hidden');
+                supplierSelect.value = '';
+                updateSupplierSelectButton('', 0);
+                hideSupplierPanels();
                 return;
             }
 
-            // Populate dropdown
             const listContainer = $el('supplierSelectList');
             if (listContainer) {
-                listContainer.innerHTML = data.suppliers.map(s => {
-                    const isSelected = currentSupplierId && parseInt(s.id, 10) === currentSupplierId;
-                    return `
-                        <button type="button"
-                                data-supplier-id="${s.id}"
-                                data-name="${escHtml(s.name)}"
-                                onclick="selectSupplier(${s.id}, '${escHtml(s.name).replace(/'/g, "\\'")}'); closeSupplierDropdown();"
-                                class="w-full px-4 py-2.5 text-left text-sm ${isSelected ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100'} rounded-[10px] transition cursor-pointer">
-                            ${escHtml(s.name)}
-                        </button>
+                listContainer.innerHTML = '';
+                
+                data.suppliers.forEach(s => {
+                    const isSelected = currentSupplierId && s.id === currentSupplierId;
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.dataset.supplierId = s.id;
+                    btn.dataset.name = s.name;
+                    btn.className = isSelected 
+                        ? 'w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-900 bg-black/10 rounded-[10px] flex items-center justify-between'
+                        : 'w-full px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px] flex items-center justify-between';
+                    
+                    btn.innerHTML = `
+                        <span>${escHtml(supplierLabel(s))}</span>
+                        ${isSelected ? '<svg class="check-icon w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>' : ''}
                     `;
-                }).join('');
+                    
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        selectSupplier(s.id, s.name);
+                    };
+                    listContainer.appendChild(btn);
+                });
             }
 
             $el('supplier-dropdown-wrapper').classList.remove('hidden');
 
-            // Restore previously selected supplier if it is still valid
-            if (currentSupplierId) {
-                const found = data.suppliers.find(s => s.id === currentSupplierId);
-                if (found) {
-                    selectSupplier(found.id, found.name);
-                } else {
-                    selectSupplier(null, '');
-                }
+            const stillValid = data.suppliers.some(s => s.id === currentSupplierId);
+            if (!stillValid) {
+                supplierSelect.value = '';
+                currentSupplierId = null;
+                updateSupplierSelectButton('', 0);
+                hideSupplierPanels();
             } else {
-                updateSupplierTriggerDisplay('');
+                const activeSup = data.suppliers.find(s => s.id === currentSupplierId);
+                if (activeSup) {
+                    updateSupplierSelectButton(activeSup.name, 0);
+                    loadSupplierDetails(currentSupplierId);
+                }
             }
-
-            loadComparison();
 
         } catch (e) {
             $el('supplier-loading').classList.add('hidden');
-            console.error('filteredSuppliers error', e);
+            console.error('refreshSuppliers error', e);
         }
     }
 
-    // -- Load supplier details + price history --------------------------------€
+    // Load supplier details + price history
     async function loadSupplierDetails(supplierId) {
-        hideSupplierPanels();
+        if (!supplierId || selectedProductIds.length === 0) return;
+
         try {
             const url = new URL(ROUTES.supplierDetails, window.location.origin);
             url.searchParams.set('supplier_id', supplierId);
@@ -1023,65 +1017,58 @@
             });
             const data = await res.json();
 
-            if (data.error) return;
-
-            renderSupplierInfo(data.supplier);
-            renderPriceAnalysis(data.price_histories);
-
+            if (data.supplier) {
+                renderSupplierInfo(data.supplier);
+                renderPriceAnalysis(data.price_histories || []);
+            }
         } catch (e) {
-            console.error('supplierDetails error', e);
+            console.error('loadSupplierDetails error', e);
         }
     }
 
-    // -- Render Step 3 --------------------------------------------------------€
+    // Render Step 4 - Supplier Information
     function renderSupplierInfo(s) {
         $el('si-name').textContent          = s.name          || '—';
         $el('si-contact').textContent       = s.contact_person || '—';
-        $el('si-last-purchase').textContent = s.last_purchase_date || 'No orders yet';
+        $el('si-last-purchase').textContent = s.last_purchase_date || 'None';
 
-        const rel = $el('si-reliability');
-        if (s.reliability_score != null) {
-            rel.textContent = `${s.reliability_score}% (${s.total_orders} orders)`;
-            rel.className = 'text-sm font-semibold ' + (s.reliability_score >= 80
-                ? 'text-emerald-700'
-                : s.reliability_score >= 50 ? 'text-amber-600' : 'text-rose-600');
+        const relEl = $el('si-reliability');
+        if (s.performance_score !== undefined && s.performance_score !== null) {
+            const scoreClass = s.performance_score >= 80 ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : (s.performance_score >= 60 ? 'text-amber-700 bg-amber-50 border-amber-200' : 'text-rose-700 bg-rose-50 border-rose-200');
+            relEl.innerHTML = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${scoreClass}">${s.performance_score}/100 Rating</span>`;
         } else {
-            rel.textContent = 'No order history';
-            rel.className   = 'text-sm text-slate-500';
+            relEl.textContent = '—';
         }
 
         $el('supplier-info-panel').classList.remove('hidden');
     }
 
-    // -- Render Steps 4+5+6 --------------------------------------------------€
+    // Render Step 5 - Price Analysis
     function renderPriceAnalysis(histories) {
         const container = $el('price-analysis-content');
         container.innerHTML = '';
 
         if (!histories || histories.length === 0) {
-            container.innerHTML = '<p class="text-sm text-slate-500">No purchase history found for the selected products from this supplier.</p>';
-            $el('price-analysis-panel').classList.remove('hidden');
+            $el('price-analysis-panel').classList.add('hidden');
             return;
         }
 
         histories.forEach(ph => {
             const section = document.createElement('div');
-            section.className = 'space-y-4';
+            section.className = 'space-y-3 pb-6 border-b border-slate-200 last:border-0 last:pb-0';
 
-            // Product heading
-            const heading = document.createElement('h3');
-            heading.className   = 'text-sm font-semibold text-slate-800 border-b border-slate-100 pb-2';
-            heading.textContent = ph.product_name;
-            section.appendChild(heading);
-
-            // Summary cards
-            const changeColor = ph.change_percentage == null ? 'text-slate-600'
-                : ph.change_percentage > 0 ? 'text-rose-600 font-semibold'
-                : ph.change_percentage < 0 ? 'text-emerald-700 font-semibold'
-                : 'text-slate-600';
+            const header = document.createElement('h3');
+            header.className   = 'text-sm font-semibold text-slate-800';
+            header.textContent = ph.product_name;
+            section.appendChild(header);
 
             const summaryGrid = document.createElement('div');
-            summaryGrid.className = 'grid gap-3 sm:grid-cols-2 lg:grid-cols-4';
+            summaryGrid.className = 'grid grid-cols-2 sm:grid-cols-4 gap-4';
+
+            const changeColor = ph.change_percentage > 0
+                ? 'text-rose-600 font-bold'
+                : ph.change_percentage < 0 ? 'text-emerald-600 font-bold' : 'text-slate-600 font-bold';
+
             summaryGrid.innerHTML = `
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                     <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Current Cost</p>
@@ -1151,7 +1138,7 @@
         $el('price-analysis-panel').classList.remove('hidden');
     }
 
-    // -- Load comparison table ------------------------------------------------€
+    // Load comparison table
     async function loadComparison() {
         $el('comparison-panel').classList.add('hidden');
         if (selectedProductIds.length === 0) return;
@@ -1165,7 +1152,6 @@
             });
             const data = await res.json();
 
-            // Only show comparison when 2+ suppliers compete
             if (!data.comparison || data.comparison.length < 2) return;
 
             renderComparison(data.comparison, data.recommended);
@@ -1175,14 +1161,20 @@
         }
     }
 
-    // -- Render comparison table ----------------------------------------------€
+    // Render comparison table
     function renderComparison(rows, recommended) {
         const tbody = $el('comparison-table-body');
         tbody.innerHTML = '';
 
         const badge = $el('recommended-supplier-badge');
         if (recommended) {
-            badge.innerHTML = `<strong>â­ Recommended Supplier: ${escHtml(recommended.name)}</strong> — ${recommended.reasons.map(r => escHtml(r)).join(', ')}`;
+            badge.innerHTML = `
+                <div class="flex items-center gap-2 text-emerald-900 font-bold">
+                    <svg class="w-5 h-5 text-amber-500 fill-amber-400 shrink-0" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    <span>Recommended Supplier: ${escHtml(recommended.name)}</span>
+                    <span class="font-normal text-emerald-800 text-xs">— ${recommended.reasons.map(r => escHtml(r)).join(', ')}</span>
+                </div>
+            `;
             badge.classList.remove('hidden');
         } else {
             badge.classList.add('hidden');
@@ -1192,7 +1184,7 @@
             const isRec = recommended && r.supplier_id === recommended.id;
             const tr = document.createElement('tr');
             tr.className = isRec
-                ? 'bg-emerald-50'
+                ? 'bg-emerald-50/60'
                 : 'hover:bg-slate-50';
 
             const cc = r.avg_change_percentage > 0
@@ -1200,8 +1192,11 @@
                 : r.avg_change_percentage < 0 ? 'text-emerald-700' : 'text-slate-500';
 
             tr.innerHTML = `
-                <td class="px-4 py-3 font-medium ${isRec ? 'text-emerald-800' : 'text-slate-800'}">
-                    ${isRec ? 'â­ ' : ''}${escHtml(r.supplier_name)}
+                <td class="px-4 py-3 font-medium ${isRec ? 'text-emerald-900' : 'text-slate-800'}">
+                    <div class="flex items-center gap-1.5">
+                        ${isRec ? '<span class="inline-flex items-center gap-1 text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-md text-[11px] font-bold shrink-0"><svg class="w-3.5 h-3.5 text-amber-500 fill-amber-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>Best Value</span>' : ''}
+                        <span>${escHtml(r.supplier_name)}</span>
+                    </div>
                 </td>
                 <td class="px-4 py-3 font-semibold">${r.has_history ? fmt(r.latest_total_cost) : '—'}</td>
                 <td class="px-4 py-3 ${cc}">${r.has_history ? fmtP(r.avg_change_percentage) : '—'}</td>
@@ -1221,7 +1216,185 @@
         $el('comparison-panel').classList.remove('hidden');
     }
 
-    // -- Public helper for comparison "Select" button --------------------------
+    // Modal Helpers
+    window.closeSupplierPerformanceModal = function() {
+        const modal = document.getElementById('supplier-performance-modal');
+        if (modal) modal.classList.add('hidden');
+    };
+
+    window.selectSupplierAndCloseModal = function(supplierId, supplierName) {
+        selectSupplier(supplierId, supplierName);
+        window.closeSupplierPerformanceModal();
+        const btn = document.getElementById('supplierSelectButton') || document.getElementById('supplier-dropdown-wrapper');
+        if (btn) {
+            btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    };
+
+    window._poViewSupplierPerformance = async function (supplierId) {
+        const modal = document.getElementById('supplier-performance-modal');
+        const content = document.getElementById('perf-modal-content');
+        const selectBtn = document.getElementById('perf-modal-select-btn');
+        if (!modal || !content) return;
+
+        modal.classList.remove('hidden');
+        content.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-12 text-slate-500">
+                <svg class="w-8 h-8 animate-spin text-[#6EC1D1] mb-3" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p class="text-sm font-semibold">Loading supplier assessment performance metrics...</p>
+            </div>
+        `;
+
+        try {
+            const url = new URL(ROUTES.supplierDetails, window.location.origin);
+            url.searchParams.set('supplier_id', supplierId);
+            selectedProductIds.forEach(id => url.searchParams.append('product_ids[]', id));
+
+            const res = await fetch(url.toString(), {
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const data = await res.json();
+
+            if (!data || !data.supplier) {
+                content.innerHTML = `<div class="p-6 text-center text-rose-600 font-semibold">Unable to load supplier performance records.</div>`;
+                return;
+            }
+
+            const s = data.supplier;
+            const priceHistories = data.price_histories || [];
+
+            if (selectBtn) {
+                selectBtn.onclick = () => window.selectSupplierAndCloseModal(s.id, s.name);
+                selectBtn.innerHTML = `<span>Select ${escHtml(s.name)}</span>`;
+            }
+
+            const score = s.performance_score || 0;
+            const scoreBadgeClass = score >= 80 ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : (score >= 60 ? 'bg-amber-50 text-amber-800 border-amber-300' : 'bg-rose-50 text-rose-800 border-rose-300');
+            const scoreDotColor = score >= 80 ? 'bg-emerald-500' : (score >= 60 ? 'bg-amber-500' : 'bg-rose-500');
+
+            let itemsHtml = '';
+            priceHistories.forEach(ph => {
+                const changeColor = ph.change_percentage > 0 ? 'text-rose-600 font-bold' : (ph.change_percentage < 0 ? 'text-emerald-600 font-bold' : 'text-slate-600');
+                const trendIcon = ph.trend === 'increasing' ? '↑' : (ph.trend === 'decreasing' ? '↓' : '→');
+                const recClass = ph.trend === 'increasing' ? 'bg-amber-50 text-amber-800 border-amber-200' : (ph.trend === 'decreasing' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-slate-50 text-slate-700 border-slate-200');
+
+                let pastPOs = '';
+                if (ph.histories && ph.histories.length > 0) {
+                    pastPOs = `
+                        <div class="mt-3 overflow-hidden rounded-xl border border-slate-200">
+                            <table class="min-w-full text-xs text-left">
+                                <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-3 py-1.5">Date</th>
+                                        <th class="px-3 py-1.5">PO Number</th>
+                                        <th class="px-3 py-1.5">Supplier Cost</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-slate-700">
+                                    ${ph.histories.map(h => `
+                                        <tr>
+                                            <td class="px-3 py-1.5">${escHtml(h.date || '—')}</td>
+                                            <td class="px-3 py-1.5 font-mono text-slate-500">${escHtml(h.po_number || '—')}</td>
+                                            <td class="px-3 py-1.5 font-semibold">${fmt(h.cost)}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+
+                itemsHtml += `
+                    <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs">
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                            <h4 class="text-sm font-bold text-slate-900">${escHtml(ph.product_name)}</h4>
+                            <span class="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
+                                Trend: ${trendIcon} ${cap(ph.trend)}
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 mt-3 text-center">
+                            <div class="rounded-lg bg-slate-50 p-2">
+                                <p class="text-[10px] uppercase font-bold text-slate-400">Current Cost</p>
+                                <p class="text-sm font-bold text-slate-900">${ph.current_cost !== null ? fmt(ph.current_cost) : '—'}</p>
+                            </div>
+                            <div class="rounded-lg bg-slate-50 p-2">
+                                <p class="text-[10px] uppercase font-bold text-slate-400">Previous Cost</p>
+                                <p class="text-sm font-bold text-slate-600">${ph.previous_cost !== null ? fmt(ph.previous_cost) : '—'}</p>
+                            </div>
+                            <div class="rounded-lg bg-slate-50 p-2">
+                                <p class="text-[10px] uppercase font-bold text-slate-400">Price Change</p>
+                                <p class="text-sm ${changeColor}">${fmtP(ph.change_percentage)}</p>
+                            </div>
+                        </div>
+                        ${ph.recommendation ? `
+                            <div class="mt-3 rounded-lg border px-3 py-2 text-xs font-medium ${recClass}">
+                                ${escHtml(ph.recommendation)}
+                            </div>
+                        ` : ''}
+                        ${pastPOs}
+                    </div>
+                `;
+            });
+
+            content.innerHTML = `
+                {{-- Supplier Header Profile --}}
+                <div class="rounded-2xl border border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100/60 p-5">
+                    <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-200">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">${escHtml(s.name)}</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">${escHtml(s.contact_person || 'No Contact Person')} • ${escHtml(s.phone || 'No Phone')} • ${escHtml(s.email || 'No Email')}</p>
+                        </div>
+                        <div>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-extrabold border ${scoreBadgeClass} shadow-2xs">
+                                <span class="w-2.5 h-2.5 rounded-full ${scoreDotColor}"></span>
+                                ${score}/100 Assessment Rating
+                            </span>
+                        </div>
+                    </div>
+
+                    {{-- Supplier Assessment 4 Core KPI Cards --}}
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-4">
+                        <div class="bg-white rounded-xl border border-slate-200 p-3 text-center shadow-2xs">
+                            <p class="text-[10px] uppercase font-bold text-slate-400">On-Time Delivery</p>
+                            <p class="text-base font-extrabold text-slate-900 mt-0.5">${s.on_time_rate}%</p>
+                            <p class="text-[10px] text-slate-500 mt-0.5">${s.delivered_orders} / ${s.total_orders} orders</p>
+                        </div>
+                        <div class="bg-white rounded-xl border border-slate-200 p-3 text-center shadow-2xs">
+                            <p class="text-[10px] uppercase font-bold text-slate-400">Order Completion</p>
+                            <p class="text-base font-extrabold text-slate-900 mt-0.5">${s.completion_rate}%</p>
+                            <p class="text-[10px] text-slate-500 mt-0.5">Fulfillment accuracy</p>
+                        </div>
+                        <div class="bg-white rounded-xl border border-slate-200 p-3 text-center shadow-2xs">
+                            <p class="text-[10px] uppercase font-bold text-slate-400">Quality Score</p>
+                            <p class="text-base font-extrabold text-emerald-700 mt-0.5">${s.quality_score}%</p>
+                            <p class="text-[10px] text-slate-500 mt-0.5">${s.defect_rate}% defect rate</p>
+                        </div>
+                        <div class="bg-white rounded-xl border border-slate-200 p-3 text-center shadow-2xs">
+                            <p class="text-[10px] uppercase font-bold text-slate-400">Price Stability</p>
+                            <p class="text-base font-extrabold text-cyan-700 mt-0.5">${s.price_stability}%</p>
+                            <p class="text-[10px] text-slate-500 mt-0.5">Rate consistency</p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Products & Pricing Analysis --}}
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500">Pricing Analysis for Selected Products</h4>
+                        <span class="text-xs text-slate-400">${priceHistories.length} item(s) checked</span>
+                    </div>
+                    ${itemsHtml || '<p class="text-sm text-slate-500 italic">No pricing records found for this supplier.</p>'}
+                </div>
+            `;
+        } catch (err) {
+            console.error('Error fetching supplier performance:', err);
+            content.innerHTML = `<div class="p-6 text-center text-rose-600 font-semibold">An error occurred while loading performance data.</div>`;
+        }
+    };
+
     window._poSelectSupplier = function (supplierId) {
         const sId = parseInt(supplierId, 10);
         const optBtn = document.querySelector(`#supplierSelectList button[data-supplier-id="${sId}"]`);
@@ -1234,13 +1407,13 @@
         }
     };
 
-    // -- Hide downstream panels ------------------------------------------------
+    // Hide downstream panels
     function hideSupplierPanels() {
         $el('supplier-info-panel').classList.add('hidden');
         $el('price-analysis-panel').classList.add('hidden');
     }
 
-    // -- Resolve Product Images from LocalStorage ----------------------------
+    // Resolve Product Images from LocalStorage
     function resolvePoProductImages() {
         try {
             const stored = localStorage.getItem('posProductImages');
@@ -1279,7 +1452,7 @@
         }
     }
 
-    // -- Boot: trigger initial state ------------------------------------------€
+    // Boot: trigger initial state
     if (productTableBody) {
         const rows = productTableBody.querySelectorAll('.product-row');
         rows.forEach(row => {
@@ -1297,68 +1470,27 @@
                     unit_price: priceInput ? (parseFloat(priceInput.value) || 0) : (parseFloat(row.dataset.defaultUnitPrice) || 0),
                     selected: true,
                 });
+                row.classList.add('bg-emerald-50/50');
             }
         });
-        updateSelectAllCheckboxState();
+        selectedProductIds = Array.from(selectedProductsStore.keys());
     }
-    onProductSelectionChange();
+
+    syncHiddenInputs();
+    updateSelectAllCheckboxState();
+    updateSelectedCountBar();
     resolvePoProductImages();
 
-    // Notification Panel Toggle
-    function toggleNotificationPanel(event) {
-        event.stopPropagation();
-        const panel = document.getElementById('notification-panel');
-        const profileDropdown = document.getElementById('dashboardProfileDropdown');
-        if (panel) {
-            const isHidden = panel.classList.contains('hidden');
-            if (isHidden) {
-                panel.classList.remove('hidden');
-                if (profileDropdown) {
-                    profileDropdown.classList.add('hidden');
-                    profileDropdown.classList.remove('opacity-100', 'scale-100');
-                    profileDropdown.classList.add('opacity-0', 'scale-95');
-                }
-            } else {
-                panel.classList.add('hidden');
-            }
-        }
+    if (selectedProductIds.length > 0) {
+        onProductSelectionChange();
     }
 
-    // Helper functions
-    function markAllNotificationsRead() {
-        // Placeholder for marking all notifications as read
-        console.log('Mark all notifications as read');
-    }
-
-    function openAllNotificationsModal() {
-        // Placeholder for opening all notifications modal
-        console.log('Open all notifications modal');
-    }
-
-    // Close dropdowns when clicking outside
-    window.addEventListener('click', function(event) {
-        const panel = document.getElementById('notification-panel');
-        const profileDropdown = document.getElementById('dashboardProfileDropdown');
-        const notificationBell = document.getElementById('notification-bell-btn');
-        const profileButton = document.getElementById('dashboardProfileButton');
-
-        if (panel && !panel.contains(event.target) && notificationBell && !notificationBell.contains(event.target)) {
-            panel.classList.add('hidden');
-        }
-
-        if (profileDropdown && !profileDropdown.contains(event.target) && profileButton && !profileButton.contains(event.target)) {
-            profileDropdown.classList.add('hidden');
-            profileDropdown.classList.remove('opacity-100', 'scale-100');
-            profileDropdown.classList.add('opacity-0', 'scale-95');
-        }
-    });
-
-    // ── Offline Mode Handler & Form Submit Interceptor ──────────────────────────
+    // OFFLINE CAPABILITY SUPPORT FOR PO CREATION
     function updateCreatePoOfflineState() {
         const isOffline = (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean') ? !navigator.onLine : false;
-        const banner = document.getElementById('po-create-offline-banner');
-        const indicator = document.getElementById('offline-order-indicator');
-        const submitBtnText = document.getElementById('submit-po-text');
+        const banner = $el('po-create-offline-banner');
+        const indicator = $el('offline-order-indicator');
+        const submitBtnText = $el('submit-po-text');
 
         if (isOffline) {
             if (banner) banner.classList.remove('hidden');
@@ -1367,12 +1499,7 @@
                 indicator.classList.add('inline-flex');
             }
             if (submitBtnText) {
-                submitBtnText.innerHTML = `
-                    <svg class="w-4 h-4 inline-block -mt-0.5 mr-1 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
-                    </svg>
-                    Save Order Locally (Offline Mode)
-                `;
+                submitBtnText.textContent = 'Save Locally (Offline)';
             }
         } else {
             if (banner) banner.classList.add('hidden');
@@ -1465,7 +1592,7 @@
                         }
                     }
 
-                    alert(`✅ Purchase Order #${poNumber} has been SAVED LOCALLY in offline mode!\n\nTotal: ₱${totalAmount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}\nExpected Delivery: ${expectedDelivery} (7 Working Days)\n\nWhen internet connection is restored, you will be notified to Export & Import this order for final synchronization before sending to supplier.`);
+                    alert(`Purchase Order #${poNumber} has been SAVED LOCALLY in offline mode!\n\nTotal: ₱${totalAmount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}\nExpected Delivery: ${expectedDelivery} (7 Days Lead Time)\n\nWhen internet connection is restored, you will be notified in the Notification Bell to Export & Import this order before sending to supplier.`);
                     
                     // Reset form selection
                     selectedProductsStore.clear();
@@ -1486,4 +1613,3 @@
 </script>
 
 </x-layouts.app>
-
