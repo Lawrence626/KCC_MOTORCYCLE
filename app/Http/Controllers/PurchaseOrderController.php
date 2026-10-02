@@ -670,13 +670,23 @@ class PurchaseOrderController extends Controller
                 ->take(10)
                 ->get();
 
-            $currentCost  = $histories->first()?->supplier_cost;
-            $previousCost = $histories->skip(1)->first()?->supplier_cost;
+            $firstHistory = $histories->first();
+            $secondHistory = $histories->skip(1)->first();
 
-            $changePercentage = null;
+            // Baseline / Previous cost
+            $baselineCost = (float) $product->unit_price;
+            $currentCost = $firstHistory?->supplier_cost !== null
+                ? (float) $firstHistory->supplier_cost
+                : $baselineCost;
+
+            $previousCost = $secondHistory?->supplier_cost !== null
+                ? (float) $secondHistory->supplier_cost
+                : ($firstHistory?->previous_cost !== null ? (float) $firstHistory->previous_cost : $baselineCost);
+
+            $changePercentage = 0;
             $trend = 'stable';
-            if ($currentCost !== null && $previousCost !== null && $previousCost > 0) {
-                $changePercentage = round((((float) $currentCost - (float) $previousCost) / (float) $previousCost) * 100, 2);
+            if ($previousCost > 0 && abs($currentCost - $previousCost) > 0.001) {
+                $changePercentage = round((($currentCost - $previousCost) / $previousCost) * 100, 2);
                 if ($changePercentage > 0.005) {
                     $trend = 'increasing';
                 } elseif ($changePercentage < -0.005) {
@@ -684,20 +694,24 @@ class PurchaseOrderController extends Controller
                 }
             }
 
+            $suggestedRetail = round($currentCost * 1.20, 2);
+
             $recommendation = match ($trend) {
-                'increasing' => 'Supplier cost has increased. Review the suggested retail price to maintain a 20% markup.',
-                'decreasing' => 'Supplier cost has decreased. Maintaining the current retail price will increase your markup.',
+                'increasing' => "Supplier cost has increased (+{$changePercentage}%). Review suggested retail price (₱" . number_format($suggestedRetail, 2) . ") to maintain 20% markup.",
+                'decreasing' => "Supplier cost has decreased ({$changePercentage}%). Maintaining current retail price will increase your profit margin.",
                 default      => 'Supplier pricing is stable. Maintain the current retail price.',
             };
 
             $priceHistories[] = [
                 'product_id'        => $productId,
                 'product_name'      => $product->product_name ?? $product->name,
-                'current_cost'      => $currentCost !== null ? (float) $currentCost : null,
-                'previous_cost'     => $previousCost !== null ? (float) $previousCost : null,
+                'catalog_price'     => $baselineCost,
+                'current_cost'      => $currentCost,
+                'previous_cost'     => $previousCost,
                 'change_percentage' => $changePercentage,
                 'trend'             => $trend,
                 'recommendation'    => $recommendation,
+                'suggested_retail'  => $suggestedRetail,
                 'histories'         => $histories->map(fn ($h) => [
                     'date'      => $h->created_at?->format('M j, Y'),
                     'cost'      => (float) $h->supplier_cost,
@@ -1222,6 +1236,10 @@ class PurchaseOrderController extends Controller
                             ->first();
                         
                         $previousCost = $previousPoItem?->unit_price;
+                    }
+
+                    if ($previousCost === null && $product->unit_price !== null) {
+                        $previousCost = (float) $product->unit_price;
                     }
                     
                     $currentCost = (float) $item->unit_price;

@@ -780,7 +780,21 @@
             updateSelectAllCheckboxState();
             updateSelectedCountBar();
             syncHiddenInputs();
+            if (loadedPriceHistories && loadedPriceHistories.length > 0) {
+                renderPriceAnalysis(loadedPriceHistories);
+            }
             onProductSelectionChange();
+        });
+
+        productTableBody.addEventListener('input', function(e) {
+            const target = e.target;
+            if (target.matches('input[name*="[unit_price]"]') || target.matches('input[name*="[quantity]"]')) {
+                syncVisibleRowsToStore();
+                syncHiddenInputs();
+                if (loadedPriceHistories && loadedPriceHistories.length > 0) {
+                    renderPriceAnalysis(loadedPriceHistories);
+                }
+            }
         });
     }
 
@@ -1007,6 +1021,8 @@
         }
     }
 
+    let loadedPriceHistories = [];
+
     // Load supplier details + price history
     async function loadSupplierDetails(supplierId) {
         if (!supplierId || selectedProductIds.length === 0) return;
@@ -1023,7 +1039,8 @@
 
             if (data.supplier) {
                 renderSupplierInfo(data.supplier);
-                renderPriceAnalysis(data.price_histories || []);
+                loadedPriceHistories = data.price_histories || [];
+                renderPriceAnalysis(loadedPriceHistories);
             }
         } catch (e) {
             console.error('loadSupplierDetails error', e);
@@ -1047,17 +1064,48 @@
         $el('supplier-info-panel').classList.remove('hidden');
     }
 
-    // Render Step 5 - Price Analysis
+    // Render Step 5 - Price Analysis (Real-time dynamic calculation)
     function renderPriceAnalysis(histories) {
         const container = $el('price-analysis-content');
         container.innerHTML = '';
 
-        if (!histories || histories.length === 0) {
+        const list = histories && histories.length > 0 ? histories : loadedPriceHistories;
+        if (!list || list.length === 0) {
             $el('price-analysis-panel').classList.add('hidden');
             return;
         }
 
-        histories.forEach(ph => {
+        list.forEach(ph => {
+            const stored = selectedProductsStore.get(ph.product_id);
+            const userPrice = stored && stored.unit_price > 0 ? stored.unit_price : null;
+            const baselinePrice = ph.previous_cost != null ? ph.previous_cost : (ph.catalog_price || ph.current_cost);
+            
+            const currentCost = userPrice != null ? userPrice : (ph.current_cost != null ? ph.current_cost : baselinePrice);
+            const previousCost = baselinePrice;
+
+            let changePercentage = 0;
+            let trend = 'stable';
+
+            if (previousCost && previousCost > 0 && currentCost != null && Math.abs(currentCost - previousCost) > 0.001) {
+                changePercentage = Number((((currentCost - previousCost) / previousCost) * 100).toFixed(2));
+                if (changePercentage > 0.005) {
+                    trend = 'increasing';
+                } else if (changePercentage < -0.005) {
+                    trend = 'decreasing';
+                }
+            }
+
+            const suggestedRetail = currentCost ? (currentCost * 1.20) : null;
+            let recommendation = ph.recommendation;
+
+            if (trend === 'increasing') {
+                recommendation = `Supplier cost has increased (+${changePercentage}%). Review suggested retail price (${fmt(suggestedRetail)}) to maintain 20% markup.`;
+            } else if (trend === 'decreasing') {
+                recommendation = `Supplier cost has decreased (${changePercentage}%). Maintaining current retail price will increase your profit margin.`;
+            } else {
+                recommendation = 'Supplier pricing is stable. Maintain the current retail price.';
+            }
+
             const section = document.createElement('div');
             section.className = 'space-y-3 pb-6 border-b border-slate-200 last:border-0 last:pb-0';
 
@@ -1069,39 +1117,39 @@
             const summaryGrid = document.createElement('div');
             summaryGrid.className = 'grid grid-cols-2 sm:grid-cols-4 gap-4';
 
-            const changeColor = ph.change_percentage > 0
+            const changeColor = changePercentage > 0
                 ? 'text-rose-600 font-bold'
-                : ph.change_percentage < 0 ? 'text-emerald-600 font-bold' : 'text-slate-600 font-bold';
+                : changePercentage < 0 ? 'text-emerald-600 font-bold' : 'text-slate-600 font-bold';
 
             summaryGrid.innerHTML = `
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                     <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Current Cost</p>
-                    <p class="text-base font-bold text-slate-800">${ph.current_cost != null ? fmt(ph.current_cost) : '—'}</p>
+                    <p class="text-base font-bold text-slate-800">${currentCost != null ? fmt(currentCost) : '—'}</p>
                 </div>
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                     <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Previous Cost</p>
-                    <p class="text-base font-bold text-slate-600">${ph.previous_cost != null ? fmt(ph.previous_cost) : '—'}</p>
+                    <p class="text-base font-bold text-slate-600">${previousCost != null ? fmt(previousCost) : '—'}</p>
                 </div>
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                     <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Price Change</p>
-                    <p class="text-base ${changeColor}">${fmtP(ph.change_percentage)}</p>
+                    <p class="text-base ${changeColor}">${fmtP(changePercentage)}</p>
                 </div>
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
                     <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Trend</p>
-                    <p class="text-base font-semibold text-slate-700">${icon(ph.trend)} ${cap(ph.trend)}</p>
+                    <p class="text-base font-semibold text-slate-700">${icon(trend)} ${cap(trend)}</p>
                 </div>
             `;
             section.appendChild(summaryGrid);
 
-            // Recommendation
-            const recStyle = ph.trend === 'increasing'
+            // Recommendation Alert Box
+            const recStyle = trend === 'increasing'
                 ? 'border-amber-200 bg-amber-50 text-amber-800'
-                : ph.trend === 'decreasing'
+                : trend === 'decreasing'
                     ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
                     : 'border-slate-200 bg-slate-50 text-slate-700';
             const recBox = document.createElement('div');
             recBox.className   = `rounded-[10px] border px-4 py-3 text-sm ${recStyle}`;
-            recBox.textContent = ph.recommendation;
+            recBox.textContent = recommendation;
             section.appendChild(recBox);
 
             // History table

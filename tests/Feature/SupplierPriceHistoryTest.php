@@ -173,3 +173,35 @@ test('it updates product latest cost and analysis when a custom receiving cost i
     expect($analysis->recommendation)->toContain('Increase the retail price');
 });
 
+test('supplierDetails API returns catalog baseline price and suggested retail price when no previous history exists', function () {
+    $supplier = Supplier::create([
+        'name' => 'BCK MOTORCYCLE PARTS',
+        'status' => 'active',
+    ]);
+
+    $product = Product::create([
+        'name' => 'APIDO Exhaust Pipe',
+        'sku' => 'KCC_PIPE_APIDO_004',
+        'stock_quantity' => 2,
+        'unit_price' => 1550.00,
+        'supplier_name' => 'BCK MOTORCYCLE PARTS',
+    ]);
+
+    $user = \App\Models\User::factory()->create(['role' => 'admin']);
+
+    $response = $this->actingAs($user)->getJson(route('api.order.supplier_details', [
+        'supplier_id' => $supplier->id,
+        'product_ids' => [$product->id],
+    ]));
+
+    $response->assertStatus(200);
+    $data = $response->json();
+
+    expect($data['price_histories'])->toHaveCount(1)
+        ->and($data['price_histories'][0]['catalog_price'])->toBe(1550)
+        ->and($data['price_histories'][0]['current_cost'])->toBe(1550)
+        ->and($data['price_histories'][0]['previous_cost'])->toBe(1550)
+        ->and($data['price_histories'][0]['suggested_retail'])->toBe(1860) // 1550 * 1.20
+        ->and($data['price_histories'][0]['trend'])->toBe('stable');
+});
+
