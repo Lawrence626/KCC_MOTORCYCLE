@@ -461,6 +461,12 @@ class PurchaseOrderController extends Controller
             return back()->withErrors(['products' => 'Select at least one product to order.'])->withInput();
         }
 
+        $productIds = $selectedProducts->pluck('product_id')->filter()->all();
+        $qualifiedSupplierIds = $this->getQualifiedSupplierIdsForProducts($productIds);
+        if (! empty($qualifiedSupplierIds) && ! in_array((int) $validated['supplier_id'], $qualifiedSupplierIds, true)) {
+            return back()->withErrors(['supplier_id' => 'The selected supplier is not authorized to fulfill all selected products.'])->withInput();
+        }
+
         $supplier = Supplier::findOrFail($validated['supplier_id']);
         $totalAmount = $selectedProducts->sum('total_price');
         $orderNumber = 'PO-' . now()->format('YmdHis') . '-' . Str::upper(Str::random(4));
@@ -513,6 +519,98 @@ class PurchaseOrderController extends Controller
         return redirect()->route('order.management')->with('success', 'Purchase order was created successfully. Waiting for admin approval.');
     }
 
+    /**
+     * Get the list of supplier IDs that are qualified to fulfill ALL given product IDs.
+     */
+    public function getQualifiedSupplierIdsForProducts(array $productIds): array
+    {
+        $productIds = array_values(array_filter(array_map('intval', $productIds)));
+        if (empty($productIds)) {
+            return [];
+        }
+
+        $products = Product::with('suppliers:id,name,status')->whereIn('id', $productIds)->get();
+        if ($products->isEmpty()) {
+            return [];
+        }
+
+        $allActiveSuppliers = Supplier::where('status', 'active')->get(['id', 'name']);
+        if ($allActiveSuppliers->isEmpty()) {
+            return [];
+        }
+
+        $supplierNameToIdMap = [];
+        foreach ($allActiveSuppliers as $sup) {
+            $supplierNameToIdMap[mb_strtolower(trim($sup->name))] = (int) $sup->id;
+        }
+
+        $qualifiedSupplierIdsPerProduct = [];
+
+        foreach ($products as $product) {
+            $productSupplierIds = [];
+
+            // 1. Check product->supplier_name (primary source of truth for assigned supplier(s))
+            if (! empty($product->supplier_name)) {
+                $rawNames = array_map('trim', explode(',', $product->supplier_name));
+                foreach ($rawNames as $rawName) {
+                    if ($rawName === '') {
+                        continue;
+                    }
+                    $lower = mb_strtolower($rawName);
+                    if (isset($supplierNameToIdMap[$lower])) {
+                        $productSupplierIds[] = $supplierNameToIdMap[$lower];
+                    } else {
+                        foreach ($allActiveSuppliers as $sup) {
+                            if (strcasecmp(trim($sup->name), $rawName) === 0) {
+                                $productSupplierIds[] = (int) $sup->id;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 2. Also check product->suppliers relation (explicitly mapped via supplier_products pivot)
+            if (empty($productSupplierIds) && $product->suppliers->isNotEmpty()) {
+                foreach ($product->suppliers as $sup) {
+                    if (($sup->status ?? 'active') === 'active') {
+                        $productSupplierIds[] = (int) $sup->id;
+                    }
+                }
+            }
+
+            // 3. Fallback to supplier_products table if still empty
+            if (empty($productSupplierIds)) {
+                $pivotIds = DB::table('supplier_products')
+                    ->where('product_id', $product->id)
+                    ->whereIn('supplier_id', $allActiveSuppliers->pluck('id'))
+                    ->pluck('supplier_id')
+                    ->map(fn ($id) => (int) $id)
+                    ->all();
+                $productSupplierIds = $pivotIds;
+            }
+
+            // 4. If product has no supplier assigned anywhere, allow active suppliers
+            if (empty($productSupplierIds)) {
+                $productSupplierIds = $allActiveSuppliers->pluck('id')->map(fn ($id) => (int) $id)->all();
+            }
+
+            $productSupplierIds = array_values(array_unique(array_filter($productSupplierIds)));
+            $qualifiedSupplierIdsPerProduct[] = $productSupplierIds;
+        }
+
+        if (empty($qualifiedSupplierIdsPerProduct)) {
+            return [];
+        }
+
+        // Must fulfill ALL selected products (intersection)
+        $intersectedIds = $qualifiedSupplierIdsPerProduct[0];
+        for ($i = 1; $i < count($qualifiedSupplierIdsPerProduct); $i++) {
+            $intersectedIds = array_intersect($intersectedIds, $qualifiedSupplierIdsPerProduct[$i]);
+        }
+
+        return array_values(array_unique($intersectedIds));
+    }
+
     public function filteredSuppliers(Request $request): \Illuminate\Http\JsonResponse
     {
         $productIds = array_values(array_filter(array_map('intval', (array) $request->input('product_ids', []))));
@@ -522,14 +620,9 @@ class PurchaseOrderController extends Controller
         }
 
         // Only include suppliers that supply EVERY selected product
-        $supplierIds = DB::table('supplier_products')
-            ->whereIn('product_id', $productIds)
-            ->select('supplier_id')
-            ->groupBy('supplier_id')
-            ->havingRaw('COUNT(DISTINCT product_id) = ?', [count($productIds)])
-            ->pluck('supplier_id');
+        $supplierIds = $this->getQualifiedSupplierIdsForProducts($productIds);
 
-        if ($supplierIds->isEmpty()) {
+        if (empty($supplierIds)) {
             return response()->json([
                 'suppliers' => [],
                 'message'   => 'No supplier can fulfill all selected products. Please select another supplier or split the purchase order.',
@@ -641,7 +734,7 @@ class PurchaseOrderController extends Controller
         ]);
     }
 
-    public function supplierComparison(Request $request): \Illuminate\Http\JsonResponse
+    public function supplierComparison(Request $request, \App\Services\SupplierPerformanceService $performanceService): \Illuminate\Http\JsonResponse
     {
         $productIds = array_values(array_filter(array_map('intval', (array) $request->input('product_ids', []))));
 
@@ -649,18 +742,15 @@ class PurchaseOrderController extends Controller
             return response()->json(['comparison' => [], 'recommended' => null]);
         }
 
-        $supplierIds = DB::table('supplier_products')
-            ->whereIn('product_id', $productIds)
-            ->select('supplier_id')
-            ->groupBy('supplier_id')
-            ->havingRaw('COUNT(DISTINCT product_id) = ?', [count($productIds)])
-            ->pluck('supplier_id');
+        $supplierIds = $this->getQualifiedSupplierIdsForProducts($productIds);
 
-        if ($supplierIds->isEmpty()) {
+        if (empty($supplierIds)) {
             return response()->json(['comparison' => [], 'recommended' => null]);
         }
 
+        $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
         $comparison = [];
+
         foreach ($supplierIds as $supplierId) {
             $supplier = Supplier::find($supplierId);
             if (! $supplier || $supplier->status !== 'active') {
@@ -673,6 +763,9 @@ class PurchaseOrderController extends Controller
             $changes          = [];
 
             foreach ($productIds as $productId) {
+                $product = $products->get($productId);
+                $catalogPrice = $product ? (float) $product->unit_price : 0;
+
                 $histories = SupplierPriceHistory::where('supplier_id', $supplierId)
                     ->where('product_id', $productId)
                     ->latest()
@@ -682,44 +775,109 @@ class PurchaseOrderController extends Controller
                 $current  = $histories->first();
                 $previous = $histories->skip(1)->first();
 
-                if ($current) {
+                if ($current && (float) $current->supplier_cost > 0) {
                     $hasHistory = true;
                     $totalCurrentCost += (float) $current->supplier_cost;
                     if (! $latestPODate || $current->created_at > $latestPODate) {
                         $latestPODate = $current->created_at;
                     }
-                    if ($previous && $previous->supplier_cost > 0) {
+                    if ($previous && (float) $previous->supplier_cost > 0) {
                         $changes[] = (((float) $current->supplier_cost - (float) $previous->supplier_cost) / (float) $previous->supplier_cost) * 100;
+                    }
+                } else {
+                    // Fallback to latest PO unit price
+                    $latestPoItem = PurchaseOrderItem::whereHas('purchaseOrder', function ($q) use ($supplierId) {
+                        $q->where('supplier_id', $supplierId)
+                            ->whereNotIn('status', ['cancelled', 'rejected']);
+                    })
+                    ->where('product_id', $productId)
+                    ->latest('id')
+                    ->first();
+
+                    if ($latestPoItem && (float) $latestPoItem->unit_price > 0) {
+                        $hasHistory = true;
+                        $totalCurrentCost += (float) $latestPoItem->unit_price;
+                        if (! $latestPODate || $latestPoItem->created_at > $latestPODate) {
+                            $latestPODate = $latestPoItem->created_at;
+                        }
+                    } else {
+                        // Fallback to catalog unit price for comparison
+                        $totalCurrentCost += $catalogPrice;
                     }
                 }
             }
 
             $avgChange = count($changes) > 0 ? round(array_sum($changes) / count($changes), 2) : 0;
 
+            // Calculate full performance metrics
+            $supplierProducts = Product::where('supplier_name', $supplier->name)->get();
+            $supplierOrders = PurchaseOrder::with(['items'])->where('supplier_id', $supplierId)->orWhere('supplier_name', $supplier->name)->get();
+            $perfMetrics = $performanceService->calculateForSupplier($supplier, $supplierProducts, $supplierOrders);
+            $perfScore = (float) ($perfMetrics['performance_score'] ?? 0);
+            $onTimeRate = (float) ($perfMetrics['on_time_rate'] ?? 0);
+
             $comparison[] = [
-                'supplier_id'          => $supplierId,
-                'supplier_name'        => $supplier->name,
-                'latest_total_cost'    => $totalCurrentCost,
+                'supplier_id'           => $supplierId,
+                'supplier_name'         => $supplier->name,
+                'latest_total_cost'     => round($totalCurrentCost, 2),
                 'avg_change_percentage' => $avgChange,
-                'last_purchase_date'   => $latestPODate?->format('M j, Y'),
-                'has_history'          => $hasHistory,
+                'last_purchase_date'    => $latestPODate?->format('M j, Y'),
+                'has_history'           => $hasHistory,
+                'performance_score'     => $perfScore,
+                'on_time_rate'          => $onTimeRate,
             ];
         }
 
-        usort($comparison, fn ($a, $b) => $a['latest_total_cost'] <=> $b['latest_total_cost']);
+        // Sort comparison:
+        // 1. Valid positive total cost ascending
+        // 2. If costs are identical or equal, higher performance score first
+        usort($comparison, function ($a, $b) {
+            $costA = (float) $a['latest_total_cost'];
+            $costB = (float) $b['latest_total_cost'];
 
-        // Recommend: lowest cost supplier
+            if ($costA > 0 && $costB > 0 && abs($costA - $costB) > 0.01) {
+                return $costA <=> $costB;
+            }
+
+            return $b['performance_score'] <=> $a['performance_score'];
+        });
+
+        // Recommend: top qualified supplier
         $recommended = ! empty($comparison) ? $comparison[0] : null;
 
         $recommendedPayload = null;
         if ($recommended) {
-            $reasons = ['Lowest current supplier cost'];
-            if (abs($recommended['avg_change_percentage']) <= 5) {
+            $reasons = [];
+            if ($recommended['latest_total_cost'] > 0) {
+                $isLowest = true;
+                foreach ($comparison as $other) {
+                    if ($other['supplier_id'] !== $recommended['supplier_id'] && $other['latest_total_cost'] > 0 && $other['latest_total_cost'] < $recommended['latest_total_cost']) {
+                        $isLowest = false;
+                        break;
+                    }
+                }
+                if ($isLowest && count($comparison) > 1) {
+                    $reasons[] = 'Lowest current supplier cost';
+                }
+            }
+
+            if (abs($recommended['avg_change_percentage']) <= 5 && $recommended['has_history']) {
                 $reasons[] = 'Stable pricing';
+            }
+            if ($recommended['performance_score'] >= 80) {
+                $reasons[] = 'High assessment rating (' . $recommended['performance_score'] . '/100)';
+            }
+            if ($recommended['on_time_rate'] >= 90) {
+                $reasons[] = 'On-time delivery (' . $recommended['on_time_rate'] . '%)';
             }
             if ($recommended['last_purchase_date']) {
                 $reasons[] = 'Recent transaction history';
             }
+
+            if (empty($reasons)) {
+                $reasons[] = 'Primary authorized supplier';
+            }
+
             $recommendedPayload = [
                 'id'      => $recommended['supplier_id'],
                 'name'    => $recommended['supplier_name'],

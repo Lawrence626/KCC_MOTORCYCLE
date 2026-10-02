@@ -985,10 +985,14 @@
 
             const stillValid = data.suppliers.some(s => s.id === currentSupplierId);
             if (!stillValid) {
-                supplierSelect.value = '';
-                currentSupplierId = null;
-                updateSupplierSelectButton('', 0);
-                hideSupplierPanels();
+                if (data.suppliers.length === 1) {
+                    selectSupplier(data.suppliers[0].id, data.suppliers[0].name);
+                } else {
+                    supplierSelect.value = '';
+                    currentSupplierId = null;
+                    updateSupplierSelectButton('', 0);
+                    hideSupplierPanels();
+                }
             } else {
                 const activeSup = data.suppliers.find(s => s.id === currentSupplierId);
                 if (activeSup) {
@@ -1152,7 +1156,7 @@
             });
             const data = await res.json();
 
-            if (!data.comparison || data.comparison.length < 2) return;
+            if (!data.comparison || data.comparison.length < 1) return;
 
             renderComparison(data.comparison, data.recommended);
 
