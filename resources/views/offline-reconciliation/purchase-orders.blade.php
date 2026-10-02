@@ -1106,6 +1106,8 @@
             try {
                 await offlineManager.savePendingOrder(orderRecord);
                 
+                alert(`✓ SUCCESS: Purchase Order #${poNumber} has been SAVED LOCALLY in offline mode!\n\nSupplier: ${selectedSupplier.name}\nTotal: ₱${totalAmount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}\n\nStored securely in browser IndexedDB. You can review and export it anytime under Offline Reconciliation > Export Data.`);
+
                 // Show rich auto-dismissing success notification banner
                 const poAlert = document.getElementById('poAlertContainer');
                 if (poAlert) {

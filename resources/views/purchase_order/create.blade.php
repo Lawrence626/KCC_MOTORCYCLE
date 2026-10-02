@@ -450,6 +450,13 @@
                    class="max-w-xs rounded-[10px] border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-black/10 transition-all duration-200">
                     Cancel
                 </a>
+                <button type="button"
+                        id="save-po-offline-button"
+                        onclick="window.executeOfflineSave()"
+                        class="max-w-xs inline-flex items-center justify-center gap-2 rounded-[10px] border border-amber-300 bg-amber-50 px-5 py-3 text-sm font-bold text-amber-950 shadow-sm hover:bg-amber-100 transition-all duration-200 cursor-pointer">
+                    <svg class="w-4 h-4 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+                    <span>Save Locally (Offline)</span>
+                </button>
                 <button type="submit"
                         id="submit-po-button"
                         class="max-w-xs inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#6EC1D1] px-5 py-3 text-sm font-semibold text-black shadow-sm hover:bg-[#59b2c2] transition-all duration-200 cursor-pointer">
@@ -1660,6 +1667,85 @@
         return date.toISOString().split('T')[0];
     }
 
+    window.executeOfflineSave = async function() {
+        syncVisibleRowsToStore();
+
+        if (selectedProductsStore.size === 0) {
+            alert('Please select at least one product before saving the order.');
+            return;
+        }
+
+        if (!currentSupplierId) {
+            alert('Please select an authorized supplier in Step 2 or 3 before saving.');
+            return;
+        }
+
+        const supplierName = $el('supplierSelectDisplay')?.textContent?.trim() || 'Authorized Supplier';
+        const notes = $el('po-notes')?.value || '';
+        const expectedDelivery = $el('expected_delivery_date')?.value || calculateSevenWorkingDays();
+        
+        const items = [];
+        let totalAmount = 0;
+
+        selectedProductsStore.forEach((item, pid) => {
+            const qty = item.quantity || 1;
+            const price = item.unit_price || 0;
+            const subtotal = qty * price;
+            totalAmount += subtotal;
+
+            items.push({
+                product_id: pid,
+                product_name: item.product_name,
+                sku: item.sku,
+                quantity: qty,
+                unit_price: price,
+                subtotal: subtotal
+            });
+        });
+
+        const poNumber = 'PO-' + new Date().toISOString().replace(/\D/g, '').slice(0, 14) + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+
+        const orderRecord = {
+            order_number: poNumber,
+            supplier_id: currentSupplierId,
+            supplier_name: supplierName,
+            items: items,
+            total_amount: totalAmount,
+            status: 'pending',
+            sync_status: 'locally_saved',
+            expected_delivery_date: expectedDelivery,
+            notes: notes,
+            timestamp: new Date().toISOString()
+        };
+
+        try {
+            if (window.offlineManager) {
+                await window.offlineManager.savePendingOrder(orderRecord);
+                if (typeof window.offlineManager.updateOfflineReconSidebar === 'function') {
+                    await window.offlineManager.updateOfflineReconSidebar();
+                }
+                if (typeof window.offlineManager.updatePendingOfflineSyncAlert === 'function') {
+                    await window.offlineManager.updatePendingOfflineSyncAlert();
+                }
+            }
+
+            // Reset form selection
+            selectedProductsStore.clear();
+            selectedProductIds = [];
+            applyStoreToVisibleRows();
+            updateSelectAllCheckboxState();
+            onProductSelectionChange();
+            if ($el('po-notes')) $el('po-notes').value = '';
+
+            // Display rich confirmation modal
+            window.showOfflineSuccessModal(orderRecord);
+
+        } catch(err) {
+            console.error('Failed to save offline order:', err);
+            alert('Error saving order locally: ' + (err.message || err));
+        }
+    };
+
     if (poForm) {
         poForm.addEventListener('submit', async function(e) {
             const isOffline = (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean') ? !navigator.onLine : false;
@@ -1667,83 +1753,7 @@
             if (isOffline) {
                 e.preventDefault();
                 e.stopPropagation();
-
-                syncVisibleRowsToStore();
-
-                if (selectedProductsStore.size === 0) {
-                    alert('Please select at least one product to create an order.');
-                    return;
-                }
-
-                if (!currentSupplierId) {
-                    alert('Please select an authorized supplier before saving the order.');
-                    return;
-                }
-
-                const supplierName = $el('supplierSelectDisplay')?.textContent?.trim() || 'Authorized Supplier';
-                const notes = $el('po-notes')?.value || '';
-                const expectedDelivery = $el('expected_delivery_date')?.value || calculateSevenWorkingDays();
-                
-                const items = [];
-                let totalAmount = 0;
-
-                selectedProductsStore.forEach((item, pid) => {
-                    const qty = item.quantity || 1;
-                    const price = item.unit_price || 0;
-                    const subtotal = qty * price;
-                    totalAmount += subtotal;
-
-                    items.push({
-                        product_id: pid,
-                        product_name: item.product_name,
-                        sku: item.sku,
-                        quantity: qty,
-                        unit_price: price,
-                        subtotal: subtotal
-                    });
-                });
-
-                const poNumber = 'PO-' + new Date().toISOString().replace(/\D/g, '').slice(0, 14) + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
-
-                const orderRecord = {
-                    order_number: poNumber,
-                    supplier_id: currentSupplierId,
-                    supplier_name: supplierName,
-                    items: items,
-                    total_amount: totalAmount,
-                    status: 'pending',
-                    sync_status: 'locally_saved',
-                    expected_delivery_date: expectedDelivery,
-                    notes: notes,
-                    timestamp: new Date().toISOString()
-                };
-
-                try {
-                    if (window.offlineManager) {
-                        await window.offlineManager.savePendingOrder(orderRecord);
-                        if (typeof window.offlineManager.updateOfflineReconSidebar === 'function') {
-                            await window.offlineManager.updateOfflineReconSidebar();
-                        }
-                        if (typeof window.offlineManager.updatePendingOfflineSyncAlert === 'function') {
-                            await window.offlineManager.updatePendingOfflineSyncAlert();
-                        }
-                    }
-
-                    // Reset form selection
-                    selectedProductsStore.clear();
-                    selectedProductIds = [];
-                    applyStoreToVisibleRows();
-                    updateSelectAllCheckboxState();
-                    onProductSelectionChange();
-                    if ($el('po-notes')) $el('po-notes').value = '';
-
-                    // Display rich confirmation modal
-                    window.showOfflineSuccessModal(orderRecord);
-
-                } catch(err) {
-                    console.error('Failed to save offline order:', err);
-                    alert('Error saving order locally: ' + (err.message || err));
-                }
+                await window.executeOfflineSave();
             }
         });
     }
