@@ -1,0 +1,147 @@
+{
+  "_fonts-DkuEHybc.css": {
+    "file": "assets/fonts-DkuEHybc.css",
+    "src": "_fonts-DkuEHybc.css"
+  },
+  "_instrument-sans-400-normal-D1W7dsQl.woff": {
+    "file": "assets/instrument-sans-400-normal-D1W7dsQl.woff",
+    "src": "_instrument-sans-400-normal-D1W7dsQl.woff"
+  },
+  "_instrument-sans-400-normal-DRC__1Mx.woff2": {
+    "file": "assets/instrument-sans-400-normal-DRC__1Mx.woff2",
+    "src": "_instrument-sans-400-normal-DRC__1Mx.woff2"
+  },
+  "_instrument-sans-400-normal-Q_nF8v4l.woff2": {
+    "file": "assets/instrument-sans-400-normal-Q_nF8v4l.woff2",
+    "src": "_instrument-sans-400-normal-Q_nF8v4l.woff2"
+  },
+  "_instrument-sans-400-normal-r32jotim.woff": {
+    "file": "assets/instrument-sans-400-normal-r32jotim.woff",
+    "src": "_instrument-sans-400-normal-r32jotim.woff"
+  },
+  "_instrument-sans-500-normal-CAxz3nsc.woff": {
+    "file": "assets/instrument-sans-500-normal-CAxz3nsc.woff",
+    "src": "_instrument-sans-500-normal-CAxz3nsc.woff"
+  },
+  "_instrument-sans-500-normal-CTEe1bJa.woff2": {
+    "file": "assets/instrument-sans-500-normal-CTEe1bJa.woff2",
+    "src": "_instrument-sans-500-normal-CTEe1bJa.woff2"
+  },
+  "_instrument-sans-500-normal-Dk9ku72i.woff2": {
+    "file": "assets/instrument-sans-500-normal-Dk9ku72i.woff2",
+    "src": "_instrument-sans-500-normal-Dk9ku72i.woff2"
+  },
+  "_instrument-sans-500-normal-Z6ESRlEs.woff": {
+    "file": "assets/instrument-sans-500-normal-Z6ESRlEs.woff",
+    "src": "_instrument-sans-500-normal-Z6ESRlEs.woff"
+  },
+  "_instrument-sans-600-normal-B7fBEWYG.woff2": {
+    "file": "assets/instrument-sans-600-normal-B7fBEWYG.woff2",
+    "src": "_instrument-sans-600-normal-B7fBEWYG.woff2"
+  },
+  "_instrument-sans-600-normal-B9e8oLYv.woff": {
+    "file": "assets/instrument-sans-600-normal-B9e8oLYv.woff",
+    "src": "_instrument-sans-600-normal-B9e8oLYv.woff"
+  },
+  "_instrument-sans-600-normal-BsaQcF38.woff2": {
+    "file": "assets/instrument-sans-600-normal-BsaQcF38.woff2",
+    "src": "_instrument-sans-600-normal-BsaQcF38.woff2"
+  },
+  "_instrument-sans-600-normal-DMks36a2.woff": {
+    "file": "assets/instrument-sans-600-normal-DMks36a2.woff",
+    "src": "_instrument-sans-600-normal-DMks36a2.woff"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-Bxj018qF.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/css/login.css": {
+    "file": "assets/login-0roXQJM4.css",
+    "name": "login",
+    "names": [
+      "login.css"
+    ],
+    "src": "resources/css/login.css",
+    "isEntry": true
+  },
+  "resources/css/sidebar.css": {
+    "file": "assets/sidebar-BN05P2LF.css",
+    "name": "sidebar",
+    "names": [
+      "sidebar.css"
+    ],
+    "src": "resources/css/sidebar.css",
+    "isEntry": true
+  },
+  "resources/js/allstocks.js": {
+    "file": "assets/allstocks-CvMQq0kM.js",
+    "name": "allstocks",
+    "src": "resources/js/allstocks.js",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-D1q0_s_Y.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/dashboard.js": {
+    "file": "assets/dashboard-CMneYvuX.js",
+    "name": "dashboard",
+    "src": "resources/js/dashboard.js",
+    "isEntry": true
+  },
+  "resources/js/login.js": {
+    "file": "assets/login-BACv4C7T.js",
+    "name": "login",
+    "src": "resources/js/login.js",
+    "isEntry": true
+  },
+  "resources/js/monitoring.js": {
+    "file": "assets/monitoring-sQdGNCfQ.js",
+    "name": "monitoring",
+    "src": "resources/js/monitoring.js",
+    "isEntry": true
+  },
+  "resources/js/pos_terminal.js": {
+    "file": "assets/pos_terminal-CINM1v8S.js",
+    "name": "pos_terminal",
+    "src": "resources/js/pos_terminal.js",
+    "isEntry": true
+  },
+  "resources/js/product-categorization.js": {
+    "file": "assets/product-categorization-BKheWlB2.js",
+    "name": "product-categorization",
+    "src": "resources/js/product-categorization.js",
+    "isEntry": true
+  },
+  "resources/js/replacing-items.js": {
+    "file": "assets/replacing-items-Bs9cykV7.js",
+    "name": "replacing-items",
+    "src": "resources/js/replacing-items.js",
+    "isEntry": true
+  },
+  "resources/js/reverse-logistics.js": {
+    "file": "assets/reverse-logistics-DgbpHEto.js",
+    "name": "reverse-logistics",
+    "src": "resources/js/reverse-logistics.js",
+    "isEntry": true
+  },
+  "resources/js/user_management.js": {
+    "file": "assets/user_management-CEkOHyxs.js",
+    "name": "user_management",
+    "src": "resources/js/user_management.js",
+    "isEntry": true
+  },
+  "resources/js/warehouse_management.js": {
+    "file": "assets/warehouse_management-WV2v6ZBp.js",
+    "name": "warehouse_management",
+    "src": "resources/js/warehouse_management.js",
+    "isEntry": true
+  }
+}
