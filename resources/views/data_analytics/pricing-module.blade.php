@@ -878,6 +878,35 @@
             }
 
             resolvePricingImages();
+
+            // ── Real-Time Auto Sync (Cross-Tab & Cross-Device) ───────────────────
+            let lastSeenTs = null;
+            let lastSeenStock = null;
+            let pollBusy = false;
+
+            const pollPricingStatus = async () => {
+                if (pollBusy) return;
+                pollBusy = true;
+                try {
+                    const res = await fetch('/api/pos/live-status', {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                    });
+                    if (res.ok) {
+                        const json = await res.json();
+                        if (lastSeenTs !== null && (lastSeenTs !== json.last_transaction_timestamp || lastSeenStock !== json.total_stock_units)) {
+                            // Smoothly reload page content to reflect latest cost changes and prices
+                            window.location.reload();
+                        }
+                        lastSeenTs = json.last_transaction_timestamp;
+                        lastSeenStock = json.total_stock_units;
+                    }
+                } catch (e) {
+                } finally {
+                    pollBusy = false;
+                }
+            };
+
+            window.setInterval(pollPricingStatus, 4000);
         </script>
     @endpush
 </x-layouts.app>

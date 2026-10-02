@@ -973,7 +973,54 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // ── Real-Time Auto Sync (Cross-Tab & Cross-Device) ───────────────────
+    // 1. Same-browser instant sync (0ms) via localStorage storage event
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'pos_last_sale_timestamp') {
+            loadDashboard();
+        }
+    });
+
+    // 2. Custom event dispatched within the same window (if POS and dashboard are in single-page context)
+    window.addEventListener('pos-transaction-completed', () => {
+        loadDashboard();
+    });
+
+    // 3. Cross-device & background polling (detects sales from other PCs / terminals)
+    let lastSeenTransactionTimestamp = null;
+    let lastSeenStockUnits = null;
+    let liveCheckInProgress = false;
+
+    const checkLiveStatus = async () => {
+        if (liveCheckInProgress) return;
+        liveCheckInProgress = true;
+        try {
+            const res = await fetch('/api/pos/live-status', {
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                const currentTs = data.last_transaction_timestamp;
+                const currentStock = data.total_stock_units;
+                
+                if (lastSeenTransactionTimestamp !== null && (lastSeenTransactionTimestamp !== currentTs || lastSeenStockUnits !== currentStock)) {
+                    loadDashboard();
+                }
+                lastSeenTransactionTimestamp = currentTs;
+                lastSeenStockUnits = currentStock;
+            }
+        } catch (e) {
+            // silent fail
+        } finally {
+            liveCheckInProgress = false;
+        }
+    };
+
+    // Initial dashboard load
     loadDashboard();
+
+    // Check live-status frequently (every 3s) for Just-In-Time updates
+    window.setInterval(checkLiveStatus, 3000);
 
     if (refreshInterval > 0) {
         window.setInterval(loadDashboard, refreshInterval);

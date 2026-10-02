@@ -1361,6 +1361,8 @@ class PurchaseOrderController extends Controller
             }
         });
 
+        \Illuminate\Support\Facades\Cache::put('pos_last_transaction_timestamp', now()->timestamp, now()->addDays(30));
+
         return redirect()->route('order.show', $purchaseOrder)->with('success', 'Purchase order confirmed and inventory updated.');
     }
 

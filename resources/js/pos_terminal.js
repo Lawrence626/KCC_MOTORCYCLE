@@ -263,6 +263,10 @@ function saveTransactionToDatabase(invoice, total, paymentMethod, items) {
         })
         .then(data => {
             console.log('Transaction saved to database:', data);
+            try {
+                localStorage.setItem('pos_last_sale_timestamp', Date.now().toString());
+                window.dispatchEvent(new CustomEvent('pos-transaction-completed', { detail: data }));
+            } catch (e) {}
         })
         .catch(error => {
             console.error('Error saving transaction to database:', error);
@@ -2224,6 +2228,11 @@ async function confirmPayment() {
         }
 
         closePaymentModal();
+
+        try {
+            localStorage.setItem('pos_last_sale_timestamp', Date.now().toString());
+            window.dispatchEvent(new CustomEvent('pos-transaction-completed', { detail: data }));
+        } catch (e) {}
 
         posState.lastReceipt = {
             invoiceNumber,

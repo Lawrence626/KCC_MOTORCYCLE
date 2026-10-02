@@ -159,8 +159,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('api/pos/validate-stock', [POSTransactionController::class, 'validateStock'])->name('api.pos.validate_stock');
         Route::post('api/pos/remove-product-discount', [App\Http\Controllers\DeadStockController::class, 'removeDiscount'])->name('api.pos.remove-discount');
     });
-    // POS Transaction read access - Admin, Cashier, Inventory Clerk
-    Route::middleware('role:admin,cashier,inventory_clerk')->group(function () {
+    // POS Transaction read access - Admin, Cashier, Inventory Clerk, Warehouse Personnel
+    Route::middleware('role:admin,cashier,inventory_clerk,warehouse_personnel')->group(function () {
+        Route::get('api/pos/live-status', [POSTransactionController::class, 'liveStatus'])->name('api.pos.live_status');
         Route::get('api/pos/transactions', [POSTransactionController::class, 'index'])->name('api.pos.transactions.index');
         Route::get('api/pos/transactions/top-selling', [POSTransactionController::class, 'topSellingProducts'])->name('api.pos.transactions.top_selling');
     });

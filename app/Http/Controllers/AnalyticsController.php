@@ -191,14 +191,29 @@ class AnalyticsController extends Controller
         ]);
     }
 
-    /**
-     * API endpoint: return the four date-filterable widget datasets as JSON.
-     * Used by the global date-range calendar on the Sales Analytics page.
-     */
     public function salesFilteredWidgets(Request $request)
     {
         $startDate = $request->get('start_date', now()->startOfMonth()->toDateString());
         $endDate   = $request->get('end_date', now()->endOfMonth()->toDateString());
+
+        // --- Quick Stats ---
+        $products = $this->activeProducts();
+        $totalInventoryValue = (clone $products)->sum(DB::raw('stock_quantity * unit_price'));
+        $includedVat = $this->vatService->calculateIncludedVat($totalInventoryValue);
+        $vatableSales = $totalInventoryValue - $includedVat;
+        $averageUnitPrice = $products->avg('unit_price') ?: 0;
+        $totalUnitsInStock = (clone $products)->sum('stock_quantity');
+        $healthySkus = (clone $products)
+            ->where('stock_quantity', '>', DB::raw('reorder_level'))
+            ->where('stock_quantity', '>', 0)
+            ->count();
+        $lowStockSkus = (clone $products)
+            ->whereColumn('stock_quantity', '<=', 'reorder_level')
+            ->where('stock_quantity', '>', 0)
+            ->count();
+        $outOfStockSkus = (clone $products)
+            ->where('stock_quantity', '<=', 0)
+            ->count();
 
         // --- Category Distribution ---
         $categoryBreakdown = $this->getCategoryBreakdownFromTransactions($startDate, $endDate);
@@ -217,6 +232,17 @@ class AnalyticsController extends Controller
         $movementData = $this->getProductMovementFromTransactions($startDate, $endDate);
 
         return response()->json([
+            'quickStats' => [
+                'total_inventory_value' => $totalInventoryValue,
+                'included_vat'          => $includedVat,
+                'vatable_sales'         => $vatableSales,
+                'average_unit_price'    => $averageUnitPrice,
+                'total_units_in_stock'  => $totalUnitsInStock,
+                'healthy_skus'          => $healthySkus,
+                'low_stock_skus'        => $lowStockSkus,
+                'out_of_stock_skus'     => $outOfStockSkus,
+            ],
+            'salesTrend'        => $this->buildSalesTrendData(),
             'categoryBreakdown' => $categoryData,
             'topProducts'       => $topProducts->values()->toArray(),
             'fastMoving'        => $movementData['fast'],
@@ -532,7 +558,7 @@ class AnalyticsController extends Controller
         ]);
     }
 
-    public function overstocking()
+    public function overstocking(Request $request)
     {
         $products = $this->activeProducts();
 
@@ -558,6 +584,16 @@ class AnalyticsController extends Controller
             })
             ->sortDesc();
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'overstockedProducts' => $overstocked,
+                'totalExcessUnits' => $totalExcessUnits,
+                'totalOverstockValue' => $totalOverstockValue,
+                'overstockSkuCount' => $overstockSkuCount,
+                'categoryBreakdown' => $categoryBreakdown,
+            ]);
+        }
+
         return view('data_analytics.overstocking-report', [
             'overstockedProducts' => $overstocked,
             'totalExcessUnits' => $totalExcessUnits,
@@ -567,7 +603,7 @@ class AnalyticsController extends Controller
         ]);
     }
 
-    public function outOfStock()
+    public function outOfStock(Request $request)
     {
         $products = $this->activeProducts();
 
@@ -585,6 +621,15 @@ class AnalyticsController extends Controller
 
         $outOfStockCount = $outOfStock->count();
         $lowStockCount = $lowStock->count();
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'outOfStockProducts' => $outOfStock,
+                'lowStockProducts' => $lowStock,
+                'outOfStockCount' => $outOfStockCount,
+                'lowStockCount' => $lowStockCount,
+            ]);
+        }
 
         return view('data_analytics.out-of-stock-report', [
             'outOfStockProducts' => $outOfStock,

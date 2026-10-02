@@ -83,7 +83,7 @@
                     <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Inventory Value</p>
                         <div class="mt-1">
-                            <p class="text-2xl font-bold text-black">₱{{ number_format($quickStats['total_inventory_value'], 2) }}</p>
+                            <p id="quickStatInventoryValue" class="text-2xl font-bold text-black">₱{{ number_format($quickStats['total_inventory_value'], 2) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Current value of stocked items across active inventory.</p>
                         </div>
                     </div>
@@ -100,7 +100,7 @@
                     <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Average Unit Price</p>
                         <div class="mt-1">
-                            <p class="text-2xl font-bold text-black">₱{{ number_format($quickStats['average_unit_price'], 2) }}</p>
+                            <p id="quickStatAvgPrice" class="text-2xl font-bold text-black">₱{{ number_format($quickStats['average_unit_price'], 2) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Average per-unit price for products currently in stock.</p>
                         </div>
                     </div>
@@ -117,7 +117,7 @@
                     <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Units In Stock</p>
                         <div class="mt-1">
-                            <p class="text-2xl font-bold text-black">{{ number_format($quickStats['total_units_in_stock']) }}</p>
+                            <p id="quickStatUnitsInStock" class="text-2xl font-bold text-black">{{ number_format($quickStats['total_units_in_stock']) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Total quantity of items currently available for sale.</p>
                         </div>
                     </div>
@@ -134,7 +134,7 @@
                     <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Healthy SKUs</p>
                         <div class="mt-1">
-                            <p class="text-2xl font-bold text-black">{{ number_format($quickStats['healthy_skus']) }}</p>
+                            <p id="quickStatHealthySkus" class="text-2xl font-bold text-black">{{ number_format($quickStats['healthy_skus']) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">SKUs with stock above reorder threshold and ready to sell.</p>
                         </div>
                     </div>
@@ -152,7 +152,7 @@
                     <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Low Stock SKUs</p>
                         <div class="mt-1">
-                            <p class="text-2xl font-bold text-black">{{ number_format($quickStats['low_stock_skus']) }}</p>
+                            <p id="quickStatLowStockSkus" class="text-2xl font-bold text-black">{{ number_format($quickStats['low_stock_skus']) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Items at or below reorder level that need replenishment soon.</p>
                         </div>
                     </div>
@@ -169,7 +169,7 @@
                     <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Out Of Stock SKUs</p>
                         <div class="mt-1">
-                            <p class="text-2xl font-bold text-black">{{ number_format($quickStats['out_of_stock_skus']) }}</p>
+                            <p id="quickStatOutOfStockSkus" class="text-2xl font-bold text-black">{{ number_format($quickStats['out_of_stock_skus']) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Products currently unavailable that need immediate restock.</p>
                         </div>
                     </div>
@@ -1696,7 +1696,12 @@
             renderFastMoving(fastMovingData);
             renderSlowMoving(slowMovingData);
 
+            let currentStartDate = '{{ now()->startOfMonth()->toDateString() }}';
+            let currentEndDate = '{{ now()->endOfMonth()->toDateString() }}';
+
             const fetchFilteredWidgets = async (startDate, endDate) => {
+                currentStartDate = startDate;
+                currentEndDate = endDate;
                 showLoadingOverlays();
 
                 try {
@@ -1707,6 +1712,32 @@
                     if (!response.ok) throw new Error('Request failed');
 
                     const data = await response.json();
+
+                    // Update Quick Stats cards
+                    if (data.quickStats) {
+                        const qs = data.quickStats;
+                        const elInv = document.getElementById('quickStatInventoryValue');
+                        const elAvg = document.getElementById('quickStatAvgPrice');
+                        const elUnits = document.getElementById('quickStatUnitsInStock');
+                        const elHealth = document.getElementById('quickStatHealthySkus');
+                        const elLow = document.getElementById('quickStatLowStockSkus');
+                        const elOut = document.getElementById('quickStatOutOfStockSkus');
+
+                        if (elInv) elInv.textContent = '₱' + Number(qs.total_inventory_value || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        if (elAvg) elAvg.textContent = '₱' + Number(qs.average_unit_price || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        if (elUnits) elUnits.textContent = Number(qs.total_units_in_stock || 0).toLocaleString();
+                        if (elHealth) elHealth.textContent = Number(qs.healthy_skus || 0).toLocaleString();
+                        if (elLow) elLow.textContent = Number(qs.low_stock_skus || 0).toLocaleString();
+                        if (elOut) elOut.textContent = Number(qs.out_of_stock_skus || 0).toLocaleString();
+                    }
+
+                    // Update Sales Trend Chart
+                    if (data.salesTrend) {
+                        salesTrendData = data.salesTrend;
+                        const activeBtn = Array.from(salesTrendRangeButtons).find(b => b.classList.contains('active'));
+                        const currentRange = activeBtn?.dataset?.range || 'monthly';
+                        updateSalesTrendChart(currentRange);
+                    }
 
                     // Category Distribution
                     const cb = data.categoryBreakdown || { labels: [], values: [], formatted: [], shares: [] };
@@ -1811,6 +1842,51 @@
                     activeBtn.className = 'product-tab-btn rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all bg-[#0f172a] text-white border-[#0f172a] shadow-sm';
                 }
             };
+
+            // ── Real-Time Auto Sync (Cross-Tab & Cross-Device) ───────────────────
+            const triggerAutoRefresh = () => {
+                fetchFilteredWidgets(currentStartDate, currentEndDate);
+            };
+
+            // 1. Same-browser instant sync (0ms) via localStorage storage event
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'pos_last_sale_timestamp') {
+                    triggerAutoRefresh();
+                }
+            });
+
+            // 2. Custom event dispatched within the same window
+            window.addEventListener('pos-transaction-completed', () => {
+                triggerAutoRefresh();
+            });
+
+            // 3. Cross-device & background polling (detects sales / inventory changes from other PCs)
+            let lastSeenTs = null;
+            let lastSeenUnits = null;
+            let livePollBusy = false;
+
+            const pollLiveStatus = async () => {
+                if (livePollBusy) return;
+                livePollBusy = true;
+                try {
+                    const res = await fetch('/api/pos/live-status', {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                    });
+                    if (res.ok) {
+                        const json = await res.json();
+                        if (lastSeenTs !== null && (lastSeenTs !== json.last_transaction_timestamp || lastSeenUnits !== json.total_stock_units)) {
+                            triggerAutoRefresh();
+                        }
+                        lastSeenTs = json.last_transaction_timestamp;
+                        lastSeenUnits = json.total_stock_units;
+                    }
+                } catch (e) {
+                } finally {
+                    livePollBusy = false;
+                }
+            };
+
+            window.setInterval(pollLiveStatus, 3000);
         </script>
     @endpush
 </x-layouts.app>

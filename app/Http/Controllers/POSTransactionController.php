@@ -233,6 +233,8 @@ class POSTransactionController extends Controller
 
             DB::commit();
 
+            \Illuminate\Support\Facades\Cache::put('pos_last_transaction_timestamp', now()->timestamp, now()->addDays(30));
+
             return response()->json([
                 'success' => true,
                 'message' => 'Transaction saved successfully',
@@ -246,6 +248,31 @@ class POSTransactionController extends Controller
                 'message' => 'Failed to process transaction: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Get live status of POS transactions & inventory changes for real-time dashboard and analytics auto-sync.
+     */
+    public function liveStatus()
+    {
+        $lastTransactionTimestamp = \Illuminate\Support\Facades\Cache::get('pos_last_transaction_timestamp');
+        if (!$lastTransactionTimestamp) {
+            $lastCompleted = POSTransaction::query()->completed()->max('completed_at');
+            $lastTransactionTimestamp = $lastCompleted ? \Illuminate\Support\Carbon::parse($lastCompleted)->timestamp : 0;
+            \Illuminate\Support\Facades\Cache::put('pos_last_transaction_timestamp', $lastTransactionTimestamp, now()->addDays(30));
+        }
+
+        $lastTransactionId = (int) (POSTransaction::query()->max('id') ?? 0);
+        $totalStockUnits = (int) Product::where('is_archived', false)->where('is_active', true)->sum('stock_quantity');
+        $activeProductsCount = (int) Product::where('is_archived', false)->where('is_active', true)->count();
+
+        return response()->json([
+            'last_transaction_timestamp' => (int) $lastTransactionTimestamp,
+            'last_transaction_id' => $lastTransactionId,
+            'total_stock_units' => $totalStockUnits,
+            'active_products_count' => $activeProductsCount,
+            'server_time' => now()->timestamp,
+        ]);
     }
 
     /**

@@ -24,7 +24,7 @@
                     <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Out of Stock SKUs</p>
                         <div class="mt-1">
-                            <p class="text-2xl font-bold text-black">{{ number_format($outOfStockCount) }}</p>
+                            <p id="outOfStockCount" class="text-2xl font-bold text-black">{{ number_format($outOfStockCount) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Products currently unavailable for sale.</p>
                         </div>
                     </div>
@@ -41,7 +41,7 @@
                     <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Low Stock SKUs</p>
                         <div class="mt-1">
-                            <p class="text-2xl font-bold text-black">{{ number_format($lowStockCount) }}</p>
+                            <p id="lowStockCount" class="text-2xl font-bold text-black">{{ number_format($lowStockCount) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Products at or below reorder level demanding urgent attention.</p>
                         </div>
                     </div>
@@ -58,7 +58,7 @@
                     <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Action Priority</p>
                         <div class="mt-1">
-                            <p class="text-lg font-bold text-black">{{ $outOfStockCount > 0 ? 'Restock Out-of-Stock First' : 'Inventory Stable' }}</p>
+                            <p id="actionPriorityTitle" class="text-lg font-bold text-black">{{ $outOfStockCount > 0 ? 'Restock Out-of-Stock First' : 'Inventory Stable' }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Recommended first step for replenishment planning.</p>
                         </div>
                     </div>
@@ -286,8 +286,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const outOfStockData = @json($outOfStockJs);
-            const lowStockData = @json($lowStockJs);
+            let outOfStockData = @json($outOfStockJs);
+            let lowStockData = @json($lowStockJs);
 
             const getProductImage = (p) => {
                 if (!p) return null;
@@ -498,6 +498,97 @@
 
             window.updateOutOfStock();
             window.updateLowStock();
+
+            // ── Real-Time Auto Sync (Cross-Tab & Cross-Device) ───────────────────
+            const refreshOutOfStockData = async () => {
+                try {
+                    const response = await fetch('/analytics/out-of-stock', {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                    });
+                    if (!response.ok) return;
+                    const data = await response.json();
+
+                    // Update summary metric cards
+                    const elOut = document.getElementById('outOfStockCount');
+                    const elLow = document.getElementById('lowStockCount');
+                    const elAction = document.getElementById('actionPriorityTitle');
+
+                    const outCount = Number(data.outOfStockCount || 0);
+                    const lowCount = Number(data.lowStockCount || 0);
+
+                    if (elOut) elOut.textContent = outCount.toLocaleString();
+                    if (elLow) elLow.textContent = lowCount.toLocaleString();
+                    if (elAction) elAction.textContent = outCount > 0 ? 'Restock Out-of-Stock First' : 'Inventory Stable';
+
+                    if (Array.isArray(data.outOfStockProducts)) {
+                        outOfStockData = data.outOfStockProducts.map(p => ({
+                            id: p.id,
+                            name: p.product_name || p.name,
+                            sku: p.sku || 'N/A',
+                            category: p.category || 'N/A',
+                            last_restock_date: p.last_restock_date ? new Date(p.last_restock_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A',
+                            image: p.image || null
+                        }));
+                        window.updateOutOfStock();
+                    }
+
+                    if (Array.isArray(data.lowStockProducts)) {
+                        lowStockData = data.lowStockProducts.map(p => ({
+                            id: p.id,
+                            name: p.product_name || p.name,
+                            sku: p.sku || 'N/A',
+                            category: p.category || 'N/A',
+                            stock_quantity: Number(p.stock_quantity || 0),
+                            reorder_level: Number(p.reorder_level || 0),
+                            need: Math.max(0, Number(p.reorder_level || 0) - Number(p.stock_quantity || 0)),
+                            image: p.image || null
+                        }));
+                        window.updateLowStock();
+                    }
+                } catch (e) {
+                    console.error('Failed to auto-refresh out of stock data', e);
+                }
+            };
+
+            // 1. Same-browser instant sync (0ms) via localStorage storage event
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'pos_last_sale_timestamp') {
+                    refreshOutOfStockData();
+                }
+            });
+
+            // 2. Custom event dispatched within the same window
+            window.addEventListener('pos-transaction-completed', () => {
+                refreshOutOfStockData();
+            });
+
+            // 3. Cross-device & background polling (detects sales / inventory changes from other PCs)
+            let lastSeenTs = null;
+            let lastSeenStock = null;
+            let pollBusy = false;
+
+            const pollOutOfStockStatus = async () => {
+                if (pollBusy) return;
+                pollBusy = true;
+                try {
+                    const res = await fetch('/api/pos/live-status', {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                    });
+                    if (res.ok) {
+                        const json = await res.json();
+                        if (lastSeenTs !== null && (lastSeenTs !== json.last_transaction_timestamp || lastSeenStock !== json.total_stock_units)) {
+                            refreshOutOfStockData();
+                        }
+                        lastSeenTs = json.last_transaction_timestamp;
+                        lastSeenStock = json.total_stock_units;
+                    }
+                } catch (e) {
+                } finally {
+                    pollBusy = false;
+                }
+            };
+
+            window.setInterval(pollOutOfStockStatus, 3000);
         });
     </script>
 </x-layouts.app>

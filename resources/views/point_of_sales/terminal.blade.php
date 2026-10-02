@@ -601,39 +601,52 @@
     <!-- Mobile Scanner Modal -->
     <div id="posMobileScannerModal" class="fixed inset-0 hidden items-center justify-center z-[9999] px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/75 backdrop-blur-md" onclick="document.getElementById('posMobileScannerModal').classList.add('hidden')"></div>
-        <div class="relative w-full max-w-md bg-[#131d2a] rounded-3xl overflow-hidden shadow-2xl border border-slate-700/60 flex flex-col">
+        <div class="relative w-full max-w-sm bg-[#131d2a] rounded-3xl overflow-hidden shadow-2xl border border-slate-700/60 flex flex-col justify-between">
             <!-- Header -->
-            <div class="px-5 pt-5 pb-3 flex items-start justify-between">
+            <div class="px-5 pt-4 pb-2.5 flex items-center justify-between flex-shrink-0 border-b border-slate-800/60">
                 <div>
-                    <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">POS Scanner</h1>
-                    <p class="text-xs text-slate-400 mt-0.5">Scan QR codes to add items to cart</p>
+                    <h1 class="text-lg sm:text-xl font-bold text-white tracking-tight leading-tight">POS Scanner</h1>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Scan QR codes to add items to cart</p>
                 </div>
-                <button id="posCloseMobileScannerButton" type="button" class="rounded-full bg-[#38bdf8] hover:bg-[#0ea5e9] px-4 py-1.5 text-xs font-bold text-white transition-all shadow-sm cursor-pointer">
+                <button id="posCloseMobileScannerButton" type="button" class="rounded-full bg-[#38bdf8] hover:bg-[#0ea5e9] active:scale-95 px-4 py-1.5 text-xs font-bold text-white transition-all shadow-sm cursor-pointer flex-shrink-0">
                     Close
                 </button>
             </div>
 
             <!-- Scanner Viewport Area -->
-            <div class="px-5 py-2 flex flex-col items-center justify-center">
-                <div id="posMobileScannerReader" class="w-full bg-black rounded-2xl overflow-hidden border border-slate-700/60 min-h-[260px]"></div>
-                <div id="posMobileScannerStatus" class="mt-4 text-center text-xs sm:text-sm text-slate-400 font-medium">
+            <div class="flex-1 flex flex-col items-center justify-center px-4 py-2 min-h-0 overflow-hidden">
+                <div class="relative w-[230px] h-[230px] sm:w-[250px] sm:h-[250px] max-w-full aspect-square rounded-2xl overflow-hidden bg-black border border-slate-700/60 shadow-inner flex items-center justify-center flex-shrink-0">
+                    <div id="posMobileScannerReader" class="w-full h-full"></div>
+                    <div class="pointer-events-none absolute inset-3 rounded-xl border border-white/20"></div>
+                    <div class="pointer-events-none absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-[#38bdf8] rounded-tl"></div>
+                    <div class="pointer-events-none absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-[#38bdf8] rounded-tr"></div>
+                    <div class="pointer-events-none absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-[#38bdf8] rounded-bl"></div>
+                    <div class="pointer-events-none absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-[#38bdf8] rounded-br"></div>
+                </div>
+                <div id="posMobileScannerStatus" class="mt-2.5 text-center text-xs text-slate-400 font-medium truncate max-w-full px-2">
                     Position QR code within the frame
                 </div>
             </div>
 
             <!-- Recent Scans -->
-            <div class="px-5 py-3 mt-1">
-                <h2 class="text-xs sm:text-sm font-bold text-white mb-2">Recent Scans</h2>
-                <div id="posMobileScannerRecent" class="space-y-1.5 max-h-36 overflow-y-auto">
-                    <div class="text-center text-xs text-slate-400 py-3">No items scanned yet</div>
+            <div class="px-5 py-2.5 flex-shrink-0 border-t border-slate-800/80 bg-[#101824]">
+                <div class="flex items-center justify-between mb-1.5">
+                    <h2 class="text-xs font-bold text-white tracking-wide">Recent Scans</h2>
+                    <span id="posMobileScannerRecentCount" class="text-[10px] text-slate-400 font-medium">0 scanned</span>
+                </div>
+                <div id="posMobileScannerRecent" class="space-y-1.5 max-h-[100px] overflow-y-auto custom-scrollbar pr-0.5">
+                    <div class="text-center text-[11px] text-slate-500 py-3">No items scanned yet</div>
                 </div>
             </div>
 
             <!-- Connection Status -->
-            <div class="bg-[#0b1320] px-5 py-3 border-t border-slate-700/60 mt-auto">
+            <div class="bg-[#0b1320] px-5 py-2.5 border-t border-slate-800 flex-shrink-0">
                 <div class="flex items-center justify-between text-xs">
-                    <span class="text-slate-400">Connection:</span>
-                    <span id="posMobileScannerConnection" class="text-emerald-400 font-bold">Connected</span>
+                    <span class="text-slate-400 text-[11px]">Connection:</span>
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span id="posMobileScannerConnection" class="text-emerald-400 font-bold text-xs">Connected</span>
+                    </div>
                 </div>
             </div>
         </div>

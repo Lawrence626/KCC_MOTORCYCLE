@@ -43,7 +43,7 @@
                     <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Overstock SKUs</p>
                         <div class="mt-1">
-                            <p class="text-2xl font-bold text-black">{{ number_format($overstockSkuCount) }}</p>
+                            <p id="overstockSkuCount" class="text-2xl font-bold text-black">{{ number_format($overstockSkuCount) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Products stocked above reorder levels.</p>
                         </div>
                     </div>
@@ -60,7 +60,7 @@
                     <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Excess Stock Units</p>
                         <div class="mt-1">
-                            <p class="text-2xl font-bold text-black">{{ number_format($totalExcessUnits) }}</p>
+                            <p id="totalExcessUnits" class="text-2xl font-bold text-black">{{ number_format($totalExcessUnits) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Total units available beyond reorder point.</p>
                         </div>
                     </div>
@@ -77,7 +77,7 @@
                     <div class="flex-1 min-w-0">
                         <p class="text-black text-xs font-semibold">Tied-up Capital Value</p>
                         <div class="mt-1">
-                            <p class="text-2xl font-bold text-black">₱{{ number_format($totalOverstockValue ?? 0, 2) }}</p>
+                            <p id="totalOverstockValue" class="text-2xl font-bold text-black">₱{{ number_format($totalOverstockValue ?? 0, 2) }}</p>
                             <p class="text-gray-500 text-[10px] mt-1 font-medium leading-tight">Estimated cost value of excess units in stock.</p>
                         </div>
                     </div>
@@ -444,6 +444,82 @@
             // Initial render
             render();
             renderCategoryExposureImages();
+
+            // ── Real-Time Auto Sync (Cross-Tab & Cross-Device) ───────────────────
+            const refreshOverstockingData = async () => {
+                try {
+                    const response = await fetch('/analytics/overstocking', {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                    });
+                    if (!response.ok) return;
+                    const data = await response.json();
+
+                    // Update summary metric cards
+                    const elSku = document.getElementById('overstockSkuCount');
+                    const elUnits = document.getElementById('totalExcessUnits');
+                    const elVal = document.getElementById('totalOverstockValue');
+
+                    if (elSku) elSku.textContent = Number(data.overstockSkuCount || 0).toLocaleString();
+                    if (elUnits) elUnits.textContent = Number(data.totalExcessUnits || 0).toLocaleString();
+                    if (elVal) elVal.textContent = '₱' + Number(data.totalOverstockValue || 0).toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                    if (Array.isArray(data.overstockedProducts)) {
+                        overstockData = data.overstockedProducts.map(p => ({
+                            id: p.id,
+                            name: p.product_name || p.name,
+                            sku: p.sku || 'N/A',
+                            category: p.category || 'N/A',
+                            stock_quantity: Number(p.stock_quantity || 0),
+                            reorder_level: Number(p.reorder_level || 0),
+                            excess: Math.max(0, Number(p.stock_quantity || 0) - Number(p.reorder_level || 0)),
+                            value: Math.max(0, Number(p.stock_quantity || 0) - Number(p.reorder_level || 0)) * Number(p.unit_price || 0)
+                        }));
+                        render();
+                    }
+                } catch (e) {
+                    console.error('Failed to auto-refresh overstocking data', e);
+                }
+            };
+
+            // 1. Same-browser instant sync (0ms) via localStorage storage event
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'pos_last_sale_timestamp') {
+                    refreshOverstockingData();
+                }
+            });
+
+            // 2. Custom event dispatched within the same window
+            window.addEventListener('pos-transaction-completed', () => {
+                refreshOverstockingData();
+            });
+
+            // 3. Cross-device & background polling (detects sales / inventory changes from other PCs)
+            let lastSeenTs = null;
+            let lastSeenStock = null;
+            let pollBusy = false;
+
+            const pollOverstockStatus = async () => {
+                if (pollBusy) return;
+                pollBusy = true;
+                try {
+                    const res = await fetch('/api/pos/live-status', {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                    });
+                    if (res.ok) {
+                        const json = await res.json();
+                        if (lastSeenTs !== null && (lastSeenTs !== json.last_transaction_timestamp || lastSeenStock !== json.total_stock_units)) {
+                            refreshOverstockingData();
+                        }
+                        lastSeenTs = json.last_transaction_timestamp;
+                        lastSeenStock = json.total_stock_units;
+                    }
+                } catch (e) {
+                } finally {
+                    pollBusy = false;
+                }
+            };
+
+            window.setInterval(pollOverstockStatus, 3000);
         });
     </script>
 </x-layouts.app>
