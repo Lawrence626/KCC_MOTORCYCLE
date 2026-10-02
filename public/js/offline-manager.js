@@ -361,6 +361,14 @@ class OfflineManager {
     }
 
     async savePendingOrder(orderData) {
+        if (!this.db) {
+            try {
+                await this.initIndexedDB();
+            } catch (e) {
+                console.warn('DB init error in savePendingOrder:', e);
+            }
+        }
+
         return new Promise((resolve, reject) => {
             if (!this.db) {
                 reject(new Error('IndexedDB not initialized'));
@@ -381,9 +389,13 @@ class OfflineManager {
 
             const addRequest = store.add(order);
             addRequest.onsuccess = () => {
-                this.loadPendingOperations().then(async () => {
-                    await this.updateOfflineReconSidebar();
-                    await this.updatePendingOfflineSyncAlert();
+                this.loadPendingOperations().catch(e => console.warn(e)).finally(async () => {
+                    try {
+                        await this.updateOfflineReconSidebar();
+                    } catch (e) {}
+                    try {
+                        await this.updatePendingOfflineSyncAlert();
+                    } catch (e) {}
                     resolve(addRequest.result);
                 });
             };
@@ -391,9 +403,24 @@ class OfflineManager {
         });
     }
 
+    updateQueueCount() {
+        const count = Array.isArray(this.queue?.orders) ? this.queue.orders.length : 0;
+        const badge = document.getElementById('sidebar-offline-pending-badge');
+        if (badge) {
+            if (count > 0) {
+                badge.textContent = count;
+                badge.classList.remove('hidden');
+                badge.classList.add('inline-flex');
+            } else {
+                badge.classList.add('hidden');
+                badge.classList.remove('inline-flex');
+            }
+        }
+    }
+
     async loadPendingOperations() {
         if (this.isOnline) {
-            await this.cleanupSyncedOrders();
+            await this.cleanupSyncedOrders().catch(e => console.warn(e));
         }
 
         const orders = await this.getAllFromStore('pending_orders');
@@ -403,7 +430,7 @@ class OfflineManager {
         };
 
         this.updateQueueCount();
-        await this.updateOfflineReconSidebar();
+        await this.updateOfflineReconSidebar().catch(e => console.warn(e));
         this.injectOfflineNotificationIntoBell();
     }
 
