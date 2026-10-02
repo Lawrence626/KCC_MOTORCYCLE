@@ -1044,7 +1044,7 @@ async function searchProducts(query = '', page = 1) {
         productGrid.innerHTML = '';
         json.data.forEach(product => {
             const card = document.createElement('div');
-            card.className = 'pos-image-upload-card relative rounded-3xl border border-slate-200 bg-slate-50 p-3 flex flex-col justify-between';
+            card.className = 'pos-image-upload-card group relative rounded-2xl border border-slate-200 bg-white p-3.5 flex flex-col justify-between hover:border-slate-300 hover:shadow-md transition-all duration-200';
             const stockQty = Number(product.stock_quantity ?? product.stock ?? 0);
             const isOutOfStock = stockQty <= 0;
             const productName = product.product_name || product.name || 'Unnamed Product';
@@ -1066,7 +1066,7 @@ async function searchProducts(query = '', page = 1) {
 
             card.innerHTML = `
                 <div class="flex-shrink-0">
-                    <div class="pos-image-container relative h-24 w-full overflow-hidden rounded-[10px] bg-slate-100/90 border border-slate-200/80 flex items-center justify-center">
+                    <div class="pos-image-container relative h-28 w-full overflow-hidden rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center">
                         <div class="pos-image-preview absolute inset-0 bg-cover bg-center ${cardImage ? '' : 'hidden'}" style="${cardImage ? `background-image: url('${cardImage}');` : ''}"></div>
                         <div class="pos-image-placeholder flex items-center justify-center text-slate-300 ${cardImage ? 'hidden' : ''}">
                             <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1075,58 +1075,60 @@ async function searchProducts(query = '', page = 1) {
                         </div>
                     </div>
                     <input type="file" accept="image/*" class="pos-image-uploader hidden" data-id="${product.id}" />
-                    <div class="mt-2 flex items-center justify-between">
-                        <h3 class="text-sm font-semibold text-slate-900 line-clamp-2">${productName}</h3>
-                        <button type="button" aria-label="Upload image" title="Upload image" class="pos-image-upload-trigger ml-2 flex-shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-[10px] border border-slate-200 bg-white text-slate-700 hover:bg-slate-100">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="mt-2.5 flex items-start justify-between gap-2">
+                        <h3 class="text-xs font-bold text-slate-900 line-clamp-2 leading-tight">${productName}</h3>
+                        <button type="button" aria-label="Upload image" title="Upload image" class="pos-image-upload-trigger flex-shrink-0 inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition cursor-pointer shadow-2xs">
+                            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                             </svg>
                         </button>
                     </div>
                 </div>
-                <div class="flex-1 flex flex-col justify-start pt-1 pb-2 space-y-0.5">
-                    ${product.product_description ? `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">PRODUCT DESCRIPTION:</span> ${product.product_description}</p>` : ''}
-                    ${brand ? `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">BRAND:</span> ${brand}</p>` : ''}
-                    ${compatibility ? `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">COMPATIBLE:</span> ${compatibility}</p>` : ''}
-                    ${product.sku ? `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">SKU:</span> ${product.sku}</p>` : ''}
-                    ${isOutOfStock
-                    ? `<p class="text-[9px] text-red-600 font-semibold"><span class="font-semibold text-black">STOCK:</span> 0 pcs <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-bold bg-red-100 text-red-700">Out of Stock</span></p>`
-                    : `<p class="text-[9px] text-slate-700"><span class="font-semibold text-black">STOCK:</span> ${stockQty} pcs</p>`
-                }
+                <div class="flex-1 flex flex-col justify-start pt-1.5 pb-2 space-y-0.5">
+                    ${product.product_description ? `<p class="text-[10px] text-slate-600 truncate"><span class="font-bold text-slate-800">Desc:</span> ${product.product_description}</p>` : ''}
+                    ${brand ? `<p class="text-[10px] text-slate-600 truncate"><span class="font-bold text-slate-800">Brand:</span> ${brand}</p>` : ''}
+                    ${compatibility ? `<p class="text-[10px] text-slate-600 truncate"><span class="font-bold text-slate-800">Comp:</span> ${compatibility}</p>` : ''}
+                    ${product.sku ? `<p class="text-[10px] text-slate-500 font-mono"><span class="font-bold text-slate-800 font-sans">SKU:</span> ${product.sku}</p>` : ''}
+                    <div class="pt-0.5">
+                        ${isOutOfStock
+                            ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Out of Stock</span>`
+                            : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>${stockQty} in stock</span>`
+                        }
+                    </div>
                 </div>
-                <div class="flex-shrink-0 space-y-2">
+                <div class="flex-shrink-0 space-y-2.5 pt-2 border-t border-slate-100">
                     <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm font-semibold text-slate-900">${formatCurrency(sellingPrice)}</span>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="text-sm font-extrabold text-slate-900">${formatCurrency(sellingPrice)}</span>
                             ${Number(product.discount_value || 0) > 0 ? `<span class="pos-discount-badge inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-200" title="Dead stock discount">🏷️ ${product.discount_type === 'percentage' ? `${product.discount_value}% OFF` : `₱${Number(product.discount_value).toFixed(2)} OFF`}</span>` : ''}
-                            <button type="button" class="pos-price-breakdown-toggle group relative inline-flex items-center gap-1 text-[10px] text-slate-500 hover:text-slate-1000 transition" data-product-id="${product.id}" data-vatable="${vatableSales}" data-included-vat="${includedVat}" title="Price Breakdown">
+                            <button type="button" class="pos-price-breakdown-toggle inline-flex items-center gap-0.5 text-[10px] font-semibold text-slate-400 hover:text-slate-700 transition" data-product-id="${product.id}" data-vatable="${vatableSales}" data-included-vat="${includedVat}" title="Price Breakdown">
                                 <svg class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
                             </button>
                         </div>
-                        <button type="button" onclick="posArchiveProduct(${product.id})" class="text-red-600 hover:text-red-700 text-[10px] font-medium flex items-center gap-1" title="Archive Product">
+                        <button type="button" onclick="posArchiveProduct(${product.id})" class="text-slate-400 hover:text-rose-600 text-[10px] font-bold inline-flex items-center gap-1 transition cursor-pointer" title="Archive Product">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
                             </svg>
                             Archive
                         </button>
                     </div>
-                    <div class="pos-price-breakdown hidden mt-2 p-2 bg-slate-100 rounded-lg text-[10px] space-y-1 overflow-hidden transition-all duration-200" data-product-id="${product.id}">
+                    <div class="pos-price-breakdown hidden p-2 bg-slate-50 border border-slate-200 rounded-xl text-[10px] space-y-1 overflow-hidden" data-product-id="${product.id}">
                         <div class="flex justify-between">
-                            <span class="text-slate-600">VATable Sales</span>
-                            <span class="font-medium text-slate-900">${formatCurrency(vatableSales)}</span>
+                            <span class="text-slate-500">VATable Sales</span>
+                            <span class="font-bold text-slate-800">${formatCurrency(vatableSales)}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-slate-600">Included VAT (12%)</span>
-                            <span class="font-medium text-slate-900">${formatCurrency(includedVat)}</span>
+                            <span class="text-slate-500">Included VAT (12%)</span>
+                            <span class="font-bold text-slate-800">${formatCurrency(includedVat)}</span>
                         </div>
                     </div>
-                    <div class="flex justify-center">
+                    <div>
                         ${isOutOfStock
-                    ? `<button type="button" disabled class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-slate-200 px-4 text-xs font-bold text-slate-400 cursor-not-allowed shadow-none tracking-wide">Out of Stock</button>`
-                    : `<button type="button" data-id="${product.id}" data-name="${productName}" data-sku="${product.sku || ''}" data-price="${product.unit_price || 0}" data-stock="${stockQty}" data-product-description="${product.product_description || product.category || ''}" data-brand="${brand}" data-compatibility="${compatibility}" data-category="${product.category || ''}" data-discount-type="${product.discount_type || ''}" data-discount-value="${product.discount_value || 0}" class="pos-add-card mt-3 inline-flex h-8 items-center justify-center rounded-[10px] bg-[#6EC1D1] px-4 text-xs font-bold text-black shadow-sm hover:bg-[#59b2c2] transition-all duration-200 tracking-wide">Add to Cart</button>`
-                }
+                            ? `<button type="button" disabled class="pos-add-card w-full inline-flex h-9 items-center justify-center rounded-xl bg-slate-100 text-xs font-bold text-slate-400 cursor-not-allowed border border-slate-200">Out of Stock</button>`
+                            : `<button type="button" data-id="${product.id}" data-name="${productName}" data-sku="${product.sku || ''}" data-price="${product.unit_price || 0}" data-stock="${stockQty}" data-product-description="${product.product_description || product.category || ''}" data-brand="${brand}" data-compatibility="${compatibility}" data-category="${product.category || ''}" data-discount-type="${product.discount_type || ''}" data-discount-value="${product.discount_value || 0}" class="pos-add-card w-full inline-flex h-9 items-center justify-center rounded-xl bg-[#6EC1D1] text-xs font-extrabold text-slate-950 shadow-2xs hover:bg-[#5bb0c0] transition-all cursor-pointer tracking-wider uppercase">Add to Cart</button>`
+                        }
                     </div>
                 </div>
             `;
@@ -1159,7 +1161,7 @@ function renderProductPagination(pagination) {
 
     const prevButton = document.createElement('button');
     prevButton.type = 'button';
-    prevButton.className = 'inline-flex items-center rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed';
+    prevButton.className = 'inline-flex items-center rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer shadow-2xs';
     prevButton.textContent = '← Prev';
     prevButton.disabled = currentPage <= 1;
     prevButton.onclick = () => searchProducts(posState.productSearchQuery, currentPage - 1);
@@ -1177,9 +1179,9 @@ function renderProductPagination(pagination) {
         const pageButton = document.createElement('button');
         pageButton.type = 'button';
         if (page === currentPage) {
-            pageButton.className = 'inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-sm font-semibold';
+            pageButton.className = 'inline-flex items-center justify-center rounded-xl bg-[#0f172a] text-white w-8 h-8 text-xs font-bold shadow-xs';
         } else {
-            pageButton.className = 'inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-sm font-semibold hover:bg-slate-50';
+            pageButton.className = 'inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 w-8 h-8 text-xs font-bold hover:bg-slate-50 transition cursor-pointer shadow-2xs';
         }
         pageButton.textContent = page;
         pageButton.onclick = () => searchProducts(posState.productSearchQuery, page);
@@ -1188,7 +1190,7 @@ function renderProductPagination(pagination) {
 
     const nextButton = document.createElement('button');
     nextButton.type = 'button';
-    nextButton.className = 'inline-flex items-center rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed';
+    nextButton.className = 'inline-flex items-center rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer shadow-2xs';
     nextButton.textContent = 'Next →';
     nextButton.disabled = currentPage >= totalPages;
     nextButton.onclick = () => searchProducts(posState.productSearchQuery, currentPage + 1);
