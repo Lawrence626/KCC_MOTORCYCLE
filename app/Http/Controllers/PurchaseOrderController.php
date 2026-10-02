@@ -200,18 +200,18 @@ class PurchaseOrderController extends Controller
         if ($movementFilter === 'all') {
             // Show fast moving and slow moving, exclude special order by default (unless pre-selected)
             $filteredProducts = $allProducts->filter(function ($product) use ($selectedProductIds) {
-                return in_array($product->id, $selectedProductIds, true) || $product->movement_category !== 'special_order';
+                return in_array((int) $product->id, $selectedProductIds, true) || $product->movement_category !== 'special_order';
             });
         } else {
             // Show only the selected category (unless pre-selected)
             $filteredProducts = $allProducts->filter(function ($product) use ($selectedProductIds, $movementFilter) {
-                return in_array($product->id, $selectedProductIds, true) || $product->movement_category === $movementFilter;
+                return in_array((int) $product->id, $selectedProductIds, true) || $product->movement_category === $movementFilter;
             });
         }
 
         // Guarantee preselected products are always at the very top (first page)
-        $preselected = $filteredProducts->filter(fn ($p) => in_array($p->id, $selectedProductIds, true));
-        $others = $filteredProducts->filter(fn ($p) => !in_array($p->id, $selectedProductIds, true));
+        $preselected = $filteredProducts->filter(fn ($p) => in_array((int) $p->id, $selectedProductIds, true));
+        $others = $filteredProducts->filter(fn ($p) => !in_array((int) $p->id, $selectedProductIds, true));
         $filteredProducts = $preselected->concat($others);
 
         // Manually paginate the filtered collection

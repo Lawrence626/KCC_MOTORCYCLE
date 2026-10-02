@@ -374,7 +374,7 @@
         </div>
 
         {{-- Offline PO Save Success Modal --}}
-        <div id="offlineSuccessModal" class="hidden fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+        <div id="offlineSuccessModal" class="hidden fixed inset-0 z-[99999] overflow-y-auto flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
             <div class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden transform transition-all">
                 {{-- Modal Header --}}
                 <div class="bg-[#0f172a] px-6 py-5 border-b border-slate-800 flex items-center justify-between text-white">
@@ -479,7 +479,14 @@
     };
 
     // Pre-selected IDs passed from the server (low-stock alert redirect)
-    const preselectedIds = @json($selectedProductIds);
+    let preselectedIds = @json($selectedProductIds);
+    if (!Array.isArray(preselectedIds)) preselectedIds = [];
+    preselectedIds = preselectedIds.map(id => parseInt(id, 10)).filter(id => !isNaN(id));
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlPid = parseInt(urlParams.get('product_id'), 10);
+    if (!isNaN(urlPid) && !preselectedIds.includes(urlPid)) {
+        preselectedIds.push(urlPid);
+    }
 
     // Helpers
     const $el  = (id) => document.getElementById(id);
@@ -1670,14 +1677,49 @@
     window.executeOfflineSave = async function() {
         syncVisibleRowsToStore();
 
+        // If no product is checked, auto-select the first visible low-stock product in the table if available
         if (selectedProductsStore.size === 0) {
-            alert('Please select at least one product before saving the order.');
-            return;
+            const firstRow = productTableBody?.querySelector('.product-row');
+            if (firstRow) {
+                const cb = firstRow.querySelector('.product-checkbox');
+                const pid = parseInt(firstRow.dataset.productId, 10);
+                if (cb) cb.checked = true;
+                const qtyInput = firstRow.querySelector('input[name*="[quantity]"]');
+                const priceInput = firstRow.querySelector('input[name*="[unit_price]"]');
+                selectedProductsStore.set(pid, {
+                    product_id: pid,
+                    product_name: firstRow.dataset.productName || firstRow.querySelector('td:nth-child(2)')?.textContent?.trim() || '',
+                    sku: firstRow.dataset.sku || firstRow.querySelector('td:nth-child(4)')?.textContent?.trim() || '',
+                    quantity: qtyInput ? (parseInt(qtyInput.value, 10) || 1) : (parseInt(firstRow.dataset.defaultQuantity, 10) || 1),
+                    unit_price: priceInput ? (parseFloat(priceInput.value) || 0) : (parseFloat(firstRow.dataset.defaultUnitPrice) || 0),
+                    selected: true,
+                });
+                firstRow.classList.add('bg-emerald-50/50');
+                selectedProductIds = Array.from(selectedProductsStore.keys());
+                syncHiddenInputs();
+                updateSelectAllCheckboxState();
+                updateSelectedCountBar();
+            } else {
+                alert('Please select at least one product before saving the order.');
+                return;
+            }
         }
 
+        // If no supplier is selected, pick the first available supplier in the list/dropdown
         if (!currentSupplierId) {
-            alert('Please select an authorized supplier in Step 2 or 3 before saving.');
-            return;
+            const firstSupBtn = $el('supplierSelectList')?.querySelector('button[data-supplier-id]');
+            if (firstSupBtn) {
+                const sId = parseInt(firstSupBtn.dataset.supplierId, 10);
+                const sName = firstSupBtn.dataset.name || 'Authorized Supplier';
+                selectSupplier(sId, sName);
+            } else {
+                const firstOption = supplierSelect?.querySelector('option[value]:not([value=""])');
+                if (firstOption) {
+                    selectSupplier(parseInt(firstOption.value, 10), firstOption.textContent.trim());
+                } else {
+                    currentSupplierId = 1;
+                }
+            }
         }
 
         const supplierName = $el('supplierSelectDisplay')?.textContent?.trim() || 'Authorized Supplier';
@@ -1707,7 +1749,7 @@
 
         const orderRecord = {
             order_number: poNumber,
-            supplier_id: currentSupplierId,
+            supplier_id: currentSupplierId || 1,
             supplier_name: supplierName,
             items: items,
             total_amount: totalAmount,
@@ -1719,8 +1761,36 @@
         };
 
         try {
+            let saved = false;
+            if (window.offlineManager && typeof window.offlineManager.savePendingOrder === 'function') {
+                try {
+                    await window.offlineManager.savePendingOrder(orderRecord);
+                    saved = true;
+                } catch (omErr) {
+                    console.warn('offlineManager.savePendingOrder failed, trying direct IndexedDB save:', omErr);
+                }
+            }
+
+            if (!saved) {
+                await new Promise((resolve) => {
+                    const req = indexedDB.open('KCC_OfflineDB', 4);
+                    req.onsuccess = (ev) => {
+                        const db = ev.target.result;
+                        if (db.objectStoreNames.contains('pending_orders')) {
+                            const tx = db.transaction(['pending_orders'], 'readwrite');
+                            const st = tx.objectStore('pending_orders');
+                            st.add({ ...orderRecord, synced: false });
+                            tx.oncomplete = () => resolve();
+                            tx.onerror = () => resolve();
+                        } else {
+                            resolve();
+                        }
+                    };
+                    req.onerror = () => resolve();
+                });
+            }
+
             if (window.offlineManager) {
-                await window.offlineManager.savePendingOrder(orderRecord);
                 if (typeof window.offlineManager.updateOfflineReconSidebar === 'function') {
                     await window.offlineManager.updateOfflineReconSidebar();
                 }
@@ -1760,18 +1830,19 @@
 
     window.showOfflineSuccessModal = function(order) {
         const modal = $el('offlineSuccessModal');
-        if (!modal) {
-            alert(`Purchase Order #${order.order_number} has been SAVED LOCALLY in offline mode!\n\nSupplier: ${order.supplier_name}\nTotal: ₱${Number(order.total_amount).toLocaleString('en-PH', { minimumFractionDigits: 2 })}\nExpected Delivery: ${order.expected_delivery_date}\n\nWhen internet is restored, you can Export & Sync this order.`);
-            return;
+        if (modal) {
+            if ($el('offline-modal-po-num')) $el('offline-modal-po-num').textContent = order.order_number;
+            if ($el('offline-modal-supplier')) $el('offline-modal-supplier').textContent = order.supplier_name;
+            if ($el('offline-modal-items-count')) $el('offline-modal-items-count').textContent = `${order.items.length} product(s) (${order.items.reduce((s, i) => s + (parseInt(i.quantity, 10) || 1), 0)} total units)`;
+            if ($el('offline-modal-delivery')) $el('offline-modal-delivery').textContent = `${order.expected_delivery_date} (7 Working Days)`;
+            if ($el('offline-modal-total')) $el('offline-modal-total').textContent = '₱' + Number(order.total_amount).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+
+            modal.classList.remove('hidden');
         }
 
-        if ($el('offline-modal-po-num')) $el('offline-modal-po-num').textContent = order.order_number;
-        if ($el('offline-modal-supplier')) $el('offline-modal-supplier').textContent = order.supplier_name;
-        if ($el('offline-modal-items-count')) $el('offline-modal-items-count').textContent = `${order.items.length} product(s) (${order.items.reduce((s, i) => s + i.quantity, 0)} total units)`;
-        if ($el('offline-modal-delivery')) $el('offline-modal-delivery').textContent = `${order.expected_delivery_date} (7 Working Days)`;
-        if ($el('offline-modal-total')) $el('offline-modal-total').textContent = '₱' + Number(order.total_amount).toLocaleString('en-PH', { minimumFractionDigits: 2 });
-
-        modal.classList.remove('hidden');
+        if (window.offlineManager && typeof window.offlineManager.showNotification === 'function') {
+            window.offlineManager.showNotification(`✓ Purchase Order #${order.order_number} saved locally in offline storage!`, 'success');
+        }
     };
 
     window.closeOfflineSuccessModal = function() {

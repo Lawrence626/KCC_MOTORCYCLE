@@ -10,7 +10,7 @@
             <input type="checkbox"
                    name="products[{{ $idx }}][selected]"
                    value="1"
-                   {{ in_array($product->id, $selectedProductIds, true) ? 'checked' : '' }}
+                   {{ in_array((int)$product->id, array_map('intval', (array)$selectedProductIds), true) ? 'checked' : '' }}
                    class="product-checkbox h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" />
             <input type="hidden" name="products[{{ $idx }}][product_id]" value="{{ $product->id }}" />
             <input type="hidden" name="products[{{ $idx }}][product_name]" value="{{ $product->product_name ?? $product->name }}" />
