@@ -746,6 +746,8 @@ class PurchaseOrderController extends Controller
     public function supplierComparison(Request $request, \App\Services\SupplierPerformanceService $performanceService): \Illuminate\Http\JsonResponse
     {
         $productIds = array_values(array_filter(array_map('intval', (array) $request->input('product_ids', []))));
+        $quantities = (array) $request->input('quantities', []);
+        $prices = (array) $request->input('prices', []);
 
         if (empty($productIds)) {
             return response()->json(['comparison' => [], 'recommended' => null]);
@@ -773,7 +775,9 @@ class PurchaseOrderController extends Controller
 
             foreach ($productIds as $productId) {
                 $product = $products->get($productId);
+                $qty = max(1, (int) ($quantities[$productId] ?? 1));
                 $catalogPrice = $product ? (float) $product->unit_price : 0;
+                $userSpecifiedPrice = isset($prices[$productId]) && (float) $prices[$productId] > 0 ? (float) $prices[$productId] : null;
 
                 $histories = SupplierPriceHistory::where('supplier_id', $supplierId)
                     ->where('product_id', $productId)
@@ -786,12 +790,13 @@ class PurchaseOrderController extends Controller
 
                 if ($current && (float) $current->supplier_cost > 0) {
                     $hasHistory = true;
-                    $totalCurrentCost += (float) $current->supplier_cost;
+                    $unitCost = $userSpecifiedPrice ?? (float) $current->supplier_cost;
+                    $totalCurrentCost += ($qty * $unitCost);
                     if (! $latestPODate || $current->created_at > $latestPODate) {
                         $latestPODate = $current->created_at;
                     }
                     if ($previous && (float) $previous->supplier_cost > 0) {
-                        $changes[] = (((float) $current->supplier_cost - (float) $previous->supplier_cost) / (float) $previous->supplier_cost) * 100;
+                        $changes[] = (($unitCost - (float) $previous->supplier_cost) / (float) $previous->supplier_cost) * 100;
                     }
                 } else {
                     // Fallback to latest PO unit price
@@ -805,13 +810,15 @@ class PurchaseOrderController extends Controller
 
                     if ($latestPoItem && (float) $latestPoItem->unit_price > 0) {
                         $hasHistory = true;
-                        $totalCurrentCost += (float) $latestPoItem->unit_price;
+                        $unitCost = $userSpecifiedPrice ?? (float) $latestPoItem->unit_price;
+                        $totalCurrentCost += ($qty * $unitCost);
                         if (! $latestPODate || $latestPoItem->created_at > $latestPODate) {
                             $latestPODate = $latestPoItem->created_at;
                         }
                     } else {
-                        // Fallback to catalog unit price for comparison
-                        $totalCurrentCost += $catalogPrice;
+                        // Fallback to user specified price or catalog unit price for comparison
+                        $unitCost = $userSpecifiedPrice ?? $catalogPrice;
+                        $totalCurrentCost += ($qty * $unitCost);
                     }
                 }
             }

@@ -783,6 +783,7 @@
             if (loadedPriceHistories && loadedPriceHistories.length > 0) {
                 renderPriceAnalysis(loadedPriceHistories);
             }
+            debouncedLoadComparison();
             onProductSelectionChange();
         });
 
@@ -794,6 +795,7 @@
                 if (loadedPriceHistories && loadedPriceHistories.length > 0) {
                     renderPriceAnalysis(loadedPriceHistories);
                 }
+                debouncedLoadComparison();
             }
         });
     }
@@ -1190,21 +1192,38 @@
         $el('price-analysis-panel').classList.remove('hidden');
     }
 
+    let comparisonDebounceTimer = null;
+    function debouncedLoadComparison() {
+        clearTimeout(comparisonDebounceTimer);
+        comparisonDebounceTimer = setTimeout(() => {
+            loadComparison();
+        }, 300);
+    }
+
     // Load comparison table
     async function loadComparison() {
-        $el('comparison-panel').classList.add('hidden');
-        if (selectedProductIds.length === 0) return;
+        if (selectedProductIds.length === 0) {
+            $el('comparison-panel').classList.add('hidden');
+            return;
+        }
 
         try {
             const url = new URL(ROUTES.comparison, window.location.origin);
-            selectedProductIds.forEach(id => url.searchParams.append('product_ids[]', id));
+            selectedProductsStore.forEach((item, pid) => {
+                url.searchParams.append('product_ids[]', pid);
+                if (item.quantity) url.searchParams.append(`quantities[${pid}]`, item.quantity);
+                if (item.unit_price) url.searchParams.append(`prices[${pid}]`, item.unit_price);
+            });
 
             const res  = await fetch(url.toString(), {
                 headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
             });
             const data = await res.json();
 
-            if (!data.comparison || data.comparison.length < 1) return;
+            if (!data.comparison || data.comparison.length < 1) {
+                $el('comparison-panel').classList.add('hidden');
+                return;
+            }
 
             renderComparison(data.comparison, data.recommended);
 
@@ -1250,7 +1269,7 @@
                         <span>${escHtml(r.supplier_name)}</span>
                     </div>
                 </td>
-                <td class="px-4 py-3 font-semibold">${r.has_history ? fmt(r.latest_total_cost) : '—'}</td>
+                <td class="px-4 py-3 font-semibold">${r.latest_total_cost > 0 ? fmt(r.latest_total_cost) : '—'}</td>
                 <td class="px-4 py-3 ${cc}">${r.has_history ? fmtP(r.avg_change_percentage) : '—'}</td>
                 <td class="px-4 py-3 text-slate-500">${escHtml(r.last_purchase_date ?? '—')}</td>
                 <td class="px-4 py-3">

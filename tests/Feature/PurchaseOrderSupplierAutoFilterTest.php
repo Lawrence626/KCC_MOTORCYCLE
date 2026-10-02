@@ -172,3 +172,31 @@ test('store rejects purchase order if selected supplier does not supply the sele
     expect(PurchaseOrder::count())->toBe(1)
         ->and(PurchaseOrder::first()->supplier_name)->toBe('BCK MOTORCYCLE PARTS');
 });
+
+test('supplierComparison dynamically recalculates total cost using quantities and custom unit prices', function () {
+    $supplier = Supplier::create(['name' => 'BCK MOTORCYCLE PARTS', 'status' => 'active']);
+
+    $product = Product::create([
+        'name' => 'APIDO Exhaust Pipe',
+        'sku' => 'KCC_PIPE_APIDO_004',
+        'stock_quantity' => 2,
+        'unit_price' => 1550.00,
+        'supplier_name' => 'BCK MOTORCYCLE PARTS',
+    ]);
+
+    $user = User::factory()->create(['role' => 'admin']);
+
+    // When quantity is 3 and unit price is adjusted to 1600: total cost should be 4800 (3 * 1600)
+    $response = $this->actingAs($user)->getJson(route('api.order.supplier_comparison', [
+        'product_ids' => [$product->id],
+        'quantities' => [$product->id => 3],
+        'prices' => [$product->id => 1600],
+    ]));
+
+    $response->assertStatus(200);
+    $data = $response->json();
+
+    expect($data['comparison'])->toHaveCount(1)
+        ->and($data['comparison'][0]['supplier_name'])->toBe('BCK MOTORCYCLE PARTS')
+        ->and($data['comparison'][0]['latest_total_cost'])->toBe(4800);
+});
