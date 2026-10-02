@@ -330,9 +330,6 @@
                 <a href="{{ route('offline.reconciliation') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('offline.reconciliation'), 'text-slate-400' => !request()->routeIs('offline.reconciliation')])>
                     Overview
                 </a>
-                <a href="{{ route('offline.purchase-orders') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('offline.purchase-orders'), 'text-slate-400' => !request()->routeIs('offline.purchase-orders')])>
-                    Purchase Orders
-                </a>
                 <a href="{{ route('offline.export') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('offline.export'), 'text-slate-400' => !request()->routeIs('offline.export')])>
                     Export Data
                 </a>

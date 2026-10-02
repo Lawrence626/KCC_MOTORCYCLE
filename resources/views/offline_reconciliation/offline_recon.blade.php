@@ -377,20 +377,20 @@
 
         <!-- Navigation Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <a href="{{ Route::has('offline.purchase-orders') ? route('offline.purchase-orders') : '#' }}" class="rounded-[18px] border border-slate-200 p-3.5 bg-white shadow-sm hover:border-[#0f172a] hover:shadow-md transition cursor-pointer group">
+            <a href="{{ Route::has('offline.export') ? route('offline.export') : '#' }}" class="rounded-[18px] border border-slate-200 p-3.5 bg-white shadow-sm hover:border-[#0f172a] hover:shadow-md transition cursor-pointer group">
                 <div class="flex items-center gap-3 mb-2">
                     <div class="w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 border border-slate-800 bg-[#0f172a]">
                         <svg class="w-4 h-4 text-[#6EC1D1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                         </svg>
                     </div>
                     <div>
-                        <p class="text-xs font-bold text-slate-900">Purchase Orders</p>
-                        <p class="text-[11px] text-slate-500">View offline POs</p>
+                        <p class="text-xs font-bold text-slate-900">Export & Sync</p>
+                        <p class="text-[11px] text-slate-500">Export offline POs to CSV</p>
                     </div>
                 </div>
                 <div class="flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-600">
-                    <span>Manage purchase orders</span>
+                    <span>Export local orders</span>
                     <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                     </svg>

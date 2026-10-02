@@ -373,6 +373,72 @@
             </div>
         </div>
 
+        {{-- Offline PO Save Success Modal --}}
+        <div id="offlineSuccessModal" class="hidden fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+            <div class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden transform transition-all">
+                {{-- Modal Header --}}
+                <div class="bg-[#0f172a] px-6 py-5 border-b border-slate-800 flex items-center justify-between text-white">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-white leading-tight">Purchase Order Saved Locally (Offline)</h3>
+                            <p class="text-xs text-slate-300 mt-0.5">Stored securely in your local browser storage</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="window.closeOfflineSuccessModal()" class="rounded-lg p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                {{-- Modal Body --}}
+                <div class="p-6 space-y-4">
+                    <div class="bg-amber-50 border border-amber-300/80 rounded-2xl p-4 flex items-start gap-3">
+                        <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <div class="text-xs text-amber-900 leading-relaxed">
+                            <strong>Offline Storage Notice:</strong> Ang Purchase Order na ito ay <strong>matagumpay na na-save sa lokal na IndexedDB database</strong> ng iyong device. Kapag nagkaroon muli ng internet connection, pumunta lamang sa <strong>Offline Reconciliation > Export Data</strong> para i-export at i-sync ito.
+                        </div>
+                    </div>
+
+                    {{-- Order Details Summary Card --}}
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-2.5 text-xs text-slate-700">
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                            <span class="text-slate-500 font-medium">Order Number:</span>
+                            <span id="offline-modal-po-num" class="font-bold text-slate-900 font-mono text-sm"></span>
+                        </div>
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                            <span class="text-slate-500 font-medium">Supplier:</span>
+                            <span id="offline-modal-supplier" class="font-semibold text-slate-900"></span>
+                        </div>
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                            <span class="text-slate-500 font-medium">Total Items:</span>
+                            <span id="offline-modal-items-count" class="font-semibold text-slate-900"></span>
+                        </div>
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                            <span class="text-slate-500 font-medium">Expected Delivery:</span>
+                            <span id="offline-modal-delivery" class="font-semibold text-slate-900"></span>
+                        </div>
+                        <div class="flex items-center justify-between pt-1 text-sm">
+                            <span class="text-slate-900 font-bold">Total Amount:</span>
+                            <span id="offline-modal-total" class="font-bold text-slate-900 font-mono text-base"></span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Modal Footer --}}
+                <div class="bg-slate-100 px-6 py-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                    <button type="button" onclick="window.closeOfflineSuccessModal()" class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition shadow-2xs cursor-pointer">
+                        Create Another Order
+                    </button>
+                    <a href="{{ route('offline.export') }}" class="rounded-xl bg-[#0f172a] text-white px-5 py-2.5 text-xs font-bold hover:bg-slate-800 transition shadow-sm inline-flex items-center gap-2 cursor-pointer">
+                        <span>Go to Export & Sync</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
         {{-- Actions --}}
         <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
             <div id="offline-order-indicator" class="hidden items-center gap-2 text-xs font-semibold text-amber-900 bg-amber-50 border border-amber-300 px-3 py-1.5 rounded-[10px]">
@@ -1663,8 +1729,6 @@
                         }
                     }
 
-                    alert(`Purchase Order #${poNumber} has been SAVED LOCALLY in offline mode!\n\nTotal: ₱${totalAmount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}\nExpected Delivery: ${expectedDelivery} (7 Days Lead Time)\n\nWhen internet connection is restored, you will be notified in the Notification Bell to Export & Import this order before sending to supplier.`);
-                    
                     // Reset form selection
                     selectedProductsStore.clear();
                     selectedProductIds = [];
@@ -1672,6 +1736,10 @@
                     updateSelectAllCheckboxState();
                     onProductSelectionChange();
                     if ($el('po-notes')) $el('po-notes').value = '';
+
+                    // Display rich confirmation modal
+                    window.showOfflineSuccessModal(orderRecord);
+
                 } catch(err) {
                     console.error('Failed to save offline order:', err);
                     alert('Error saving order locally: ' + (err.message || err));
@@ -1679,6 +1747,27 @@
             }
         });
     }
+
+    window.showOfflineSuccessModal = function(order) {
+        const modal = $el('offlineSuccessModal');
+        if (!modal) {
+            alert(`Purchase Order #${order.order_number} has been SAVED LOCALLY in offline mode!\n\nSupplier: ${order.supplier_name}\nTotal: ₱${Number(order.total_amount).toLocaleString('en-PH', { minimumFractionDigits: 2 })}\nExpected Delivery: ${order.expected_delivery_date}\n\nWhen internet is restored, you can Export & Sync this order.`);
+            return;
+        }
+
+        if ($el('offline-modal-po-num')) $el('offline-modal-po-num').textContent = order.order_number;
+        if ($el('offline-modal-supplier')) $el('offline-modal-supplier').textContent = order.supplier_name;
+        if ($el('offline-modal-items-count')) $el('offline-modal-items-count').textContent = `${order.items.length} product(s) (${order.items.reduce((s, i) => s + i.quantity, 0)} total units)`;
+        if ($el('offline-modal-delivery')) $el('offline-modal-delivery').textContent = `${order.expected_delivery_date} (7 Working Days)`;
+        if ($el('offline-modal-total')) $el('offline-modal-total').textContent = '₱' + Number(order.total_amount).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+
+        modal.classList.remove('hidden');
+    };
+
+    window.closeOfflineSuccessModal = function() {
+        const modal = $el('offlineSuccessModal');
+        if (modal) modal.classList.add('hidden');
+    };
 
 })();
 </script>

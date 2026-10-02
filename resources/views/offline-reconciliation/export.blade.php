@@ -13,12 +13,11 @@
                     </svg>
                     <span>Back to Overview</span>
                 </a>
-                <a href="{{ route('offline.purchase-orders') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200">
+                <a href="{{ route('order.create') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200">
                     <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
                     </svg>
-                    <span>Create Offline PO</span>
+                    <span>Create Purchase Order</span>
                 </a>
             </div>
         </div>
@@ -455,7 +454,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                                 </svg>
                                 <span class="font-semibold text-slate-700">No local orders found in browser storage</span>
-                                <span class="text-xs text-slate-400">Create an offline order first on the <a href="{{ route('offline.purchase-orders') }}" class="text-cyan-700 underline font-semibold">Purchase Orders page</a></span>
+                                <span class="text-xs text-slate-400">Create an order first on the <a href="{{ route('order.create') }}" class="text-cyan-700 underline font-semibold">Create Purchase Order page</a></span>
                             </div>
                         </td>
                     </tr>

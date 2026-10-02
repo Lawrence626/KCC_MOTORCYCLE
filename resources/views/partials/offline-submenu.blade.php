@@ -3,7 +3,6 @@
         @php
             $offlineMenuLinks = [
                 ['route' => 'offline.reconciliation', 'label' => 'Overview'],
-                ['route' => 'offline.purchase-orders', 'label' => 'Purchase Orders'],
                 ['route' => 'offline.export', 'label' => 'Export Data'],
                 ['route' => 'offline.import', 'label' => 'Import Data'],
                 ['route' => 'offline.pending.imports', 'label' => 'Pending Imports'],
