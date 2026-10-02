@@ -1,4 +1,4 @@
-﻿<x-layouts.app :title="__('Export Data')">
+<x-layouts.app :title="__('Export Data')">
 
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
@@ -81,6 +81,12 @@
 
                     <!-- Top Action Buttons -->
                     <div class="flex items-center gap-2 flex-wrap">
+                        <button type="button" onclick="cleanSyncedOrdersManual()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-[10px] border border-cyan-300 bg-cyan-50 text-cyan-950 text-xs font-bold hover:bg-cyan-100 transition cursor-pointer" title="Check and remove orders already synced into the central database">
+                            <svg class="w-3.5 h-3.5 text-cyan-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            <span>Clean Synced</span>
+                        </button>
                         <button type="button" onclick="selectAllFilteredOrders(true)" class="px-3 py-2 rounded-[10px] border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer">
                             Select All
                         </button>
@@ -339,6 +345,12 @@
                 setTimeout(initExportPage, 200);
                 return;
             }
+
+            // Automatically purge orders that have already been imported/approved in central DB
+            if (typeof offlineManager.cleanupSyncedOrders === 'function') {
+                await offlineManager.cleanupSyncedOrders();
+            }
+
             const orders = await offlineManager.getAllFromStore('pending_orders') || [];
             
             // Sort NEWEST / LATEST first by timestamp descending or id descending
@@ -359,6 +371,23 @@
             await loadArchiveList();
         } catch (e) {
             console.error('Error initializing export page:', e);
+        }
+    }
+
+    async function cleanSyncedOrdersManual() {
+        if (!window.offlineManager) return;
+        try {
+            const cleaned = await offlineManager.cleanupSyncedOrders();
+            if (Array.isArray(cleaned) && cleaned.length > 0) {
+                alert(`✅ Successfully removed ${cleaned.length} already-synchronized order(s) from your local browser storage: ${cleaned.join(', ')}`);
+            } else {
+                alert('No synchronized orders to clean. All local pending orders are up to date.');
+            }
+            await initExportPage();
+        } catch (e) {
+            console.error('Manual clean failed:', e);
+            alert('Clean check completed.');
+            await initExportPage();
         }
     }
 
@@ -563,7 +592,7 @@
     }
 
     // Export Selected Orders to CSV
-    function exportSelectedOrders() {
+    async function exportSelectedOrders() {
         if (selectedOrderIds.size === 0) {
             alert('Please check at least one order to export.');
             return;
@@ -577,7 +606,7 @@
 
         const exportedCount = offlineManager.exportOrdersToCsv(ordersToExport);
         const ymd = new Date().toISOString().slice(0, 10).replace(/-/g, '_');
-        const fileName = `offline_transactions_${ymd}.csv`;
+        const fileName = (exportedCount && exportedCount.fileName) ? exportedCount.fileName : `offline_transactions_${ymd}.csv`;
 
         let totalItems = 0;
         let totalAmount = 0;
@@ -585,6 +614,16 @@
             totalItems += Array.isArray(o.items) ? o.items.length : 0;
             totalAmount += Number(o.total_amount || 0);
         });
+
+        // Automatically archive exported orders so they no longer clutter the pending export table
+        for (const o of ordersToExport) {
+            try {
+                await offlineManager.archiveOrder(o.id);
+            } catch (e) {
+                console.warn('Could not archive exported order #' + o.id, e);
+            }
+        }
+        await initExportPage();
 
         const alertContainer = document.getElementById('exportAlertContainer');
         if (alertContainer) {

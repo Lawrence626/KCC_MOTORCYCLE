@@ -1,4 +1,4 @@
-﻿<x-layouts.app :title="__('Pending Imports')">
+<x-layouts.app :title="__('Pending Imports')">
 
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
@@ -382,6 +382,14 @@
             if (wrapper && !wrapper.contains(e.target)) {
                 document.getElementById('pendingStatusFilterDropdown')?.classList.add('hidden');
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                if (window.offlineManager && typeof window.offlineManager.cleanupSyncedOrders === 'function') {
+                    window.offlineManager.cleanupSyncedOrders();
+                }
+            }, 300);
         });
     </script>
 </x-layouts.app>

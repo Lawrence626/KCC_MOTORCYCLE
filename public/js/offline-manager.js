@@ -176,40 +176,135 @@ class OfflineManager {
         }
     }
 
-    async updatePendingOfflineSyncAlert() {
-        const alertContainer = document.getElementById('pending-offline-sync-alert');
-        const countBadge = document.getElementById('pending-offline-orders-count-badge');
-        const previewEl = document.getElementById('pending-offline-orders-preview');
+    async cleanupSyncedOrders() {
+        if (!this.db || !this.isOnline) return [];
 
+        try {
+            const rawPending = await this.getAllFromStore('pending_orders');
+            if (!rawPending || rawPending.length === 0) return [];
+
+            const orderNumbers = rawPending
+                .map(o => o.order_number || o.po_number)
+                .filter(Boolean);
+
+            if (orderNumbers.length === 0) return [];
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const response = await fetch('/offline-reconciliation/check-synced-orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken || '',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ order_numbers: orderNumbers })
+            });
+
+            if (!response.ok) return [];
+
+            const data = await response.json();
+            const syncedNumbers = Array.isArray(data.synced_order_numbers) ? data.synced_order_numbers : [];
+
+            if (syncedNumbers.length > 0) {
+                const syncedSet = new Set(syncedNumbers);
+                const tx = this.db.transaction(['pending_orders'], 'readwrite');
+                const store = tx.objectStore('pending_orders');
+
+                for (const order of rawPending) {
+                    const poNum = order.order_number || order.po_number;
+                    if (poNum && syncedSet.has(poNum)) {
+                        store.delete(order.id);
+                    }
+                }
+
+                await new Promise((resolve) => {
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = () => resolve();
+                });
+            }
+
+            return syncedNumbers;
+        } catch (e) {
+            console.warn('Auto cleanup of synced orders skipped:', e);
+            return [];
+        }
+    }
+
+    injectOfflineNotificationIntoBell() {
         const isOnline = (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean') ? navigator.onLine : true;
         let pendingOrders = [];
         try {
-            pendingOrders = await this.getPendingOrders();
-        } catch(e) {
-            pendingOrders = this.queue?.orders || [];
+            pendingOrders = (this.queue?.orders || []).filter(o => !o.synced);
+        } catch (e) {
+            pendingOrders = [];
         }
-        const count = Array.isArray(pendingOrders) ? pendingOrders.length : 0;
 
-        if (!alertContainer) return;
+        const count = pendingOrders.length;
+        const list = document.getElementById('notification-list') || document.getElementById('headerNotificationList');
+        const empty = document.getElementById('notification-empty');
+        const bellBadge = document.getElementById('notification-badge') || document.getElementById('headerNotificationBadge');
+        const centerBadge = document.getElementById('notif-center-unread-badge');
 
-        if (isOnline && count > 0) {
-            alertContainer.classList.remove('hidden');
-            if (countBadge) {
-                countBadge.textContent = `${count} Local Order${count === 1 ? '' : 's'} Pending`;
+        // Remove any old offline notification element
+        document.querySelectorAll('#offline-notif-bell-item').forEach(el => el.remove());
+
+        if (count > 0 && isOnline) {
+            if (!list) return;
+
+            if (empty) empty.classList.add('hidden');
+
+            const poNumbers = pendingOrders.slice(0, 3).map(o => o.order_number || o.po_number || 'PO').join(', ');
+            const moreCount = count > 3 ? ` +${count - 3} more` : '';
+
+            const item = document.createElement('div');
+            item.id = 'offline-notif-bell-item';
+            item.className = 'border-b border-slate-100 bg-amber-50/50 hover:bg-amber-100/60 px-4 py-3 transition-colors';
+            item.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="mt-0.5 flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-[10px] bg-amber-100 border border-amber-200 text-amber-800">
+                        <svg class="w-4 h-4 text-amber-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between mb-0.5">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 font-mono">OFFLINE SYNC PENDING</span>
+                                <span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>
+                            </div>
+                            <span class="text-[10px] text-amber-800 font-bold">${count} Order${count > 1 ? 's' : ''}</span>
+                        </div>
+                        <p class="text-[13px] font-semibold text-slate-900 truncate mb-1">${poNumbers}${moreCount}</p>
+                        <div class="flex items-center justify-between mt-1.5">
+                            <span class="text-[10px] text-slate-500">Saved in browser storage</span>
+                            <a href="/offline-reconciliation/export" class="rounded-lg bg-amber-600 hover:bg-amber-700 px-2.5 py-1 text-[10px] font-bold text-white shadow-xs transition">Export & Sync</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            list.insertBefore(item, list.firstChild);
+
+            if (bellBadge) {
+                const currentBadgeVal = parseInt(bellBadge.textContent) || 0;
+                const newTotal = currentBadgeVal + count;
+                bellBadge.textContent = newTotal > 9 ? '9+' : newTotal;
+                bellBadge.classList.remove('hidden');
+                bellBadge.style.display = 'inline-flex';
             }
-            if (previewEl) {
-                const poList = pendingOrders.slice(0, 4).map(o => {
-                    const num = o.order_number || o.po_number || 'PO';
-                    const supp = o.supplier_name ? `(${o.supplier_name})` : '';
-                    const itemsCount = Array.isArray(o.items) ? `${o.items.length} item(s)` : '';
-                    return `<span class="inline-flex items-center gap-1 bg-amber-100 text-amber-950 px-2 py-0.5 rounded-[6px] border border-amber-300 font-mono text-[10px]"><strong>${num}</strong> ${supp} ${itemsCount}</span>`;
-                }).join(' ');
-                const more = count > 4 ? `<span class="text-amber-800 text-[10px] font-bold">+${count - 4} more</span>` : '';
-                previewEl.innerHTML = `<span><strong>Local Orders:</strong> ${poList} ${more}</span>`;
+            if (centerBadge) {
+                const currentCenterVal = parseInt(centerBadge.textContent) || 0;
+                const newTotal = currentCenterVal + count;
+                centerBadge.textContent = newTotal;
+                centerBadge.classList.remove('hidden');
+                centerBadge.style.display = 'inline-flex';
             }
-        } else {
-            alertContainer.classList.add('hidden');
         }
+    }
+
+    async updatePendingOfflineSyncAlert() {
+        this.injectOfflineNotificationIntoBell();
     }
 
     showNotification(message, type = 'info') {
@@ -300,6 +395,10 @@ class OfflineManager {
     }
 
     async loadPendingOperations() {
+        if (this.isOnline) {
+            await this.cleanupSyncedOrders();
+        }
+
         const orders = await this.getAllFromStore('pending_orders');
         
         this.queue = {
@@ -308,7 +407,7 @@ class OfflineManager {
 
         this.updateQueueCount();
         await this.updateOfflineReconSidebar();
-        await this.updatePendingOfflineSyncAlert();
+        this.injectOfflineNotificationIntoBell();
     }
 
     async getAllFromStore(storeName) {

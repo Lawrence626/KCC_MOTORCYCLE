@@ -387,4 +387,39 @@ class OfflineReconciliationController extends Controller
             return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
+
+    /**
+     * Check which order numbers have already been synced or approved in the database
+     */
+    public function checkSyncedOrders(Request $request): JsonResponse
+    {
+        $orderNumbers = $request->input('order_numbers', []);
+
+        if (empty($orderNumbers) || !is_array($orderNumbers)) {
+            return response()->json([
+                'success' => true,
+                'synced_order_numbers' => [],
+            ]);
+        }
+
+        // Clean and filter input
+        $orderNumbers = array_filter(array_map('trim', $orderNumbers));
+
+        if (empty($orderNumbers)) {
+            return response()->json([
+                'success' => true,
+                'synced_order_numbers' => [],
+            ]);
+        }
+
+        // Query database for existing order numbers
+        $existingOrders = PurchaseOrder::whereIn('order_number', $orderNumbers)
+            ->pluck('order_number')
+            ->toArray();
+
+        return response()->json([
+            'success' => true,
+            'synced_order_numbers' => array_values(array_unique($existingOrders)),
+        ]);
+    }
 }

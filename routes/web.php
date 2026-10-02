@@ -320,6 +320,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('api/stats', [App\Http\Controllers\OfflineReconciliationController::class, 'stats'])->name('offline.api.stats');
         Route::get('local-orders', [App\Http\Controllers\OfflineReconciliationController::class, 'localOrders'])->name('offline.local.orders');
         Route::post('sync-order', [App\Http\Controllers\OfflineReconciliationController::class, 'syncOrder'])->name('offline.sync.order');
+        Route::post('check-synced-orders', [App\Http\Controllers\OfflineReconciliationController::class, 'checkSyncedOrders'])->name('offline.check.synced');
     });
 
     // Supplier Assessment Route - Admin only

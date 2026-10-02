@@ -84,16 +84,41 @@ test('create purchase order page renders with 7 working days default date and of
     $response->assertSee('offline-manager.js');
 });
 
-test('layout includes pending offline sync alert container and full offline reconciliation submenu', function () {
+test('layout includes notification bell with offline manager integration and offline reconciliation sidebar', function () {
     $admin = User::factory()->create(['role' => 'admin', 'is_active' => true]);
 
     $response = $this->actingAs($admin)->get(route('dashboard'));
     $response->assertStatus(200);
-    $response->assertSee('pending-offline-sync-alert');
-    $response->assertSee('Offline Orders Pending Final Synchronization');
+    $response->assertSee('notification-bell-btn');
+    $response->assertSee('offline-manager.js');
     $response->assertSee('sidebar-offline-recon-group');
     $response->assertSee('sidebar-offline-pending-badge');
     $response->assertSee('Import Data');
     $response->assertSee('Pending Imports');
     $response->assertSee('Sync History');
 });
+
+test('check-synced-orders endpoint accurately returns existing database purchase orders', function () {
+    $admin = User::factory()->create(['role' => 'admin', 'is_active' => true]);
+    $supplier = Supplier::create(['name' => 'KCC Honda Supplies', 'status' => 'active']);
+
+    $po1 = PurchaseOrder::create([
+        'order_number' => 'PO-20261001-9803',
+        'supplier_id' => $supplier->id,
+        'supplier_name' => $supplier->name,
+        'status' => 'pending',
+        'sync_status' => 'synchronized',
+        'total_amount' => 1500,
+    ]);
+
+    $response = $this->actingAs($admin)->postJson(route('offline.check.synced'), [
+        'order_numbers' => ['PO-20261001-9803', 'PO-NON-EXISTENT-9999']
+    ]);
+
+    $response->assertStatus(200);
+    $response->assertJson([
+        'success' => true,
+        'synced_order_numbers' => ['PO-20261001-9803']
+    ]);
+});
+
