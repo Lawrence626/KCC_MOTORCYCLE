@@ -1,37 +1,39 @@
 <x-layouts.app :title="__('Mobile Scanner')">
-    <div class="min-h-screen bg-slate-900 flex flex-col">
-        <!-- Header -->
-        <div class="bg-slate-800 px-4 py-3 flex items-center justify-between">
-            <div>
-                <h1 class="text-3xl font-bold text-white">POS Scanner</h1>
-                <p class="text-xs text-slate-400">Scan QR codes to add items to cart</p>
+    <div class="min-h-screen bg-[#0b1320] flex flex-col items-center justify-center p-3 sm:p-6">
+        <div class="w-full max-w-md bg-[#131d2a] rounded-3xl overflow-hidden shadow-2xl border border-slate-700/60 flex flex-col">
+            <!-- Header -->
+            <div class="px-5 pt-5 pb-3 flex items-start justify-between">
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">POS Scanner</h1>
+                    <p class="text-xs text-slate-400 mt-0.5">Scan QR codes to add items to cart</p>
+                </div>
+                <button onclick="window.location.href='{{ route('pos.terminal') }}'" class="rounded-full bg-[#38bdf8] hover:bg-[#0ea5e9] px-4 py-1.5 text-xs font-bold text-white transition-all shadow-sm cursor-pointer">
+                    Close
+                </button>
             </div>
-            <button onclick="window.location.href='{{ route('pos.terminal') }}'" class="rounded-full bg-slate-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-600">
-                Back to Terminal
-            </button>
-        </div>
 
-        <!-- Scanner Area -->
-        <div class="flex-1 flex flex-col items-center justify-center p-4">
-            <div id="reader" class="w-full max-w-md bg-black rounded-2xl overflow-hidden"></div>
-            <div id="scanner-status" class="mt-4 text-center text-sm text-slate-400">
-                Position QR code within the frame
+            <!-- Scanner Area -->
+            <div class="px-5 py-2 flex flex-col items-center justify-center">
+                <div id="reader" class="w-full bg-black rounded-2xl overflow-hidden border border-slate-700/60 min-h-[260px]"></div>
+                <div id="scanner-status" class="mt-4 text-center text-xs sm:text-sm text-slate-400 font-medium">
+                    Position QR code within the frame
+                </div>
             </div>
-        </div>
 
-        <!-- Recent Scans -->
-        <div class="bg-slate-800 px-4 py-3">
-            <h2 class="text-sm font-semibold text-white mb-2">Recent Scans</h2>
-            <div id="recent-scans" class="space-y-2 max-h-40 overflow-y-auto">
-                <div class="text-center text-xs text-slate-500">No items scanned yet</div>
+            <!-- Recent Scans -->
+            <div class="px-5 py-3 mt-1">
+                <h2 class="text-xs sm:text-sm font-bold text-white mb-2">Recent Scans</h2>
+                <div id="recent-scans" class="space-y-1.5 max-h-36 overflow-y-auto">
+                    <div class="text-center text-xs text-slate-400 py-3">No items scanned yet</div>
+                </div>
             </div>
-        </div>
 
-        <!-- Connection Status -->
-        <div class="bg-slate-900 px-4 py-2 border-t border-slate-700">
-            <div class="flex items-center justify-between text-xs">
-                <span class="text-slate-400">Connection:</span>
-                <span id="connection-status" class="text-green-400 font-medium">Connected</span>
+            <!-- Connection Status -->
+            <div class="bg-[#0b1320] px-5 py-3 border-t border-slate-700/60 mt-auto">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-slate-400">Connection:</span>
+                    <span id="connection-status" class="text-emerald-400 font-bold">Connected</span>
+                </div>
             </div>
         </div>
     </div>
