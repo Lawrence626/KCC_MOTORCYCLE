@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-[#0b1320]">
+<html lang="en" class="h-full bg-[#0a111e]">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -14,16 +14,19 @@
         html, body {
             height: 100%;
             height: 100dvh;
+            height: -webkit-fill-available;
             max-height: 100dvh;
             overflow: hidden;
             margin: 0;
             padding: 0;
-            background-color: #0b1320;
+            background-color: #0a111e;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            touch-action: manipulation;
         }
+        
         /* Custom scrollbar for recent scans */
         .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
+            width: 3px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
             background: rgba(15, 23, 42, 0.4);
@@ -33,13 +36,26 @@
             background: rgba(100, 116, 139, 0.5);
             border-radius: 4px;
         }
-        /* html5-qrcode video overrides to prevent mobile overflow */
+
+        /* html5-qrcode rigid containment */
+        #reader-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            border-radius: 1rem;
+            background-color: #000000;
+        }
         #reader {
+            position: absolute !important;
+            inset: 0 !important;
             width: 100% !important;
             height: 100% !important;
+            max-width: 100% !important;
+            max-height: 100% !important;
             border: none !important;
             padding: 0 !important;
-            position: relative !important;
+            margin: 0 !important;
             background-color: #000000 !important;
             overflow: hidden !important;
             display: flex !important;
@@ -47,77 +63,96 @@
             justify-content: center !important;
         }
         #reader video {
+            position: absolute !important;
+            inset: 0 !important;
             width: 100% !important;
             height: 100% !important;
+            max-width: 100% !important;
+            max-height: 100% !important;
             object-fit: cover !important;
             border-radius: 1rem !important;
         }
+        #reader canvas {
+            display: none !important;
+        }
         #reader__scan_region {
-            min-height: unset !important;
+            position: absolute !important;
+            inset: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 0 !important;
             background: transparent !important;
+            overflow: hidden !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
         }
-        #reader__scan_region img,
+        #reader__scan_region video {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+        }
+        #reader__dashboard,
+        #reader__dashboard_section,
+        #reader__dashboard_section_csr,
         #reader__dashboard_section_swaplink,
         #reader__camera_selection,
-        #reader__dashboard_section_csr,
-        #reader__header_message {
-            display: none !important;
-        }
-        #reader__status_span {
+        #reader__header_message,
+        #reader__status_span,
+        #reader img {
             display: none !important;
         }
     </style>
 </head>
-<body class="h-full w-full flex flex-col items-center justify-center p-2 sm:p-4 select-none">
+<body class="h-full w-full flex flex-col items-center justify-center p-2.5 sm:p-4 select-none box-border">
     
-    <!-- Scanner Card Container -->
-    <div class="w-full max-w-sm h-full max-h-[100dvh] bg-[#131d2a] rounded-3xl overflow-hidden shadow-2xl border border-slate-700/60 flex flex-col justify-between">
+    <!-- Scanner Card Container (Strictly fits within 100dvh) -->
+    <div class="w-full max-w-[360px] sm:max-w-[380px] h-full max-h-[calc(100dvh-20px)] bg-[#111a28] rounded-[24px] overflow-hidden shadow-2xl border border-slate-700/60 flex flex-col justify-between">
         
         <!-- Header -->
-        <div class="px-5 pt-4 pb-2.5 flex items-center justify-between flex-shrink-0 border-b border-slate-800/60">
+        <div class="px-5 pt-4 pb-2 flex items-center justify-between flex-shrink-0 border-b border-slate-800/60">
             <div>
-                <h1 class="text-lg sm:text-xl font-bold text-white tracking-tight leading-tight">POS Scanner</h1>
+                <h1 class="text-lg font-bold text-white tracking-tight leading-tight">POS Scanner</h1>
                 <p class="text-[11px] text-slate-400 mt-0.5">Scan QR codes to add items to cart</p>
             </div>
-            <button onclick="handleClose()" type="button" class="rounded-full bg-[#38bdf8] hover:bg-[#0ea5e9] active:scale-95 px-4 py-1.5 text-xs font-bold text-white transition-all shadow-sm cursor-pointer flex-shrink-0">
+            <button onclick="handleClose()" type="button" class="rounded-full bg-[#06b6d4] hover:bg-[#0891b2] active:scale-95 px-4 py-1 text-xs font-bold text-white transition-all shadow-sm cursor-pointer flex-shrink-0">
                 Close
             </button>
         </div>
 
         <!-- Scanner Viewfinder Area -->
         <div class="flex-1 flex flex-col items-center justify-center px-4 py-2 min-h-0 overflow-hidden">
-            <div class="relative w-[230px] h-[230px] sm:w-[250px] sm:h-[250px] max-w-full aspect-square rounded-2xl overflow-hidden bg-black border border-slate-700/60 shadow-inner flex items-center justify-center flex-shrink-0">
-                <div id="reader"></div>
+            <div class="relative w-[min(68vw,220px)] h-[min(68vw,220px)] max-h-[30vh] aspect-square rounded-2xl overflow-hidden bg-black border border-slate-700/60 shadow-inner flex items-center justify-center flex-shrink-0">
+                <div id="reader-container">
+                    <div id="reader"></div>
+                </div>
                 
                 <!-- Viewfinder Corner Accents -->
                 <div class="pointer-events-none absolute inset-3 rounded-xl border border-white/20"></div>
-                <div class="pointer-events-none absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-[#38bdf8] rounded-tl"></div>
-                <div class="pointer-events-none absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-[#38bdf8] rounded-tr"></div>
-                <div class="pointer-events-none absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-[#38bdf8] rounded-bl"></div>
-                <div class="pointer-events-none absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-[#38bdf8] rounded-br"></div>
+                <div class="pointer-events-none absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-[#06b6d4] rounded-tl"></div>
+                <div class="pointer-events-none absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-[#06b6d4] rounded-tr"></div>
+                <div class="pointer-events-none absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-[#06b6d4] rounded-bl"></div>
+                <div class="pointer-events-none absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-[#06b6d4] rounded-br"></div>
             </div>
             
-            <div id="scanner-status" class="mt-2.5 text-center text-xs text-slate-400 font-medium truncate max-w-full px-2">
+            <div id="scanner-status" class="mt-2 text-center text-xs text-slate-400 font-medium truncate max-w-full px-2">
                 Position QR code within the frame
             </div>
         </div>
 
         <!-- Recent Scans -->
-        <div class="px-5 py-2.5 flex-shrink-0 border-t border-slate-800/80 bg-[#101824]">
+        <div class="px-5 py-2.5 flex-shrink-0 border-t border-slate-800/80 bg-[#0d1522]">
             <div class="flex items-center justify-between mb-1.5">
                 <h2 class="text-xs font-bold text-white tracking-wide">Recent Scans</h2>
                 <span id="scan-badge" class="text-[10px] text-slate-400 font-medium">0 scanned</span>
             </div>
-            <div id="recent-scans" class="space-y-1.5 max-h-[100px] overflow-y-auto custom-scrollbar pr-0.5">
-                <div class="text-center text-[11px] text-slate-500 py-3">No items scanned yet</div>
+            <div id="recent-scans" class="space-y-1.5 max-h-[85px] overflow-y-auto custom-scrollbar pr-0.5">
+                <div class="text-center text-[11px] text-slate-500 py-2.5">No items scanned yet</div>
             </div>
         </div>
 
         <!-- Connection Status Footer -->
-        <div class="bg-[#0b1320] px-5 py-2.5 border-t border-slate-800 flex-shrink-0">
+        <div class="bg-[#090f19] px-5 py-2.5 border-t border-slate-800 flex-shrink-0">
             <div class="flex items-center justify-between text-xs">
                 <span class="text-slate-400 text-[11px]">Connection:</span>
                 <div class="flex items-center gap-1.5">
@@ -159,7 +194,9 @@
                         const minDim = Math.min(viewfinderWidth, viewfinderHeight);
                         return { width: Math.floor(minDim * 0.8), height: Math.floor(minDim * 0.8) };
                     },
-                    aspectRatio: 1.0
+                    aspectRatio: 1.0,
+                    showTorchButtonIfSupported: false,
+                    showZoomSliderIfSupported: false
                 };
 
                 html5QrcodeScanner.start(
@@ -168,12 +205,20 @@
                     onScanSuccess,
                     onScanFailure
                 ).catch(err => {
-                    console.error("Camera start error:", err);
-                    const statusEl = document.getElementById('scanner-status');
-                    if (statusEl) {
-                        statusEl.textContent = 'Camera access denied or not available';
-                        statusEl.className = 'mt-2.5 text-center text-xs text-red-400 font-medium truncate max-w-full px-2';
-                    }
+                    console.warn("Environment camera failed, trying user camera:", err);
+                    html5QrcodeScanner.start(
+                        { facingMode: "user" },
+                        config,
+                        onScanSuccess,
+                        onScanFailure
+                    ).catch(finalErr => {
+                        console.error("Camera start error:", finalErr);
+                        const statusEl = document.getElementById('scanner-status');
+                        if (statusEl) {
+                            statusEl.textContent = 'Camera access denied or not available';
+                            statusEl.className = 'mt-2 text-center text-xs text-red-400 font-medium truncate max-w-full px-2';
+                        }
+                    });
                 });
             } catch (e) {
                 console.error("Scanner init error:", e);
@@ -201,10 +246,10 @@
             const statusEl = document.getElementById('scanner-status');
             if (statusEl) {
                 statusEl.textContent = '✓ Scanned: ' + skuDisplay;
-                statusEl.className = 'mt-2.5 text-center text-xs text-emerald-400 font-bold truncate max-w-full px-2';
+                statusEl.className = 'mt-2 text-center text-xs text-emerald-400 font-bold truncate max-w-full px-2';
                 
                 setTimeout(() => {
-                    statusEl.className = 'mt-2.5 text-center text-xs text-slate-400 font-medium truncate max-w-full px-2';
+                    statusEl.className = 'mt-2 text-center text-xs text-slate-400 font-medium truncate max-w-full px-2';
                     statusEl.textContent = 'Position QR code within the frame';
                     isProcessingScan = false;
                 }, 1500);
@@ -248,7 +293,7 @@
             const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             scannedItems.unshift({ rawCode, skuDisplay, productDisplay, timestamp });
             
-            if (scannedItems.length > 8) {
+            if (scannedItems.length > 6) {
                 scannedItems.pop();
             }
 
