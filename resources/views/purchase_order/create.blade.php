@@ -50,9 +50,9 @@
         @csrf
         <div id="selected-products-hidden-inputs"></div>
 
-        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        {{-- 
              STEP 1 â€“ SELECT PRODUCTS
-        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
+         --}}
         <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">1</span>
@@ -65,7 +65,7 @@
             <div class="p-6">
                 @if(!empty($selectedProductIds))
                     <div class="mb-4 rounded-[10px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-                        âœ“ Low-stock alert pre-selected products for replenishment. Review and confirm your selection.
+                        ✓ Low-stock alert pre-selected products for replenishment. Review and confirm your selection.
                     </div>
                 @endif
 
@@ -82,7 +82,7 @@
                             </span>
                             <input type="text"
                                    id="product-search"
-                                   placeholder="Search by Product Name or SKUâ€¦"
+                                   placeholder="Search by Product Name or SKU..."
                                    class="w-full rounded-[10px] border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-900 outline-none transition-colors focus:outline-none focus:ring-1 focus:ring-black/35" />
                         </div>
                         <div class="flex-shrink-0 relative z-50" data-dropdown-wrapper="movementFilter">
@@ -141,7 +141,7 @@
                                                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-4m0-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                              </svg>
                                              <div class="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 hidden group-hover:block w-48 rounded-xl bg-slate-900 px-3 py-2 text-[10px] font-semibold normal-case tracking-normal text-white text-center shadow-xl z-20">
-                                                 <span class="relative z-10">Maximum Stock (100) âˆ’ Current Stock</span>
+                                                 <span class="relative z-10">Maximum Stock (100) - Current Stock</span>
                                                  <div class="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-slate-900"></div>
                                              </div>
                                          </div>
@@ -164,9 +164,9 @@
             </div>
         </div>
 
-        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        {{-- 
              STEP 2 â€“ SELECT SUPPLIER
-        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
+         --}}
         <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">2</span>
@@ -182,7 +182,7 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                     </svg>
-                    Finding qualified suppliersâ€¦
+                    Finding qualified suppliers...
                 </div>
 
                 <div id="no-product-hint" class="rounded-[10px] border border-gray-300 bg-gray-200/50 px-4 py-3 text-sm text-gray-700 flex items-center gap-2">
@@ -201,7 +201,7 @@
                             id="supplierSelectButton"
                             onclick="toggleSupplierDropdown(event)"
                             class="w-full rounded-[10px] border border-slate-200 bg-white px-4 py-2.5 text-left text-sm text-slate-900 flex items-center justify-between shadow-sm cursor-pointer hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 transition">
-                        <span id="supplierSelectDisplay" class="truncate text-slate-400 font-normal">Select supplierâ€¦</span>
+                        <span id="supplierSelectDisplay" class="truncate text-slate-400 font-normal">Select supplier...</span>
                         <svg id="supplierSelectArrow" class="w-4 h-4 text-slate-600 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
@@ -216,9 +216,9 @@
             </div>
         </div>
 
-        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        {{-- 
              STEP 3 â€“ SUPPLIER INFORMATION
-        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
+         --}}
         <div id="supplier-info-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">3</span>
@@ -246,9 +246,9 @@
             </div>
         </div>
 
-        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        {{-- 
              STEP 4+5+6 â€“ PRICE HISTORY / SUMMARY / RECOMMENDATIONS
-        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
+         --}}
         <div id="price-analysis-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">4</span>
@@ -262,15 +262,15 @@
             </div>
         </div>
 
-        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        {{-- 
              BONUS â€“ SUPPLIER COMPARISON TABLE
-        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
+         --}}
         <div id="comparison-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">â˜…</span>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">★</span>
                 <div>
                     <h2 class="text-sm font-semibold text-white">Supplier Comparison</h2>
-                    <p class="text-xs text-slate-300">All qualified suppliers ranked by cost. Click Select to choose one.</p>
+                    <p class="text-xs text-slate-300">All qualified suppliers ranked by cost. Click View to inspect performance and select.</p>
                 </div>
             </div>
             <div class="p-6 space-y-4">
@@ -294,7 +294,7 @@
         </div>
 
         {{-- ==========================================================
-             STEP 4 – DELIVERY SCHEDULE & ORDER NOTES (7 Working Days Allotted)
+             STEP 5 - DELIVERY SCHEDULE & ORDER NOTES (7 Days Allotted)
         ========================================================== --}}
         @php
             $defaultExpectedDelivery = \App\Models\PurchaseOrder::calculateDefaultWorkingDaysDeliveryDate(7)->format('Y-m-d');
@@ -310,7 +310,7 @@
                 </div>
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#6EC1D1]/20 text-[#6EC1D1] border border-[#6EC1D1]/40">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    7 Working Days Allotment
+                    7 Days Delivery Allotment
                 </span>
             </div>
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -326,7 +326,7 @@
                            class="w-full rounded-[10px] border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-2xs" />
                     <p class="text-xs text-slate-500 mt-1.5 flex items-center gap-1">
                         <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                        Auto-calculated 7 business days from today (excluding weekends). Ready before sending to supplier.
+                        Auto-calculated 7 days from today. Ready before sending to supplier.
                     </p>
                 </div>
                 <div>
@@ -338,6 +338,44 @@
                               rows="3"
                               placeholder="Add special instructions, priority notes, or delivery terms..."
                               class="w-full rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-2xs resize-none">{{ old('notes') }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        
+        {{-- SUPPLIER PERFORMANCE MODAL --}}
+        <div id="supplier-performance-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div class="relative w-full max-w-3xl rounded-[20px] bg-white shadow-2xl overflow-hidden border border-slate-200 my-8">
+                {{-- Modal Header --}}
+                <div class="bg-[#0f172a] px-6 py-4 flex items-center justify-between border-b border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#6EC1D1]/20 text-[#6EC1D1] border border-[#6EC1D1]/40">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-semibold text-white" id="perf-modal-title">Supplier Performance Review</h3>
+                            <p class="text-xs text-slate-300">Track record, reliability metrics, and itemized pricing history</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="window.closeSupplierPerformanceModal()" class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white transition cursor-pointer">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                {{-- Modal Body --}}
+                <div id="perf-modal-content" class="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+                    {{-- Dynamically populated --}}
+                </div>
+
+                {{-- Modal Footer --}}
+                <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex items-center justify-between gap-3">
+                    <button type="button" onclick="window.closeSupplierPerformanceModal()" class="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-100 transition shadow-2xs cursor-pointer">
+                        <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                        <span>Back to Order</span>
+                    </button>
+                    <button type="button" id="perf-modal-select-btn" class="inline-flex items-center gap-1.5 rounded-xl bg-[#6EC1D1] px-5 py-2.5 text-xs font-bold text-slate-950 hover:bg-[#5bb0c0] transition shadow-xs cursor-pointer">
+                        <span>✓ Select This Supplier</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -376,7 +414,7 @@
     // Pre-selected IDs passed from the server (low-stock alert redirect)
     const preselectedIds = @json($selectedProductIds);
 
-    // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Helpers ----------------------------------------------------------------
     const $el  = (id) => document.getElementById(id);
     const fmt  = (v) => v != null ? '₱' + Number(v).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
     const fmtP = (v) => v != null ? (v > 0 ? '+' : '') + Number(v).toFixed(2) + '%' : '—';
@@ -388,21 +426,21 @@
     }
     function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
 
-    // â”€â”€ State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- State ------------------------------------------------------------------
     let selectedProductIds = [];
     const selectedProductsStore = new Map();
     let currentSupplierId  = null;
     let filterTimer        = null;
     let isFetchingPage     = false;
 
-    // â”€â”€ DOM references â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- DOM references --------------------------------------------------------€
     const selectAllBox      = $el('select-all-products');
     const supplierSelect    = $el('supplier-select');
     const productSearch     = $el('product-search');
     const productTableBody  = $el('product-table-body') || document.querySelector('table tbody');
     const poForm            = $el('po-form');
 
-    // â”€â”€ Dropdown functions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Dropdown functions --------------------------------------------------------
     function resetDropdownButtonStyles() {
         document.querySelectorAll('[id$="Button"]').forEach(btn => {
             btn.style.borderColor = '';
@@ -467,7 +505,7 @@
     window.toggleDropdown = toggleDropdown;
     window.selectMovementFilter = selectMovementFilter;
 
-    // â”€â”€ Supplier Dropdown Functions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Supplier Dropdown Functions ------------------------------------------€
     function updateSupplierTriggerDisplay(name) {
         const displaySpan = $el('supplierSelectDisplay');
         const button = $el('supplierSelectButton');
@@ -478,7 +516,7 @@
             displaySpan.className = 'truncate text-slate-900 font-medium text-sm';
             if (button) button.title = name;
         } else {
-            displaySpan.textContent = 'Select supplierâ€¦';
+            displaySpan.textContent = 'Select supplier...';
             displaySpan.className = 'truncate text-slate-400 font-normal text-sm';
             if (button) button.title = '';
         }
@@ -558,7 +596,7 @@
         }
     });
 
-    // â”€â”€ Store Synchronisation & State Management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Store Synchronisation & State Management ------------------------------
     function syncVisibleRowsToStore() {
         const rows = productTableBody ? productTableBody.querySelectorAll('.product-row') : [];
         rows.forEach(row => {
@@ -659,7 +697,7 @@
         }
     }
 
-    // â”€â”€ AJAX Page Fetcher (No reload) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- AJAX Page Fetcher (No reload) ----------------------------------------€
     async function fetchProducts(targetUrl, updateHistory = true) {
         if (isFetchingPage) return;
         isFetchingPage = true;
@@ -711,7 +749,7 @@
         }
     }
 
-    // â”€â”€ Event Delegation for table rows â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Event Delegation for table rows --------------------------------------€
     productTableBody?.addEventListener('change', function (e) {
         if (e.target.matches('.product-checkbox')) {
             handleRowCheckboxChange(e.target);
@@ -724,7 +762,7 @@
         }
     });
 
-    // â”€â”€ Select-all toggle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Select-all toggle ----------------------------------------------------€
     selectAllBox?.addEventListener('change', function () {
         const isChecked = this.checked;
         const rows = productTableBody ? productTableBody.querySelectorAll('.product-row') : [];
@@ -753,7 +791,7 @@
         onProductSelectionChange();
     });
 
-    // â”€â”€ Intercept pagination clicks without page reload â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Intercept pagination clicks without page reload ----------------------€
     document.addEventListener('click', function (e) {
         const pageLink = e.target.closest('#pagination-container a');
         if (pageLink) {
@@ -765,12 +803,12 @@
         }
     });
 
-    // â”€â”€ Browser back/forward navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Browser back/forward navigation --------------------------------------€
     window.addEventListener('popstate', function () {
         fetchProducts(window.location.href, false);
     });
 
-    // â”€â”€ Product search with debounce â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Product search with debounce ------------------------------------------
     let searchTimer = null;
     function triggerSearch(term) {
         const url = new URL(window.location.href);
@@ -798,14 +836,14 @@
         }
     });
 
-    // â”€â”€ Supplier dropdown change â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Supplier dropdown change ----------------------------------------------
     supplierSelect?.addEventListener('change', () => {
         const id = parseInt(supplierSelect.value, 10) || null;
         currentSupplierId = id;
         id ? loadSupplierDetails(id) : hideSupplierPanels();
     });
 
-    // â”€â”€ Product selection change â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Product selection change ----------------------------------------------
     function onProductSelectionChange() {
         selectedProductIds = Array.from(selectedProductsStore.keys());
 
@@ -825,7 +863,7 @@
         filterTimer = setTimeout(refreshSupplierDropdown, 250);
     }
 
-    // â”€â”€ Form submission: submit all selected products from all pages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Form submission: submit all selected products from all pages ----------
     poForm?.addEventListener('submit', function (e) {
         syncVisibleRowsToStore();
 
@@ -897,7 +935,7 @@
         }, 1500);
     });
 
-    // â”€â”€ Refresh supplier dropdown â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Refresh supplier dropdown --------------------------------------------€
     async function refreshSupplierDropdown() {
         hideSupplierPanels();
         currentSupplierId = null;
@@ -972,7 +1010,7 @@
         }
     }
 
-    // â”€â”€ Load supplier details + price history â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Load supplier details + price history --------------------------------€
     async function loadSupplierDetails(supplierId) {
         hideSupplierPanels();
         try {
@@ -995,7 +1033,7 @@
         }
     }
 
-    // â”€â”€ Render Step 3 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Render Step 3 --------------------------------------------------------€
     function renderSupplierInfo(s) {
         $el('si-name').textContent          = s.name          || '—';
         $el('si-contact').textContent       = s.contact_person || '—';
@@ -1015,7 +1053,7 @@
         $el('supplier-info-panel').classList.remove('hidden');
     }
 
-    // â”€â”€ Render Steps 4+5+6 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Render Steps 4+5+6 --------------------------------------------------€
     function renderPriceAnalysis(histories) {
         const container = $el('price-analysis-content');
         container.innerHTML = '';
@@ -1113,7 +1151,7 @@
         $el('price-analysis-panel').classList.remove('hidden');
     }
 
-    // â”€â”€ Load comparison table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Load comparison table ------------------------------------------------€
     async function loadComparison() {
         $el('comparison-panel').classList.add('hidden');
         if (selectedProductIds.length === 0) return;
@@ -1137,7 +1175,7 @@
         }
     }
 
-    // â”€â”€ Render comparison table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Render comparison table ----------------------------------------------€
     function renderComparison(rows, recommended) {
         const tbody = $el('comparison-table-body');
         tbody.innerHTML = '';
@@ -1170,9 +1208,10 @@
                 <td class="px-4 py-3 text-slate-500">${escHtml(r.last_purchase_date ?? '—')}</td>
                 <td class="px-4 py-3">
                     <button type="button"
-                            onclick="window._poSelectSupplier(${r.supplier_id})"
-                            class="rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100">
-                        Select
+                            onclick="window._poViewSupplierPerformance(${r.supplier_id})"
+                            class="inline-flex items-center gap-1.5 rounded-xl border border-cyan-300 bg-cyan-50 px-3 py-1.5 text-xs font-bold text-cyan-700 hover:bg-cyan-100 transition shadow-xs cursor-pointer">
+                        <svg class="w-3.5 h-3.5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        <span>View</span>
                     </button>
                 </td>
             `;
@@ -1182,7 +1221,7 @@
         $el('comparison-panel').classList.remove('hidden');
     }
 
-    // â”€â”€ Public helper for comparison "Select" button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Public helper for comparison "Select" button --------------------------
     window._poSelectSupplier = function (supplierId) {
         const sId = parseInt(supplierId, 10);
         const optBtn = document.querySelector(`#supplierSelectList button[data-supplier-id="${sId}"]`);
@@ -1195,13 +1234,13 @@
         }
     };
 
-    // â”€â”€ Hide downstream panels â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Hide downstream panels ------------------------------------------------
     function hideSupplierPanels() {
         $el('supplier-info-panel').classList.add('hidden');
         $el('price-analysis-panel').classList.add('hidden');
     }
 
-    // â”€â”€ Resolve Product Images from LocalStorage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Resolve Product Images from LocalStorage ----------------------------
     function resolvePoProductImages() {
         try {
             const stored = localStorage.getItem('posProductImages');
@@ -1240,7 +1279,7 @@
         }
     }
 
-    // â”€â”€ Boot: trigger initial state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Boot: trigger initial state ------------------------------------------€
     if (productTableBody) {
         const rows = productTableBody.querySelectorAll('.product-row');
         rows.forEach(row => {
@@ -1353,14 +1392,7 @@
 
     function calculateSevenWorkingDays(startDate = new Date()) {
         let date = new Date(startDate);
-        let workingDays = 0;
-        while (workingDays < 7) {
-            date.setDate(date.getDate() + 1);
-            const dayOfWeek = date.getDay();
-            if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-                workingDays++;
-            }
-        }
+        date.setDate(date.getDate() + 7);
         return date.toISOString().split('T')[0];
     }
 

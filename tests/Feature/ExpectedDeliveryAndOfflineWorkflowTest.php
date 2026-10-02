@@ -10,18 +10,16 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-test('it calculates exactly 7 working days excluding weekends', function () {
-    // Test from a Monday (2026-10-05) -> 7 working days: Tue(1), Wed(2), Thu(3), Fri(4), Mon(5), Tue(6), Wed(7) -> 2026-10-14
-    $monday = Carbon::parse('2026-10-05 09:00:00');
-    $delivery = PurchaseOrder::calculateDefaultWorkingDaysDeliveryDate(7, $monday);
-    expect($delivery->toDateString())->toBe('2026-10-14')
-        ->and($delivery->isWeekend())->toBeFalse();
+test('it calculates exactly 7 days from order date', function () {
+    // Test from 2026-10-02 -> 7 days -> 2026-10-09
+    $date = Carbon::parse('2026-10-02 09:00:00');
+    $delivery = PurchaseOrder::calculateDefaultWorkingDaysDeliveryDate(7, $date);
+    expect($delivery->toDateString())->toBe('2026-10-09');
 
-    // Test from a Friday (2026-10-09) -> 7 working days: Mon(1), Tue(2), Wed(3), Thu(4), Fri(5), Mon(6), Tue(7) -> 2026-10-20
-    $friday = Carbon::parse('2026-10-09 15:00:00');
-    $deliveryFromFri = PurchaseOrder::calculateDefaultWorkingDaysDeliveryDate(7, $friday);
-    expect($deliveryFromFri->toDateString())->toBe('2026-10-20')
-        ->and($deliveryFromFri->isWeekend())->toBeFalse();
+    // Test from 2026-10-05 -> 7 days -> 2026-10-12
+    $monday = Carbon::parse('2026-10-05 09:00:00');
+    $deliveryFromMon = PurchaseOrder::calculateDefaultWorkingDaysDeliveryDate(7, $monday);
+    expect($deliveryFromMon->toDateString())->toBe('2026-10-12');
 });
 
 test('saving a new purchase order without delivery date auto-fills 7 working days before sending to supplier', function () {
@@ -59,10 +57,9 @@ test('saving a new purchase order without delivery date auto-fills 7 working day
         ->and($po->status)->toBe('approved')
         ->and($po->expected_delivery_date)->not->toBeNull()
         ->and($po->estimated_delivery_date)->not->toBeNull()
-        ->and($po->expected_delivery_date->toDateString())->toBe($po->estimated_delivery_date->toDateString())
-        ->and($po->expected_delivery_date->isWeekend())->toBeFalse();
+        ->and($po->expected_delivery_date->toDateString())->toBe($po->estimated_delivery_date->toDateString());
 
-    // Check that expected delivery date is exactly 7 working days from today
+    // Check that expected delivery date is exactly 7 days from today
     $expectedDate = PurchaseOrder::calculateDefaultWorkingDaysDeliveryDate(7)->toDateString();
     expect($po->expected_delivery_date->toDateString())->toBe($expectedDate);
 
@@ -73,13 +70,13 @@ test('saving a new purchase order without delivery date auto-fills 7 working day
     $detailResponse->assertSee('Send to Supplier');
 });
 
-test('create purchase order page renders with 7 working days default date and offline support', function () {
+test('create purchase order page renders with 7 days default date and offline support', function () {
     $admin = User::factory()->create(['role' => 'admin', 'is_active' => true]);
 
     $response = $this->actingAs($admin)->get(route('order.create'));
     $response->assertStatus(200);
     $response->assertSee('Expected Delivery Date');
-    $response->assertSee('7 Working Days Allotment');
+    $response->assertSee('7 Days Delivery Allotment');
     $response->assertSee('po-create-offline-banner');
     $response->assertSee('offline-manager.js');
 });

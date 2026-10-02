@@ -40,19 +40,12 @@ class PurchaseOrder extends Model
     ];
 
     /**
-     * Calculate default delivery date based on standard working days (skipping Saturday & Sunday)
+     * Calculate default delivery date (default 7 days from order date)
      */
-    public static function calculateDefaultWorkingDaysDeliveryDate(int $workingDays = 7, ?\Carbon\Carbon $startDate = null): \Carbon\Carbon
+    public static function calculateDefaultWorkingDaysDeliveryDate(int $days = 7, ?\Carbon\Carbon $startDate = null): \Carbon\Carbon
     {
         $date = ($startDate ? $startDate->copy() : now())->startOfDay();
-        $daysAdded = 0;
-        while ($daysAdded < $workingDays) {
-            $date->addDay();
-            if (!$date->isWeekend()) {
-                $daysAdded++;
-            }
-        }
-        return $date;
+        return $date->addDays($days);
     }
 
     protected static function booted(): void

@@ -81,14 +81,7 @@ class OfflineManager {
 
     calculateWorkingDays(days = 7, startDate = new Date()) {
         let date = new Date(startDate);
-        let workingDays = 0;
-        while (workingDays < days) {
-            date.setDate(date.getDate() + 1);
-            const dayOfWeek = date.getDay(); // 0 is Sunday, 6 is Saturday
-            if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-                workingDays++;
-            }
-        }
+        date.setDate(date.getDate() + days);
         return date.toISOString().split('T')[0];
     }
 

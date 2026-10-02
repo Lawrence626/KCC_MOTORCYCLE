@@ -124,7 +124,7 @@
     <div class="space-y-4">
         <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
-        {{-- â•â•â• FILTERS & STATS â•â•â• --}}
+        {{--  FILTERS & STATS  --}}
         <div class="rounded-[18px] border border-slate-200 bg-white p-3 shadow-sm">
             <div class="flex flex-col lg:flex-row lg:items-center gap-2">
                 <div class="flex flex-wrap items-center gap-2 flex-1">
@@ -201,7 +201,7 @@
 
         <div class="grid gap-4 mt-0">
 
-        {{-- â”€â”€ Pending Warehouse Assignment panel (collapsible) â”€â”€ --}}
+        {{-- -- Pending Warehouse Assignment panel (collapsible) -- --}}
         <div id="pending-arrivals-panel" class="rounded-[20px] border border-slate-200 border-l-[5px] border-l-[#6EC1D1] shadow-sm overflow-hidden" style="background: linear-gradient(50deg, #ffffff 0%, rgba(110, 193, 209, 0.12) 50%);">
             {{-- Header / toggle bar --}}
             <button
@@ -248,10 +248,10 @@
                             @foreach($pendingArrivals as $arrival)
                             <tr id="arrival-row-{{ $arrival['id'] }}" class="hover:bg-slate-50 transition">
                                 <td class="px-4 py-3 font-medium text-slate-900">{{ $arrival['product_name'] }}</td>
-                                <td class="px-4 py-3 font-mono text-xs text-slate-600">{{ $arrival['sku'] ?? 'â€”' }}</td>
+                                <td class="px-4 py-3 font-mono text-xs text-slate-600">{{ $arrival['sku'] ?? '—' }}</td>
                                 <td class="px-4 py-3 text-center font-semibold text-slate-800">{{ $arrival['quantity'] }}</td>
-                                <td class="px-4 py-3 text-slate-600">{{ $arrival['purchase_order_number'] ?? 'â€”' }}</td>
-                                <td class="px-4 py-3 text-slate-600">{{ $arrival['supplier_name'] ?? 'â€”' }}</td>
+                                <td class="px-4 py-3 text-slate-600">{{ $arrival['purchase_order_number'] ?? '—' }}</td>
+                                <td class="px-4 py-3 text-slate-600">{{ $arrival['supplier_name'] ?? '—' }}</td>
                                 <td class="px-4 py-3 text-xs text-slate-500">{{ $arrival['arrived_at'] }}</td>
                                 <td class="px-4 py-3 text-center">
                                     <button
@@ -283,7 +283,7 @@
                 @endif
             </div>
         </div>
-        {{-- â”€â”€ end Pending Warehouse Assignment panel â”€â”€ --}}
+        {{-- -- end Pending Warehouse Assignment panel -- --}}
 
             @foreach($warehouses as $wh)
                 <div class="rounded-[15px] border border-slate-200 bg-white overflow-hidden shadow-sm wh-card" data-id="{{ $wh['id'] }}" style="display:none;">
@@ -321,7 +321,7 @@
                                 <div class="flex items-center gap-1">
                                     <button type="button" class="prev-page inline-flex items-center justify-center h-8 rounded-[10px] border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" data-id="{{ $wh['id'] }}">â† Prev</button>
                                     <div class="page-numbers flex items-center gap-1" data-id="{{ $wh['id'] }}"></div>
-                                    <button type="button" class="next-page inline-flex items-center justify-center h-8 rounded-[10px] border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" data-id="{{ $wh['id'] }}">Next â†’</button>
+                                    <button type="button" class="next-page inline-flex items-center justify-center h-8 rounded-[10px] border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" data-id="{{ $wh['id'] }}">Next →</button>
                                 </div>
                             </div>
                         </div>
@@ -484,7 +484,7 @@
                 <div class="flex items-center justify-between p-3.5 bg-white rounded-[14px] border border-slate-200 shadow-sm">
                     <div>
                         <p class="text-sm font-semibold text-slate-900">${item.name || 'Unnamed Shelf'}</p>
-                        <p class="text-xs text-slate-500 mt-0.5">${item.warehouseName} â€¢ ${item.products ? item.products.length : 0} items</p>
+                        <p class="text-xs text-slate-500 mt-0.5">${item.warehouseName} • ${item.products ? item.products.length : 0} items</p>
                     </div>
                     <button type="button" onclick="restoreArchivedShelf('${item.slot_index}', '${item.warehouseId}')" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-black hover:bg-[#59b2c2] ring-1 ring-slate-300 transition cursor-pointer">
                         Restore
@@ -555,7 +555,7 @@
                     const submitBtn = addWarehouseForm.querySelector('button[type="submit"]');
                     if (submitBtn) {
                         submitBtn.disabled = true;
-                        submitBtn.textContent = 'Creatingâ€¦';
+                        submitBtn.textContent = 'Creating...';
                     }
 
                     try {
@@ -976,8 +976,8 @@
                 <input type="hidden" id="assign-arrival-id">
 
                 <div id="assign-arrival-info" class="rounded-[20px] bg-amber-50 border border-amber-200 p-4 text-sm">
-                    <p class="font-bold text-amber-900" id="assign-arrival-product-name">â€”</p>
-                    <p class="text-amber-700 mt-1 font-medium">Qty: <span id="assign-arrival-qty" class="font-bold">â€”</span></p>
+                    <p class="font-bold text-amber-900" id="assign-arrival-product-name">—</p>
+                    <p class="text-amber-700 mt-1 font-medium">Qty: <span id="assign-arrival-qty" class="font-bold">—</span></p>
                 </div>
 
                 <div class="rounded-[28px] border border-slate-200 p-4 bg-white">
@@ -1076,7 +1076,7 @@
 
                 const submitBtn = form.querySelector('[type="submit"]');
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'SavingÃ¢â‚¬Â¦';
+                submitBtn.textContent = 'Saving...';
 
                 try {
                     const response = await fetch(`/warehouse-management/stock-arrival/${id}/assign`, {

@@ -216,7 +216,7 @@
         <div class="rounded-[15px] border border-slate-200 bg-white p-4 shadow-sm">
             <div class="flex items-center justify-between mb-3">
                 <h2 class="text-base font-bold text-slate-900">Pending Imports for Review ({{ $pendingImports->total() }})</h2>
-                <a href="{{ route('offline.pending.imports') }}" class="text-xs text-cyan-600 hover:text-cyan-700 font-bold">View Full List â†’</a>
+                <a href="{{ route('offline.pending.imports') }}" class="text-xs text-cyan-600 hover:text-cyan-700 font-bold">View Full List →</a>
             </div>
             <div class="overflow-hidden rounded-[10px] border border-slate-200">
                 <div class="overflow-x-auto">
@@ -273,9 +273,9 @@
                         @endforeach
 
                         @if ($pendingImports->hasMorePages())
-                            <a href="{{ $pendingImports->nextPageUrl() }}" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">Next â†’</a>
+                            <a href="{{ $pendingImports->nextPageUrl() }}" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">Next →</a>
                         @else
-                            <button disabled class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 opacity-50 cursor-not-allowed">Next â†’</button>
+                            <button disabled class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 opacity-50 cursor-not-allowed">Next →</button>
                         @endif
                     </div>
                 </div>
@@ -351,9 +351,9 @@
                         @endforeach
 
                         @if ($recentImports->hasMorePages())
-                            <a href="{{ $recentImports->nextPageUrl() }}" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">Next â†’</a>
+                            <a href="{{ $recentImports->nextPageUrl() }}" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">Next →</a>
                         @else
-                            <button disabled class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 opacity-50 cursor-not-allowed">Next â†’</button>
+                            <button disabled class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 opacity-50 cursor-not-allowed">Next →</button>
                         @endif
                     </div>
                 </div>
@@ -574,7 +574,7 @@
                         showClientAlert(
                             `All set! All <strong>${valid}</strong> order(s) have been verified successfully. You can now proceed to click <strong>Import Data</strong>.`,
                             'success',
-                            'Validation Passed â€” All Set!'
+                            'Validation Passed — All Set!'
                         );
                     } else if (valid > 0) {
                         showClientAlert(

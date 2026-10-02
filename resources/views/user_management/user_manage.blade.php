@@ -131,23 +131,23 @@
                                 <div id="add_password_requirements" class="text-[11px] space-y-0.5 mt-1 p-2 bg-white border border-slate-200 rounded-[10px] hidden">
                                     <div class="font-semibold text-slate-900 text-xs">Password must contain:</div>
                                     <div class="flex items-center gap-1" data-requirement="lowercase">
-                                        <span class="text-red-500 text-xs">âœ•</span>
+                                        <span class="text-red-500 text-xs">✕</span>
                                         <span class="text-red-600 text-[10px]">Lowercase letter (a-z)</span>
                                     </div>
                                     <div class="flex items-center gap-1" data-requirement="uppercase">
-                                        <span class="text-red-500 text-xs">âœ•</span>
+                                        <span class="text-red-500 text-xs">✕</span>
                                         <span class="text-red-600 text-[10px]">Uppercase letter (A-Z)</span>
                                     </div>
                                     <div class="flex items-center gap-1" data-requirement="number">
-                                        <span class="text-red-500 text-xs">âœ•</span>
+                                        <span class="text-red-500 text-xs">✕</span>
                                         <span class="text-red-600 text-[10px]">Number (0-9)</span>
                                     </div>
                                     <div class="flex items-center gap-1" data-requirement="special">
-                                        <span class="text-red-500 text-xs">âœ•</span>
+                                        <span class="text-red-500 text-xs">✕</span>
                                         <span class="text-red-600 text-[10px]">Special char (@ $ ! % * # ?)</span>
                                     </div>
                                     <div class="flex items-center gap-1" data-requirement="length">
-                                        <span class="text-red-500 text-xs">âœ•</span>
+                                        <span class="text-red-500 text-xs">✕</span>
                                         <span class="text-red-600 text-[10px]">12+ characters</span>
                                     </div>
                                 </div>
@@ -253,23 +253,23 @@
                                 <div id="edit_password_requirements" class="text-[11px] space-y-0.5 mt-1 p-2 bg-white border border-slate-200 rounded-[10px] hidden">
                                     <div class="font-semibold text-slate-900 text-xs">Password must contain:</div>
                                     <div class="flex items-center gap-1" data-requirement="lowercase">
-                                        <span class="text-red-500 text-xs">âœ•</span>
+                                        <span class="text-red-500 text-xs">✕</span>
                                         <span class="text-red-600 text-[10px]">Lowercase (a-z)</span>
                                     </div>
                                     <div class="flex items-center gap-1" data-requirement="uppercase">
-                                        <span class="text-red-500 text-xs">âœ•</span>
+                                        <span class="text-red-500 text-xs">✕</span>
                                         <span class="text-red-600 text-[10px]">Uppercase (A-Z)</span>
                                     </div>
                                     <div class="flex items-center gap-1" data-requirement="number">
-                                        <span class="text-red-500 text-xs">âœ•</span>
+                                        <span class="text-red-500 text-xs">✕</span>
                                         <span class="text-red-600 text-[10px]">Number (0-9)</span>
                                     </div>
                                     <div class="flex items-center gap-1" data-requirement="special">
-                                        <span class="text-red-500 text-xs">âœ•</span>
+                                        <span class="text-red-500 text-xs">✕</span>
                                         <span class="text-red-600 text-[10px]">Special char (@ $ ! %)</span>
                                     </div>
                                     <div class="flex items-center gap-1" data-requirement="length">
-                                        <span class="text-red-500 text-xs">âœ•</span>
+                                        <span class="text-red-500 text-xs">✕</span>
                                         <span class="text-red-600 text-[10px]">12+ characters</span>
                                     </div>
                                 </div>

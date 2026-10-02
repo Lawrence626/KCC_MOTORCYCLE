@@ -84,38 +84,36 @@
         @php
             $estDate = $purchaseOrder->estimated_delivery_date ?? $purchaseOrder->expected_delivery_date;
             $isCompleted = in_array($purchaseOrder->status, ['completed', 'archived']);
-            $daysRemaining = $estDate ? (int) now()->startOfDay()->diffInDays($estDate->startOfDay(), false) : null;
-
-            if ($estDate === null) {
+            $daysRemaining = $estDate ? (int) now()->startOfDay()->diffInDays($estDate->startOfDay(), false) : null;            if ($estDate === null) {
                 $estColor = 'slate';
                 $estBg = 'bg-slate-50 border-slate-200';
                 $estBadgeBg = 'bg-slate-100 text-slate-600';
                 $estLabel = 'Not yet provided';
-                $estIcon = 'â³';
+                $estIconSvg = '<svg class="w-7 h-7 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
             } elseif ($isCompleted) {
                 $estColor = 'emerald';
                 $estBg = 'bg-emerald-50 border-emerald-200';
                 $estBadgeBg = 'bg-emerald-100 text-emerald-700';
                 $estLabel = 'Delivered';
-                $estIcon = 'âœ…';
+                $estIconSvg = '<svg class="w-7 h-7 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
             } elseif ($daysRemaining < 0) {
                 $estColor = 'rose';
                 $estBg = 'bg-rose-50 border-rose-200';
                 $estBadgeBg = 'bg-rose-100 text-rose-700';
                 $estLabel = abs($daysRemaining) . ' ' . Str::plural('day', abs($daysRemaining)) . ' overdue';
-                $estIcon = 'ðŸ”´';
+                $estIconSvg = '<svg class="w-7 h-7 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>';
             } elseif ($daysRemaining <= 2) {
                 $estColor = 'amber';
                 $estBg = 'bg-amber-50 border-amber-200';
                 $estBadgeBg = 'bg-amber-100 text-amber-700';
                 $estLabel = $daysRemaining === 0 ? 'Due today' : 'Arriving in ' . $daysRemaining . ' ' . Str::plural('day', $daysRemaining);
-                $estIcon = 'ðŸŸ¡';
+                $estIconSvg = '<svg class="w-7 h-7 text-amber-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
             } else {
                 $estColor = 'emerald';
                 $estBg = 'bg-emerald-50 border-emerald-200';
                 $estBadgeBg = 'bg-emerald-100 text-emerald-700';
                 $estLabel = 'Arriving in ' . $daysRemaining . ' ' . Str::plural('day', $daysRemaining);
-                $estIcon = 'ðŸŸ¢';
+                $estIconSvg = '<svg class="w-7 h-7 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>';
             }
 
             $isReceivingStage = in_array($purchaseOrder->status, ['in transit', 'partially received', 'awaiting confirmation', 'completed', 'delivered'], true);
@@ -125,7 +123,9 @@
                 <div class="space-y-3">
                     <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Estimated Delivery Date</p>
                     <div class="flex items-center gap-3">
-                        <span class="text-2xl">{{ $estIcon }}</span>
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-xs border border-slate-200/60">
+                            {!! $estIconSvg !!}
+                        </div>
                         <div>
                             <p class="text-xl font-semibold text-slate-900">
                                 {{ $estDate ? $estDate->format('M j, Y') : 'Not yet provided' }}
@@ -135,7 +135,7 @@
                             </span>
                         </div>
                     </div>
-                </div>
+                </div>                </div>
                 @if(auth()->user() && auth()->user()->role === 'admin')
                     <form method="POST" action="{{ route('order.update_estimated_delivery', $purchaseOrder) }}" class="flex items-end gap-2">
                         @csrf
@@ -550,7 +550,7 @@
                                                 $rpo = $req->replacementPurchaseOrder;
                                             @endphp
                                             @if($req->status === 'Completed' || ($rpo && $rpo->status === 'completed'))
-                                                <div class="mt-0.5 text-[11px] text-emerald-700 font-medium">âœ“ Received {{ $req->replacement_received_quantity ?: ($rpo ? $rpo->items->sum('accepted_quantity') : $req->defective_quantity) }} units on {{ optional($req->replacement_received_at ?? ($rpo ? $rpo->completed_at : null))->format('M j, Y') }}</div>
+                                                <div class="mt-0.5 text-[11px] text-emerald-700 font-medium">✓ Received {{ $req->replacement_received_quantity ?: ($rpo ? $rpo->items->sum('accepted_quantity') : $req->defective_quantity) }} units on {{ optional($req->replacement_received_at ?? ($rpo ? $rpo->completed_at : null))->format('M j, Y') }}</div>
                                             @elseif($rpo)
                                                 <div class="mt-0.5 text-[11px] text-blue-600 font-medium">PO Status: <span class="font-semibold capitalize">{{ $rpo->status }}</span></div>
                                             @else

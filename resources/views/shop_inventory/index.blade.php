@@ -313,7 +313,7 @@
                             <p class="text-slate-600">Page <span id="current-page" class="font-semibold text-slate-900">1</span> of <span id="total-pages" class="font-semibold text-slate-900">1</span></p>
                             <div class="flex gap-1">
                                 <button type="button" id="prev-page" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">â† Prev</button>
-                                <button type="button" id="next-page" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">Next â†’</button>
+                                <button type="button" id="next-page" class="rounded-[10px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">Next →</button>
                             </div>
                         </div>
                     </div>
@@ -920,7 +920,7 @@
             if (!container) return;
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.innerHTML = `<span>${message}</span><button onclick="this.parentElement.remove()">âœ•</button>`;
+            toast.innerHTML = `<span>${message}</span><button onclick="this.parentElement.remove()">✕</button>`;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 5000);
         }

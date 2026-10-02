@@ -941,9 +941,9 @@
             }
         </style>
         <script>
-            // -------------------------------------------
+            // ---
             // SALES TREND (independent — NOT date-filtered)
-            // -------------------------------------------
+            // ---
             const salesTrendRangeButtons = document.querySelectorAll('.sales-trend-range-btn');
             const salesTrendCtx = document.getElementById('salesTrendChart');
             const posSalesStorageKey = 'posTransactionHistory';
@@ -1228,9 +1228,9 @@
 
             setActiveSalesTrendButton('monthly');
 
-            // -------------------------------------------
+            // ---
             // CATEGORY CHART (initial render from server)
-            // -------------------------------------------
+            // ---
             const CATEGORY_DEFS = [
                 { name: 'Exhaust', color: '#00f700' },
                 { name: 'Helmets', color: '#da0e0e' },
@@ -1413,9 +1413,9 @@
             // Initial category chart from server data
             initCategoryChart(@json($categoryBreakdown['labels']), @json($categoryBreakdown['values']));
 
-            // -------------------------------------------
+            // ---
             // GLOBAL DATE RANGE CALENDAR + WIDGET REFRESH
-            // -------------------------------------------
+            // ---
             const loadingOverlayIds = [
                 'categoryLoadingOverlay',
                 'topProductsLoadingOverlay',
