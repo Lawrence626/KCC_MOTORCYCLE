@@ -306,7 +306,7 @@
         @endif
 
         @if(auth()->user() && auth()->user()->role === 'admin')
-        <div id="sidebar-offline-recon-group" class="group @if(request()->routeIs('offline.*') || request()->is('offline*')) open @endif transition-all duration-300" style="display: {{ (request()->routeIs('offline.*') || request()->is('offline*')) ? 'block' : 'none' }};">
+        <div id="sidebar-offline-recon-group" class="group transition-all duration-300" style="display: none;">
             <button type="button" @class([
                 'sidebar-group-toggle w-full flex items-center justify-between gap-3 pl-6 pr-4 py-2.5 text-sm font-medium cursor-pointer border-l-[3px] border-transparent',
                 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('offline.*') || request()->is('offline*'),

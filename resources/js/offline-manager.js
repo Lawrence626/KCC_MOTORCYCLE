@@ -19,10 +19,15 @@ class OfflineManager {
         window.addEventListener('online', () => this.handleOnline());
         window.addEventListener('offline', () => this.handleOffline());
         
+        // Clean up any orders that are already approved in the database
+        if (this.isOnline) {
+            await this.cleanupSyncedOrders();
+        }
+
         // Load pending operations from IndexedDB
         await this.loadPendingOperations();
         
-        // Update UI status, sidebar, and alert banner
+        // Update UI status, sidebar, and notification bell
         this.updateStatusIndicator();
         await this.updateOfflineReconSidebar();
         await this.updatePendingOfflineSyncAlert();
@@ -90,6 +95,7 @@ class OfflineManager {
     async handleOnline() {
         this.isOnline = true;
         this.updateStatusIndicator();
+        await this.cleanupSyncedOrders();
         await this.loadPendingOperations();
         await this.updateOfflineReconSidebar();
         await this.updatePendingOfflineSyncAlert();
@@ -145,8 +151,6 @@ class OfflineManager {
         if (!group) return;
 
         const isOffline = (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean') ? !navigator.onLine : false;
-        const currentPath = (typeof window !== 'undefined' && window.location) ? window.location.pathname : '';
-        const isOfflineRoute = currentPath.includes('offline-reconciliation') || currentPath.includes('offline');
         
         let count = 0;
         try {
@@ -167,9 +171,9 @@ class OfflineManager {
             }
         }
 
-        // Hide offline recon module when online with 0 local pending orders,
-        // but keep visible when offline OR when pending local orders exist OR when actively browsing offline pages
-        if (isOffline || count > 0 || isOfflineRoute) {
+        // Strictly hide offline recon module when online with 0 local pending orders.
+        // It will only be shown if currently offline OR when there are pending local orders (count > 0).
+        if (isOffline || count > 0) {
             group.style.display = 'block';
         } else {
             group.style.display = 'none';
