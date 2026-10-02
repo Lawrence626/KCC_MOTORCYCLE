@@ -1,4 +1,4 @@
-﻿<x-layouts.app :title="__('Offline Purchase Orders')">
+<x-layouts.app :title="__('Offline Purchase Orders')">
 
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
@@ -1056,7 +1056,22 @@
 
             const totalAmount = selectedItems.reduce((sum, i) => sum + i.subtotal, 0);
 
-            // Record snapshot
+            // Record snapshot with 7 working days expected delivery date
+            function calculateSevenWorkingDays(startDate = new Date()) {
+                let date = new Date(startDate);
+                let workingDays = 0;
+                while (workingDays < 7) {
+                    date.setDate(date.getDate() + 1);
+                    const dayOfWeek = date.getDay();
+                    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                        workingDays++;
+                    }
+                }
+                return date.toISOString().split('T')[0];
+            }
+
+            const expectedDeliveryDate = calculateSevenWorkingDays();
+
             const orderRecord = {
                 order_number: poNumber,
                 supplier_id: selectedSupplier.id,
@@ -1065,6 +1080,7 @@
                 total_amount: totalAmount,
                 status: 'pending',
                 sync_status: 'pending_sync',
+                expected_delivery_date: expectedDeliveryDate,
                 items: selectedItems.map(i => ({
                     product_id: i.product_id,
                     product_name: i.product_name,

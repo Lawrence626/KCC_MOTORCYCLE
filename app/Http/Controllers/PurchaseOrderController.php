@@ -469,7 +469,11 @@ class PurchaseOrderController extends Controller
         $isAdmin = $user && $user->role === 'admin';
         $initialStatus = $isAdmin ? 'approved' : 'pending approval';
 
-        $purchaseOrder = DB::transaction(function () use ($supplier, $validated, $selectedProducts, $totalAmount, $orderNumber, $user, $isAdmin, $initialStatus) {
+        $expectedDeliveryDate = !empty($validated['expected_delivery_date'])
+            ? $validated['expected_delivery_date']
+            : PurchaseOrder::calculateDefaultWorkingDaysDeliveryDate(7)->toDateString();
+
+        $purchaseOrder = DB::transaction(function () use ($supplier, $validated, $selectedProducts, $totalAmount, $orderNumber, $user, $isAdmin, $initialStatus, $expectedDeliveryDate) {
             $purchaseOrder = PurchaseOrder::create([
                 'order_number'            => $orderNumber,
                 'supplier_id'             => $supplier->id,
@@ -478,7 +482,7 @@ class PurchaseOrderController extends Controller
                 'created_by_role'         => $user?->role ?? ($isAdmin ? 'admin' : 'inventory_clerk'),
                 'status'                  => $initialStatus,
                 'approved_at'             => $isAdmin ? now() : null,
-                'expected_delivery_date'  => $validated['expected_delivery_date'] ?? null,
+                'expected_delivery_date'  => $expectedDeliveryDate,
                 'notes'                   => $validated['notes'] ?? null,
                 'total_amount'            => $totalAmount,
             ]);

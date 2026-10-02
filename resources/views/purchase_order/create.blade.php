@@ -1,4 +1,4 @@
-﻿<x-layouts.app :title="__('Create Purchase Order')">
+<x-layouts.app :title="__('Create Purchase Order')">
 
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
@@ -30,6 +30,21 @@
             </ul>
         </div>
     @endif
+
+    {{-- Offline Outage Banner --}}
+    <div id="po-create-offline-banner" class="hidden rounded-[14px] border border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 p-4 shadow-sm mb-4 transition-all duration-300">
+        <div class="flex items-start gap-3">
+            <div class="p-2 bg-amber-100 border border-amber-200 rounded-xl text-amber-700 shrink-0">
+                <svg class="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                </svg>
+            </div>
+            <div>
+                <p class="text-sm font-bold text-amber-950">Internet connection lost — Offline Mode Activated</p>
+                <p class="text-xs text-amber-800 mt-0.5">You can safely save this purchase order locally. When your internet connection is restored, you will be notified to export and synchronize it for final processing before sending to supplier.</p>
+            </div>
+        </div>
+    </div>
 
     <form action="{{ route('order.store') }}" method="POST" id="po-form" class="space-y-6">
         @csrf
@@ -278,16 +293,72 @@
             </div>
         </div>
 
+        {{-- ==========================================================
+             STEP 4 – DELIVERY SCHEDULE & ORDER NOTES (7 Working Days Allotted)
+        ========================================================== --}}
+        @php
+            $defaultExpectedDelivery = \App\Models\PurchaseOrder::calculateDefaultWorkingDaysDeliveryDate(7)->format('Y-m-d');
+        @endphp
+        <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div class="border-b border-slate-800 px-6 py-4 flex items-center justify-between bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
+                <div class="flex items-center gap-3">
+                    <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">4</span>
+                    <div>
+                        <h2 class="text-sm font-semibold text-white">Delivery Schedule & Order Notes</h2>
+                        <p class="text-xs text-slate-300">Set expected arrival date (auto-allotted 7 working days) and special instructions.</p>
+                    </div>
+                </div>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#6EC1D1]/20 text-[#6EC1D1] border border-[#6EC1D1]/40">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    7 Working Days Allotment
+                </span>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Expected Delivery Date <span class="text-red-500">*</span>
+                    </label>
+                    <input type="date"
+                           name="expected_delivery_date"
+                           id="expected_delivery_date"
+                           value="{{ old('expected_delivery_date', $defaultExpectedDelivery) }}"
+                           required
+                           class="w-full rounded-[10px] border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-2xs" />
+                    <p class="text-xs text-slate-500 mt-1.5 flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        Auto-calculated 7 business days from today (excluding weekends). Ready before sending to supplier.
+                    </p>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Order Notes / Remarks (Optional)
+                    </label>
+                    <textarea name="notes"
+                              id="po-notes"
+                              rows="3"
+                              placeholder="Add special instructions, priority notes, or delivery terms..."
+                              class="w-full rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-black/35 shadow-2xs resize-none">{{ old('notes') }}</textarea>
+                </div>
+            </div>
+        </div>
+
         {{-- Actions --}}
-        <div class="flex flex-wrap items-center justify-end gap-3 pt-2">
-            <a href="{{ route('order.management') }}"
-               class="max-w-xs rounded-[10px] border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-black/10 transition-all duration-200">
-                Cancel
-            </a>
-            <button type="submit"
-                    class="max-w-xs inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#6EC1D1] px-5 py-3 text-sm font-semibold text-black shadow-sm hover:bg-[#59b2c2] transition-all duration-200">
-                Submit Purchase Order
-            </button>
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <div id="offline-order-indicator" class="hidden items-center gap-2 text-xs font-semibold text-amber-900 bg-amber-50 border border-amber-300 px-3 py-1.5 rounded-[10px]">
+                <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+                <span>Offline Mode: Order will be saved locally to browser storage (IndexedDB)</span>
+            </div>
+            <div class="flex items-center justify-end gap-3 ml-auto">
+                <a href="{{ route('order.management') }}"
+                   class="max-w-xs rounded-[10px] border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-black/10 transition-all duration-200">
+                    Cancel
+                </a>
+                <button type="submit"
+                        id="submit-po-button"
+                        class="max-w-xs inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#6EC1D1] px-5 py-3 text-sm font-semibold text-black shadow-sm hover:bg-[#59b2c2] transition-all duration-200 cursor-pointer">
+                    <span id="submit-po-text">Submit Purchase Order</span>
+                </button>
+            </div>
         </div>
     </form>
 </div>
@@ -1242,6 +1313,142 @@
             profileDropdown.classList.add('opacity-0', 'scale-95');
         }
     });
+
+    // ── Offline Mode Handler & Form Submit Interceptor ──────────────────────────
+    function updateCreatePoOfflineState() {
+        const isOffline = (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean') ? !navigator.onLine : false;
+        const banner = document.getElementById('po-create-offline-banner');
+        const indicator = document.getElementById('offline-order-indicator');
+        const submitBtnText = document.getElementById('submit-po-text');
+
+        if (isOffline) {
+            if (banner) banner.classList.remove('hidden');
+            if (indicator) {
+                indicator.classList.remove('hidden');
+                indicator.classList.add('inline-flex');
+            }
+            if (submitBtnText) {
+                submitBtnText.innerHTML = `
+                    <svg class="w-4 h-4 inline-block -mt-0.5 mr-1 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+                    </svg>
+                    Save Order Locally (Offline Mode)
+                `;
+            }
+        } else {
+            if (banner) banner.classList.add('hidden');
+            if (indicator) {
+                indicator.classList.add('hidden');
+                indicator.classList.remove('inline-flex');
+            }
+            if (submitBtnText) {
+                submitBtnText.textContent = 'Submit Purchase Order';
+            }
+        }
+    }
+
+    window.addEventListener('online', updateCreatePoOfflineState);
+    window.addEventListener('offline', updateCreatePoOfflineState);
+    updateCreatePoOfflineState();
+
+    function calculateSevenWorkingDays(startDate = new Date()) {
+        let date = new Date(startDate);
+        let workingDays = 0;
+        while (workingDays < 7) {
+            date.setDate(date.getDate() + 1);
+            const dayOfWeek = date.getDay();
+            if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                workingDays++;
+            }
+        }
+        return date.toISOString().split('T')[0];
+    }
+
+    if (poForm) {
+        poForm.addEventListener('submit', async function(e) {
+            const isOffline = (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean') ? !navigator.onLine : false;
+            
+            if (isOffline) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                syncVisibleRowsToStore();
+
+                if (selectedProductsStore.size === 0) {
+                    alert('Please select at least one product to create an order.');
+                    return;
+                }
+
+                if (!currentSupplierId) {
+                    alert('Please select an authorized supplier before saving the order.');
+                    return;
+                }
+
+                const supplierName = $el('supplierSelectDisplay')?.textContent?.trim() || 'Authorized Supplier';
+                const notes = $el('po-notes')?.value || '';
+                const expectedDelivery = $el('expected_delivery_date')?.value || calculateSevenWorkingDays();
+                
+                const items = [];
+                let totalAmount = 0;
+
+                selectedProductsStore.forEach((item, pid) => {
+                    const qty = item.quantity || 1;
+                    const price = item.unit_price || 0;
+                    const subtotal = qty * price;
+                    totalAmount += subtotal;
+
+                    items.push({
+                        product_id: pid,
+                        product_name: item.product_name,
+                        sku: item.sku,
+                        quantity: qty,
+                        unit_price: price,
+                        subtotal: subtotal
+                    });
+                });
+
+                const poNumber = 'PO-' + new Date().toISOString().replace(/\D/g, '').slice(0, 14) + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+
+                const orderRecord = {
+                    order_number: poNumber,
+                    supplier_id: currentSupplierId,
+                    supplier_name: supplierName,
+                    items: items,
+                    total_amount: totalAmount,
+                    status: 'pending',
+                    sync_status: 'locally_saved',
+                    expected_delivery_date: expectedDelivery,
+                    notes: notes,
+                    timestamp: new Date().toISOString()
+                };
+
+                try {
+                    if (window.offlineManager) {
+                        await window.offlineManager.savePendingOrder(orderRecord);
+                        if (typeof window.offlineManager.updateOfflineReconSidebar === 'function') {
+                            await window.offlineManager.updateOfflineReconSidebar();
+                        }
+                        if (typeof window.offlineManager.updatePendingOfflineSyncAlert === 'function') {
+                            await window.offlineManager.updatePendingOfflineSyncAlert();
+                        }
+                    }
+
+                    alert(`✅ Purchase Order #${poNumber} has been SAVED LOCALLY in offline mode!\n\nTotal: ₱${totalAmount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}\nExpected Delivery: ${expectedDelivery} (7 Working Days)\n\nWhen internet connection is restored, you will be notified to Export & Import this order for final synchronization before sending to supplier.`);
+                    
+                    // Reset form selection
+                    selectedProductsStore.clear();
+                    selectedProductIds = [];
+                    applyStoreToVisibleRows();
+                    updateSelectAllCheckboxState();
+                    onProductSelectionChange();
+                    if ($el('po-notes')) $el('po-notes').value = '';
+                } catch(err) {
+                    console.error('Failed to save offline order:', err);
+                    alert('Error saving order locally: ' + (err.message || err));
+                }
+            }
+        });
+    }
 
 })();
 </script>

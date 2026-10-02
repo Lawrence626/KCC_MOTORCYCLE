@@ -174,6 +174,48 @@
                             {{ $header }}
                         </div>
                     @endif
+
+                    <!-- Pending Offline Orders Synchronization Alert Banner -->
+                    <div id="pending-offline-sync-alert" class="hidden mx-4 sm:mx-8 mt-2 mb-3 rounded-[16px] border border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 p-4 shadow-sm transition-all duration-300">
+                        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                            <div class="flex items-start gap-3.5">
+                                <div class="p-2.5 bg-amber-100 border border-amber-200 rounded-xl text-amber-800 shrink-0 mt-0.5">
+                                    <svg class="w-6 h-6 text-amber-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <h3 class="text-sm font-bold text-amber-950">Offline Orders Pending Final Synchronization</h3>
+                                        <span id="pending-offline-orders-count-badge" class="px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-amber-200 text-amber-900 font-mono">1 Order Pending</span>
+                                    </div>
+                                    <p class="text-xs text-amber-800 mt-1 leading-relaxed">
+                                        You have purchase order(s) saved locally while offline. <strong>To avoid duplicate orders for the same items</strong>, please export and import your locally saved orders for final database synchronization before sending to supplier.
+                                    </p>
+                                    <div id="pending-offline-orders-preview" class="text-[11px] text-amber-700 mt-1.5 font-medium flex flex-wrap gap-2 items-center">
+                                        <!-- Populated dynamically via JS -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 flex-wrap shrink-0">
+                                <a href="{{ route('offline.export') }}" class="inline-flex items-center gap-1.5 rounded-[10px] bg-amber-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-amber-700 transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                    <span>Export Data</span>
+                                </a>
+                                <a href="{{ route('offline.import') }}" class="inline-flex items-center gap-1.5 rounded-[10px] bg-slate-900 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-slate-800 transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12"/></svg>
+                                    <span>Import Data</span>
+                                </a>
+                                <a href="{{ route('offline.pending.imports') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-amber-300 bg-white px-3 py-2 text-xs font-bold text-amber-900 hover:bg-amber-50 transition">
+                                    <span>Pending Imports</span>
+                                </a>
+                                <a href="{{ route('offline.history') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-amber-300 bg-white px-3 py-2 text-xs font-bold text-amber-900 hover:bg-amber-50 transition">
+                                    <span>Sync History</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
                     @if($flush)
                         <div class="pt-0">
                             {{ $slot }}
@@ -946,6 +988,7 @@
         });
     </script>
 
+    <script src="{{ asset('js/offline-manager.js') }}"></script>
     @stack('scripts')
 </body>
 </html>

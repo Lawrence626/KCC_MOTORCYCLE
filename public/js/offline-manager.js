@@ -1,7 +1,7 @@
 // Offline Manager - Handles offline detection, local storage, and synchronization for Purchase Orders
 class OfflineManager {
     constructor() {
-        this.isOnline = navigator.onLine;
+        this.isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
         this.dbName = 'KCC_OfflineDB';
         this.dbVersion = 4;
         this.db = null;
@@ -22,8 +22,10 @@ class OfflineManager {
         // Load pending operations from IndexedDB
         await this.loadPendingOperations();
         
-        // Update UI status
+        // Update UI status, sidebar, and alert banner
         this.updateStatusIndicator();
+        await this.updateOfflineReconSidebar();
+        await this.updatePendingOfflineSyncAlert();
     }
 
     async initIndexedDB() {
@@ -72,16 +74,40 @@ class OfflineManager {
         });
     }
 
-    handleOnline() {
-        this.isOnline = true;
-        this.updateStatusIndicator();
-        this.showNotification('You are back online.', 'success');
+    calculateWorkingDays(days = 7, startDate = new Date()) {
+        let date = new Date(startDate);
+        let workingDays = 0;
+        while (workingDays < days) {
+            date.setDate(date.getDate() + 1);
+            const dayOfWeek = date.getDay(); // 0 is Sunday, 6 is Saturday
+            if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                workingDays++;
+            }
+        }
+        return date.toISOString().split('T')[0];
     }
 
-    handleOffline() {
+    async handleOnline() {
+        this.isOnline = true;
+        this.updateStatusIndicator();
+        await this.loadPendingOperations();
+        await this.updateOfflineReconSidebar();
+        await this.updatePendingOfflineSyncAlert();
+
+        const pendingOrders = await this.getPendingOrders();
+        if (pendingOrders && pendingOrders.length > 0) {
+            this.showNotification(`Internet connection restored! You have ${pendingOrders.length} locally saved order(s). Please export and import them for final synchronization before placing new orders.`, 'warning');
+        } else {
+            this.showNotification('You are back online.', 'success');
+        }
+    }
+
+    async handleOffline() {
         this.isOnline = false;
         this.updateStatusIndicator();
-        this.showNotification('You are currently offline. Orders will be saved locally.', 'warning');
+        await this.updateOfflineReconSidebar();
+        await this.updatePendingOfflineSyncAlert();
+        this.showNotification('You are currently offline. Orders will be saved locally to your device.', 'warning');
     }
 
     updateStatusIndicator() {
@@ -113,20 +139,101 @@ class OfflineManager {
         }
     }
 
+    async updateOfflineReconSidebar() {
+        const group = document.getElementById('sidebar-offline-recon-group');
+        const badge = document.getElementById('sidebar-offline-pending-badge');
+        if (!group) return;
+
+        const isOffline = (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean') ? !navigator.onLine : false;
+        const currentPath = (typeof window !== 'undefined' && window.location) ? window.location.pathname : '';
+        const isOfflineRoute = currentPath.includes('offline-reconciliation') || currentPath.includes('offline');
+        
+        let count = 0;
+        try {
+            const pendingOrders = await this.getPendingOrders();
+            count = Array.isArray(pendingOrders) ? pendingOrders.length : 0;
+        } catch (e) {
+            count = this.queue?.orders?.length || 0;
+        }
+
+        if (badge) {
+            if (count > 0) {
+                badge.textContent = count;
+                badge.classList.remove('hidden');
+                badge.classList.add('inline-flex');
+            } else {
+                badge.classList.add('hidden');
+                badge.classList.remove('inline-flex');
+            }
+        }
+
+        // Hide offline recon module when online with 0 local pending orders,
+        // but keep visible when offline OR when pending local orders exist OR when actively browsing offline pages
+        if (isOffline || count > 0 || isOfflineRoute) {
+            group.style.display = 'block';
+        } else {
+            group.style.display = 'none';
+        }
+    }
+
+    async updatePendingOfflineSyncAlert() {
+        const alertContainer = document.getElementById('pending-offline-sync-alert');
+        const countBadge = document.getElementById('pending-offline-orders-count-badge');
+        const previewEl = document.getElementById('pending-offline-orders-preview');
+
+        const isOnline = (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean') ? navigator.onLine : true;
+        let pendingOrders = [];
+        try {
+            pendingOrders = await this.getPendingOrders();
+        } catch(e) {
+            pendingOrders = this.queue?.orders || [];
+        }
+        const count = Array.isArray(pendingOrders) ? pendingOrders.length : 0;
+
+        if (!alertContainer) return;
+
+        if (isOnline && count > 0) {
+            alertContainer.classList.remove('hidden');
+            if (countBadge) {
+                countBadge.textContent = `${count} Local Order${count === 1 ? '' : 's'} Pending`;
+            }
+            if (previewEl) {
+                const poList = pendingOrders.slice(0, 4).map(o => {
+                    const num = o.order_number || o.po_number || 'PO';
+                    const supp = o.supplier_name ? `(${o.supplier_name})` : '';
+                    const itemsCount = Array.isArray(o.items) ? `${o.items.length} item(s)` : '';
+                    return `<span class="inline-flex items-center gap-1 bg-amber-100 text-amber-950 px-2 py-0.5 rounded-[6px] border border-amber-300 font-mono text-[10px]"><strong>${num}</strong> ${supp} ${itemsCount}</span>`;
+                }).join(' ');
+                const more = count > 4 ? `<span class="text-amber-800 text-[10px] font-bold">+${count - 4} more</span>` : '';
+                previewEl.innerHTML = `<span><strong>Local Orders:</strong> ${poList} ${more}</span>`;
+            }
+        } else {
+            alertContainer.classList.add('hidden');
+        }
+    }
+
     showNotification(message, type = 'info') {
         const notification = document.createElement('div');
-        notification.className = `fixed bottom-4 right-4 px-4 py-2.5 rounded-[12px] shadow-xl z-50 text-xs font-semibold flex items-center gap-2 ${
-            type === 'success' ? 'bg-green-600 text-white' :
+        notification.className = `fixed bottom-4 right-4 px-4 py-3 rounded-[12px] shadow-2xl z-[99999] text-xs font-semibold flex items-center gap-2.5 max-w-md ${
+            type === 'success' ? 'bg-green-700 text-white' :
             type === 'warning' ? 'bg-amber-500 text-slate-950' :
             type === 'error' ? 'bg-red-600 text-white' :
             'bg-[#0f172a] text-white'
         }`;
-        notification.textContent = message;
+        notification.innerHTML = `
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>${message}</span>
+        `;
         document.body.appendChild(notification);
 
         setTimeout(() => {
-            notification.remove();
-        }, 3500);
+            notification.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateY(10px)';
+            setTimeout(() => notification.remove(), 400);
+        }, 4500);
     }
 
     async cacheMasterData(products = [], suppliers = []) {
@@ -171,14 +278,23 @@ class OfflineManager {
             const transaction = this.db.transaction(['pending_orders'], 'readwrite');
             const store = transaction.objectStore('pending_orders');
 
+            const expectedDelivery = orderData.expected_delivery_date || this.calculateWorkingDays(7);
+
             const order = {
                 ...orderData,
-                timestamp: new Date().toISOString(),
+                expected_delivery_date: expectedDelivery,
+                timestamp: orderData.timestamp || new Date().toISOString(),
                 synced: false
             };
 
             const addRequest = store.add(order);
-            addRequest.onsuccess = () => resolve(addRequest.result);
+            addRequest.onsuccess = () => {
+                this.loadPendingOperations().then(async () => {
+                    await this.updateOfflineReconSidebar();
+                    await this.updatePendingOfflineSyncAlert();
+                    resolve(addRequest.result);
+                });
+            };
             addRequest.onerror = () => reject(addRequest.error);
         });
     }
@@ -191,6 +307,8 @@ class OfflineManager {
         };
 
         this.updateQueueCount();
+        await this.updateOfflineReconSidebar();
+        await this.updatePendingOfflineSyncAlert();
     }
 
     async getAllFromStore(storeName) {
@@ -271,7 +389,9 @@ class OfflineManager {
                 addReq.onsuccess = () => {
                     const delKey = (order.id !== undefined) ? order.id : ((!isNaN(id) && id !== '') ? Number(id) : id);
                     const delReq = pendingStore.delete(delKey);
-                    delReq.onsuccess = () => resolve(addReq.result);
+                    delReq.onsuccess = () => {
+                        this.loadPendingOperations().then(() => resolve(addReq.result));
+                    };
                     delReq.onerror = () => reject(delReq.error);
                 };
                 addReq.onerror = () => reject(addReq.error);
@@ -310,7 +430,9 @@ class OfflineManager {
                 addReq.onsuccess = () => {
                     const delKey = (order.id !== undefined) ? order.id : ((!isNaN(id) && id !== '') ? Number(id) : id);
                     const delReq = archiveStore.delete(delKey);
-                    delReq.onsuccess = () => resolve(addReq.result);
+                    delReq.onsuccess = () => {
+                        this.loadPendingOperations().then(() => resolve(addReq.result));
+                    };
                     delReq.onerror = () => reject(delReq.error);
                 };
                 addReq.onerror = () => reject(addReq.error);
@@ -333,7 +455,9 @@ class OfflineManager {
             const key = (!isNaN(id) && id !== '' && id !== null) ? Number(id) : id;
             const request = store.delete(key);
 
-            request.onsuccess = () => resolve();
+            request.onsuccess = () => {
+                this.loadPendingOperations().then(() => resolve());
+            };
             request.onerror = () => reject(request.error);
         });
     }
@@ -390,7 +514,9 @@ class OfflineManager {
                     data.synced = true;
                     data.sync_status = 'synchronized';
                     const updateRequest = store.put(data);
-                    updateRequest.onsuccess = () => resolve();
+                    updateRequest.onsuccess = () => {
+                        this.loadPendingOperations().then(() => resolve());
+                    };
                     updateRequest.onerror = () => reject(updateRequest.error);
                 } else {
                     resolve();
@@ -415,6 +541,8 @@ class OfflineManager {
             tx.oncomplete = () => {
                 this.queue = { orders: [] };
                 this.updateQueueCount();
+                this.updateOfflineReconSidebar();
+                this.updatePendingOfflineSyncAlert();
                 resolve();
             };
             tx.onerror = () => reject(tx.error);

@@ -39,8 +39,33 @@ class PurchaseOrder extends Model
         'total_amount' => 'decimal:2',
     ];
 
+    /**
+     * Calculate default delivery date based on standard working days (skipping Saturday & Sunday)
+     */
+    public static function calculateDefaultWorkingDaysDeliveryDate(int $workingDays = 7, ?\Carbon\Carbon $startDate = null): \Carbon\Carbon
+    {
+        $date = ($startDate ? $startDate->copy() : now())->startOfDay();
+        $daysAdded = 0;
+        while ($daysAdded < $workingDays) {
+            $date->addDay();
+            if (!$date->isWeekend()) {
+                $daysAdded++;
+            }
+        }
+        return $date;
+    }
+
     protected static function booted(): void
     {
+        static::creating(function ($po) {
+            // If expected_delivery_date and estimated_delivery_date are not specified, default to 7 working days
+            if (!array_key_exists('expected_delivery_date', $po->getAttributes()) && !array_key_exists('estimated_delivery_date', $po->getAttributes())) {
+                $defaultDate = static::calculateDefaultWorkingDaysDeliveryDate(7);
+                $po->expected_delivery_date = $defaultDate;
+                $po->estimated_delivery_date = $defaultDate;
+            }
+        });
+
         static::saving(function ($po) {
             // Keep estimated_delivery_date and expected_delivery_date synchronized
             if ($po->isDirty('estimated_delivery_date') && !$po->isDirty('expected_delivery_date')) {

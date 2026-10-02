@@ -306,13 +306,47 @@
         @endif
 
         @if(auth()->user() && auth()->user()->role === 'admin')
-        <a href="{{ route('offline.reconciliation') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-2.5 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('offline.*') || request()->is('offline*'), 'text-slate-300 border-transparent' => !(request()->routeIs('offline.*') || request()->is('offline*'))])>
-            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 11a1 1 0 100-2 1 1 0 000 2zm0 0a4 4 0 100 8 4 4 0 000-8zm0 0V3m0 0L9 6m3-3l3 3" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.071 4.929a10 10 0 00-14.142 0M16.243 7.757a6 6 0 00-8.486 0" />
-            </svg>
-            <span>Offline Reconciliation</span>
-        </a>
+        <div id="sidebar-offline-recon-group" class="group @if(request()->routeIs('offline.*') || request()->is('offline*')) open @endif transition-all duration-300" style="display: {{ (request()->routeIs('offline.*') || request()->is('offline*')) ? 'block' : 'none' }};">
+            <button type="button" @class([
+                'sidebar-group-toggle w-full flex items-center justify-between gap-3 pl-6 pr-4 py-2.5 text-sm font-medium cursor-pointer border-l-[3px] border-transparent',
+                'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('offline.*') || request()->is('offline*'),
+                'text-slate-300 border-transparent' => !(request()->routeIs('offline.*') || request()->is('offline*')),
+            ])>
+                <div class="flex items-center gap-3 min-w-0">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 11a1 1 0 100-2 1 1 0 000 2zm0 0a4 4 0 100 8 4 4 0 000-8zm0 0V3m0 0L9 6m3-3l3 3" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.071 4.929a10 10 0 00-14.142 0M16.243 7.757a6 6 0 00-8.486 0" />
+                    </svg>
+                    <span class="truncate">Offline Reconciliation</span>
+                </div>
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                    <span id="sidebar-offline-pending-badge" class="hidden px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-slate-950 font-mono">0</span>
+                    <svg class="w-4 h-4 sidebar-arrow text-slate-400 mr-0 flex-shrink-0 arrow-left-4" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 10l5 5 5-5H7z" />
+                    </svg>
+                </div>
+            </button>
+            <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-[#6EC1D1]/40 space-y-0.5 mt-1">
+                <a href="{{ route('offline.reconciliation') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('offline.reconciliation'), 'text-slate-400' => !request()->routeIs('offline.reconciliation')])>
+                    Overview
+                </a>
+                <a href="{{ route('offline.purchase-orders') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('offline.purchase-orders'), 'text-slate-400' => !request()->routeIs('offline.purchase-orders')])>
+                    Purchase Orders
+                </a>
+                <a href="{{ route('offline.export') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('offline.export'), 'text-slate-400' => !request()->routeIs('offline.export')])>
+                    Export Data
+                </a>
+                <a href="{{ route('offline.import') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('offline.import'), 'text-slate-400' => !request()->routeIs('offline.import')])>
+                    Import Data
+                </a>
+                <a href="{{ route('offline.pending.imports') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('offline.pending.imports') || request()->routeIs('offline.pending.review'), 'text-slate-400' => !(request()->routeIs('offline.pending.imports') || request()->routeIs('offline.pending.review'))])>
+                    Pending Imports
+                </a>
+                <a href="{{ route('offline.history') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('offline.history') || request()->routeIs('offline.report'), 'text-slate-400' => !(request()->routeIs('offline.history') || request()->routeIs('offline.report'))])>
+                    Sync History
+                </a>
+            </div>
+        </div>
         @endif
 
     </nav>
