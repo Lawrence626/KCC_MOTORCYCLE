@@ -91,8 +91,10 @@ class SupplierAssessmentController extends Controller
         $fastMovingIds = FastMovingProduct::pluck('product_id')->filter()->all();
         $slowMovingIds = SlowMovingProduct::pluck('product_id')->filter()->all();
 
+        $allProducts = Product::with('suppliers')->where('is_archived', false)->get();
+
         $supplierSummaries = $allSupplierNames->map(function ($supplierName) use (
-            $products,
+            $allProducts,
             $ordersBySupplierName,
             $ordersBySupplierId,
             $suppliersByName,
@@ -107,7 +109,20 @@ class SupplierAssessmentController extends Controller
             $slowMovingIds
         ) {
             $supplier = $suppliersByName->get($supplierName);
-            $group = $products->get($supplierName, collect());
+            $group = $allProducts->filter(function ($prod) use ($supplierName, $supplier) {
+                if (!empty($prod->supplier_name)) {
+                    $names = array_map('trim', explode(',', $prod->supplier_name));
+                    foreach ($names as $n) {
+                        if (strcasecmp($n, $supplierName) === 0) {
+                            return true;
+                        }
+                    }
+                }
+                if ($supplier && $prod->suppliers->contains('id', $supplier->id)) {
+                    return true;
+                }
+                return false;
+            })->values();
 
             $supplierOrdersByName = $ordersBySupplierName->get($supplierName, collect());
             $supplierOrdersById = $supplier?->id ? $ordersBySupplierId->get($supplier->id, collect()) : collect();

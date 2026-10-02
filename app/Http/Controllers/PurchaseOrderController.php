@@ -589,11 +589,6 @@ class PurchaseOrderController extends Controller
                 $productSupplierIds = $pivotIds;
             }
 
-            // 4. If product has no supplier assigned anywhere, allow active suppliers
-            if (empty($productSupplierIds)) {
-                $productSupplierIds = $allActiveSuppliers->pluck('id')->map(fn ($id) => (int) $id)->all();
-            }
-
             $productSupplierIds = array_values(array_unique(array_filter($productSupplierIds)));
             $qualifiedSupplierIdsPerProduct[] = $productSupplierIds;
         }
