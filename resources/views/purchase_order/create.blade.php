@@ -505,7 +505,7 @@
                 <button type="button"
                         id="save-po-offline-button"
                         onclick="window.executeOfflineSave()"
-                        class="max-w-xs inline-flex items-center justify-center gap-2 rounded-[10px] border border-amber-300 bg-amber-50 px-5 py-3 text-sm font-bold text-amber-950 shadow-sm hover:bg-amber-100 transition-all duration-200 cursor-pointer">
+                        class="hidden max-w-xs inline-flex items-center justify-center gap-2 rounded-[10px] border border-amber-300 bg-amber-50 px-5 py-3 text-sm font-bold text-amber-950 shadow-sm hover:bg-amber-100 transition-all duration-200 cursor-pointer">
                     <svg class="w-4 h-4 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
                     <span>Save Locally (Offline)</span>
                 </button>
@@ -1819,6 +1819,8 @@
         const isOffline = (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean') ? !navigator.onLine : false;
         const banner = $el('po-create-offline-banner');
         const indicator = $el('offline-order-indicator');
+        const saveOfflineBtn = $el('save-po-offline-button');
+        const submitBtn = $el('submit-po-button');
         const submitBtnText = $el('submit-po-text');
 
         if (isOffline) {
@@ -1827,14 +1829,29 @@
                 indicator.classList.remove('hidden');
                 indicator.classList.add('inline-flex');
             }
-            if (submitBtnText) {
-                submitBtnText.textContent = 'Save Locally (Offline)';
+            // Show only the Save Locally (Offline) button next to Cancel during offline mode
+            if (saveOfflineBtn) {
+                saveOfflineBtn.classList.remove('hidden');
+                saveOfflineBtn.classList.add('inline-flex');
+            }
+            if (submitBtn) {
+                submitBtn.classList.add('hidden');
+                submitBtn.classList.remove('inline-flex');
             }
         } else {
             if (banner) banner.classList.add('hidden');
             if (indicator) {
                 indicator.classList.add('hidden');
                 indicator.classList.remove('inline-flex');
+            }
+            // In online mode: hide the offline button and show the standard submit button
+            if (saveOfflineBtn) {
+                saveOfflineBtn.classList.add('hidden');
+                saveOfflineBtn.classList.remove('inline-flex');
+            }
+            if (submitBtn) {
+                submitBtn.classList.remove('hidden');
+                submitBtn.classList.add('inline-flex');
             }
             if (submitBtnText) {
                 submitBtnText.textContent = 'Submit Purchase Order';
@@ -1855,79 +1872,62 @@
     window.executeOfflineSave = async function() {
         syncVisibleRowsToStore();
 
-        // If no product is checked, auto-select the first visible low-stock product in the table if available
-        if (selectedProductsStore.size === 0) {
-            const firstRow = productTableBody?.querySelector('.product-row');
-            if (firstRow) {
-                const cb = firstRow.querySelector('.product-checkbox');
-                const pid = parseInt(firstRow.dataset.productId, 10);
-                if (cb) cb.checked = true;
-                const qtyInput = firstRow.querySelector('input[name*="[quantity]"]');
-                const priceInput = firstRow.querySelector('input[name*="[unit_price]"]');
-                selectedProductsStore.set(pid, {
-                    product_id: pid,
-                    product_name: firstRow.dataset.productName || firstRow.querySelector('td:nth-child(2)')?.textContent?.trim() || '',
-                    sku: firstRow.dataset.sku || firstRow.querySelector('td:nth-child(4)')?.textContent?.trim() || '',
-                    quantity: qtyInput ? (parseInt(qtyInput.value, 10) || 1) : (parseInt(firstRow.dataset.defaultQuantity, 10) || 1),
-                    unit_price: priceInput ? (parseFloat(priceInput.value) || 0) : (parseFloat(firstRow.dataset.defaultUnitPrice) || 0),
-                    selected: true,
-                });
-                firstRow.classList.add('bg-emerald-50/50');
-                selectedProductIds = Array.from(selectedProductsStore.keys());
-                syncHiddenInputs();
-                updateSelectAllCheckboxState();
-                updateSelectedCountBar();
-            } else {
-                alert('Please select at least one product before saving the order.');
-                return;
-            }
+        // 1. Validate Product Selection: Must have at least 1 product selected
+        if (!selectedProductsStore || selectedProductsStore.size === 0) {
+            showOfflineToast('Please select at least one product before saving the order.', 'warning');
+            alert('Please select at least one product before saving the purchase order.');
+            productTableBody?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
         }
 
-        // If no supplier is selected, pick the first available supplier in the list/dropdown
+        // 2. Validate Supplier Selection: Must have a supplier chosen
         if (!currentSupplierId) {
-            const firstSupBtn = $el('supplierSelectList')?.querySelector('button[data-supplier-id]');
-            if (firstSupBtn) {
-                const sId = parseInt(firstSupBtn.dataset.supplierId, 10);
-                const sName = firstSupBtn.dataset.name || 'Authorized Supplier';
-                selectSupplier(sId, sName);
-            } else {
-                const firstOption = supplierSelect?.querySelector('option[value]:not([value=""])');
-                if (firstOption) {
-                    selectSupplier(parseInt(firstOption.value, 10), firstOption.textContent.trim());
-                } else {
-                    currentSupplierId = 1;
-                }
-            }
+            showOfflineToast('Please select a supplier before saving the order.', 'warning');
+            alert('Please select a supplier before saving the purchase order.');
+            const supElement = $el('supplierSelectButton') || $el('supplier-select');
+            supElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
         }
 
-        const supplierName = $el('supplierSelectDisplay')?.textContent?.trim() || 'Authorized Supplier';
-        const notes = $el('po-notes')?.value || '';
-        const expectedDelivery = $el('expected_delivery_date')?.value || calculateSevenWorkingDays();
-        
+        // 3. Validate Quantities and compute total
         const items = [];
         let totalAmount = 0;
+        let hasInvalidQty = false;
 
         selectedProductsStore.forEach((item, pid) => {
-            const qty = item.quantity || 1;
-            const price = item.unit_price || 0;
-            const subtotal = qty * price;
+            const qty = parseInt(item.quantity, 10);
+            if (isNaN(qty) || qty <= 0) {
+                hasInvalidQty = true;
+            }
+            const price = parseFloat(item.unit_price) || 0;
+            const subtotal = (qty > 0 ? qty : 1) * price;
             totalAmount += subtotal;
 
             items.push({
                 product_id: pid,
-                product_name: item.product_name,
-                sku: item.sku,
-                quantity: qty,
+                product_name: item.product_name || ('Product #' + pid),
+                sku: item.sku || '',
+                quantity: qty > 0 ? qty : 1,
                 unit_price: price,
                 subtotal: subtotal
             });
         });
 
+        if (hasInvalidQty) {
+            showOfflineToast('Please enter a valid quantity (> 0) for all selected products.', 'warning');
+            alert('Please enter a valid quantity (> 0) for all selected products.');
+            return;
+        }
+
+        const supplierName = $el('supplierSelectDisplay')?.textContent?.trim() || 'Authorized Supplier';
+        const notes = $el('po-notes')?.value || '';
+        const expectedDelivery = $el('expected_delivery_date')?.value || calculateSevenWorkingDays();
+
         const poNumber = 'PO-' + new Date().toISOString().replace(/\D/g, '').slice(0, 14) + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
 
         const orderRecord = {
             order_number: poNumber,
-            supplier_id: currentSupplierId || 1,
+            supplier_id: currentSupplierId,
             supplier_name: supplierName,
             items: items,
             total_amount: totalAmount,
@@ -1980,6 +1980,10 @@
             // Reset form selection
             selectedProductsStore.clear();
             selectedProductIds = [];
+            currentSupplierId = null;
+            if (supplierSelect) supplierSelect.value = '';
+            updateSupplierSelectButton('Select Supplier', 0);
+            hideSupplierPanels();
             applyStoreToVisibleRows();
             updateSelectAllCheckboxState();
             onProductSelectionChange();
@@ -2002,6 +2006,23 @@
                 e.preventDefault();
                 e.stopPropagation();
                 await window.executeOfflineSave();
+                return;
+            }
+
+            syncVisibleRowsToStore();
+            if (!selectedProductsStore || selectedProductsStore.size === 0) {
+                e.preventDefault();
+                alert('Please select at least one product before submitting the purchase order.');
+                productTableBody?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            if (!currentSupplierId) {
+                e.preventDefault();
+                alert('Please select a supplier before submitting the purchase order.');
+                const supElement = $el('supplierSelectButton') || $el('supplier-select');
+                supElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
             }
         });
     }
