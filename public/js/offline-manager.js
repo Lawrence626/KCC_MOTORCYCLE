@@ -459,12 +459,13 @@ class OfflineManager {
         const orders = await this.getAllFromStore('pending_orders');
         
         this.queue = {
-            orders: orders.filter(o => !o.synced)
+            orders: Array.isArray(orders) ? orders.filter(o => o.synced !== true && o.status !== 'approved' && o.sync_status !== 'synchronized') : []
         };
 
         this.updateQueueCount();
         await this.updateOfflineReconSidebar().catch(e => console.warn(e));
         this.injectOfflineNotificationIntoBell();
+        return this.queue.orders;
     }
 
     async getAllFromStore(storeName) {

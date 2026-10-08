@@ -854,8 +854,17 @@
                 }
 
                 // Seamlessly inject offline pending order notification at top without conflict
-                if (window.offlineManager && typeof window.offlineManager.injectOfflineNotificationIntoBell === 'function') {
-                    window.offlineManager.injectOfflineNotificationIntoBell(safeUnread);
+                if (window.offlineManager) {
+                    if (typeof window.offlineManager.injectOfflineNotificationIntoBell === 'function') {
+                        window.offlineManager.injectOfflineNotificationIntoBell(safeUnread);
+                    }
+                    if (typeof window.offlineManager.loadPendingOperations === 'function' && (!window.offlineManager.queue || !window.offlineManager.queue.orders || window.offlineManager.queue.orders.length === 0)) {
+                        window.offlineManager.loadPendingOperations().then(function(orders) {
+                            if (orders && orders.length > 0 && typeof window.offlineManager.injectOfflineNotificationIntoBell === 'function') {
+                                window.offlineManager.injectOfflineNotificationIntoBell(safeUnread);
+                            }
+                        }).catch(function() {});
+                    }
                 }
             };
 
@@ -972,7 +981,7 @@
         });
     </script>
 
-    <script src="{{ asset('js/offline-manager.js') }}"></script>
+    <script src="{{ asset('js/offline-manager.js') }}?v={{ file_exists(public_path('js/offline-manager.js')) ? filemtime(public_path('js/offline-manager.js')) : time() }}"></script>
     @stack('scripts')
 </body>
 </html>
