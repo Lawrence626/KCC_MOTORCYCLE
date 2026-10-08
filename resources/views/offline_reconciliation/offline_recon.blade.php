@@ -450,7 +450,6 @@
         </div>
     </div>
 
-    <script src="{{ asset('js/offline-manager.js') }}"></script>
     <script>
         // Load synchronization stats
         document.addEventListener('DOMContentLoaded', function() {
