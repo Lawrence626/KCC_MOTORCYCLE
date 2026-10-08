@@ -304,7 +304,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Offline Data Reconciliation Routes - Admin only
     Route::prefix('offline-reconciliation')->group(function () {
-        Route::get('purchase-orders', [App\Http\Controllers\OfflineReconciliationController::class, 'index'])->name('offline.purchase-orders');
+        Route::redirect('purchase-orders', '/offline-reconciliation')->name('offline.purchase-orders');
         Route::get('export', [App\Http\Controllers\ExportController::class, 'index'])->name('offline.export');
         Route::match(['get', 'post'], 'export/csv', [App\Http\Controllers\ExportController::class, 'exportCsv'])->name('offline.export.csv');
         Route::match(['get', 'post'], 'export/excel', [App\Http\Controllers\ExportController::class, 'exportExcel'])->name('offline.export.excel');
@@ -319,7 +319,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('report/{id}', [App\Http\Controllers\OfflineReconciliationController::class, 'report'])->name('offline.report');
         Route::delete('history/{id}', [App\Http\Controllers\OfflineReconciliationController::class, 'destroyHistory'])->name('offline.history.destroy');
         Route::get('api/stats', [App\Http\Controllers\OfflineReconciliationController::class, 'stats'])->name('offline.api.stats');
-        Route::get('local-orders', [App\Http\Controllers\OfflineReconciliationController::class, 'localOrders'])->name('offline.local.orders');
         Route::post('sync-order', [App\Http\Controllers\OfflineReconciliationController::class, 'syncOrder'])->name('offline.sync.order');
         Route::post('check-synced-orders', [App\Http\Controllers\OfflineReconciliationController::class, 'checkSyncedOrders'])->name('offline.check.synced');
     });
