@@ -503,7 +503,45 @@
         @push('scripts')
             <script>
                 const rawSummaries = @json($supplierSummaries);
-                const supplierSummaries = Array.isArray(rawSummaries) ? rawSummaries : Object.values(rawSummaries);
+                let supplierSummaries = Array.isArray(rawSummaries) ? rawSummaries : Object.values(rawSummaries);
+
+                try {
+                    if (supplierSummaries && supplierSummaries.length > 0) {
+                        localStorage.setItem('cachedSupplierSummaries', JSON.stringify(supplierSummaries));
+                        
+                        // Also populate kcc_cached_supplier_performance
+                        const perfCache = {};
+                        supplierSummaries.forEach(s => {
+                            perfCache[s.id || s.name] = {
+                                id: s.id,
+                                name: s.name,
+                                contact_person: s.contact_person,
+                                phone: s.phone,
+                                email: s.email,
+                                address: s.address,
+                                performance_score: s.performance_score ?? 85,
+                                on_time_rate: s.on_time_rate ?? 100,
+                                completion_rate: s.completion_rate ?? 100,
+                                quality_score: s.quality_score ?? 100,
+                                price_stability: s.price_stability ?? 100,
+                                delivered_orders: s.delivered_orders_count ?? 0,
+                                total_orders: s.orders_count ?? 0,
+                                defect_rate: s.defect_rate ?? 0
+                            };
+                            if (s.id) {
+                                perfCache[s.id] = perfCache[s.id || s.name];
+                            }
+                        });
+                        localStorage.setItem('kcc_cached_supplier_performance', JSON.stringify(perfCache));
+                    } else {
+                        const localCached = localStorage.getItem('cachedSupplierSummaries');
+                        if (localCached) {
+                            supplierSummaries = JSON.parse(localCached);
+                        }
+                    }
+                } catch (e) {
+                    console.warn('localStorage cache error in supplier assessment:', e);
+                }
 
                 // Modal elements
                 const supplierModal = document.getElementById('supplierModal');
