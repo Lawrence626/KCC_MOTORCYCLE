@@ -12,36 +12,59 @@ class OfflineManager {
     }
 
     async init() {
-        // Initialize IndexedDB
-        await this.initIndexedDB();
-        
-        // Setup event listeners for online/offline status
-        window.addEventListener('online', () => this.handleOnline());
-        window.addEventListener('offline', () => this.handleOffline());
-        
-        // Clean up any orders that are already approved in the database
-        if (this.isOnline) {
-            await this.cleanupSyncedOrders().catch(e => console.warn(e));
-        }
-
-        // Load pending operations from IndexedDB
-        await this.loadPendingOperations();
-        
-        // Update UI status, sidebar, and notification bell
-        this.updateStatusIndicator();
-        await this.updateOfflineReconSidebar();
-        await this.updatePendingOfflineSyncAlert();
-
-        // Remind admin upon re-login / initial page load of session
-        const pendingCount = Array.isArray(this.queue?.orders) ? this.queue.orders.length : 0;
-        if (pendingCount > 0) {
-            const hasSeen = sessionStorage.getItem('kcc_offline_po_login_reminder_shown');
-            if (!hasSeen) {
-                sessionStorage.setItem('kcc_offline_po_login_reminder_shown', 'true');
-                setTimeout(() => {
-                    this.showNotification(`🔔 Paalala: May ${pendingCount} offline purchase order(s) na naka-save locally. I-export at i-import ito sa Offline Reconciliation para ma-proceed sa supplier.`, 'warning');
-                }, 1200);
+        try {
+            // Initialize IndexedDB
+            await this.initIndexedDB();
+            
+            // Setup event listeners for online/offline status
+            window.addEventListener('online', () => this.handleOnline());
+            window.addEventListener('offline', () => this.handleOffline());
+            
+            // Clean up any orders that are already synced
+            if (this.isOnline) {
+                await this.cleanupSyncedOrders();
             }
+
+            // Load pending operations from IndexedDB
+            await this.loadPendingOperations();
+            
+            // Update UI status, sidebar, and notification bell
+            this.updateStatusIndicator();
+            await this.updateOfflineReconSidebar();
+            await this.updatePendingOfflineSyncAlert();
+
+            // Remind admin upon re-login / page load if pending local orders exist
+            const pendingCount = Array.isArray(this.queue?.orders) ? this.queue.orders.length : 0;
+            if (pendingCount > 0) {
+                const isDashboard = window.location.pathname.includes('/dashboard') || window.location.pathname === '/';
+                const lastShown = parseInt(sessionStorage.getItem('kcc_offline_po_reminder_last_ts') || '0', 10);
+                const now = Date.now();
+                if (isDashboard || (now - lastShown > 120000)) {
+                    sessionStorage.setItem('kcc_offline_po_reminder_last_ts', String(now));
+                    setTimeout(() => {
+                        this.showNotification(`🔔 Paalala: May ${pendingCount} offline purchase order(s) na naka-save locally. I-export at i-import ito sa Offline Reconciliation para ma-proceed sa supplier.`, 'warning');
+                    }, 800);
+                }
+            }
+        } catch (err) {
+            console.error('OfflineManager init error:', err);
+        }
+    }
+
+    async cleanupSyncedOrders() {
+        try {
+            if (!this.db || !this.db.objectStoreNames.contains('pending_orders')) return;
+            const orders = await this.getAllFromStore('pending_orders');
+            const synced = orders.filter(o => o.synced === true);
+            if (synced.length > 0) {
+                const tx = this.db.transaction(['pending_orders'], 'readwrite');
+                const store = tx.objectStore('pending_orders');
+                for (const item of synced) {
+                    if (item.id !== undefined) store.delete(item.id);
+                }
+            }
+        } catch (e) {
+            console.warn('cleanupSyncedOrders warning:', e);
         }
     }
 
