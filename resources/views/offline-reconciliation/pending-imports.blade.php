@@ -211,36 +211,63 @@
                                         {{ ucfirst($pending->status) }}
                                     </span>
                                 </td>
-                                <td class="px-3 py-2">
+                                <td class="px-3 py-2 whitespace-nowrap">
                                     @if($pending->status == 'pending')
-                                    <div class="flex gap-1">
-                                        <button onclick="reviewImport({{ $pending->id }})" class="text-cyan-600 hover:text-cyan-700" title="Review">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="flex items-center gap-1.5 flex-nowrap">
+                                        <button type="button" onclick="reviewImport({{ $pending->id }})" class="inline-flex items-center gap-1.5 rounded-[8px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 text-xs font-semibold transition shadow-sm border border-slate-200 cursor-pointer" title="View Details">
+                                            <svg class="w-3.5 h-3.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                             </svg>
+                                            <span>View Details</span>
                                         </button>
-                                        <form action="{{ route('offline.pending.approve', $pending->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to approve this import?');">
+                                        <form action="{{ route('offline.pending.approve', $pending->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to approve this import?');" class="inline m-0">
                                             @csrf
-                                            <button type="submit" class="text-green-600 hover:text-green-700" title="Approve">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                            <button type="submit" class="inline-flex items-center gap-1 rounded-[8px] bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 text-xs font-semibold transition shadow-sm cursor-pointer" title="Approve">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
                                                 </svg>
+                                                <span>Approve</span>
                                             </button>
                                         </form>
-                                        <form action="{{ route('offline.pending.reject', $pending->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to reject this import?');">
+                                        <form action="{{ route('offline.pending.reject', $pending->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to reject this import?');" class="inline m-0">
                                             @csrf
-                                            <button type="submit" class="text-red-600 hover:text-red-700" title="Reject">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                            <button type="submit" class="inline-flex items-center gap-1 rounded-[8px] bg-rose-600 hover:bg-rose-700 text-white px-2.5 py-1.5 text-xs font-semibold transition shadow-sm cursor-pointer" title="Reject">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
                                                 </svg>
+                                                <span>Reject</span>
                                             </button>
                                         </form>
                                     </div>
                                     @elseif($pending->status == 'approved')
-                                    <span class="text-green-600 text-xs">Approved by {{ $pending->reviewedBy?->name ?? '-' }}</span>
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" onclick="reviewImport({{ $pending->id }})" class="inline-flex items-center gap-1.5 rounded-[8px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 text-xs font-semibold transition shadow-sm border border-slate-200 cursor-pointer" title="View Details">
+                                            <svg class="w-3.5 h-3.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            </svg>
+                                            <span>View Details</span>
+                                        </button>
+                                        <span class="inline-flex items-center gap-1 text-emerald-600 text-xs font-semibold">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                            Approved by {{ $pending->reviewedBy?->name ?? 'Admin' }}
+                                        </span>
+                                    </div>
                                     @else
-                                    <span class="text-red-600 text-xs">Rejected</span>
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" onclick="reviewImport({{ $pending->id }})" class="inline-flex items-center gap-1.5 rounded-[8px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 text-xs font-semibold transition shadow-sm border border-slate-200 cursor-pointer" title="View Details">
+                                            <svg class="w-3.5 h-3.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            </svg>
+                                            <span>View Details</span>
+                                        </button>
+                                        <span class="inline-flex items-center gap-1 text-rose-600 text-xs font-semibold">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                            Rejected by {{ $pending->reviewedBy?->name ?? 'Admin' }}
+                                        </span>
+                                    </div>
                                     @endif
                                 </td>
                             </tr>

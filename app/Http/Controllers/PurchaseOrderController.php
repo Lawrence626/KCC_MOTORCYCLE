@@ -30,28 +30,17 @@ class PurchaseOrderController extends Controller
         // Synchronize imported purchase order statuses with Offline Reconciliation PendingImport status
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('pending_imports')) {
-                // Ensure approved imports are marked as 'approved'
-                $approvedImports = \App\Models\PendingImport::where('status', 'approved')->get();
-                foreach ($approvedImports as $imp) {
-                    $data = $imp->data;
-                    if (isset($data['valid']) && is_array($data['valid'])) {
-                        foreach ($data['valid'] as $rec) {
-                            if (!empty($rec['order_number'])) {
-                                PurchaseOrder::where('order_number', $rec['order_number'])
-                                    ->whereIn('status', ['pending', 'pending approval'])
-                                    ->update(['status' => 'approved', 'approved_at' => ($rec['approved_at'] ?? now()), 'sync_status' => 'synchronized']);
-                            }
-                        }
-                    }
-                }
-
-                // Ensure currently pending imports are staged with 'pending approval' status
+                // 1. Collect all order numbers belonging to currently active pending imports
+                $activePendingOrderNumbers = [];
                 $pendingImports = \App\Models\PendingImport::where('status', 'pending')->get();
                 foreach ($pendingImports as $pImp) {
                     $pData = $pImp->data;
                     if (isset($pData['valid']) && is_array($pData['valid'])) {
                         foreach ($pData['valid'] as $record) {
                             if (($record['type'] ?? 'purchase_order') === 'purchase_order' && !empty($record['order_number'])) {
+                                $activePendingOrderNumbers[] = $record['order_number'];
+
+                                // Ensure this pending import order exists in purchase_orders table
                                 $existing = PurchaseOrder::where('order_number', $record['order_number'])->first();
                                 if (!$existing) {
                                     $sId = $record['supplier_id'] ?? null;
@@ -93,11 +82,24 @@ class PurchaseOrderController extends Controller
                                             ]);
                                         }
                                     }
+                                } else {
+                                    $existing->update(['status' => 'pending approval', 'sync_status' => 'imported']);
                                 }
                             }
                         }
                     }
                 }
+
+                // 2. Any other order that is NOT in the active pending imports list should be marked as 'approved'
+                $queryToApprove = PurchaseOrder::whereIn('status', ['pending', 'pending approval']);
+                if (!empty($activePendingOrderNumbers)) {
+                    $queryToApprove->whereNotIn('order_number', $activePendingOrderNumbers);
+                }
+                $queryToApprove->update([
+                    'status' => 'approved',
+                    'approved_at' => now(),
+                    'sync_status' => 'synchronized',
+                ]);
             }
         } catch (\Exception $syncErr) {
             \Log::warning('Order management import sync check skipped:', ['error' => $syncErr->getMessage()]);
@@ -419,11 +421,7 @@ class PurchaseOrderController extends Controller
         return PurchaseOrder::with(['items.product'])
             ->whereIn('status', $statuses)
             ->when($status && in_array($status, $statuses, true), function ($query) use ($status) {
-                if ($status === 'pending approval' || $status === 'pending') {
-                    $query->whereIn('status', ['pending approval', 'pending']);
-                } else {
-                    $query->where('status', $status);
-                }
+                $query->where('status', $status);
             })
             ->when($supplier, fn ($query, $supplier) => $query->where('supplier_name', $supplier))
             ->when($search, fn ($query, $search) => $query->where(function ($query) use ($search) {
