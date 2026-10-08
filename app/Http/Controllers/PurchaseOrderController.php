@@ -27,6 +27,82 @@ class PurchaseOrderController extends Controller
 {
     public function management(Request $request)
     {
+        // Synchronize imported purchase order statuses with Offline Reconciliation PendingImport status
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('pending_imports')) {
+                // Ensure approved imports are marked as 'approved'
+                $approvedImports = \App\Models\PendingImport::where('status', 'approved')->get();
+                foreach ($approvedImports as $imp) {
+                    $data = $imp->data;
+                    if (isset($data['valid']) && is_array($data['valid'])) {
+                        foreach ($data['valid'] as $rec) {
+                            if (!empty($rec['order_number'])) {
+                                PurchaseOrder::where('order_number', $rec['order_number'])
+                                    ->whereIn('status', ['pending', 'pending approval'])
+                                    ->update(['status' => 'approved', 'approved_at' => ($rec['approved_at'] ?? now()), 'sync_status' => 'synchronized']);
+                            }
+                        }
+                    }
+                }
+
+                // Ensure currently pending imports are staged with 'pending approval' status
+                $pendingImports = \App\Models\PendingImport::where('status', 'pending')->get();
+                foreach ($pendingImports as $pImp) {
+                    $pData = $pImp->data;
+                    if (isset($pData['valid']) && is_array($pData['valid'])) {
+                        foreach ($pData['valid'] as $record) {
+                            if (($record['type'] ?? 'purchase_order') === 'purchase_order' && !empty($record['order_number'])) {
+                                $existing = PurchaseOrder::where('order_number', $record['order_number'])->first();
+                                if (!$existing) {
+                                    $sId = $record['supplier_id'] ?? null;
+                                    $sName = $record['supplier_name'] ?? null;
+                                    if (!$sId && $sName) {
+                                        $sId = Supplier::where('name', $sName)->value('id');
+                                    }
+                                    $newPo = PurchaseOrder::create([
+                                        'order_number' => $record['order_number'],
+                                        'supplier_id' => $sId,
+                                        'supplier_name' => $sName,
+                                        'user_id' => $pImp->uploaded_by ?? 1,
+                                        'created_by_role' => 'admin',
+                                        'status' => 'pending approval',
+                                        'sync_status' => 'imported',
+                                        'notes' => $record['notes'] ?? null,
+                                        'total_amount' => $record['total_amount'] ?? 0,
+                                        'created_at' => $record['created_at'] ?? now(),
+                                        'updated_at' => now(),
+                                    ]);
+                                    if (!empty($record['items']) && is_array($record['items'])) {
+                                        foreach ($record['items'] as $it) {
+                                            $prId = $it['product_id'] ?? null;
+                                            $prName = $it['product_name'] ?? 'Unknown Item';
+                                            $sku = $it['sku'] ?? null;
+                                            if (!$prId && $sku) {
+                                                $prod = Product::where('sku', $sku)->first();
+                                                $prId = $prod?->id;
+                                                $prName = $prod?->product_name ?: ($prod?->name ?: $prName);
+                                            }
+                                            PurchaseOrderItem::create([
+                                                'purchase_order_id' => $newPo->id,
+                                                'product_id' => $prId,
+                                                'product_name' => $prName,
+                                                'sku' => $sku,
+                                                'quantity' => (int) ($it['quantity'] ?? 1),
+                                                'unit_price' => (float) ($it['unit_price'] ?? 0),
+                                                'total_price' => (float) ($it['subtotal'] ?? (($it['quantity'] ?? 1) * ($it['unit_price'] ?? 0))),
+                                            ]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (\Exception $syncErr) {
+            \Log::warning('Order management import sync check skipped:', ['error' => $syncErr->getMessage()]);
+        }
+
         $receivedRange = $request->query('received_range', 'weekly');
 
         $lowStockProducts = Product::where('is_active', true)

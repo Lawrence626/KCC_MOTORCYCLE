@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Services\OfflineReconciliationService;
 use App\Models\SynchronizationHistory;
 use App\Models\PendingImport;
+use App\Models\PurchaseOrder;
+use App\Models\PurchaseOrderItem;
+use App\Models\Product;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
@@ -85,6 +89,61 @@ class ImportController extends Controller
             ]);
 
             \Log::info('Pending import created', ['id' => $pendingImport->id]);
+
+            // Stage valid purchase orders as 'pending approval' so they appear in Order Management's Pending Approval filter
+            foreach ($validationResults['valid'] as $record) {
+                if (($record['type'] ?? 'purchase_order') === 'purchase_order' && !empty($record['order_number'])) {
+                    $supplierId = $record['supplier_id'] ?? null;
+                    $supplierName = $record['supplier_name'] ?? null;
+                    if (!$supplierId && $supplierName) {
+                        $supplierId = Supplier::where('name', $supplierName)->value('id');
+                    }
+
+                    $existingPO = PurchaseOrder::where('order_number', $record['order_number'])->first();
+                    if (!$existingPO) {
+                        $po = PurchaseOrder::create([
+                            'order_number' => $record['order_number'],
+                            'supplier_id' => $supplierId,
+                            'supplier_name' => $supplierName,
+                            'user_id' => Auth::id() ?? 1,
+                            'created_by_role' => 'admin',
+                            'status' => 'pending approval',
+                            'sync_status' => 'imported',
+                            'notes' => $record['notes'] ?? null,
+                            'total_amount' => $record['total_amount'] ?? 0,
+                            'created_at' => $record['created_at'] ?? now(),
+                            'updated_at' => now(),
+                        ]);
+
+                        if (!empty($record['items']) && is_array($record['items'])) {
+                            foreach ($record['items'] as $item) {
+                                $productId = $item['product_id'] ?? null;
+                                $productName = $item['product_name'] ?? 'Unknown Item';
+                                $sku = $item['sku'] ?? null;
+                                if (!$productId && $sku) {
+                                    $p = Product::where('sku', $sku)->first();
+                                    $productId = $p?->id;
+                                    $productName = $p?->product_name ?: ($p?->name ?: $productName);
+                                }
+                                PurchaseOrderItem::create([
+                                    'purchase_order_id' => $po->id,
+                                    'product_id' => $productId,
+                                    'product_name' => $productName,
+                                    'sku' => $sku,
+                                    'quantity' => (int) ($item['quantity'] ?? 1),
+                                    'unit_price' => (float) ($item['unit_price'] ?? 0),
+                                    'total_price' => (float) ($item['subtotal'] ?? (($item['quantity'] ?? 1) * ($item['unit_price'] ?? 0))),
+                                ]);
+                            }
+                        }
+                    } else {
+                        // If it existed as pending, make sure its status matches
+                        if (in_array($existingPO->status, ['pending', 'pending approval'])) {
+                            $existingPO->update(['status' => 'pending approval', 'sync_status' => 'imported']);
+                        }
+                    }
+                }
+            }
 
             $validCount = count($validationResults['valid']);
             $dupCount = count($validationResults['duplicates']);
@@ -402,7 +461,18 @@ class ImportController extends Controller
                 'reviewed_at' => now(),
             ]);
 
+            // Update staged purchase orders to 'approved' status with approval timestamp
             $validOrders = $pendingImport->data['valid'] ?? [];
+            foreach ($validOrders as $record) {
+                if (!empty($record['order_number'])) {
+                    PurchaseOrder::where('order_number', $record['order_number'])->update([
+                        'status' => 'approved',
+                        'approved_at' => now(),
+                        'sync_status' => 'synchronized',
+                    ]);
+                }
+            }
+
             $validCount = count($validOrders);
 
             return back()->with('success', "Import Approved! Successfully synchronized {$validCount} purchase order" . ($validCount === 1 ? '' : 's') . " from file \"{$pendingImport->file_name}\" into the database.");
@@ -443,6 +513,17 @@ class ImportController extends Controller
             'reviewed_by' => Auth::id(),
             'reviewed_at' => now(),
         ]);
+
+        // Update staged purchase orders to 'rejected' status
+        $validOrders = $pendingImport->data['valid'] ?? [];
+        foreach ($validOrders as $record) {
+            if (!empty($record['order_number'])) {
+                PurchaseOrder::where('order_number', $record['order_number'])->update([
+                    'status' => 'rejected',
+                    'sync_status' => 'rejected',
+                ]);
+            }
+        }
 
         return back()->with('success', "Import for \"{$pendingImport->file_name}\" was rejected successfully.");
     }
