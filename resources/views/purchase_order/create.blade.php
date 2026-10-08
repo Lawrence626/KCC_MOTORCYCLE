@@ -274,14 +274,14 @@
                 <div id="supplier-info-panel" class="hidden rounded-2xl border border-slate-200 bg-slate-50/80 p-5 space-y-4">
                     <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-200">
                         <div class="flex items-center gap-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-slate-700"></span>
                             <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Selected Supplier Profile & Performance</span>
                         </div>
                         <button type="button"
                                 id="btn-view-selected-supplier-perf"
-                                onclick="if(currentSupplierId) window._poViewSupplierPerformance(currentSupplierId)"
-                                class="inline-flex items-center gap-1.5 rounded-xl border border-cyan-300 bg-cyan-50 px-3.5 py-1.5 text-xs font-bold text-cyan-800 hover:bg-cyan-100 transition shadow-2xs cursor-pointer">
-                            <svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                                onclick="window._poTriggerSelectedSupplierAssessment()"
+                                class="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-800 hover:bg-slate-100 hover:text-slate-900 transition shadow-2xs cursor-pointer">
+                            <svg class="w-4 h-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                             <span>View Full Performance Assessment</span>
                         </button>
                     </div>
@@ -313,10 +313,8 @@
                             <svg class="w-4 h-4 text-[#6EC1D1]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 18h12l3-18H3z"/></svg>
                             <span>Qualified Suppliers Comparison Matrix</span>
                         </h3>
-                        <span class="text-xs text-slate-400">Click Select to switch or View to inspect assessment</span>
+                        <span class="text-xs text-slate-400">Click Select to choose supplier</span>
                     </div>
-
-                    <div id="recommended-supplier-badge" class="hidden rounded-[10px] bg-emerald-50 border border-emerald-200 px-4 py-2.5 text-sm text-emerald-800"></div>
 
                     <div class="overflow-hidden rounded-2xl border border-slate-200">
                         <table class="min-w-full text-left text-sm">
@@ -326,12 +324,18 @@
                                     <th class="px-4 py-3">Total Cost (₱)</th>
                                     <th class="px-4 py-3">Avg Change</th>
                                     <th class="px-4 py-3">Last Purchase</th>
-                                    <th class="px-4 py-3 text-right">Actions</th>
+                                    <th class="px-4 py-3 text-right">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="comparison-table-body" class="divide-y divide-slate-200 text-slate-700">
                             </tbody>
                         </table>
+                    </div>
+
+                    {{-- Comparison Pagination Bar --}}
+                    <div id="comparison-pagination-bar" class="hidden flex items-center justify-between pt-2 px-1 text-xs text-slate-500">
+                        <span id="comparison-pagination-info"></span>
+                        <div class="flex items-center gap-1" id="comparison-pagination-controls"></div>
                     </div>
                 </div>
             </div>
@@ -339,15 +343,23 @@
 
         {{-- STEP 3 - PRICE ANALYSIS --}}
         <div id="price-analysis-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">3</span>
-                <div>
-                    <h2 class="text-sm font-semibold text-white">Supplier Price Analysis</h2>
-                    <p class="text-xs text-slate-300">Historical costs, trends, and purchasing recommendations per product.</p>
+            <div class="border-b border-slate-800 px-6 py-4 flex items-center justify-between bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
+                <div class="flex items-center gap-3">
+                    <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">3</span>
+                    <div>
+                        <h2 class="text-sm font-semibold text-white">Supplier Price Analysis</h2>
+                        <p class="text-xs text-slate-300">Historical costs, trends, and purchasing recommendations per product.</p>
+                    </div>
                 </div>
+                <span id="price-analysis-badge-count" class="hidden text-xs text-slate-300 font-medium"></span>
             </div>
-            <div id="price-analysis-content" class="p-6 space-y-8">
+            <div id="price-analysis-content" class="p-6 space-y-6">
                 {{-- Injected by JavaScript --}}
+            </div>
+            {{-- Price Analysis Pagination Bar --}}
+            <div id="price-analysis-pagination-bar" class="hidden border-t border-slate-200 bg-slate-50 px-6 py-3 flex items-center justify-between text-xs text-slate-600">
+                <span id="price-analysis-pagination-info"></span>
+                <div class="flex items-center gap-1" id="price-analysis-pagination-controls"></div>
             </div>
         </div>
 
@@ -1256,7 +1268,7 @@
         }
     }
 
-    // Render Step 4 - Supplier Information
+    // Render Step 2 - Selected Supplier Information Card
     function renderSupplierInfo(s) {
         $el('si-name').textContent          = s.name          || '—';
         $el('si-contact').textContent       = s.contact_person || '—';
@@ -1264,8 +1276,7 @@
 
         const relEl = $el('si-reliability');
         if (s.performance_score !== undefined && s.performance_score !== null) {
-            const scoreClass = s.performance_score >= 80 ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : (s.performance_score >= 60 ? 'text-amber-700 bg-amber-50 border-amber-200' : 'text-rose-700 bg-rose-50 border-rose-200');
-            relEl.innerHTML = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${scoreClass}">${s.performance_score}/100 Rating</span>`;
+            relEl.innerHTML = `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border border-slate-300 bg-slate-100 text-slate-800">${s.performance_score}/100 Rating</span>`;
         } else {
             relEl.textContent = '—';
         }
@@ -1273,18 +1284,63 @@
         $el('supplier-info-panel').classList.remove('hidden');
     }
 
-    // Render Step 5 - Price Analysis (Real-time dynamic calculation)
+    // Trigger full supplier performance assessment for currently selected supplier
+    window._poTriggerSelectedSupplierAssessment = function() {
+        if (!currentSupplierId) {
+            showOfflineToast('Please select a supplier first to view performance assessment.', 'warning');
+            alert('Please select a supplier from the dropdown or comparison matrix first.');
+            const supBtn = $el('supplierSelectButton') || $el('supplier-dropdown-wrapper');
+            supBtn?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+        window._poViewSupplierPerformance(currentSupplierId);
+    };
+
+    // State for Price Analysis Pagination
+    let priceAnalysisHistories = [];
+    let priceAnalysisCurrentPage = 1;
+    const priceAnalysisPageSize = 3;
+
+    // Render Step 3 - Price Analysis (Real-time dynamic calculation)
     function renderPriceAnalysis(histories) {
+        const list = (histories && histories.length > 0) ? histories : loadedPriceHistories;
+        priceAnalysisHistories = Array.isArray(list) ? list : [];
+        priceAnalysisCurrentPage = 1;
+        renderPriceAnalysisPage();
+    }
+
+    window.changePriceAnalysisPage = function(page) {
+        priceAnalysisCurrentPage = page;
+        renderPriceAnalysisPage();
+        const panel = $el('price-analysis-panel');
+        if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    function renderPriceAnalysisPage() {
         const container = $el('price-analysis-content');
         container.innerHTML = '';
 
-        const list = histories && histories.length > 0 ? histories : loadedPriceHistories;
-        if (!list || list.length === 0) {
+        if (!priceAnalysisHistories || priceAnalysisHistories.length === 0) {
             $el('price-analysis-panel').classList.add('hidden');
             return;
         }
 
-        list.forEach(ph => {
+        const total = priceAnalysisHistories.length;
+        const totalPages = Math.ceil(total / priceAnalysisPageSize) || 1;
+        if (priceAnalysisCurrentPage > totalPages) priceAnalysisCurrentPage = totalPages;
+        if (priceAnalysisCurrentPage < 1) priceAnalysisCurrentPage = 1;
+
+        const badgeCount = $el('price-analysis-badge-count');
+        if (badgeCount) {
+            badgeCount.textContent = `${total} Product${total > 1 ? 's' : ''} Analyzed`;
+            badgeCount.classList.remove('hidden');
+        }
+
+        const startIndex = (priceAnalysisCurrentPage - 1) * priceAnalysisPageSize;
+        const endIndex = Math.min(startIndex + priceAnalysisPageSize, total);
+        const pageItems = priceAnalysisHistories.slice(startIndex, endIndex);
+
+        pageItems.forEach(ph => {
             const stored = selectedProductsStore.get(ph.product_id);
             const userPrice = stored && stored.unit_price > 0 ? stored.unit_price : null;
             const baselinePrice = ph.previous_cost != null ? ph.previous_cost : (ph.catalog_price || ph.current_cost);
@@ -1328,7 +1384,7 @@
 
             const changeColor = changePercentage > 0
                 ? 'text-rose-600 font-bold'
-                : changePercentage < 0 ? 'text-emerald-600 font-bold' : 'text-slate-600 font-bold';
+                : changePercentage < 0 ? 'text-slate-800 font-bold' : 'text-slate-600 font-bold';
 
             summaryGrid.innerHTML = `
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
@@ -1350,12 +1406,10 @@
             `;
             section.appendChild(summaryGrid);
 
-            // Recommendation Alert Box
+            // Recommendation Alert Box (Clean Neutral Theme)
             const recStyle = trend === 'increasing'
-                ? 'border-amber-200 bg-amber-50 text-amber-800'
-                : trend === 'decreasing'
-                    ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-                    : 'border-slate-200 bg-slate-50 text-slate-700';
+                ? 'border-amber-200 bg-amber-50 text-amber-900'
+                : 'border-slate-200 bg-slate-50 text-slate-800';
             const recBox = document.createElement('div');
             recBox.className   = `rounded-[10px] border px-4 py-3 text-sm ${recStyle}`;
             recBox.textContent = recommendation;
@@ -1364,7 +1418,7 @@
             // History table
             if (ph.histories && ph.histories.length > 0) {
                 const tableWrap = document.createElement('div');
-                tableWrap.className = 'overflow-hidden rounded-3xl border border-slate-200';
+                tableWrap.className = 'overflow-hidden rounded-2xl border border-slate-200';
                 tableWrap.innerHTML = `
                     <table class="min-w-full text-left text-sm">
                         <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider border-b border-slate-200" style="background-color: #0f172a;">
@@ -1396,6 +1450,38 @@
             container.appendChild(section);
         });
 
+        // Price Analysis Pagination Controls
+        const pagBar = $el('price-analysis-pagination-bar');
+        const pagInfo = $el('price-analysis-pagination-info');
+        const pagControls = $el('price-analysis-pagination-controls');
+
+        if (pagBar && pagInfo && pagControls) {
+            if (total <= priceAnalysisPageSize) {
+                pagBar.classList.add('hidden');
+            } else {
+                pagBar.classList.remove('hidden');
+                pagInfo.textContent = `Showing ${startIndex + 1} to ${endIndex} of ${total} products`;
+
+                let controlsHtml = '';
+                // Prev button
+                controlsHtml += `<button type="button" onclick="window.changePriceAnalysisPage(${priceAnalysisCurrentPage - 1})" ${priceAnalysisCurrentPage === 1 ? 'disabled class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-300 cursor-not-allowed text-xs font-medium"' : 'class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 text-xs font-semibold cursor-pointer shadow-2xs"'}>‹ Prev</button>`;
+
+                // Page numbers
+                for (let i = 1; i <= totalPages; i++) {
+                    if (i === priceAnalysisCurrentPage) {
+                        controlsHtml += `<span class="px-3 py-1.5 rounded-lg bg-[#0f172a] text-white text-xs font-bold shadow-2xs">${i}</span>`;
+                    } else {
+                        controlsHtml += `<button type="button" onclick="window.changePriceAnalysisPage(${i})" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 text-xs font-semibold cursor-pointer shadow-2xs">${i}</button>`;
+                    }
+                }
+
+                // Next button
+                controlsHtml += `<button type="button" onclick="window.changePriceAnalysisPage(${priceAnalysisCurrentPage + 1})" ${priceAnalysisCurrentPage === totalPages ? 'disabled class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-300 cursor-not-allowed text-xs font-medium"' : 'class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 text-xs font-semibold cursor-pointer shadow-2xs"'}>Next ›</button>`;
+
+                pagControls.innerHTML = controlsHtml;
+            }
+        }
+
         $el('price-analysis-panel').classList.remove('hidden');
     }
 
@@ -1407,7 +1493,7 @@
         }, 300);
     }
 
-    // Load comparison table
+    // Load comparison table data
     async function loadComparison() {
         if (selectedProductIds.length === 0) {
             $el('comparison-panel').classList.add('hidden');
@@ -1439,75 +1525,109 @@
         }
     }
 
+    // State for Comparison Pagination
+    let comparisonRows = [];
+    let comparisonCurrentPage = 1;
+    const comparisonPageSize = 5;
+
     // Render comparison table
     function renderComparison(rows, recommended) {
+        comparisonRows = Array.isArray(rows) ? rows : [];
+        comparisonCurrentPage = 1;
+        renderComparisonPage();
+        $el('comparison-panel').classList.remove('hidden');
+    }
+
+    window.changeComparisonPage = function(page) {
+        comparisonCurrentPage = page;
+        renderComparisonPage();
+    };
+
+    function renderComparisonPage() {
         const tbody = $el('comparison-table-body');
         tbody.innerHTML = '';
 
-        const badge = $el('recommended-supplier-badge');
-        if (recommended) {
-            badge.innerHTML = `
-                <div class="flex items-center gap-2 text-emerald-900 font-bold">
-                    <svg class="w-5 h-5 text-amber-500 fill-amber-400 shrink-0" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                    <span>Recommended Supplier: ${escHtml(recommended.name)}</span>
-                    <span class="font-normal text-emerald-800 text-xs">— ${recommended.reasons.map(r => escHtml(r)).join(', ')}</span>
-                </div>
-            `;
-            badge.classList.remove('hidden');
-        } else {
-            badge.classList.add('hidden');
+        if (!comparisonRows || comparisonRows.length === 0) {
+            $el('comparison-panel').classList.add('hidden');
+            return;
         }
 
-        rows.forEach(r => {
-            const isRec = recommended && r.supplier_id === recommended.id;
+        const total = comparisonRows.length;
+        const totalPages = Math.ceil(total / comparisonPageSize) || 1;
+        if (comparisonCurrentPage > totalPages) comparisonCurrentPage = totalPages;
+        if (comparisonCurrentPage < 1) comparisonCurrentPage = 1;
+
+        const startIndex = (comparisonCurrentPage - 1) * comparisonPageSize;
+        const endIndex = Math.min(startIndex + comparisonPageSize, total);
+        const pageRows = comparisonRows.slice(startIndex, endIndex);
+
+        pageRows.forEach(r => {
             const isSelected = currentSupplierId && r.supplier_id === currentSupplierId;
             const tr = document.createElement('tr');
             tr.className = isSelected
-                ? 'bg-emerald-50/70 border-l-4 border-l-emerald-500 font-semibold'
-                : (isRec ? 'bg-emerald-50/30 hover:bg-slate-50' : 'hover:bg-slate-50');
+                ? 'bg-slate-100/90 border-l-4 border-l-[#0f172a] font-semibold'
+                : 'hover:bg-slate-50/80';
 
             const cc = r.avg_change_percentage > 0
                 ? 'text-rose-600 font-semibold'
-                : r.avg_change_percentage < 0 ? 'text-emerald-700 font-semibold' : 'text-slate-500';
+                : r.avg_change_percentage < 0 ? 'text-slate-800 font-semibold' : 'text-slate-500';
 
             const selectActionBtn = isSelected
-                ? `<span class="inline-flex items-center gap-1 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                ? `<span class="inline-flex items-center gap-1.5 rounded-xl bg-[#0f172a] px-4 py-1.5 text-xs font-bold text-white shadow-xs">
+                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                     <span>Selected</span>
                    </span>`
                 : `<button type="button"
                            onclick="selectSupplier(${r.supplier_id}, '${escHtml(r.supplier_name)}')"
-                           class="inline-flex items-center gap-1 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition shadow-2xs cursor-pointer">
+                           class="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-4 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition shadow-2xs cursor-pointer">
                     <span>Select</span>
                    </button>`;
 
             tr.innerHTML = `
-                <td class="px-4 py-3 ${isSelected ? 'text-emerald-950 font-bold' : (isRec ? 'text-emerald-900 font-semibold' : 'text-slate-800')}">
-                    <div class="flex items-center gap-1.5">
-                        ${isRec ? '<span class="inline-flex items-center gap-1 text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-md text-[11px] font-bold shrink-0"><svg class="w-3.5 h-3.5 text-amber-500 fill-amber-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>Best Value</span>' : ''}
-                        <span>${escHtml(r.supplier_name)}</span>
-                    </div>
+                <td class="px-4 py-3 ${isSelected ? 'text-slate-900 font-bold' : 'text-slate-800'}">
+                    <span>${escHtml(r.supplier_name)}</span>
                 </td>
-                <td class="px-4 py-3 font-semibold">${r.latest_total_cost > 0 ? fmt(r.latest_total_cost) : '—'}</td>
+                <td class="px-4 py-3 font-semibold text-slate-900">${r.latest_total_cost > 0 ? fmt(r.latest_total_cost) : '—'}</td>
                 <td class="px-4 py-3 ${cc}">${r.has_history ? fmtP(r.avg_change_percentage) : '—'}</td>
                 <td class="px-4 py-3 text-slate-500">${escHtml(r.last_purchase_date ?? '—')}</td>
                 <td class="px-4 py-3 text-right">
-                    <div class="inline-flex items-center justify-end gap-1.5">
-                        ${selectActionBtn}
-                        <button type="button"
-                                onclick="window._poViewSupplierPerformance(${r.supplier_id})"
-                                class="inline-flex items-center gap-1.5 rounded-xl border border-cyan-300 bg-cyan-50 px-3 py-1.5 text-xs font-bold text-cyan-800 hover:bg-cyan-100 transition shadow-2xs cursor-pointer"
-                                title="View assessment performance details">
-                            <svg class="w-3.5 h-3.5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                            <span>View</span>
-                        </button>
-                    </div>
+                    ${selectActionBtn}
                 </td>
             `;
             tbody.appendChild(tr);
         });
 
-        $el('comparison-panel').classList.remove('hidden');
+        // Comparison Pagination UI
+        const pagBar = $el('comparison-pagination-bar');
+        const pagInfo = $el('comparison-pagination-info');
+        const pagControls = $el('comparison-pagination-controls');
+
+        if (pagBar && pagInfo && pagControls) {
+            if (total <= comparisonPageSize) {
+                pagBar.classList.add('hidden');
+            } else {
+                pagBar.classList.remove('hidden');
+                pagInfo.textContent = `Showing ${startIndex + 1} to ${endIndex} of ${total} suppliers`;
+
+                let controlsHtml = '';
+                // Prev button
+                controlsHtml += `<button type="button" onclick="window.changeComparisonPage(${comparisonCurrentPage - 1})" ${comparisonCurrentPage === 1 ? 'disabled class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-300 cursor-not-allowed text-xs font-medium"' : 'class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 text-xs font-semibold cursor-pointer shadow-2xs"'}>‹ Prev</button>`;
+
+                // Page numbers
+                for (let i = 1; i <= totalPages; i++) {
+                    if (i === comparisonCurrentPage) {
+                        controlsHtml += `<span class="px-3 py-1.5 rounded-lg bg-[#0f172a] text-white text-xs font-bold shadow-2xs">${i}</span>`;
+                    } else {
+                        controlsHtml += `<button type="button" onclick="window.changeComparisonPage(${i})" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 text-xs font-semibold cursor-pointer shadow-2xs">${i}</button>`;
+                    }
+                }
+
+                // Next button
+                controlsHtml += `<button type="button" onclick="window.changeComparisonPage(${comparisonCurrentPage + 1})" ${comparisonCurrentPage === totalPages ? 'disabled class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-300 cursor-not-allowed text-xs font-medium"' : 'class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 text-xs font-semibold cursor-pointer shadow-2xs"'}>Next ›</button>`;
+
+                pagControls.innerHTML = controlsHtml;
+            }
+        }
     }
 
     // Modal Helpers
@@ -1540,8 +1660,8 @@
             }
 
             const score = s.performance_score || 0;
-            const scoreBadgeClass = score >= 80 ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : (score >= 60 ? 'bg-amber-50 text-amber-800 border-amber-300' : 'bg-rose-50 text-rose-800 border-rose-300');
-            const scoreDotColor = score >= 80 ? 'bg-emerald-500' : (score >= 60 ? 'bg-amber-500' : 'bg-rose-500');
+            const scoreBadgeClass = 'bg-slate-100 text-slate-800 border-slate-300';
+            const scoreDotColor = 'bg-slate-700';
 
             let itemsHtml = '';
             if (priceHistories.length === 0 && selectedProductsStore.size > 0) {
@@ -1569,16 +1689,16 @@
                 });
             } else {
                 priceHistories.forEach(ph => {
-                    const changeColor = ph.change_percentage > 0 ? 'text-rose-600 font-bold' : (ph.change_percentage < 0 ? 'text-emerald-600 font-bold' : 'text-slate-600');
+                    const changeColor = ph.change_percentage > 0 ? 'text-rose-600 font-bold' : (ph.change_percentage < 0 ? 'text-slate-800 font-bold' : 'text-slate-600');
                     const trendIcon = ph.trend === 'increasing' ? '↑' : (ph.trend === 'decreasing' ? '↓' : '→');
-                    const recClass = ph.trend === 'increasing' ? 'bg-amber-50 text-amber-800 border-amber-200' : (ph.trend === 'decreasing' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-slate-50 text-slate-700 border-slate-200');
+                    const recClass = ph.trend === 'increasing' ? 'bg-amber-50 text-amber-900 border-amber-200' : 'bg-slate-50 text-slate-800 border-slate-200';
 
                     let pastPOs = '';
                     if (ph.histories && ph.histories.length > 0) {
                         pastPOs = `
                             <div class="mt-3 overflow-hidden rounded-xl border border-slate-200">
                                 <table class="min-w-full text-xs text-left">
-                                    <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
+                                    <thead class="bg-[#0f172a] text-white font-semibold border-b border-slate-800" style="background-color: #0f172a;">
                                         <tr>
                                             <th class="px-3 py-1.5">Date</th>
                                             <th class="px-3 py-1.5">PO Number</th>
@@ -1662,12 +1782,12 @@
                         </div>
                         <div class="bg-white rounded-xl border border-slate-200 p-3 text-center shadow-2xs">
                             <p class="text-[10px] uppercase font-bold text-slate-400">Quality Score</p>
-                            <p class="text-base font-extrabold text-emerald-700 mt-0.5">${s.quality_score ?? 100}%</p>
+                            <p class="text-base font-extrabold text-slate-900 mt-0.5">${s.quality_score ?? 100}%</p>
                             <p class="text-[10px] text-slate-500 mt-0.5">${s.defect_rate ?? 0}% defect rate</p>
                         </div>
                         <div class="bg-white rounded-xl border border-slate-200 p-3 text-center shadow-2xs">
                             <p class="text-[10px] uppercase font-bold text-slate-400">Price Stability</p>
-                            <p class="text-base font-extrabold text-cyan-700 mt-0.5">${s.price_stability ?? 100}%</p>
+                            <p class="text-base font-extrabold text-slate-900 mt-0.5">${s.price_stability ?? 100}%</p>
                             <p class="text-[10px] text-slate-500 mt-0.5">Rate consistency</p>
                         </div>
                     </div>
@@ -1696,7 +1816,7 @@
 
         content.innerHTML = `
             <div class="flex flex-col items-center justify-center py-12 text-slate-500">
-                <svg class="w-8 h-8 animate-spin text-[#6EC1D1] mb-3" fill="none" viewBox="0 0 24 24">
+                <svg class="w-8 h-8 animate-spin text-slate-800 mb-3" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
