@@ -102,10 +102,12 @@ class DashboardController extends Controller
 
         // Get all products (including archived) for historical lookup and active products for catalog/slow moving
         $allProducts = Product::all()->keyBy('id');
+        $productsBySku = $allProducts->filter(fn ($p) => !empty($p->sku))->keyBy(fn ($p) => strtolower(trim($p->sku)));
+        $productsByName = $allProducts->keyBy(fn ($p) => strtolower(trim($p->name)));
         $activeProducts = Product::query()->where('is_archived', false)->get();
 
-        $soldItems = $transactionsForMovement->flatMap(function ($transaction) use ($allProducts) {
-            return collect($transaction->items ?? [])->map(function ($item) use ($allProducts) {
+        $soldItems = $transactionsForMovement->flatMap(function ($transaction) use ($allProducts, $productsBySku, $productsByName) {
+            return collect($transaction->items ?? [])->map(function ($item) use ($allProducts, $productsBySku, $productsByName) {
                 $quantity = (int) ($item['quantity'] ?? $item['qty'] ?? 0);
                 if ($quantity <= 0) {
                     return null;
@@ -113,6 +115,15 @@ class DashboardController extends Controller
 
                 $productId = $item['id'] ?? $item['product_id'] ?? null;
                 $product = $productId ? $allProducts->get($productId) : null;
+                if (!$product && !empty($item['sku'])) {
+                    $product = $productsBySku->get(strtolower(trim($item['sku'])));
+                }
+                if (!$product && !empty($item['name'])) {
+                    $product = $productsByName->get(strtolower(trim($item['name'])));
+                }
+                if ($product && !$productId) {
+                    $productId = $product->id;
+                }
 
                 $unitPrice = (float) ($item['unit_price'] ?? $item['price'] ?? 0);
                 if ($unitPrice <= 0 && $product) {
@@ -134,8 +145,13 @@ class DashboardController extends Controller
                 return [
                     'product_id' => $productId,
                     'name' => $name,
+                    'product_name' => $product?->product_name ?? $product?->name ?? null,
+                    'brand' => $product?->brand ?? null,
                     'sku' => $sku ?: 'N/A',
                     'category' => $this->normalizeCategory($rawCategory),
+                    'product_description' => $product?->description ?? $product?->product_name ?? null,
+                    'compatibility' => $product?->compatibility ?? null,
+                    'image' => $product?->image ?? null,
                     'quantity' => $quantity,
                     'revenue' => $quantity * $unitPrice,
                 ];
@@ -149,8 +165,13 @@ class DashboardController extends Controller
             return [
                 'product_id' => $first['product_id'] ?? null,
                 'name' => $first['name'],
+                'product_name' => $first['product_name'] ?? null,
+                'brand' => $first['brand'] ?? null,
                 'sku' => $first['sku'] ?? 'N/A',
                 'category' => $first['category'],
+                'product_description' => $first['product_description'] ?? null,
+                'compatibility' => $first['compatibility'] ?? null,
+                'image' => $first['image'] ?? null,
                 'quantity' => $items->sum('quantity'),
                 'revenue' => $items->sum('revenue'),
             ];
@@ -162,8 +183,13 @@ class DashboardController extends Controller
                 'id' => $item['product_id'] ?? null,
                 'product_id' => $item['product_id'] ?? null,
                 'name' => $item['name'],
+                'product_name' => $item['product_name'] ?? null,
+                'brand' => $item['brand'] ?? null,
                 'sku' => $item['sku'] ?: 'N/A',
                 'category' => $item['category'] ?? 'General',
+                'product_description' => $item['product_description'] ?? null,
+                'compatibility' => $item['compatibility'] ?? null,
+                'image' => $item['image'] ?? null,
                 'qty' => (int) $item['quantity'],
                 'quantity' => (int) $item['quantity'],
                 'revenue' => (float) $item['revenue'],
@@ -199,8 +225,13 @@ class DashboardController extends Controller
                 'id' => $product->id,
                 'product_id' => $product->id,
                 'name' => $name,
+                'product_name' => $product->product_name,
+                'brand' => $product->brand,
                 'sku' => $product->sku ?: 'N/A',
                 'category' => $this->normalizeCategory($product->category),
+                'product_description' => $product->description ?? $product->product_name,
+                'compatibility' => $product->compatibility,
+                'image' => $product->image,
                 'qty' => $qty,
                 'quantity' => $qty,
                 'revenue' => $revenue,

@@ -111,7 +111,7 @@
                         
                         <!-- Custom Searchable Dropdown Trigger -->
                         <div class="relative">
-                            <button id="supplierDropdownBtn" type="button" class="w-full flex items-center justify-between gap-3 rounded-[12px] border border-slate-300 bg-slate-50/80 px-4 py-3 text-left text-sm font-semibold text-slate-900 hover:bg-slate-100 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] transition-all duration-200 cursor-pointer shadow-xs">
+                            <button id="supplierDropdownBtn" type="button" class="w-full flex items-center justify-between gap-3 rounded-[12px] border border-slate-300 bg-slate-50/80 px-4 py-3 text-left text-sm font-semibold text-slate-900 hover:bg-slate-100 hover:border-slate-400 focus:outline-none focus:ring-1 focus:ring-black/35 transition-all duration-200 cursor-pointer shadow-xs">
                                 <div class="flex items-center gap-3 min-w-0 flex-1">
                                     <div class="w-8 h-8 rounded-[8px] bg-[#6EC1D1]/20 flex items-center justify-center flex-shrink-0 text-slate-900">
                                         <svg class="w-4 h-4 text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,7 +135,7 @@
                                         <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 12.65z"/>
                                         </svg>
-                                        <input id="supplierDropdownSearch" type="search" placeholder="Type supplier name, contact, email..." class="w-full rounded-[10px] border border-slate-200 bg-white pl-9 pr-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1]" />
+                                        <input id="supplierDropdownSearch" type="search" placeholder="Type supplier name, contact, email..." class="w-full rounded-[10px] border border-slate-200 bg-white pl-9 pr-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-black/35" />
                                     </div>
                                 </div>
                                 <div id="supplierDropdownOptions" class="max-h-72 overflow-y-auto divide-y divide-slate-100 bg-white">
@@ -162,7 +162,7 @@
 
                     <!-- Quick Supplier Action Buttons when selected -->
                     <div id="supplierActionButtons" class="hidden flex items-end gap-2 pt-2 md:pt-0">
-                        <button id="quickEditBtn" type="button" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-4 py-3 text-xs font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all whitespace-nowrap cursor-pointer">
+                        <button id="quickEditBtn" type="button" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-4 py-3 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all whitespace-nowrap cursor-pointer">
                             <svg class="h-4 w-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                             </svg>
@@ -181,7 +181,7 @@
                 <div id="selectedSupplierRibbon" class="hidden rounded-[14px] bg-slate-50 border border-slate-200/80 p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
                     <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-slate-600">
                         <div class="flex items-center gap-2">
-                            <span class="inline-block w-2.5 h-2.5 rounded-full bg-slate-900"></span>
+                            <span class="inline-block w-2.5 h-2.5 rounded-full bg-[#6EC1D1]"></span>
                             <span class="font-bold text-slate-900 text-sm" id="ribbonSupplierName">-</span>
                             <span class="rounded-[6px] bg-slate-200 px-2 py-0.5 text-[10px] font-semibold text-slate-700" id="ribbonSupplierRole">Supplier</span>
                         </div>
@@ -291,7 +291,7 @@
                     <div class="border-t border-slate-200 pt-6">
                         <div class="mb-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                                <p class="text-[11px] uppercase tracking-wider font-bold text-[#145a66]">Movement Analysis Per Supplier</p>
+                                <p class="text-[11px] uppercase tracking-wider font-semibold text-[#145a66]">Movement Analysis Per Supplier</p>
                                 <h3 class="text-lg font-bold text-slate-900">Fast &amp; Slow Moving Products</h3>
                             </div>
                             <span class="text-xs text-slate-500">Classified based on POS transaction sales velocity &amp; turnover rate</span>
@@ -326,7 +326,7 @@
                     <div class="border-t border-slate-200 pt-6">
                         <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                             <div>
-                                <p class="text-[11px] uppercase tracking-wider font-bold text-slate-500">Performance Summary</p>
+                                <p class="text-[11px] uppercase tracking-wider font-semibold text-slate-500">Performance Summary</p>
                                 <h3 class="mt-0.5 text-lg font-bold text-slate-900">Delivery &amp; Order Reliability</h3>
                             </div>
                             <div class="flex flex-wrap gap-2">
@@ -381,7 +381,7 @@
                             <div class="flex flex-wrap items-center gap-2">
                                 <!-- Filter Tabs (All / Fast / Slow) -->
                                 <div class="flex items-center rounded-[10px] bg-slate-100 p-1 border border-slate-200 text-xs">
-                                    <button type="button" onclick="setProductFilter('all')" id="filterTabAll" class="rounded-[8px] px-3 py-1 font-bold transition-all bg-white text-slate-900 shadow-sm cursor-pointer">
+                                    <button type="button" onclick="setProductFilter('all')" id="filterTabAll" class="rounded-[8px] px-3 py-1 font-bold transition-all bg-[#6EC1D1] text-slate-900 shadow-sm cursor-pointer">
                                         All (<span id="tabCountAll">0</span>)
                                     </button>
                                     <button type="button" onclick="setProductFilter('fast_moving')" id="filterTabFast" class="rounded-[8px] px-3 py-1 font-semibold transition-all text-slate-600 hover:text-slate-900 cursor-pointer">
@@ -431,12 +431,12 @@
         <div id="supplierModal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-4">
             <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" data-action="close-modal"></div>
             <div class="relative w-full max-w-2xl overflow-hidden rounded-[24px] bg-white shadow-[0_30px_80px_rgba(15,23,42,0.22)] max-h-[90vh] overflow-y-auto">
-                <div class="flex items-center justify-between border-b border-slate-100 bg-[#0f172a] px-6 py-5">
+                <div class="flex items-center justify-between bg-[#6EC1D1] px-6 py-5">
                     <div>
-                        <h2 id="supplierModalTitle" class="text-lg font-bold text-white">Add Supplier</h2>
-                        <p id="supplierModalSubtitle" class="text-xs text-slate-300">Create a supplier record and link products automatically.</p>
+                        <h2 id="supplierModalTitle" class="text-xl font-bold text-black leading-tight">Add Supplier</h2>
+                        <p id="supplierModalSubtitle" class="text-sm text-slate-900 font-medium">Create a supplier record and link products automatically.</p>
                     </div>
-                    <button type="button" id="closeSupplierModal" class="rounded-[10px] p-2 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer">
+                    <button type="button" id="closeSupplierModal" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
@@ -807,6 +807,37 @@
                     }
                 }
 
+                function getSupplierProductImage(p) {
+                    if (!p) return null;
+                    if (window.resolveProductImage) {
+                        const resolved = window.resolveProductImage(p);
+                        if (resolved) return resolved;
+                    }
+                    if (p.image) return p.image;
+                    try {
+                        const stored = localStorage.getItem('posProductImages');
+                        if (stored) {
+                            const images = JSON.parse(stored);
+                            const productId = p.id || p.product_id;
+                            if (productId && images[productId]) return images[productId];
+                            if (p.sku && images[p.sku]) return images[p.sku];
+                            if (p.name && images[p.name]) return images[p.name];
+                            if (p.product_name && images[p.product_name]) return images[p.product_name];
+
+                            const keys = Object.keys(images);
+                            if (p.sku) {
+                                const matchSku = keys.find(k => k.toLowerCase() === String(p.sku).toLowerCase());
+                                if (matchSku) return images[matchSku];
+                            }
+                            if (p.name) {
+                                const matchName = keys.find(k => k.toLowerCase() === String(p.name).toLowerCase());
+                                if (matchName) return images[matchName];
+                            }
+                        }
+                    } catch (e) {}
+                    return null;
+                }
+
                 // Render Fast and Slow Moving Lists for Active Supplier (Refined & Modern Cards)
                 function renderFastSlowMovingBreakdown(supplier) {
                     const fastProducts = supplier.fast_moving_products || [];
@@ -825,15 +856,23 @@
                         `;
                     } else {
                         fastProducts.forEach(prod => {
+                            const imgUrl = getSupplierProductImage(prod);
+                            const imgHtml = imgUrl
+                                ? `<div class="w-10 h-10 rounded-[8px] bg-slate-100 flex-shrink-0 overflow-hidden border border-slate-200 bg-cover bg-center" style="background-image:url('${imgUrl}');"></div>`
+                                : `<div class="w-10 h-10 rounded-[8px] bg-slate-100 flex-shrink-0 border border-slate-200 flex items-center justify-center text-slate-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`;
+
                             const card = document.createElement('div');
                             card.className = 'rounded-[12px] border border-slate-200 bg-white p-3 hover:border-slate-400 hover:shadow-xs transition-all flex items-center justify-between gap-3';
                             card.innerHTML = `
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex items-center gap-2">
-                                        <p class="text-xs font-bold text-slate-900 truncate uppercase">${prod.name}</p>
-                                        <span class="rounded-[6px] bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 text-[10px] font-semibold">${prod.category || 'General'}</span>
+                                <div class="flex items-center gap-3 min-w-0 flex-1">
+                                    ${imgHtml}
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center gap-2">
+                                            <p class="text-xs font-bold text-slate-900 truncate uppercase">${prod.name}</p>
+                                            <span class="rounded-[6px] bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 text-[10px] font-semibold">${prod.category || 'General'}</span>
+                                        </div>
+                                        <p class="text-[11px] text-slate-500 truncate mt-1 font-medium">SKU: <span class="font-mono text-slate-700 font-semibold">${prod.sku || 'N/A'}</span> · Stock: <span class="font-bold text-slate-900">${prod.stock_quantity}</span></p>
                                     </div>
-                                    <p class="text-[11px] text-slate-500 truncate mt-1 font-medium">SKU: <span class="font-mono text-slate-700 font-semibold">${prod.sku || 'N/A'}</span> · Stock: <span class="font-bold text-slate-900">${prod.stock_quantity}</span></p>
                                 </div>
                                 <div class="text-right flex-shrink-0">
                                     <span class="inline-flex items-center rounded-[6px] bg-slate-100 text-slate-700 border border-slate-200/90 px-2.5 py-0.5 text-[10px] font-bold shadow-xs">
@@ -856,15 +895,23 @@
                         `;
                     } else {
                         slowProducts.forEach(prod => {
+                            const imgUrl = getSupplierProductImage(prod);
+                            const imgHtml = imgUrl
+                                ? `<div class="w-10 h-10 rounded-[8px] bg-slate-100 flex-shrink-0 overflow-hidden border border-slate-200 bg-cover bg-center" style="background-image:url('${imgUrl}');"></div>`
+                                : `<div class="w-10 h-10 rounded-[8px] bg-slate-100 flex-shrink-0 border border-slate-200 flex items-center justify-center text-slate-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`;
+
                             const card = document.createElement('div');
                             card.className = 'rounded-[12px] border border-slate-200 bg-white p-3 hover:border-slate-400 hover:shadow-xs transition-all flex items-center justify-between gap-3';
                             card.innerHTML = `
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex items-center gap-2">
-                                        <p class="text-xs font-bold text-slate-900 truncate uppercase">${prod.name}</p>
-                                        <span class="rounded-[6px] bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 text-[10px] font-semibold">${prod.category || 'General'}</span>
+                                <div class="flex items-center gap-3 min-w-0 flex-1">
+                                    ${imgHtml}
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center gap-2">
+                                            <p class="text-xs font-bold text-slate-900 truncate uppercase">${prod.name}</p>
+                                            <span class="rounded-[6px] bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 text-[10px] font-semibold">${prod.category || 'General'}</span>
+                                        </div>
+                                        <p class="text-[11px] text-slate-500 truncate mt-1 font-medium">SKU: <span class="font-mono text-slate-700 font-semibold">${prod.sku || 'N/A'}</span> · Current Stock: <span class="font-bold text-slate-900">${prod.stock_quantity}</span></p>
                                     </div>
-                                    <p class="text-[11px] text-slate-500 truncate mt-1 font-medium">SKU: <span class="font-mono text-slate-700 font-semibold">${prod.sku || 'N/A'}</span> · Current Stock: <span class="font-bold text-slate-900">${prod.stock_quantity}</span></p>
                                 </div>
                                 <div class="text-right flex-shrink-0">
                                     <span class="inline-flex items-center rounded-[6px] bg-slate-800 text-slate-200 border border-slate-700 px-2.5 py-0.5 text-[10px] font-bold shadow-xs">
@@ -916,19 +963,19 @@
 
                     // Update Tab UI
                     [filterTabAll, filterTabFast, filterTabSlow].forEach(tab => {
-                        tab.classList.remove('bg-white', 'text-slate-900', 'shadow-sm', 'font-bold');
+                        tab.classList.remove('bg-[#6EC1D1]', 'text-slate-900', 'shadow-sm', 'font-bold');
                         tab.classList.add('text-slate-600', 'font-semibold');
                     });
 
                     if (filterType === 'all') {
-                        filterTabAll.classList.add('bg-white', 'text-slate-900', 'shadow-sm', 'font-bold');
-                        filterTabAll.classList.remove('text-slate-600');
+                        filterTabAll.classList.add('bg-[#6EC1D1]', 'text-slate-900', 'shadow-sm', 'font-bold');
+                        filterTabAll.classList.remove('text-slate-600', 'font-semibold');
                     } else if (filterType === 'fast_moving') {
-                        filterTabFast.classList.add('bg-white', 'text-slate-900', 'shadow-sm', 'font-bold');
-                        filterTabFast.classList.remove('text-slate-600');
+                        filterTabFast.classList.add('bg-[#6EC1D1]', 'text-slate-900', 'shadow-sm', 'font-bold');
+                        filterTabFast.classList.remove('text-slate-600', 'font-semibold');
                     } else if (filterType === 'slow_moving') {
-                        filterTabSlow.classList.add('bg-white', 'text-slate-900', 'shadow-sm', 'font-bold');
-                        filterTabSlow.classList.remove('text-slate-600');
+                        filterTabSlow.classList.add('bg-[#6EC1D1]', 'text-slate-900', 'shadow-sm', 'font-bold');
+                        filterTabSlow.classList.remove('text-slate-600', 'font-semibold');
                     }
 
                     renderProductTable();
@@ -982,9 +1029,19 @@
                             ? '<span class="inline-flex items-center rounded-[6px] bg-slate-100 border border-slate-200 px-2.5 py-0.5 text-[10px] font-bold text-slate-700">Fast Moving</span>'
                             : '<span class="inline-flex items-center rounded-[6px] bg-slate-800 border border-slate-700 px-2.5 py-0.5 text-[10px] font-bold text-slate-200">Slow Moving</span>';
 
+                        const imgUrl = getSupplierProductImage(product);
+                        const imgHtml = imgUrl
+                            ? `<div class="w-8 h-8 rounded-[6px] bg-slate-100 flex-shrink-0 overflow-hidden border border-slate-200 bg-cover bg-center" style="background-image:url('${imgUrl}');"></div>`
+                            : `<div class="w-8 h-8 rounded-[6px] bg-slate-100 flex-shrink-0 border border-slate-200 flex items-center justify-center text-slate-400"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`;
+
                         detailProductTable.insertAdjacentHTML('beforeend', `
                             <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition">
-                                <td class="px-4 py-3.5 font-bold text-slate-900 text-xs">${product.name}</td>
+                                <td class="px-4 py-3.5 font-bold text-slate-900 text-xs">
+                                    <div class="flex items-center gap-2.5">
+                                        ${imgHtml}
+                                        <span class="truncate">${product.name}</span>
+                                    </div>
+                                </td>
                                 <td class="px-4 py-3.5 text-slate-600 font-mono text-xs">${product.sku || 'N/A'}</td>
                                 <td class="px-4 py-3.5 text-slate-600 text-xs">${product.category || 'Uncategorized'}</td>
                                 <td class="px-4 py-3.5 font-bold text-slate-900 text-xs">${product.stock_quantity}</td>
@@ -1003,11 +1060,11 @@
                                 Showing ${startIndex + 1} to ${Math.min(endIndex, filtered.length)} of ${filtered.length} products
                             </div>
                             <div class="flex items-center gap-1.5 flex-wrap justify-center">
-                                <button type="button" onclick="window.changeProductPage(${currentProductPage - 1})" ${currentProductPage === 1 ? 'disabled' : ''} class="px-3 py-1.5 text-xs rounded-[8px] border border-slate-200 transition-all cursor-pointer ${currentProductPage === 1 ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-700 bg-white hover:bg-slate-100'}">Prev</button>
+                                <button type="button" onclick="window.changeProductPage(${currentProductPage - 1})" ${currentProductPage === 1 ? 'disabled' : ''} class="rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition">← Prev</button>
                                 ${Array.from({length: totalPages}, (_, i) => i + 1).map(page => `
-                                    <button type="button" onclick="window.changeProductPage(${page})" class="px-3 py-1.5 text-xs rounded-[8px] transition-all cursor-pointer ${page === currentProductPage ? 'font-bold text-slate-900 bg-[#6EC1D1] border border-slate-200 shadow-sm' : 'text-slate-700 border border-slate-200 bg-white hover:bg-slate-100'}">${page}</button>
+                                    <button type="button" onclick="window.changeProductPage(${page})" class="inline-flex items-center justify-center rounded-[10px] w-8 h-8 text-xs font-semibold transition ${page === currentProductPage ? 'bg-black/10 text-slate-900' : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50'}">${page}</button>
                                 `).join('')}
-                                <button type="button" onclick="window.changeProductPage(${currentProductPage + 1})" ${currentProductPage === totalPages ? 'disabled' : ''} class="px-3 py-1.5 text-xs rounded-[8px] border border-slate-200 transition-all cursor-pointer ${currentProductPage === totalPages ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-700 bg-white hover:bg-slate-100'}">Next</button>
+                                <button type="button" onclick="window.changeProductPage(${currentProductPage + 1})" ${currentProductPage === totalPages ? 'disabled' : ''} class="rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition">Next →</button>
                             </div>
                         `;
                     } else {

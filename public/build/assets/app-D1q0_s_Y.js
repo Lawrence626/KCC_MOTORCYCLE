@@ -1,1 +1,0 @@
-console.log(`KCC Motorcycle app.js loaded.`);

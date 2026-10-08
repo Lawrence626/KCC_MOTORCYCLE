@@ -572,7 +572,7 @@
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" id="closeProductDescOverlay" onclick="document.getElementById('addProductDescModal').classList.add('hidden')"></div>
         <div class="relative w-full max-w-md overflow-hidden rounded-[28px] bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] z-10">
             <!-- Header -->
-            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
+            <div class="flex items-center justify-between bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h3 class="text-xl font-bold text-black">Add New Product Category</h3>
                 </div>

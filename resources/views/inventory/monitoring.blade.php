@@ -82,18 +82,18 @@
         <div class="rounded-[10px] border border-slate-200 bg-white p-3 shadow-sm">
             <div class="grid grid-cols-1 md:grid-cols-5 gap-2.5">
                 <div class="md:col-span-2">
-                    <input id="searchInput" type="search" placeholder="Search by product name, SKU, brand, or category..." class="w-full px-3.5 py-2.5 rounded-[14px] border border-slate-300 bg-white text-xs sm:text-[13px] text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 hover:border-slate-400 transition shadow-2xs" />
+                    <input id="searchInput" type="search" placeholder="Search by product name, SKU, brand, or category..." class="w-full px-3.5 py-2.5 rounded-[10px] border border-slate-300 bg-white text-xs sm:text-[13px] text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 hover:border-slate-400 transition shadow-2xs" />
                 </div>
 
                 <div class="relative z-[10]" data-dropdown-wrapper="statusFilter">
                     <input type="hidden" id="statusFilter" value="" />
-                    <button type="button" id="statusFilterButton" onclick="toggleDropdown('statusFilterDropdown')" class="w-full px-3.5 py-2.5 rounded-[14px] border border-slate-300 bg-white text-left text-xs sm:text-[13px] text-slate-800 flex items-center justify-between hover:border-slate-400 focus:outline-none transition shadow-2xs cursor-pointer">
+                    <button type="button" id="statusFilterButton" onclick="toggleDropdown('statusFilterDropdown')" class="w-full px-3.5 py-2.5 rounded-[10px] border border-slate-300 bg-white text-left text-xs sm:text-[13px] text-slate-800 flex items-center justify-between hover:border-slate-400 focus:outline-none transition shadow-2xs cursor-pointer">
                         <span>All Stock Status</span>
                         <svg class="w-4 h-4 text-slate-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
-                    <div id="statusFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[20] mt-1.5 w-full rounded-[14px] border border-slate-200/90 bg-white shadow-xl shadow-slate-200/60 p-1.5 space-y-0.5">
+                    <div id="statusFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[20] mt-1.5 w-full rounded-[10px] border border-slate-200/90 bg-white shadow-xl shadow-slate-200/60 p-1.5 space-y-0.5">
                         <button type="button" onclick="selectDropdownOption('statusFilter', '', 'All Stock Status', 'statusFilterDropdown')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">All Stock Status</button>
                         <button type="button" onclick="selectDropdownOption('statusFilter', 'active', 'Active', 'statusFilterDropdown')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">Active</button>
                         <button type="button" onclick="selectDropdownOption('statusFilter', 'low', 'Low Stock', 'statusFilterDropdown')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">Low Stock</button>
@@ -103,13 +103,13 @@
 
                 <div class="relative z-[10]" data-dropdown-wrapper="expiryStatusFilter">
                     <input type="hidden" id="expiryStatusFilter" value="" />
-                    <button type="button" id="expiryStatusFilterButton" onclick="toggleDropdown('expiryStatusFilterDropdown')" class="w-full px-3.5 py-2.5 rounded-[14px] border border-slate-300 bg-white text-left text-xs sm:text-[13px] text-slate-800 flex items-center justify-between hover:border-slate-400 focus:outline-none transition shadow-2xs cursor-pointer">
+                    <button type="button" id="expiryStatusFilterButton" onclick="toggleDropdown('expiryStatusFilterDropdown')" class="w-full px-3.5 py-2.5 rounded-[10px] border border-slate-300 bg-white text-left text-xs sm:text-[13px] text-slate-800 flex items-center justify-between hover:border-slate-400 focus:outline-none transition shadow-2xs cursor-pointer">
                         <span>All Expiry Status</span>
                         <svg class="w-4 h-4 text-slate-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
-                    <div id="expiryStatusFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[20] mt-1.5 w-full rounded-[14px] border border-slate-200/90 bg-white shadow-xl shadow-slate-200/60 p-1.5 space-y-0.5">
+                    <div id="expiryStatusFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[20] mt-1.5 w-full rounded-[10px] border border-slate-200/90 bg-white shadow-xl shadow-slate-200/60 p-1.5 space-y-0.5">
                         <button type="button" onclick="selectDropdownOption('expiryStatusFilter', '', 'All Expiry Status', 'expiryStatusFilterDropdown')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">All Expiry Status</button>
                         <button type="button" onclick="selectDropdownOption('expiryStatusFilter', 'non_expiring', 'Non-expiring', 'expiryStatusFilterDropdown')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">Non-expiring</button>
                         <button type="button" onclick="selectDropdownOption('expiryStatusFilter', 'expiring', 'Expiring Soon', 'expiryStatusFilterDropdown')" class="w-full px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition font-normal cursor-pointer">Expiring Soon</button>
@@ -118,7 +118,7 @@
                 </div>
 
                 <div>
-                    <input id="restockDateFilter" type="date" class="w-full px-3.5 py-2.5 rounded-[14px] border border-slate-300 bg-white text-xs sm:text-[13px] text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 hover:border-slate-400 transition shadow-2xs" />
+                    <input id="restockDateFilter" type="date" class="w-full px-3.5 py-2.5 rounded-[10px] border border-slate-300 bg-white text-xs sm:text-[13px] text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 hover:border-slate-400 transition shadow-2xs" />
                 </div>
             </div>
         </div>
@@ -157,11 +157,11 @@
             <div class="flex flex-col sm:flex-row items-center justify-between border-t border-slate-200 bg-slate-50/70 px-4 py-3 gap-3 text-xs">
                 <p id="paginationInfo" class="text-slate-600 font-medium">Showing 0 of 0 items</p>
                 <div id="paginationControls" class="flex items-center gap-1.5">
-                    <button class="rounded-[8px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">← Prev</button>
-                    <button class="inline-flex items-center justify-center rounded-[8px] bg-[#0f172a] text-white w-8 h-8 text-xs font-semibold shadow-sm">1</button>
-                    <button class="inline-flex items-center justify-center rounded-[8px] border border-slate-200 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50">2</button>
-                    <button class="inline-flex items-center justify-center rounded-[8px] border border-slate-200 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50">3</button>
-                    <button class="rounded-[8px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">Next →</button>
+                    <button class="rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">← Prev</button>
+                    <button class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">1</button>
+                    <button class="inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50">2</button>
+                    <button class="inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50">3</button>
+                    <button class="rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">Next →</button>
                 </div>
             </div>
         </div>
@@ -263,11 +263,11 @@
             <div class="flex flex-col sm:flex-row items-center justify-between border-t border-slate-200 bg-slate-50/70 px-4 py-3 gap-3 text-xs">
                 <p id="movementPaginationInfo" class="text-slate-600 font-medium">Showing 0 of 0 movements</p>
                 <div id="movementPaginationControls" class="flex items-center gap-1.5">
-                    <button class="movement-prev rounded-[8px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-sm">← Prev</button>
-                    <button class="inline-flex items-center justify-center rounded-[8px] bg-[#0f172a] text-white w-8 h-8 text-xs font-semibold shadow-sm">1</button>
-                    <button class="inline-flex items-center justify-center rounded-[8px] border border-slate-200 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50 transition shadow-sm">2</button>
-                    <button class="inline-flex items-center justify-center rounded-[8px] border border-slate-200 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50 transition shadow-sm">3</button>
-                    <button class="movement-next rounded-[8px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-sm">Next →</button>
+                    <button class="movement-prev rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition">← Prev</button>
+                    <button class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">1</button>
+                    <button class="inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50">2</button>
+                    <button class="inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50">3</button>
+                    <button class="movement-next rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition">Next →</button>
                 </div>
             </div>
         </div>
@@ -498,7 +498,7 @@
             input.type = 'text';
             input.readOnly = true;
             input.placeholder = 'mm/dd/yyyy';
-            input.className = 'w-full px-3 py-[11px] pr-10 rounded-[12px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none cursor-pointer shadow-sm hover:border-slate-400 transition';
+            input.className = 'w-full px-3 py-[11px] pr-10 rounded-[10px] border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none cursor-pointer shadow-sm hover:border-slate-400 transition';
 
             const wrapper = document.createElement('div');
             wrapper.className = 'relative w-full mt-0 z-[60]';
@@ -522,7 +522,7 @@
             }
 
             const card = document.createElement('div');
-            card.className = 'custom-calendar-card hidden absolute top-full left-0 mt-1 z-[90] w-full rounded-[14px] bg-white p-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.12)] border border-slate-200 transition-all duration-200';
+            card.className = 'custom-calendar-card hidden absolute top-full left-0 mt-1 z-[90] w-full rounded-[10px] bg-white p-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.12)] border border-slate-200 transition-all duration-200';
             wrapper.appendChild(card);
 
             if (input.value && input.value.includes('T')) {

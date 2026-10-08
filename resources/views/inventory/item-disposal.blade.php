@@ -462,17 +462,31 @@
 
         function resolveDisposalImages() {
             try {
-                const stored = localStorage.getItem('posProductImages');
-                const images = stored ? JSON.parse(stored) : {};
-                const keys = Object.keys(images);
-
                 document.querySelectorAll('.disposal-img-thumb').forEach(container => {
-                    const id = container.dataset.id;
-                    const sku = container.dataset.sku;
-                    const imgData = container.dataset.image;
+                    const itemObj = {
+                        id: container.dataset.id,
+                        sku: container.dataset.sku,
+                        name: container.dataset.name,
+                        brand: container.dataset.brand,
+                        image: container.dataset.image
+                    };
 
-                    let imgUrl = imgData || null;
+                    let imgUrl = null;
+                    if (window.resolveProductImage) {
+                        imgUrl = window.resolveProductImage(itemObj);
+                    }
+
                     if (!imgUrl) {
+                        imgUrl = itemObj.image || null;
+                    }
+
+                    if (!imgUrl) {
+                        const stored = localStorage.getItem('posProductImages');
+                        const images = stored ? JSON.parse(stored) : {};
+                        const keys = Object.keys(images);
+                        const id = itemObj.id;
+                        const sku = itemObj.sku;
+
                         if (id && images[id]) imgUrl = images[id];
                         else if (sku && images[sku]) imgUrl = images[sku];
                         else if (sku) {

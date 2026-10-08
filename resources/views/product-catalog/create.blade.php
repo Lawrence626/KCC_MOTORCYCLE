@@ -1,4 +1,4 @@
-﻿<x-layouts.app :title="__('Add Product')">
+<x-layouts.app :title="__('Add Product')">
     <style>
         .motorcycle-group { max-height: 300px; overflow-y: auto; }
         .motorcycle-group::-webkit-scrollbar { width: 6px; }
@@ -8,17 +8,9 @@
     </style>
 
     <x-slot name="header">
-        <div class="flex items-center justify-between w-full">
-            <div>
-                <h1 class="text-3xl font-bold text-slate-900">Add New Product</h1>
-                <p class="text-xs text-slate-500 mt-0.5">Create a new product with SKU generation, QR code, and motorcycle compatibility.</p>
-            </div>
-            <div>
-                <a href="{{ route('product-catalog.index') }}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-black/10 transition-all">
-                    <svg class="w-3.5 h-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                    Back to Products
-                </a>
-            </div>
+        <div>
+            <h1 class="text-3xl font-bold text-slate-900">Add New Product</h1>
+            <p class="text-xs text-slate-500 mt-0.5">Create a new product with SKU generation, QR code, and motorcycle compatibility.</p>
         </div>
     </x-slot>
 
@@ -329,9 +321,9 @@
     <!-- Add New Product Category Modal (Matching Add User Modal design) -->
     <div id="addProductDescModal" class="hidden fixed inset-0 z-[10000] flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" id="closeProductDescModalBackdrop"></div>
-        <div class="relative w-full max-w-md bg-white rounded-[28px] border border-slate-200 shadow-[0_30px_80px_rgba(15,23,42,0.18)] overflow-hidden transform transition-all z-10">
+        <div class="relative w-full max-w-md bg-white rounded-[28px] shadow-[0_30px_80px_rgba(15,23,42,0.18)] overflow-hidden transform transition-all z-10">
             <!-- Header (matching Add User Modal style) -->
-            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
+            <div class="flex items-center justify-between bg-[#6EC1D1] px-6 py-5">
                 <div>
                     <h3 class="text-xl font-bold text-black">Add New Product Category</h3>
                     <p class="text-sm text-slate-800 font-medium mt-0.5">Enter category name and default brand.</p>

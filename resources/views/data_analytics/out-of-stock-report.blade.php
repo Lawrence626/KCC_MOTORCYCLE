@@ -291,6 +291,10 @@
 
             const getProductImage = (p) => {
                 if (!p) return null;
+                if (window.resolveProductImage) {
+                    const resolved = window.resolveProductImage(p);
+                    if (resolved) return resolved;
+                }
                 if (p.image) return p.image;
                 try {
                     const stored = localStorage.getItem('posProductImages');

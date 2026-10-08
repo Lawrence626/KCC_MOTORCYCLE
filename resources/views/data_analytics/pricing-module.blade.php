@@ -841,28 +841,42 @@
 
             function resolvePricingImages() {
                 try {
-                    const stored = localStorage.getItem('posProductImages');
-                    if (!stored) return;
-                    const images = JSON.parse(stored);
-                    const keys = Object.keys(images);
-
                     document.querySelectorAll('.pricing-img-thumb').forEach(container => {
-                        const id = container.dataset.id;
-                        const sku = container.dataset.sku;
-                        const name = container.dataset.name;
+                        const itemObj = {
+                            id: container.dataset.id,
+                            sku: container.dataset.sku,
+                            name: container.dataset.name,
+                            brand: container.dataset.brand,
+                            category: container.dataset.category
+                        };
 
                         let imgUrl = null;
-                        if (id && images[id]) imgUrl = images[id];
-                        else if (sku && images[sku]) imgUrl = images[sku];
-                        else if (name && images[name]) imgUrl = images[name];
-                        else {
-                            if (sku) {
-                                const matchSku = keys.find(k => k.toLowerCase() === String(sku).toLowerCase());
-                                if (matchSku) imgUrl = images[matchSku];
-                            }
-                            if (!imgUrl && name) {
-                                const matchName = keys.find(k => k.toLowerCase() === String(name).toLowerCase());
-                                if (matchName) imgUrl = images[matchName];
+                        if (window.resolveProductImage) {
+                            imgUrl = window.resolveProductImage(itemObj);
+                        }
+
+                        if (!imgUrl) {
+                            const stored = localStorage.getItem('posProductImages');
+                            if (stored) {
+                                const images = JSON.parse(stored);
+                                const keys = Object.keys(images);
+                                const id = itemObj.id;
+                                const sku = itemObj.sku;
+                                const name = itemObj.name;
+
+                                if (id && images[id]) imgUrl = images[id];
+                                else if (sku && images[sku]) imgUrl = images[sku];
+                                else if (name && images[name]) imgUrl = images[name];
+                                else {
+                                    if (sku) {
+                                        const matchSku = keys.find(k => k.toLowerCase() === String(sku).toLowerCase());
+                                        if (matchSku) imgUrl = images[matchSku];
+                                    }
+                                    if (!imgUrl && name) {
+                                        const matchName = keys.find(k => k.toLowerCase() === String(name).toLowerCase());
+                                        if (matchName) imgUrl = images[matchName];
+                                    }
+                                }
                             }
                         }
 

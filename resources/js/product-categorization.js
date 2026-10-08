@@ -63,6 +63,10 @@ let products = [
 
 function getCategorizationProductImage(p) {
     if (!p) return null;
+    if (window.resolveProductImage) {
+        const resolved = window.resolveProductImage(p);
+        if (resolved) return resolved;
+    }
     if (p.image) return p.image;
     try {
         const stored = localStorage.getItem('posProductImages');
@@ -71,11 +75,17 @@ function getCategorizationProductImage(p) {
             const productId = p.id || p.product_id;
             if (productId && images[productId]) return images[productId];
             if (p.sku && images[p.sku]) return images[p.sku];
+            if (p.name && images[p.name]) return images[p.name];
+            if (p.product_name && images[p.product_name]) return images[p.product_name];
 
             const keys = Object.keys(images);
             if (p.sku) {
                 const matchSku = keys.find(k => k.toLowerCase() === String(p.sku).toLowerCase());
                 if (matchSku) return images[matchSku];
+            }
+            if (p.name) {
+                const matchName = keys.find(k => k.toLowerCase() === String(p.name).toLowerCase());
+                if (matchName) return images[matchName];
             }
         }
     } catch (e) {}

@@ -1,17 +1,9 @@
 <x-layouts.app :title="__('Archived Suppliers')">
 
     <x-slot name="header">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between w-full">
-            <div>
-                <h1 class="text-3xl font-bold text-slate-900">Archived Suppliers</h1>
-                <p class="text-xs text-slate-500 mt-0.5">View and restore archived supplier records.</p>
-            </div>
-            <a href="{{ route('supplier.assessment') }}" class="inline-flex items-center gap-1.5 rounded-[10px] border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 hover:text-slate-900 transition-all duration-200">
-                <svg class="h-3.5 w-3.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                </svg>
-                Back to Active Suppliers
-            </a>
+        <div>
+            <h1 class="text-3xl font-bold text-slate-900">Archived Suppliers</h1>
+            <p class="text-xs text-slate-500 mt-0.5">View and restore archived supplier records.</p>
         </div>
     </x-slot>
 
@@ -62,7 +54,7 @@
                         </thead>
                         <tbody class="divide-y divide-slate-100 bg-white">
                             @foreach($archivedSuppliers as $supplier)
-                                <tr class="hover:bg-slate-50/80 transition">
+                                <tr>
                                     <td class="px-5 py-3.5 font-bold text-slate-900 text-xs">{{ $supplier->name }}</td>
                                     <td class="px-5 py-3.5 text-slate-600 text-xs">{{ $supplier->contact_person ?? '-' }}</td>
                                     <td class="px-5 py-3.5 text-slate-600 text-xs">{{ $supplier->email ?? '-' }}</td>
@@ -72,14 +64,14 @@
                                         <div class="inline-flex items-center justify-end gap-2">
                                             <form method="POST" action="{{ route('supplier.assessment.restore', ['supplier' => $supplier->id]) }}">
                                                 @csrf
-                                                <button type="submit" class="inline-flex items-center gap-1.5 rounded-[8px] bg-[#6EC1D1] px-3.5 py-1.5 text-xs font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all cursor-pointer">
+                                                <button type="submit" class="inline-flex items-center gap-1.5 rounded-[10px] bg-[#6EC1D1] px-3.5 py-1.5 text-xs font-bold text-slate-900 border border-slate-200 shadow-sm hover:bg-[#59b2c2] transition-all cursor-pointer">
                                                     Restore
                                                 </button>
                                             </form>
                                             <form method="POST" action="{{ route('supplier.assessment.force-delete', ['supplier' => $supplier->id]) }}" onsubmit="return confirm('Are you sure you want to permanently delete \'{{ addslashes($supplier->name) }}\'? This action cannot be undone.');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="inline-flex items-center gap-1.5 rounded-[8px] bg-rose-50 text-rose-700 border border-rose-200 px-3 py-1.5 text-xs font-semibold hover:bg-rose-100 hover:border-rose-300 transition-all cursor-pointer shadow-xs">
+                                                <button type="submit" class="inline-flex items-center gap-1.5 rounded-[10px] bg-white text-rose-600 border border-slate-300 px-3 py-1.5 text-xs font-semibold hover:bg-slate-50 transition-all cursor-pointer shadow-xs">
                                                     <svg class="h-3.5 w-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                     </svg>

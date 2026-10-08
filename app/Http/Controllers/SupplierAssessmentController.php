@@ -167,8 +167,13 @@ class SupplierAssessmentController extends Controller
 
                 return [
                     'id' => $product->id,
+                    'product_id' => $product->id,
                     'name' => $product->product_name ?: $product->name,
+                    'product_name' => $product->product_name ?: $product->name,
+                    'brand' => $product->brand,
                     'sku' => $product->sku,
+                    'image' => $product->image,
+                    'compatibility' => $product->compatibility,
                     'price' => (float) $product->unit_price,
                     'stock_quantity' => (int) $product->stock_quantity,
                     'category' => $product->category,

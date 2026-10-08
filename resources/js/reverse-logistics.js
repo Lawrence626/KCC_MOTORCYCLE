@@ -405,7 +405,60 @@ document.addEventListener('DOMContentLoaded', () => {
         const record = records.find(item => item.id === id);
         if (!record) return;
 
-        alert(`Product: ${record.product_name || record.productName}\nSKU: ${record.sku}\nReason: ${record.return_reason || record.returnReason}\nCondition: ${record.condition}\nQuantity: ${record.quantity}\nWarehouse: ${record.warehouse}\nStatus: ${record.status}\nNotes: ${record.notes || 'None'}`);
+        const detailsContent = document.getElementById('detailsModalContent');
+        const detailsModal = document.getElementById('detailsModal');
+        if (!detailsContent || !detailsModal) return;
+
+        detailsContent.innerHTML = `
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div class="bg-slate-50 p-3.5 rounded-[10px] border border-slate-200">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Product Name</span>
+                    <span class="text-sm font-bold text-slate-900 mt-1 block">${record.product_name || record.productName || '-'}</span>
+                </div>
+                <div class="bg-slate-50 p-3.5 rounded-[10px] border border-slate-200">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">SKU</span>
+                    <span class="text-sm font-mono font-bold text-slate-900 mt-1 block">${record.sku || '-'}</span>
+                </div>
+                <div class="bg-slate-50 p-3.5 rounded-[10px] border border-slate-200">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Quantity</span>
+                    <span class="text-sm font-bold text-slate-900 mt-1 block">${record.quantity || 1} units</span>
+                </div>
+                <div class="bg-slate-50 p-3.5 rounded-[10px] border border-slate-200">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Workflow Status</span>
+                    <div class="mt-1">${getStatusBadge(record.status)}</div>
+                </div>
+                <div class="bg-slate-50 p-3.5 rounded-[10px] border border-slate-200">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Return Reason</span>
+                    <span class="text-xs font-semibold text-slate-800 mt-1 block">${record.return_reason || record.returnReason || '-'}</span>
+                </div>
+                <div class="bg-slate-50 p-3.5 rounded-[10px] border border-slate-200">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Item Condition</span>
+                    <span class="text-xs font-semibold text-slate-800 mt-1 block">${record.condition || '-'}</span>
+                </div>
+                <div class="bg-slate-50 p-3.5 rounded-[10px] border border-slate-200">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Warehouse / Location</span>
+                    <span class="text-xs font-semibold text-slate-800 mt-1 block">${record.warehouse || '-'}</span>
+                </div>
+                <div class="bg-slate-50 p-3.5 rounded-[10px] border border-slate-200">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Reported Date</span>
+                    <span class="text-xs font-semibold text-slate-800 mt-1 block">${formatDate(record.reported_date || record.reportedDate)}</span>
+                </div>
+                <div class="sm:col-span-2 bg-slate-50 p-3.5 rounded-[10px] border border-slate-200">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Source</span>
+                    <span class="text-xs font-medium text-slate-800 mt-1 block">${record.source || '-'}</span>
+                </div>
+                <div class="sm:col-span-2 bg-slate-50 p-3.5 rounded-[10px] border border-slate-200">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Notes & Inspection Findings</span>
+                    <p class="text-xs text-slate-700 mt-1 whitespace-pre-wrap">${record.notes || 'No inspection notes provided.'}</p>
+                </div>
+            </div>
+            <div class="pt-4 border-t border-slate-100 flex items-center justify-end">
+                <button type="button" onclick="const modal=document.getElementById('detailsModal'); if(modal){ modal.classList.add('hidden'); document.body.classList.remove('overflow-hidden'); }" class="px-4 py-2.5 rounded-[10px] bg-[#6EC1D1] text-slate-900 text-xs sm:text-sm font-bold hover:bg-[#59b2c2] transition shadow-sm cursor-pointer">Close</button>
+            </div>
+        `;
+
+        detailsModal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
     }
 
     async function updateStatus(id, newStatus) {
@@ -541,10 +594,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const closeDetailsModalBtn = document.getElementById('closeDetailsModalBtn');
+    const detailsModalOverlay = document.getElementById('detailsModalOverlay');
+
+    function closeDetailsModal() {
+        const detailsModal = document.getElementById('detailsModal');
+        if (detailsModal) {
+            detailsModal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+    }
+
     if (openAddReturn) openAddReturn.addEventListener('click', openModal);
     if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
     if (cancelModalBtn) cancelModalBtn.addEventListener('click', closeModal);
     if (modalOverlay) modalOverlay.addEventListener('click', closeModal);
+    if (closeDetailsModalBtn) closeDetailsModalBtn.addEventListener('click', closeDetailsModal);
+    if (detailsModalOverlay) detailsModalOverlay.addEventListener('click', closeDetailsModal);
     if (deleteRecordBtn) deleteRecordBtn.addEventListener('click', deleteCurrentRecord);
 
     if (clearFiltersBtn) {
@@ -585,8 +651,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.addEventListener('keydown', event => {
-        if (event.key === 'Escape' && returnModal && !returnModal.classList.contains('hidden')) {
-            closeModal();
+        if (event.key === 'Escape') {
+            if (returnModal && !returnModal.classList.contains('hidden')) {
+                closeModal();
+            }
+            const detailsModal = document.getElementById('detailsModal');
+            if (detailsModal && !detailsModal.classList.contains('hidden')) {
+                closeDetailsModal();
+            }
         }
     });
 

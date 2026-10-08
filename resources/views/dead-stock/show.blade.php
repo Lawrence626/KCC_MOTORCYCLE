@@ -504,36 +504,50 @@
         }
         // Resolve product photo from localStorage
         try {
-            const stored = localStorage.getItem('posProductImages');
-            if (stored) {
-                const images = JSON.parse(stored);
-                const imgEl = document.getElementById('deadStockProductImage');
-                if (imgEl) {
-                    const id = imgEl.dataset.id;
-                    const sku = imgEl.dataset.sku;
-                    const name = imgEl.dataset.name;
-                    const keys = Object.keys(images);
+            const imgEl = document.getElementById('deadStockProductImage');
+            if (imgEl) {
+                const itemObj = {
+                    id: imgEl.dataset.id,
+                    sku: imgEl.dataset.sku,
+                    name: imgEl.dataset.name,
+                    brand: imgEl.dataset.brand,
+                    category: imgEl.dataset.category
+                };
 
-                    let imgUrl = null;
-                    if (id && images[id]) imgUrl = images[id];
-                    else if (sku && images[sku]) imgUrl = images[sku];
-                    else if (name && images[name]) imgUrl = images[name];
-                    else {
-                        if (sku) {
-                            const matchSku = keys.find(k => k.toLowerCase() === String(sku).toLowerCase());
-                            if (matchSku) imgUrl = images[matchSku];
-                        }
-                        if (!imgUrl && name) {
-                            const matchName = keys.find(k => k.toLowerCase() === String(name).toLowerCase());
-                            if (matchName) imgUrl = images[matchName];
+                let imgUrl = null;
+                if (window.resolveProductImage) {
+                    imgUrl = window.resolveProductImage(itemObj);
+                }
+
+                if (!imgUrl) {
+                    const stored = localStorage.getItem('posProductImages');
+                    if (stored) {
+                        const images = JSON.parse(stored);
+                        const keys = Object.keys(images);
+                        const id = itemObj.id;
+                        const sku = itemObj.sku;
+                        const name = itemObj.name;
+
+                        if (id && images[id]) imgUrl = images[id];
+                        else if (sku && images[sku]) imgUrl = images[sku];
+                        else if (name && images[name]) imgUrl = images[name];
+                        else {
+                            if (sku) {
+                                const matchSku = keys.find(k => k.toLowerCase() === String(sku).toLowerCase());
+                                if (matchSku) imgUrl = images[matchSku];
+                            }
+                            if (!imgUrl && name) {
+                                const matchName = keys.find(k => k.toLowerCase() === String(name).toLowerCase());
+                                if (matchName) imgUrl = images[matchName];
+                            }
                         }
                     }
+                }
 
-                    if (imgUrl) {
-                        imgEl.innerHTML = '';
-                        imgEl.className = 'w-12 h-12 rounded-[10px] bg-slate-100 border border-slate-200/80 flex-shrink-0 bg-cover bg-center shadow-sm';
-                        imgEl.style.backgroundImage = `url('${imgUrl}')`;
-                    }
+                if (imgUrl) {
+                    imgEl.innerHTML = '';
+                    imgEl.className = 'w-12 h-12 rounded-[10px] bg-slate-100 border border-slate-200/80 flex-shrink-0 bg-cover bg-center shadow-sm';
+                    imgEl.style.backgroundImage = `url('${imgUrl}')`;
                 }
             }
         } catch(e) {

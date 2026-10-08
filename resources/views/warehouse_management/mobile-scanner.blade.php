@@ -31,9 +31,9 @@
             
             <!-- Pagination -->
             <div id="pagination" class="hidden flex items-center justify-between mt-3 pt-3 border-t border-slate-700">
-                <button onclick="prevPage()" class="px-2.5 py-1 rounded-lg border border-slate-600 bg-slate-700 text-[11px] font-semibold text-white hover:bg-slate-600 disabled:opacity-50" id="prev-page">Previous</button>
+                <button onclick="prevPage()" class="px-2.5 py-1 rounded-[10px] border border-slate-600 bg-slate-700 text-[11px] font-semibold text-white hover:bg-slate-600 disabled:opacity-50 transition" id="prev-page">← Prev</button>
                 <span id="page-info" class="text-[11px] text-slate-400">Page 1 of 1</span>
-                <button onclick="nextPage()" class="px-2.5 py-1 rounded-lg border border-slate-600 bg-slate-700 text-[11px] font-semibold text-white hover:bg-slate-600 disabled:opacity-50" id="next-page">Next</button>
+                <button onclick="nextPage()" class="px-2.5 py-1 rounded-[10px] border border-slate-600 bg-slate-700 text-[11px] font-semibold text-white hover:bg-slate-600 disabled:opacity-50 transition" id="next-page">Next →</button>
             </div>
 
             <button onclick="sendToWarehouse()" class="w-full mt-4 px-3 py-2.5 rounded-xl bg-[#6EC1D1] text-slate-900 text-sm font-bold hover:bg-[#59b2c2] transition cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed" id="send-btn" disabled>Send to Warehouse</button>

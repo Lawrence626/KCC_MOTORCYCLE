@@ -450,18 +450,23 @@ function getProductDefaultImage(product) {
     return '';
 }
 
-function saveProductImagePreview(cardId, dataUrl) {
-    // Store image ONLY by product ID to prevent cross-product image conflicts.
-    // Do NOT store by SKU or name since multiple products can share the same values.
-    const key = String(cardId);
+function saveProductImagePreview(productOrId, dataUrl) {
+    if (!productOrId || !dataUrl) return;
+    const prod = typeof productOrId === 'object' ? productOrId : { id: productOrId };
+    const key = String(prod.id || prod.product_id || productOrId);
+
     try {
         posState.productImages[key] = dataUrl;
-        const serialized = JSON.stringify(posState.productImages);
-        const sizeInMB = new Blob([serialized]).size / (1024 * 1024);
-        console.log(`Saving ${Object.keys(posState.productImages).length} images, total size: ${sizeInMB.toFixed(2)}MB`);
+        if (prod.sku && prod.sku !== 'N/A') posState.productImages[prod.sku] = dataUrl;
+        if (prod.name && prod.name !== 'Unknown Product') posState.productImages[prod.name] = dataUrl;
+        if (prod.product_name) posState.productImages[prod.product_name] = dataUrl;
 
-        localStorage.setItem('posProductImages', JSON.stringify(posState.productImages));
-        console.log('✓ Saved product image for card:', key);
+        if (window.saveProductImage) {
+            window.saveProductImage(prod, dataUrl);
+        } else {
+            localStorage.setItem('posProductImages', JSON.stringify(posState.productImages));
+        }
+        console.log('✓ Saved product image for card:', key, prod.sku, prod.name);
     } catch (error) {
         console.error('Failed to save product image preview:', error.message);
         if (error.name === 'QuotaExceededError') {
@@ -470,7 +475,11 @@ function saveProductImagePreview(cardId, dataUrl) {
             try {
                 localStorage.setItem('posProductImages', JSON.stringify({}));
                 posState.productImages[key] = dataUrl;
-                localStorage.setItem('posProductImages', JSON.stringify(posState.productImages));
+                if (window.saveProductImage) {
+                    window.saveProductImage(prod, dataUrl);
+                } else {
+                    localStorage.setItem('posProductImages', JSON.stringify(posState.productImages));
+                }
                 console.log('✓ Saved after clearing');
             } catch (retryError) {
                 console.error('Still cannot save:', retryError.message);
@@ -481,16 +490,6 @@ function saveProductImagePreview(cardId, dataUrl) {
 
 function loadProductImagePreviews() {
     try {
-        // One-time migration: clear all old uploaded images to fix cross-product image conflicts.
-        // Remove this block once the migration has run (after first page load).
-        if (!localStorage.getItem('posProductImages_v2')) {
-            localStorage.removeItem('posProductImages');
-            localStorage.setItem('posProductImages_v2', '1');
-            posState.productImages = {};
-            console.log('🔄 Cleared all old product images (one-time migration)');
-            return;
-        }
-
         const stored = localStorage.getItem('posProductImages');
         posState.productImages = stored ? JSON.parse(stored) : {};
         console.log(`Loaded ${Object.keys(posState.productImages).length} product images from storage`);
@@ -501,18 +500,46 @@ function loadProductImagePreviews() {
 }
 
 function applyProductImagePreviews() {
-    Object.entries(posState.productImages).forEach(([cardId, dataUrl]) => {
-        const input = document.querySelector(`.pos-image-uploader[data-id="${cardId}"]`);
-        const card = input?.closest('.pos-image-upload-card');
-        if (!card) return;
+    document.querySelectorAll('.pos-image-upload-card').forEach(card => {
+        const input = card.querySelector('.pos-image-uploader');
+        const productId = input?.dataset.id || card.dataset.productId;
+        const sku = card.dataset.sku || '';
+        const name = card.dataset.name || '';
+        const brand = card.dataset.brand || '';
+        const category = card.dataset.category || '';
+        const product_name = card.dataset.productName || '';
+
+        const prodObj = {
+            id: productId,
+            product_id: productId,
+            sku: sku,
+            name: name,
+            product_name: product_name,
+            brand: brand,
+            category: category
+        };
+
+        const resolved = window.resolveProductImage
+            ? window.resolveProductImage(prodObj)
+            : (posState.productImages[String(productId)] || posState.productImages[sku] || posState.productImages[name] || getProductDefaultImage(prodObj));
+
         const preview = card.querySelector('.pos-image-preview');
         const placeholder = card.querySelector('.pos-image-placeholder');
-        if (preview && dataUrl) {
-            preview.style.backgroundImage = `url('${dataUrl}')`;
-            preview.classList.remove('hidden');
+        if (preview) {
+            if (resolved) {
+                preview.style.backgroundImage = `url('${resolved}')`;
+                preview.classList.remove('hidden');
+            } else {
+                preview.style.backgroundImage = '';
+                preview.classList.add('hidden');
+            }
         }
-        if (placeholder && dataUrl) {
-            placeholder.classList.add('hidden');
+        if (placeholder) {
+            if (resolved) {
+                placeholder.classList.add('hidden');
+            } else {
+                placeholder.classList.remove('hidden');
+            }
         }
     });
 }
@@ -1058,15 +1085,18 @@ async function searchProducts(query = '', page = 1) {
             card.dataset.productId = product.id;
             card.dataset.sku = product.sku || '';
             card.dataset.name = productName;
+            card.dataset.productName = product.product_name || productName;
+            card.dataset.brand = brand;
+            card.dataset.category = product.category || '';
+            card.dataset.compatibility = compatibility;
 
             // Calculate VAT breakdown
             const sellingPrice = Number(product.unit_price || 0);
             const includedVat = sellingPrice * (12 / 112);
             const vatableSales = sellingPrice - includedVat;
 
-            // Retrieve image: custom uploaded by product ID -> product DB image -> brand default image -> empty
-            const defaultImage = getProductDefaultImage(product);
-            const cardImage = posState.productImages[String(product.id)] || product.image || defaultImage || '';
+            // Retrieve image: custom uploaded (ID, SKU, Name) -> product DB image -> brand default image -> empty
+            const cardImage = window.resolveProductImage ? window.resolveProductImage(product) : (posState.productImages[String(product.id)] || product.image || getProductDefaultImage(product) || '');
 
             card.innerHTML = `
                 <div class="flex-shrink-0">
@@ -2456,10 +2486,18 @@ function setupPosEvents() {
                     placeholder.classList.add('hidden');
                 }
 
-                // Save compressed version — keyed only by product ID to avoid cross-product conflicts
-                if (input.dataset.id) {
-                    saveProductImagePreview(input.dataset.id, compressedDataUrl);
-                }
+                // Save compressed version synced across all modules and keys
+                const productObj = {
+                    id: input.dataset.id || card?.dataset.productId,
+                    product_id: input.dataset.id || card?.dataset.productId,
+                    sku: card?.dataset.sku || '',
+                    name: card?.dataset.name || '',
+                    product_name: card?.dataset.productName || card?.dataset.name || '',
+                    brand: card?.dataset.brand || '',
+                    category: card?.dataset.category || ''
+                };
+
+                saveProductImagePreview(productObj, compressedDataUrl);
             };
             img.src = reader.result;
         };

@@ -887,6 +887,10 @@
 
             function resolveItemImage(it, localImages){
                 if (!it) return null;
+                if (window.resolveProductImage) {
+                    const resolved = window.resolveProductImage(it);
+                    if (resolved) return resolved;
+                }
                 if (it.image_url || it.image) return it.image_url || it.image;
                 localImages = localImages || loadLocalImages();
                 const pid = it.product_id ?? it.id ?? null;
@@ -1854,6 +1858,10 @@
 
         function getFsModalProductImage(item) {
             if (!item) return null;
+            if (window.resolveProductImage) {
+                var resolved = window.resolveProductImage(item);
+                if (resolved) return resolved;
+            }
             if (item.image) return item.image;
             try {
                 var stored = localStorage.getItem('posProductImages');

@@ -322,9 +322,9 @@
 
                 <!-- Pagination -->
                 <div id="ro-qr-pagination" class="hidden flex items-center justify-between pt-4 border-t border-slate-200">
-                    <button onclick="roPrevPage()" class="px-4 py-2 rounded-lg border border-slate-300 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" id="ro-prev-page">Previous</button>
-                    <span id="ro-page-info" class="text-sm text-slate-600">Page 1 of 1</span>
-                    <button onclick="roNextPage()" class="px-4 py-2 rounded-lg border border-slate-300 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" id="ro-next-page">Next</button>
+                    <button onclick="roPrevPage()" class="inline-flex items-center rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" id="ro-prev-page">← Prev</button>
+                    <span id="ro-page-info" class="text-xs text-slate-600">Page 1 of 1</span>
+                    <button onclick="roNextPage()" class="inline-flex items-center rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" id="ro-next-page">Next →</button>
                 </div>
 
                 <!-- Action Buttons -->
@@ -1011,28 +1011,42 @@
 
             function resolvePoReceivedImages() {
                 try {
-                    const stored = localStorage.getItem('posProductImages');
-                    if (!stored) return;
-                    const images = JSON.parse(stored);
-                    const keys = Object.keys(images);
-
                     document.querySelectorAll('.po-received-img-thumb').forEach(container => {
-                        const id = container.dataset.id;
-                        const sku = container.dataset.sku;
-                        const name = container.dataset.name;
+                        const itemObj = {
+                            id: container.dataset.id,
+                            sku: container.dataset.sku,
+                            name: container.dataset.name,
+                            brand: container.dataset.brand,
+                            category: container.dataset.category
+                        };
 
                         let imgUrl = null;
-                        if (id && images[id]) imgUrl = images[id];
-                        else if (sku && images[sku]) imgUrl = images[sku];
-                        else if (name && images[name]) imgUrl = images[name];
-                        else {
-                            if (sku) {
-                                const matchSku = keys.find(k => k.toLowerCase() === String(sku).toLowerCase());
-                                if (matchSku) imgUrl = images[matchSku];
-                            }
-                            if (!imgUrl && name) {
-                                const matchName = keys.find(k => k.toLowerCase() === String(name).toLowerCase());
-                                if (matchName) imgUrl = images[matchName];
+                        if (window.resolveProductImage) {
+                            imgUrl = window.resolveProductImage(itemObj);
+                        }
+
+                        if (!imgUrl) {
+                            const stored = localStorage.getItem('posProductImages');
+                            if (stored) {
+                                const images = JSON.parse(stored);
+                                const keys = Object.keys(images);
+                                const id = itemObj.id;
+                                const sku = itemObj.sku;
+                                const name = itemObj.name;
+
+                                if (id && images[id]) imgUrl = images[id];
+                                else if (sku && images[sku]) imgUrl = images[sku];
+                                else if (name && images[name]) imgUrl = images[name];
+                                else {
+                                    if (sku) {
+                                        const matchSku = keys.find(k => k.toLowerCase() === String(sku).toLowerCase());
+                                        if (matchSku) imgUrl = images[matchSku];
+                                    }
+                                    if (!imgUrl && name) {
+                                        const matchName = keys.find(k => k.toLowerCase() === String(name).toLowerCase());
+                                        if (matchName) imgUrl = images[matchName];
+                                    }
+                                }
                             }
                         }
 

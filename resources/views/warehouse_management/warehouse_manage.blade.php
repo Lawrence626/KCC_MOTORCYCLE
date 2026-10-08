@@ -682,9 +682,9 @@
                 <div id="archived-list" class="space-y-2 max-h-64 overflow-y-auto rounded-[20px] border border-slate-200 p-4 bg-slate-50"></div>
 
                 <div class="archived-pagination flex items-center justify-center gap-3 pt-2">
-                    <button id="archived-prev" type="button" onclick="if(currentArchivedPage>1){currentArchivedPage--;renderArchivedShelvesList();}" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer disabled:opacity-50">Previous</button>
+                    <button id="archived-prev" type="button" onclick="if(currentArchivedPage>1){currentArchivedPage--;renderArchivedShelvesList();}" class="inline-flex items-center rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition cursor-pointer">← Prev</button>
                     <div id="archived-page-info" class="text-xs font-semibold text-slate-600">Page 1 of 1</div>
-                    <button id="archived-next" type="button" onclick="currentArchivedPage++;renderArchivedShelvesList();" class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-800 shadow-sm hover:bg-black/10 focus:outline-none transition-all duration-200 cursor-pointer disabled:opacity-50">Next</button>
+                    <button id="archived-next" type="button" onclick="currentArchivedPage++;renderArchivedShelvesList();" class="inline-flex items-center rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition cursor-pointer">Next →</button>
                 </div>
             </div>
 
@@ -756,9 +756,9 @@
 
                 <!-- Pagination -->
                 <div id="wm-qr-pagination" class="hidden flex items-center justify-between pt-4 border-t border-slate-200">
-                    <button onclick="wmPrevPage()" class="px-4 py-2 rounded-lg border border-slate-300 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" id="wm-prev-page">Previous</button>
-                    <span id="wm-page-info" class="text-sm text-slate-600">Page 1 of 1</span>
-                    <button onclick="wmNextPage()" class="px-4 py-2 rounded-lg border border-slate-300 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" id="wm-next-page">Next</button>
+                    <button onclick="wmPrevPage()" class="inline-flex items-center rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" id="wm-prev-page">← Prev</button>
+                    <span id="wm-page-info" class="text-xs text-slate-600">Page 1 of 1</span>
+                    <button onclick="wmNextPage()" class="inline-flex items-center rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" id="wm-next-page">Next →</button>
                 </div>
 
                 <!-- Action Buttons -->
@@ -880,9 +880,9 @@
 
                         <!-- Pagination -->
                         <div id="wm-scan-pagination" class="hidden flex items-center justify-between mt-3 pt-3 border-t border-slate-200">
-                            <button onclick="wmScanPrevPage()" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" id="wm-scan-prev-page">Previous</button>
+                            <button onclick="wmScanPrevPage()" class="inline-flex items-center rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" id="wm-scan-prev-page">← Prev</button>
                             <span id="wm-scan-page-info" class="text-xs text-slate-600">Page 1 of 1</span>
-                            <button onclick="wmScanNextPage()" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" id="wm-scan-next-page">Next</button>
+                            <button onclick="wmScanNextPage()" class="inline-flex items-center rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" id="wm-scan-next-page">Next →</button>
                         </div>
                     </div>
 

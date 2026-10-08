@@ -52,7 +52,7 @@
     "src": "_instrument-sans-600-normal-DMks36a2.woff"
   },
   "resources/css/app.css": {
-    "file": "assets/app-DXtuHc7B.css",
+    "file": "assets/app-DPh8_-kw.css",
     "name": "app",
     "names": [
       "app.css"
@@ -85,13 +85,13 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-D1q0_s_Y.js",
+    "file": "assets/app-i7TGNs2p.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
   },
   "resources/js/dashboard.js": {
-    "file": "assets/dashboard-CMneYvuX.js",
+    "file": "assets/dashboard-DrgxvJ6y.js",
     "name": "dashboard",
     "src": "resources/js/dashboard.js",
     "isEntry": true
@@ -103,19 +103,19 @@
     "isEntry": true
   },
   "resources/js/monitoring.js": {
-    "file": "assets/monitoring-sQdGNCfQ.js",
+    "file": "assets/monitoring-YKn3tM0y.js",
     "name": "monitoring",
     "src": "resources/js/monitoring.js",
     "isEntry": true
   },
   "resources/js/pos_terminal.js": {
-    "file": "assets/pos_terminal-CINM1v8S.js",
+    "file": "assets/pos_terminal-CSAscbof.js",
     "name": "pos_terminal",
     "src": "resources/js/pos_terminal.js",
     "isEntry": true
   },
   "resources/js/product-categorization.js": {
-    "file": "assets/product-categorization-BKheWlB2.js",
+    "file": "assets/product-categorization-CNA-v9Rb.js",
     "name": "product-categorization",
     "src": "resources/js/product-categorization.js",
     "isEntry": true
@@ -127,7 +127,7 @@
     "isEntry": true
   },
   "resources/js/reverse-logistics.js": {
-    "file": "assets/reverse-logistics-DgbpHEto.js",
+    "file": "assets/reverse-logistics-C8AXoNIm.js",
     "name": "reverse-logistics",
     "src": "resources/js/reverse-logistics.js",
     "isEntry": true

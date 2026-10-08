@@ -463,7 +463,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const getSavedProductImage = (item) => {
         if (!item) return null;
-        if (item.image) return item.image;
+        if (window.resolveProductImage) {
+            const resolved = window.resolveProductImage(item);
+            if (resolved) return resolved;
+        }
+        if (item.image || item.image_url) return item.image || item.image_url;
         try {
             const stored = localStorage.getItem('posProductImages');
             if (stored) {
@@ -976,13 +980,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── Real-Time Auto Sync (Cross-Tab & Cross-Device) ───────────────────
     // 1. Same-browser instant sync (0ms) via localStorage storage event
     window.addEventListener('storage', (e) => {
-        if (e.key === 'pos_last_sale_timestamp') {
+        if (e.key === 'pos_last_sale_timestamp' || e.key === 'posProductImages') {
             loadDashboard();
         }
     });
 
     // 2. Custom event dispatched within the same window (if POS and dashboard are in single-page context)
     window.addEventListener('pos-transaction-completed', () => {
+        loadDashboard();
+    });
+    window.addEventListener('pos-image-updated', () => {
         loadDashboard();
     });
 

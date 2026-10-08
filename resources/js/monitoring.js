@@ -24,6 +24,10 @@ function formatDate(dateStr) {
 
 function getMonitoringProductImage(p) {
     if (!p) return null;
+    if (window.resolveProductImage) {
+        const resolved = window.resolveProductImage(p);
+        if (resolved) return resolved;
+    }
     if (p.image) return p.image;
     try {
         const stored = localStorage.getItem('posProductImages');
@@ -32,11 +36,17 @@ function getMonitoringProductImage(p) {
             const productId = p.id || p.product_id;
             if (productId && images[productId]) return images[productId];
             if (p.sku && images[p.sku]) return images[p.sku];
+            if (p.name && images[p.name]) return images[p.name];
+            if (p.product_name && images[p.product_name]) return images[p.product_name];
 
             const keys = Object.keys(images);
             if (p.sku) {
                 const matchSku = keys.find(k => k.toLowerCase() === String(p.sku).toLowerCase());
                 if (matchSku) return images[matchSku];
+            }
+            if (p.name) {
+                const matchName = keys.find(k => k.toLowerCase() === String(p.name).toLowerCase());
+                if (matchName) return images[matchName];
             }
         }
     } catch (e) {}
@@ -815,7 +825,7 @@ function updatePagination(pagination) {
     }
 
     const totalPages = pagination.last_page;
-    let html = `<button type="button" onclick="loadProducts(${Math.max(1, currentPage - 1)})" class="rounded-[8px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-sm" ${currentPage <= 1 ? 'disabled' : ''}>← Prev</button>`;
+    let html = `<button type="button" onclick="loadProducts(${Math.max(1, currentPage - 1)})" class="rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" ${currentPage <= 1 ? 'disabled' : ''}>← Prev</button>`;
 
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(totalPages, startPage + 4);
@@ -824,13 +834,13 @@ function updatePagination(pagination) {
 
     for (let i = startPage; i <= endPage; i++) {
         if (i === currentPage) {
-            html += `<button type="button" class="inline-flex items-center justify-center rounded-[8px] bg-[#0f172a] text-white w-8 h-8 text-xs font-semibold shadow-sm">${i}</button>`;
+            html += `<button type="button" class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">${i}</button>`;
         } else {
-            html += `<button type="button" onclick="loadProducts(${i})" class="inline-flex items-center justify-center rounded-[8px] border border-slate-200 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50 transition shadow-sm">${i}</button>`;
+            html += `<button type="button" onclick="loadProducts(${i})" class="inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50 transition">${i}</button>`;
         }
     }
 
-    html += `<button type="button" onclick="loadProducts(${Math.min(totalPages, currentPage + 1)})" class="rounded-[8px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-sm" ${currentPage >= totalPages ? 'disabled' : ''}>Next →</button>`;
+    html += `<button type="button" onclick="loadProducts(${Math.min(totalPages, currentPage + 1)})" class="rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition" ${currentPage >= totalPages ? 'disabled' : ''}>Next →</button>`;
 
     paginationContainer.innerHTML = html;
 
