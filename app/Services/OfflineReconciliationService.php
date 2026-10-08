@@ -271,24 +271,26 @@ class OfflineReconciliationService
         }
 
         $rawStatus = strtolower(trim($record['status'] ?? 'approved'));
-        $finalStatus = in_array($rawStatus, ['approved', 'pending approval', 'sent to supplier', 'in transit', 'completed'], true)
+        $finalStatus = in_array($rawStatus, ['approved', 'sent to supplier', 'in transit', 'completed'], true)
             ? $rawStatus
             : 'approved';
 
         $userId = $importedBy ?? auth()->id();
 
-        $purchaseOrder = PurchaseOrder::create([
-            'order_number' => $record['order_number'],
-            'supplier_id' => $supplierId,
-            'supplier_name' => $supplierName,
-            'user_id' => $userId,
-            'created_by_role' => 'admin',
-            'status' => $finalStatus,
-            'approved_at' => ($finalStatus === 'approved') ? now() : null,
-            'sync_status' => 'synchronized',
-            'notes' => $record['notes'] ?? null,
-            'total_amount' => $record['total_amount'] ?? 0,
-        ]);
+        $purchaseOrder = PurchaseOrder::updateOrCreate(
+            ['order_number' => $record['order_number']],
+            [
+                'supplier_id' => $supplierId,
+                'supplier_name' => $supplierName,
+                'user_id' => $userId,
+                'created_by_role' => 'admin',
+                'status' => $finalStatus,
+                'approved_at' => ($finalStatus === 'approved') ? now() : null,
+                'sync_status' => 'synchronized',
+                'notes' => $record['notes'] ?? null,
+                'total_amount' => $record['total_amount'] ?? 0,
+            ]
+        );
 
         if (isset($record['items']) && is_array($record['items'])) {
             foreach ($record['items'] as $item) {

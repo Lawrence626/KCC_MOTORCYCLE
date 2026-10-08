@@ -6,19 +6,26 @@
         $supplierProducts = \App\Models\Product::where('supplier_name', $s->name)->get();
         $supplierOrders = \App\Models\PurchaseOrder::where('supplier_id', $s->id)->orWhere('supplier_name', $s->name)->get();
         $metrics = app(\App\Services\SupplierPerformanceService::class)->calculateForSupplier($s, $supplierProducts, $supplierOrders);
+        $lastPO = \App\Models\PurchaseOrder::where('supplier_id', $s->id)
+            ->whereIn('status', ['completed', 'partially received'])
+            ->latest('completed_at')
+            ->first();
+
         $supplierPerformanceCache[$s->id] = [
             'id' => $s->id,
             'name' => $s->name,
             'contact_person' => $s->contact_person ?? 'No Contact Person',
             'phone' => $s->phone ?? 'No Phone',
             'email' => $s->email ?? 'No Email',
-            'performance_score' => $metrics['overall_score'] ?? 85,
+            'address' => $s->address ?? '',
+            'last_purchase_date' => $lastPO?->completed_at?->format('M j, Y') ?? $lastPO?->updated_at?->format('M j, Y') ?? 'None',
+            'performance_score' => $metrics['performance_score'] ?? 85,
             'on_time_rate' => $metrics['on_time_rate'] ?? 100,
             'completion_rate' => $metrics['completion_rate'] ?? 100,
             'quality_score' => $metrics['quality_score'] ?? 100,
             'price_stability' => $metrics['price_stability'] ?? 100,
-            'delivered_orders' => $metrics['delivered_orders'] ?? 0,
-            'total_orders' => $metrics['total_orders'] ?? 0,
+            'delivered_orders' => $metrics['delivered_orders_count'] ?? 0,
+            'total_orders' => $metrics['orders_count'] ?? $supplierOrders->count(),
             'defect_rate' => $metrics['defect_rate'] ?? 0,
         ];
     }
@@ -66,6 +73,27 @@
                 <p class="text-sm font-bold text-amber-950">Internet connection lost — Offline Mode Activated</p>
                 <p class="text-xs text-amber-800 mt-0.5">You can safely save this purchase order locally. When your internet connection is restored, you will be notified to export and synchronize it for final processing before sending to supplier.</p>
             </div>
+        </div>
+    </div>
+
+    {{-- Offline Order Saved Success Alert Banner --}}
+    <div id="offline-saved-success-alert" class="hidden rounded-[14px] border border-emerald-300 bg-gradient-to-r from-emerald-50 to-teal-50 p-4 shadow-sm mb-4 transition-all duration-300">
+        <div class="flex items-start justify-between gap-3">
+            <div class="flex items-start gap-3">
+                <div class="p-2 bg-emerald-100 border border-emerald-200 rounded-xl text-emerald-700 shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <div>
+                    <p class="text-sm font-bold text-emerald-950 flex items-center gap-2">
+                        <span>Purchase Order Saved Locally (Offline)!</span>
+                        <span id="saved-alert-po-tag" class="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-200 text-emerald-900"></span>
+                    </p>
+                    <p id="saved-alert-msg" class="text-xs text-emerald-800 mt-0.5">Matagumpay na na-save ang purchase order sa lokal na browser storage (IndexedDB). Kapag may internet na, pumunta sa Offline Reconciliation para i-export at i-sync ito.</p>
+                </div>
+            </div>
+            <button type="button" onclick="document.getElementById('offline-saved-success-alert').classList.add('hidden')" class="text-emerald-700 hover:text-emerald-900 p-1 cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
         </div>
     </div>
 
@@ -513,7 +541,20 @@
     }
 
     // Embedded Supplier Performance Cache for 100% Offline Capability
-    const embeddedSupplierPerformance = @json($supplierPerformanceCache);
+    const rawEmbeddedPerf = @json($supplierPerformanceCache);
+    let embeddedSupplierPerformance = (rawEmbeddedPerf && typeof rawEmbeddedPerf === 'object') ? rawEmbeddedPerf : {};
+    
+    try {
+        if (embeddedSupplierPerformance && Object.keys(embeddedSupplierPerformance).length > 0) {
+            localStorage.setItem('kcc_cached_supplier_performance', JSON.stringify(embeddedSupplierPerformance));
+        } else {
+            const cached = localStorage.getItem('kcc_cached_supplier_performance');
+            if (cached) embeddedSupplierPerformance = JSON.parse(cached);
+        }
+    } catch (e) {
+        console.warn('localStorage access error for supplier performance:', e);
+    }
+    window.embeddedSupplierPerformance = embeddedSupplierPerformance;
 
     // Helpers
     const $el  = (id) => document.getElementById(id);
@@ -1136,6 +1177,33 @@
     async function loadSupplierDetails(supplierId) {
         if (!supplierId || selectedProductIds.length === 0) return;
 
+        const isOffline = (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean') ? !navigator.onLine : false;
+        const cachedSupplier = (embeddedSupplierPerformance && embeddedSupplierPerformance[supplierId])
+            || (window.embeddedSupplierPerformance && window.embeddedSupplierPerformance[supplierId])
+            || (JSON.parse(localStorage.getItem('kcc_cached_supplier_performance') || '{}')[supplierId]);
+
+        if (isOffline && cachedSupplier) {
+            renderSupplierInfo(cachedSupplier);
+            const fallbackHistories = [];
+            selectedProductsStore.forEach((item, pid) => {
+                fallbackHistories.push({
+                    product_id: pid,
+                    product_name: item.product_name,
+                    catalog_price: item.unit_price,
+                    current_cost: item.unit_price,
+                    previous_cost: item.unit_price,
+                    change_percentage: 0,
+                    trend: 'stable',
+                    recommendation: 'Offline Mode: Supplier pricing is stable. Maintain current retail price.',
+                    suggested_retail: item.unit_price * 1.20,
+                    histories: []
+                });
+            });
+            loadedPriceHistories = fallbackHistories;
+            renderPriceAnalysis(fallbackHistories);
+            return;
+        }
+
         try {
             const url = new URL(ROUTES.supplierDetails, window.location.origin);
             url.searchParams.set('supplier_id', supplierId);
@@ -1152,7 +1220,27 @@
                 renderPriceAnalysis(loadedPriceHistories);
             }
         } catch (e) {
-            console.error('loadSupplierDetails error', e);
+            console.warn('loadSupplierDetails network error, falling back to cached supplier metrics:', e);
+            if (cachedSupplier) {
+                renderSupplierInfo(cachedSupplier);
+                const fallbackHistories = [];
+                selectedProductsStore.forEach((item, pid) => {
+                    fallbackHistories.push({
+                        product_id: pid,
+                        product_name: item.product_name,
+                        catalog_price: item.unit_price,
+                        current_cost: item.unit_price,
+                        previous_cost: item.unit_price,
+                        change_percentage: 0,
+                        trend: 'stable',
+                        recommendation: 'Offline Mode: Supplier pricing is stable. Maintain current retail price.',
+                        suggested_retail: item.unit_price * 1.20,
+                        histories: []
+                    });
+                });
+                loadedPriceHistories = fallbackHistories;
+                renderPriceAnalysis(fallbackHistories);
+            }
         }
     }
 
@@ -1569,9 +1657,12 @@
         }
 
         const isOffline = (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean') ? !navigator.onLine : false;
+        const cachedSupplier = (embeddedSupplierPerformance && embeddedSupplierPerformance[supplierId])
+            || (window.embeddedSupplierPerformance && window.embeddedSupplierPerformance[supplierId])
+            || (JSON.parse(localStorage.getItem('kcc_cached_supplier_performance') || '{}')[supplierId]);
 
-        if (isOffline && embeddedSupplierPerformance && embeddedSupplierPerformance[supplierId]) {
-            renderSupplierPerformanceData(embeddedSupplierPerformance[supplierId], []);
+        if (isOffline && cachedSupplier) {
+            renderSupplierPerformanceData(cachedSupplier, []);
             return;
         }
 
@@ -1599,8 +1690,8 @@
             const data = await res.json();
 
             if (!data || !data.supplier) {
-                if (embeddedSupplierPerformance && embeddedSupplierPerformance[supplierId]) {
-                    renderSupplierPerformanceData(embeddedSupplierPerformance[supplierId], []);
+                if (cachedSupplier) {
+                    renderSupplierPerformanceData(cachedSupplier, []);
                 } else {
                     content.innerHTML = `<div class="p-6 text-center text-rose-600 font-semibold">Unable to load supplier performance records.</div>`;
                 }
@@ -1611,10 +1702,11 @@
 
         } catch (err) {
             console.warn('Network error fetching supplier performance, fallback to offline cache:', err);
-            if (embeddedSupplierPerformance && embeddedSupplierPerformance[supplierId]) {
-                renderSupplierPerformanceData(embeddedSupplierPerformance[supplierId], []);
+            if (cachedSupplier) {
+                renderSupplierPerformanceData(cachedSupplier, []);
             } else {
                 content.innerHTML = `<div class="p-6 text-center text-slate-600 font-semibold">Offline Mode: Supplier performance data is active.</div>`;
+            }
         }
     };
 
@@ -1914,6 +2006,33 @@
         });
     }
 
+    function showOfflineToast(message, type = 'success') {
+        if (window.offlineManager && typeof window.offlineManager.showNotification === 'function') {
+            window.offlineManager.showNotification(message, type);
+            return;
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `fixed top-5 right-5 z-[999999] px-4 py-3.5 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2.5 max-w-md transition-all duration-300 ${
+            type === 'success' ? 'bg-emerald-700 text-white border border-emerald-500' :
+            type === 'warning' ? 'bg-amber-500 text-slate-950 border border-amber-300' :
+            'bg-slate-900 text-white border border-slate-700'
+        }`;
+        toast.innerHTML = `
+            <svg class="w-5 h-5 shrink-0 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span>${message}</span>
+        `;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-10px)';
+            setTimeout(() => toast.remove(), 400);
+        }, 5000);
+    }
+
     window.showOfflineSuccessModal = function(order) {
         const modal = $el('offlineSuccessModal');
         if (modal) {
@@ -1924,16 +2043,26 @@
             if ($el('offline-modal-total')) $el('offline-modal-total').textContent = '₱' + Number(order.total_amount).toLocaleString('en-PH', { minimumFractionDigits: 2 });
 
             modal.classList.remove('hidden');
+            modal.style.display = 'flex';
         }
 
-        if (window.offlineManager && typeof window.offlineManager.showNotification === 'function') {
-            window.offlineManager.showNotification(`✓ Purchase Order #${order.order_number} saved locally in offline storage!`, 'success');
+        const banner = $el('offline-saved-success-alert');
+        if (banner) {
+            const tag = $el('saved-alert-po-tag');
+            if (tag) tag.textContent = order.order_number;
+            banner.classList.remove('hidden');
+            banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
+
+        showOfflineToast(`✓ Purchase Order #${order.order_number} saved locally in offline storage!`, 'success');
     };
 
     window.closeOfflineSuccessModal = function() {
         const modal = $el('offlineSuccessModal');
-        if (modal) modal.classList.add('hidden');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
     };
 
 })();

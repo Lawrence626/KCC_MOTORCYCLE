@@ -9,12 +9,6 @@
             </div>
             <div class="flex items-center gap-2">
                 <div id="offline-indicator" class="hidden"></div>
-                <button onclick="window.offlineManager && window.offlineManager.manualSync ? window.offlineManager.manualSync() : alert('Sync in progress...')" class="inline-flex items-center gap-1.5 rounded-[10px] border border-[#6EC1D1]/40 bg-[#6EC1D1] px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] focus:outline-none transition-all duration-200 cursor-pointer">
-                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                    </svg>
-                    <span>Sync Now</span>
-                </button>
             </div>
         </div>
     </x-slot>
@@ -450,7 +444,6 @@
         </div>
     </div>
 
-    <script src="{{ asset('js/offline-manager.js') }}"></script>
     <script>
         // Load synchronization stats
         document.addEventListener('DOMContentLoaded', function() {

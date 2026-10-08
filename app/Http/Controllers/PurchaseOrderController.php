@@ -27,6 +27,84 @@ class PurchaseOrderController extends Controller
 {
     public function management(Request $request)
     {
+        // Synchronize imported purchase order statuses with Offline Reconciliation PendingImport status
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('pending_imports')) {
+                // 1. Collect all order numbers belonging to currently active pending imports
+                $activePendingOrderNumbers = [];
+                $pendingImports = \App\Models\PendingImport::where('status', 'pending')->get();
+                foreach ($pendingImports as $pImp) {
+                    $pData = $pImp->data;
+                    if (isset($pData['valid']) && is_array($pData['valid'])) {
+                        foreach ($pData['valid'] as $record) {
+                            if (($record['type'] ?? 'purchase_order') === 'purchase_order' && !empty($record['order_number'])) {
+                                $activePendingOrderNumbers[] = $record['order_number'];
+
+                                // Ensure this pending import order exists in purchase_orders table
+                                $existing = PurchaseOrder::where('order_number', $record['order_number'])->first();
+                                if (!$existing) {
+                                    $sId = $record['supplier_id'] ?? null;
+                                    $sName = $record['supplier_name'] ?? null;
+                                    if (!$sId && $sName) {
+                                        $sId = Supplier::where('name', $sName)->value('id');
+                                    }
+                                    $newPo = PurchaseOrder::create([
+                                        'order_number' => $record['order_number'],
+                                        'supplier_id' => $sId,
+                                        'supplier_name' => $sName,
+                                        'user_id' => $pImp->uploaded_by ?? 1,
+                                        'created_by_role' => 'admin',
+                                        'status' => 'pending approval',
+                                        'sync_status' => 'imported',
+                                        'notes' => $record['notes'] ?? null,
+                                        'total_amount' => $record['total_amount'] ?? 0,
+                                        'created_at' => $record['created_at'] ?? now(),
+                                        'updated_at' => now(),
+                                    ]);
+                                    if (!empty($record['items']) && is_array($record['items'])) {
+                                        foreach ($record['items'] as $it) {
+                                            $prId = $it['product_id'] ?? null;
+                                            $prName = $it['product_name'] ?? 'Unknown Item';
+                                            $sku = $it['sku'] ?? null;
+                                            if (!$prId && $sku) {
+                                                $prod = Product::where('sku', $sku)->first();
+                                                $prId = $prod?->id;
+                                                $prName = $prod?->product_name ?: ($prod?->name ?: $prName);
+                                            }
+                                            PurchaseOrderItem::create([
+                                                'purchase_order_id' => $newPo->id,
+                                                'product_id' => $prId,
+                                                'product_name' => $prName,
+                                                'sku' => $sku,
+                                                'quantity' => (int) ($it['quantity'] ?? 1),
+                                                'unit_price' => (float) ($it['unit_price'] ?? 0),
+                                                'total_price' => (float) ($it['subtotal'] ?? (($it['quantity'] ?? 1) * ($it['unit_price'] ?? 0))),
+                                            ]);
+                                        }
+                                    }
+                                } else {
+                                    $existing->update(['status' => 'pending approval', 'sync_status' => 'imported']);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 2. Any other order that is NOT in the active pending imports list should be marked as 'approved'
+                $queryToApprove = PurchaseOrder::whereIn('status', ['pending', 'pending approval']);
+                if (!empty($activePendingOrderNumbers)) {
+                    $queryToApprove->whereNotIn('order_number', $activePendingOrderNumbers);
+                }
+                $queryToApprove->update([
+                    'status' => 'approved',
+                    'approved_at' => now(),
+                    'sync_status' => 'synchronized',
+                ]);
+            }
+        } catch (\Exception $syncErr) {
+            \Log::warning('Order management import sync check skipped:', ['error' => $syncErr->getMessage()]);
+        }
+
         $receivedRange = $request->query('received_range', 'weekly');
 
         $lowStockProducts = Product::where('is_active', true)
@@ -342,7 +420,9 @@ class PurchaseOrderController extends Controller
 
         return PurchaseOrder::with(['items.product'])
             ->whereIn('status', $statuses)
-            ->when($status && in_array($status, $statuses, true), fn ($query) => $query->where('status', $status))
+            ->when($status && in_array($status, $statuses, true), function ($query) use ($status) {
+                $query->where('status', $status);
+            })
             ->when($supplier, fn ($query, $supplier) => $query->where('supplier_name', $supplier))
             ->when($search, fn ($query, $search) => $query->where(function ($query) use ($search) {
                 $query->where('order_number', 'like', "%{$search}%")

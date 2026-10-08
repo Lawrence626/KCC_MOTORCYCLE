@@ -14,42 +14,12 @@ use Illuminate\Http\UploadedFile;
 
 uses(RefreshDatabase::class);
 
-test('it renders offline purchase orders page with products, suppliers, and assessment metrics', function () {
+test('it redirects offline purchase orders route to offline reconciliation overview', function () {
     $admin = User::factory()->create(['role' => 'admin', 'is_active' => true]);
-
-    $supplier = Supplier::create([
-        'name' => 'Yamaha Genuine Parts',
-        'contact_person' => 'Juan Dela Cruz',
-        'email' => 'yamaha@example.com',
-        'status' => 'active',
-    ]);
-
-    $product = Product::create([
-        'name' => 'Yamalube 4T 10W-40',
-        'product_name' => 'Yamalube 4T 10W-40',
-        'sku' => 'YAM-LUBE-01',
-        'category' => 'Oil',
-        'brand' => 'Yamaha',
-        'unit_price' => 250.00,
-        'stock_quantity' => 5,
-        'reorder_level' => 10,
-        'supplier_name' => $supplier->name,
-        'is_active' => true,
-        'is_archived' => false,
-    ]);
-
-    $product->suppliers()->attach($supplier->id);
 
     $response = $this->actingAs($admin)->get(route('offline.purchase-orders'));
 
-    $response->assertStatus(200);
-    $response->assertViewHas('products');
-    $response->assertViewHas('suppliers');
-    $response->assertViewHas('categories');
-    $response->assertViewHas('brands');
-    $response->assertSee('Offline Purchase Orders');
-    $response->assertSee('Yamalube 4T 10W-40');
-    $response->assertSee('Yamaha Genuine Parts');
+    $response->assertRedirect(route('offline.reconciliation'));
 });
 
 test('it exports offline purchase orders without expected delivery date header', function () {
@@ -497,28 +467,5 @@ test('it renders offline export data page with local order selection and date fi
     $response->assertSee('Export The Selected Orders');
 });
 
-test('it passes categories and categoryBrandsMap to offline purchase orders page', function () {
-    $admin = User::factory()->create(['role' => 'admin', 'is_active' => true]);
 
-    \App\Models\ProductDescription::create([
-        'name' => 'Pipe',
-        'sku_prefix' => 'PIP',
-        'brands' => ['APIDO', 'TRC', 'KVIN'],
-        'is_active' => true,
-    ]);
-
-    $response = $this->actingAs($admin)->get(route('offline.purchase-orders'));
-
-    $response->assertStatus(200);
-    $response->assertViewHas('categories');
-    $response->assertViewHas('brands');
-    $response->assertViewHas('categoryBrandsMap');
-
-    $categories = $response->viewData('categories');
-    expect($categories->contains('Pipe'))->toBeTrue();
-
-    $categoryBrandsMap = $response->viewData('categoryBrandsMap');
-    expect($categoryBrandsMap)->toHaveKey('Pipe');
-    expect($categoryBrandsMap['Pipe'])->toContain('APIDO');
-});
 

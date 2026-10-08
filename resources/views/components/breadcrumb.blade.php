@@ -96,9 +96,6 @@
         $breadcrumbItems[] = ['name' => 'Archived Users', 'url' => null, 'active' => true];
     } elseif ($currentRoute === 'offline.reconciliation') {
         $breadcrumbItems[] = ['name' => 'Offline Reconciliation', 'url' => null, 'active' => true];
-    } elseif ($currentRoute === 'offline.purchase-orders') {
-        $breadcrumbItems[] = ['name' => 'Offline Reconciliation', 'url' => route('offline.reconciliation'), 'active' => false];
-        $breadcrumbItems[] = ['name' => 'Purchase Orders', 'url' => null, 'active' => true];
     } elseif ($currentRoute === 'offline.export') {
         $breadcrumbItems[] = ['name' => 'Offline Reconciliation', 'url' => route('offline.reconciliation'), 'active' => false];
         $breadcrumbItems[] = ['name' => 'Export Data', 'url' => null, 'active' => true];
