@@ -330,6 +330,12 @@ class OfflineManager {
                 centerBadge.classList.remove('hidden');
                 centerBadge.style.display = 'inline-flex';
             }
+
+            const modal = document.getElementById('all-notifications-modal');
+            if (modal && !modal.classList.contains('hidden') && typeof window.openAllNotificationsModal === 'function') {
+                // If modal is currently open, refresh list
+                window.openAllNotificationsModal();
+            }
         }
     }
 

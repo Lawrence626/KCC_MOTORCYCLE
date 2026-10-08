@@ -195,6 +195,29 @@
 
     @include('partials.admin-purchase-order-toasts')
 
+    <!-- ═══ View All Notifications Modal (Global) ═══ -->
+    <div id="all-notifications-modal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="window.closeAllNotificationsModal ? window.closeAllNotificationsModal() : this.parentElement.classList.add('hidden')"></div>
+        <div class="relative bg-white rounded-[28px] shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
+                <div>
+                    <h3 class="text-xl font-bold text-black">All Notifications</h3>
+                    <p class="text-sm text-slate-900 font-medium">History of inventory alerts and pending offline orders.</p>
+                </div>
+                <button type="button" onclick="window.closeAllNotificationsModal ? window.closeAllNotificationsModal() : document.getElementById('all-notifications-modal').classList.add('hidden')" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div id="modal-notification-list" class="divide-y divide-slate-100 overflow-y-auto p-6 space-y-3">
+                <!-- Loaded dynamically -->
+            </div>
+            <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+                <span id="modal-notif-count" class="text-xs text-slate-500">0 notifications</span>
+                <button type="button" onclick="window.closeAllNotificationsModal ? window.closeAllNotificationsModal() : document.getElementById('all-notifications-modal').classList.add('hidden')" class="rounded-[10px] bg-black/10 px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-black/20">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         (function() {
             const menuToggle = document.getElementById('mobile-menu-toggle');
@@ -419,45 +442,6 @@
                     }
                 });
             }
-
-            // Notification panel toggle function
-            window.toggleNotificationPanel = function(event) {
-                event.stopPropagation();
-                const panel = document.getElementById('notification-panel');
-                const dropdown = document.getElementById('dashboardProfileDropdown');
-
-                if (panel) {
-                    const isHidden = panel.classList.contains('hidden');
-                    if (isHidden) {
-                        panel.classList.remove('hidden');
-                        if (dropdown) {
-                            dropdown.classList.add('hidden', 'opacity-0', 'scale-95');
-                            dropdown.classList.remove('block', 'opacity-100', 'scale-100');
-                        }
-                    } else {
-                        panel.classList.add('hidden');
-                    }
-                }
-            };
-
-            // Mark all notifications as read
-            window.markAllNotificationsRead = function() {
-                console.log('Mark all notifications as read');
-            };
-
-            // Open all notifications modal
-            window.openAllNotificationsModal = function() {
-                console.log('Open all notifications modal');
-            };
-
-            // Close notification panel when clicking outside
-            window.addEventListener('click', function(e) {
-                const panel = document.getElementById('notification-panel');
-                const bellBtn = document.getElementById('notification-bell-btn');
-                if (panel && !panel.classList.contains('hidden') && !panel.contains(e.target) && !bellBtn.contains(e.target)) {
-                    panel.classList.add('hidden');
-                }
-            });
         })();
     </script>
 
@@ -929,6 +913,135 @@
                 var isHidden = panel.classList.contains('hidden');
                 panel.classList.toggle('hidden');
                 if (isHidden) window.loadNotificationCenter();
+            };
+
+            window.openAllNotificationsModal = function() {
+                var modal = document.getElementById('all-notifications-modal');
+                var list = document.getElementById('modal-notification-list');
+                var count = document.getElementById('modal-notif-count');
+                if (!modal || !list) return;
+
+                // Hide the dropdown panel
+                var panel = document.getElementById('notification-panel');
+                if (panel) panel.classList.add('hidden');
+
+                list.innerHTML = '<div class="p-6 text-center text-slate-500">Loading notifications…</div>';
+                modal.classList.remove('hidden');
+
+                var pendingOfflineOrders = [];
+                if (window.offlineManager && typeof window.offlineManager.getPendingOrders === 'function') {
+                    try {
+                        pendingOfflineOrders = (window.offlineManager.getPendingOrders() || []).filter(function(o) { return !o.synced; });
+                    } catch (e) {
+                        pendingOfflineOrders = [];
+                    }
+                }
+
+                function renderModalContent(serverNotifications) {
+                    var totalNotifs = serverNotifications.length + pendingOfflineOrders.length;
+                    if (count) count.textContent = totalNotifs + ' notification' + (totalNotifs === 1 ? '' : 's');
+                    
+                    if (totalNotifs === 0) {
+                        list.innerHTML = '<div class="p-6 text-center text-slate-400">No notification history.</div>';
+                        return;
+                    }
+
+                    var html = '';
+
+                    // 1. Render pending offline orders at top of modal
+                    if (pendingOfflineOrders.length > 0) {
+                        pendingOfflineOrders.forEach(function(order, idx) {
+                            var poNum = order.order_number || order.po_number || ('PO-OFFLINE-' + (idx + 1));
+                            var suppName = (order.supplier_name || 'Selected Supplier').replace(/"/g, '');
+                            var itemsCount = Array.isArray(order.items) ? order.items.length : 1;
+                            var itemsText = itemsCount + ' item' + (itemsCount > 1 ? 's' : '');
+                            var ago = window.timeAgo ? window.timeAgo(order.timestamp) : 'Just now';
+
+                            html += '<div class="notif-item notif-item-unread p-4 rounded-[14px] border border-amber-300/80 bg-amber-50/40 hover:border-amber-400 shadow-sm flex items-start justify-between gap-4 transition-all mb-3">' +
+                                '<div class="flex items-start gap-4">' +
+                                    '<div class="flex-shrink-0 w-10 h-10 rounded-[10px] flex items-center justify-center" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(245, 158, 11, 0.16) 100%); border: 1px solid rgba(245, 158, 11, 0.25);">' +
+                                        '<svg class="w-5 h-5 text-amber-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>' +
+                                    '</div>' +
+                                    '<div>' +
+                                        '<div class="flex items-center gap-2 mb-0.5">' +
+                                            '<span class="text-[10px] font-bold uppercase tracking-wider text-amber-700">OFFLINE ORDER</span>' +
+                                            '<span class="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>' +
+                                        '</div>' +
+                                        '<p class="text-[14px] font-semibold text-slate-900 mt-1">' + window.escHtml(poNum) + ' &middot; ' + window.escHtml(suppName) + '</p>' +
+                                        '<div class="flex items-center gap-2 mt-1">' +
+                                            '<span class="text-xs text-slate-500">' + itemsText + '</span>' +
+                                            '<span class="text-slate-400">&middot;</span>' +
+                                            '<span class="text-xs font-medium text-amber-600">Pending Sync</span>' +
+                                        '</div>' +
+                                        '<p class="text-[11px] font-bold text-slate-900 mt-1.5">' + window.escHtml(ago) + '</p>' +
+                                    '</div>' +
+                                '</div>' +
+                                '<a href="/offline-reconciliation/export" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[#00ddd2] text-black text-xs font-semibold hover:bg-[#00c7bc] transition-colors flex-shrink-0">Export</a>' +
+                            '</div>';
+                        });
+                    }
+
+                    // 2. Render server inventory notifications
+                    if (serverNotifications.length > 0) {
+                        html += serverNotifications.map(function(n) {
+                            var isCritical = n.notification_type === 'out_of_stock';
+                            var iconSVG = isCritical 
+                                ? '<svg class="w-5 h-5 text-red-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>'
+                                : '<svg class="w-5 h-5 text-amber-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>';
+                            var iconBgStyle = isCritical
+                                ? 'background: linear-gradient(135deg, rgba(239, 68, 68, 0.06) 0%, rgba(239, 68, 68, 0.10) 100%); border: 1px solid rgba(239, 68, 68, 0.20);'
+                                : 'background: linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(245, 158, 11, 0.10) 100%); border: 1px solid rgba(245, 158, 11, 0.20);';
+                            var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
+                            var ago = window.timeAgo(n.created_at);
+                            var stockText = isCritical ? '0 left' : n.current_stock + ' remaining';
+                            var statusClass = 'notif-item notif-item-' + n.status;
+
+                            return '<div class="' + statusClass + ' p-4 rounded-[14px] border border-slate-200/80 bg-white hover:border-[#6EC1D1]/60 shadow-sm flex items-start justify-between gap-4 transition-all mb-3">' +
+                                '<div class="flex items-start gap-4">' +
+                                    '<div class="flex-shrink-0 w-10 h-10 rounded-[10px] flex items-center justify-center" style="' + iconBgStyle + '">' +
+                                        iconSVG +
+                                    '</div>' +
+                                    '<div>' +
+                                        '<div class="flex items-center gap-2 mb-0.5">' +
+                                            '<span class="text-[10px] font-bold uppercase tracking-wider text-slate-700">' + typeLabel + '</span>' +
+                                            (n.status === 'unread' ? '<span class="notif-status-dot unread"></span>' : '') +
+                                        '</div>' +
+                                        '<p class="text-[14px] font-semibold text-slate-900 mt-1">' + window.escHtml(n.product_name) + '</p>' +
+                                        '<div class="flex items-center gap-2 mt-1">' +
+                                            '<span class="text-xs text-slate-500">SKU: ' + window.escHtml(n.sku) + '</span>' +
+                                            '<span class="text-slate-400">&middot;</span>' +
+                                            '<span class="text-xs font-medium text-slate-600">' + stockText + '</span>' +
+                                        '</div>' +
+                                        '<p class="text-[11px] ' + (n.status === 'unread' ? 'font-bold text-slate-900' : 'text-slate-400') + ' mt-1.5">' + window.escHtml(ago) + '</p>' +
+                                    '</div>' +
+                                '</div>' +
+                                (n.status !== 'resolved'
+                                    ? '<a href="' + window.escHtml(n.order_url || '/purchase-order/create') + '" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[#6EC1D1] text-black text-xs font-medium hover:bg-[#59b2c2] transition-colors flex-shrink-0">Order Now</a>'
+                                    : '<span class="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 flex-shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Resolved</span>'
+                                ) +
+                            '</div>';
+                        }).join('');
+                    }
+
+                    list.innerHTML = html;
+                }
+
+                fetch('/api/inventory-notifications?limit=250', {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    renderModalContent(data.notifications || []);
+                })
+                .catch(function(err) {
+                    console.warn('Network offline or error fetching modal notifications:', err);
+                    renderModalContent([]);
+                });
+            };
+
+            window.closeAllNotificationsModal = function() {
+                var modal = document.getElementById('all-notifications-modal');
+                if (modal) modal.classList.add('hidden');
             };
 
             // Close notification panel when clicking outside
