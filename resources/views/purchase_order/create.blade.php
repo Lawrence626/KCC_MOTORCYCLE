@@ -214,52 +214,24 @@
             </div>
         </div>
 
-        {{-- STEP 2 - SUPPLIER COMPARISON (Placed ABOVE Select Supplier for clear decision making) --}}
-        <div id="comparison-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
+        {{-- STEP 2 - SELECT SUPPLIER, SUPPLIER INFORMATION & COMPARISON MATRIX (UNIFIED STEP) --}}
+        <div id="supplier-section-panel" class="rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center justify-between bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <div class="flex items-center gap-3">
                     <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">2</span>
                     <div>
-                        <h2 class="text-sm font-semibold text-white">Supplier Comparison</h2>
-                        <p class="text-xs text-slate-300">All qualified suppliers ranked by cost & metrics. Click View to inspect supplier assessment performance.</p>
+                        <h2 class="text-sm font-semibold text-white">Select Supplier, Evaluation & Comparison</h2>
+                        <p class="text-xs text-slate-300">Choose a qualified supplier, inspect performance metrics, and compare pricing benchmarks.</p>
                     </div>
                 </div>
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#6EC1D1]/20 text-[#6EC1D1] border border-[#6EC1D1]/40">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                    Performance Matrix
+                    Supplier Intelligence
                 </span>
             </div>
-            <div class="p-6 space-y-4">
-                <div id="recommended-supplier-badge" class="hidden rounded-[10px] bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800"></div>
-                <div class="overflow-hidden rounded-3xl border border-slate-200">
-                    <table class="min-w-full text-left text-sm">
-                        <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider border-b border-slate-200" style="background-color: #0f172a;">
-                            <tr>
-                                <th class="px-4 py-3">Supplier</th>
-                                <th class="px-4 py-3">Total Cost (₱)</th>
-                                <th class="px-4 py-3">Avg Change</th>
-                                <th class="px-4 py-3">Last Purchase</th>
-                                <th class="px-4 py-3">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="comparison-table-body" class="divide-y divide-slate-200 text-slate-700">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
 
-        {{-- STEP 3 - SELECT SUPPLIER (Placed BELOW Supplier Comparison) --}}
-        <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm">
-            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">3</span>
-                <div>
-                    <h2 class="text-sm font-semibold text-white">Select Supplier</h2>
-                    <p class="text-xs text-slate-300">Choose your preferred supplier directly or select one from the comparison table above.</p>
-                </div>
-            </div>
-
-            <div class="p-6 space-y-4">
+            <div class="p-6 space-y-5">
+                {{-- Supplier loading / hints --}}
                 <div id="supplier-loading" class="hidden flex items-center gap-2 text-sm text-slate-500">
                     <svg class="animate-spin h-4 w-4 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -272,13 +244,14 @@
                     <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
                     </svg>
-                    Select at least one product above to see qualified suppliers.
+                    Select at least one product above to choose and compare qualified suppliers.
                 </div>
 
                 <div id="no-supplier-message" class="hidden rounded-[10px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"></div>
 
-                <div id="supplier-dropdown-wrapper" class="hidden relative max-w-sm z-30" data-dropdown-wrapper="supplierSelect">
-                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Supplier</label>
+                {{-- Part A: Select Supplier Dropdown --}}
+                <div id="supplier-dropdown-wrapper" class="hidden relative max-w-md z-30" data-dropdown-wrapper="supplierSelect">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">Choose Primary Supplier</label>
                     <input type="hidden" name="supplier_id" id="supplier-select" value="" />
                     <button type="button"
                             id="supplierSelectButton"
@@ -292,45 +265,82 @@
                     <div id="supplierSelectDropdown"
                          class="dropdown-menu hidden absolute top-full left-0 z-50 mt-1.5 w-full rounded-[16px] border border-slate-200 bg-white shadow-xl p-3 space-y-1 max-h-60 overflow-y-auto">
                         <div id="supplierSelectList" class="space-y-1">
-                            <!-- Supplier checkboxes dynamically loaded here -->
+                            <!-- Supplier options dynamically loaded here -->
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        {{-- STEP 4 - SUPPLIER INFORMATION --}}
-        <div id="supplier-info-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">4</span>
-                <h2 class="text-sm font-semibold text-white">Supplier Information</h2>
-            </div>
-            <div class="p-6">
-                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Supplier Name</p>
-                        <p id="si-name" class="text-sm font-semibold text-slate-800">—</p>
+                {{-- Part B: Supplier Information Card (Appears directly upon selecting a supplier) --}}
+                <div id="supplier-info-panel" class="hidden rounded-2xl border border-slate-200 bg-slate-50/80 p-5 space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-200">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Selected Supplier Profile & Performance</span>
+                        </div>
+                        <button type="button"
+                                id="btn-view-selected-supplier-perf"
+                                onclick="if(currentSupplierId) window._poViewSupplierPerformance(currentSupplierId)"
+                                class="inline-flex items-center gap-1.5 rounded-xl border border-cyan-300 bg-cyan-50 px-3.5 py-1.5 text-xs font-bold text-cyan-800 hover:bg-cyan-100 transition shadow-2xs cursor-pointer">
+                            <svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                            <span>View Full Performance Assessment</span>
+                        </button>
                     </div>
-                    <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Contact Person</p>
-                        <p id="si-contact" class="text-sm text-slate-700">—</p>
+
+                    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                        <div class="rounded-xl bg-white border border-slate-200/80 p-3 shadow-2xs">
+                            <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-0.5">Supplier Name</p>
+                            <p id="si-name" class="text-sm font-bold text-slate-900 truncate">—</p>
+                        </div>
+                        <div class="rounded-xl bg-white border border-slate-200/80 p-3 shadow-2xs">
+                            <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-0.5">Contact Person</p>
+                            <p id="si-contact" class="text-sm font-medium text-slate-700 truncate">—</p>
+                        </div>
+                        <div class="rounded-xl bg-white border border-slate-200/80 p-3 shadow-2xs">
+                            <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-0.5">Last Purchase</p>
+                            <p id="si-last-purchase" class="text-sm font-medium text-slate-700 truncate">—</p>
+                        </div>
+                        <div class="rounded-xl bg-white border border-slate-200/80 p-3 shadow-2xs">
+                            <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-0.5">Performance Score</p>
+                            <div id="si-reliability" class="text-sm font-bold text-slate-900">—</div>
+                        </div>
                     </div>
-                    <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Last Purchase</p>
-                        <p id="si-last-purchase" class="text-sm text-slate-700">—</p>
+                </div>
+
+                {{-- Part C: Supplier Comparison Table --}}
+                <div id="comparison-panel" class="hidden space-y-3 pt-2">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-[#6EC1D1]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 18h12l3-18H3z"/></svg>
+                            <span>Qualified Suppliers Comparison Matrix</span>
+                        </h3>
+                        <span class="text-xs text-slate-400">Click Select to switch or View to inspect assessment</span>
                     </div>
-                    <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Performance Score</p>
-                        <p id="si-reliability" class="text-sm font-semibold text-slate-800">—</p>
+
+                    <div id="recommended-supplier-badge" class="hidden rounded-[10px] bg-emerald-50 border border-emerald-200 px-4 py-2.5 text-sm text-emerald-800"></div>
+
+                    <div class="overflow-hidden rounded-2xl border border-slate-200">
+                        <table class="min-w-full text-left text-sm">
+                            <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider border-b border-slate-200" style="background-color: #0f172a;">
+                                <tr>
+                                    <th class="px-4 py-3">Supplier</th>
+                                    <th class="px-4 py-3">Total Cost (₱)</th>
+                                    <th class="px-4 py-3">Avg Change</th>
+                                    <th class="px-4 py-3">Last Purchase</th>
+                                    <th class="px-4 py-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="comparison-table-body" class="divide-y divide-slate-200 text-slate-700">
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- STEP 5 - PRICE HISTORY / SUMMARY / RECOMMENDATIONS --}}
+        {{-- STEP 3 - PRICE ANALYSIS --}}
         <div id="price-analysis-panel" class="hidden rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center gap-3 bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">5</span>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">3</span>
                 <div>
                     <h2 class="text-sm font-semibold text-white">Supplier Price Analysis</h2>
                     <p class="text-xs text-slate-300">Historical costs, trends, and purchasing recommendations per product.</p>
@@ -341,14 +351,14 @@
             </div>
         </div>
 
-        {{-- STEP 6 - DELIVERY SCHEDULE & ORDER NOTES (7 Days Allotted) --}}
+        {{-- STEP 4 - DELIVERY SCHEDULE & ORDER NOTES (7 Days Allotted) --}}
         @php
             $defaultExpectedDelivery = \App\Models\PurchaseOrder::calculateDefaultWorkingDaysDeliveryDate(7)->format('Y-m-d');
         @endphp
         <div class="rounded-[15px] border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div class="border-b border-slate-800 px-6 py-4 flex items-center justify-between bg-[#0f172a] rounded-t-[15px]" style="background-color: #0f172a;">
                 <div class="flex items-center gap-3">
-                    <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">6</span>
+                    <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6EC1D1] text-xs font-bold text-black">4</span>
                     <div>
                         <h2 class="text-sm font-semibold text-white">Delivery Schedule & Order Notes</h2>
                         <p class="text-xs text-slate-300">Set expected arrival date (auto-calculated 7 days from today) and special instructions.</p>
@@ -449,7 +459,7 @@
                     <div class="bg-amber-50 border border-amber-300/80 rounded-2xl p-4 flex items-start gap-3">
                         <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         <div class="text-xs text-amber-900 leading-relaxed">
-                            <strong>Offline Storage Notice:</strong> Ang Purchase Order na ito ay <strong>matagumpay na na-save sa lokal na IndexedDB database</strong> ng iyong device. Kapag nagkaroon muli ng internet connection, pumunta lamang sa <strong>Offline Reconciliation > Export Data</strong> para i-export at i-sync ito.
+                            <strong>Offline Storage Notice:</strong> Ang Purchase Order na ito ay <strong>matagumpay na na-save sa lokal na browser storage (IndexedDB)</strong> ng iyong device habang offline. Naka-store ito nang ligtas at handang i-sync kapag naibalik na ang iyong internet connection.
                         </div>
                     </div>
 
@@ -483,9 +493,9 @@
                     <button type="button" onclick="window.closeOfflineSuccessModal()" class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition shadow-2xs cursor-pointer">
                         Create Another Order
                     </button>
-                    <a href="{{ route('offline.export') }}" class="rounded-xl bg-[#0f172a] text-white px-5 py-2.5 text-xs font-bold hover:bg-slate-800 transition shadow-sm inline-flex items-center gap-2 cursor-pointer">
-                        <span>Go to Export & Sync</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    <a href="{{ route('order.management') }}" class="rounded-xl bg-[#0f172a] text-white px-5 py-2.5 text-xs font-bold hover:bg-slate-800 transition shadow-sm inline-flex items-center gap-2 cursor-pointer">
+                        <span>Back and wait for the internet restored</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                     </a>
                 </div>
             </div>
@@ -679,6 +689,8 @@
         } else {
             hideSupplierPanels();
         }
+
+        debouncedLoadComparison();
     }
 
     window.toggleSupplierDropdown = function(event) {
@@ -1448,17 +1460,29 @@
 
         rows.forEach(r => {
             const isRec = recommended && r.supplier_id === recommended.id;
+            const isSelected = currentSupplierId && r.supplier_id === currentSupplierId;
             const tr = document.createElement('tr');
-            tr.className = isRec
-                ? 'bg-emerald-50/60'
-                : 'hover:bg-slate-50';
+            tr.className = isSelected
+                ? 'bg-emerald-50/70 border-l-4 border-l-emerald-500 font-semibold'
+                : (isRec ? 'bg-emerald-50/30 hover:bg-slate-50' : 'hover:bg-slate-50');
 
             const cc = r.avg_change_percentage > 0
-                ? 'text-rose-600'
-                : r.avg_change_percentage < 0 ? 'text-emerald-700' : 'text-slate-500';
+                ? 'text-rose-600 font-semibold'
+                : r.avg_change_percentage < 0 ? 'text-emerald-700 font-semibold' : 'text-slate-500';
+
+            const selectActionBtn = isSelected
+                ? `<span class="inline-flex items-center gap-1 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    <span>Selected</span>
+                   </span>`
+                : `<button type="button"
+                           onclick="selectSupplier(${r.supplier_id}, '${escHtml(r.supplier_name)}')"
+                           class="inline-flex items-center gap-1 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition shadow-2xs cursor-pointer">
+                    <span>Select</span>
+                   </button>`;
 
             tr.innerHTML = `
-                <td class="px-4 py-3 font-medium ${isRec ? 'text-emerald-900' : 'text-slate-800'}">
+                <td class="px-4 py-3 ${isSelected ? 'text-emerald-950 font-bold' : (isRec ? 'text-emerald-900 font-semibold' : 'text-slate-800')}">
                     <div class="flex items-center gap-1.5">
                         ${isRec ? '<span class="inline-flex items-center gap-1 text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-md text-[11px] font-bold shrink-0"><svg class="w-3.5 h-3.5 text-amber-500 fill-amber-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>Best Value</span>' : ''}
                         <span>${escHtml(r.supplier_name)}</span>
@@ -1467,13 +1491,17 @@
                 <td class="px-4 py-3 font-semibold">${r.latest_total_cost > 0 ? fmt(r.latest_total_cost) : '—'}</td>
                 <td class="px-4 py-3 ${cc}">${r.has_history ? fmtP(r.avg_change_percentage) : '—'}</td>
                 <td class="px-4 py-3 text-slate-500">${escHtml(r.last_purchase_date ?? '—')}</td>
-                <td class="px-4 py-3">
-                    <button type="button"
-                            onclick="window._poViewSupplierPerformance(${r.supplier_id})"
-                            class="inline-flex items-center gap-1.5 rounded-xl border border-cyan-300 bg-cyan-50 px-3 py-1.5 text-xs font-bold text-cyan-700 hover:bg-cyan-100 transition shadow-xs cursor-pointer">
-                        <svg class="w-3.5 h-3.5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                        <span>View</span>
-                    </button>
+                <td class="px-4 py-3 text-right">
+                    <div class="inline-flex items-center justify-end gap-1.5">
+                        ${selectActionBtn}
+                        <button type="button"
+                                onclick="window._poViewSupplierPerformance(${r.supplier_id})"
+                                class="inline-flex items-center gap-1.5 rounded-xl border border-cyan-300 bg-cyan-50 px-3 py-1.5 text-xs font-bold text-cyan-800 hover:bg-cyan-100 transition shadow-2xs cursor-pointer"
+                                title="View assessment performance details">
+                            <svg class="w-3.5 h-3.5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            <span>View</span>
+                        </button>
+                    </div>
                 </td>
             `;
             tbody.appendChild(tr);
