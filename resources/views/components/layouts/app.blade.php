@@ -735,7 +735,10 @@
                 .then(function(data) {
                     window.renderNotificationCenter(data.notifications || [], data.unread_count || 0);
                 })
-                .catch(function(err) { console.error('Failed to load notifications:', err); });
+                .catch(function(err) {
+                    console.warn('Network offline or failed to load server notifications:', err);
+                    window.renderNotificationCenter([], 0);
+                });
             };
 
             window.renderNotificationCenter = function(notifications, unreadCount) {
