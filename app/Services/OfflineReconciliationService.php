@@ -270,10 +270,13 @@ class OfflineReconciliationService
             $supplierId = $foundSupplier?->id;
         }
 
-        $rawStatus = strtolower(trim($record['status'] ?? 'approved'));
+        $rawStatus = strtolower(trim($record['status'] ?? 'pending approval'));
+        if ($rawStatus === 'pending') {
+            $rawStatus = 'pending approval';
+        }
         $finalStatus = in_array($rawStatus, ['approved', 'pending approval', 'sent to supplier', 'in transit', 'completed'], true)
             ? $rawStatus
-            : 'approved';
+            : 'pending approval';
 
         $userId = $importedBy ?? auth()->id();
 

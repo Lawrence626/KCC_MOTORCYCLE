@@ -157,7 +157,7 @@ class ImportController extends Controller
                         'order_number' => $orderNumber,
                         'supplier_id' => !empty($rawRow['supplier_id']) ? (int) $rawRow['supplier_id'] : null,
                         'supplier_name' => !empty($rawRow['supplier_name']) ? trim($rawRow['supplier_name']) : null,
-                        'status' => !empty($rawRow['status']) && strtolower(trim($rawRow['status'])) !== 'pending' ? trim($rawRow['status']) : 'approved',
+                        'status' => !empty($rawRow['status']) && !in_array(strtolower(trim($rawRow['status'])), ['pending', 'pending approval']) ? trim($rawRow['status']) : 'pending approval',
                         'sync_status' => 'imported',
                         'notes' => !empty($rawRow['notes']) ? trim($rawRow['notes']) : null,
                         'total_amount' => !empty($rawRow['total_amount']) ? (float) $rawRow['total_amount'] : 0,

@@ -129,11 +129,15 @@ class OfflineReconciliationController extends Controller
             $orderData = $request->all();
 
             return DB::transaction(function () use ($orderData) {
+                $rawStatus = strtolower(trim($orderData['status'] ?? 'pending approval'));
+                if ($rawStatus === 'pending') {
+                    $rawStatus = 'pending approval';
+                }
                 $purchaseOrder = PurchaseOrder::create([
                     'order_number' => $orderData['order_number'],
                     'supplier_id' => $orderData['supplier_id'] ?? null,
                     'supplier_name' => $orderData['supplier_name'] ?? null,
-                    'status' => $orderData['status'] ?? 'pending',
+                    'status' => $rawStatus,
                     'sync_status' => 'synchronized',
                     'notes' => $orderData['notes'] ?? null,
                     'total_amount' => $orderData['total_amount'] ?? 0,

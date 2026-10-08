@@ -342,7 +342,13 @@ class PurchaseOrderController extends Controller
 
         return PurchaseOrder::with(['items.product'])
             ->whereIn('status', $statuses)
-            ->when($status && in_array($status, $statuses, true), fn ($query) => $query->where('status', $status))
+            ->when($status && in_array($status, $statuses, true), function ($query) use ($status) {
+                if ($status === 'pending approval' || $status === 'pending') {
+                    $query->whereIn('status', ['pending approval', 'pending']);
+                } else {
+                    $query->where('status', $status);
+                }
+            })
             ->when($supplier, fn ($query, $supplier) => $query->where('supplier_name', $supplier))
             ->when($search, fn ($query, $search) => $query->where(function ($query) use ($search) {
                 $query->where('order_number', 'like', "%{$search}%")
