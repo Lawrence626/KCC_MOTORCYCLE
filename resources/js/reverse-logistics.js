@@ -673,7 +673,7 @@ document.addEventListener('DOMContentLoaded', () => {
         input.className = 'w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2 pr-10 text-xs text-slate-900 placeholder:text-slate-400 shadow-sm hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35 cursor-pointer';
 
         const wrapper = document.createElement('div');
-        wrapper.className = 'relative w-full mt-0 z-[10]';
+        wrapper.className = 'relative w-full mt-0 z-[50]';
         input.parentNode.insertBefore(wrapper, input);
         wrapper.appendChild(input);
 
@@ -758,9 +758,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 let dayClasses = "h-5 w-5 mx-auto flex items-center justify-center rounded font-medium cursor-pointer transition-all duration-150 text-[11px] ";
                 if (isSelected) {
-                    dayClasses += "bg-[#0f172a] text-white font-bold shadow-sm";
+                    dayClasses += "bg-[#6EC1D1] text-slate-900 font-bold shadow-sm";
                 } else if (isToday) {
-                    dayClasses += "bg-[#6EC1D1] text-black font-bold shadow-sm";
+                    dayClasses += "bg-[#6EC1D1]/25 text-slate-900 font-bold ring-1 ring-[#6EC1D1]";
                 } else {
                     dayClasses += "text-slate-700 hover:bg-slate-100";
                 }

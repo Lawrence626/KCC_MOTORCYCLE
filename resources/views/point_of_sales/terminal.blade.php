@@ -749,9 +749,9 @@
 
                         let dayClasses = "h-7 w-7 mx-auto flex items-center justify-center rounded-lg font-medium cursor-pointer transition-all duration-150 ";
                         if (isSelected) {
-                            dayClasses += "bg-[#0f172a] text-white font-bold shadow-sm";
+                            dayClasses += "bg-[#6EC1D1] text-slate-900 font-bold shadow-sm";
                         } else if (isToday) {
-                            dayClasses += "bg-[#6EC1D1] text-black font-bold shadow-sm";
+                            dayClasses += "bg-[#6EC1D1]/25 text-slate-900 font-bold ring-1 ring-[#6EC1D1]";
                         } else {
                             dayClasses += "text-slate-700 hover:bg-slate-100";
                         }

@@ -244,7 +244,7 @@
                     </div>
 
                     <!-- Custom Dropdown: Return Reason -->
-                    <div class="space-y-1 relative z-[20]" data-dropdown-wrapper="returnReason">
+                    <div class="space-y-1 relative z-[40]" data-dropdown-wrapper="returnReason">
                         <label class="block text-xs font-medium text-slate-700">Return Reason <span class="text-rose-500">*</span></label>
                         <select id="returnReason" class="hidden" required>
                             <option value="Defective" selected>Defective</option>
@@ -259,7 +259,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <div id="returnReasonDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
+                        <div id="returnReasonDropdown" class="dropdown-menu hidden absolute top-full right-0 z-50 mt-1 min-w-[180px] w-auto max-h-48 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
                             <button type="button" onclick="selectCustomOption('returnReason', 'Defective', 'Defective', 'returnReasonDisplay', 'returnReasonDropdown')" class="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 transition cursor-pointer">Defective</button>
                             <button type="button" onclick="selectCustomOption('returnReason', 'Customer Return', 'Customer Return', 'returnReasonDisplay', 'returnReasonDropdown')" class="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 transition cursor-pointer">Customer Return</button>
                             <button type="button" onclick="selectCustomOption('returnReason', 'Wrong Item Delivered', 'Wrong Item Delivered', 'returnReasonDisplay', 'returnReasonDropdown')" class="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 transition cursor-pointer">Wrong Item Delivered</button>
@@ -269,7 +269,7 @@
                     </div>
 
                     <!-- Custom Dropdown: Condition -->
-                    <div class="space-y-1 relative z-[20]" data-dropdown-wrapper="condition">
+                    <div class="space-y-1 relative z-[40]" data-dropdown-wrapper="condition">
                         <label class="block text-xs font-medium text-slate-700">Condition <span class="text-rose-500">*</span></label>
                         <select id="condition" class="hidden" required>
                             <option value="Good" selected>Good</option>
@@ -283,7 +283,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <div id="conditionDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
+                        <div id="conditionDropdown" class="dropdown-menu hidden absolute top-full right-0 z-50 mt-1 min-w-[140px] w-auto max-h-48 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
                             <button type="button" onclick="selectCustomOption('condition', 'Good', 'Good', 'conditionDisplay', 'conditionDropdown')" class="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 transition cursor-pointer">Good</button>
                             <button type="button" onclick="selectCustomOption('condition', 'Opened', 'Opened', 'conditionDisplay', 'conditionDropdown')" class="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 transition cursor-pointer">Opened</button>
                             <button type="button" onclick="selectCustomOption('condition', 'Damaged', 'Damaged', 'conditionDisplay', 'conditionDropdown')" class="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 transition cursor-pointer">Damaged</button>
@@ -292,7 +292,7 @@
                     </div>
 
                     <!-- Custom Dropdown: Source -->
-                    <div class="space-y-1 relative z-[10]" data-dropdown-wrapper="source">
+                    <div class="space-y-1 relative z-[30]" data-dropdown-wrapper="source">
                         <label class="block text-xs font-medium text-slate-700">Source <span class="text-rose-500">*</span></label>
                         <select id="source" class="hidden" required>
                             <option value="Customer Return" selected>Customer Return</option>
@@ -306,7 +306,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <div id="sourceDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
+                        <div id="sourceDropdown" class="dropdown-menu hidden absolute top-full right-0 z-50 mt-1 min-w-[170px] w-auto max-h-48 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
                             <button type="button" onclick="selectCustomOption('source', 'Customer Return', 'Customer Return', 'sourceDisplay', 'sourceDropdown')" class="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 transition cursor-pointer">Customer Return</button>
                             <button type="button" onclick="selectCustomOption('source', 'Supplier Return', 'Supplier Return', 'sourceDisplay', 'sourceDropdown')" class="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 transition cursor-pointer">Supplier Return</button>
                             <button type="button" onclick="selectCustomOption('source', 'Quality Inspection', 'Quality Inspection', 'sourceDisplay', 'sourceDropdown')" class="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 transition cursor-pointer">Quality Inspection</button>
@@ -314,7 +314,7 @@
                         </div>
                     </div>
 
-                    <div class="space-y-1">
+                    <div class="space-y-1 relative z-[30]">
                         <label class="block text-xs font-medium text-slate-700">Reported Date <span class="text-rose-500">*</span></label>
                         <input id="reportedDate" type="date" class="w-full rounded-[10px] border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 shadow-sm hover:ring-1 hover:ring-black/15 focus:outline-none focus:ring-1 focus:ring-black/35" required />
                     </div>
@@ -334,7 +334,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <div id="statusDropdown" class="dropdown-menu hidden absolute top-full left-0 z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
+                        <div id="statusDropdown" class="dropdown-menu hidden absolute top-full right-0 z-50 mt-1 min-w-[170px] w-auto max-h-48 overflow-y-auto rounded-[10px] border border-slate-200 bg-white shadow-xl p-1.5 space-y-0.5">
                             <button type="button" onclick="selectCustomOption('status', 'Under Review', 'Under Review', 'statusDisplay', 'statusDropdown')" class="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 transition cursor-pointer">Under Review</button>
                             <button type="button" onclick="selectCustomOption('status', 'Pending Repair', 'Pending Repair', 'statusDisplay', 'statusDropdown')" class="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 transition cursor-pointer">Pending Repair</button>
                             <button type="button" onclick="selectCustomOption('status', 'Ready for Restock', 'Ready for Restock', 'statusDisplay', 'statusDropdown')" class="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 transition cursor-pointer">Ready for Restock</button>
