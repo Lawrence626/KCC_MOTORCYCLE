@@ -745,22 +745,35 @@
                 var centerBadge = document.getElementById('notif-center-unread-badge');
                 if (!panel) return;
 
+                var safeUnread = typeof unreadCount === 'number' ? unreadCount : 0;
+                if (badge) badge.dataset.serverCount = safeUnread;
+                if (centerBadge) centerBadge.dataset.serverCount = safeUnread;
+
+                var offlineCount = 0;
+                if (window.offlineManager && Array.isArray(window.offlineManager.queue?.orders)) {
+                    offlineCount = window.offlineManager.queue.orders.length;
+                }
+
+                var totalCount = safeUnread + offlineCount;
+
                 if (badge) {
-                    if (unreadCount > 0) {
-                        badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                    if (totalCount > 0) {
+                        badge.textContent = totalCount > 9 ? '9+' : totalCount;
                         badge.classList.remove('hidden');
+                        badge.style.display = 'inline-flex';
                     } else {
                         badge.classList.add('hidden');
+                        badge.style.display = 'none';
                     }
                 }
                 if (centerBadge) {
-                    if (unreadCount > 0) {
-                        centerBadge.textContent = unreadCount;
+                    if (totalCount > 0) {
+                        centerBadge.textContent = totalCount;
                         centerBadge.classList.remove('hidden');
                         centerBadge.style.display = 'inline-flex';
                         centerBadge.style.alignItems = 'center';
                         centerBadge.style.justifyContent = 'center';
-                        if (unreadCount > 9) {
+                        if (totalCount > 9) {
                             centerBadge.style.width = 'auto';
                             centerBadge.style.padding = '0 6px';
                         } else {
@@ -774,66 +787,73 @@
                 }
 
                 panel.innerHTML = '';
-                if (!notifications || notifications.length === 0) {
+                if ((!notifications || notifications.length === 0) && offlineCount === 0) {
                     if (empty) empty.classList.remove('hidden');
                     return;
                 }
                 if (empty) empty.classList.add('hidden');
 
-                notifications.forEach(function(n) {
-                    var isCritical = n.notification_type === 'out_of_stock';
-                    var iconSVG = isCritical 
-                        ? '<svg class="w-4 h-4 text-red-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>'
-                        : '<svg class="w-4 h-4 text-amber-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>';
-                    var iconBgStyle = isCritical
-                        ? 'background: linear-gradient(135deg, rgba(239, 68, 68, 0.06) 0%, rgba(239, 68, 68, 0.10) 100%); border: 1px solid rgba(239, 68, 68, 0.20); border-radius: 10px;'
-                        : 'background: linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(245, 158, 11, 0.10) 100%); border: 1px solid rgba(245, 158, 11, 0.20); border-radius: 10px;';
-                    var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
-                    var statusClass = 'notif-item notif-item-' + n.status;
-                    var ago = window.timeAgo(n.created_at);
-                    var stockText = isCritical ? '0 left' : n.current_stock + ' remaining';
-                    var shortSku = (n.sku || '').length > 15 ? (n.sku || '').substring(0, 15) + '...' : (n.sku || '');
+                if (notifications && notifications.length > 0) {
+                    notifications.forEach(function(n) {
+                        var isCritical = n.notification_type === 'out_of_stock';
+                        var iconSVG = isCritical 
+                            ? '<svg class="w-4 h-4 text-red-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>'
+                            : '<svg class="w-4 h-4 text-amber-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>';
+                        var iconBgStyle = isCritical
+                            ? 'background: linear-gradient(135deg, rgba(239, 68, 68, 0.06) 0%, rgba(239, 68, 68, 0.10) 100%); border: 1px solid rgba(239, 68, 68, 0.20); border-radius: 10px;'
+                            : 'background: linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(245, 158, 11, 0.10) 100%); border: 1px solid rgba(245, 158, 11, 0.20); border-radius: 10px;';
+                        var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
+                        var statusClass = 'notif-item notif-item-' + n.status;
+                        var ago = window.timeAgo(n.created_at);
+                        var stockText = isCritical ? '0 left' : n.current_stock + ' remaining';
+                        var shortSku = (n.sku || '').length > 15 ? (n.sku || '').substring(0, 15) + '...' : (n.sku || '');
 
-                    var item = document.createElement('div');
-                    item.className = statusClass + ' px-4 py-3 cursor-pointer border-b border-slate-100 last:border-b-0 hover:bg-slate-50 transition-colors';
-                    item.setAttribute('data-notif-id', n.id);
+                        var item = document.createElement('div');
+                        item.className = statusClass + ' px-4 py-3 cursor-pointer border-b border-slate-100 last:border-b-0 hover:bg-slate-50 transition-colors';
+                        item.setAttribute('data-notif-id', n.id);
 
-                    item.innerHTML =
-                        '<div class="flex items-start gap-3">' +
-                            '<div class="flex-shrink-0 w-8 h-8 flex items-center justify-center" style="' + iconBgStyle + '">' +
-                                iconSVG +
-                            '</div>' +
-                            '<div class="flex-1 min-w-0">' +
-                                '<div class="flex items-center justify-between mb-0.5">' +
-                                    '<div class="flex items-center gap-1.5">' +
-                                        '<span class="text-[10px] font-bold uppercase tracking-wider text-slate-700">' + typeLabel + '</span>' +
-                                        (n.status === 'unread' ? '<span class="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>' : '') +
-                                    '</div>' +
-                                    '<span class="text-[10px] text-slate-400">' + window.escHtml(ago) + '</span>' +
+                        item.innerHTML =
+                            '<div class="flex items-start gap-3">' +
+                                '<div class="flex-shrink-0 w-8 h-8 flex items-center justify-center" style="' + iconBgStyle + '">' +
+                                    iconSVG +
                                 '</div>' +
-                                '<p class="text-[13px] font-semibold text-slate-900 truncate mb-1">' + window.escHtml(n.product_name) + '</p>' +
-                                '<div class="flex items-center justify-between">' +
-                                    '<div class="flex items-center gap-1.5 text-[11px] text-slate-500 whitespace-nowrap">' +
-                                        '<span class="truncate max-w-[80px]">' + window.escHtml(shortSku) + '</span>' +
-                                        '<span>&middot;</span>' +
-                                        '<span class="font-medium whitespace-nowrap text-slate-600">' + stockText + '</span>' +
+                                '<div class="flex-1 min-w-0">' +
+                                    '<div class="flex items-center justify-between mb-0.5">' +
+                                        '<div class="flex items-center gap-1.5">' +
+                                            '<span class="text-[10px] font-bold uppercase tracking-wider text-slate-700">' + typeLabel + '</span>' +
+                                            (n.status === 'unread' ? '<span class="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>' : '') +
+                                        '</div>' +
+                                        '<span class="text-[10px] text-slate-400">' + window.escHtml(ago) + '</span>' +
                                     '</div>' +
-                                    (n.status !== 'resolved'
-                                        ? '<a href="' + window.escHtml(n.order_url || '/purchase-order/create') + '" class="px-2.5 py-1 rounded bg-[#00ddd2] text-black text-[11px] font-semibold hover:bg-[#00c7bc] transition-colors flex-shrink-0" onclick="event.stopPropagation();">Order</a>'
-                                        : '<span class="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600 flex-shrink-0"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Resolved</span>'
-                                    ) +
+                                    '<p class="text-[13px] font-semibold text-slate-900 truncate mb-1">' + window.escHtml(n.product_name) + '</p>' +
+                                    '<div class="flex items-center justify-between">' +
+                                        '<div class="flex items-center gap-1.5 text-[11px] text-slate-500 whitespace-nowrap">' +
+                                            '<span class="truncate max-w-[80px]">' + window.escHtml(shortSku) + '</span>' +
+                                            '<span>&middot;</span>' +
+                                            '<span class="font-medium whitespace-nowrap text-slate-600">' + stockText + '</span>' +
+                                        '</div>' +
+                                        (n.status !== 'resolved'
+                                            ? '<a href="' + window.escHtml(n.order_url || '/purchase-order/create') + '" class="px-2.5 py-1 rounded bg-[#00ddd2] text-black text-[11px] font-semibold hover:bg-[#00c7bc] transition-colors flex-shrink-0" onclick="event.stopPropagation();">Order</a>'
+                                            : '<span class="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600 flex-shrink-0"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Resolved</span>'
+                                        ) +
+                                    '</div>' +
                                 '</div>' +
-                            '</div>' +
-                        '</div>';
+                            '</div>';
 
-                    if (n.status === 'unread') {
-                        item.addEventListener('click', function() {
-                            window.markNotificationRead(n.id);
-                        });
-                    }
+                        if (n.status === 'unread') {
+                            item.addEventListener('click', function() {
+                                window.markNotificationRead(n.id);
+                            });
+                        }
 
-                    panel.appendChild(item);
-                });
+                        panel.appendChild(item);
+                    });
+                }
+
+                // Seamlessly inject offline pending order notification at top without conflict
+                if (window.offlineManager && typeof window.offlineManager.injectOfflineNotificationIntoBell === 'function') {
+                    window.offlineManager.injectOfflineNotificationIntoBell(safeUnread);
+                }
             };
 
             window.markNotificationRead = function(notifId) {

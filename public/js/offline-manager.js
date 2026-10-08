@@ -21,7 +21,7 @@ class OfflineManager {
         
         // Clean up any orders that are already approved in the database
         if (this.isOnline) {
-            await this.cleanupSyncedOrders();
+            await this.cleanupSyncedOrders().catch(e => console.warn(e));
         }
 
         // Load pending operations from IndexedDB
@@ -31,6 +31,18 @@ class OfflineManager {
         this.updateStatusIndicator();
         await this.updateOfflineReconSidebar();
         await this.updatePendingOfflineSyncAlert();
+
+        // Remind admin upon re-login / initial page load of session
+        const pendingCount = Array.isArray(this.queue?.orders) ? this.queue.orders.length : 0;
+        if (pendingCount > 0) {
+            const hasSeen = sessionStorage.getItem('kcc_offline_po_login_reminder_shown');
+            if (!hasSeen) {
+                sessionStorage.setItem('kcc_offline_po_login_reminder_shown', 'true');
+                setTimeout(() => {
+                    this.showNotification(`🔔 Paalala: May ${pendingCount} offline purchase order(s) na naka-save locally. I-export at i-import ito sa Offline Reconciliation para ma-proceed sa supplier.`, 'warning');
+                }, 1200);
+            }
+        }
     }
 
     async initIndexedDB() {
@@ -228,8 +240,7 @@ class OfflineManager {
         }
     }
 
-    injectOfflineNotificationIntoBell() {
-        const isOnline = (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean') ? navigator.onLine : true;
+    injectOfflineNotificationIntoBell(serverUnreadCount = null) {
         let pendingOrders = [];
         try {
             pendingOrders = (this.queue?.orders || []).filter(o => !o.synced);
@@ -243,57 +254,95 @@ class OfflineManager {
         const bellBadge = document.getElementById('notification-badge') || document.getElementById('headerNotificationBadge');
         const centerBadge = document.getElementById('notif-center-unread-badge');
 
-        // Remove any old offline notification element
+        // Always remove old offline notification elements first to prevent duplication
         document.querySelectorAll('#offline-notif-bell-item').forEach(el => el.remove());
+        document.querySelectorAll('#modal-offline-notif-item').forEach(el => el.remove());
 
-        if (count > 0 && isOnline) {
-            if (!list) return;
+        if (count > 0) {
+            if (list) {
+                if (empty) empty.classList.add('hidden');
 
-            if (empty) empty.classList.add('hidden');
+                const poNumbers = pendingOrders.slice(0, 3).map(o => o.order_number || o.po_number || 'PO').join(', ');
+                const moreCount = count > 3 ? ` +${count - 3} more` : '';
 
-            const poNumbers = pendingOrders.slice(0, 3).map(o => o.order_number || o.po_number || 'PO').join(', ');
-            const moreCount = count > 3 ? ` +${count - 3} more` : '';
-
-            const item = document.createElement('div');
-            item.id = 'offline-notif-bell-item';
-            item.className = 'border-b border-slate-100 bg-amber-50/50 hover:bg-amber-100/60 px-4 py-3 transition-colors';
-            item.innerHTML = `
-                <div class="flex items-start gap-3">
-                    <div class="mt-0.5 flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-[10px] bg-amber-100 border border-amber-200 text-amber-800">
-                        <svg class="w-4 h-4 text-amber-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                        </svg>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center justify-between mb-0.5">
-                            <div class="flex items-center gap-1.5">
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 font-mono">OFFLINE SYNC PENDING</span>
-                                <span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>
+                const item = document.createElement('div');
+                item.id = 'offline-notif-bell-item';
+                item.className = 'border-b border-amber-200 bg-amber-50/95 hover:bg-amber-100/90 p-3.5 transition-colors';
+                item.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <div class="mt-0.5 flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-[10px] bg-amber-100 border border-amber-300 text-amber-800 shadow-2xs">
+                            <svg class="w-4 h-4 text-amber-700 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-900 font-mono flex items-center gap-1">
+                                    <span class="w-2 h-2 rounded-full bg-amber-500 inline-block animate-ping"></span>
+                                    OFFLINE ORDERS PENDING SYNC
+                                </span>
+                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-amber-200 text-amber-950">${count} order${count > 1 ? 's' : ''}</span>
                             </div>
-                            <span class="text-[10px] text-amber-800 font-bold">${count} Order${count > 1 ? 's' : ''}</span>
-                        </div>
-                        <p class="text-[13px] font-semibold text-slate-900 truncate mb-1">${poNumbers}${moreCount}</p>
-                        <div class="flex items-center justify-between mt-1.5">
-                            <span class="text-[10px] text-slate-500">Saved in browser storage</span>
-                            <a href="/offline-reconciliation/export" class="rounded-lg bg-amber-600 hover:bg-amber-700 px-2.5 py-1 text-[10px] font-bold text-white shadow-xs transition">Export & Sync</a>
+                            <p class="text-xs font-semibold text-slate-900 leading-snug mb-1">
+                                May <strong>${count} locally saved purchase order(s)</strong> ka na kailangan i-export at i-import sa Offline Reconciliation para ma-proceed sa supplier.
+                            </p>
+                            <p class="text-[11px] font-mono text-amber-800 truncate mb-2">
+                                ${poNumbers}${moreCount}
+                            </p>
+                            <div class="flex items-center justify-between pt-1">
+                                <span class="text-[10px] text-slate-500">Saved in browser storage</span>
+                                <a href="/offline-reconciliation/export" class="inline-flex items-center gap-1 rounded-lg bg-[#0f172a] hover:bg-slate-800 px-3 py-1.5 text-[11px] font-bold text-white shadow-xs transition cursor-pointer">
+                                    <span>Export & Proceed</span>
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
 
-            list.insertBefore(item, list.firstChild);
+                list.insertBefore(item, list.firstChild);
+            }
+
+            // Also inject into "View All Notifications" modal list if present in DOM
+            const modalList = document.getElementById('modal-notification-list');
+            if (modalList) {
+                const modalItem = document.createElement('div');
+                modalItem.id = 'modal-offline-notif-item';
+                modalItem.className = 'rounded-2xl border border-amber-200 bg-amber-50/95 p-4 mb-3';
+                modalItem.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 shrink-0">
+                            <svg class="w-5 h-5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between mb-1">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-amber-900 font-mono">Offline Purchase Orders Awaiting Sync</h4>
+                                <span class="text-xs font-bold text-amber-900 bg-amber-200 px-2 py-0.5 rounded-full">${count} pending</span>
+                            </div>
+                            <p class="text-sm font-semibold text-slate-900 mb-2">May ${count} locally saved purchase order(s) na kailangan i-export at i-import sa Offline Reconciliation para ma-proceed sa supplier.</p>
+                            <a href="/offline-reconciliation/export" class="inline-flex items-center gap-1.5 rounded-xl bg-[#0f172a] text-white px-4 py-2 text-xs font-bold hover:bg-slate-800 transition shadow-xs">
+                                <span>Export & Sync Locally Saved Orders</span>
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                `;
+                modalList.insertBefore(modalItem, modalList.firstChild);
+            }
+
+            const serverCount = typeof serverUnreadCount === 'number' 
+                ? serverUnreadCount 
+                : (parseInt(bellBadge?.dataset?.serverCount) || 0);
+
+            const total = serverCount + count;
 
             if (bellBadge) {
-                const currentBadgeVal = parseInt(bellBadge.textContent) || 0;
-                const newTotal = currentBadgeVal + count;
-                bellBadge.textContent = newTotal > 9 ? '9+' : newTotal;
+                bellBadge.textContent = total > 9 ? '9+' : total;
                 bellBadge.classList.remove('hidden');
                 bellBadge.style.display = 'inline-flex';
             }
             if (centerBadge) {
-                const currentCenterVal = parseInt(centerBadge.textContent) || 0;
-                const newTotal = currentCenterVal + count;
-                centerBadge.textContent = newTotal;
+                centerBadge.textContent = total;
                 centerBadge.classList.remove('hidden');
                 centerBadge.style.display = 'inline-flex';
             }
