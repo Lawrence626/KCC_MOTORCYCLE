@@ -269,6 +269,8 @@ class OfflineManager {
         document.querySelectorAll('#modal-offline-notif-item').forEach(el => el.remove());
 
         if (count > 0) {
+            this.triggerOfflineToastAlert(pendingOrders);
+
             if (list) {
                 if (empty) empty.classList.add('hidden');
 
@@ -339,13 +341,60 @@ class OfflineManager {
         }
     }
 
+    triggerOfflineToastAlert(pendingOrders) {
+        if (!Array.isArray(pendingOrders) || pendingOrders.length === 0) return;
+        const count = pendingOrders.length;
+        const lastOrder = pendingOrders[pendingOrders.length - 1];
+        const poNum = lastOrder.order_number || lastOrder.po_number || `PO-OFFLINE-${count}`;
+        const suppName = (lastOrder.supplier_name || 'Selected Supplier').replace(/"/g, '');
+
+        const toastKey = `offline_toast_${count}_${poNum}`;
+        const lastShown = sessionStorage.getItem('last_offline_toast_ts');
+        const lastKey = sessionStorage.getItem('last_offline_toast_key');
+        const now = Date.now();
+
+        // Avoid showing continuously on every tick, but show immediately on page load / new orders
+        if (lastShown && (now - parseInt(lastShown, 10)) < 30000 && lastKey === toastKey) {
+            return;
+        }
+
+        sessionStorage.setItem('last_offline_toast_ts', now.toString());
+        sessionStorage.setItem('last_offline_toast_key', toastKey);
+
+        if (typeof window.showGlobalToast === 'function') {
+            window.showGlobalToast({
+                id: toastKey,
+                type: 'offline',
+                badge: 'OFFLINE ORDER PENDING',
+                title: count === 1 ? `${poNum} · ${suppName}` : `${count} Offline Orders Pending`,
+                message: count === 1 
+                    ? `Order created offline. Ready to export or sync.` 
+                    : `You have ${count} offline orders waiting to be exported.`,
+                actionUrl: '/offline-reconciliation/export',
+                actionLabel: 'Export Now',
+                duration: 4500
+            });
+        }
+    }
+
     async updatePendingOfflineSyncAlert() {
         this.injectOfflineNotificationIntoBell();
     }
 
     showNotification(message, type = 'info') {
+        if (typeof window.showGlobalToast === 'function') {
+            window.showGlobalToast({
+                type: type === 'warning' ? 'warning' : (type === 'error' ? 'critical' : 'info'),
+                badge: type === 'warning' ? 'OFFLINE WARNING' : 'NOTIFICATION',
+                title: message,
+                message: '',
+                duration: 4000
+            });
+            return;
+        }
+
         const notification = document.createElement('div');
-        notification.className = `fixed bottom-4 right-4 px-4 py-3 rounded-[12px] shadow-2xl z-[99999] text-xs font-semibold flex items-center gap-2.5 max-w-md ${
+        notification.className = `fixed top-16 right-6 px-4 py-3 rounded-[12px] shadow-2xl z-[99999] text-xs font-semibold flex items-center gap-2.5 max-w-md ${
             type === 'success' ? 'bg-green-700 text-white' :
             type === 'warning' ? 'bg-amber-500 text-slate-950' :
             type === 'error' ? 'bg-red-600 text-white' :
@@ -362,7 +411,7 @@ class OfflineManager {
         setTimeout(() => {
             notification.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
             notification.style.opacity = '0';
-            notification.style.transform = 'translateY(10px)';
+            notification.style.transform = 'translateY(-10px)';
             setTimeout(() => notification.remove(), 400);
         }, 4500);
     }

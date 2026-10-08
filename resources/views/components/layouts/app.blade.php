@@ -218,6 +218,57 @@
         </div>
     </div>
 
+    <!-- ═══ Global Toast Notifications Container (Upper Right) ═══ -->
+    <div id="global-toast-container" class="fixed top-16 right-4 sm:right-6 z-[99998] flex flex-col gap-3 pointer-events-none" style="max-width: 380px; width: calc(100vw - 2rem);"></div>
+
+    <style>
+        /* ═══ Global Notification Toasts (Upper Right) ═══ */
+        .global-notif-toast {
+            pointer-events: auto;
+            background: #ffffff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            padding: 14px 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+            transform: translateX(120%);
+            opacity: 0;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .global-notif-toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        .global-notif-toast.hide {
+            transform: translateX(110%);
+            opacity: 0;
+            margin-top: -12px;
+        }
+        .global-notif-toast:hover {
+            box-shadow: 0 14px 28px -4px rgba(0, 0, 0, 0.16), 0 10px 12px -6px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+        .global-notif-toast .toast-progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            transition: width linear;
+        }
+        .global-notif-toast.toast-amber .toast-progress-bar {
+            background: #f59e0b;
+        }
+        .global-notif-toast.toast-teal .toast-progress-bar {
+            background: #00ddd2;
+        }
+        .global-notif-toast.toast-red .toast-progress-bar {
+            background: #ef4444;
+        }
+    </style>
+
     <script>
         (function() {
             const menuToggle = document.getElementById('mobile-menu-toggle');
@@ -711,6 +762,121 @@
                 return date.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
             };
 
+            window.showGlobalToast = function(options) {
+                var container = document.getElementById('global-toast-container') || document.getElementById('inventory-toast-container');
+                if (!container) return;
+
+                var id = options.id || ('toast_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5));
+                if (options.id && document.querySelector('[data-global-toast-id="' + options.id + '"]')) {
+                    return; // already showing
+                }
+
+                var duration = options.duration || 4500;
+                var type = options.type || 'info';
+                var themeClass = (type === 'offline' || type === 'warning') ? 'toast-amber' : (type === 'critical' ? 'toast-red' : 'toast-teal');
+
+                var iconBgStyle = type === 'critical'
+                    ? 'background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.2) 100%); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px;'
+                    : 'background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.2) 100%); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 10px;';
+
+                var iconSVG = type === 'critical'
+                    ? '<svg class="w-4 h-4 text-red-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>'
+                    : '<svg class="w-4 h-4 text-amber-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>';
+
+                var toast = document.createElement('div');
+                toast.className = 'global-notif-toast ' + themeClass;
+                toast.setAttribute('data-global-toast-id', id);
+
+                var badgeLabel = options.badge || (type === 'offline' ? 'OFFLINE ORDER PENDING' : 'INVENTORY ALERT');
+                var title = options.title || 'Notification';
+                var message = options.message || '';
+                var actionBtnHtml = '';
+
+                if (options.actionUrl && options.actionLabel) {
+                    actionBtnHtml = '<a href="' + options.actionUrl + '" class="px-3 py-1.5 rounded-lg bg-[#00ddd2] hover:bg-[#00c7bc] text-black text-xs font-semibold transition-colors flex-shrink-0" onclick="event.stopPropagation();">' + options.actionLabel + '</a>';
+                }
+
+                toast.innerHTML =
+                    '<div class="flex items-start gap-3">' +
+                        '<div class="flex-shrink-0 w-8 h-8 flex items-center justify-center mt-0.5" style="' + iconBgStyle + '">' +
+                            iconSVG +
+                        '</div>' +
+                        '<div class="flex-1 min-w-0">' +
+                            '<div class="flex items-center justify-between mb-0.5">' +
+                                '<div class="flex items-center gap-1.5">' +
+                                    '<span class="text-[10px] font-bold uppercase tracking-wider text-amber-700">' + badgeLabel + '</span>' +
+                                    '<span class="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>' +
+                                '</div>' +
+                                '<span class="text-[10px] text-slate-400">Just now</span>' +
+                            '</div>' +
+                            '<p class="text-[13px] font-semibold text-slate-900 truncate mb-0.5">' + title + '</p>' +
+                            (message ? '<p class="text-xs text-slate-600 mb-2 leading-relaxed">' + message + '</p>' : '') +
+                            '<div class="flex items-center justify-between gap-2 mt-2">' +
+                                '<button type="button" class="px-2.5 py-1 text-xs font-medium text-slate-500 hover:text-slate-800 rounded bg-slate-100 hover:bg-slate-200 transition-colors" data-toast-dismiss>Dismiss</button>' +
+                                actionBtnHtml +
+                            '</div>' +
+                        '</div>' +
+                        '<button type="button" class="flex-shrink-0 text-slate-400 hover:text-slate-600 transition-colors -mt-1 -mr-1 p-1" data-toast-close aria-label="Close">' +
+                            '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>' +
+                        '</button>' +
+                    '</div>' +
+                    '<div class="toast-progress-bar" style="width: 100%;"></div>';
+
+                container.appendChild(toast);
+
+                // Animate in
+                requestAnimationFrame(function() {
+                    requestAnimationFrame(function() {
+                        toast.classList.add('show');
+                    });
+                });
+
+                // Progress bar animation
+                var progressBar = toast.querySelector('.toast-progress-bar');
+                if (progressBar) {
+                    progressBar.style.transitionDuration = duration + 'ms';
+                    setTimeout(function() { progressBar.style.width = '0%'; }, 50);
+                }
+
+                function removeToast() {
+                    if (toast._removing) return;
+                    toast._removing = true;
+                    toast.classList.remove('show');
+                    toast.classList.add('hide');
+                    setTimeout(function() {
+                        if (toast.parentNode) toast.parentNode.removeChild(toast);
+                    }, 400);
+                }
+
+                var autoTimer = setTimeout(removeToast, duration);
+
+                // Pause on hover
+                toast.addEventListener('mouseenter', function() {
+                    clearTimeout(autoTimer);
+                    if (progressBar) {
+                        progressBar.style.transitionDuration = '0ms';
+                        progressBar.style.width = progressBar.getBoundingClientRect().width + 'px';
+                    }
+                });
+
+                toast.addEventListener('mouseleave', function() {
+                    var remaining = duration * 0.4;
+                    if (progressBar) {
+                        progressBar.style.transitionDuration = remaining + 'ms';
+                        progressBar.style.width = '0%';
+                    }
+                    autoTimer = setTimeout(removeToast, remaining);
+                });
+
+                toast.querySelectorAll('[data-toast-dismiss], [data-toast-close]').forEach(function(btn) {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        clearTimeout(autoTimer);
+                        removeToast();
+                    });
+                });
+            };
+
             window.loadNotificationCenter = function() {
                 fetch('/api/inventory-notifications?limit=30', {
                     headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
@@ -835,6 +1001,33 @@
 
                         panel.appendChild(item);
                     });
+
+                    // Trigger toast popups for unread inventory alerts on page load if not recently shown
+                    if (typeof window.showGlobalToast === 'function') {
+                        var unreadAlerts = notifications.filter(function(n) { return n.status === 'unread'; });
+                        if (unreadAlerts.length > 0) {
+                            unreadAlerts.slice(0, 2).forEach(function(alert, idx) {
+                                var toastKey = 'server_notif_toast_' + alert.id;
+                                var lastShown = sessionStorage.getItem(toastKey);
+                                if (!lastShown) {
+                                    sessionStorage.setItem(toastKey, Date.now().toString());
+                                    setTimeout(function() {
+                                        var isCritical = alert.notification_type === 'out_of_stock';
+                                        window.showGlobalToast({
+                                            id: toastKey,
+                                            type: isCritical ? 'critical' : 'warning',
+                                            badge: isCritical ? 'OUT OF STOCK' : 'LOW STOCK ALERT',
+                                            title: alert.product_name,
+                                            message: (isCritical ? 'Product is out of stock (0 left).' : (alert.current_stock + ' remaining in stock.')) + ' SKU: ' + (alert.sku || ''),
+                                            actionUrl: alert.order_url || '/purchase-order/create',
+                                            actionLabel: 'Order Now',
+                                            duration: 4500
+                                        });
+                                    }, idx * 300);
+                                }
+                            });
+                        }
+                    }
                 }
 
                 // Seamlessly inject offline pending order notification at top without conflict
