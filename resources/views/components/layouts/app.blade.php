@@ -49,7 +49,6 @@
                                 id="notification-bell-btn"
                                 class="relative p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition"
                                 aria-label="Notifications"
-                                onclick="window.toggleHeaderNotificationPanel(event)"
                             >
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
@@ -93,6 +92,66 @@
                             </div>
                         </div>
                         @endif
+
+                        <script>
+                            (function() {
+                                var button = document.getElementById('notification-bell-btn');
+                                var panel = document.getElementById('notification-panel');
+                                if (!button || !panel) return;
+
+                                function positionPanel() {
+                                    if (panel.classList.contains('hidden')) return;
+                                    var rect = button.getBoundingClientRect();
+                                    var margin = 12;
+                                    var panelWidth = panel.offsetWidth;
+                                    var panelHeight = panel.offsetHeight;
+                                    var left = Math.max(margin, Math.min(rect.right - panelWidth, window.innerWidth - panelWidth - margin));
+                                    var top = rect.bottom + 8;
+                                    if (top + panelHeight > window.innerHeight - margin) {
+                                        top = Math.max(margin, rect.top - panelHeight - 8);
+                                    }
+                                    panel.style.left = left + 'px';
+                                    panel.style.top = top + 'px';
+                                }
+
+                                function closePanel() {
+                                    panel.classList.add('hidden');
+                                }
+
+                                button.addEventListener('click', function(event) {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    var profileDropdown = document.getElementById('dashboardProfileDropdown');
+                                    if (profileDropdown) profileDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
+
+                                    if (!panel.classList.contains('hidden')) {
+                                        closePanel();
+                                        return;
+                                    }
+
+                                    if (panel.parentElement !== document.body) document.body.appendChild(panel);
+                                    panel.classList.remove('hidden');
+                                    positionPanel();
+                                    if (typeof window.loadNotificationCenter === 'function') window.loadNotificationCenter();
+                                });
+
+                                panel.addEventListener('click', function(event) {
+                                    event.stopPropagation();
+                                });
+
+                                document.addEventListener('click', function(event) {
+                                    if (!panel.classList.contains('hidden') && !panel.contains(event.target) && !button.contains(event.target)) {
+                                        closePanel();
+                                    }
+                                });
+
+                                window.addEventListener('resize', positionPanel);
+                                if (window.MutationObserver) {
+                                    var list = document.getElementById('notification-list');
+                                    if (list) new MutationObserver(function() { requestAnimationFrame(positionPanel); }).observe(list, { childList: true, subtree: true });
+                                }
+                            })();
+                        </script>
 
                         <div class="relative inline-flex items-center text-left">
                             <button type="button" id="dashboardProfileButton" class="inline-flex items-center gap-1.5 sm:gap-2 rounded-[18px] p-1 sm:px-2.5 sm:py-1.5 text-left bg-transparent border-none hover:bg-slate-50 transition-all focus:outline-none cursor-pointer group flex-shrink-0" aria-label="Open profile menu">
@@ -1097,56 +1156,6 @@
                     .then(function() { window.loadNotificationCenter(); });
                 });
             };
-
-            window.positionHeaderNotificationPanel = function() {
-                var panel = document.getElementById('notification-panel');
-                var button = document.getElementById('notification-bell-btn');
-                if (!panel || !button || panel.classList.contains('hidden')) return;
-
-                var rect = button.getBoundingClientRect();
-                var margin = 12;
-                var panelWidth = panel.offsetWidth;
-                var panelHeight = panel.offsetHeight;
-                var left = Math.max(margin, Math.min(rect.right - panelWidth, window.innerWidth - panelWidth - margin));
-                var top = rect.bottom + 8;
-                if (top + panelHeight > window.innerHeight - margin) {
-                    top = Math.max(margin, rect.top - panelHeight - 8);
-                }
-                panel.style.left = left + 'px';
-                panel.style.top = top + 'px';
-            };
-
-            window.toggleHeaderNotificationPanel = function(e) {
-                if (e) e.stopPropagation();
-                var panel = document.getElementById('notification-panel');
-                if (!panel) return;
-
-                // Close profile dropdown first if open
-                var profileDropdown = document.getElementById('dashboardProfileDropdown');
-                if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
-                    profileDropdown.classList.add('hidden');
-                    profileDropdown.classList.add('opacity-0', 'scale-95');
-                }
-
-                var isHidden = panel.classList.contains('hidden');
-                if (isHidden) {
-                    if (panel.parentElement !== document.body) document.body.appendChild(panel);
-                    panel.classList.remove('hidden');
-                    window.positionHeaderNotificationPanel();
-                    window.loadNotificationCenter();
-                } else {
-                    panel.classList.add('hidden');
-                }
-            };
-
-            window.addEventListener('resize', window.positionHeaderNotificationPanel);
-            document.addEventListener('click', function(e) {
-                var panel = document.getElementById('notification-panel');
-                var button = document.getElementById('notification-bell-btn');
-                if (panel && button && !panel.classList.contains('hidden') && !panel.contains(e.target) && !button.contains(e.target)) {
-                    panel.classList.add('hidden');
-                }
-            });
 
             window.openAllNotificationsModal = function() {
                 var modal = document.getElementById('all-notifications-modal');
