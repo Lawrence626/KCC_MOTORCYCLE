@@ -6,7 +6,7 @@
     <title>KCC - Welcome Page</title>
     <link rel="icon" type="image/png" href="{{ asset('images/Logo.png') }}">
     <link rel="shortcut icon" type="image/png" href="{{ asset('images/Logo.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/Logo.png') }}">
+    @include('partials.head')
     @vite(['resources/css/app.css', 'resources/css/login.css', 'resources/js/login.js'])
 </head>
 <body>
@@ -24,7 +24,7 @@
                 <!-- Left Side - Logo/Branding -->
                 <div class="logo-container">
                     <img
-                        src="{{ asset('images/Logo.png') }}"
+                        src="{{ function_exists('app_logo_url') ? app_logo_url() : \App\Services\AppSettingService::getLogoUrl() }}"
                         alt="KCC Logo"
                         class="logo-image"
                     >
@@ -101,14 +101,14 @@
                             <input type="hidden" name="remember" id="rememberInput" value="0">
 
                             <div class="form-footer">
-                                <label class="flex items-center cursor-pointer">
+                                <label class="remember-label flex items-center cursor-pointer">
                                     <input
                                         type="checkbox"
                                         id="rememberMe"
                                         class="remember-checkbox"
                                         value="1"
                                     >
-                                    <span class="ml-2 text-sm text-gray-300">Remember me</span>
+                                    <span class="remember-text">Remember me</span>
                                 </label>
                                 <a href="{{ url('/forgot-password') }}" class="forgot-password-link">
                                     Forgot Password?

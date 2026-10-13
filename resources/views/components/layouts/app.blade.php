@@ -112,41 +112,41 @@
                                 </svg>
                             </button>
 
-                            <div id="dashboardProfileDropdown" class="absolute right-0 top-full mt-2 rounded-[15px] bg-[#111111] shadow-xl shadow-black/30 z-[9999] hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right border border-slate-800" style="min-width: 220px;">
-                                <div class="px-4 py-4 border-b border-slate-800">
+                            <div id="dashboardProfileDropdown" class="absolute right-0 top-full mt-2 rounded-[15px] bg-white dark:bg-slate-900 shadow-xl shadow-black/10 dark:shadow-black/30 z-[9999] hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-right border border-slate-200 dark:border-slate-700" style="min-width: 220px;">
+                                <div class="px-4 py-4 border-b border-slate-200 dark:border-slate-800">
                                     <div class="flex items-center gap-3">
                                         <span class="w-11 h-11 rounded-full bg-slate-100 text-slate-900 grid place-items-center overflow-hidden text-base font-semibold flex-shrink-0 border border-slate-300">
                                             {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
                                         </span>
                                         <div class="min-w-0">
-                                            <div class="text-[13px] font-semibold text-white truncate">{{ auth()->user()->name ?? 'Admin' }}</div>
-                                            <div class="text-[11px] text-slate-400 truncate">{{ auth()->user()->email ?? '' }}</div>
+                                            <div class="text-[13px] font-semibold text-slate-900 dark:text-white truncate">{{ auth()->user()->name ?? 'Admin' }}</div>
+                                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">{{ auth()->user()->email ?? '' }}</div>
                                         </div>
                                     </div>
                                     <div class="mt-2.5">
-                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] bg-slate-800 text-cyan-400 border border-slate-700">
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] bg-cyan-50 text-cyan-700 border border-cyan-200 dark:bg-slate-800 dark:text-cyan-400 dark:border-slate-700">
                                             {{ (auth()->user()->role ?? 'user') === 'admin' ? 'Administrator' : ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'user')) }}
                                         </span>
                                     </div>
                                 </div>
                                 <div class="flex flex-col gap-0.5 px-2 py-2">
-                                    <a href="{{ route('profile.show') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">
-                                        <span class="w-7 h-7 grid place-items-center rounded-full bg-slate-800 flex-shrink-0">
-                                            <svg class="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9 9 0 1118.879 6.196 9 9 0 015.12 17.804z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                    <a href="{{ route('profile.show') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                                        <span class="w-7 h-7 grid place-items-center rounded-full bg-slate-100 dark:bg-slate-800 flex-shrink-0">
+                                            <svg class="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9 9 0 1118.879 6.196 9 9 0 015.12 17.804z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                         </span>
                                         <span>View Profile</span>
                                     </a>
-                                    <a href="{{ route('settings.general') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">
-                                        <span class="w-7 h-7 grid place-items-center rounded-full bg-slate-800 flex-shrink-0">
-                                            <svg class="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                    <a href="{{ route('settings.general') }}" class="flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                                        <span class="w-7 h-7 grid place-items-center rounded-full bg-slate-100 dark:bg-slate-800 flex-shrink-0">
+                                            <svg class="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543-.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                         </span>
                                         <span>Settings</span>
                                     </a>
                                     <form action="{{ route('logout') }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="flex w-full items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">
-                                            <span class="w-7 h-7 grid place-items-center rounded-full bg-slate-800 flex-shrink-0">
-                                                <svg class="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                                        <button type="submit" class="flex w-full items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                                            <span class="w-7 h-7 grid place-items-center rounded-full bg-slate-100 dark:bg-slate-800 flex-shrink-0">
+                                                <svg class="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                                             </span>
                                             <span>Logout</span>
                                         </button>
@@ -671,7 +671,7 @@
             window.setTheme = function(theme) {
                 let isDark = false;
                 if (theme === 'system') {
-                    try { localStorage.removeItem('theme'); } catch(e) {}
+                    try { localStorage.setItem('theme', 'system'); } catch(e) {}
                     isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
                 } else {
                     try { localStorage.setItem('theme', theme); } catch(e) {}
@@ -819,7 +819,7 @@
                                         '<span class="font-medium whitespace-nowrap text-slate-600">' + stockText + '</span>' +
                                     '</div>' +
                                     (n.status !== 'resolved'
-                                        ? '<a href="' + window.escHtml(n.order_url || '/purchase-order/create') + '" class="px-2.5 py-1 rounded bg-[#00ddd2] text-black text-[11px] font-semibold hover:bg-[#00c7bc] transition-colors flex-shrink-0" onclick="event.stopPropagation();">Order</a>'
+                                        ? '<a href="' + window.escHtml(n.order_url || '/purchase-order/create') + '" class="px-2.5 py-1 rounded bg-theme-primary text-[11px] font-semibold transition-colors flex-shrink-0" onclick="event.stopPropagation();">Order</a>'
                                         : '<span class="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600 flex-shrink-0"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Resolved</span>'
                                     ) +
                                 '</div>' +

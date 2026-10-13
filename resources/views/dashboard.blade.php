@@ -392,7 +392,7 @@
                             <h3 class="text-xl font-bold text-black">Top Selling Items</h3>
                             <p class="text-sm text-slate-900 font-medium">Ranking of best performing products by revenue and quantity.</p>
                         </div>
-                        <button type="button" onclick="closeTopItemsModal()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
+                        <button type="button" onclick="closeTopItemsModal()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer" aria-label="Close modal">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
@@ -427,13 +427,13 @@
             <div id="fast-slow-modal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4">
                 <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeFastSlowModal()"></div>
                 <div class="relative bg-white rounded-[28px] shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[85vh]">
-                    <!-- Modal Header -->
+                    <!-- Modal Header (no hover effect on header container) -->
                     <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
                         <div>
                             <h3 class="text-xl font-bold text-black">Fast & Slow Moving Items</h3>
                             <p class="text-sm text-slate-900 font-medium">Complete list of all product movement data.</p>
                         </div>
-                        <button type="button" onclick="closeFastSlowModal()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
+                        <button type="button" onclick="closeFastSlowModal()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer" aria-label="Close modal">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>

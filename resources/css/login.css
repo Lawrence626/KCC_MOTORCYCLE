@@ -140,17 +140,29 @@ body{
 .eye-icon-button{
     position:absolute;
     right:12px;
-    top:50%;
+    top:20%;
+    width:24px;
+    height:24px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     transform:translateY(-50%);
     border:none;
     background:none;
-    color:#6b7280; /* Gray when password is hidden */
+    color:#6b7280;
     cursor:pointer;
+    padding:0;
     transition:color .25s ease;
 }
 
+.eye-icon-button svg{
+    width:18px;
+    height:18px;
+    display:block;
+}
+
 .eye-icon-button.active{
-    color:#167b86; /* Blue when password is visible */
+    color:#167b86;
 }
 
 /* Footer */
@@ -166,11 +178,22 @@ body{
     display:flex;
     align-items:center;
     color:#ddd;
-    gap:5px;
+    gap:8px;
+    margin-top:-10px;
+    line-height:1;
 }
 .remember-checkbox{
     width:12px;
     height:12px;
+    margin:0;
+    flex-shrink:0;
+}
+.remember-text{
+    font-size:14px;
+    line-height:1;
+    color:#f3f4f6;
+    display:inline-block;
+    transform:translateY(1px);
 }
 .forgot-password-link{
     color:#fff;
@@ -184,30 +207,33 @@ body{
 
 /* Button */
 .login-button{
-    min-width: 150px;
-    width: auto;
-    max-width: 100%;
-    height: 36px;
-    padding: 0 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 30px auto 0;
-    border: none;
-    border-radius: 50px;
-    background: #4A9CA5;
-    color: #fff;
-    font-weight: 600;
-    font-size: 15px;
-    text-align: center;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: all .3s ease;
-    box-sizing: border-box;
+    width:55% !important;
+    height:36px !important;
+    padding:0 16px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    margin:30px auto 0 !important;
+    border:none !important;
+    border-radius:50px !important;
+    background:#4A9CA5 !important;
+    color:#fff !important;
+    font-weight:600 !important;
+    font-size:15px !important;
+    text-align:center !important;
+    white-space:nowrap !important;
+    cursor:pointer !important;
+    transition:all .3s ease !important;
+    box-sizing:border-box !important;
+    font-family:inherit !important;
+    letter-spacing:normal !important;
 }
 
-.login-button:hover{
-    background: #005f57;
+.login-button:hover,
+.login-button:focus,
+.login-button:active{
+    background:#005f57 !important;
+    color:#fff !important;
 }
 
 .login-button:disabled{
@@ -402,7 +428,7 @@ body{
 
 .otp-close-btn:active{
     background:rgba(255, 255, 255, 0.2);
-    transform:scale(0.95);
+    transform:none !important;
 }
 
 .otp-form-group{

@@ -1,4 +1,4 @@
-﻿<x-layouts.app :title="__('My Profile')">
+<x-layouts.app :title="__('My Profile')">
 
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
@@ -66,31 +66,11 @@
                         <span class="text-sm text-gray-500">Account Status</span>
                         <span class="text-sm font-semibold" style="color: #0aada5;">Active</span>
                     </div>
-                    <!-- Theme Mode Field -->
-                    <div class="p-3" style="border-radius: 15px; background-color: #ffffff; border: 1px solid #e5e7eb;">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-sm text-gray-500">Theme Appearance</span>
-                            <span id="profileThemeBadge" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">Light</span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 mt-1">
-                            <button type="button" onclick="window.setTheme('light')" id="profileThemeLightBtn" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border text-xs font-semibold transition cursor-pointer">
-                                <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                                </svg>
-                                <span>LIGHT</span>
-                            </button>
-                            <button type="button" onclick="window.setTheme('dark')" id="profileThemeDarkBtn" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border text-xs font-semibold transition cursor-pointer">
-                                <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                                </svg>
-                                <span>DARK</span>
-                            </button>
-                        </div>
-                    </div>
+
                 </div>
 
                 <div class="mt-6">
-                    <button id="openEditProfile" type="button" class="w-full px-4 py-3 text-sm font-semibold text-black transition" style="border-radius: 15px; background-color: #6EC1D1;" onmouseover="this.style.backgroundColor='#59b2c2'" onmouseout="this.style.backgroundColor='#6EC1D1'">
+                    <button id="openEditProfile" type="button" class="w-full px-4 py-3 rounded-[15px] bg-theme-primary text-sm font-semibold transition cursor-pointer">
                         Edit Profile
                     </button>
                 </div>
@@ -201,11 +181,11 @@
                                     <span class="text-left">{{ $currentGender ?: 'Other' }}</span>
                                     <svg class="w-4 h-4 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6"/></svg>
                                 </button>
-                                <div id="editProfileGenderDropdown" class="dropdown-menu hidden fixed z-[9999] rounded-[10px] border border-slate-200 bg-white shadow-lg p-1.5 space-y-0.5">
+                                <div id="editProfileGenderDropdown" class="dropdown-menu hidden absolute right-0 top-full mt-1 w-44 max-w-[calc(100vw-2rem)] z-[9999] rounded-[10px] border border-slate-200 bg-white shadow-lg p-1.5 space-y-0">
                                     @foreach(['Male' => 'Male', 'Female' => 'Female'] as $value => $label)
-                                        <button type="button" onclick="selectEditProfileDropdown(event, 'editProfileGenderInput', '{{ $value }}', 'editProfileGenderButton', '{{ $label }}', 'editProfileGenderDropdown')" class="w-full px-3 py-1.5 text-left text-xs {{ $currentGender === $value ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[8px]">{{ $label }}</button>
+                                        <button type="button" onclick="selectEditProfileDropdown(event, 'editProfileGenderInput', '{{ $value }}', 'editProfileGenderButton', '{{ $label }}', 'editProfileGenderDropdown')" class="w-full px-3 py-0 text-left text-xs rounded-[8px] transition-colors hover:bg-black/10 {{ $currentGender === $value ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700' }}">{{ $label }}</button>
                                     @endforeach
-                                    <button type="button" onclick="selectEditProfileDropdown(event, 'editProfileGenderInput', '', 'editProfileGenderButton', 'Other', 'editProfileGenderDropdown')" class="w-full px-3 py-1.5 text-left text-xs {{ empty($currentGender) ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700 hover:bg-slate-100' }} rounded-[8px]">Other</button>
+                                    <button type="button" onclick="selectEditProfileDropdown(event, 'editProfileGenderInput', '', 'editProfileGenderButton', 'Other', 'editProfileGenderDropdown')" class="w-full px-3 py-0 text-left text-xs rounded-[8px] transition-colors hover:bg-black/10 {{ empty($currentGender) ? 'font-semibold text-slate-900 bg-black/10' : 'text-slate-700' }}">Other</button>
                                 </div>
                             </div>
                             <div>
@@ -383,25 +363,7 @@
         });
     })();
 
-    // Gender dropdown (styled to match the Received Orders filter dropdowns)
-    function positionEditProfileDropdown(id) {
-        const dropdown = document.getElementById(id);
-        const button = document.getElementById('editProfileGenderButton');
-        if (!dropdown || !button) return;
-        const rect = button.getBoundingClientRect();
-        const dropdownHeight = dropdown.offsetHeight || 160;
-        const spaceBelow = window.innerHeight - rect.bottom;
-        const openUpward = spaceBelow < dropdownHeight && rect.top > dropdownHeight;
-
-        dropdown.style.left = rect.left + 'px';
-        dropdown.style.width = rect.width + 'px';
-        if (openUpward) {
-            dropdown.style.top = (rect.top - dropdownHeight - 6) + 'px';
-        } else {
-            dropdown.style.top = (rect.bottom + 6) + 'px';
-        }
-    }
-
+    // Gender dropdown stays anchored inside its field container.
     function toggleEditProfileDropdown(id) {
         const dropdown = document.getElementById(id);
         if (!dropdown) return;
@@ -409,15 +371,8 @@
         document.querySelectorAll('#editProfileModal .dropdown-menu').forEach(d => d.classList.add('hidden'));
         if (isHidden) {
             dropdown.classList.remove('hidden');
-            positionEditProfileDropdown(id);
         }
     }
-
-    window.addEventListener('resize', () => positionEditProfileDropdown('editProfileGenderDropdown'));
-    document.getElementById('editProfileModalBody')?.addEventListener('scroll', () => {
-        const dd = document.getElementById('editProfileGenderDropdown');
-        if (dd && !dd.classList.contains('hidden')) positionEditProfileDropdown('editProfileGenderDropdown');
-    });
 
     function selectEditProfileDropdown(event, inputId, value, buttonId, label, dropdownId) {
         if (event) { event.preventDefault(); event.stopPropagation(); }
@@ -433,32 +388,6 @@
         }
     });
 
-    function syncProfileThemeButtons() {
-        const isDark = document.documentElement.classList.contains('dark');
-        const lightBtn = document.getElementById('profileThemeLightBtn');
-        const darkBtn = document.getElementById('profileThemeDarkBtn');
-        const badge = document.getElementById('profileThemeBadge');
 
-        if (badge) {
-            badge.textContent = isDark ? 'Dark Mode' : 'Light Mode';
-            badge.className = isDark
-                ? 'text-xs font-semibold px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-500/30'
-                : 'text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200';
-        }
-
-        if (lightBtn && darkBtn) {
-            if (isDark) {
-                darkBtn.className = 'flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border-2 border-cyan-500 bg-cyan-500/20 text-cyan-300 text-xs font-bold shadow-sm transition cursor-pointer';
-                lightBtn.className = 'flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-slate-700 bg-slate-800/60 text-slate-400 hover:text-slate-200 text-xs font-semibold transition cursor-pointer';
-            } else {
-                lightBtn.className = 'flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border-2 border-amber-500 bg-amber-500/10 text-amber-800 text-xs font-bold shadow-sm transition cursor-pointer';
-                darkBtn.className = 'flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-500 hover:text-slate-800 text-xs font-semibold transition cursor-pointer';
-            }
-        }
-    }
-
-    window.addEventListener('themeChanged', syncProfileThemeButtons);
-    document.addEventListener('DOMContentLoaded', syncProfileThemeButtons);
-    setTimeout(syncProfileThemeButtons, 100);
 </script>
 </x-layouts.app>

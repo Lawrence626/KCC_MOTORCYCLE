@@ -63,6 +63,10 @@ Route::post('/verify-otp', [App\Http\Controllers\Auth\ForgotPasswordController::
 Route::get('/reset-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'showResetPassword'])->name('reset-password');
 Route::post('/reset-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'resetPassword'])->name('reset-password.update');
 
+// System Logo Settings endpoints (AJAX & Form)
+Route::match(['get', 'post'], 'settings/logo', [App\Http\Controllers\SettingsController::class, 'updateLogo'])->name('settings.logo.update');
+Route::post('settings/logo/reset', [App\Http\Controllers\SettingsController::class, 'resetLogo'])->name('settings.logo.reset');
+Route::match(['get', 'post'], 'settings/theme-color', [App\Http\Controllers\SettingsController::class, 'updateThemeColor'])->name('settings.theme.color');
 
 Route::middleware(['auth'])->group(function () {
     // Dashboard - All authenticated users
@@ -351,9 +355,11 @@ Route::middleware(['auth'])->group(function () {
         Route::view('offline-reconciliation/test', 'offline_reconciliation.test-offline')->name('offline.reconciliation.test');
     });
 
-    // Settings Routes - Admin only
+    // Settings Routes - accessible to authenticated users
+    Route::get('settings/general', [App\Http\Controllers\SettingsController::class, 'index'])->name('settings.general');
+
+    // Admin only settings
     Route::middleware('role:admin')->group(function () {
-        Route::view('settings/general', 'settings.general')->name('settings.general');
         Route::view('settings/users', 'settings.users')->name('settings.users');
     });
 

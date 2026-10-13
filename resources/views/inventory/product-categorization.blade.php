@@ -1,4 +1,11 @@
 <x-layouts.app :title="__('Product Categorization')">
+    <style>
+        #openAddProduct:hover {
+            background-color: var(--primary-hover) !important;
+            border-color: var(--primary-hover) !important;
+            color: var(--primary-text) !important;
+        }
+    </style>
 
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">

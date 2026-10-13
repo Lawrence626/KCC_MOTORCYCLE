@@ -4,7 +4,7 @@
     <!-- Left: Brand Logo (Separated on Left Side) -->
     <div class="flex items-center">
         <a href="{{ route('dashboard') }}" class="flex items-center group">
-            <img src="{{ asset('images/Logo.png') }}?v={{ time() }}" alt="KCC Logo" class="h-14 sm:h-16 w-auto object-contain transition-transform group-hover:scale-105" />
+            <img src="{{ function_exists('app_logo_url') ? app_logo_url() : \App\Services\AppSettingService::getLogoUrl() }}" alt="KCC Logo" class="h-14 sm:h-16 w-auto object-contain transition-transform group-hover:scale-105" />
         </a>
     </div>
 

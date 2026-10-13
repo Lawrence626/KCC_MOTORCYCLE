@@ -783,14 +783,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const ctx = canvas.getContext('2d');
+        const rootStyles = getComputedStyle(document.documentElement);
+        const salesChartAccent = rootStyles.getPropertyValue('--primary-color').trim() || SALES_CHART_CYAN;
+        const salesChartAccentRgb = rootStyles.getPropertyValue('--primary-color-rgb').trim() || '110, 193, 209';
+        const isDarkTheme = document.documentElement.classList.contains('dark');
+        const chartGridColor = isDarkTheme ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)';
+        const chartTickColor = isDarkTheme ? '#b5b7bc' : '#374151';
 
-        // Cyan gradient fill under the line — mas buo/solid na ngayon,
-        // hindi agad nawawala papunta sa ibaba, para mas makapal ang
-        // highlight sa ilalim ng curve.
         const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        gradient.addColorStop(0, 'rgba(110, 193, 209, 0.65)');
-        gradient.addColorStop(0.5, 'rgba(110, 193, 209, 0.35)');
-        gradient.addColorStop(1, 'rgba(110, 193, 209, 0.08)');
+        gradient.addColorStop(0, `rgba(${salesChartAccentRgb}, ${isDarkTheme ? 0.32 : 0.65})`);
+        gradient.addColorStop(0.5, `rgba(${salesChartAccentRgb}, ${isDarkTheme ? 0.16 : 0.35})`);
+        gradient.addColorStop(1, `rgba(${salesChartAccentRgb}, ${isDarkTheme ? 0.02 : 0.08})`);
 
         window.dashboardSalesChart = new Chart(ctx, {
             type: 'line',
@@ -800,7 +803,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: [{
                     label: 'Revenue',
                     data: chartData.values,
-                    borderColor: SALES_CHART_CYAN,
+                    borderColor: salesChartAccent,
                     backgroundColor: gradient,
                     borderWidth: 2.5,
                     fill: true,
@@ -811,9 +814,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     cubicInterpolationMode: 'monotone',
                     pointRadius: 0,
                     pointHoverRadius: 5,
-                    pointBackgroundColor: SALES_CHART_CYAN,
-                    pointHoverBackgroundColor: SALES_CHART_CYAN,
-                    pointHoverBorderColor: '#ffffff',
+                    pointBackgroundColor: salesChartAccent,
+                    pointHoverBackgroundColor: salesChartAccent,
+                    pointHoverBorderColor: isDarkTheme ? '#202124' : '#ffffff',
                     pointHoverBorderWidth: 2,
                 }],
             },
@@ -828,10 +831,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     tooltip: {
                         mode: 'index',
                         intersect: false,
-                        backgroundColor: '#1a1a1a',
+                        backgroundColor: isDarkTheme ? '#292a2d' : '#1a1a1a',
                         titleColor: '#ffffff',
                         bodyColor: '#ffffff',
-                        borderColor: SALES_CHART_CYAN,
+                        borderColor: salesChartAccent,
                         borderWidth: 1,
                         padding: 10,
                         displayColors: false,
@@ -844,14 +847,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 scales: {
                     x: {
-                        grid: { color: 'rgba(0, 0, 0, 0.06)' },
-                        ticks: { color: '#374151', font: { size: 10 } },
+                        grid: { color: chartGridColor },
+                        ticks: { color: chartTickColor, font: { size: 10 } },
                     },
                     y: {
                         beginAtZero: true,
-                        grid: { color: 'rgba(0, 0, 0, 0.06)' },
+                        grid: { color: chartGridColor },
                         ticks: {
-                            color: '#616161',
+                            color: chartTickColor,
                             font: { size: 10 },
                             callback: (value) => currency.format(value),
                         },
@@ -863,6 +866,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // i-highlight yung button na tugma sa currentSalesRange, hindi lagi 'monthly'
         setActiveSalesRange(currentSalesRange);
     };
+
+    const redrawSalesChartTheme = () => {
+        if (dashboardSalesTrendData) {
+            renderSalesChart(dashboardSalesTrendData);
+        }
+    };
+
+    window.addEventListener('themeChanged', redrawSalesChartTheme);
+    window.addEventListener('themeColorChanged', redrawSalesChartTheme);
 
     const loadDashboard = () => {
         fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })

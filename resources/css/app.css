@@ -5,6 +5,364 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ==========================================================================
+   GLOBAL COLOR THEME SYSTEM — CSS Variable Engine
+   All primary action buttons, modal headers, focus rings, and accents
+   are driven by these variables, set by the <head> inline script.
+   ========================================================================== */
+
+:root {
+    --primary-color: #6EC1D1;
+    --primary-hover: #59B2C2;
+    --primary-active: #4AA3B3;
+    --primary-light: #EBF8FA;
+    --primary-border: #59B2C2;
+    --primary-text: #0F172A;
+    --primary-color-rgb: 110, 193, 209;
+}
+
+/* ── Primary Button Overrides ─────────────────────────────────────────── */
+/* Target ALL buttons and interactive primary elements that use bg-[#6EC1D1] */
+[class*="bg-[#6EC1D1]"]:not(.no-theme):not([class*="bg-red"]):not([class*="bg-rose"]):not([class*="border-l-[#6EC1D1]"]):not([class*="bg-[#6EC1D1]/"]) {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-border) !important;
+    color: var(--primary-text) !important;
+}
+
+[class*="bg-[#6EC1D1]"]:not(.no-theme):not([class*="bg-red"]):not([class*="bg-rose"]):not([class*="border-l-[#6EC1D1]"]):not([class*="bg-[#6EC1D1]/"]) * {
+    color: var(--primary-text) !important;
+}
+
+/* Base stability for ALL buttons: zero movement, zero glow — let Tailwind hover classes work naturally */
+button,
+a[role="button"],
+a.btn,
+input[type="submit"],
+input[type="button"],
+.btn,
+.modal-footer-button,
+.login-button,
+.theme-swatch {
+    transform: none !important;
+    animation: none !important;
+}
+
+button:hover,
+button:active,
+button:focus,
+a[role="button"]:hover,
+a[role="button"]:active,
+a[role="button"]:focus,
+a.btn:hover,
+a.btn:active,
+a.btn:focus,
+input[type="submit"]:hover,
+input[type="submit"]:active,
+input[type="submit"]:focus,
+input[type="button"]:hover,
+input[type="button"]:active,
+input[type="button"]:focus,
+.btn:hover,
+.btn:active,
+.btn:focus,
+.modal-footer-button:hover,
+.modal-footer-button:active,
+.modal-footer-button:focus,
+.login-button:hover,
+.login-button:active,
+.login-button:focus,
+.theme-swatch:hover,
+.theme-swatch:active,
+.theme-swatch:focus {
+    transform: none !important;
+    animation: none !important;
+}
+
+/* Hover effect on THEMED buttons across ALL modules (bg-[#6EC1D1] and bg-[#105f68]) */
+button[class*="bg-[#6EC1D1]"]:not(.no-theme):not([class*="bg-[#6EC1D1]/"]):hover,
+a[class*="bg-[#6EC1D1]"]:not(.no-theme):not([class*="bg-[#6EC1D1]/"]):hover,
+input[type="submit"][class*="bg-[#6EC1D1]"]:not(.no-theme):not([class*="bg-[#6EC1D1]/"]):hover,
+input[type="button"][class*="bg-[#6EC1D1]"]:not(.no-theme):not([class*="bg-[#6EC1D1]/"]):hover,
+[role="button"][class*="bg-[#6EC1D1]"]:not(.no-theme):not([class*="bg-[#6EC1D1]/"]):hover,
+.btn[class*="bg-[#6EC1D1]"]:not(.no-theme):not([class*="bg-[#6EC1D1]/"]):hover,
+[class*="hover:bg-[#59b2c2]"]:not(.no-theme):hover,
+[class*="hover:bg-[#5bb0c0]"]:not(.no-theme):hover,
+[class*="hover:bg-[#0d4f56]"]:not(.no-theme):hover,
+[class*="hover:bg-[#0c474e]"]:not(.no-theme):hover,
+button[class*="bg-[#105f68]"]:not(.no-theme):hover,
+a[class*="bg-[#105f68]"]:not(.no-theme):hover,
+.modal-footer-button.primary:hover,
+.login-button:hover,
+.bg-theme-primary:hover {
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+    color: var(--primary-text) !important;
+}
+
+/* Active / pressed state on themed buttons */
+button[class*="bg-[#6EC1D1]"]:not(.no-theme):not([class*="bg-[#6EC1D1]/"]):active,
+a[class*="bg-[#6EC1D1]"]:not(.no-theme):not([class*="bg-[#6EC1D1]/"]):active,
+input[type="submit"][class*="bg-[#6EC1D1]"]:not(.no-theme):not([class*="bg-[#6EC1D1]/"]):active,
+input[type="button"][class*="bg-[#6EC1D1]"]:not(.no-theme):not([class*="bg-[#6EC1D1]/"]):active,
+[role="button"][class*="bg-[#6EC1D1]"]:not(.no-theme):not([class*="bg-[#6EC1D1]/"]):active,
+.btn[class*="bg-[#6EC1D1]"]:not(.no-theme):not([class*="bg-[#6EC1D1]/"]):active,
+button[class*="bg-[#105f68]"]:not(.no-theme):active,
+a[class*="bg-[#105f68]"]:not(.no-theme):active,
+.modal-footer-button.primary:active,
+.login-button:active,
+.bg-theme-primary:active {
+    background-color: var(--primary-active) !important;
+    border-color: var(--primary-active) !important;
+    color: var(--primary-text) !important;
+}
+
+/* Settings theme swatch hover: clean brightness tint, zero movement or resize */
+.theme-swatch {
+    border-radius: 10px !important;
+}
+
+.theme-swatch:hover {
+    filter: brightness(0.88) !important;
+    transform: none !important;
+}
+
+/* Modal header banners, stat cards, and container divs NEVER change background color on hover */
+div[class*="bg-[#6EC1D1]"]:hover,
+div[class*="bg-[#6EC1D1]"]:active,
+div[class*="bg-[#6EC1D1]"]:focus,
+div[class*="bg-[#105f68]"]:hover,
+div[class*="bg-[#105f68]"]:active,
+header[class*="bg-[#6EC1D1]"]:hover,
+header[class*="bg-[#6EC1D1]"]:active {
+    background-color: var(--primary-color) !important;
+}
+
+/* ── Dropdown & Filter Pill Buttons (like "Monthly v", "Order Tab", "View Selector") across all modules ── */
+#salesRangeDropdownBtn,
+#salesTrendRangeDropdownBtn,
+#orderTabDropdownBtn,
+#dsViewDropdownBtn,
+button[id*="DropdownBtn"]:not(.no-theme),
+button[id*="dropdownBtn"]:not(.no-theme),
+button[class*="justify-between"][class*="bg-[#6EC1D1]"]:not(.no-theme),
+button[class*="justify-between"][class*="border-[#59b2c2]"]:not(.no-theme) {
+    cursor: pointer !important;
+}
+
+#salesRangeDropdownBtn *,
+#salesTrendRangeDropdownBtn *,
+#orderTabDropdownBtn *,
+#dsViewDropdownBtn * {
+    color: var(--primary-text) !important;
+    pointer-events: none;
+}
+
+#salesRangeDropdownBtn:hover,
+#salesTrendRangeDropdownBtn:hover,
+#orderTabDropdownBtn:hover,
+#dsViewDropdownBtn:hover,
+button[id*="DropdownBtn"]:not(.no-theme):hover,
+button[id*="dropdownBtn"]:not(.no-theme):hover,
+button[class*="justify-between"][class*="bg-[#6EC1D1]"]:not(.no-theme):hover,
+button[class*="justify-between"][class*="border-[#59b2c2]"]:not(.no-theme):hover {
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+    color: var(--primary-text) !important;
+}
+
+#salesRangeDropdownBtn:active,
+#salesTrendRangeDropdownBtn:active,
+#orderTabDropdownBtn:active,
+#dsViewDropdownBtn:active,
+button[id*="DropdownBtn"]:not(.no-theme):active,
+button[id*="dropdownBtn"]:not(.no-theme):active,
+button[class*="justify-between"][class*="bg-[#6EC1D1]"]:not(.no-theme):active,
+button[class*="justify-between"][class*="border-[#59b2c2]"]:not(.no-theme):active {
+    background-color: var(--primary-active) !important;
+    border-color: var(--primary-active) !important;
+    color: var(--primary-text) !important;
+}
+
+/* Primary buttons with bg-[#105f68] */
+button[class*="bg-[#105f68]"]:not(.no-theme),
+a[class*="bg-[#105f68]"]:not(.no-theme) {
+    background-color: var(--primary-color) !important;
+    color: var(--primary-text) !important;
+}
+
+/* Accent badges & tinted pills */
+[class*="bg-[#6EC1D1]/"]:not(.no-theme) {
+    background-color: rgba(var(--primary-color-rgb), 0.16) !important;
+}
+[class*="text-[#6EC1D1]"]:not(.no-theme) {
+    color: var(--primary-color) !important;
+}
+[class*="border-[#6EC1D1]/"]:not(.no-theme) {
+    border-color: rgba(var(--primary-color-rgb), 0.35) !important;
+}
+
+/* Sidebar active buttons and sub-module typography */
+.sidebar-nav-item.bg-cyan-500\/5,
+.sidebar-group-toggle.bg-cyan-500\/5 {
+    color: var(--primary-text) !important;
+}
+
+.sidebar-nav-item.bg-cyan-500\/5 svg,
+.sidebar-group-toggle.bg-cyan-500\/5 svg,
+.sidebar-nav-item.bg-cyan-500\/5 .sidebar-arrow,
+.sidebar-group-toggle.bg-cyan-500\/5 .sidebar-arrow {
+    color: var(--primary-text) !important;
+}
+
+.sidebar-nav-item.bg-cyan-500\/5::after,
+.sidebar-group-toggle.bg-cyan-500\/5::after {
+    background: var(--primary-color) !important;
+}
+
+.sidebar-group-content .sidebar-nav-item.text-\[\#6EC1D1\],
+.sidebar-group-content .sidebar-nav-item[class*="text-[#6EC1D1]"],
+.sidebar-group-content a.font-semibold {
+    color: var(--primary-color) !important;
+    font-weight: 600 !important;
+}
+
+.sidebar-group-content[class*="border-[#6EC1D1]"] {
+    border-color: rgba(var(--primary-color-rgb), 0.45) !important;
+}
+
+/* Buttons with hover:bg-[#59b2c2] */
+[class*="hover:bg-[#59b2c2]"]:not(.no-theme):hover {
+    background-color: var(--primary-hover) !important;
+}
+
+/* Border colors for themed buttons — only static borders, NOT hover: or focus: */
+[class*="border-[#6EC1D1]"]:not(.no-theme):not([class*="border-l-[#6EC1D1]"]):not([class*="hover:border-[#6EC1D1]"]):not([class*="focus:border-[#6EC1D1]"]):not([class*="border-[#6EC1D1]/"]) {
+    border-color: var(--primary-border) !important;
+}
+
+[class*="border-[#59b2c2]"]:not(.no-theme):not([class*="hover:border-[#59b2c2]"]):not([class*="focus:border-[#59b2c2]"]) {
+    border-color: var(--primary-border) !important;
+}
+
+/* Hover-only border and ring overrides (Dead Stock card & stat cards) */
+[class*="hover:border-[#6EC1D1]"]:hover {
+    border-color: var(--primary-color) !important;
+}
+
+[class*="hover:ring-[#6EC1D1]"]:hover {
+    --tw-ring-color: var(--primary-color) !important;
+    --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width, 0px)) var(--primary-color) !important;
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), 0 0 0 2px var(--primary-color), var(--tw-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1)) !important;
+}
+
+/* Focus ring overrides */
+[class*="ring-[#6EC1D1]"]:not(.no-theme):not([class*="hover:ring-[#6EC1D1]"]):not([class*="focus:ring-[#6EC1D1]"]) {
+    --tw-ring-color: var(--primary-color) !important;
+}
+
+[class*="focus:ring-[#6EC1D1]"]:not(.no-theme):focus {
+    --tw-ring-color: var(--primary-color) !important;
+}
+
+/* Utility classes for manual theming */
+.bg-theme-primary { background-color: var(--primary-color) !important; color: var(--primary-text) !important; }
+.bg-theme-primary:hover { background-color: var(--primary-hover) !important; }
+.text-theme-primary { color: var(--primary-color) !important; }
+.border-theme-primary { border-color: var(--primary-border) !important; }
+
+/* Inline style background-color overrides for stat card icons */
+[style*="background-color: rgba(110, 193, 209"] {
+    background-color: rgba(var(--primary-color-rgb), 0.18) !important;
+}
+
+/* Modal header bar overrides — all modals using bg-[#6EC1D1] as header */
+div[class*="bg-[#6EC1D1]"]:not(button):not(a):not(span):not(.no-theme) {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-border) !important;
+}
+
+div[class*="bg-[#6EC1D1]"]:not(button):not(a):not(span):not(.no-theme) * {
+    color: var(--primary-text) !important;
+}
+
+/* CSS class for the .modal-footer-button.primary in shop_inventory */
+.modal-footer-button.primary {
+    background: var(--primary-color) !important;
+    color: var(--primary-text) !important;
+    border-color: rgba(var(--primary-color-rgb), 0.4) !important;
+}
+.modal-footer-button.primary:hover {
+    background: var(--primary-hover) !important;
+}
+
+/* Toast success border */
+.toast.success {
+    border-left-color: var(--primary-color) !important;
+}
+
+#nativeColorInput {
+    box-sizing: border-box;
+    border-radius: 0.75rem !important;
+    overflow: hidden;
+}
+
+#nativeColorInput::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+#nativeColorInput::-webkit-color-swatch {
+    border: 0 !important;
+    border-radius: 10px;
+}
+
+#nativeColorInput::-moz-color-swatch {
+    border: 0 !important;
+    border-radius: 10px;
+}
+
+#closeColorPickerBtn:hover {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+    color: #000 !important;
+}
+
+#closeColorPickerBtn:hover svg {
+    color: #000 !important;
+}
+
+#applyPickerColorBtn:hover {
+    background-color: var(--primary-hover) !important;
+}
+
+/* Keep the dashboard sales-range hover color consistent on cyan module actions. */
+:is(button, a[role="button"], a.btn, input[type="submit"], input[type="button"], .btn, .modal-footer-button):not(.login-button):not(.no-theme)[class*="bg-[#6EC1D1]"]:not([class*="bg-[#6EC1D1]/"]):hover,
+:is(button, a[role="button"], a.btn, input[type="submit"], input[type="button"], .btn, .modal-footer-button):not(.login-button):not(.no-theme)[class*="bg-[#105f68]"]:hover {
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+}
+
+#openAddProduct:hover {
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+    color: var(--primary-text) !important;
+}
+
+/* Active filter tabs that dynamically add bg-[#6EC1D1] */
+.filter-tab-active,
+[class*="bg-[#6EC1D1]"].filter-active {
+    background-color: var(--primary-color) !important;
+    color: var(--primary-text) !important;
+}
+
+/* ── Login Page Button ─────────────────────────────────────────── */
+.login-button {
+    background: var(--primary-color) !important;
+    color: var(--primary-text) !important;
+}
+.login-button:hover {
+    background: var(--primary-hover) !important;
+}
+
+
 .module-inline-title + .module-inline-first {
     margin-top: 12px !important;
 }
@@ -85,6 +443,14 @@ html.dark #mainScrollArea .bg-white,
 html.dark .bg-white {
     background-color: #0d1624 !important;
     border-color: #162236 !important;
+    color: #f1f5f9 !important;
+}
+
+html.dark button[class*="bg-white"]:not([class*="bg-[#6EC1D1]"]):hover,
+html.dark button.bg-white:hover,
+html.dark a.btn[class*="bg-white"]:hover {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
     color: #f1f5f9 !important;
 }
 
@@ -311,4 +677,393 @@ html.dark [data-dropdown-wrapper] .dropdown-menu button:hover,
 html.dark [data-dropdown-wrapper] .dropdown-menu a:hover {
     background-color: #182335 !important;
     color: #ffffff !important;
+}
+
+/* Central black-and-white Dark Mode overrides. Light Mode remains unchanged. */
+html.dark {
+    --dark-page: #141517;
+    --dark-sidebar: #101113;
+    --dark-header: #1b1c1f;
+    --dark-surface: #202124;
+    --dark-control: #262626;
+    --dark-border: #3a3a3a;
+    --dark-text: #f3f4f6;
+    --dark-muted: #b5b7bc;
+    color-scheme: dark;
+}
+
+html.dark body,
+html.dark #mainScrollArea,
+html.dark main {
+    background: var(--dark-page) !important;
+    background-image: none !important;
+    color: var(--dark-text) !important;
+}
+
+html.dark #dashboardHeader {
+    background-color: var(--dark-header) !important;
+    border-color: var(--dark-border) !important;
+    color: var(--dark-text) !important;
+    box-shadow: none !important;
+}
+
+html.dark #modulePageHeader {
+    background-color: var(--dark-header) !important;
+    border-bottom: 1px solid var(--dark-border) !important;
+}
+
+html.dark #topScrollFade {
+    background: linear-gradient(to bottom, rgba(27, 28, 31, 0.96), rgba(27, 28, 31, 0.72), transparent) !important;
+}
+
+html.dark .bg-white,
+html.dark #mainScrollArea .bg-white,
+html.dark .bg-gray-50,
+html.dark .bg-slate-50,
+html.dark .bg-gray-100,
+html.dark .bg-slate-100,
+html.dark .bg-gray-200,
+html.dark .bg-slate-200,
+html.dark .bg-zinc-50,
+html.dark .bg-neutral-50,
+html.dark .modal-content,
+html.dark [role="dialog"] > div.bg-white,
+html.dark [role="dialog"] .bg-white,
+html.dark .fixed.inset-0 .bg-white {
+    background-color: var(--dark-surface) !important;
+    color: var(--dark-text) !important;
+}
+
+html.dark [class*="bg-[#0f172a]"],
+html.dark [class*="bg-[#111827]"],
+html.dark [class*="bg-[#070c14]"],
+html.dark [class*="bg-[#0b1320]"],
+html.dark [class*="bg-[#1e293b]"],
+html.dark [class*="bg-slate-900"],
+html.dark [class*="bg-slate-800"],
+html.dark [class*="bg-gray-900"] {
+    background-color: var(--dark-surface) !important;
+    border-color: var(--dark-border) !important;
+}
+
+html.dark [class*="bg-[#ffffff]"],
+html.dark [style*="background-color: #ffffff"],
+html.dark [style*="background-color:#ffffff"],
+html.dark [style*="background-color: white"],
+html.dark [style*="background: #fff"],
+html.dark [style*="background:#fff"] {
+    background-color: var(--dark-surface) !important;
+    background: var(--dark-surface) !important;
+}
+
+html.dark [style*="linear-gradient(50deg, #ffffff"],
+html.dark [style*="linear-gradient(50deg,#ffffff"],
+html.dark [style*="linear-gradient(180deg, #ffffff"],
+html.dark [style*="linear-gradient(135deg, #ffffff"] {
+    background: var(--dark-surface) !important;
+    border-color: var(--dark-border) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28) !important;
+}
+
+html.dark #topSellingCarousel {
+    background: var(--dark-surface) !important;
+}
+
+html.dark .border-slate-300,
+html.dark .border-slate-200,
+html.dark .border-slate-100,
+html.dark [class*="border-slate-700"],
+html.dark [class*="border-slate-800"],
+html.dark .border-gray-300,
+html.dark .border-gray-200,
+html.dark .border-gray-100,
+html.dark .border-zinc-200,
+html.dark .border-neutral-200,
+html.dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
+    border-color: var(--dark-border) !important;
+}
+
+html.dark .text-slate-950,
+html.dark .text-slate-900,
+html.dark .text-slate-800,
+html.dark .text-slate-700,
+html.dark .text-gray-950,
+html.dark .text-gray-900,
+html.dark .text-gray-800,
+html.dark .text-gray-700,
+html.dark .text-zinc-900,
+html.dark .text-zinc-800,
+html.dark .text-neutral-900,
+html.dark .text-neutral-800,
+html.dark .text-black,
+html.dark [class*="text-[#0f172a]"],
+html.dark [class*="text-[#1e293b]"],
+html.dark [class*="text-[#111827]"] {
+    color: var(--dark-text) !important;
+}
+
+html.dark .text-slate-600,
+html.dark .text-slate-500,
+html.dark .text-slate-400,
+html.dark .text-gray-600,
+html.dark .text-gray-500,
+html.dark .text-gray-400,
+html.dark .text-zinc-700,
+html.dark .text-zinc-600,
+html.dark .text-zinc-500,
+html.dark .text-neutral-700,
+html.dark .text-neutral-600,
+html.dark .text-neutral-500 {
+    color: var(--dark-muted) !important;
+}
+
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="file"]):not([type="range"]),
+html.dark select,
+html.dark textarea {
+    background-color: var(--dark-control) !important;
+    border-color: var(--dark-border) !important;
+    color: var(--dark-text) !important;
+    color-scheme: dark;
+    caret-color: var(--dark-text);
+}
+
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="file"]):not([type="range"])::placeholder,
+html.dark textarea::placeholder {
+    color: #a3a3a3 !important;
+    opacity: 1;
+}
+
+html.dark select option {
+    background-color: #050505;
+    color: var(--dark-text);
+}
+
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="file"]):not([type="range"]):focus,
+html.dark select:focus,
+html.dark textarea:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 1px var(--primary-color) !important;
+    outline: none !important;
+}
+
+html.dark table,
+html.dark table thead,
+html.dark table thead th,
+html.dark table tbody tr {
+    background-color: var(--dark-surface) !important;
+    border-color: var(--dark-border) !important;
+}
+
+html.dark table thead th,
+html.dark table tbody td {
+    color: var(--dark-text) !important;
+}
+
+html.dark table tbody tr:hover {
+    background-color: #2a2b2e !important;
+}
+
+html.dark .dropdown-menu,
+html.dark [data-dropdown-wrapper] .dropdown-menu {
+    background-color: var(--dark-surface) !important;
+    border-color: var(--dark-border) !important;
+}
+
+html.dark .dropdown-menu button,
+html.dark .dropdown-menu a,
+html.dark [data-dropdown-wrapper] .dropdown-menu button,
+html.dark [data-dropdown-wrapper] .dropdown-menu a {
+    color: var(--dark-muted) !important;
+}
+
+html.dark .dropdown-menu button:hover,
+html.dark .dropdown-menu a:hover,
+html.dark [data-dropdown-wrapper] .dropdown-menu button:hover,
+html.dark [data-dropdown-wrapper] .dropdown-menu a:hover {
+    background-color: #2a2b2e !important;
+    color: var(--dark-text) !important;
+}
+
+html.dark .sidebar-nav-item,
+html.dark .sidebar-group-toggle {
+    transition: background-color 0.15s ease, color 0.15s ease !important;
+    transform: none !important;
+}
+
+html.dark .sidebar-nav-item::before,
+html.dark .sidebar-group-toggle::before {
+    display: block !important;
+    animation: none !important;
+    transform: none !important;
+    opacity: 0 !important;
+    background: #2a2b2e !important;
+    transition: opacity 0.15s ease !important;
+}
+
+html.dark nav > .sidebar-nav-item:hover::before,
+html.dark .sidebar-group-toggle:hover::before {
+    opacity: 1 !important;
+}
+
+html.dark .sidebar-nav-item.bg-cyan-500\/5::before,
+html.dark .sidebar-group-toggle.bg-cyan-500\/5::before {
+    display: none !important;
+}
+
+html.dark .sidebar-group-content .sidebar-nav-item::before {
+    display: none !important;
+}
+
+html.dark .sidebar-nav-item:hover,
+html.dark .sidebar-group-toggle:hover {
+    background-color: transparent !important;
+    color: var(--dark-text) !important;
+    transform: none !important;
+}
+
+html.dark .sidebar-nav-item:hover svg,
+html.dark .sidebar-group-toggle:hover svg {
+    color: var(--dark-text) !important;
+}
+
+html.dark .sidebar-nav-item.bg-cyan-500\/5,
+html.dark .sidebar-group-toggle.bg-cyan-500\/5 {
+    background-color: transparent !important;
+    color: var(--primary-text) !important;
+    font-weight: 600 !important;
+}
+
+html.dark .sidebar-nav-item.bg-cyan-500\/5::after,
+html.dark .sidebar-group-toggle.bg-cyan-500\/5::after {
+    display: block !important;
+    background: var(--primary-color) !important;
+    transform: scaleX(1) !important;
+    animation: none !important;
+}
+
+html.dark .sidebar-nav-item.bg-cyan-500\/5 svg,
+html.dark .sidebar-group-toggle.bg-cyan-500\/5 svg,
+html.dark .sidebar-group-toggle.bg-cyan-500\/5 .sidebar-arrow {
+    color: var(--primary-text) !important;
+}
+
+html.dark .sidebar-nav-item.bg-cyan-500\/5:hover,
+html.dark .sidebar-group-toggle.bg-cyan-500\/5:hover {
+    background-color: transparent !important;
+    color: var(--primary-text) !important;
+}
+
+html.dark .sidebar-nav-item.bg-cyan-500\/5:hover::after,
+html.dark .sidebar-group-toggle.bg-cyan-500\/5:hover::after {
+    background: var(--primary-hover) !important;
+}
+
+html.dark .sidebar-group-content .sidebar-nav-item {
+    transition: color 0.15s ease, background-color 0.15s ease !important;
+    transform: none !important;
+}
+
+html.dark .sidebar-group-content .sidebar-nav-item > span {
+    display: inline-block;
+    transition: color 0.15s ease, transform 0.18s ease;
+}
+
+html.dark .sidebar-group-content .sidebar-nav-item:hover {
+    color: #ffffff !important;
+    background-color: transparent !important;
+    transform: none !important;
+}
+
+html.dark .sidebar-group-content .sidebar-nav-item:hover > span {
+    color: #ffffff !important;
+    transform: translateY(-2px);
+}
+
+html.dark .sidebar-group-content .sidebar-nav-item[class*="text-[#6EC1D1]"],
+html.dark .sidebar-group-content .sidebar-nav-item.text-cyan-400,
+html.dark .sidebar-group-content .sidebar-nav-item.text-cyan-300 {
+    background-color: transparent !important;
+    color: var(--primary-color) !important;
+    font-weight: 600 !important;
+}
+
+html.dark .sidebar-group-content .sidebar-nav-item[class*="text-[#6EC1D1]"] svg,
+html.dark .sidebar-group-content .sidebar-nav-item.text-cyan-400 svg,
+html.dark .sidebar-group-content .sidebar-nav-item.text-cyan-300 svg {
+    color: var(--primary-color) !important;
+}
+
+html.dark #posOpenScannerButton,
+html.dark #posOpenTransactionHistoryButton,
+html.dark #posOpenArchivedItemsButton {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-border) !important;
+    color: var(--primary-text) !important;
+}
+
+html.dark #posOpenScannerButton svg,
+html.dark #posOpenTransactionHistoryButton svg,
+html.dark #posOpenArchivedItemsButton svg {
+    color: var(--primary-text) !important;
+}
+
+html.dark #posOpenScannerButton:hover,
+html.dark #posOpenTransactionHistoryButton:hover,
+html.dark #posOpenArchivedItemsButton:hover {
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+    color: var(--primary-text) !important;
+}
+
+html.dark [class*="hover:shadow"]:hover,
+html.dark [class*="hover:ring"]:hover {
+    background-color: #292a2d !important;
+    box-shadow: none !important;
+    --tw-shadow: 0 0 #0000 !important;
+    --tw-ring-shadow: 0 0 #0000 !important;
+    transform: none !important;
+}
+
+html.dark [class*="group-hover:scale"] {
+    transform: none !important;
+}
+
+html.dark ::-webkit-scrollbar-track {
+    background: #1b1c1f !important;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+    background: #45474b !important;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+    background: #5a5d62 !important;
+}
+
+html.dark #categoryCenterValue {
+    color: var(--dark-text) !important;
+}
+
+html.dark #categoryCenterCaption,
+html.dark #categoryLegend .cat-label {
+    color: var(--dark-muted) !important;
+}
+
+html.dark #categoryLegend .cat-value {
+    color: var(--dark-text) !important;
+}
+
+html.dark [class*="text-[#145a66]"] {
+    color: var(--primary-color) !important;
+}
+
+/* Preserve contrast chosen by the global color engine on primary actions. */
+html.dark [class*="bg-[#6EC1D1]"]:not(.no-theme):not([class*="bg-[#6EC1D1]/"], [class*="border-l-[#6EC1D1]"]),
+html.dark [class*="bg-[#6EC1D1]"]:not(.no-theme):not([class*="bg-[#6EC1D1]/"], [class*="border-l-[#6EC1D1]"]) *,
+html.dark [class*="bg-[#105f68]"]:not(.no-theme),
+html.dark [class*="bg-[#105f68]"]:not(.no-theme) * {
+    color: var(--primary-text) !important;
 }

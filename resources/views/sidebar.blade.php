@@ -1,4 +1,4 @@
-<div class="w-full md:w-[270px] text-white flex flex-col h-full min-h-full shadow-2xl border-r border-slate-700/60"
+<div class="w-full md:w-[270px] text-white flex flex-col h-full min-h-full shadow-2xl border-none"
      style="background: linear-gradient(to bottom, #000000, #2b2b2b); position: relative;">
 
     <!-- Mobile Close Sidebar Button -->
@@ -8,16 +8,19 @@
         </svg>
     </button>
 
-    <a href="{{ route('dashboard') }}" class="px-6 py-5 flex-shrink-0">
+    <a href="{{ route('dashboard') }}" class="px-6 py-5 flex-shrink-0 block">
         <div class="flex flex-col items-center justify-center">
-            <div class="w-44 sm:w-48">
-                <img src="{{ asset('images/Logo.png') }}" alt="KCC Logo" class="w-full h-auto object-contain" />
+            <div class="w-44 sm:w-48 h-28 sm:h-32 flex items-center justify-center overflow-hidden">
+                <img id="sidebarAppLogo"
+                     src="{{ function_exists('app_logo_url') ? app_logo_url() : \App\Services\AppSettingService::getLogoUrl() }}"
+                     alt="KCC Logo"
+                     class="max-w-full max-h-full w-auto h-auto object-contain" />
             </div>
         </div>
     </a>
 
 
-    <nav class="flex-1 py-4 space-y-2 overflow-y-auto overflow-x-visible sidebar-scroll">
+    <nav class="flex-1 py-4 space-y-2 overflow-y-auto overflow-x-hidden sidebar-scroll">
 
         <a href="{{ route('dashboard') }}" @class(['sidebar-nav-item flex items-center gap-3 pl-6 pr-4 py-2.5 text-sm font-medium transition border-l-[3px]', 'bg-cyan-500/5 text-cyan-400 border-cyan-400' => request()->routeIs('dashboard'), 'text-slate-300 border-transparent' => !request()->routeIs('dashboard')])>
             <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -350,26 +353,39 @@
 </div>
 
 <style>
-    /* Force sidebar scrollbar to always be visible on the right side flush against main screen */
+    /* Sidebar scrollbar: hidden by default, visible when sub-modules are open or actively scrolling */
     .sidebar-scroll {
-        overflow-y: scroll !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
         scrollbar-width: thin;
-        scrollbar-color: rgba(148, 163, 184, 0.7) transparent;
+        scrollbar-color: transparent transparent;
+        transition: scrollbar-color 0.3s ease;
         margin-right: -2px;
         padding-right: 2px;
     }
+    .sidebar-scroll.has-open-group,
+    .sidebar-scroll:has(.group.open),
+    .sidebar-scroll.is-scrolling {
+        scrollbar-color: rgba(148, 163, 184, 0.6) transparent;
+    }
     .sidebar-scroll::-webkit-scrollbar {
         width: 5px !important;
-        display: block !important;
     }
     .sidebar-scroll::-webkit-scrollbar-track {
         background: transparent !important;
     }
     .sidebar-scroll::-webkit-scrollbar-thumb {
-        background: rgba(148, 163, 184, 0.6) !important;
+        background: transparent !important;
         border-radius: 9999px;
+        transition: background-color 0.3s ease;
     }
-    .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    .sidebar-scroll.has-open-group::-webkit-scrollbar-thumb,
+    .sidebar-scroll:has(.group.open)::-webkit-scrollbar-thumb,
+    .sidebar-scroll.is-scrolling::-webkit-scrollbar-thumb {
+        background: rgba(148, 163, 184, 0.6) !important;
+    }
+    .sidebar-scroll::-webkit-scrollbar-thumb:hover,
+    .sidebar-scroll::-webkit-scrollbar-thumb:active {
         background: rgba(148, 163, 184, 0.9) !important;
     }
 
@@ -531,23 +547,27 @@
 
     /* ============================================
        CLICKED / ACTIVE STATE
-       Same box size/shape as the hover box (top/bottom 4px, left/right 10px,
-       15px radius) but filled solid cyan, with black semi-bold text so it's
-       easy to read and doesn't strain the eyes.
-       Applied ONLY to main buttons / direct nav items (bg-cyan-500/5).
-       Submenu items (text-cyan-300) are NOT affected.
+       Driven dynamically by Global Color Theme System:
+       - Background pill uses var(--primary-color)
+       - Text and icons use var(--primary-text) for WCAG contrast
+       - Sub-module active font uses var(--primary-color)
        ============================================ */
 
     .sidebar-nav-item.bg-cyan-500\/5,
     .sidebar-group-toggle.bg-cyan-500\/5 {
         background-color: transparent !important;
-        color: #000000 !important;
+        color: var(--primary-text) !important;
         font-weight: 600 !important;
+    }
+
+    .sidebar-nav-item.bg-cyan-500\/5 svg,
+    .sidebar-group-toggle.bg-cyan-500\/5 svg {
+        color: var(--primary-text) !important;
     }
 
     .sidebar-nav-item.bg-cyan-500\/5 .sidebar-arrow,
     .sidebar-group-toggle.bg-cyan-500\/5 .sidebar-arrow {
-        color: #000000 !important;
+        color: var(--primary-text) !important;
     }
 
     .sidebar-nav-item.bg-cyan-500\/5::after,
@@ -559,12 +579,26 @@
         left: 12px;
         right: 18px;
         border-radius: 16px;
-        background: #6EC1D1;
+        background: var(--primary-color) !important;
         transform: scaleX(1);
         transform-origin: left;
         animation: wipeInRight 0.5s cubic-bezier(0.65, 0, 0.35, 1);
         z-index: -1;
         pointer-events: none;
+    }
+
+    /* Sub-module active font color in sidebar */
+    .sidebar-group-content .sidebar-nav-item.text-\[\#6EC1D1\],
+    .sidebar-group-content .sidebar-nav-item.text-cyan-400,
+    .sidebar-group-content .sidebar-nav-item.text-cyan-300,
+    .sidebar-group-content .sidebar-nav-item[class*="text-[#6EC1D1]"] {
+        color: var(--primary-color) !important;
+        font-weight: 600 !important;
+    }
+
+    /* Sub-module branch border line */
+    .sidebar-group-content[class*="border-[#6EC1D1]"] {
+        border-color: rgba(var(--primary-color-rgb), 0.45) !important;
     }
 
     @keyframes wipeInRight {
@@ -644,12 +678,25 @@
             }
         }
 
+        function updateOpenGroupClass() {
+            const sidebarNav = document.querySelector('.sidebar-scroll');
+            if (!sidebarNav) return;
+            const hasAnyOpen = sidebarNav.querySelector('.group.open') !== null;
+            if (hasAnyOpen) {
+                sidebarNav.classList.add('has-open-group');
+            } else {
+                sidebarNav.classList.remove('has-open-group');
+            }
+        }
+
         allGroups.forEach(group => {
             if (hasActiveSubmodule(group)) {
                 group.classList.add('open');
             }
             updateGroupState(group);
         });
+        updateOpenGroupClass();
+
         allGroups.forEach(group => {
             const button = group.querySelector('.sidebar-group-toggle');
             const content = group.querySelector('.sidebar-group-content');
@@ -675,14 +722,34 @@
                     group.classList.remove('open');
                 }
                 updateGroupState(group);
+                updateOpenGroupClass();
             });
         });
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initSidebarAccordion);
-    } else {
+    function initSidebarScrollbar() {
+        const scrollContainers = document.querySelectorAll('.sidebar-scroll');
+        scrollContainers.forEach(container => {
+            let scrollTimeout;
+            container.addEventListener('scroll', function() {
+                container.classList.add('is-scrolling');
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(function() {
+                    container.classList.remove('is-scrolling');
+                }, 1000);
+            }, { passive: true });
+        });
+    }
+
+    function init() {
         initSidebarAccordion();
+        initSidebarScrollbar();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
     }
 })();
 </script>

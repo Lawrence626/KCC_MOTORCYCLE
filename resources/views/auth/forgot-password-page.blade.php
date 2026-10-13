@@ -21,7 +21,7 @@
                 <div class="flex justify-center lg:justify-start">
                     <div class="logo-container">
                         <img
-                            src="{{ asset('images/Logo.png') }}"
+                            src="{{ function_exists('app_logo_url') ? app_logo_url() : \App\Services\AppSettingService::getLogoUrl() }}"
                             alt="KCC Logo"
                             class="logo-image"
                         >

@@ -16,6 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'login/otp/*',
             'forgot-password/*',
+            'settings/logo',
+            'settings/logo/*',
         ]);
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
@@ -23,6 +25,6 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*') || $request->is('login/otp/*'),
+            fn (Request $request) => $request->is('api/*') || $request->is('login/otp/*') || $request->expectsJson() || $request->ajax() || $request->is('settings/logo*'),
         );
     })->create();
