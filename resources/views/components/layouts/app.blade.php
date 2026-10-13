@@ -49,7 +49,7 @@
                                 id="notification-bell-btn"
                                 class="relative p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition"
                                 aria-label="Notifications"
-                                onclick="toggleNotificationPanel(event)"
+                                onclick="window.toggleHeaderNotificationPanel(event)"
                             >
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
@@ -63,8 +63,8 @@
 
                             <div
                                 id="notification-panel"
-                                class="hidden absolute right-0 top-full mt-2 w-[300px] sm:w-[320px] rounded-xl bg-white border border-slate-200 shadow-2xl z-[9999] flex flex-col"
-                                style="max-height: 350px;"
+                                class="hidden fixed w-[300px] sm:w-[320px] rounded-xl bg-white border border-slate-200 shadow-2xl z-[10000] flex flex-col"
+                                style="max-height: min(350px, calc(100dvh - 24px)); max-width: calc(100vw - 24px);"
                             >
                                 <div class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b border-slate-800 rounded-t-xl bg-[#0f172a]" style="background-color: #0f172a;">
                                     <div class="flex items-center gap-2">
@@ -194,6 +194,80 @@
     </div>
 
     @include('partials.admin-purchase-order-toasts')
+
+    <!-- ═══ View All Notifications Modal (Global) ═══ -->
+    <div id="all-notifications-modal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="window.closeAllNotificationsModal ? window.closeAllNotificationsModal() : this.parentElement.classList.add('hidden')"></div>
+        <div class="relative bg-white rounded-[28px] shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            <div class="flex items-center justify-between border-b border-[#6EC1D1] bg-[#6EC1D1] px-6 py-5">
+                <div>
+                    <h3 class="text-xl font-bold text-black">All Notifications</h3>
+                    <p class="text-sm text-slate-900 font-medium">History of inventory alerts and pending offline orders.</p>
+                </div>
+                <button type="button" onclick="window.closeAllNotificationsModal ? window.closeAllNotificationsModal() : document.getElementById('all-notifications-modal').classList.add('hidden')" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div id="modal-notification-list" class="divide-y divide-slate-100 overflow-y-auto p-6 space-y-3">
+                <!-- Loaded dynamically -->
+            </div>
+            <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+                <span id="modal-notif-count" class="text-xs text-slate-500">0 notifications</span>
+                <button type="button" onclick="window.closeAllNotificationsModal ? window.closeAllNotificationsModal() : document.getElementById('all-notifications-modal').classList.add('hidden')" class="rounded-[10px] bg-black/10 px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-black/20">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ Global Toast Notifications Container (Upper Right) ═══ -->
+    <div id="global-toast-container" class="fixed top-16 right-4 sm:right-6 z-[99998] flex flex-col gap-3 pointer-events-none" style="max-width: 380px; width: calc(100vw - 2rem);"></div>
+
+    <style>
+        /* ═══ Global Notification Toasts (Upper Right) ═══ */
+        .global-notif-toast {
+            pointer-events: auto;
+            background: #ffffff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            padding: 14px 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+            transform: translateX(120%);
+            opacity: 0;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .global-notif-toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        .global-notif-toast.hide {
+            transform: translateX(110%);
+            opacity: 0;
+            margin-top: -12px;
+        }
+        .global-notif-toast:hover {
+            box-shadow: 0 14px 28px -4px rgba(0, 0, 0, 0.16), 0 10px 12px -6px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+        .global-notif-toast .toast-progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            transition: width linear;
+        }
+        .global-notif-toast.toast-amber .toast-progress-bar {
+            background: #f59e0b;
+        }
+        .global-notif-toast.toast-teal .toast-progress-bar {
+            background: #00ddd2;
+        }
+        .global-notif-toast.toast-red .toast-progress-bar {
+            background: #ef4444;
+        }
+    </style>
 
     <script>
         (function() {
@@ -419,45 +493,6 @@
                     }
                 });
             }
-
-            // Notification panel toggle function
-            window.toggleNotificationPanel = function(event) {
-                event.stopPropagation();
-                const panel = document.getElementById('notification-panel');
-                const dropdown = document.getElementById('dashboardProfileDropdown');
-
-                if (panel) {
-                    const isHidden = panel.classList.contains('hidden');
-                    if (isHidden) {
-                        panel.classList.remove('hidden');
-                        if (dropdown) {
-                            dropdown.classList.add('hidden', 'opacity-0', 'scale-95');
-                            dropdown.classList.remove('block', 'opacity-100', 'scale-100');
-                        }
-                    } else {
-                        panel.classList.add('hidden');
-                    }
-                }
-            };
-
-            // Mark all notifications as read
-            window.markAllNotificationsRead = function() {
-                console.log('Mark all notifications as read');
-            };
-
-            // Open all notifications modal
-            window.openAllNotificationsModal = function() {
-                console.log('Open all notifications modal');
-            };
-
-            // Close notification panel when clicking outside
-            window.addEventListener('click', function(e) {
-                const panel = document.getElementById('notification-panel');
-                const bellBtn = document.getElementById('notification-bell-btn');
-                if (panel && !panel.classList.contains('hidden') && !panel.contains(e.target) && !bellBtn.contains(e.target)) {
-                    panel.classList.add('hidden');
-                }
-            });
         })();
     </script>
 
@@ -727,6 +762,121 @@
                 return date.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
             };
 
+            window.showGlobalToast = function(options) {
+                var container = document.getElementById('global-toast-container') || document.getElementById('inventory-toast-container');
+                if (!container) return;
+
+                var id = options.id || ('toast_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5));
+                if (options.id && document.querySelector('[data-global-toast-id="' + options.id + '"]')) {
+                    return; // already showing
+                }
+
+                var duration = options.duration || 4500;
+                var type = options.type || 'info';
+                var themeClass = (type === 'offline' || type === 'warning') ? 'toast-amber' : (type === 'critical' ? 'toast-red' : 'toast-teal');
+
+                var iconBgStyle = type === 'critical'
+                    ? 'background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.2) 100%); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px;'
+                    : 'background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.2) 100%); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 10px;';
+
+                var iconSVG = type === 'critical'
+                    ? '<svg class="w-4 h-4 text-red-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>'
+                    : '<svg class="w-4 h-4 text-amber-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>';
+
+                var toast = document.createElement('div');
+                toast.className = 'global-notif-toast ' + themeClass;
+                toast.setAttribute('data-global-toast-id', id);
+
+                var badgeLabel = options.badge || (type === 'offline' ? 'OFFLINE ORDER PENDING' : 'INVENTORY ALERT');
+                var title = options.title || 'Notification';
+                var message = options.message || '';
+                var actionBtnHtml = '';
+
+                if (options.actionUrl && options.actionLabel) {
+                    actionBtnHtml = '<a href="' + options.actionUrl + '" class="px-3 py-1.5 rounded-lg bg-[#00ddd2] hover:bg-[#00c7bc] text-black text-xs font-semibold transition-colors flex-shrink-0" onclick="event.stopPropagation();">' + options.actionLabel + '</a>';
+                }
+
+                toast.innerHTML =
+                    '<div class="flex items-start gap-3">' +
+                        '<div class="flex-shrink-0 w-8 h-8 flex items-center justify-center mt-0.5" style="' + iconBgStyle + '">' +
+                            iconSVG +
+                        '</div>' +
+                        '<div class="flex-1 min-w-0">' +
+                            '<div class="flex items-center justify-between mb-0.5">' +
+                                '<div class="flex items-center gap-1.5">' +
+                                    '<span class="text-[10px] font-bold uppercase tracking-wider text-amber-700">' + badgeLabel + '</span>' +
+                                    '<span class="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>' +
+                                '</div>' +
+                                '<span class="text-[10px] text-slate-400">Just now</span>' +
+                            '</div>' +
+                            '<p class="text-[13px] font-semibold text-slate-900 truncate mb-0.5">' + title + '</p>' +
+                            (message ? '<p class="text-xs text-slate-600 mb-2 leading-relaxed">' + message + '</p>' : '') +
+                            '<div class="flex items-center justify-between gap-2 mt-2">' +
+                                '<button type="button" class="px-2.5 py-1 text-xs font-medium text-slate-500 hover:text-slate-800 rounded bg-slate-100 hover:bg-slate-200 transition-colors" data-toast-dismiss>Dismiss</button>' +
+                                actionBtnHtml +
+                            '</div>' +
+                        '</div>' +
+                        '<button type="button" class="flex-shrink-0 text-slate-400 hover:text-slate-600 transition-colors -mt-1 -mr-1 p-1" data-toast-close aria-label="Close">' +
+                            '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>' +
+                        '</button>' +
+                    '</div>' +
+                    '<div class="toast-progress-bar" style="width: 100%;"></div>';
+
+                container.appendChild(toast);
+
+                // Animate in
+                requestAnimationFrame(function() {
+                    requestAnimationFrame(function() {
+                        toast.classList.add('show');
+                    });
+                });
+
+                // Progress bar animation
+                var progressBar = toast.querySelector('.toast-progress-bar');
+                if (progressBar) {
+                    progressBar.style.transitionDuration = duration + 'ms';
+                    setTimeout(function() { progressBar.style.width = '0%'; }, 50);
+                }
+
+                function removeToast() {
+                    if (toast._removing) return;
+                    toast._removing = true;
+                    toast.classList.remove('show');
+                    toast.classList.add('hide');
+                    setTimeout(function() {
+                        if (toast.parentNode) toast.parentNode.removeChild(toast);
+                    }, 400);
+                }
+
+                var autoTimer = setTimeout(removeToast, duration);
+
+                // Pause on hover
+                toast.addEventListener('mouseenter', function() {
+                    clearTimeout(autoTimer);
+                    if (progressBar) {
+                        progressBar.style.transitionDuration = '0ms';
+                        progressBar.style.width = progressBar.getBoundingClientRect().width + 'px';
+                    }
+                });
+
+                toast.addEventListener('mouseleave', function() {
+                    var remaining = duration * 0.4;
+                    if (progressBar) {
+                        progressBar.style.transitionDuration = remaining + 'ms';
+                        progressBar.style.width = '0%';
+                    }
+                    autoTimer = setTimeout(removeToast, remaining);
+                });
+
+                toast.querySelectorAll('[data-toast-dismiss], [data-toast-close]').forEach(function(btn) {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        clearTimeout(autoTimer);
+                        removeToast();
+                    });
+                });
+            };
+
             window.loadNotificationCenter = function() {
                 fetch('/api/inventory-notifications?limit=30', {
                     headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
@@ -735,7 +885,10 @@
                 .then(function(data) {
                     window.renderNotificationCenter(data.notifications || [], data.unread_count || 0);
                 })
-                .catch(function(err) { console.error('Failed to load notifications:', err); });
+                .catch(function(err) {
+                    console.warn('Network offline or failed to load server notifications:', err);
+                    window.renderNotificationCenter([], 0);
+                });
             };
 
             window.renderNotificationCenter = function(notifications, unreadCount) {
@@ -745,22 +898,35 @@
                 var centerBadge = document.getElementById('notif-center-unread-badge');
                 if (!panel) return;
 
+                var safeUnread = typeof unreadCount === 'number' ? unreadCount : 0;
+                if (badge) badge.dataset.serverCount = safeUnread;
+                if (centerBadge) centerBadge.dataset.serverCount = safeUnread;
+
+                var offlineCount = 0;
+                if (window.offlineManager && Array.isArray(window.offlineManager.queue?.orders)) {
+                    offlineCount = window.offlineManager.queue.orders.length;
+                }
+
+                var totalCount = safeUnread + offlineCount;
+
                 if (badge) {
-                    if (unreadCount > 0) {
-                        badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                    if (totalCount > 0) {
+                        badge.textContent = totalCount > 9 ? '9+' : totalCount;
                         badge.classList.remove('hidden');
+                        badge.style.display = 'inline-flex';
                     } else {
                         badge.classList.add('hidden');
+                        badge.style.display = 'none';
                     }
                 }
                 if (centerBadge) {
-                    if (unreadCount > 0) {
-                        centerBadge.textContent = unreadCount;
+                    if (totalCount > 0) {
+                        centerBadge.textContent = totalCount;
                         centerBadge.classList.remove('hidden');
                         centerBadge.style.display = 'inline-flex';
                         centerBadge.style.alignItems = 'center';
                         centerBadge.style.justifyContent = 'center';
-                        if (unreadCount > 9) {
+                        if (totalCount > 9) {
                             centerBadge.style.width = 'auto';
                             centerBadge.style.padding = '0 6px';
                         } else {
@@ -774,66 +940,116 @@
                 }
 
                 panel.innerHTML = '';
-                if (!notifications || notifications.length === 0) {
+                if ((!notifications || notifications.length === 0) && offlineCount === 0) {
                     if (empty) empty.classList.remove('hidden');
                     return;
                 }
                 if (empty) empty.classList.add('hidden');
 
-                notifications.forEach(function(n) {
-                    var isCritical = n.notification_type === 'out_of_stock';
-                    var iconSVG = isCritical 
-                        ? '<svg class="w-4 h-4 text-red-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>'
-                        : '<svg class="w-4 h-4 text-amber-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>';
-                    var iconBgStyle = isCritical
-                        ? 'background: linear-gradient(135deg, rgba(239, 68, 68, 0.06) 0%, rgba(239, 68, 68, 0.10) 100%); border: 1px solid rgba(239, 68, 68, 0.20); border-radius: 10px;'
-                        : 'background: linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(245, 158, 11, 0.10) 100%); border: 1px solid rgba(245, 158, 11, 0.20); border-radius: 10px;';
-                    var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
-                    var statusClass = 'notif-item notif-item-' + n.status;
-                    var ago = window.timeAgo(n.created_at);
-                    var stockText = isCritical ? '0 left' : n.current_stock + ' remaining';
-                    var shortSku = (n.sku || '').length > 15 ? (n.sku || '').substring(0, 15) + '...' : (n.sku || '');
+                if (notifications && notifications.length > 0) {
+                    notifications.forEach(function(n) {
+                        var isCritical = n.notification_type === 'out_of_stock';
+                        var iconSVG = isCritical 
+                            ? '<svg class="w-4 h-4 text-red-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>'
+                            : '<svg class="w-4 h-4 text-amber-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>';
+                        var iconBgStyle = isCritical
+                            ? 'background: linear-gradient(135deg, rgba(239, 68, 68, 0.06) 0%, rgba(239, 68, 68, 0.10) 100%); border: 1px solid rgba(239, 68, 68, 0.20); border-radius: 10px;'
+                            : 'background: linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(245, 158, 11, 0.10) 100%); border: 1px solid rgba(245, 158, 11, 0.20); border-radius: 10px;';
+                        var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
+                        var statusClass = 'notif-item notif-item-' + n.status;
+                        var ago = window.timeAgo(n.created_at);
+                        var stockText = isCritical ? '0 left' : n.current_stock + ' remaining';
+                        var shortSku = (n.sku || '').length > 15 ? (n.sku || '').substring(0, 15) + '...' : (n.sku || '');
 
-                    var item = document.createElement('div');
-                    item.className = statusClass + ' px-4 py-3 cursor-pointer border-b border-slate-100 last:border-b-0 hover:bg-slate-50 transition-colors';
-                    item.setAttribute('data-notif-id', n.id);
+                        var item = document.createElement('div');
+                        item.className = statusClass + ' px-4 py-3 cursor-pointer border-b border-slate-100 last:border-b-0 hover:bg-slate-50 transition-colors';
+                        item.setAttribute('data-notif-id', n.id);
 
-                    item.innerHTML =
-                        '<div class="flex items-start gap-3">' +
-                            '<div class="flex-shrink-0 w-8 h-8 flex items-center justify-center" style="' + iconBgStyle + '">' +
-                                iconSVG +
-                            '</div>' +
-                            '<div class="flex-1 min-w-0">' +
-                                '<div class="flex items-center justify-between mb-0.5">' +
-                                    '<div class="flex items-center gap-1.5">' +
-                                        '<span class="text-[10px] font-bold uppercase tracking-wider text-slate-700">' + typeLabel + '</span>' +
-                                        (n.status === 'unread' ? '<span class="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>' : '') +
-                                    '</div>' +
-                                    '<span class="text-[10px] text-slate-400">' + window.escHtml(ago) + '</span>' +
+                        item.innerHTML =
+                            '<div class="flex items-start gap-3">' +
+                                '<div class="flex-shrink-0 w-8 h-8 flex items-center justify-center" style="' + iconBgStyle + '">' +
+                                    iconSVG +
                                 '</div>' +
-                                '<p class="text-[13px] font-semibold text-slate-900 truncate mb-1">' + window.escHtml(n.product_name) + '</p>' +
-                                '<div class="flex items-center justify-between">' +
-                                    '<div class="flex items-center gap-1.5 text-[11px] text-slate-500 whitespace-nowrap">' +
-                                        '<span class="truncate max-w-[80px]">' + window.escHtml(shortSku) + '</span>' +
-                                        '<span>&middot;</span>' +
-                                        '<span class="font-medium whitespace-nowrap text-slate-600">' + stockText + '</span>' +
+                                '<div class="flex-1 min-w-0">' +
+                                    '<div class="flex items-center justify-between mb-0.5">' +
+                                        '<div class="flex items-center gap-1.5">' +
+                                            '<span class="text-[10px] font-bold uppercase tracking-wider text-slate-700">' + typeLabel + '</span>' +
+                                            (n.status === 'unread' ? '<span class="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>' : '') +
+                                        '</div>' +
+                                        '<span class="text-[10px] text-slate-400">' + window.escHtml(ago) + '</span>' +
                                     '</div>' +
+                                    '<p class="text-[13px] font-semibold text-slate-900 truncate mb-1">' + window.escHtml(n.product_name) + '</p>' +
+                                    '<div class="flex items-center justify-between">' +
+                                        '<div class="flex items-center gap-1.5 text-[11px] text-slate-500 whitespace-nowrap">' +
+                                            '<span class="truncate max-w-[80px]">' + window.escHtml(shortSku) + '</span>' +
+                                            '<span>&middot;</span>' +
+                                            '<span class="font-medium whitespace-nowrap text-slate-600">' + stockText + '</span>' +
+                                        '</div>' +
+                                        (n.status !== 'resolved'
+                                            ? '<a href="' + window.escHtml(n.order_url || '/purchase-order/create') + '" class="px-2.5 py-1 rounded bg-[#00ddd2] text-black text-[11px] font-semibold hover:bg-[#00c7bc] transition-colors flex-shrink-0" onclick="event.stopPropagation();">Order</a>'
+                                            : '<span class="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600 flex-shrink-0"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Resolved</span>'
+                                        ) +
+                                    '</div>' +
+<<<<<<< HEAD
                                     (n.status !== 'resolved'
                                         ? '<a href="' + window.escHtml(n.order_url || '/purchase-order/create') + '" class="px-2.5 py-1 rounded bg-theme-primary text-[11px] font-semibold transition-colors flex-shrink-0" onclick="event.stopPropagation();">Order</a>'
                                         : '<span class="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600 flex-shrink-0"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Resolved</span>'
                                     ) +
+=======
+>>>>>>> 034901bc2bc12049012582d501965e9369ce4b9e
                                 '</div>' +
-                            '</div>' +
-                        '</div>';
+                            '</div>';
 
-                    if (n.status === 'unread') {
-                        item.addEventListener('click', function() {
-                            window.markNotificationRead(n.id);
-                        });
+                        if (n.status === 'unread') {
+                            item.addEventListener('click', function() {
+                                window.markNotificationRead(n.id);
+                            });
+                        }
+
+                        panel.appendChild(item);
+                    });
+
+                    // Trigger toast popups for unread inventory alerts on page load if not recently shown
+                    if (typeof window.showGlobalToast === 'function') {
+                        var unreadAlerts = notifications.filter(function(n) { return n.status === 'unread'; });
+                        if (unreadAlerts.length > 0) {
+                            unreadAlerts.slice(0, 2).forEach(function(alert, idx) {
+                                var toastKey = 'server_notif_toast_' + alert.id;
+                                var lastShown = sessionStorage.getItem(toastKey);
+                                if (!lastShown) {
+                                    sessionStorage.setItem(toastKey, Date.now().toString());
+                                    setTimeout(function() {
+                                        var isCritical = alert.notification_type === 'out_of_stock';
+                                        window.showGlobalToast({
+                                            id: toastKey,
+                                            type: isCritical ? 'critical' : 'warning',
+                                            badge: isCritical ? 'OUT OF STOCK' : 'LOW STOCK ALERT',
+                                            title: alert.product_name,
+                                            message: (isCritical ? 'Product is out of stock (0 left).' : (alert.current_stock + ' remaining in stock.')) + ' SKU: ' + (alert.sku || ''),
+                                            actionUrl: alert.order_url || '/purchase-order/create',
+                                            actionLabel: 'Order Now',
+                                            duration: 4500
+                                        });
+                                    }, idx * 300);
+                                }
+                            });
+                        }
                     }
+                }
 
-                    panel.appendChild(item);
-                });
+                // Seamlessly inject offline pending order notification at top without conflict
+                if (window.offlineManager) {
+                    if (typeof window.offlineManager.injectOfflineNotificationIntoBell === 'function') {
+                        window.offlineManager.injectOfflineNotificationIntoBell(safeUnread);
+                    }
+                    if (typeof window.offlineManager.loadPendingOperations === 'function' && (!window.offlineManager.queue || !window.offlineManager.queue.orders || window.offlineManager.queue.orders.length === 0)) {
+                        window.offlineManager.loadPendingOperations().then(function(orders) {
+                            if (orders && orders.length > 0 && typeof window.offlineManager.injectOfflineNotificationIntoBell === 'function') {
+                                window.offlineManager.injectOfflineNotificationIntoBell(safeUnread);
+                            }
+                        }).catch(function() {});
+                    }
+                }
             };
 
             window.markNotificationRead = function(notifId) {
@@ -882,7 +1098,25 @@
                 });
             };
 
-            window.toggleNotificationPanel = function(e) {
+            window.positionHeaderNotificationPanel = function() {
+                var panel = document.getElementById('notification-panel');
+                var button = document.getElementById('notification-bell-btn');
+                if (!panel || !button || panel.classList.contains('hidden')) return;
+
+                var rect = button.getBoundingClientRect();
+                var margin = 12;
+                var panelWidth = panel.offsetWidth;
+                var panelHeight = panel.offsetHeight;
+                var left = Math.max(margin, Math.min(rect.right - panelWidth, window.innerWidth - panelWidth - margin));
+                var top = rect.bottom + 8;
+                if (top + panelHeight > window.innerHeight - margin) {
+                    top = Math.max(margin, rect.top - panelHeight - 8);
+                }
+                panel.style.left = left + 'px';
+                panel.style.top = top + 'px';
+            };
+
+            window.toggleHeaderNotificationPanel = function(e) {
                 if (e) e.stopPropagation();
                 var panel = document.getElementById('notification-panel');
                 if (!panel) return;
@@ -895,8 +1129,152 @@
                 }
 
                 var isHidden = panel.classList.contains('hidden');
-                panel.classList.toggle('hidden');
-                if (isHidden) window.loadNotificationCenter();
+                if (isHidden) {
+                    if (panel.parentElement !== document.body) document.body.appendChild(panel);
+                    panel.classList.remove('hidden');
+                    window.positionHeaderNotificationPanel();
+                    window.loadNotificationCenter();
+                } else {
+                    panel.classList.add('hidden');
+                }
+            };
+
+            window.addEventListener('resize', window.positionHeaderNotificationPanel);
+            document.addEventListener('click', function(e) {
+                var panel = document.getElementById('notification-panel');
+                var button = document.getElementById('notification-bell-btn');
+                if (panel && button && !panel.classList.contains('hidden') && !panel.contains(e.target) && !button.contains(e.target)) {
+                    panel.classList.add('hidden');
+                }
+            });
+
+            window.openAllNotificationsModal = function() {
+                var modal = document.getElementById('all-notifications-modal');
+                var list = document.getElementById('modal-notification-list');
+                var count = document.getElementById('modal-notif-count');
+                if (!modal || !list) return;
+
+                // Hide the dropdown panel
+                var panel = document.getElementById('notification-panel');
+                if (panel) panel.classList.add('hidden');
+
+                list.innerHTML = '<div class="p-6 text-center text-slate-500">Loading notifications…</div>';
+                modal.classList.remove('hidden');
+
+                var pendingOfflineOrders = [];
+                if (window.offlineManager && typeof window.offlineManager.getPendingOrders === 'function') {
+                    try {
+                        pendingOfflineOrders = (window.offlineManager.getPendingOrders() || []).filter(function(o) { return !o.synced; });
+                    } catch (e) {
+                        pendingOfflineOrders = [];
+                    }
+                }
+
+                function renderModalContent(serverNotifications) {
+                    var totalNotifs = serverNotifications.length + pendingOfflineOrders.length;
+                    if (count) count.textContent = totalNotifs + ' notification' + (totalNotifs === 1 ? '' : 's');
+                    
+                    if (totalNotifs === 0) {
+                        list.innerHTML = '<div class="p-6 text-center text-slate-400">No notification history.</div>';
+                        return;
+                    }
+
+                    var html = '';
+
+                    // 1. Render pending offline orders at top of modal
+                    if (pendingOfflineOrders.length > 0) {
+                        pendingOfflineOrders.forEach(function(order, idx) {
+                            var poNum = order.order_number || order.po_number || ('PO-OFFLINE-' + (idx + 1));
+                            var suppName = (order.supplier_name || 'Selected Supplier').replace(/"/g, '');
+                            var itemsCount = Array.isArray(order.items) ? order.items.length : 1;
+                            var itemsText = itemsCount + ' item' + (itemsCount > 1 ? 's' : '');
+                            var ago = window.timeAgo ? window.timeAgo(order.timestamp) : 'Just now';
+
+                            html += '<div class="notif-item notif-item-unread p-4 rounded-[14px] border border-amber-300/80 bg-amber-50/40 hover:border-amber-400 shadow-sm flex items-start justify-between gap-4 transition-all mb-3">' +
+                                '<div class="flex items-start gap-4">' +
+                                    '<div class="flex-shrink-0 w-10 h-10 rounded-[10px] flex items-center justify-center" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(245, 158, 11, 0.16) 100%); border: 1px solid rgba(245, 158, 11, 0.25);">' +
+                                        '<svg class="w-5 h-5 text-amber-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>' +
+                                    '</div>' +
+                                    '<div>' +
+                                        '<div class="flex items-center gap-2 mb-0.5">' +
+                                            '<span class="text-[10px] font-bold uppercase tracking-wider text-amber-700">OFFLINE ORDER</span>' +
+                                            '<span class="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>' +
+                                        '</div>' +
+                                        '<p class="text-[14px] font-semibold text-slate-900 mt-1">' + window.escHtml(poNum) + ' &middot; ' + window.escHtml(suppName) + '</p>' +
+                                        '<div class="flex items-center gap-2 mt-1">' +
+                                            '<span class="text-xs text-slate-500">' + itemsText + '</span>' +
+                                            '<span class="text-slate-400">&middot;</span>' +
+                                            '<span class="text-xs font-medium text-amber-600">Pending Sync</span>' +
+                                        '</div>' +
+                                        '<p class="text-[11px] font-bold text-slate-900 mt-1.5">' + window.escHtml(ago) + '</p>' +
+                                    '</div>' +
+                                '</div>' +
+                                '<a href="/offline-reconciliation/export" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[#00ddd2] text-black text-xs font-semibold hover:bg-[#00c7bc] transition-colors flex-shrink-0">Export</a>' +
+                            '</div>';
+                        });
+                    }
+
+                    // 2. Render server inventory notifications
+                    if (serverNotifications.length > 0) {
+                        html += serverNotifications.map(function(n) {
+                            var isCritical = n.notification_type === 'out_of_stock';
+                            var iconSVG = isCritical 
+                                ? '<svg class="w-5 h-5 text-red-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>'
+                                : '<svg class="w-5 h-5 text-amber-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>';
+                            var iconBgStyle = isCritical
+                                ? 'background: linear-gradient(135deg, rgba(239, 68, 68, 0.06) 0%, rgba(239, 68, 68, 0.10) 100%); border: 1px solid rgba(239, 68, 68, 0.20);'
+                                : 'background: linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(245, 158, 11, 0.10) 100%); border: 1px solid rgba(245, 158, 11, 0.20);';
+                            var typeLabel = isCritical ? 'Out of Stock' : 'Low Stock';
+                            var ago = window.timeAgo(n.created_at);
+                            var stockText = isCritical ? '0 left' : n.current_stock + ' remaining';
+                            var statusClass = 'notif-item notif-item-' + n.status;
+
+                            return '<div class="' + statusClass + ' p-4 rounded-[14px] border border-slate-200/80 bg-white hover:border-[#6EC1D1]/60 shadow-sm flex items-start justify-between gap-4 transition-all mb-3">' +
+                                '<div class="flex items-start gap-4">' +
+                                    '<div class="flex-shrink-0 w-10 h-10 rounded-[10px] flex items-center justify-center" style="' + iconBgStyle + '">' +
+                                        iconSVG +
+                                    '</div>' +
+                                    '<div>' +
+                                        '<div class="flex items-center gap-2 mb-0.5">' +
+                                            '<span class="text-[10px] font-bold uppercase tracking-wider text-slate-700">' + typeLabel + '</span>' +
+                                            (n.status === 'unread' ? '<span class="notif-status-dot unread"></span>' : '') +
+                                        '</div>' +
+                                        '<p class="text-[14px] font-semibold text-slate-900 mt-1">' + window.escHtml(n.product_name) + '</p>' +
+                                        '<div class="flex items-center gap-2 mt-1">' +
+                                            '<span class="text-xs text-slate-500">SKU: ' + window.escHtml(n.sku) + '</span>' +
+                                            '<span class="text-slate-400">&middot;</span>' +
+                                            '<span class="text-xs font-medium text-slate-600">' + stockText + '</span>' +
+                                        '</div>' +
+                                        '<p class="text-[11px] ' + (n.status === 'unread' ? 'font-bold text-slate-900' : 'text-slate-400') + ' mt-1.5">' + window.escHtml(ago) + '</p>' +
+                                    '</div>' +
+                                '</div>' +
+                                (n.status !== 'resolved'
+                                    ? '<a href="' + window.escHtml(n.order_url || '/purchase-order/create') + '" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[#6EC1D1] text-black text-xs font-medium hover:bg-[#59b2c2] transition-colors flex-shrink-0">Order Now</a>'
+                                    : '<span class="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 flex-shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Resolved</span>'
+                                ) +
+                            '</div>';
+                        }).join('');
+                    }
+
+                    list.innerHTML = html;
+                }
+
+                fetch('/api/inventory-notifications?limit=250', {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    renderModalContent(data.notifications || []);
+                })
+                .catch(function(err) {
+                    console.warn('Network offline or error fetching modal notifications:', err);
+                    renderModalContent([]);
+                });
+            };
+
+            window.closeAllNotificationsModal = function() {
+                var modal = document.getElementById('all-notifications-modal');
+                if (modal) modal.classList.add('hidden');
             };
 
             // Close notification panel when clicking outside
@@ -949,7 +1327,7 @@
         });
     </script>
 
-    <script src="{{ asset('js/offline-manager.js') }}"></script>
+    <script src="{{ asset('js/offline-manager.js') }}?v={{ file_exists(public_path('js/offline-manager.js')) ? filemtime(public_path('js/offline-manager.js')) : time() }}"></script>
     @stack('scripts')
 </body>
 </html>

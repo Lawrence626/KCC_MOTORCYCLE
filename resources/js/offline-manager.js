@@ -12,25 +12,46 @@ class OfflineManager {
     }
 
     async init() {
-        // Initialize IndexedDB
-        await this.initIndexedDB();
-        
-        // Setup event listeners for online/offline status
-        window.addEventListener('online', () => this.handleOnline());
-        window.addEventListener('offline', () => this.handleOffline());
-        
-        // Clean up any orders that are already approved in the database
-        if (this.isOnline) {
-            await this.cleanupSyncedOrders();
-        }
+        try {
+            // Initialize IndexedDB
+            await this.initIndexedDB();
+            
+            // Setup event listeners for online/offline status
+            window.addEventListener('online', () => this.handleOnline());
+            window.addEventListener('offline', () => this.handleOffline());
+            
+            // Clean up any orders that are already synced
+            if (this.isOnline) {
+                await this.cleanupSyncedOrders();
+            }
 
-        // Load pending operations from IndexedDB
-        await this.loadPendingOperations();
-        
-        // Update UI status, sidebar, and notification bell
-        this.updateStatusIndicator();
-        await this.updateOfflineReconSidebar();
-        await this.updatePendingOfflineSyncAlert();
+            // Load pending operations from IndexedDB
+            await this.loadPendingOperations();
+            
+            // Update UI status, sidebar, and notification bell
+            this.updateStatusIndicator();
+            await this.updateOfflineReconSidebar();
+            await this.updatePendingOfflineSyncAlert();
+        } catch (err) {
+            console.error('OfflineManager init error:', err);
+        }
+    }
+
+    async cleanupSyncedOrders() {
+        try {
+            if (!this.db || !this.db.objectStoreNames.contains('pending_orders')) return;
+            const orders = await this.getAllFromStore('pending_orders');
+            const synced = orders.filter(o => o.synced === true);
+            if (synced.length > 0) {
+                const tx = this.db.transaction(['pending_orders'], 'readwrite');
+                const store = tx.objectStore('pending_orders');
+                for (const item of synced) {
+                    if (item.id !== undefined) store.delete(item.id);
+                }
+            }
+        } catch (e) {
+            console.warn('cleanupSyncedOrders warning:', e);
+        }
     }
 
     async initIndexedDB() {
@@ -228,8 +249,7 @@ class OfflineManager {
         }
     }
 
-    injectOfflineNotificationIntoBell() {
-        const isOnline = (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean') ? navigator.onLine : true;
+    injectOfflineNotificationIntoBell(serverUnreadCount = null) {
         let pendingOrders = [];
         try {
             pendingOrders = (this.queue?.orders || []).filter(o => !o.synced);
@@ -243,60 +263,117 @@ class OfflineManager {
         const bellBadge = document.getElementById('notification-badge') || document.getElementById('headerNotificationBadge');
         const centerBadge = document.getElementById('notif-center-unread-badge');
 
-        // Remove any old offline notification element
+        // Always remove old offline notification elements first to prevent duplication
+        document.querySelectorAll('.offline-notif-bell-item').forEach(el => el.remove());
         document.querySelectorAll('#offline-notif-bell-item').forEach(el => el.remove());
+        document.querySelectorAll('#modal-offline-notif-item').forEach(el => el.remove());
 
-        if (count > 0 && isOnline) {
-            if (!list) return;
+        if (count > 0) {
+            this.triggerOfflineToastAlert(pendingOrders);
 
-            if (empty) empty.classList.add('hidden');
+            if (list) {
+                if (empty) empty.classList.add('hidden');
 
-            const poNumbers = pendingOrders.slice(0, 3).map(o => o.order_number || o.po_number || 'PO').join(', ');
-            const moreCount = count > 3 ? ` +${count - 3} more` : '';
+                // Render each pending offline order to match the exact notification card structure
+                pendingOrders.forEach((order, idx) => {
+                    const poNum = order.order_number || order.po_number || `PO-OFFLINE-${idx + 1}`;
+                    const suppName = (order.supplier_name || 'Selected Supplier').replace(/"/g, '');
+                    const itemsCount = Array.isArray(order.items) ? order.items.length : 1;
+                    const itemsText = `${itemsCount} item${itemsCount > 1 ? 's' : ''}`;
+                    const ago = window.timeAgo ? window.timeAgo(order.timestamp) : 'Just now';
 
-            const item = document.createElement('div');
-            item.id = 'offline-notif-bell-item';
-            item.className = 'border-b border-slate-100 bg-amber-50/50 hover:bg-amber-100/60 px-4 py-3 transition-colors';
-            item.innerHTML = `
-                <div class="flex items-start gap-3">
-                    <div class="mt-0.5 flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-[10px] bg-amber-100 border border-amber-200 text-amber-800">
-                        <svg class="w-4 h-4 text-amber-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                        </svg>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center justify-between mb-0.5">
-                            <div class="flex items-center gap-1.5">
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 font-mono">OFFLINE SYNC PENDING</span>
-                                <span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>
+                    const item = document.createElement('div');
+                    item.className = 'offline-notif-bell-item notif-item notif-item-unread px-4 py-3 cursor-pointer border-b border-slate-100 last:border-b-0 hover:bg-slate-50 transition-colors';
+                    item.innerHTML = `
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(245, 158, 11, 0.16) 100%); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 10px;">
+                                <svg class="w-4 h-4 text-amber-600" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
                             </div>
-                            <span class="text-[10px] text-amber-800 font-bold">${count} Order${count > 1 ? 's' : ''}</span>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between mb-0.5">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-700">OFFLINE ORDER</span>
+                                        <span class="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>
+                                    </div>
+                                    <span class="text-[10px] text-slate-400">${window.escHtml ? window.escHtml(ago) : ago}</span>
+                                </div>
+                                <p class="text-[13px] font-semibold text-slate-900 truncate mb-1">${window.escHtml ? window.escHtml(poNum) : poNum} &middot; ${window.escHtml ? window.escHtml(suppName) : suppName}</p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-1.5 text-[11px] text-slate-500 whitespace-nowrap">
+                                        <span class="truncate max-w-[90px] text-slate-600">${itemsText}</span>
+                                        <span>&middot;</span>
+                                        <span class="font-medium whitespace-nowrap text-amber-600">Pending Sync</span>
+                                    </div>
+                                    <a href="/offline-reconciliation/export" class="px-2.5 py-1 rounded bg-[#00ddd2] text-black text-[11px] font-semibold hover:bg-[#00c7bc] transition-colors flex-shrink-0" onclick="event.stopPropagation();">Export</a>
+                                </div>
+                            </div>
                         </div>
-                        <p class="text-[13px] font-semibold text-slate-900 truncate mb-1">${poNumbers}${moreCount}</p>
-                        <div class="flex items-center justify-between mt-1.5">
-                            <span class="text-[10px] text-slate-500">Saved in browser storage</span>
-                            <a href="/offline-reconciliation/export" class="rounded-lg bg-amber-600 hover:bg-amber-700 px-2.5 py-1 text-[10px] font-bold text-white shadow-xs transition">Export & Sync</a>
-                        </div>
-                    </div>
-                </div>
-            `;
+                    `;
 
-            list.insertBefore(item, list.firstChild);
+                    list.insertBefore(item, list.firstChild);
+                });
+            }
+
+            const serverCount = typeof serverUnreadCount === 'number' 
+                ? serverUnreadCount 
+                : (parseInt(bellBadge?.dataset?.serverCount) || 0);
+
+            const total = serverCount + count;
 
             if (bellBadge) {
-                const currentBadgeVal = parseInt(bellBadge.textContent) || 0;
-                const newTotal = currentBadgeVal + count;
-                bellBadge.textContent = newTotal > 9 ? '9+' : newTotal;
+                bellBadge.textContent = total > 9 ? '9+' : total;
                 bellBadge.classList.remove('hidden');
                 bellBadge.style.display = 'inline-flex';
             }
             if (centerBadge) {
-                const currentCenterVal = parseInt(centerBadge.textContent) || 0;
-                const newTotal = currentCenterVal + count;
-                centerBadge.textContent = newTotal;
+                centerBadge.textContent = total;
                 centerBadge.classList.remove('hidden');
                 centerBadge.style.display = 'inline-flex';
             }
+
+            const modal = document.getElementById('all-notifications-modal');
+            if (modal && !modal.classList.contains('hidden') && typeof window.openAllNotificationsModal === 'function') {
+                // If modal is currently open, refresh list
+                window.openAllNotificationsModal();
+            }
+        }
+    }
+
+    triggerOfflineToastAlert(pendingOrders) {
+        if (!Array.isArray(pendingOrders) || pendingOrders.length === 0) return;
+        const count = pendingOrders.length;
+        const lastOrder = pendingOrders[pendingOrders.length - 1];
+        const poNum = lastOrder.order_number || lastOrder.po_number || `PO-OFFLINE-${count}`;
+        const suppName = (lastOrder.supplier_name || 'Selected Supplier').replace(/"/g, '');
+
+        const toastKey = `offline_toast_${count}_${poNum}`;
+        const lastShown = sessionStorage.getItem('last_offline_toast_ts');
+        const lastKey = sessionStorage.getItem('last_offline_toast_key');
+        const now = Date.now();
+
+        // Avoid showing continuously on every tick, but show immediately on page load / new orders
+        if (lastShown && (now - parseInt(lastShown, 10)) < 30000 && lastKey === toastKey) {
+            return;
+        }
+
+        sessionStorage.setItem('last_offline_toast_ts', now.toString());
+        sessionStorage.setItem('last_offline_toast_key', toastKey);
+
+        if (typeof window.showGlobalToast === 'function') {
+            window.showGlobalToast({
+                id: toastKey,
+                type: 'offline',
+                badge: 'OFFLINE ORDER PENDING',
+                title: count === 1 ? `${poNum} · ${suppName}` : `${count} Offline Orders Pending`,
+                message: count === 1 
+                    ? `Order created offline. Ready to export or sync.` 
+                    : `You have ${count} offline orders waiting to be exported.`,
+                actionUrl: '/offline-reconciliation/export',
+                actionLabel: 'Export Now',
+                duration: 4500
+            });
         }
     }
 
@@ -305,8 +382,19 @@ class OfflineManager {
     }
 
     showNotification(message, type = 'info') {
+        if (typeof window.showGlobalToast === 'function') {
+            window.showGlobalToast({
+                type: type === 'warning' ? 'warning' : (type === 'error' ? 'critical' : 'info'),
+                badge: type === 'warning' ? 'OFFLINE WARNING' : 'NOTIFICATION',
+                title: message,
+                message: '',
+                duration: 4000
+            });
+            return;
+        }
+
         const notification = document.createElement('div');
-        notification.className = `fixed bottom-4 right-4 px-4 py-3 rounded-[12px] shadow-2xl z-[99999] text-xs font-semibold flex items-center gap-2.5 max-w-md ${
+        notification.className = `fixed top-16 right-6 px-4 py-3 rounded-[12px] shadow-2xl z-[99999] text-xs font-semibold flex items-center gap-2.5 max-w-md ${
             type === 'success' ? 'bg-green-700 text-white' :
             type === 'warning' ? 'bg-amber-500 text-slate-950' :
             type === 'error' ? 'bg-red-600 text-white' :
@@ -323,7 +411,7 @@ class OfflineManager {
         setTimeout(() => {
             notification.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
             notification.style.opacity = '0';
-            notification.style.transform = 'translateY(10px)';
+            notification.style.transform = 'translateY(-10px)';
             setTimeout(() => notification.remove(), 400);
         }, 4500);
     }
@@ -426,12 +514,13 @@ class OfflineManager {
         const orders = await this.getAllFromStore('pending_orders');
         
         this.queue = {
-            orders: orders.filter(o => !o.synced)
+            orders: Array.isArray(orders) ? orders.filter(o => o.synced !== true && o.status !== 'approved' && o.sync_status !== 'synchronized') : []
         };
 
         this.updateQueueCount();
         await this.updateOfflineReconSidebar().catch(e => console.warn(e));
         this.injectOfflineNotificationIntoBell();
+        return this.queue.orders;
     }
 
     async getAllFromStore(storeName) {
