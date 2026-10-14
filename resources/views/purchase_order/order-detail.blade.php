@@ -438,10 +438,11 @@
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-2">Warehouse</label>
                                 <select name="warehouse" id="confirmWarehouseSelect" required class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none">
+                                    <option value="" disabled selected>Select Warehouse</option>
                                     <option value="Shop">Shop (Main Store)</option>
                                     @foreach(array_keys($shelvesByWarehouse) as $whName)
-                                        @if($whName !== 'Shop')
-                                            <option value="{{ $whName }}" {{ $whName === 'Warehouse A' ? 'selected' : '' }}>{{ $whName }}</option>
+                                        @if(strtolower(trim($whName)) !== 'shop')
+                                            <option value="{{ $whName }}">{{ $whName }}</option>
                                         @endif
                                     @endforeach
                                 </select>
@@ -454,8 +455,8 @@
                                         Add Shelf
                                     </button>
                                 </div>
-                                <select name="shelf_id" id="confirmShelfSelect" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none">
-                                    <option value="">No specific shelf</option>
+                                <select name="shelf_id" id="confirmShelfSelect" disabled class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none cursor-not-allowed">
+                                    <option value="">Select a warehouse first</option>
                                 </select>
                             </div>
                         </div>
@@ -666,9 +667,10 @@
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1.5">Destination Warehouse <span class="text-rose-500">*</span></label>
                             <select name="warehouse" id="replacementWarehouseSelect" required class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
+                                <option value="" disabled selected>Select Warehouse</option>
                                 <option value="Shop">Shop (Main Store)</option>
                                 @foreach(array_keys($shelvesByWarehouse) as $whName)
-                                    @if($whName !== 'Shop')
+                                    @if(strtolower(trim($whName)) !== 'shop')
                                         <option value="{{ $whName }}">{{ $whName }}</option>
                                     @endif
                                 @endforeach
@@ -682,8 +684,8 @@
                                     Add Shelf
                                 </button>
                             </div>
-                            <select name="shelf_id" id="replacementShelfSelect" class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
-                                <option value="">No specific shelf</option>
+                            <select name="shelf_id" id="replacementShelfSelect" disabled class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs text-slate-900 outline-none cursor-not-allowed focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
+                                <option value="">Select a warehouse first</option>
                             </select>
                         </div>
                     </div>
@@ -808,6 +810,18 @@
             if (!warehouseSelect || !shelfSelect) return;
 
             const selectedWarehouse = warehouseSelect.value;
+            if (!selectedWarehouse) {
+                shelfSelect.innerHTML = '<option value="">Select a warehouse first</option>';
+                shelfSelect.disabled = true;
+                shelfSelect.classList.add('bg-slate-50', 'cursor-not-allowed');
+                shelfSelect.classList.remove('bg-white');
+                return;
+            }
+
+            shelfSelect.disabled = false;
+            shelfSelect.classList.remove('bg-slate-50', 'cursor-not-allowed');
+            shelfSelect.classList.add('bg-white');
+
             const shelves = shelvesByWarehouse[selectedWarehouse] || [];
 
             shelfSelect.innerHTML = '';
@@ -837,7 +851,13 @@
             currentAddShelfContext = context;
             const whSelectId = context === 'replacement' ? 'replacementWarehouseSelect' : 'confirmWarehouseSelect';
             const whSelect = document.getElementById(whSelectId);
-            const selectedWarehouse = whSelect ? whSelect.value : 'Warehouse B';
+            const selectedWarehouse = whSelect ? whSelect.value : '';
+
+            if (!selectedWarehouse) {
+                alert('Please select a warehouse first before adding a shelf.');
+                if (whSelect) whSelect.focus();
+                return;
+            }
 
             document.getElementById('addShelfWarehouseInput').value = selectedWarehouse;
 

@@ -137,3 +137,69 @@ test('confirm receive assigns product to the selected warehouse shelf', function
         ->and($shelf->products[0]['sku'])->toBe('KCC_PART_WH_001')
         ->and($shelf->products[0]['qty'])->toBe(10);
 });
+
+test('duplicate SHOP warehouse is consolidated to Shop and shelvesByWarehouse contains no SHOP key', function () {
+    // Create an explicit duplicate SHOP warehouse
+    Warehouse::create(['name' => 'SHOP', 'code' => 'WH-SHOP', 'is_active' => true]);
+
+    $grouped = \App\Http\Controllers\PurchaseOrderController::getShelvesGroupedByWarehouse();
+
+    expect(array_key_exists('SHOP', $grouped))->toBeFalse()
+        ->and(array_key_exists('Shop', $grouped))->toBeTrue()
+        ->and(Warehouse::where('name', 'SHOP')->exists())->toBeFalse();
+});
+
+test('order detail view shows select warehouse placeholder without preselected warehouse', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $supplier = Supplier::create([
+        'name' => 'Test Supplier 2',
+        'contact_person' => 'Maria',
+        'email' => 'maria@supplier.test',
+        'phone' => '09123456788',
+        'address' => 'Supplier Address 2',
+    ]);
+
+    $po = PurchaseOrder::create([
+        'order_number' => 'PO-TEST-SHELVES-002',
+        'supplier_id' => $supplier->id,
+        'supplier_name' => $supplier->name,
+        'status' => 'awaiting confirmation',
+        'total_amount' => 500,
+        'user_id' => $admin->id,
+    ]);
+
+    $response = $this->actingAs($admin)->get(route('order.show', $po));
+    $response->assertOk();
+    $response->assertSee('Select Warehouse');
+    $response->assertSee('Shop (Main Store)');
+    $response->assertDontSee('<option value="SHOP">', false);
+});
+
+test('api movements endpoint returns more than 10 movements when available', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $product = Product::create([
+        'name' => 'Movement Test Item',
+        'product_name' => 'Movement Test Item',
+        'sku' => 'TEST-MOV-SKU',
+        'unit_price' => 100,
+        'stock_quantity' => 50,
+    ]);
+
+    for ($i = 0; $i < 15; $i++) {
+        \App\Models\InventoryMovement::create([
+            'product_id' => $product->id,
+            'type' => 'restock',
+            'quantity_change' => 5,
+            'unit_price' => 100,
+            'supplier_name' => 'Test Supplier',
+            'notes' => "Movement {$i}",
+        ]);
+    }
+
+    $response = $this->actingAs($admin)->getJson(route('api.movements'));
+    $response->assertOk();
+    $data = $response->json('data');
+
+    expect(count($data))->toBe(15);
+});
+

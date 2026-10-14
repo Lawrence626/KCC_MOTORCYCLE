@@ -1047,14 +1047,38 @@ class PurchaseOrderController extends Controller
 
     public static function getShelvesGroupedByWarehouse(): array
     {
-        $warehouses = Warehouse::active()->orderBy('name')->get();
+        try {
+            $duplicateShop = Warehouse::where('name', 'SHOP')->first();
+            if ($duplicateShop) {
+                $mainShop = Warehouse::where('name', 'Shop')->first();
+                if (!$mainShop) {
+                    $duplicateShop->update(['name' => 'Shop']);
+                } else {
+                    WarehouseShelf::where('warehouse_id', $duplicateShop->id)->update([
+                        'warehouse_id' => $mainShop->id,
+                        'warehouse_code' => $mainShop->code ?: 'WH-SHOP',
+                    ]);
+                    $duplicateShop->delete();
+                }
+            }
+        } catch (\Throwable $e) {
+            // Ignore in early/testing migration state
+        }
+
+        $warehouses = Warehouse::active()
+            ->where('name', '!=', 'SHOP')
+            ->orderBy('name')
+            ->get();
         if ($warehouses->isEmpty()) {
             $defaultNames = ['Warehouse A', 'Warehouse B', 'Warehouse C', 'Warehouse D'];
             foreach ($defaultNames as $idx => $name) {
                 $code = 'WH-' . chr(65 + $idx);
                 Warehouse::firstOrCreate(['name' => $name], ['code' => $code, 'is_active' => true]);
             }
-            $warehouses = Warehouse::active()->orderBy('name')->get();
+            $warehouses = Warehouse::active()
+                ->where('name', '!=', 'SHOP')
+                ->orderBy('name')
+                ->get();
         }
 
         $warehousesById = $warehouses->keyBy('id');
@@ -1105,11 +1129,16 @@ class PurchaseOrderController extends Controller
             'Warehouse A' => [],
             'Warehouse B' => [],
             'Warehouse C' => [],
+            'Warehouse D' => [],
         ];
 
         foreach ($warehouses as $wh) {
-            if (!isset($grouped[$wh->name])) {
-                $grouped[$wh->name] = [];
+            $whTrimmed = trim($wh->name);
+            if (strtolower($whTrimmed) === 'shop') {
+                continue;
+            }
+            if (!isset($grouped[$whTrimmed])) {
+                $grouped[$whTrimmed] = [];
             }
         }
 
@@ -1123,12 +1152,17 @@ class PurchaseOrderController extends Controller
                 elseif (str_contains($code, 'WH-B') || $code === 'B') $whName = 'Warehouse B';
                 elseif (str_contains($code, 'WH-C') || $code === 'C') $whName = 'Warehouse C';
                 elseif (str_contains($code, 'WH-D') || $code === 'D') $whName = 'Warehouse D';
+                elseif (str_contains($code, 'SHOP')) $whName = 'Shop';
             } elseif (preg_match('/^(Warehouse [A-Z]|Shop)/i', $shelf->name, $matches)) {
                 $whName = ucwords(strtolower($matches[1]));
             }
 
             if (!$whName) {
                 $whName = 'Warehouse A';
+            }
+
+            if (strtolower(trim($whName)) === 'shop') {
+                $whName = 'Shop';
             }
 
             if (!isset($grouped[$whName])) {
@@ -1152,6 +1186,9 @@ class PurchaseOrderController extends Controller
         ]);
 
         $warehouseName = trim($validated['warehouse']);
+        if (strtolower($warehouseName) === 'shop') {
+            $warehouseName = 'Shop';
+        }
         $shelfName     = trim($validated['name']);
 
         $warehouse = Warehouse::where('name', $warehouseName)->first();
@@ -1447,6 +1484,9 @@ class PurchaseOrderController extends Controller
         ]);
 
         $warehouse = $validated['warehouse'];
+        if (strtolower(trim($warehouse)) === 'shop') {
+            $warehouse = 'Shop';
+        }
         $shelfId = $validated['shelf_id'] ?? null;
 
         DB::transaction(function () use ($purchaseOrder, $warehouse, $shelfId) {
@@ -1728,6 +1768,9 @@ class PurchaseOrderController extends Controller
 
         $receivedQty = (int) $validated['replacement_quantity'];
         $warehouse = $validated['warehouse'];
+        if (strtolower(trim($warehouse)) === 'shop') {
+            $warehouse = 'Shop';
+        }
         $shelfId = $validated['shelf_id'] ?? null;
 
         DB::transaction(function () use ($purchaseOrder, $defectiveRequest, $receivedQty, $warehouse, $shelfId) {

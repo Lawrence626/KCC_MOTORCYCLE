@@ -955,6 +955,11 @@ async function loadMovements() {
     }
 }
 
+window.goToMovementPage = function (page) {
+    movementsPage = page;
+    renderMovements();
+};
+
 function renderMovements() {
     const tbody = document.getElementById('movementFeed');
     const paginationInfo = document.getElementById('movementPaginationInfo');
@@ -1024,13 +1029,39 @@ function renderMovements() {
     }
 
     // Update pagination info
+    const totalMovements = filteredMovements.length;
     if (paginationInfo) {
-        paginationInfo.textContent = `Showing ${startIndex + 1}-${Math.min(endIndex, filteredMovements.length)} of ${filteredMovements.length} movements`;
+        if (totalMovements === 0) {
+            paginationInfo.textContent = 'Showing 0 of 0 movements';
+        } else {
+            paginationInfo.textContent = `Showing ${startIndex + 1}-${Math.min(endIndex, totalMovements)} of ${totalMovements} movements`;
+        }
     }
 
-    // Update button states
-    if (prevBtn) prevBtn.disabled = movementsPage === 1;
-    if (nextBtn) nextBtn.disabled = movementsPage === totalPages;
+    // Update pagination controls
+    const paginationControls = document.getElementById('movementPaginationControls');
+    if (paginationControls) {
+        let html = `<button type="button" onclick="goToMovementPage(${movementsPage - 1})" class="movement-prev rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition cursor-pointer" ${movementsPage <= 1 ? 'disabled' : ''}>← Prev</button>`;
+
+        let startPage = Math.max(1, movementsPage - 2);
+        let endPage = Math.min(totalPages, startPage + 4);
+        if (endPage - startPage < 4) {
+            startPage = Math.max(1, endPage - 4);
+        }
+        startPage = Math.max(1, startPage);
+
+        for (let i = startPage; i <= endPage; i++) {
+            if (i === movementsPage) {
+                html += `<button type="button" class="inline-flex items-center justify-center rounded-[10px] bg-black/10 text-slate-900 w-8 h-8 text-xs font-semibold">${i}</button>`;
+            } else {
+                html += `<button type="button" onclick="goToMovementPage(${i})" class="inline-flex items-center justify-center rounded-[10px] border border-slate-300 bg-white text-slate-700 w-8 h-8 text-xs font-semibold hover:bg-slate-50 transition cursor-pointer">${i}</button>`;
+            }
+        }
+
+        html += `<button type="button" onclick="goToMovementPage(${movementsPage + 1})" class="movement-next rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition cursor-pointer" ${movementsPage >= totalPages ? 'disabled' : ''}>Next →</button>`;
+
+        paginationControls.innerHTML = html;
+    }
 }
 
 let currentPage = 1;

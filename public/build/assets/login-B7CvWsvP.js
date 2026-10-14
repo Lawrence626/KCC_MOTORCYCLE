@@ -1,4 +1,4 @@
-var e=document.getElementById(`rememberMe`),t=document.getElementById(`email`),n=document.getElementById(`password`);e.addEventListener(`change`,function(){this.checked?(t.autocomplete=`email`,n.autocomplete=`current-password`):(t.autocomplete=`off`,n.autocomplete=`new-password`)}),window.togglePassword=function(e){let t=e.previousElementSibling,n=e.querySelector(`svg`);t.type===`password`?(t.type=`text`,e.classList.add(`active`),e.setAttribute(`aria-label`,`Hide password`),n.innerHTML=`
+var e=document.getElementById(`email`),t=document.getElementById(`password`);e&&(e.autocomplete=`off`),t&&(t.autocomplete=`current-password`),window.togglePassword=function(e){let t=e.previousElementSibling,n=e.querySelector(`svg`);t.type===`password`?(t.type=`text`,e.classList.add(`active`),e.setAttribute(`aria-label`,`Hide password`),n.innerHTML=`
             <path stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"

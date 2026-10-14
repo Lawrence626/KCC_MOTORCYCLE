@@ -306,20 +306,6 @@
                         </div>
                     </div>
 
-                    <!-- Bottom Section: Restock Alert Banner -->
-                    <a href="{{ route('warehouse.management') }}" id="inventoryRestockBanner" class="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-gray-200 transition-colors group cursor-pointer text-decoration-none">
-                        <div class="flex items-center gap-1.5 min-w-0">
-                            <svg class="w-4 h-4 text-red-600 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                            </svg>
-                            <span id="inventoryRestockAlertText" class="text-[11px] font-semibold text-red-600 truncate">
-                                <span id="restockItemCount">0</span> items need restocking
-                            </span>
-                        </div>
-                        <svg class="w-3.5 h-3.5 text-red-500 group-hover:translate-x-0.5 transition-transform shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                        </svg>
-                    </a>
                 </div>
             </div>
  
