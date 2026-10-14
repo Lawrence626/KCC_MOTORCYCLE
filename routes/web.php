@@ -336,6 +336,7 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('supplier-assessment/suppliers/{supplier}', [SupplierAssessmentController::class, 'update'])->name('supplier.assessment.update');
         Route::delete('supplier-assessment/suppliers/{supplier}', [SupplierAssessmentController::class, 'destroy'])->name('supplier.assessment.destroy');
         Route::delete('supplier-assessment/suppliers/{supplier}/force-delete', [SupplierAssessmentController::class, 'forceDelete'])->name('supplier.assessment.force-delete');
+        Route::patch('supplier-assessment/products/{product}', [SupplierAssessmentController::class, 'updateProduct'])->name('supplier.assessment.product.update');
     });
 
     // User Management Routes (controller-driven) - Admin only

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\FastMovingProduct;
 use App\Models\POSTransaction;
 use App\Models\Product;
+use App\Models\ProductCatalog;
 use App\Models\PurchaseOrder;
 use App\Models\ReverseLogistics;
 use App\Models\SlowMovingProduct;
@@ -334,5 +335,70 @@ class SupplierAssessmentController extends Controller
         $supplier->delete();
 
         return redirect()->route('supplier.assessment.archived')->with('success', "Supplier \"{$supplierName}\" permanently deleted.");
+    }
+
+    /**
+     * Update product details (e.g. name, unit price) directly from Supplier Assessment in real time.
+     */
+    public function updateProduct(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'unit_price' => 'required|numeric|min:0',
+            'category' => 'nullable|string|max:255',
+            'brand' => 'nullable|string|max:255',
+            'stock_quantity' => 'nullable|integer|min:0',
+            'reorder_level' => 'nullable|integer|min:0',
+        ]);
+
+        $product->name = $validated['name'];
+        $product->product_name = $validated['name'];
+        $product->unit_price = (float) $validated['unit_price'];
+
+        if (array_key_exists('category', $validated) && $validated['category'] !== null) {
+            $product->category = $validated['category'];
+        }
+        if (array_key_exists('brand', $validated) && $validated['brand'] !== null) {
+            $product->brand = $validated['brand'];
+        }
+        if (array_key_exists('stock_quantity', $validated) && $validated['stock_quantity'] !== null) {
+            $product->stock_quantity = (int) $validated['stock_quantity'];
+        }
+        if (array_key_exists('reorder_level', $validated) && $validated['reorder_level'] !== null) {
+            $product->reorder_level = (int) $validated['reorder_level'];
+        }
+
+        $product->save();
+
+        // Synchronize matching ProductCatalog records by SKU or product_catalog_id
+        if ($product->sku) {
+            ProductCatalog::where('sku', $product->sku)->update([
+                'product_name' => $product->name,
+                'brand' => $product->brand,
+            ]);
+        }
+        if ($product->product_catalog_id) {
+            ProductCatalog::where('id', $product->product_catalog_id)->update([
+                'product_name' => $product->name,
+                'brand' => $product->brand,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Product \"{$product->name}\" updated successfully.",
+            'product' => [
+                'id' => $product->id,
+                'product_id' => $product->id,
+                'name' => $product->product_name ?: $product->name,
+                'product_name' => $product->product_name ?: $product->name,
+                'sku' => $product->sku,
+                'brand' => $product->brand,
+                'category' => $product->category,
+                'price' => (float) $product->unit_price,
+                'stock_quantity' => (int) $product->stock_quantity,
+                'reorder_level' => (int) $product->reorder_level,
+            ],
+        ]);
     }
 }
