@@ -9,6 +9,10 @@
         </div>
     </x-slot>
 
+@php
+    $shelvesByWarehouse = $shelvesByWarehouse ?? \App\Http\Controllers\PurchaseOrderController::getShelvesGroupedByWarehouse();
+@endphp
+
     <div class="space-y-4">
 
         @if(session('success'))
@@ -433,26 +437,25 @@
                         <div class="mt-4 grid gap-4 sm:grid-cols-2">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-2">Warehouse</label>
-                                <select name="warehouse" required class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none">
+                                <select name="warehouse" id="confirmWarehouseSelect" required class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none">
                                     <option value="Shop">Shop (Main Store)</option>
-                                    <option value="Warehouse A">Warehouse A</option>
-                                    <option value="Warehouse B">Warehouse B</option>
-                                    <option value="Warehouse C">Warehouse C</option>
+                                    @foreach(array_keys($shelvesByWarehouse) as $whName)
+                                        @if($whName !== 'Shop')
+                                            <option value="{{ $whName }}" {{ $whName === 'Warehouse A' ? 'selected' : '' }}>{{ $whName }}</option>
+                                        @endif
+                                    @endforeach
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-2">Shelf (Optional)</label>
-                                <select name="shelf_id" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none">
+                                <div class="flex items-center justify-between mb-2">
+                                    <label class="block text-xs font-semibold text-slate-700">Shelf (Optional)</label>
+                                    <button type="button" onclick="openAddShelfModal('inventory')" class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:underline">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                        Add Shelf
+                                    </button>
+                                </div>
+                                <select name="shelf_id" id="confirmShelfSelect" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none">
                                     <option value="">No specific shelf</option>
-                                    @php
-                                        $warehouseName = 'Warehouse A'; // Default to Warehouse A for shelf options
-                                        $shelves = \App\Models\WarehouseShelf::whereHas('warehouse', function($q) use ($warehouseName) {
-                                            $q->where('name', $warehouseName);
-                                        })->where('archived', false)->get();
-                                    @endphp
-                                    @foreach($shelves as $shelf)
-                                        <option value="{{ $shelf->id }}">{{ $shelf->name }}</option>
-                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -662,23 +665,25 @@
                     <div class="grid gap-3 sm:grid-cols-2">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1.5">Destination Warehouse <span class="text-rose-500">*</span></label>
-                            <select name="warehouse" required class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
+                            <select name="warehouse" id="replacementWarehouseSelect" required class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
                                 <option value="Shop">Shop (Main Store)</option>
-                                <option value="Warehouse A">Warehouse A</option>
-                                <option value="Warehouse B">Warehouse B</option>
-                                <option value="Warehouse C">Warehouse C</option>
+                                @foreach(array_keys($shelvesByWarehouse) as $whName)
+                                    @if($whName !== 'Shop')
+                                        <option value="{{ $whName }}">{{ $whName }}</option>
+                                    @endif
+                                @endforeach
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Shelf Location (Optional)</label>
-                            <select name="shelf_id" class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="block text-xs font-semibold text-slate-700">Shelf Location (Optional)</label>
+                                <button type="button" onclick="openAddShelfModal('replacement')" class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 hover:text-emerald-700 hover:underline">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                    Add Shelf
+                                </button>
+                            </div>
+                            <select name="shelf_id" id="replacementShelfSelect" class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
                                 <option value="">No specific shelf</option>
-                                @php
-                                    $shelves = \App\Models\WarehouseShelf::where('archived', false)->get();
-                                @endphp
-                                @foreach($shelves as $shelf)
-                                    <option value="{{ $shelf->id }}">{{ $shelf->name }}</option>
-                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -792,6 +797,208 @@
             }
         }
         document.addEventListener('DOMContentLoaded', resolvePoDetailImages);
+
+        // Shelves dynamic filtering and Add Shelf handling
+        const shelvesByWarehouse = @json($shelvesByWarehouse);
+        let currentAddShelfContext = 'inventory';
+
+        function updateShelfOptions(warehouseSelectId, shelfSelectId, selectedShelfId = '') {
+            const warehouseSelect = document.getElementById(warehouseSelectId);
+            const shelfSelect = document.getElementById(shelfSelectId);
+            if (!warehouseSelect || !shelfSelect) return;
+
+            const selectedWarehouse = warehouseSelect.value;
+            const shelves = shelvesByWarehouse[selectedWarehouse] || [];
+
+            shelfSelect.innerHTML = '';
+
+            const defaultOpt = document.createElement('option');
+            defaultOpt.value = '';
+            defaultOpt.textContent = 'No specific shelf';
+            shelfSelect.appendChild(defaultOpt);
+
+            shelves.forEach(shelf => {
+                const opt = document.createElement('option');
+                opt.value = shelf.id;
+                opt.textContent = shelf.name;
+                if (String(shelf.id) === String(selectedShelfId)) {
+                    opt.selected = true;
+                }
+                shelfSelect.appendChild(opt);
+            });
+
+            const addOpt = document.createElement('option');
+            addOpt.value = '__add_new__';
+            addOpt.textContent = '+ Add New Shelf...';
+            shelfSelect.appendChild(addOpt);
+        }
+
+        function openAddShelfModal(context = 'inventory') {
+            currentAddShelfContext = context;
+            const whSelectId = context === 'replacement' ? 'replacementWarehouseSelect' : 'confirmWarehouseSelect';
+            const whSelect = document.getElementById(whSelectId);
+            const selectedWarehouse = whSelect ? whSelect.value : 'Warehouse B';
+
+            document.getElementById('addShelfWarehouseInput').value = selectedWarehouse;
+
+            // Suggest next shelf name
+            const existing = shelvesByWarehouse[selectedWarehouse] || [];
+            let nextNum = existing.length + 1;
+            existing.forEach(s => {
+                const m = s.name.match(/Shelf\s+(\d+)/i);
+                if (m) {
+                    const num = parseInt(m[1], 10);
+                    if (num >= nextNum) nextNum = num + 1;
+                }
+            });
+
+            const nameInput = document.getElementById('addShelfNameInput');
+            nameInput.value = `${selectedWarehouse} - Shelf ${nextNum}`;
+
+            const errBox = document.getElementById('addShelfError');
+            if (errBox) {
+                errBox.classList.add('hidden');
+                errBox.textContent = '';
+            }
+
+            const modal = document.getElementById('addShelfModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+            setTimeout(() => nameInput.focus(), 100);
+        }
+
+        function closeAddShelfModal() {
+            const modal = document.getElementById('addShelfModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        async function submitAddShelf(e) {
+            e.preventDefault();
+            const btn = document.getElementById('addShelfSubmitBtn');
+            const errBox = document.getElementById('addShelfError');
+            const warehouse = document.getElementById('addShelfWarehouseInput').value;
+            const name = document.getElementById('addShelfNameInput').value.trim();
+
+            if (!name) return;
+
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+            if (errBox) errBox.classList.add('hidden');
+
+            try {
+                const response = await fetch("{{ route('order.store_shelf') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ warehouse, name })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || 'Failed to create shelf.');
+                }
+
+                const newShelf = data.shelf;
+                if (!shelvesByWarehouse[warehouse]) {
+                    shelvesByWarehouse[warehouse] = [];
+                }
+
+                if (!shelvesByWarehouse[warehouse].some(s => String(s.id) === String(newShelf.id))) {
+                    shelvesByWarehouse[warehouse].push({
+                        id: newShelf.id,
+                        name: newShelf.name
+                    });
+                }
+
+                const shelfSelectId = currentAddShelfContext === 'replacement' ? 'replacementShelfSelect' : 'confirmShelfSelect';
+                const whSelectId = currentAddShelfContext === 'replacement' ? 'replacementWarehouseSelect' : 'confirmWarehouseSelect';
+                updateShelfOptions(whSelectId, shelfSelectId, newShelf.id);
+
+                closeAddShelfModal();
+            } catch (err) {
+                if (errBox) {
+                    errBox.textContent = err.message || 'An error occurred while saving the shelf.';
+                    errBox.classList.remove('hidden');
+                }
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Save Shelf';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const confirmWh = document.getElementById('confirmWarehouseSelect');
+            const confirmShelf = document.getElementById('confirmShelfSelect');
+            if (confirmWh && confirmShelf) {
+                confirmWh.addEventListener('change', function() {
+                    updateShelfOptions('confirmWarehouseSelect', 'confirmShelfSelect');
+                });
+                confirmShelf.addEventListener('change', function() {
+                    if (this.value === '__add_new__') {
+                        this.value = '';
+                        openAddShelfModal('inventory');
+                    }
+                });
+                updateShelfOptions('confirmWarehouseSelect', 'confirmShelfSelect');
+            }
+
+            const replWh = document.getElementById('replacementWarehouseSelect');
+            const replShelf = document.getElementById('replacementShelfSelect');
+            if (replWh && replShelf) {
+                replWh.addEventListener('change', function() {
+                    updateShelfOptions('replacementWarehouseSelect', 'replacementShelfSelect');
+                });
+                replShelf.addEventListener('change', function() {
+                    if (this.value === '__add_new__') {
+                        this.value = '';
+                        openAddShelfModal('replacement');
+                    }
+                });
+                updateShelfOptions('replacementWarehouseSelect', 'replacementShelfSelect');
+            }
+        });
     </script>
+
+    {{-- Add Shelf Modal --}}
+    <div id="addShelfModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 p-4">
+        <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    </span>
+                    <h3 class="text-base font-bold text-slate-900">Add New Shelf</h3>
+                </div>
+                <button type="button" onclick="closeAddShelfModal()" class="text-slate-400 hover:text-slate-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form id="addShelfForm" onsubmit="submitAddShelf(event)" class="mt-4 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Target Warehouse</label>
+                    <input type="text" id="addShelfWarehouseInput" readonly class="w-full rounded-xl border border-slate-200 bg-slate-100 px-3.5 py-2.5 text-sm font-semibold text-slate-700 cursor-not-allowed" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Shelf Name <span class="text-rose-500">*</span></label>
+                    <input type="text" id="addShelfNameInput" required placeholder="e.g. Warehouse B - Shelf 1" class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
+                    <p class="text-[11px] text-slate-400 mt-1">Specify a unique shelf name for this warehouse.</p>
+                </div>
+                <div id="addShelfError" class="hidden text-xs text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-xl"></div>
+                <div class="flex items-center justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeAddShelfModal()" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100">Cancel</button>
+                    <button type="submit" id="addShelfSubmitBtn" class="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700 shadow-sm shadow-emerald-600/20">Save Shelf</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </x-layouts.app>
 
