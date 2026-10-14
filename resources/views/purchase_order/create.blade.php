@@ -197,7 +197,7 @@
                                          </div>
                                      </div>
                                  </th>
-                                <th class="px-4 py-3 rounded-tr-[10px]">Unit Price (₱)</th>
+                                <th class="px-4 py-3 rounded-tr-[10px]">Supplier Cost / Unit Price (₱)</th>
                             </tr>
                         </thead>
                         <tbody id="product-table-body" class="divide-y divide-slate-200 text-slate-700">
@@ -1436,11 +1436,11 @@
 
             summaryGrid.innerHTML = `
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Current Cost</p>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Current Supplier Cost</p>
                     <p class="text-base font-bold text-slate-800">${currentCost != null ? fmt(currentCost) : '—'}</p>
                 </div>
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Previous Cost</p>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Previous Supplier Cost</p>
                     <p class="text-base font-bold text-slate-600">${previousCost != null ? fmt(previousCost) : '—'}</p>
                 </div>
                 <div class="rounded-[10px] bg-slate-50 border border-slate-100 px-4 py-3">
@@ -1463,37 +1463,49 @@
             recBox.textContent = recommendation;
             section.appendChild(recBox);
 
-            // History table
-            if (ph.histories && ph.histories.length > 0) {
-                const tableWrap = document.createElement('div');
-                tableWrap.className = 'overflow-hidden rounded-2xl border border-slate-200';
-                tableWrap.innerHTML = `
-                    <table class="min-w-full text-left text-sm">
-                        <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider border-b border-slate-200" style="background-color: #0f172a;">
-                            <tr>
-                                <th class="px-4 py-3">Purchase Date</th>
-                                <th class="px-4 py-3">Purchase Order</th>
-                                <th class="px-4 py-3">Supplier Cost</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-200 text-slate-700">
-                            ${ph.histories.map(h => `
-                                <tr class="hover:bg-slate-50">
-                                    <td class="px-4 py-2">${escHtml(h.date ?? '—')}</td>
-                                    <td class="px-4 py-2 font-mono text-xs text-slate-500">${escHtml(h.po_number ?? '—')}</td>
-                                    <td class="px-4 py-2 font-semibold">${fmt(h.cost)}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
+            // History table with real-time Current Supplier Cost as the top row
+            const tableWrap = document.createElement('div');
+            tableWrap.className = 'overflow-hidden rounded-2xl border border-slate-200';
+            const pastOrdersRows = (ph.histories && ph.histories.length > 0)
+                ? ph.histories.map(h => `
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-4 py-2.5">${escHtml(h.date ?? '—')}</td>
+                        <td class="px-4 py-2.5 font-mono text-xs text-slate-500">${escHtml(h.po_number ?? '—')}</td>
+                        <td class="px-4 py-2.5 font-semibold text-slate-700">${fmt(h.cost)}</td>
+                    </tr>
+                `).join('')
+                : `
+                    <tr>
+                        <td colspan="3" class="px-4 py-2.5 text-xs text-slate-400 italic">No previous purchase orders recorded yet from this supplier.</td>
+                    </tr>
                 `;
-                section.appendChild(tableWrap);
-            } else {
-                const noHist = document.createElement('p');
-                noHist.className   = 'text-sm text-slate-500';
-                noHist.textContent = 'No purchase history yet for this product from this supplier.';
-                section.appendChild(noHist);
-            }
+
+            tableWrap.innerHTML = `
+                <table class="min-w-full text-left text-sm">
+                    <thead class="bg-[#0f172a] text-white text-xs font-semibold uppercase tracking-wider border-b border-slate-200" style="background-color: #0f172a;">
+                        <tr>
+                            <th class="px-4 py-3">Purchase Date</th>
+                            <th class="px-4 py-3">Purchase Order</th>
+                            <th class="px-4 py-3">Supplier Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 text-slate-700">
+                        <tr class="bg-cyan-50/70 border-b border-cyan-100">
+                            <td class="px-4 py-2.5 font-medium text-slate-900 flex items-center gap-2">
+                                <span class="inline-block w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
+                                <span>Today (Draft Order)</span>
+                            </td>
+                            <td class="px-4 py-2.5 font-mono text-xs text-cyan-800 font-semibold">Current Order</td>
+                            <td class="px-4 py-2.5 font-bold text-slate-900">
+                                ${currentCost != null ? fmt(currentCost) : '—'}
+                                <span class="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-cyan-100 text-cyan-800 ml-1.5 inline-block">Real-Time Cost</span>
+                            </td>
+                        </tr>
+                        ${pastOrdersRows}
+                    </tbody>
+                </table>
+            `;
+            section.appendChild(tableWrap);
 
             container.appendChild(section);
         });
@@ -1737,35 +1749,55 @@
                 });
             } else {
                 priceHistories.forEach(ph => {
+                    const stored = selectedProductsStore.get(ph.product_id);
+                    const userPrice = stored && stored.unit_price > 0 ? stored.unit_price : null;
+                    const activeCost = userPrice != null ? userPrice : ph.current_cost;
+                    const prevCost = ph.previous_cost;
                     const changeColor = ph.change_percentage > 0 ? 'text-rose-600 font-bold' : (ph.change_percentage < 0 ? 'text-slate-800 font-bold' : 'text-slate-600');
                     const trendIcon = ph.trend === 'increasing' ? '↑' : (ph.trend === 'decreasing' ? '↓' : '→');
                     const recClass = ph.trend === 'increasing' ? 'bg-amber-50 text-amber-900 border-amber-200' : 'bg-slate-50 text-slate-800 border-slate-200';
 
-                    let pastPOs = '';
-                    if (ph.histories && ph.histories.length > 0) {
-                        pastPOs = `
-                            <div class="mt-3 overflow-hidden rounded-xl border border-slate-200">
-                                <table class="min-w-full text-xs text-left">
-                                    <thead class="bg-[#0f172a] text-white font-semibold border-b border-slate-800" style="background-color: #0f172a;">
-                                        <tr>
-                                            <th class="px-3 py-1.5">Date</th>
-                                            <th class="px-3 py-1.5">PO Number</th>
-                                            <th class="px-3 py-1.5">Supplier Cost</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-slate-100 text-slate-700">
-                                        ${ph.histories.map(h => `
-                                            <tr>
-                                                <td class="px-3 py-1.5">${escHtml(h.date || '—')}</td>
-                                                <td class="px-3 py-1.5 font-mono text-slate-500">${escHtml(h.po_number || '—')}</td>
-                                                <td class="px-3 py-1.5 font-semibold">${fmt(h.cost)}</td>
-                                            </tr>
-                                        `).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
+                    const pastOrdersRows = (ph.histories && ph.histories.length > 0)
+                        ? ph.histories.map(h => `
+                            <tr>
+                                <td class="px-3 py-1.5">${escHtml(h.date || '—')}</td>
+                                <td class="px-3 py-1.5 font-mono text-slate-500">${escHtml(h.po_number || '—')}</td>
+                                <td class="px-3 py-1.5 font-semibold text-slate-700">${fmt(h.cost)}</td>
+                            </tr>
+                        `).join('')
+                        : `
+                            <tr>
+                                <td colspan="3" class="px-3 py-1.5 text-xs text-slate-400 italic">No prior purchase orders recorded.</td>
+                            </tr>
                         `;
-                    }
+
+                    const pastPOs = `
+                        <div class="mt-3 overflow-hidden rounded-xl border border-slate-200">
+                            <table class="min-w-full text-xs text-left">
+                                <thead class="bg-[#0f172a] text-white font-semibold border-b border-slate-800" style="background-color: #0f172a;">
+                                    <tr>
+                                        <th class="px-3 py-1.5">Date</th>
+                                        <th class="px-3 py-1.5">PO Number</th>
+                                        <th class="px-3 py-1.5">Supplier Cost</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-slate-700">
+                                    <tr class="bg-cyan-50/70 border-b border-cyan-100 font-medium">
+                                        <td class="px-3 py-1.5 text-slate-900 flex items-center gap-1.5">
+                                            <span class="inline-block w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></span>
+                                            <span>Today (Draft)</span>
+                                        </td>
+                                        <td class="px-3 py-1.5 font-mono text-cyan-800 font-semibold">Current Order</td>
+                                        <td class="px-3 py-1.5 font-bold text-slate-900">
+                                            ${activeCost !== null ? fmt(activeCost) : '—'}
+                                            <span class="text-[9px] uppercase font-bold px-1 py-0.2 rounded bg-cyan-100 text-cyan-800 ml-1">Current</span>
+                                        </td>
+                                    </tr>
+                                    ${pastOrdersRows}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
 
                     itemsHtml += `
                         <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs">
@@ -1777,12 +1809,12 @@
                             </div>
                             <div class="grid grid-cols-3 gap-2 mt-3 text-center">
                                 <div class="rounded-lg bg-slate-50 p-2">
-                                    <p class="text-[10px] uppercase font-bold text-slate-400">Current Cost</p>
-                                    <p class="text-sm font-bold text-slate-900">${ph.current_cost !== null ? fmt(ph.current_cost) : '—'}</p>
+                                    <p class="text-[10px] uppercase font-bold text-slate-400">Current Supplier Cost</p>
+                                    <p class="text-sm font-bold text-slate-900">${activeCost !== null ? fmt(activeCost) : '—'}</p>
                                 </div>
                                 <div class="rounded-lg bg-slate-50 p-2">
-                                    <p class="text-[10px] uppercase font-bold text-slate-400">Previous Cost</p>
-                                    <p class="text-sm font-bold text-slate-600">${ph.previous_cost !== null ? fmt(ph.previous_cost) : '—'}</p>
+                                    <p class="text-[10px] uppercase font-bold text-slate-400">Previous Supplier Cost</p>
+                                    <p class="text-sm font-bold text-slate-600">${prevCost !== null ? fmt(prevCost) : '—'}</p>
                                 </div>
                                 <div class="rounded-lg bg-slate-50 p-2">
                                     <p class="text-[10px] uppercase font-bold text-slate-400">Price Change</p>
