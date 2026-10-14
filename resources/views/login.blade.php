@@ -100,16 +100,7 @@
 
                             <input type="hidden" name="remember" id="rememberInput" value="0">
 
-                            <div class="form-footer">
-                                <label class="remember-label flex items-center cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        id="rememberMe"
-                                        class="remember-checkbox"
-                                        value="1"
-                                    >
-                                    <span class="remember-text">Remember me</span>
-                                </label>
+                            <div class="form-footer flex justify-end">
                                 <a href="{{ url('/forgot-password') }}" class="forgot-password-link">
                                     Forgot Password?
                                 </a>
@@ -163,7 +154,6 @@
     </div>
 
     <script>
-        const rememberCheckbox = document.getElementById('rememberMe');
         const rememberInput = document.getElementById('rememberInput');
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
@@ -235,10 +225,6 @@
         function clearOtpFields() {
             otpDigits.forEach(digit => digit.value = '');
         }
-
-        rememberCheckbox.addEventListener('change', function() {
-            rememberInput.value = this.checked ? '1' : '0';
-        });
 
         window.togglePassword = function(button) {
             const input = button.previousElementSibling;
@@ -319,7 +305,7 @@
             const payload = {
                 email: emailInput.value.trim(),
                 password: passwordInput.value,
-                remember: rememberInput.value === '1' ? 1 : 0,
+                remember: 0,
             };
 
             try {
@@ -433,7 +419,7 @@
                     body: JSON.stringify({
                         email: emailInput.value.trim(),
                         password: passwordInput.value,
-                        remember: rememberInput.value === '1' ? 1 : 0,
+                        remember: 0,
                     }),
                 });
 

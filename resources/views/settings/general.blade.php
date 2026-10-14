@@ -4,7 +4,7 @@
         <div class="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h1 class="text-3xl font-bold text-slate-900">Profile & Settings</h1>
-                <p class="text-xs text-slate-500 mt-0.5">Manage your account, security, and interface preferences</p>
+                <p class="text-xs text-slate-500 mt-0.5">Manage your account and interface preferences</p>
             </div>
             <a href="{{ route('profile.show', ['from' => 'settings']) }}" class="inline-flex w-fit items-center px-5 py-2.5 rounded-[10px] text-sm font-bold bg-theme-primary border border-[#59b2c2] shadow-sm hover:shadow transition cursor-pointer">View Profile</a>
         </div>
@@ -15,8 +15,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
             <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                 <div class="flex items-center gap-4 border-b border-slate-100 pb-3 mb-6">
-                    <button data-tab="preferences" class="settings-tab rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all bg-[#0f172a] text-white border-[#0f172a] shadow-sm focus:outline-none focus:ring-0">Preferences & Appearance</button>
-                    <button data-tab="security" class="settings-tab rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all bg-white text-slate-700 border-slate-200 hover:bg-slate-50 focus:outline-none focus:ring-0">Security</button>
+                    <button data-tab="preferences" class="settings-tab rounded-[10px] border px-4 py-2 text-sm font-semibold transition-all bg-[#0f172a] text-white border-[#0f172a] shadow-sm focus:outline-none focus:ring-0 cursor-default">Preferences & Appearance</button>
                 </div>
 
                 <!-- Preferences Pane -->
@@ -283,18 +282,6 @@
                                     </button>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Security Pane -->
-                <div id="tabSecurity" class="settings-pane hidden space-y-6">
-                    <div>
-                        <h3 class="text-sm font-semibold text-slate-900 mb-2">Two-factor Authentication</h3>
-                        <p class="text-xs text-slate-500 mb-3">Manage your two-factor authentication settings (TOTP, SMS).</p>
-                        <div class="flex gap-2">
-                            <button type="button" class="px-3 py-2 rounded-[10px] border border-slate-200 text-sm text-slate-700 hover:bg-slate-50 transition focus:outline-none focus:ring-0">Enable</button>
-                            <button type="button" class="px-3 py-2 rounded-[10px] border border-slate-200 text-sm text-slate-700 hover:bg-slate-50 transition focus:outline-none focus:ring-0">Disable</button>
                         </div>
                     </div>
                 </div>

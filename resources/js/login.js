@@ -1,19 +1,12 @@
-const rememberCheckbox = document.getElementById('rememberMe');
 const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
 
-// Handle Remember Me checkbox
-rememberCheckbox.addEventListener('change', function() {
-    if (this.checked) {
-        // Enable autocomplete for saving
-        emailInput.autocomplete = 'email';
-        passwordInput.autocomplete = 'current-password';
-    } else {
-        // Disable autocomplete to prevent saving
-        emailInput.autocomplete = 'off';
-        passwordInput.autocomplete = 'new-password';
-    }
-});
+if (emailInput) {
+    emailInput.autocomplete = 'off';
+}
+if (passwordInput) {
+    passwordInput.autocomplete = 'current-password';
+}
 
 window.togglePassword = function(button){
 
