@@ -759,19 +759,34 @@ class PurchaseOrderController extends Controller
                 ? (float) $firstHistory->supplier_cost
                 : $baselineCost;
 
-            $previousCost = $secondHistory?->supplier_cost !== null
-                ? (float) $secondHistory->supplier_cost
-                : ($firstHistory?->previous_cost !== null ? (float) $firstHistory->previous_cost : $baselineCost);
+            // Determine if supplier has a prior distinct cost from purchase history
+            $previousCost = null;
+            if ($histories->count() > 1 && $secondHistory?->supplier_cost !== null) {
+                if (abs((float) $secondHistory->supplier_cost - $currentCost) > 0.001) {
+                    $previousCost = (float) $secondHistory->supplier_cost;
+                } else {
+                    $olderDistinct = $histories->first(fn ($h) => abs((float) $h->supplier_cost - $currentCost) > 0.001);
+                    if ($olderDistinct) {
+                        $previousCost = (float) $olderDistinct->supplier_cost;
+                    }
+                }
+            } elseif ($firstHistory?->previous_cost !== null && abs((float) $firstHistory->previous_cost - $currentCost) > 0.001) {
+                // If single record had a valid prior different cost from an earlier order
+                $previousCost = (float) $firstHistory->previous_cost;
+            }
 
-            $changePercentage = 0;
+            $changePercentage = null;
             $trend = 'stable';
-            if ($previousCost > 0 && abs($currentCost - $previousCost) > 0.001) {
+            if ($previousCost !== null && $previousCost > 0 && abs($currentCost - $previousCost) > 0.001) {
                 $changePercentage = round((($currentCost - $previousCost) / $previousCost) * 100, 2);
                 if ($changePercentage > 0.005) {
                     $trend = 'increasing';
                 } elseif ($changePercentage < -0.005) {
                     $trend = 'decreasing';
                 }
+            } else {
+                $changePercentage = null;
+                $trend = 'stable';
             }
 
             $suggestedRetail = round($currentCost * 1.20, 2);
@@ -1325,25 +1340,23 @@ class PurchaseOrderController extends Controller
                         $previousCost = $previousPoItem?->unit_price;
                     }
 
-                    if ($previousCost === null && $product->unit_price !== null) {
-                        $previousCost = (float) $product->unit_price;
-                    }
-                    
+                    // If no previous cost from this supplier exists, previousCost remains null (first purchase order)
                     $currentCost = (float) $item->unit_price;
-                    $changePercentage = $previousCost && $previousCost > 0
+                    $changePercentage = ($previousCost !== null && (float) $previousCost > 0)
                         ? round((($currentCost - (float) $previousCost) / (float) $previousCost) * 100, 2)
                         : 0;
 
                     $recommendation = match (true) {
-                        $currentCost > $previousCost => 'Increase retail price',
-                        $currentCost < $previousCost => 'Maintain or lower retail price',
+                        $previousCost !== null && $currentCost > (float) $previousCost => 'Increase retail price',
+                        $previousCost !== null && $currentCost < (float) $previousCost => 'Maintain or lower retail price',
                         default => 'Maintain current retail price',
                     };
 
                     $reason = match (true) {
-                        $currentCost > $previousCost => 'Supplier cost increased while maintaining the desired 20% markup.',
-                        $currentCost < $previousCost => 'Supplier cost decreased, allowing for higher profit or more competitive pricing.',
-                        default => 'Supplier cost has not changed.',
+                        $previousCost !== null && $currentCost > (float) $previousCost => 'Supplier cost increased while maintaining the desired 20% markup.',
+                        $previousCost !== null && $currentCost < (float) $previousCost => 'Supplier cost decreased, allowing for higher profit or more competitive pricing.',
+                        $previousCost !== null => 'Supplier cost has not changed.',
+                        default => 'Initial supplier pricing recorded. No previous price change.',
                     };
 
                     $markupMultiplier = 1.20;
