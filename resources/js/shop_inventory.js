@@ -308,18 +308,40 @@ function renderShelvesPage() {
                     <div class="bg-emerald-500 h-2 rounded-full" style="width: ${(shelf.occupied / shelf.capacity) * 100}%"></div>
                 </div>
             </div>
-            <div class="space-y-2 max-h-28 overflow-y-auto">
+            <div class="space-y-2">
                 ${shelf.shop_inventory && shelf.shop_inventory.length > 0 
-                    ? shelf.shop_inventory.slice(0, 10).map(item => `
-                        <div class="product-chip">
-                            <div class="left">
-                                <span class="name">${item.product.name}</span>
-                                <span class="meta">${item.product.sku || ''}</span>
-                            </div>
-                            <span class="qty">${item.quantity}</span>
-                        </div>
-                    `).join('')
-                    : '<p class="text-sm text-gray-400">No products on this shelf</p>'
+                    ? `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        ${shelf.shop_inventory.slice(0, 10).map((item, idx) => {
+                            const p = item.product || {};
+                            const cat = p.product_catalog || p.productCatalog || {};
+                            const desc = (cat.product_description || p.description || p.name || 'PRODUCT').toUpperCase();
+                            const brand = cat.brand || p.brand || '—';
+                            const compatible = cat.product_name || p.compatibility || '—';
+                            const sku = cat.sku || p.sku || '—';
+                            const priceVal = Number(p.unit_price || 0);
+                            const priceFormatted = '₱' + priceVal.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                            const qty = item.quantity ?? 0;
+                            const slotCode = 'S' + (idx + 1);
+                            const finalTitle = desc.includes(' - S') ? desc : `${desc} - ${slotCode}`;
+                            return `
+                            <details class="product-chip" data-desc="${desc.toLowerCase()}" data-brand="${brand.toLowerCase()}" data-sku="${sku.toLowerCase()}" data-compat="${compatible.toLowerCase()}">
+                                <summary class="chip-header cursor-pointer select-none">
+                                    <div class="chip-desc flex items-center justify-between">
+                                        <span class="truncate name font-bold" title="${finalTitle}">${finalTitle}</span>
+                                        <svg class="w-4 h-4 text-black transition-transform duration-200 details-arrow flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    </div>
+                                </summary>
+                                <div class="chip-body">
+                                    <div class="chip-row"><span class="chip-label">Brand:</span><span class="chip-value truncate brand">${brand}</span></div>
+                                    <div class="chip-row"><span class="chip-label">Compatible:</span><span class="chip-value truncate compat">${compatible}</span></div>
+                                    <div class="chip-row"><span class="chip-label">SKU:</span><span class="chip-value sku">${sku}</span></div>
+                                    <div class="chip-row"><span class="chip-label">Price:</span><span class="chip-value price">${priceFormatted}</span></div>
+                                    <div class="chip-row"><span class="chip-label">Qty:</span><span class="chip-value qty">${qty}</span></div>
+                                </div>
+                            </details>`;
+                        }).join('')}
+                    </div>`
+                    : '<div class="py-6 text-center text-xs text-slate-400 bg-white/50 rounded-xl border border-dashed border-slate-200">No products on this shelf</div>'
                 }
                 ${shelf.shop_inventory && shelf.shop_inventory.length > 10 ? `<p class="text-xs text-gray-400 mt-2">+${shelf.shop_inventory.length - 10} more</p>` : ''}
             </div>
@@ -594,12 +616,13 @@ function updateBrandFilter(productDescription) {
     // Get all product chips and find unique brands for this description
     const productChips = document.querySelectorAll('.product-chip');
     const brands = new Set();
+    const targetDesc = productDescription.trim().toLowerCase();
     
     productChips.forEach(chip => {
-        const desc = chip.querySelector('.chip-desc')?.textContent.trim() || '';
-        const brand = chip.querySelector('.chip-row:nth-child(1) .chip-value')?.textContent.trim() || '';
+        const desc = (chip.dataset.desc || chip.querySelector('.chip-desc')?.textContent || '').trim().toLowerCase();
+        const brand = (chip.dataset.brand || chip.querySelector('.chip-row:nth-child(1) .chip-value')?.textContent || '').trim();
         
-        if (desc === productDescription && brand) {
+        if (desc.includes(targetDesc) && brand && brand !== '—') {
             brands.add(brand);
         }
     });
@@ -623,38 +646,38 @@ function filterShelves() {
 
     console.log('Filters:', { searchQuery, productDescriptionFilter, brandFilter, sectionFilter });
 
-    const shelfCards = document.querySelectorAll('.si-card');
+    const shelfCards = document.querySelectorAll('.si-card, .shelf-card');
     console.log('Found shelf cards:', shelfCards.length);
     shelfCards.forEach(card => {
         const shelfName = card.querySelector('.shelf-name')?.textContent.toLowerCase() || '';
-        const shelfSection = card.querySelector('.shelf-section')?.textContent.toLowerCase() || '';
+        const shelfSection = card.querySelector('.shelf-section, .shelf-location')?.textContent.toLowerCase() || '';
         
         // Check if shelf matches section filter
-        const matchesSection = !sectionFilter || shelfSection === sectionFilter.toLowerCase();
+        const matchesSection = !sectionFilter || shelfSection.includes(sectionFilter.toLowerCase());
         
         // Filter products within the shelf
         const productChips = card.querySelectorAll('.product-chip');
         let hasMatchingProduct = false;
         
         productChips.forEach(chip => {
-            const productDesc = chip.querySelector('.chip-desc')?.textContent.toLowerCase() || '';
-            const productBrand = chip.querySelector('.chip-row:nth-child(1) .chip-value')?.textContent.toLowerCase() || '';
-            const productSku = chip.querySelector('.chip-value.sku')?.textContent.toLowerCase() || '';
-            
-            console.log('Product:', { productDesc, productBrand, productSku });
+            const productDesc = (chip.dataset.desc || chip.querySelector('.chip-desc')?.textContent || '').toLowerCase();
+            const productBrand = (chip.dataset.brand || chip.querySelector('.chip-row:nth-child(1) .chip-value')?.textContent || '').toLowerCase();
+            const productSku = (chip.dataset.sku || chip.querySelector('.chip-value.sku')?.textContent || '').toLowerCase();
+            const productCompat = (chip.dataset.compat || chip.querySelector('.compat')?.textContent || '').toLowerCase();
             
             const matchesSearch = !searchQuery || 
                 productDesc.includes(searchQuery) || 
                 productBrand.includes(searchQuery) || 
-                productSku.includes(searchQuery);
+                productSku.includes(searchQuery) ||
+                productCompat.includes(searchQuery) ||
+                shelfName.includes(searchQuery) ||
+                shelfSection.includes(searchQuery);
             
-            const matchesProductDescription = !productDescriptionFilter || productDesc === productDescriptionFilter.toLowerCase();
+            const matchesProductDescription = !productDescriptionFilter || productDesc.includes(productDescriptionFilter.toLowerCase());
             const matchesBrand = !brandFilter || productBrand === brandFilter.toLowerCase();
             
-            console.log('Matches:', { matchesSearch, matchesProductDescription, matchesBrand });
-            
             if (matchesSearch && matchesProductDescription && matchesBrand) {
-                chip.style.display = 'flex';
+                chip.style.display = '';
                 hasMatchingProduct = true;
             } else {
                 chip.style.display = 'none';

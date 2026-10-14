@@ -13,16 +13,21 @@
         }
         .si-badge { background: #0f172a; color: #fff; }
         .si-card { border: 1px solid border-slate-200; background: #ffffff; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1); }
-        .product-chip { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
-        .chip-header { background: #0f172a; padding: 0.35rem 0.6rem; border-bottom: 1px solid #1e293b; }
-        .chip-desc { color: #ffffff; font-weight: 600; font-size: 0.75rem; line-height: 1rem; }
-        .chip-body { padding: 0.4rem 0.6rem; display: flex; flex-direction: column; gap: 0.15rem; }
-        .chip-row { display: flex; align-items: baseline; justify-content: space-between; gap: 0.25rem; font-size: 0.7rem; }
-        .chip-label { color: #64748b; font-weight: 500; }
-        .chip-value { color: #0f172a; font-weight: 600; }
-        .chip-value.sku { font-family: monospace; color: #0891b2; font-weight: 700; font-size: 0.68rem; }
-        .chip-value.price { color: #047857; font-weight: 700; }
-        .chip-value.qty { color: #1d4ed8; font-weight: 700; }
+        .product-chip { background: #ffffff; border: 1px solid rgba(16,185,129,0.18); color: var(--brand-dark); border-radius: 0.9rem; display: flex; flex-direction: column; gap: 0; overflow: hidden; box-shadow: 0 2px 8px rgba(15,118,110,0.06); align-self: start; }
+        .product-chip summary { list-style: none; outline: none; }
+        .product-chip summary::-webkit-details-marker { display: none; }
+        .product-chip .details-arrow { color: #000000; }
+        .product-chip[open] .details-arrow { transform: rotate(180deg); }
+        .product-chip .chip-header { background: linear-gradient(90deg, #ecfdf5, #d1fae5); padding: 0.45rem 0.75rem; }
+        .product-chip[open] .chip-header { border-bottom: 1px solid rgba(16,185,129,0.14); }
+        .product-chip .chip-body { padding: 0.5rem 0.75rem; display: flex; flex-direction: column; gap: 0.18rem; }
+        .product-chip .chip-row { display: flex; align-items: baseline; gap: 0.3rem; font-size: 0.72rem; }
+        .product-chip .chip-label { color: #64748b; font-weight: 600; min-width: 4.8rem; flex-shrink: 0; }
+        .product-chip .chip-value { color: #000000; font-weight: 500; word-break: break-word; }
+        .product-chip .chip-value.sku { font-family: monospace; font-size: 0.68rem; color: #000000; font-weight: 700; }
+        .product-chip .chip-value.price { color: #000000; font-weight: 700; }
+        .product-chip .chip-value.qty { color: #000000; font-weight: 700; }
+        .product-chip .chip-desc { font-size: 0.78rem; font-weight: 700; color: #0f172a; }
         .shop-shelves { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
         .map-unit { min-height: 180px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 0.85rem; }
         .modal-panel { width: min(100%, 920px); border-radius: 20px; background: #ffffff; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
@@ -272,7 +277,7 @@
                                                 @php
                                                     $p   = $item->product;
                                                     $cat = $p?->productCatalog;
-                                                    $desc       = $cat?->product_description ?? $p?->description ?? $p?->name ?? 'Unknown';
+                                                    $desc       = $cat?->product_description ?? $p?->description ?? $p?->name ?? 'PRODUCT';
                                                     $brand      = $cat?->brand               ?? $p?->brand       ?? '—';
                                                     $compatible = $cat?->product_name        ?? $p?->compatibility ?? '—';
                                                     $sku        = $cat?->sku                 ?? $p?->sku          ?? '—';
@@ -281,20 +286,27 @@
                                                     $priceFormatted = '₱' . number_format($price, 2);
                                                     $expiry     = $p?->expiry_date ? \Carbon\Carbon::parse($p->expiry_date)->format('M d, Y') : 'N/A';
                                                     $expiryColor = $p?->expiry_status === 'expired' ? 'text-red-600 font-bold' : ($p?->expiry_status === 'expiring' ? 'text-amber-600 font-semibold' : 'text-slate-700');
+                                                    $slotCode   = 'S' . $loop->iteration;
+                                                    $finalTitle = (stripos($desc, ' - S') !== false) ? strtoupper($desc) : (strtoupper($desc) . ' - ' . $slotCode);
                                                 @endphp
-                                                <div class="product-chip">
-                                                    <div class="chip-header">
-                                                        <div class="chip-desc truncate" title="{{ $desc }}">{{ $desc }}</div>
-                                                    </div>
+                                                <details class="product-chip" data-desc="{{ strtolower($desc) }}" data-brand="{{ strtolower($brand) }}" data-sku="{{ strtolower($sku) }}" data-compat="{{ strtolower($compatible) }}">
+                                                    <summary class="chip-header cursor-pointer select-none">
+                                                        <div class="chip-desc flex items-center justify-between">
+                                                            <span class="truncate name font-bold" title="{{ $finalTitle }}">{{ $finalTitle }}</span>
+                                                            <svg class="w-4 h-4 text-black transition-transform duration-200 details-arrow flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                            </svg>
+                                                        </div>
+                                                    </summary>
                                                     <div class="chip-body">
-                                                        <div class="chip-row"><span class="chip-label">Brand:</span><span class="chip-value truncate">{{ $brand }}</span></div>
-                                                        <div class="chip-row"><span class="chip-label">Compat:</span><span class="chip-value truncate">{{ $compatible }}</span></div>
+                                                        <div class="chip-row"><span class="chip-label">Brand:</span><span class="chip-value truncate brand">{{ $brand }}</span></div>
+                                                        <div class="chip-row"><span class="chip-label">Compatible:</span><span class="chip-value truncate compat">{{ $compatible }}</span></div>
                                                         <div class="chip-row"><span class="chip-label">SKU:</span><span class="chip-value sku">{{ $sku }}</span></div>
                                                         <div class="chip-row"><span class="chip-label">Price:</span><span class="chip-value price">{{ $priceFormatted }}</span></div>
                                                         <div class="chip-row"><span class="chip-label">Qty:</span><span class="chip-value qty">{{ $qty }}</span></div>
                                                         <div class="chip-row"><span class="chip-label">Expiry:</span><span class="chip-value {{ $expiryColor }}">{{ $expiry }}</span></div>
                                                     </div>
-                                                </div>
+                                                </details>
                                             @endforeach
                                         </div>
                                         @if($remainingProducts > 0)
@@ -1103,12 +1115,11 @@
         const itemsPerPage = 4;
 
         function filterShelves() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
-            const sectionFilter = document.getElementById('section-filter').value.toLowerCase().trim();
+            const searchTerm = document.getElementById('search-input')?.value.toLowerCase().trim() || '';
+            const sectionFilter = document.getElementById('section-filter')?.value.toLowerCase().trim() || '';
+            const descFilter = document.getElementById('product-description-filter')?.value.toLowerCase().trim() || '';
+            const brandFilter = document.getElementById('brand-filter')?.value.toLowerCase().trim() || '';
             const shelfCards = document.querySelectorAll('.shelf-card');
-
-            console.log('Filtering - Search:', searchTerm, 'Section:', sectionFilter);
-            console.log('Total shelf cards:', shelfCards.length);
 
             let visibleCount = 0;
             const visibleCards = [];
@@ -1116,23 +1127,48 @@
             shelfCards.forEach(card => {
                 const shelfName = card.querySelector('.shelf-name')?.textContent.toLowerCase().trim() || '';
                 const shelfLocation = card.querySelector('.shelf-location')?.textContent.toLowerCase().trim() || '';
-                const products = Array.from(card.querySelectorAll('.product-chip .name')).map(p => p.textContent.toLowerCase().trim());
+                const productChips = Array.from(card.querySelectorAll('.product-chip'));
 
-                console.log('Card - Name:', shelfName, 'Location:', shelfLocation);
+                let hasMatchingProduct = false;
+                if (productChips.length > 0) {
+                    let matchingChipsCount = 0;
+                    productChips.forEach(chip => {
+                        const chipText = chip.textContent.toLowerCase();
+                        const chipDesc = (chip.dataset.desc || '').toLowerCase();
+                        const chipBrand = (chip.dataset.brand || '').toLowerCase();
+                        const chipSku = (chip.dataset.sku || '').toLowerCase();
+                        const chipCompat = (chip.dataset.compat || '').toLowerCase();
 
-                // Check if matches search term
-                const matchesSearch = searchTerm === '' ||
-                    shelfName.includes(searchTerm) ||
-                    shelfLocation.includes(searchTerm) ||
-                    products.some(p => p.includes(searchTerm));
+                        const matchesSearch = searchTerm === '' || 
+                            chipText.includes(searchTerm) || 
+                            chipDesc.includes(searchTerm) || 
+                            chipBrand.includes(searchTerm) || 
+                            chipSku.includes(searchTerm) || 
+                            chipCompat.includes(searchTerm) ||
+                            shelfName.includes(searchTerm) || 
+                            shelfLocation.includes(searchTerm);
 
-                // Check if matches section filter (exact match)
-                const matchesSection = sectionFilter === '' || shelfLocation === sectionFilter;
+                        const matchesDesc = descFilter === '' || chipDesc.includes(descFilter) || chipText.includes(descFilter);
+                        const matchesBrand = brandFilter === '' || chipBrand === brandFilter || chipText.includes(brandFilter);
 
-                console.log('Matches Search:', matchesSearch, 'Matches Section:', matchesSection);
+                        if (matchesSearch && matchesDesc && matchesBrand) {
+                            chip.style.display = '';
+                            matchingChipsCount++;
+                        } else {
+                            chip.style.display = 'none';
+                        }
+                    });
+                    hasMatchingProduct = matchingChipsCount > 0;
+                } else {
+                    // Empty shelf
+                    hasMatchingProduct = searchTerm === '' && descFilter === '' && brandFilter === '';
+                }
+
+                // Check if matches section filter
+                const matchesSection = sectionFilter === '' || shelfLocation.includes(sectionFilter);
 
                 // Show/hide card
-                if (matchesSearch && matchesSection) {
+                if (matchesSection && hasMatchingProduct) {
                     card.style.display = 'block';
                     card.dataset.visible = 'true';
                     visibleCards.push(card);
@@ -1142,8 +1178,6 @@
                     card.dataset.visible = 'false';
                 }
             });
-
-            console.log('Visible shelves:', visibleCount);
 
             // Reset to page 1 and apply pagination
             currentPage = 1;
@@ -1193,8 +1227,23 @@
         }
 
         function clearFilters() {
-            document.getElementById('search-input').value = '';
-            document.getElementById('section-filter').value = '';
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) searchInput.value = '';
+            const sectionFilter = document.getElementById('section-filter');
+            if (sectionFilter) sectionFilter.value = '';
+            const descFilter = document.getElementById('product-description-filter');
+            if (descFilter) descFilter.value = '';
+            const brandFilter = document.getElementById('brand-filter');
+            if (brandFilter) brandFilter.value = '';
+
+            const descLabel = document.getElementById('dd-desc-label');
+            if (descLabel) descLabel.textContent = 'All Categories';
+            const brandLabel = document.getElementById('dd-brand-label');
+            if (brandLabel) brandLabel.textContent = 'All Brands';
+            const sectionLabel = document.getElementById('dd-section-label');
+            if (sectionLabel) sectionLabel.textContent = 'All Sections';
+
+            document.querySelectorAll('.product-chip').forEach(c => c.style.display = '');
             filterShelves();
         }
 
@@ -1339,12 +1388,23 @@
             const sectionFilter = document.getElementById('section-filter');
             const clearSearchBtn = document.getElementById('clear-search');
 
+            const descFilter = document.getElementById('product-description-filter');
+            const brandFilter = document.getElementById('brand-filter');
+
             if (searchInput) {
                 searchInput.addEventListener('input', filterShelves);
             }
 
             if (sectionFilter) {
                 sectionFilter.addEventListener('change', filterShelves);
+            }
+
+            if (descFilter) {
+                descFilter.addEventListener('change', filterShelves);
+            }
+
+            if (brandFilter) {
+                brandFilter.addEventListener('change', filterShelves);
             }
 
             if (clearSearchBtn) {
