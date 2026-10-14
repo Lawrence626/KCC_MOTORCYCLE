@@ -545,29 +545,141 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 mt-6">
-            <div class="xl:col-span-3 rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm">
-                <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 mt-6" id="dssExecutiveSummarySection">
+            <div class="xl:col-span-3 rounded-[20px] border border-slate-200 bg-white p-5 shadow-sm">
+                <!-- Header -->
+                <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between pb-4 border-b border-slate-100">
                     <div>
-                        <h2 class="text-base font-semibold text-slate-900">Executive summary</h2>
-                        <p class="text-xs text-slate-500 mt-1">Key observations and recommended actions for the next period.</p>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-base font-semibold text-slate-900">Executive summary</h2>
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                DSS Engine Active
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">Key observations and actionable DSS recommendations on inventory reorder levels and stock requirements based on actual product sales velocity.</p>
                     </div>
-                    <div class="rounded-[12px] bg-slate-50 border border-slate-200 px-3 py-2 text-xs text-slate-600">
-                        <span class="font-semibold text-slate-900">High priority:</span> Focus on helmet campaigns for continued revenue growth.
+                    <div id="dssPriorityBanner" class="rounded-[12px] {{ ($dssSummary['has_fast_moving'] ?? false) ? 'bg-amber-50 border border-amber-200 text-amber-900' : 'bg-slate-50 border border-slate-200 text-slate-700' }} px-3.5 py-2 text-xs font-medium flex items-center gap-2">
+                        <svg class="w-4 h-4 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        <span><strong class="font-semibold">Priority:</strong> <span id="dssPriorityBannerText">{{ $dssSummary['high_priority_banner'] ?? 'Evaluating stock and sales...' }}</span></span>
                     </div>
                 </div>
+
+                <!-- DSS Fast-Moving Reorder & Stock Recommendations Container -->
+                <div id="dssRecommendationsContainer" class="mt-4">
+                    @if(!empty($dssSummary['recommendations']))
+                        <div class="mb-4">
+                            <div class="flex items-center justify-between mb-2.5">
+                                <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                                    <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Fast-Moving Inventory Reorder Recommendations (DSS System)
+                                </h3>
+                                <span id="dssPeriodLabel" class="text-[11px] text-slate-500 font-medium">Evaluation Period: {{ $dssSummary['period_label'] ?? 'Current' }}</span>
+                            </div>
+
+                            <div class="grid gap-3 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3" id="dssRecCardsGrid">
+                                @foreach($dssSummary['recommendations'] as $rec)
+                                    <div class="rounded-[16px] border border-amber-200 bg-gradient-to-b from-amber-50/60 to-white p-4 shadow-sm flex flex-col justify-between" id="dss-rec-card-{{ $rec['id'] }}">
+                                        <div>
+                                            <div class="flex items-start justify-between gap-2 mb-2">
+                                                <div>
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200">
+                                                        ⚡ Fast-Moving
+                                                    </span>
+                                                    <h4 class="text-sm font-bold text-slate-900 mt-1">{{ $rec['product_name'] }}</h4>
+                                                    <p class="text-[11px] font-mono text-slate-500">SKU: {{ $rec['sku'] }}</p>
+                                                </div>
+                                                <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full {{ $rec['stockout_risk'] === 'high' ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-amber-100 text-amber-700 border border-amber-200' }}">
+                                                    {{ ucfirst($rec['stockout_risk']) }} Risk
+                                                </span>
+                                            </div>
+
+                                            <div class="my-3 grid grid-cols-2 gap-2 text-xs bg-white rounded-xl p-2.5 border border-slate-200">
+                                                <div>
+                                                    <span class="text-[10px] text-slate-500 uppercase font-semibold block">Sales Volume</span>
+                                                    <span class="text-sm font-bold text-emerald-700">{{ $rec['sales_volume'] }} units sold</span>
+                                                </div>
+                                                <div>
+                                                    <span class="text-[10px] text-slate-500 uppercase font-semibold block">Current Stock</span>
+                                                    <span class="text-sm font-bold {{ $rec['current_stock'] <= $rec['current_reorder_level'] ? 'text-red-600' : 'text-slate-800' }}">
+                                                        {{ $rec['current_stock'] }} units
+                                                    </span>
+                                                </div>
+                                                <div class="col-span-2 pt-2 border-t border-slate-100 flex items-center justify-between">
+                                                    <div>
+                                                        <span class="text-[10px] text-slate-500 uppercase font-semibold block">Reorder Level</span>
+                                                        <div class="flex items-center gap-1.5 mt-0.5">
+                                                            <span class="text-xs text-slate-500 line-through reorder-curr-val">{{ $rec['current_reorder_level'] }}</span>
+                                                            <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200">
+                                                                ➔ {{ $rec['suggested_reorder_level'] }} units
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-right">
+                                                        <span class="text-[10px] text-slate-500 uppercase font-semibold block">Suggested Stock</span>
+                                                        <span class="text-xs font-bold text-slate-900">{{ $rec['suggested_stock_quantity'] }} units</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                                                {{ $rec['description'] }}
+                                            </p>
+                                        </div>
+
+                                        <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2 mt-auto dss-action-wrapper">
+                                            @if($rec['is_actioned'])
+                                                <span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1.5 rounded-lg w-full justify-center">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                                    Applied Reorder Level ({{ $rec['suggested_reorder_level'] }} units)
+                                                </span>
+                                            @else
+                                                <form method="POST" action="{{ route('dss.recommendations.apply-reorder', $rec['id']) }}" class="w-full dss-apply-form" data-rec-id="{{ $rec['id'] }}" data-suggested="{{ $rec['suggested_reorder_level'] }}">
+                                                    @csrf
+                                                    <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#105f68] hover:bg-[#0c4a52] text-white text-xs font-semibold px-3 py-2 transition-colors shadow-sm">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                                                        Apply Suggested Reorder Level ({{ $rec['suggested_reorder_level'] }})
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @else
+                        <div class="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-4 text-center text-xs text-slate-500 mb-2">
+                            No fast-moving reorder level adjustments currently required for this period. All active inventory thresholds provide adequate coverage.
+                        </div>
+                    @endif
+                </div>
+
+                <!-- 3 Dynamic Insight Cards (Opportunity, Attention, Next step) -->
                 <div class="mt-4 grid gap-3 lg:grid-cols-3">
                     <div class="rounded-[18px] border border-slate-200 bg-slate-50 p-4">
-                        <p class="text-xs font-semibold uppercase tracking-wider text-[#105f68]">Opportunity</p>
-                        <p class="mt-2 text-xs text-slate-700">Boost cross-sell bundles for high-margin accessories during weekend promotions.</p>
+                        <div class="flex items-center justify-between mb-1">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-[#105f68]">Opportunity</p>
+                            <svg class="w-4 h-4 text-[#105f68]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                        </div>
+                        <p id="dssOpportunityText" class="mt-2 text-xs text-slate-700 leading-relaxed">{{ $dssSummary['opportunity'] ?? 'Analyzing sales momentum...' }}</p>
                     </div>
                     <div class="rounded-[18px] border border-slate-200 bg-slate-50 p-4">
-                        <p class="text-xs font-semibold uppercase tracking-wider text-[#105f68]">Attention</p>
-                        <p class="mt-2 text-xs text-slate-700">Review Mindanao stock replenishment after a strong 7.1% lift in sales demand.</p>
+                        <div class="flex items-center justify-between mb-1">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-[#105f68]">Attention</p>
+                            <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        </div>
+                        <p id="dssAttentionText" class="mt-2 text-xs text-slate-700 leading-relaxed">{{ $dssSummary['attention'] ?? 'Evaluating stock safety...' }}</p>
                     </div>
                     <div class="rounded-[18px] border border-slate-200 bg-slate-50 p-4">
-                        <p class="text-xs font-semibold uppercase tracking-wider text-[#105f68]">Next step</p>
-                        <p class="mt-2 text-xs text-slate-700">Align pricing and promotions ahead of next month’s seasonal demand spike.</p>
+                        <div class="flex items-center justify-between mb-1">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-[#105f68]">Next step</p>
+                            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                        <p id="dssNextStepText" class="mt-2 text-xs text-slate-700 leading-relaxed">{{ $dssSummary['next_step'] ?? 'Aligning replenishment...' }}</p>
                     </div>
                 </div>
             </div>
@@ -1695,6 +1807,242 @@
                 `).join('');
             };
 
+            const renderDssExecutiveSummary = (dssSummary) => {
+                if (!dssSummary) return;
+
+                // Priority Banner
+                const bannerEl = document.getElementById('dssPriorityBanner');
+                const bannerTextEl = document.getElementById('dssPriorityBannerText');
+                if (bannerTextEl) {
+                    bannerTextEl.textContent = dssSummary.high_priority_banner || 'Inventory health is stable.';
+                }
+                if (bannerEl) {
+                    if (dssSummary.has_fast_moving) {
+                        bannerEl.className = 'rounded-[12px] bg-amber-50 border border-amber-200 text-amber-900 px-3.5 py-2 text-xs font-medium flex items-center gap-2';
+                    } else {
+                        bannerEl.className = 'rounded-[12px] bg-slate-50 border border-slate-200 text-slate-700 px-3.5 py-2 text-xs font-medium flex items-center gap-2';
+                    }
+                }
+
+                // Opportunity, Attention, Next Step
+                const oppEl = document.getElementById('dssOpportunityText');
+                const attEl = document.getElementById('dssAttentionText');
+                const nextEl = document.getElementById('dssNextStepText');
+                if (oppEl) oppEl.textContent = dssSummary.opportunity || '';
+                if (attEl) attEl.textContent = dssSummary.attention || '';
+                if (nextEl) nextEl.textContent = dssSummary.next_step || '';
+
+                // Period Label
+                const periodLabelEl = document.getElementById('dssPeriodLabel');
+                if (periodLabelEl) {
+                    periodLabelEl.textContent = 'Evaluation Period: ' + (dssSummary.period_label || 'Current');
+                }
+
+                // Recommendations Cards Grid
+                const recContainer = document.getElementById('dssRecommendationsContainer');
+                if (!recContainer) return;
+
+                const recs = dssSummary.recommendations || [];
+                if (recs.length === 0) {
+                    recContainer.innerHTML = `
+                        <div class="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-4 text-center text-xs text-slate-500 mb-2">
+                            No fast-moving reorder level adjustments currently required for this period. All active inventory thresholds provide adequate coverage.
+                        </div>
+                    `;
+                    return;
+                }
+
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+                let html = `
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-2.5">
+                            <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Fast-Moving Inventory Reorder Recommendations (DSS System)
+                            </h3>
+                            <span id="dssPeriodLabel" class="text-[11px] text-slate-500 font-medium">Evaluation Period: ${dssSummary.period_label || 'Current'}</span>
+                        </div>
+                        <div class="grid gap-3 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3" id="dssRecCardsGrid">
+                `;
+
+                recs.forEach(rec => {
+                    const isHigh = rec.stockout_risk === 'high';
+                    const riskBadgeClass = isHigh ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-amber-100 text-amber-700 border border-amber-200';
+                    const stockClass = rec.current_stock <= rec.current_reorder_level ? 'text-red-600' : 'text-slate-800';
+
+                    let actionHtml = '';
+                    if (rec.is_actioned) {
+                        actionHtml = `
+                            <span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1.5 rounded-lg w-full justify-center">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                Applied Reorder Level (${rec.suggested_reorder_level} units)
+                            </span>
+                        `;
+                    } else {
+                        actionHtml = `
+                            <form method="POST" action="${rec.apply_url || ('/dss/recommendations/' + rec.id + '/apply-reorder')}" class="w-full dss-apply-form" data-rec-id="${rec.id}" data-suggested="${rec.suggested_reorder_level}">
+                                <input type="hidden" name="_token" value="${csrfToken}">
+                                <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#105f68] hover:bg-[#0c4a52] text-white text-xs font-semibold px-3 py-2 transition-colors shadow-sm">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                                    Apply Suggested Reorder Level (${rec.suggested_reorder_level})
+                                </button>
+                            </form>
+                        `;
+                    }
+
+                    html += `
+                        <div class="rounded-[16px] border border-amber-200 bg-gradient-to-b from-amber-50/60 to-white p-4 shadow-sm flex flex-col justify-between" id="dss-rec-card-${rec.id}">
+                            <div>
+                                <div class="flex items-start justify-between gap-2 mb-2">
+                                    <div>
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200">
+                                            ⚡ Fast-Moving
+                                        </span>
+                                        <h4 class="text-sm font-bold text-slate-900 mt-1">${rec.product_name}</h4>
+                                        <p class="text-[11px] font-mono text-slate-500">SKU: ${rec.sku}</p>
+                                    </div>
+                                    <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full ${riskBadgeClass}">
+                                        ${rec.stockout_risk.charAt(0).toUpperCase() + rec.stockout_risk.slice(1)} Risk
+                                    </span>
+                                </div>
+
+                                <div class="my-3 grid grid-cols-2 gap-2 text-xs bg-white rounded-xl p-2.5 border border-slate-200">
+                                    <div>
+                                        <span class="text-[10px] text-slate-500 uppercase font-semibold block">Sales Volume</span>
+                                        <span class="text-sm font-bold text-emerald-700">${rec.sales_volume} units sold</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] text-slate-500 uppercase font-semibold block">Current Stock</span>
+                                        <span class="text-sm font-bold ${stockClass}">${rec.current_stock} units</span>
+                                    </div>
+                                    <div class="col-span-2 pt-2 border-t border-slate-100 flex items-center justify-between">
+                                        <div>
+                                            <span class="text-[10px] text-slate-500 uppercase font-semibold block">Reorder Level</span>
+                                            <div class="flex items-center gap-1.5 mt-0.5">
+                                                <span class="text-xs text-slate-500 line-through reorder-curr-val">${rec.current_reorder_level}</span>
+                                                <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200">
+                                                    ➔ ${rec.suggested_reorder_level} units
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-[10px] text-slate-500 uppercase font-semibold block">Suggested Stock</span>
+                                            <span class="text-xs font-bold text-slate-900">${rec.suggested_stock_quantity} units</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                                    ${rec.description}
+                                </p>
+                            </div>
+
+                            <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2 mt-auto dss-action-wrapper">
+                                ${actionHtml}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+
+                recContainer.innerHTML = html;
+            };
+
+            // Toast notification helper
+            function showDssToast(message) {
+                let toast = document.getElementById('dssToastNotification');
+                if (!toast) {
+                    toast = document.createElement('div');
+                    toast.id = 'dssToastNotification';
+                    toast.className = 'fixed bottom-5 right-5 z-50 transform transition-all duration-300 translate-y-10 opacity-0 pointer-events-none';
+                    toast.innerHTML = `
+                        <div class="flex items-center gap-2 bg-emerald-800 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-lg border border-emerald-700">
+                            <svg class="w-4 h-4 text-emerald-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span id="dssToastMessage"></span>
+                        </div>
+                    `;
+                    document.body.appendChild(toast);
+                }
+                const msgEl = toast.querySelector('#dssToastMessage');
+                if (msgEl) msgEl.textContent = message;
+                toast.classList.remove('translate-y-10', 'opacity-0', 'pointer-events-none');
+                toast.classList.add('translate-y-0', 'opacity-100');
+                setTimeout(() => {
+                    toast.classList.remove('translate-y-0', 'opacity-100');
+                    toast.classList.add('translate-y-10', 'opacity-0', 'pointer-events-none');
+                }, 3500);
+            }
+
+            // AJAX Handler for applying suggested reorder level
+            document.addEventListener('submit', async function (e) {
+                const form = e.target.closest('.dss-apply-form');
+                if (!form) return;
+
+                e.preventDefault();
+                const btn = form.querySelector('button[type="submit"]');
+                const originalText = btn ? btn.innerHTML : '';
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = `
+                        <svg class="animate-spin -ml-1 mr-2 h-3.5 w-3.5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                        </svg>
+                        Applying...
+                    `;
+                }
+
+                try {
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                        }
+                    });
+
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        const wrapper = form.closest('.dss-action-wrapper') || form.parentElement;
+                        const suggested = form.dataset.suggested || result.new_reorder_level;
+                        wrapper.innerHTML = `
+                            <span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1.5 rounded-lg w-full justify-center">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                Applied Reorder Level (${suggested} units)
+                            </span>
+                        `;
+
+                        // Update displayed current reorder value in card if present
+                        const card = wrapper.closest('[id^="dss-rec-card-"]');
+                        if (card) {
+                            const currValEl = card.querySelector('.reorder-curr-val');
+                            if (currValEl) currValEl.textContent = suggested;
+                        }
+
+                        showDssToast('Suggested reorder level successfully applied to product inventory!');
+                    } else {
+                        throw new Error(result.message || 'Failed to apply reorder level.');
+                    }
+                } catch (err) {
+                    console.error('Error applying reorder level:', err);
+                    alert(err.message || 'An error occurred while applying the reorder level.');
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
+                    }
+                }
+            });
+
             // Render with images on initial load
             renderTopProducts(topProductsData);
             renderFastMoving(fastMovingData);
@@ -1757,6 +2105,11 @@
                     // Slow-Moving Products
                     renderSlowMoving(data.slowMoving || []);
 
+                    // DSS Executive Summary
+                    if (data.dssSummary) {
+                        renderDssExecutiveSummary(data.dssSummary);
+                    }
+
                 } catch (error) {
                     console.error('Error fetching filtered widgets:', error);
                     // Show empty states on error
@@ -1765,6 +2118,14 @@
                     renderTopProducts([]);
                     renderFastMoving([]);
                     renderSlowMoving([]);
+                    renderDssExecutiveSummary({
+                        has_fast_moving: false,
+                        high_priority_banner: 'Unable to evaluate DSS recommendations for this period.',
+                        recommendations: [],
+                        opportunity: 'No sales data available for this range.',
+                        attention: 'No stockout risks detected for this range.',
+                        next_step: 'Adjust the date range or record sales to generate DSS insights.'
+                    });
                 } finally {
                     hideLoadingOverlays();
                 }

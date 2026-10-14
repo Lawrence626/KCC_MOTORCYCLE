@@ -9,6 +9,7 @@ use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use App\Models\SupplierPriceHistory;
 use App\Services\VatCalculationService;
+use App\Services\DSSRecommendationEngineService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -16,10 +17,14 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class AnalyticsController extends Controller
 {
     private VatCalculationService $vatService;
+    private DSSRecommendationEngineService $dssService;
 
-    public function __construct(VatCalculationService $vatService)
-    {
+    public function __construct(
+        VatCalculationService $vatService,
+        ?DSSRecommendationEngineService $dssService = null
+    ) {
         $this->vatService = $vatService;
+        $this->dssService = $dssService ?? app(DSSRecommendationEngineService::class);
     }
 
     private function activeProducts()
@@ -145,10 +150,14 @@ class AnalyticsController extends Controller
             $monthlyLabels[] = $month->format('M');
         }
 
+        $monthFormat = DB::connection()->getDriverName() === 'sqlite'
+            ? "strftime('%Y-%m', completed_at)"
+            : 'DATE_FORMAT(completed_at, "%Y-%m")';
+
         $salesByMonth = PurchaseOrder::where('status', 'completed')
             ->whereNotNull('completed_at')
             ->whereBetween('completed_at', [$monthStart, $endOfMonth])
-            ->selectRaw('DATE_FORMAT(completed_at, "%Y-%m") as month, SUM(total_amount) as value')
+            ->selectRaw("{$monthFormat} as month, SUM(total_amount) as value")
             ->groupBy('month')
             ->orderBy('month')
             ->get()
@@ -166,6 +175,7 @@ class AnalyticsController extends Controller
         })->values()->toArray();
 
         $movementData = $this->getProductMovementFromTransactions($monthStart->toDateString(), $endOfMonth->toDateString());
+        $dssSummary = $this->dssService->getExecutiveSummaryForSalesAnalytics();
 
         return view('data_analytics.sales-analytics', [
             'quickStats' => [
@@ -188,6 +198,7 @@ class AnalyticsController extends Controller
             'topProducts' => $topProducts,
             'fastMoving'  => $movementData['fast'],
             'slowMoving'  => $movementData['slow'],
+            'dssSummary'  => $dssSummary,
         ]);
     }
 
@@ -230,6 +241,7 @@ class AnalyticsController extends Controller
 
         // --- Fast & Slow moving (by quantity) — reuse the same transaction scan ---
         $movementData = $this->getProductMovementFromTransactions($startDate, $endDate);
+        $dssSummary = $this->dssService->getExecutiveSummaryForSalesAnalytics($startDate, $endDate);
 
         return response()->json([
             'quickStats' => [
@@ -247,6 +259,7 @@ class AnalyticsController extends Controller
             'topProducts'       => $topProducts->values()->toArray(),
             'fastMoving'        => $movementData['fast'],
             'slowMoving'        => $movementData['slow'],
+            'dssSummary'        => $dssSummary,
         ]);
     }
 
