@@ -658,26 +658,23 @@
                     @endif
                 </div>
 
-                <!-- 3 Dynamic Insight Cards (Opportunity, Attention, Next step) -->
+                <!-- 3 Dynamic Insight Cards (Opportunity, Attention, Note) -->
                 <div class="mt-4 grid gap-3 lg:grid-cols-3">
                     <div class="rounded-[18px] border border-slate-200 bg-slate-50 p-4">
-                        <div class="flex items-center justify-between mb-1">
+                        <div class="mb-1">
                             <p class="text-xs font-semibold uppercase tracking-wider text-[#105f68]">Opportunity</p>
-                            <svg class="w-4 h-4 text-[#105f68]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
                         </div>
                         <p id="dssOpportunityText" class="mt-2 text-xs text-slate-700 leading-relaxed">{{ $dssSummary['opportunity'] ?? 'Analyzing sales momentum...' }}</p>
                     </div>
                     <div class="rounded-[18px] border border-slate-200 bg-slate-50 p-4">
-                        <div class="flex items-center justify-between mb-1">
+                        <div class="mb-1">
                             <p class="text-xs font-semibold uppercase tracking-wider text-[#105f68]">Attention</p>
-                            <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                         </div>
                         <p id="dssAttentionText" class="mt-2 text-xs text-slate-700 leading-relaxed">{{ $dssSummary['attention'] ?? 'Evaluating stock safety...' }}</p>
                     </div>
                     <div class="rounded-[18px] border border-slate-200 bg-slate-50 p-4">
-                        <div class="flex items-center justify-between mb-1">
-                            <p class="text-xs font-semibold uppercase tracking-wider text-[#105f68]">NOTE</p>
-                            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        <div class="mb-1">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-[#105f68]">Note</p>
                         </div>
                         <p id="dssNextStepText" class="mt-2 text-xs text-slate-700 leading-relaxed">{{ $dssSummary['next_step'] ?? 'Aligning replenishment...' }}</p>
                     </div>
