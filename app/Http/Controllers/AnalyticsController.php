@@ -423,19 +423,25 @@ class AnalyticsController extends Controller
         $search          = request('search');
         $costChangeFilter = request('cost_change'); // '', 'none', 'up', 'down'
 
-        // 1. Get all product IDs that have at least one received PO item
+        // 1. Get all product IDs that have at least one received PO item or have price history
         $productIdsWithPOs = PurchaseOrderItem::where('received_quantity', '>', 0)
             ->whereHas('purchaseOrder')
             ->select('product_id')
             ->distinct()
             ->pluck('product_id');
 
+        $productIdsWithHistory = \App\Models\SupplierPriceHistory::select('product_id')
+            ->distinct()
+            ->pluck('product_id');
+
+        $eligibleProductIds = $productIdsWithPOs->merge($productIdsWithHistory)->unique()->values();
+
         // 2. Fetch ALL matching products (no pagination yet), applying name/SKU search at DB level
-        $allProducts = Product::whereIn('id', $productIdsWithPOs)
+        $allProducts = Product::whereIn('id', $eligibleProductIds)
             ->when($search, fn($q) => $q->where(fn($query) => $query->where('product_name', 'like', "%{$search}%")->orWhere('sku', 'like', "%{$search}%")->orWhere('name', 'like', "%{$search}%")))
             ->get();
 
-        // 3. Fetch ALL received PO items for these products in one query
+        // 3. Fetch ALL received PO items and SupplierPriceHistories for these products in one query
         $allProductIds = $allProducts->pluck('id');
         $poItems = PurchaseOrderItem::whereIn('product_id', $allProductIds)
             ->where('received_quantity', '>', 0)
@@ -444,26 +450,68 @@ class AnalyticsController extends Controller
             ->get()
             ->groupBy('product_id');
 
+        $sphItems = \App\Models\SupplierPriceHistory::whereIn('product_id', $allProductIds)
+            ->latest('id')
+            ->get()
+            ->groupBy('product_id');
+
         // 4. Build the full analysis collection for every fetched product
-        $analysisCollection = $allProducts->map(function ($product) use ($poItems) {
+        $analysisCollection = $allProducts->map(function ($product) use ($poItems, $sphItems) {
             $items = collect($poItems->get($product->id, collect()))
                 ->sortByDesc(fn($item) => $item->purchaseOrder?->id)
                 ->values();
 
-            $currentCost  = $items->count() > 0  ? (float) $items[0]->unit_price : 0;
-            $previousCost = $items->count() >= 2 ? (float) $items[1]->unit_price : null;
+            $sph = collect($sphItems->get($product->id, collect()))->first();
 
-            $changePercentage = $previousCost && $previousCost > 0
-                ? round((($currentCost - $previousCost) / $previousCost) * 100, 2)
-                : 0;
+            if ($sph && (float) $sph->supplier_cost > 0) {
+                // If there are PO items, check if a PO item is newer than SPH
+                $poIsNewer = false;
+                if ($items->count() > 0) {
+                    $poDate = $items[0]->purchaseOrder?->completed_at ?? $items[0]->created_at;
+                    if ($poDate && $sph->created_at && $poDate > $sph->created_at) {
+                        $poIsNewer = true;
+                    }
+                }
 
-            $recommendation = match (true) {
-                $previousCost !== null && $currentCost > $previousCost => 'Increase the retail price to maintain a 20% markup.',
-                $previousCost !== null && $currentCost < $previousCost => 'Maintain the current retail price to increase markup.',
-                default => 'Maintain current retail price.',
-            };
+                if ($poIsNewer) {
+                    $currentCost = (float) $items[0]->unit_price;
+                    $previousCost = $items->count() >= 2 ? (float) $items[1]->unit_price : (float) $sph->supplier_cost;
+                    $changePercentage = ($previousCost !== null && $previousCost > 0)
+                        ? round((($currentCost - $previousCost) / $previousCost) * 100, 2)
+                        : 0;
+                    $recommendation = match (true) {
+                        $previousCost !== null && $currentCost > $previousCost => 'Increase the retail price to maintain a 20% markup.',
+                        $previousCost !== null && $currentCost < $previousCost => 'Maintain the current retail price to increase markup.',
+                        default => 'Maintain current retail price.',
+                    };
+                } else {
+                    $currentCost = (float) $sph->supplier_cost;
+                    $previousCost = $sph->previous_cost !== null && (float) $sph->previous_cost > 0
+                        ? (float) $sph->previous_cost
+                        : ($items->count() >= 2 ? (float) $items[1]->unit_price : ($items->count() > 0 ? (float) $items[0]->unit_price : null));
+                    $changePercentage = (float) $sph->change_percentage;
+                    $recommendation = $sph->recommendation ?: match (true) {
+                        $previousCost !== null && $currentCost > $previousCost => 'Increase the retail price to maintain a 20% markup.',
+                        $previousCost !== null && $currentCost < $previousCost => 'Maintain the current retail price to increase markup.',
+                        default => 'Maintain current retail price.',
+                    };
+                }
+            } else {
+                $currentCost  = $items->count() > 0  ? (float) $items[0]->unit_price : (float) $product->unit_price;
+                $previousCost = $items->count() >= 2 ? (float) $items[1]->unit_price : null;
 
-            // Calculate the latest receipt date based on completed purchase orders
+                $changePercentage = $previousCost && $previousCost > 0
+                    ? round((($currentCost - $previousCost) / $previousCost) * 100, 2)
+                    : 0;
+
+                $recommendation = match (true) {
+                    $previousCost !== null && $currentCost > $previousCost => 'Increase the retail price to maintain a 20% markup.',
+                    $previousCost !== null && $currentCost < $previousCost => 'Maintain the current retail price to increase markup.',
+                    default => 'Maintain current retail price.',
+                };
+            }
+
+            // Calculate the latest receipt date based on completed purchase orders or price history
             $latestReceiptDate = null;
             if ($items->count() > 0) {
                 $completedPo = $items->filter(fn($item) => $item->purchaseOrder?->status === 'completed' && $item->purchaseOrder?->completed_at)
@@ -476,6 +524,9 @@ class AnalyticsController extends Controller
                     $latestReceiptDate = $items->sortByDesc(fn($item) => $item->purchaseOrder?->id)
                         ->first()?->purchaseOrder?->created_at;
                 }
+            }
+            if (!$latestReceiptDate && $sph) {
+                $latestReceiptDate = $sph->created_at;
             }
 
             return (object) [

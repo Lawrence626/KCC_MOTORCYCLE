@@ -859,6 +859,9 @@
 
                     activeSupplier = supplier;
                     currentProductPage = 1;
+                    if (productSearchInput) {
+                        productSearchInput.value = '';
+                    }
 
                     // Update Trigger Label
                     dropdownSelectedName.textContent = supplier.name;
@@ -1130,7 +1133,12 @@
 
                     detailProductTable.innerHTML = '';
                     if (filtered.length === 0) {
-                        detailProductTable.innerHTML = '<tr><td colspan="9" class="px-4 py-8 text-center text-xs text-slate-500 font-medium">No products match the selected filter.</td></tr>';
+                        if (search) {
+                            const safeSearch = search.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                            detailProductTable.innerHTML = `<tr><td colspan="9" class="px-4 py-8 text-center text-xs text-slate-500 font-medium">No products match "${safeSearch}". <button type="button" onclick="clearProductSearch()" class="text-cyan-600 underline font-bold ml-1 hover:text-cyan-700 cursor-pointer">Clear search</button></td></tr>`;
+                        } else {
+                            detailProductTable.innerHTML = '<tr><td colspan="9" class="px-4 py-8 text-center text-xs text-slate-500 font-medium">No products match the selected filter.</td></tr>';
+                        }
                         productPagination.innerHTML = '';
                         return;
                     }
@@ -1199,6 +1207,14 @@
                 window.changeProductPage = function(page) {
                     currentProductPage = page;
                     renderProductTable();
+                };
+
+                window.clearProductSearch = function() {
+                    if (productSearchInput) {
+                        productSearchInput.value = '';
+                        currentProductPage = 1;
+                        renderProductTable();
+                    }
                 };
 
                 productSearchInput.addEventListener('input', () => {
