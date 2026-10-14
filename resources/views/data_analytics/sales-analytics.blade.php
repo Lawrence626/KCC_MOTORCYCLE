@@ -676,7 +676,7 @@
                     </div>
                     <div class="rounded-[18px] border border-slate-200 bg-slate-50 p-4">
                         <div class="flex items-center justify-between mb-1">
-                            <p class="text-xs font-semibold uppercase tracking-wider text-[#105f68]">Next step</p>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-[#105f68]">NOTE</p>
                             <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </div>
                         <p id="dssNextStepText" class="mt-2 text-xs text-slate-700 leading-relaxed">{{ $dssSummary['next_step'] ?? 'Aligning replenishment...' }}</p>
