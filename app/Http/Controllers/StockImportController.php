@@ -821,10 +821,14 @@ class StockImportController extends Controller
      */
     public function getMovements(Request $request)
     {
-        $movements = InventoryMovement::with('product')
-            ->latest()
-            ->limit(10)
-            ->get()
+        $limit = (int) $request->input('limit', 500);
+        $query = InventoryMovement::with('product')->latest();
+
+        if ($limit > 0) {
+            $query->limit($limit);
+        }
+
+        $movements = $query->get()
             ->map(function ($movement) {
                 return [
                     'id' => $movement->id,

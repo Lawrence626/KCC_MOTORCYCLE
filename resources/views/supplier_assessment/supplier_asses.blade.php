@@ -416,6 +416,7 @@
                                         <th class="px-4 py-3.5 font-semibold text-white">Units Sold</th>
                                         <th class="px-4 py-3.5 font-semibold text-white">Movement Status</th>
                                         <th class="px-4 py-3.5 font-semibold text-white">Last Restock</th>
+                                        <th class="px-4 py-3.5 font-semibold text-white text-center">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="detailProductTable" class="divide-y divide-slate-100 bg-white"></tbody>
@@ -489,6 +490,85 @@
                     <div class="flex flex-col gap-3 sm:flex-row sm:justify-end pt-3 border-t border-slate-100">
                         <button type="button" id="cancelSupplierModal" class="rounded-[10px] border border-slate-200 bg-white px-5 py-2 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-100 transition-all cursor-pointer">Cancel</button>
                         <button type="submit" id="supplierModalSubmit" class="rounded-[10px] bg-[#6EC1D1] px-5 py-2 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition-all cursor-pointer">Save Supplier</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit Product Details Modal -->
+        <div id="editProductModal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-4">
+            <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-xl" onclick="closeEditProductModal()"></div>
+            <div class="relative w-full max-w-lg overflow-hidden rounded-[24px] bg-white shadow-[0_30px_80px_rgba(15,23,42,0.22)] max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between bg-[#6EC1D1] px-6 py-5">
+                    <div>
+                        <h2 class="text-xl font-bold text-black leading-tight">Edit Product Details</h2>
+                        <p class="text-xs text-slate-900 font-medium">Update product name and supplier unit price in real time.</p>
+                    </div>
+                    <button type="button" onclick="closeEditProductModal()" class="rounded-[10px] p-2 text-black hover:bg-black/10 transition cursor-pointer">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                <form id="editProductForm" onsubmit="saveProductChanges(event)" class="space-y-4 px-6 py-6">
+                    <input type="hidden" id="editProductId" value="" />
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">
+                            Product Name <span class="text-rose-500">*</span>
+                        </label>
+                        <input id="editProductName" type="text" class="w-full rounded-[10px] border border-slate-300 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] focus:bg-white transition" required />
+                    </div>
+
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                SKU (Read-only)
+                            </label>
+                            <input id="editProductSku" type="text" class="w-full rounded-[10px] border border-slate-200 bg-slate-100 px-3.5 py-2.5 text-xs text-slate-600 font-mono" readonly />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Category
+                            </label>
+                            <input id="editProductCategory" type="text" class="w-full rounded-[10px] border border-slate-300 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] focus:bg-white transition" />
+                        </div>
+                    </div>
+
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Unit Price / Supplier Price (₱) <span class="text-rose-500">*</span>
+                            </label>
+                            <input id="editProductPrice" type="number" step="0.01" min="0" class="w-full rounded-[10px] border border-slate-300 bg-slate-50/50 px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] focus:bg-white transition" required />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Brand
+                            </label>
+                            <input id="editProductBrand" type="text" class="w-full rounded-[10px] border border-slate-300 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] focus:bg-white transition" />
+                        </div>
+                    </div>
+
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Stock Quantity
+                            </label>
+                            <input id="editProductStock" type="number" min="0" class="w-full rounded-[10px] border border-slate-300 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] focus:bg-white transition" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Reorder Level
+                            </label>
+                            <input id="editProductReorderLevel" type="number" min="0" class="w-full rounded-[10px] border border-slate-300 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#6EC1D1] focus:bg-white transition" />
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-3 sm:flex-row sm:justify-end pt-3 border-t border-slate-100">
+                        <button type="button" onclick="closeEditProductModal()" class="rounded-[10px] border border-slate-200 bg-white px-5 py-2 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-100 transition cursor-pointer">Cancel</button>
+                        <button type="submit" id="saveProductBtn" class="rounded-[10px] bg-[#6EC1D1] px-5 py-2 text-xs font-bold text-slate-900 shadow-sm hover:bg-[#59b2c2] transition cursor-pointer flex items-center justify-center gap-2">
+                            <span>Save Changes</span>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -779,6 +859,9 @@
 
                     activeSupplier = supplier;
                     currentProductPage = 1;
+                    if (productSearchInput) {
+                        productSearchInput.value = '';
+                    }
 
                     // Update Trigger Label
                     dropdownSelectedName.textContent = supplier.name;
@@ -1050,7 +1133,12 @@
 
                     detailProductTable.innerHTML = '';
                     if (filtered.length === 0) {
-                        detailProductTable.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-xs text-slate-500 font-medium">No products match the selected filter.</td></tr>';
+                        if (search) {
+                            const safeSearch = search.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                            detailProductTable.innerHTML = `<tr><td colspan="9" class="px-4 py-8 text-center text-xs text-slate-500 font-medium">No products match "${safeSearch}". <button type="button" onclick="clearProductSearch()" class="text-cyan-600 underline font-bold ml-1 hover:text-cyan-700 cursor-pointer">Clear search</button></td></tr>`;
+                        } else {
+                            detailProductTable.innerHTML = '<tr><td colspan="9" class="px-4 py-8 text-center text-xs text-slate-500 font-medium">No products match the selected filter.</td></tr>';
+                        }
                         productPagination.innerHTML = '';
                         return;
                     }
@@ -1087,6 +1175,12 @@
                                 <td class="px-4 py-3.5 font-bold text-slate-800 text-xs">${product.units_sold ?? 0}</td>
                                 <td class="px-4 py-3.5">${badge}</td>
                                 <td class="px-4 py-3.5 text-slate-500 text-xs">${product.last_restock_date || 'N/A'}</td>
+                                <td class="px-4 py-3.5 text-center">
+                                    <button type="button" onclick="openEditProductModal(${product.id})" class="inline-flex items-center gap-1 rounded-[8px] bg-slate-100 hover:bg-[#6EC1D1] hover:text-slate-900 text-slate-700 px-2.5 py-1 text-xs font-bold transition shadow-2xs cursor-pointer border border-slate-200" title="Edit Product Details">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                                        <span>Edit</span>
+                                    </button>
+                                </td>
                             </tr>
                         `);
                     });
@@ -1113,6 +1207,14 @@
                 window.changeProductPage = function(page) {
                     currentProductPage = page;
                     renderProductTable();
+                };
+
+                window.clearProductSearch = function() {
+                    if (productSearchInput) {
+                        productSearchInput.value = '';
+                        currentProductPage = 1;
+                        renderProductTable();
+                    }
                 };
 
                 productSearchInput.addEventListener('input', () => {
@@ -1154,6 +1256,138 @@
                 [closeSupplierModalButton, cancelSupplierModalButton].forEach(button => {
                     button.addEventListener('click', () => closeModal(supplierModal));
                 });
+
+                // Product Edit Modal Functions in Supplier Assessment
+                window.openEditProductModal = function(productId) {
+                    if (!activeSupplier || !activeSupplier.products) return;
+                    const product = activeSupplier.products.find(p => p.id == productId);
+                    if (!product) return;
+
+                    document.getElementById('editProductId').value = product.id;
+                    document.getElementById('editProductName').value = product.name || '';
+                    document.getElementById('editProductSku').value = product.sku || '';
+                    document.getElementById('editProductCategory').value = product.category || '';
+                    document.getElementById('editProductPrice').value = product.price != null ? product.price : 0;
+                    document.getElementById('editProductBrand').value = product.brand || '';
+                    document.getElementById('editProductStock').value = product.stock_quantity ?? 0;
+                    document.getElementById('editProductReorderLevel').value = product.reorder_level ?? 10;
+
+                    const modal = document.getElementById('editProductModal');
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                };
+
+                window.closeEditProductModal = function() {
+                    const modal = document.getElementById('editProductModal');
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                };
+
+                window.saveProductChanges = function(e) {
+                    e.preventDefault();
+                    const productId = document.getElementById('editProductId').value;
+                    if (!productId) return;
+
+                    const saveBtn = document.getElementById('saveProductBtn');
+                    const originalText = saveBtn.innerHTML;
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = '<span>Saving...</span>';
+
+                    const payload = {
+                        name: document.getElementById('editProductName').value.trim(),
+                        category: document.getElementById('editProductCategory').value.trim(),
+                        unit_price: parseFloat(document.getElementById('editProductPrice').value) || 0,
+                        brand: document.getElementById('editProductBrand').value.trim(),
+                        stock_quantity: parseInt(document.getElementById('editProductStock').value, 10) || 0,
+                        reorder_level: parseInt(document.getElementById('editProductReorderLevel').value, 10) || 0,
+                    };
+
+                    fetch(`/supplier-assessment/products/${productId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify(payload)
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = originalText;
+
+                        if (data.success && data.product) {
+                            // Update in-memory activeSupplier.products
+                            if (activeSupplier && Array.isArray(activeSupplier.products)) {
+                                const prod = activeSupplier.products.find(p => p.id == productId);
+                                if (prod) {
+                                    prod.name = data.product.name;
+                                    prod.product_name = data.product.name;
+                                    prod.price = data.product.price;
+                                    prod.category = data.product.category;
+                                    prod.brand = data.product.brand;
+                                    prod.stock_quantity = data.product.stock_quantity;
+                                    prod.reorder_level = data.product.reorder_level;
+                                }
+
+                                // Update in fast/slow moving products arrays
+                                ['fast_moving_products', 'slow_moving_products'].forEach(key => {
+                                    if (Array.isArray(activeSupplier[key])) {
+                                        const p = activeSupplier[key].find(item => item.id == productId);
+                                        if (p) {
+                                            p.name = data.product.name;
+                                            p.product_name = data.product.name;
+                                            p.price = data.product.price;
+                                            p.category = data.product.category;
+                                            p.brand = data.product.brand;
+                                            p.stock_quantity = data.product.stock_quantity;
+                                        }
+                                    }
+                                });
+
+                                // Recalculate total value for supplier
+                                activeSupplier.total_value = activeSupplier.products.reduce((acc, p) => acc + (p.stock_quantity * p.price), 0);
+                                if (detailTotalValue) {
+                                    detailTotalValue.textContent = `₱${Number(activeSupplier.total_value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                                }
+
+                                // Update in supplierSummaries array
+                                const sObj = supplierSummaries.find(s => s.name === activeSupplier.name || (s.id && s.id === activeSupplier.id));
+                                if (sObj && Array.isArray(sObj.products)) {
+                                    const pObj = sObj.products.find(p => p.id == productId);
+                                    if (pObj) {
+                                        pObj.name = data.product.name;
+                                        pObj.product_name = data.product.name;
+                                        pObj.price = data.product.price;
+                                        pObj.category = data.product.category;
+                                        pObj.brand = data.product.brand;
+                                        pObj.stock_quantity = data.product.stock_quantity;
+                                    }
+                                    sObj.total_value = activeSupplier.total_value;
+                                }
+
+                                try {
+                                    localStorage.setItem('cachedSupplierSummaries', JSON.stringify(supplierSummaries));
+                                } catch (err) {}
+                            }
+
+                            // Re-render table & widgets in real time
+                            renderProductTable();
+                            renderFastSlowMovingBreakdown(activeSupplier);
+
+                            closeEditProductModal();
+                            showToast(data.message || 'Product updated successfully in real time!', 'success');
+                        } else {
+                            showToast(data.message || 'Failed to update product details.', 'error');
+                        }
+                    })
+                    .catch(err => {
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = originalText;
+                        console.error('Error updating product:', err);
+                        showToast('An error occurred while updating the product.', 'error');
+                    });
+                };
 
                 // Populate dropdown options on load
                 renderDropdownOptions();

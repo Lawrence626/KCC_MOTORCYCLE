@@ -15,6 +15,7 @@ use App\Models\StockArrivalNotice;
 use App\Models\Supplier;
 use App\Models\SupplierPriceHistory;
 use App\Models\User;
+use App\Models\Warehouse;
 use App\Models\WarehouseShelf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -759,19 +760,34 @@ class PurchaseOrderController extends Controller
                 ? (float) $firstHistory->supplier_cost
                 : $baselineCost;
 
-            $previousCost = $secondHistory?->supplier_cost !== null
-                ? (float) $secondHistory->supplier_cost
-                : ($firstHistory?->previous_cost !== null ? (float) $firstHistory->previous_cost : $baselineCost);
+            // Determine if supplier has a prior distinct cost from purchase history
+            $previousCost = null;
+            if ($histories->count() > 1 && $secondHistory?->supplier_cost !== null) {
+                if (abs((float) $secondHistory->supplier_cost - $currentCost) > 0.001) {
+                    $previousCost = (float) $secondHistory->supplier_cost;
+                } else {
+                    $olderDistinct = $histories->first(fn ($h) => abs((float) $h->supplier_cost - $currentCost) > 0.001);
+                    if ($olderDistinct) {
+                        $previousCost = (float) $olderDistinct->supplier_cost;
+                    }
+                }
+            } elseif ($firstHistory?->previous_cost !== null && abs((float) $firstHistory->previous_cost - $currentCost) > 0.001) {
+                // If single record had a valid prior different cost from an earlier order
+                $previousCost = (float) $firstHistory->previous_cost;
+            }
 
-            $changePercentage = 0;
+            $changePercentage = null;
             $trend = 'stable';
-            if ($previousCost > 0 && abs($currentCost - $previousCost) > 0.001) {
+            if ($previousCost !== null && $previousCost > 0 && abs($currentCost - $previousCost) > 0.001) {
                 $changePercentage = round((($currentCost - $previousCost) / $previousCost) * 100, 2);
                 if ($changePercentage > 0.005) {
                     $trend = 'increasing';
                 } elseif ($changePercentage < -0.005) {
                     $trend = 'decreasing';
                 }
+            } else {
+                $changePercentage = null;
+                $trend = 'stable';
             }
 
             $suggestedRetail = round($currentCost * 1.20, 2);
@@ -1025,6 +1041,215 @@ class PurchaseOrderController extends Controller
 
         return view('purchase_order.order-detail', [
             'purchaseOrder' => $purchaseOrder,
+            'shelvesByWarehouse' => self::getShelvesGroupedByWarehouse(),
+        ]);
+    }
+
+    public static function getShelvesGroupedByWarehouse(): array
+    {
+        try {
+            $duplicateShop = Warehouse::where('name', 'SHOP')->first();
+            if ($duplicateShop) {
+                $mainShop = Warehouse::where('name', 'Shop')->first();
+                if (!$mainShop) {
+                    $duplicateShop->update(['name' => 'Shop']);
+                } else {
+                    WarehouseShelf::where('warehouse_id', $duplicateShop->id)->update([
+                        'warehouse_id' => $mainShop->id,
+                        'warehouse_code' => $mainShop->code ?: 'WH-SHOP',
+                    ]);
+                    $duplicateShop->delete();
+                }
+            }
+        } catch (\Throwable $e) {
+            // Ignore in early/testing migration state
+        }
+
+        $warehouses = Warehouse::active()
+            ->where('name', '!=', 'SHOP')
+            ->orderBy('name')
+            ->get();
+        if ($warehouses->isEmpty()) {
+            $defaultNames = ['Warehouse A', 'Warehouse B', 'Warehouse C', 'Warehouse D'];
+            foreach ($defaultNames as $idx => $name) {
+                $code = 'WH-' . chr(65 + $idx);
+                Warehouse::firstOrCreate(['name' => $name], ['code' => $code, 'is_active' => true]);
+            }
+            $warehouses = Warehouse::active()
+                ->where('name', '!=', 'SHOP')
+                ->orderBy('name')
+                ->get();
+        }
+
+        $warehousesById = $warehouses->keyBy('id');
+
+        $hasCode = Schema::hasColumn('warehouse_shelves', 'warehouse_code');
+        $hasSort = Schema::hasColumn('warehouse_shelves', 'sort_order');
+        $hasSlot = Schema::hasColumn('warehouse_shelves', 'slot_index');
+
+        // Ensure each active warehouse has default shelves if none exist
+        foreach ($warehouses as $wh) {
+            $existingCount = WarehouseShelf::where('warehouse_id', $wh->id)->where('archived', false)->count();
+            if ($existingCount === 0) {
+                $nameMatchCount = WarehouseShelf::where('name', 'like', $wh->name . ' - %')->where('archived', false)->count();
+                if ($nameMatchCount === 0) {
+                    for ($s = 0; $s < 10; $s++) {
+                        $shelfData = [
+                            'warehouse_id'    => $wh->id,
+                            'warehouse_index' => max(0, $wh->id - 1),
+                            'slot_index'      => $s,
+                            'name'            => $wh->name . ' - Shelf ' . ($s + 1),
+                            'capacity'        => 10,
+                            'products'        => [],
+                            'archived'        => false,
+                        ];
+                        if ($hasCode) {
+                            $shelfData['warehouse_code'] = $wh->code ?: ('WH-' . $wh->id);
+                        }
+                        if ($hasSort) {
+                            $shelfData['sort_order'] = $s;
+                        }
+                        WarehouseShelf::create($shelfData);
+                    }
+                }
+            }
+        }
+
+        $allShelvesQuery = WarehouseShelf::where('archived', false);
+        if ($hasSort) {
+            $allShelvesQuery->orderBy('sort_order');
+        }
+        if ($hasSlot) {
+            $allShelvesQuery->orderBy('slot_index');
+        }
+        $allShelves = $allShelvesQuery->orderBy('id')->get();
+
+        $grouped = [
+            'Shop' => [],
+            'Warehouse A' => [],
+            'Warehouse B' => [],
+            'Warehouse C' => [],
+            'Warehouse D' => [],
+        ];
+
+        foreach ($warehouses as $wh) {
+            $whTrimmed = trim($wh->name);
+            if (strtolower($whTrimmed) === 'shop') {
+                continue;
+            }
+            if (!isset($grouped[$whTrimmed])) {
+                $grouped[$whTrimmed] = [];
+            }
+        }
+
+        foreach ($allShelves as $shelf) {
+            $whName = null;
+            if ($shelf->warehouse_id && isset($warehousesById[$shelf->warehouse_id])) {
+                $whName = $warehousesById[$shelf->warehouse_id]->name;
+            } elseif ($hasCode && !empty($shelf->warehouse_code)) {
+                $code = strtoupper($shelf->warehouse_code);
+                if (str_contains($code, 'WH-A') || $code === 'A') $whName = 'Warehouse A';
+                elseif (str_contains($code, 'WH-B') || $code === 'B') $whName = 'Warehouse B';
+                elseif (str_contains($code, 'WH-C') || $code === 'C') $whName = 'Warehouse C';
+                elseif (str_contains($code, 'WH-D') || $code === 'D') $whName = 'Warehouse D';
+                elseif (str_contains($code, 'SHOP')) $whName = 'Shop';
+            } elseif (preg_match('/^(Warehouse [A-Z]|Shop)/i', $shelf->name, $matches)) {
+                $whName = ucwords(strtolower($matches[1]));
+            }
+
+            if (!$whName) {
+                $whName = 'Warehouse A';
+            }
+
+            if (strtolower(trim($whName)) === 'shop') {
+                $whName = 'Shop';
+            }
+
+            if (!isset($grouped[$whName])) {
+                $grouped[$whName] = [];
+            }
+
+            $grouped[$whName][] = [
+                'id'   => $shelf->id,
+                'name' => $shelf->name,
+            ];
+        }
+
+        return $grouped;
+    }
+
+    public function storeShelf(Request $request)
+    {
+        $validated = $request->validate([
+            'warehouse' => 'required|string|max:100',
+            'name'      => 'required|string|max:255',
+        ]);
+
+        $warehouseName = trim($validated['warehouse']);
+        if (strtolower($warehouseName) === 'shop') {
+            $warehouseName = 'Shop';
+        }
+        $shelfName     = trim($validated['name']);
+
+        $warehouse = Warehouse::where('name', $warehouseName)->first();
+        if (!$warehouse) {
+            $cleanCode = strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $warehouseName), -1));
+            $warehouse = Warehouse::firstOrCreate(
+                ['name' => $warehouseName],
+                ['code' => 'WH-' . ($cleanCode ?: 'X'), 'is_active' => true]
+            );
+        }
+
+        $existing = WarehouseShelf::where('warehouse_id', $warehouse->id)
+            ->where('name', $shelfName)
+            ->where('archived', false)
+            ->first();
+
+        if ($existing) {
+            return response()->json([
+                'success' => true,
+                'shelf'   => [
+                    'id'             => $existing->id,
+                    'name'           => $existing->name,
+                    'warehouse_name' => $warehouse->name,
+                ],
+                'message' => 'Shelf already exists.',
+            ]);
+        }
+
+        $hasCode = Schema::hasColumn('warehouse_shelves', 'warehouse_code');
+        $hasSort = Schema::hasColumn('warehouse_shelves', 'sort_order');
+        $hasSlot = Schema::hasColumn('warehouse_shelves', 'slot_index');
+
+        $maxSlot = $hasSlot ? WarehouseShelf::where('warehouse_id', $warehouse->id)->max('slot_index') : null;
+        $slotIndex = ($maxSlot !== null) ? $maxSlot + 1 : 0;
+
+        $shelfData = [
+            'warehouse_id'    => $warehouse->id,
+            'warehouse_index' => max(0, $warehouse->id - 1),
+            'slot_index'      => $slotIndex,
+            'name'            => $shelfName,
+            'capacity'        => 10,
+            'products'        => [],
+            'archived'        => false,
+        ];
+        if ($hasCode) {
+            $shelfData['warehouse_code'] = $warehouse->code ?: ('WH-' . $warehouse->id);
+        }
+        if ($hasSort) {
+            $shelfData['sort_order'] = $slotIndex;
+        }
+
+        $shelf = WarehouseShelf::create($shelfData);
+
+        return response()->json([
+            'success' => true,
+            'shelf'   => [
+                'id'             => $shelf->id,
+                'name'           => $shelf->name,
+                'warehouse_name' => $warehouse->name,
+            ],
+            'message' => 'Shelf created successfully.',
         ]);
     }
 
@@ -1252,12 +1477,16 @@ class PurchaseOrderController extends Controller
             return redirect()->route('order.show', $purchaseOrder)->with('warning', 'Only orders awaiting confirmation can be confirmed.');
         }
 
+        $allowedWarehouses = array_unique(array_merge(['Shop', 'Warehouse A', 'Warehouse B', 'Warehouse C', 'Warehouse D'], Warehouse::active()->pluck('name')->toArray()));
         $validated = $request->validate([
-            'warehouse' => 'required|in:Shop,Warehouse A,Warehouse B,Warehouse C',
+            'warehouse' => ['required', 'string', \Illuminate\Validation\Rule::in($allowedWarehouses)],
             'shelf_id' => 'nullable|integer|exists:warehouse_shelves,id',
         ]);
 
         $warehouse = $validated['warehouse'];
+        if (strtolower(trim($warehouse)) === 'shop') {
+            $warehouse = 'Shop';
+        }
         $shelfId = $validated['shelf_id'] ?? null;
 
         DB::transaction(function () use ($purchaseOrder, $warehouse, $shelfId) {
@@ -1325,25 +1554,23 @@ class PurchaseOrderController extends Controller
                         $previousCost = $previousPoItem?->unit_price;
                     }
 
-                    if ($previousCost === null && $product->unit_price !== null) {
-                        $previousCost = (float) $product->unit_price;
-                    }
-                    
+                    // If no previous cost from this supplier exists, previousCost remains null (first purchase order)
                     $currentCost = (float) $item->unit_price;
-                    $changePercentage = $previousCost && $previousCost > 0
+                    $changePercentage = ($previousCost !== null && (float) $previousCost > 0)
                         ? round((($currentCost - (float) $previousCost) / (float) $previousCost) * 100, 2)
                         : 0;
 
                     $recommendation = match (true) {
-                        $currentCost > $previousCost => 'Increase retail price',
-                        $currentCost < $previousCost => 'Maintain or lower retail price',
+                        $previousCost !== null && $currentCost > (float) $previousCost => 'Increase retail price',
+                        $previousCost !== null && $currentCost < (float) $previousCost => 'Maintain or lower retail price',
                         default => 'Maintain current retail price',
                     };
 
                     $reason = match (true) {
-                        $currentCost > $previousCost => 'Supplier cost increased while maintaining the desired 20% markup.',
-                        $currentCost < $previousCost => 'Supplier cost decreased, allowing for higher profit or more competitive pricing.',
-                        default => 'Supplier cost has not changed.',
+                        $previousCost !== null && $currentCost > (float) $previousCost => 'Supplier cost increased while maintaining the desired 20% markup.',
+                        $previousCost !== null && $currentCost < (float) $previousCost => 'Supplier cost decreased, allowing for higher profit or more competitive pricing.',
+                        $previousCost !== null => 'Supplier cost has not changed.',
+                        default => 'Initial supplier pricing recorded. No previous price change.',
                     };
 
                     $markupMultiplier = 1.20;
@@ -1532,14 +1759,18 @@ class PurchaseOrderController extends Controller
                 ->with('warning', 'Only active replacement requests can be received.');
         }
 
+        $allowedWarehouses = array_unique(array_merge(['Shop', 'Warehouse A', 'Warehouse B', 'Warehouse C', 'Warehouse D'], Warehouse::active()->pluck('name')->toArray()));
         $validated = $request->validate([
             'replacement_quantity' => 'required|integer|min:1|max:' . $defectiveRequest->defective_quantity,
-            'warehouse' => 'required|in:Shop,Warehouse A,Warehouse B,Warehouse C',
+            'warehouse' => ['required', 'string', \Illuminate\Validation\Rule::in($allowedWarehouses)],
             'shelf_id' => 'nullable|integer|exists:warehouse_shelves,id',
         ]);
 
         $receivedQty = (int) $validated['replacement_quantity'];
         $warehouse = $validated['warehouse'];
+        if (strtolower(trim($warehouse)) === 'shop') {
+            $warehouse = 'Shop';
+        }
         $shelfId = $validated['shelf_id'] ?? null;
 
         DB::transaction(function () use ($purchaseOrder, $defectiveRequest, $receivedQty, $warehouse, $shelfId) {

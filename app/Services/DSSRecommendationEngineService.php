@@ -93,9 +93,9 @@ class DSSRecommendationEngineService
     /**
      * Generate DSS inventory reorder and stock management recommendation.
      */
-    public function generateInventoryRecommendation(Product $product): ?DSSRecommendation
+    public function generateInventoryRecommendation(Product $product, $startDate = null, $endDate = null, ?int $customThreshold = null): ?DSSRecommendation
     {
-        $metrics = $this->getProductSalesMetrics($product);
+        $metrics = $this->getProductSalesMetrics($product, $startDate, $endDate);
 
         $salesThisMonth = $metrics['sales_this_month'];
         $salesPrevMonth = $metrics['sales_prev_month'];
@@ -103,7 +103,7 @@ class DSSRecommendationEngineService
         $currentStock = (int) $product->stock_quantity;
         $currentReorderLevel = (int) ($product->reorder_level ?? 10);
         $velocity = $metrics['daily_velocity'];
-        $fastThreshold = (int) DSSSettings::getSetting('fast_moving_threshold_units', 50);
+        $fastThreshold = $customThreshold ?? (int) DSSSettings::getSetting('fast_moving_threshold_units', 50);
 
         // Determine Classification
         $isFastMoving = ($salesThisMonth >= $fastThreshold)
@@ -189,6 +189,17 @@ class DSSRecommendationEngineService
                 : "Higher reorder point and buffer stock is recommended to keep up with surging customer demand."
         );
 
+        $existing = DSSRecommendation::where('product_id', $product->id)
+            ->where('recommendation_type', 'reorder_level')
+            ->first();
+
+        $actionTakenAt = null;
+        $actionNotes = null;
+        if ($existing && $existing->action_taken_at && $currentReorderLevel >= $suggestedReorderLevel) {
+            $actionTakenAt = $existing->action_taken_at;
+            $actionNotes = $existing->action_notes;
+        }
+
         return DSSRecommendation::updateOrCreate(
             ['product_id' => $product->id, 'recommendation_type' => 'reorder_level'],
             [
@@ -213,7 +224,9 @@ class DSSRecommendationEngineService
                     'rationale' => $rationale,
                 ],
                 'is_active' => true,
-                'generated_at' => now(),
+                'action_taken_at' => $actionTakenAt,
+                'action_notes' => $actionNotes,
+                'generated_at' => $existing?->generated_at ?? now(),
                 'last_updated_at' => now(),
             ]
         );
@@ -342,7 +355,7 @@ class DSSRecommendationEngineService
     /**
      * Extract comprehensive sales metrics for a product.
      */
-    public function getProductSalesMetrics(Product $product): array
+    public function getProductSalesMetrics(Product $product, $startDate = null, $endDate = null): array
     {
         $completedTransactions = POSTransaction::where('status', 'completed')
             ->whereNotNull('completed_at')
@@ -350,8 +363,9 @@ class DSSRecommendationEngineService
             ->get();
 
         $now = Carbon::now();
-        $startOfMonth = $now->copy()->startOfMonth();
-        $endOfMonth = $now->copy()->endOfMonth();
+        $isCustomRange = !empty($startDate) && !empty($endDate);
+        $rangeStart = $isCustomRange ? Carbon::parse($startDate)->startOfDay() : $now->copy()->startOfMonth();
+        $rangeEnd = $isCustomRange ? Carbon::parse($endDate)->endOfDay() : $now->copy()->endOfMonth();
 
         $startOfPrevMonth = $now->copy()->subMonth()->startOfMonth();
         $endOfPrevMonth = $now->copy()->subMonth()->endOfMonth();
@@ -378,8 +392,8 @@ class DSSRecommendationEngineService
                             $lastSaleDate = $transactionDate;
                         }
 
-                        // Current month check
-                        if ($transactionDate->between($startOfMonth, $endOfMonth)) {
+                        // Selected range / current month check
+                        if ($transactionDate->between($rangeStart, $rangeEnd)) {
                             $salesThisMonth += $quantity;
                         }
 
@@ -398,10 +412,11 @@ class DSSRecommendationEngineService
             }
         }
 
+        $daysInPeriod = max(1, (int) $rangeStart->diffInDays($rangeEnd));
         $daysInCurrentMonthSoFar = max(1, (int) $now->day);
-        $velocityMonth = round($salesThisMonth / $daysInCurrentMonthSoFar, 2);
+        $velocityPeriod = round($salesThisMonth / ($isCustomRange ? $daysInPeriod : $daysInCurrentMonthSoFar), 2);
         $velocity30 = round($units30 / 30, 2);
-        $dailyVelocity = max($velocityMonth, $velocity30);
+        $dailyVelocity = max($velocityPeriod, $velocity30);
 
         return [
             'sales_this_month' => $salesThisMonth,
@@ -412,6 +427,7 @@ class DSSRecommendationEngineService
             'units_90_days' => $units90,
             'daily_velocity' => $dailyVelocity,
             'last_sale_date' => $lastSaleDate,
+            'is_custom_range' => $isCustomRange,
         ];
     }
 
@@ -754,5 +770,170 @@ class DSSRecommendationEngineService
 
         $recommendation->markAsActioned($notes);
         return true;
+    }
+
+    /**
+     * Generate DSS Executive Summary metrics and fast-moving stock/reorder recommendations for Sales Analytics.
+     */
+    public function getExecutiveSummaryForSalesAnalytics($startDate = null, $endDate = null): array
+    {
+        $now = Carbon::now();
+        $isCustom = !empty($startDate) && !empty($endDate);
+        $start = $isCustom ? Carbon::parse($startDate)->startOfDay() : $now->copy()->startOfMonth();
+        $end = $isCustom ? Carbon::parse($endDate)->endOfDay() : $now->copy()->endOfMonth();
+
+        // 1. Fetch completed POS transactions in range
+        $transactions = POSTransaction::where('status', 'completed')
+            ->whereNotNull('completed_at')
+            ->whereBetween('completed_at', [$start, $end])
+            ->get();
+
+        $usedFallbackPeriod = false;
+        // If current month has 0 transactions, evaluate recent period (past 180 days) so recommendations reflect actual data
+        if (!$isCustom && $transactions->isEmpty()) {
+            $fallbackStart = $now->copy()->subDays(180)->startOfDay();
+            $fallbackTransactions = POSTransaction::where('status', 'completed')
+                ->whereNotNull('completed_at')
+                ->whereBetween('completed_at', [$fallbackStart, $end])
+                ->get();
+            if ($fallbackTransactions->isNotEmpty()) {
+                $start = $fallbackStart;
+                $transactions = $fallbackTransactions;
+                $usedFallbackPeriod = true;
+            }
+        }
+
+        // Aggregate product sales in period
+        $productSales = [];
+        $productRevenues = [];
+        foreach ($transactions as $tx) {
+            if (!is_array($tx->items)) continue;
+            foreach ($tx->items as $item) {
+                $pid = $item['id'] ?? $item['product_id'] ?? null;
+                $qty = (int) ($item['quantity'] ?? $item['qty'] ?? 0);
+                $price = (float) ($item['unit_price'] ?? $item['price'] ?? 0);
+                if ($pid && $qty > 0) {
+                    $productSales[$pid] = ($productSales[$pid] ?? 0) + $qty;
+                    $productRevenues[$pid] = ($productRevenues[$pid] ?? 0) + ($qty * $price);
+                }
+            }
+        }
+
+        // Find products
+        $candidateProductIds = array_keys($productSales);
+        $products = Product::whereIn('id', $candidateProductIds)
+            ->where('is_active', true)
+            ->where('is_archived', false)
+            ->get();
+
+        $fastThreshold = (int) DSSSettings::getSetting('fast_moving_threshold_units', 50);
+        $analyticsFastThreshold = min($fastThreshold, 15);
+
+        $recommendations = collect();
+        foreach ($products as $product) {
+            $rec = $this->generateInventoryRecommendation($product, $start, $end, $analyticsFastThreshold);
+            if ($rec && in_array($rec->recommendation_type, ['reorder_level', 'inventory_reorder'])) {
+                $recommendations->push($rec);
+            }
+        }
+
+        // Also check any active reorder recommendations already in DSS database
+        $existingRecs = DSSRecommendation::where('is_active', true)
+            ->whereIn('recommendation_type', ['reorder_level', 'inventory_reorder'])
+            ->with('product')
+            ->get();
+
+        foreach ($existingRecs as $eRec) {
+            if ($eRec->product && !$recommendations->contains('id', $eRec->id)) {
+                $recommendations->push($eRec);
+            }
+        }
+
+        // Format recommendations for view/API
+        $formattedRecs = $recommendations->map(function (DSSRecommendation $r) use ($productSales) {
+            $product = $r->product;
+            $meta = $r->metadata ?? [];
+            $salesVol = $meta['sales_this_month'] ?? ($productSales[$product?->id] ?? 0);
+            $currReorder = (int) ($meta['current_reorder_level'] ?? ($product?->reorder_level ?? 10));
+            $suggReorder = (int) ($meta['suggested_reorder_level'] ?? ($currReorder + 10));
+            $currStock = (int) ($meta['current_stock'] ?? ($product?->stock_quantity ?? 0));
+            $suggStock = (int) ($meta['suggested_stock_quantity'] ?? max($currStock, $suggReorder * 2));
+            $risk = $meta['stockout_risk'] ?? ($currStock <= $currReorder ? 'high' : 'medium');
+            $daysLeft = $meta['days_of_stock_left'] ?? ($currStock > 0 ? 30 : 0);
+            $isActioned = !is_null($r->action_taken_at) || ($product && $product->reorder_level >= $suggReorder);
+
+            return [
+                'id' => $r->id,
+                'product_id' => $product?->id,
+                'product_name' => $product?->product_name ?: ($product?->name ?? 'Product #' . $r->product_id),
+                'sku' => $product?->sku ?? 'N/A',
+                'sales_volume' => $salesVol,
+                'current_reorder_level' => $currReorder,
+                'suggested_reorder_level' => $suggReorder,
+                'current_stock' => $currStock,
+                'suggested_stock_quantity' => $suggStock,
+                'stockout_risk' => $risk,
+                'days_of_stock_left' => $daysLeft,
+                'is_actioned' => $isActioned,
+                'action_taken_at' => $r->action_taken_at?->format('M d, Y H:i'),
+                'title' => $r->title,
+                'description' => $r->description,
+                'rationale' => $meta['rationale'] ?? '',
+                'apply_url' => route('dss.recommendations.apply-reorder', $r->id),
+            ];
+        })->sortByDesc('sales_volume')->values()->all();
+
+        $hasFastMoving = count($formattedRecs) > 0;
+
+        // Dynamic High Priority Banner
+        if ($hasFastMoving) {
+            $pendingCount = collect($formattedRecs)->where('is_actioned', false)->count();
+            if ($pendingCount > 0) {
+                $highPriorityBanner = "DSS Stock Alert: {$pendingCount} fast-moving product(s) detected with high sales volume. Increasing reorder levels is recommended to prevent stockouts.";
+            } else {
+                $highPriorityBanner = "DSS Stock Alert: Fast-moving products detected; recommended reorder level adjustments have been applied.";
+            }
+        } else {
+            $highPriorityBanner = "DSS Inventory Health: Sales velocity and inventory reorder points are currently balanced.";
+        }
+
+        // Dynamic Opportunity text
+        if (!empty($productRevenues)) {
+            arsort($productRevenues);
+            $topPid = array_key_first($productRevenues);
+            $topProduct = $products->firstWhere('id', $topPid);
+            $topRevenue = $productRevenues[$topPid];
+            $topQty = $productSales[$topPid] ?? 0;
+            $opportunity = ($topProduct?->product_name ?: 'Top product') . " is leading sales momentum with {$topQty} units sold (₱" . number_format($topRevenue, 2) . "). Maintaining higher buffer stock maximizes revenue during peak demand periods.";
+        } else {
+            $opportunity = "Explore promotional bundling for accessories to stimulate sales velocity across seasonal inventory lines.";
+        }
+
+        // Dynamic Attention text
+        $highestRiskItem = collect($formattedRecs)->first(fn($item) => $item['stockout_risk'] === 'high' || $item['current_stock'] <= $item['current_reorder_level']);
+        if ($highestRiskItem) {
+            $attention = "Stockout warning: {$highestRiskItem['product_name']} has only {$highestRiskItem['current_stock']} units remaining in stock against high customer demand (~{$highestRiskItem['days_of_stock_left']} days coverage). Immediate replenishment and higher reorder point advised.";
+        } elseif ($hasFastMoving) {
+            $attention = "Fast-moving items are actively depleting stock. Monitor daily velocity to ensure incoming purchase orders arrive before minimum stock thresholds.";
+        } else {
+            $attention = "No critical stockout risks detected. Reorder thresholds across all product categories provide adequate coverage.";
+        }
+
+        // Dynamic Next Step text
+        if ($hasFastMoving) {
+            $nextStep = "Adopt DSS suggested reorder levels and adjust supplier purchase order lead times to maintain at least a 30-day stock buffer.";
+        } else {
+            $nextStep = "Align pricing and promotional calendars ahead of next month’s seasonal demand spikes.";
+        }
+
+        return [
+            'has_fast_moving' => $hasFastMoving,
+            'high_priority_banner' => $highPriorityBanner,
+            'recommendations' => $formattedRecs,
+            'opportunity' => $opportunity,
+            'attention' => $attention,
+            'next_step' => $nextStep,
+            'period_label' => $isCustom ? 'Analyzed Period' : ($usedFallbackPeriod ? 'Recent 90 Days' : 'This Month'),
+        ];
     }
 }

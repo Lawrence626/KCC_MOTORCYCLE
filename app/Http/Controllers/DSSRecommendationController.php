@@ -97,12 +97,29 @@ class DSSRecommendationController extends Controller
     /**
      * Apply suggested reorder level from recommendation.
      */
-    public function applyReorderLevel(int $id)
+    public function applyReorderLevel(int $id, Request $request)
     {
         $success = $this->recommendationService->applyReorderLevel($id);
 
         if (!$success) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unable to apply reorder level for this recommendation.',
+                ], 422);
+            }
             return redirect()->back()->with('error', 'Unable to apply reorder level for this recommendation.');
+        }
+
+        $recommendation = DSSRecommendation::with('product')->find($id);
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Suggested reorder level successfully applied to product inventory.',
+                'new_reorder_level' => $recommendation?->product?->reorder_level,
+                'recommendation_id' => $id,
+            ]);
         }
 
         return redirect()->back()->with('success', 'Suggested reorder level successfully applied to product inventory.');

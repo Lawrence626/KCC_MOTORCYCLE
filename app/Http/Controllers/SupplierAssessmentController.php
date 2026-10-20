@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\FastMovingProduct;
+use App\Models\InventoryMovement;
 use App\Models\POSTransaction;
 use App\Models\Product;
+use App\Models\ProductCatalog;
 use App\Models\PurchaseOrder;
 use App\Models\ReverseLogistics;
 use App\Models\SlowMovingProduct;
@@ -334,5 +336,129 @@ class SupplierAssessmentController extends Controller
         $supplier->delete();
 
         return redirect()->route('supplier.assessment.archived')->with('success', "Supplier \"{$supplierName}\" permanently deleted.");
+    }
+
+    /**
+     * Update product details (e.g. name, unit price) directly from Supplier Assessment in real time.
+     */
+    public function updateProduct(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'unit_price' => 'required|numeric|min:0',
+            'category' => 'nullable|string|max:255',
+            'brand' => 'nullable|string|max:255',
+            'stock_quantity' => 'nullable|integer|min:0',
+            'reorder_level' => 'nullable|integer|min:0',
+        ]);
+
+        $oldPrice = (float) $product->getOriginal('unit_price') ?? (float) $product->unit_price;
+        $newPrice = (float) $validated['unit_price'];
+
+        $product->name = $validated['name'];
+        $product->product_name = $validated['name'];
+        $product->unit_price = $newPrice;
+
+        if (array_key_exists('category', $validated) && $validated['category'] !== null) {
+            $product->category = $validated['category'];
+        }
+        if (array_key_exists('brand', $validated) && $validated['brand'] !== null) {
+            $product->brand = $validated['brand'];
+        }
+        if (array_key_exists('stock_quantity', $validated) && $validated['stock_quantity'] !== null) {
+            $product->stock_quantity = (int) $validated['stock_quantity'];
+        }
+        if (array_key_exists('reorder_level', $validated) && $validated['reorder_level'] !== null) {
+            $product->reorder_level = (int) $validated['reorder_level'];
+        }
+
+        $product->save();
+
+        // If price changed, log InventoryMovement and SupplierPriceHistory for real-time pricing module sync
+        if (abs($newPrice - $oldPrice) > 0.001) {
+            InventoryMovement::create([
+                'product_id' => $product->id,
+                'type' => 'price_update',
+                'quantity' => 0,
+                'unit_price' => $newPrice,
+                'source' => 'supplier_assessment',
+                'metadata' => [
+                    'old_price' => $oldPrice,
+                    'new_price' => $newPrice,
+                    'reason' => 'Price updated directly by admin in Supplier Assessment',
+                ],
+            ]);
+
+            $supplier = null;
+            if (!empty($product->supplier_name)) {
+                $rawNames = array_map('trim', explode(',', $product->supplier_name));
+                $supplier = Supplier::where('name', $rawNames[0] ?? '')->first();
+            }
+            if (!$supplier) {
+                $supplier = $product->suppliers()->first() ?? Supplier::first();
+            }
+
+            if ($supplier) {
+                $latestHistory = SupplierPriceHistory::where('product_id', $product->id)
+                    ->where('supplier_id', $supplier->id)
+                    ->latest('id')
+                    ->first();
+
+                $prevCost = $latestHistory && (float) $latestHistory->supplier_cost > 0
+                    ? (float) $latestHistory->supplier_cost
+                    : $oldPrice;
+
+                $changePct = $prevCost > 0 ? round((($newPrice - $prevCost) / $prevCost) * 100, 2) : 0;
+
+                $reco = match (true) {
+                    $newPrice > $prevCost => 'Increase the retail price to maintain a 20% markup.',
+                    $newPrice < $prevCost => 'Maintain the current retail price to increase markup.',
+                    default => 'Maintain current retail price.',
+                };
+
+                SupplierPriceHistory::create([
+                    'product_id' => $product->id,
+                    'supplier_id' => $supplier->id,
+                    'previous_cost' => $prevCost,
+                    'supplier_cost' => $newPrice,
+                    'change_percentage' => $changePct,
+                    'recommendation' => $reco,
+                    'reason' => 'Price updated directly by admin in Supplier Assessment',
+                    'suggested_retail_price' => round($newPrice * 1.20, 2),
+                    'is_dismissed' => false,
+                ]);
+            }
+        }
+
+        // Synchronize matching ProductCatalog records by SKU or product_catalog_id
+        if ($product->sku) {
+            ProductCatalog::where('sku', $product->sku)->update([
+                'product_name' => $product->name,
+                'brand' => $product->brand,
+            ]);
+        }
+        if ($product->product_catalog_id) {
+            ProductCatalog::where('id', $product->product_catalog_id)->update([
+                'product_name' => $product->name,
+                'brand' => $product->brand,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Product \"{$product->name}\" updated successfully.",
+            'product' => [
+                'id' => $product->id,
+                'product_id' => $product->id,
+                'name' => $product->product_name ?: $product->name,
+                'product_name' => $product->product_name ?: $product->name,
+                'sku' => $product->sku,
+                'brand' => $product->brand,
+                'category' => $product->category,
+                'price' => (float) $product->unit_price,
+                'stock_quantity' => (int) $product->stock_quantity,
+                'reorder_level' => (int) $product->reorder_level,
+            ],
+        ]);
     }
 }

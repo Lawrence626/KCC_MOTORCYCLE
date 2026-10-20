@@ -157,3 +157,50 @@ test('it allows archiving, restoring, and permanently deleting a supplier', func
     // Product supplier_name unlinked
     expect($product->fresh()->supplier_name)->toBeNull();
 });
+
+test('it updates product details and unit price directly from supplier assessment in real time', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+
+    $supplier = Supplier::create([
+        'name' => 'Brembo Philippines',
+        'status' => 'active',
+    ]);
+
+    $product = Product::create([
+        'name' => 'Brembo Brake Pads Old',
+        'product_name' => 'Brembo Brake Pads Old',
+        'sku' => 'BRM-PAD-01',
+        'unit_price' => 500.00,
+        'stock_quantity' => 15,
+        'category' => 'Brakes',
+        'supplier_name' => $supplier->name,
+    ]);
+
+    $response = $this->actingAs($admin)->patchJson(route('supplier.assessment.product.update', ['product' => $product->id]), [
+        'name' => 'Brembo Ceramic Brake Pads New',
+        'unit_price' => 650.00,
+        'category' => 'Brakes & Suspension',
+        'brand' => 'Brembo High Perf',
+        'stock_quantity' => 20,
+        'reorder_level' => 8,
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJson([
+            'success' => true,
+            'product' => [
+                'id' => $product->id,
+                'name' => 'Brembo Ceramic Brake Pads New',
+                'price' => 650.00,
+                'stock_quantity' => 20,
+            ],
+        ]);
+
+    $fresh = $product->fresh();
+    expect($fresh->name)->toBe('Brembo Ceramic Brake Pads New')
+        ->and((float) $fresh->unit_price)->toBe(650.00)
+        ->and($fresh->category)->toBe('Brakes')
+        ->and($fresh->stock_quantity)->toBe(20)
+        ->and($fresh->reorder_level)->toBe(8);
+});
+

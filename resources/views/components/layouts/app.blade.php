@@ -1049,13 +1049,6 @@
                                             : '<span class="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600 flex-shrink-0"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Resolved</span>'
                                         ) +
                                     '</div>' +
-<<<<<<< HEAD
-                                    (n.status !== 'resolved'
-                                        ? '<a href="' + window.escHtml(n.order_url || '/purchase-order/create') + '" class="px-2.5 py-1 rounded bg-theme-primary text-[11px] font-semibold transition-colors flex-shrink-0" onclick="event.stopPropagation();">Order</a>'
-                                        : '<span class="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600 flex-shrink-0"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Resolved</span>'
-                                    ) +
-=======
->>>>>>> 034901bc2bc12049012582d501965e9369ce4b9e
                                 '</div>' +
                             '</div>';
 
