@@ -24,12 +24,13 @@ return new class extends Migration
                     $mainShop = DB::table('warehouses')->where('id', $duplicateShop->id)->first();
                 } else {
                     if (Schema::hasTable('warehouse_shelves')) {
+                        $updateData = ['warehouse_id' => $mainShop->id];
+                        if (Schema::hasColumn('warehouse_shelves', 'warehouse_code')) {
+                            $updateData['warehouse_code'] = $mainShop->code ?? 'WH-SHOP';
+                        }
                         DB::table('warehouse_shelves')
                             ->where('warehouse_id', $duplicateShop->id)
-                            ->update([
-                                'warehouse_id' => $mainShop->id,
-                                'warehouse_code' => $mainShop->code ?? 'WH-SHOP',
-                            ]);
+                            ->update($updateData);
                     }
                     DB::table('warehouses')->where('id', $duplicateShop->id)->delete();
                 }
