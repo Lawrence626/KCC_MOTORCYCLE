@@ -13,7 +13,6 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/js/login.js',
                 'resources/js/dashboard.js',
-                'resources/js/allstocks.js',
                 'resources/js/monitoring.js',
                 'resources/js/pos_terminal.js',
                 'resources/js/product-categorization.js',

@@ -52,7 +52,7 @@
     "src": "_instrument-sans-600-normal-DMks36a2.woff"
   },
   "resources/css/app.css": {
-    "file": "assets/app-Bk7OxbLf.css",
+    "file": "assets/app-CwvN1CD_.css",
     "name": "app",
     "names": [
       "app.css"
@@ -78,12 +78,6 @@
     "src": "resources/css/sidebar.css",
     "isEntry": true
   },
-  "resources/js/allstocks.js": {
-    "file": "assets/allstocks-tptjzPsw.js",
-    "name": "allstocks",
-    "src": "resources/js/allstocks.js",
-    "isEntry": true
-  },
   "resources/js/app.js": {
     "file": "assets/app-i7TGNs2p.js",
     "name": "app",
@@ -103,7 +97,7 @@
     "isEntry": true
   },
   "resources/js/monitoring.js": {
-    "file": "assets/monitoring-C1EQBGS6.js",
+    "file": "assets/monitoring-BV_5ERdh.js",
     "name": "monitoring",
     "src": "resources/js/monitoring.js",
     "isEntry": true

@@ -24,7 +24,7 @@
         $breadcrumbItems[] = ['name' => 'Inventory Monitoring', 'url' => null, 'active' => true];
     } elseif ($currentRoute === 'allstocks') {
         $breadcrumbItems[] = ['name' => 'Inventory Management', 'url' => route('inventory.monitoring'), 'active' => false];
-        $breadcrumbItems[] = ['name' => 'All Stocks', 'url' => null, 'active' => true];
+        $breadcrumbItems[] = ['name' => 'Inventory Monitoring', 'url' => null, 'active' => true];
     } elseif ($currentRoute === 'product.categorization') {
         $breadcrumbItems[] = ['name' => 'Inventory Management', 'url' => route('inventory.monitoring'), 'active' => false];
         $breadcrumbItems[] = ['name' => 'Product Categorization', 'url' => null, 'active' => true];
@@ -36,7 +36,7 @@
         $breadcrumbItems[] = ['name' => 'Reverse Logistics', 'url' => null, 'active' => true];
     } elseif ($currentRoute === 'archived') {
         $breadcrumbItems[] = ['name' => 'Inventory Management', 'url' => route('inventory.monitoring'), 'active' => false];
-        $breadcrumbItems[] = ['name' => 'All Stocks', 'url' => route('allstocks'), 'active' => false];
+        $breadcrumbItems[] = ['name' => 'Inventory Monitoring', 'url' => route('inventory.monitoring'), 'active' => false];
         $breadcrumbItems[] = ['name' => 'Archived Items', 'url' => null, 'active' => true];
     } elseif ($currentRoute === 'pos.archived') {
         $breadcrumbItems[] = ['name' => 'Point of Sales', 'url' => route('pos.terminal'), 'active' => false];

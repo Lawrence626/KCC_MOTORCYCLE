@@ -64,11 +64,8 @@
                 </svg>
             </button>
             <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-[#6EC1D1]/40 space-y-0.5 mt-1">
-                <a href="{{ route('inventory.monitoring') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('inventory.monitoring'), 'text-slate-400' => !request()->routeIs('inventory.monitoring')])>
+                <a href="{{ route('inventory.monitoring') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('inventory.monitoring') || request()->routeIs('allstocks') || request()->routeIs('archived'), 'text-slate-400' => !(request()->routeIs('inventory.monitoring') || request()->routeIs('allstocks') || request()->routeIs('archived'))])>
                     <span>Inventory Monitoring</span>
-                </a>
-                <a href="{{ route('allstocks') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('allstocks') || request()->routeIs('archived'), 'text-slate-400' => !(request()->routeIs('allstocks') || request()->routeIs('archived'))])>
-                    <span>All Stocks</span>
                 </a>
                 <a href="{{ route('product.categorization') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('product.categorization') || request()->routeIs('product-catalog.*') || request()->is('product-catalog*'), 'text-slate-400' => !(request()->routeIs('product.categorization') || request()->routeIs('product-catalog.*') || request()->is('product-catalog*'))])>
                     <span>Product Categorization</span>
@@ -111,14 +108,9 @@
                 </svg>
             </button>
             <div class="sidebar-group-content flyout-animated overflow-hidden ml-6 pl-4 border-l-2 border-[#6EC1D1]/40 space-y-0.5 mt-1">
-                <a href="{{ route('inventory.monitoring') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('inventory.monitoring'), 'text-slate-400' => !request()->routeIs('inventory.monitoring')])>
+                <a href="{{ route('inventory.monitoring') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('inventory.monitoring') || request()->routeIs('allstocks') || request()->routeIs('archived'), 'text-slate-400' => !(request()->routeIs('inventory.monitoring') || request()->routeIs('allstocks') || request()->routeIs('archived'))])>
                     <span>Inventory Monitoring</span>
                 </a>
-                @if(auth()->user()->role === 'warehouse_personnel')
-                <a href="{{ route('allstocks') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('allstocks') || request()->routeIs('archived'), 'text-slate-400' => !(request()->routeIs('allstocks') || request()->routeIs('archived'))])>
-                    <span>All Stocks</span>
-                </a>
-                @endif
                 <a href="{{ route('product.categorization') }}" @class(['sidebar-nav-item flex items-center py-2 text-sm font-medium transition w-full', 'text-[#6EC1D1] font-semibold' => request()->routeIs('product.categorization') || request()->routeIs('product-catalog.*') || request()->is('product-catalog*'), 'text-slate-400' => !(request()->routeIs('product.categorization') || request()->routeIs('product-catalog.*') || request()->is('product-catalog*'))])>
                     <span>Product Categorization</span>
                 </a>

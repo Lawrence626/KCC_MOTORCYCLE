@@ -173,7 +173,7 @@ Route::middleware(['auth'])->group(function () {
 
     // All Stocks - Admin, Inventory Clerk, Warehouse Personnel
     Route::middleware('role:admin,inventory_clerk,warehouse_personnel')->group(function () {
-        Route::view('all-stocks', 'inventory.allstocks')->name('allstocks');
+        Route::redirect('all-stocks', '/inventory/monitoring')->name('allstocks');
         Route::view('archived-items', 'inventory.archived')->name('archived');
         Route::post('stock/import', [App\Http\Controllers\StockImportController::class, 'import'])->name('stock.import');
         Route::post('stock/add', [App\Http\Controllers\StockImportController::class, 'addStock'])->name('stock.add');
