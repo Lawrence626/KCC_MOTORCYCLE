@@ -785,15 +785,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
         const rootStyles = getComputedStyle(document.documentElement);
         const salesChartAccent = rootStyles.getPropertyValue('--primary-color').trim() || SALES_CHART_CYAN;
-        const salesChartAccentRgb = rootStyles.getPropertyValue('--primary-color-rgb').trim() || '110, 193, 209';
         const isDarkTheme = document.documentElement.classList.contains('dark');
         const chartGridColor = isDarkTheme ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)';
         const chartTickColor = isDarkTheme ? '#b5b7bc' : '#374151';
-
-        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        gradient.addColorStop(0, `rgba(${salesChartAccentRgb}, ${isDarkTheme ? 0.32 : 0.65})`);
-        gradient.addColorStop(0.5, `rgba(${salesChartAccentRgb}, ${isDarkTheme ? 0.16 : 0.35})`);
-        gradient.addColorStop(1, `rgba(${salesChartAccentRgb}, ${isDarkTheme ? 0.02 : 0.08})`);
 
         window.dashboardSalesChart = new Chart(ctx, {
             type: 'line',
@@ -804,20 +798,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     label: 'Revenue',
                     data: chartData.values,
                     borderColor: salesChartAccent,
-                    backgroundColor: gradient,
+                    backgroundColor: 'transparent',
                     borderWidth: 2.5,
-                    fill: true,
-                    // Mas mataas na tension para sa makinis/mountain-like na
-                    // curve, gaya ng reference image (rounded peaks/valleys,
-                    // walang matulis na sulok).
-                    tension: 0.55,
+                    fill: false,
+                    tension: 0.4,
                     cubicInterpolationMode: 'monotone',
-                    pointRadius: 0,
-                    pointHoverRadius: 5,
-                    pointBackgroundColor: salesChartAccent,
-                    pointHoverBackgroundColor: salesChartAccent,
-                    pointHoverBorderColor: isDarkTheme ? '#202124' : '#ffffff',
-                    pointHoverBorderWidth: 2,
+                    pointRadius: 4.5,
+                    pointBackgroundColor: isDarkTheme ? '#202124' : '#ffffff',
+                    pointBorderColor: salesChartAccent,
+                    pointBorderWidth: 2.5,
+                    pointHoverRadius: 6.5,
+                    pointHoverBackgroundColor: isDarkTheme ? '#202124' : '#ffffff',
+                    pointHoverBorderColor: salesChartAccent,
+                    pointHoverBorderWidth: 3,
+                    pointHitRadius: 10,
                 }],
             },
             options: {

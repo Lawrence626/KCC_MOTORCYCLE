@@ -1079,18 +1079,6 @@
                 return localData;
             })();
 
-            let trendGradient = null;
-            if (salesTrendCtx && salesTrendCtx.getContext) {
-                const ctx2d = salesTrendCtx.getContext('2d');
-                if (ctx2d) {
-                    const h = salesTrendCtx.height || salesTrendCtx.clientHeight || 300;
-                    trendGradient = ctx2d.createLinearGradient(0, 0, 0, h);
-                    trendGradient.addColorStop(0, 'rgba(110, 193, 209, 0.65)');
-                    trendGradient.addColorStop(0.5, 'rgba(110, 193, 209, 0.35)');
-                    trendGradient.addColorStop(1, 'rgba(110, 193, 209, 0.08)');
-                }
-            }
-
             const salesTrendChartConfig = {
                 type: 'line',
                 data: {
@@ -1099,17 +1087,20 @@
                         label: 'Revenue',
                         data: salesTrendData.monthly.values,
                         borderColor: '#6EC1D1',
-                        backgroundColor: trendGradient || 'rgba(110, 193, 209, 0.25)',
+                        backgroundColor: 'transparent',
                         borderWidth: 2.5,
-                        fill: true,
-                        tension: 0.55,
+                        fill: false,
+                        tension: 0.4,
                         cubicInterpolationMode: 'monotone',
-                        pointRadius: 0,
-                        pointHoverRadius: 5,
-                        pointBackgroundColor: '#6EC1D1',
-                        pointHoverBackgroundColor: '#6EC1D1',
-                        pointHoverBorderColor: '#ffffff',
-                        pointHoverBorderWidth: 2,
+                        pointRadius: 4.5,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#6EC1D1',
+                        pointBorderWidth: 2.5,
+                        pointHoverRadius: 6.5,
+                        pointHoverBackgroundColor: '#ffffff',
+                        pointHoverBorderColor: '#6EC1D1',
+                        pointHoverBorderWidth: 3,
+                        pointHitRadius: 10,
                     }]
                 },
                 options: {
