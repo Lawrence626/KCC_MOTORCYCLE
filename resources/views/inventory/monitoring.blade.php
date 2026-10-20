@@ -1,3 +1,17 @@
+@php
+    $activeSuppliersList = \App\Models\Supplier::orderBy('name')
+        ->where(function ($query) {
+            $query->where('status', 'active')->orWhereNull('status');
+        })
+        ->get(['id', 'name']);
+    if ($activeSuppliersList->isEmpty()) {
+        $activeSuppliersList = \App\Models\Supplier::orderBy('name')->get(['id', 'name']);
+    }
+    $activeCategoriesList = \App\Models\ProductDescription::where('is_active', true)
+        ->orderBy('name')
+        ->get(['id', 'name', 'brands']);
+@endphp
+
 <x-layouts.app :title="__('Inventory Monitoring')">
     <style>
         .dashboard-card { transition: all 0.3s ease; }
@@ -151,13 +165,11 @@
                         </button>
                         <div id="categoryFilterDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[999] mt-2 w-56 max-h-60 overflow-y-auto rounded-[12px] border border-slate-200 bg-white shadow-xl p-3 space-y-1">
                             <button type="button" onclick="selectDropdownOption('categoryFilter', '', 'All Categories', 'categoryFilterDropdown', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">All Categories</button>
-                            <button type="button" onclick="selectDropdownOption('categoryFilter', 'Exhaust', 'Exhaust', 'categoryFilterDropdown', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Exhaust</button>
-                            <button type="button" onclick="selectDropdownOption('categoryFilter', 'Helmets', 'Helmets', 'categoryFilterDropdown', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Helmets</button>
-                            <button type="button" onclick="selectDropdownOption('categoryFilter', 'Tires', 'Tires', 'categoryFilterDropdown', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Tires</button>
-                            <button type="button" onclick="selectDropdownOption('categoryFilter', 'Brakes', 'Brakes', 'categoryFilterDropdown', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Brakes</button>
-                            <button type="button" onclick="selectDropdownOption('categoryFilter', 'Oils', 'Oils', 'categoryFilterDropdown', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Oils</button>
-                            <button type="button" onclick="selectDropdownOption('categoryFilter', 'Batteries', 'Batteries', 'categoryFilterDropdown', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Batteries</button>
-                            <button type="button" onclick="selectDropdownOption('categoryFilter', 'Accessories', 'Accessories', 'categoryFilterDropdown', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Accessories</button>
+                            @if(isset($activeCategoriesList) && $activeCategoriesList->isNotEmpty())
+                                @foreach($activeCategoriesList as $cat)
+                                    <button type="button" onclick="selectDropdownOption('categoryFilter', '{{ addslashes($cat->name) }}', '{{ addslashes($cat->name) }}', 'categoryFilterDropdown', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">{{ $cat->name }}</button>
+                                @endforeach
+                            @endif
                         </div>
                     </div>
 
@@ -582,13 +594,11 @@
                             </button>
                             <div id="editCategoryDropdown" class="dropdown-menu hidden absolute top-full left-0 z-[100] mt-1 w-full rounded-[10px] border border-slate-300 bg-white shadow-xl p-1.5 max-h-[200px] overflow-y-auto">
                                 <button type="button" onclick="selectDropdownOption('editCategory', '', 'Select category', 'editCategoryDropdown', event)" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Select category</button>
-                                <button type="button" onclick="selectDropdownOption('editCategory', 'Exhaust', 'Exhaust', 'editCategoryDropdown', event)" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Exhaust</button>
-                                <button type="button" onclick="selectDropdownOption('editCategory', 'Helmets', 'Helmets', 'editCategoryDropdown', event)" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Helmets</button>
-                                <button type="button" onclick="selectDropdownOption('editCategory', 'Tires', 'Tires', 'editCategoryDropdown', event)" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Tires</button>
-                                <button type="button" onclick="selectDropdownOption('editCategory', 'Brakes', 'Brakes', 'editCategoryDropdown', event)" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Brakes</button>
-                                <button type="button" onclick="selectDropdownOption('editCategory', 'Oils', 'Oils', 'editCategoryDropdown', event)" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Oils</button>
-                                <button type="button" onclick="selectDropdownOption('editCategory', 'Batteries', 'Batteries', 'editCategoryDropdown', event)" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Batteries</button>
-                                <button type="button" onclick="selectDropdownOption('editCategory', 'Accessories', 'Accessories', 'editCategoryDropdown', event)" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">Accessories</button>
+                                @if(isset($activeCategoriesList) && $activeCategoriesList->isNotEmpty())
+                                    @foreach($activeCategoriesList as $cat)
+                                        <button type="button" onclick="selectDropdownOption('editCategory', '{{ addslashes($cat->name) }}', '{{ addslashes($cat->name) }}', 'editCategoryDropdown', event)" class="w-full px-3 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[8px]">{{ $cat->name }}</button>
+                                    @endforeach
+                                @endif
                             </div>
                         </div>
                         <div class="space-y-1">
@@ -801,20 +811,11 @@
         </div>
     </div>
 
-    @php
-        $activeSuppliersList = \App\Models\Supplier::orderBy('name')
-            ->where(function ($query) {
-                $query->where('status', 'active')->orWhereNull('status');
-            })
-            ->get(['id', 'name']);
-        if ($activeSuppliersList->isEmpty()) {
-            $activeSuppliersList = \App\Models\Supplier::orderBy('name')->get(['id', 'name']);
-        }
-    @endphp
 
     <script>
         window.AllStocks = {
             suppliers: @json($activeSuppliersList),
+            categories: @json($activeCategoriesList),
             routes: {
                 apiProducts: '{{ route("api.products") }}',
                 apiProductShowBase: '{{ url("api/products") }}',

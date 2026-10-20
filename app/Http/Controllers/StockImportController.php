@@ -478,8 +478,63 @@ class StockImportController extends Controller
         // Apply category filter
         if ($request->filled('category')) {
             $category = trim($request->input('category'));
-            $standardCategory = \App\Services\SalesCategoryService::mapToPredefinedCategory($category);
-            $query->where('category', $standardCategory);
+
+            // Look up associated brands from ProductDescription if any
+            $categoryDesc = \App\Models\ProductDescription::where('name', $category)->first();
+            $categoryBrands = ($categoryDesc && is_array($categoryDesc->brands)) ? array_filter($categoryDesc->brands) : [];
+
+            // Define specific category aliases
+            $categoryAliases = [
+                'exhaust' => ['pipe', 'exhaust', 'muffler', 'silencer'],
+                'helmets' => ['helmet', 'helmets'],
+                'tires' => ['tire', 'tires', 'fdr'],
+                'brakes' => ['brake', 'brakes', 'caliper', 'disc'],
+                'engine oil' => ['engine oil', 'oil', '4t'],
+                'oils' => ['oil', 'oils', 'lubricant'],
+                'batteries' => ['battery', 'batteries'],
+            ];
+
+            $catLower = strtolower($category);
+            $aliases = $categoryAliases[$catLower] ?? [];
+
+            $query->where(function ($q) use ($category, $catLower, $aliases, $categoryBrands) {
+                $q->where('category', $category)
+                  ->orWhere('product_name', $category)
+                  ->orWhere('product_name', 'like', "%{$category}%")
+                  ->orWhere('description', 'like', "%{$category}%")
+                  ->orWhere('name', 'like', "%{$category}%")
+                  ->orWhereHas('productCatalog', function ($catQ) use ($category) {
+                      $catQ->where('product_description', $category)
+                           ->orWhere('product_description', 'like', "%{$category}%");
+                  });
+
+                // Match known aliases (e.g. 'pipe' for 'exhaust', 'oil' for 'engine oil')
+                if (!empty($aliases)) {
+                    foreach ($aliases as $alias) {
+                        $q->orWhere('product_name', 'like', "%{$alias}%")
+                          ->orWhere('category', 'like', "%{$alias}%")
+                          ->orWhere('description', 'like', "%{$alias}%");
+                    }
+                }
+
+                // If this category has associated brands, also match products with those brands that fit category keywords
+                if (!empty($categoryBrands)) {
+                    $q->orWhere(function ($brandQ) use ($categoryBrands, $category) {
+                        $brandQ->whereIn('brand', $categoryBrands);
+                        $words = array_filter(explode(' ', strtolower($category)), fn($w) => strlen($w) > 2);
+                        if (!empty($words)) {
+                            $brandQ->where(function ($wordQ) use ($words) {
+                                foreach ($words as $word) {
+                                    $wordQ->orWhere('product_name', 'like', "%{$word}%")
+                                          ->orWhere('name', 'like', "%{$word}%")
+                                          ->orWhere('description', 'like', "%{$word}%")
+                                          ->orWhere('category', 'like', "%{$word}%");
+                                }
+                            });
+                        }
+                    });
+                }
+            });
         }
 
         // Apply warehouse location filter
@@ -551,6 +606,7 @@ class StockImportController extends Controller
             $productName = trim($request->input('product_name'));
             $query->where(function($q) use ($productName) {
                 $q->where('product_name', $productName)
+                  ->orWhere('name', $productName)
                   ->orWhere('name', 'like', "%{$productName}%")
                   ->orWhere('description', 'like', "%{$productName}%");
             });

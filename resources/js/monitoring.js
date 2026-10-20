@@ -519,90 +519,247 @@ async function loadProductsForSelect() {
     }
 }
 
-// Load filter options (Product Name, Brand, Size)
-async function loadFilterOptions() {
-    try {
-        let productNames = new Set();
-        let brands = new Set();
-        let sizes = new Set();
+// Helper: Check if a product belongs to a specific category description
+function productMatchesCategory(product, categoryName) {
+    if (!categoryName || categoryName === 'All' || categoryName === 'All Categories') return true;
+    if (!product) return false;
 
-        window.productNameToBrands = {};
+    const catLower = categoryName.trim().toLowerCase();
+    const pCat = String(product.category || '').trim().toLowerCase();
+    const pProdName = String(product.product_name || '').trim().toLowerCase();
+    const pName = String(product.name || '').trim().toLowerCase();
+    const pDesc = String(product.description || '').trim().toLowerCase();
+    const pCatalogDesc = String(product.product_catalog?.product_description || product.product_description || '').trim().toLowerCase();
+    const pCompatibility = String(product.compatibility || '').trim().toLowerCase();
+    const pSku = String(product.sku || '').trim().toLowerCase();
 
-        if (window.AllStocks?.routes?.apiProductDescriptions) {
-            try {
-                const descriptionsResponse = await fetch(window.AllStocks.routes.apiProductDescriptions);
-                const descriptionsResult = await descriptionsResponse.json();
-                if (descriptionsResult && Array.isArray(descriptionsResult)) {
-                    descriptionsResult.forEach(description => {
-                        if (description.name) {
-                            window.productNameToBrands[description.name] = new Set(description.brands || []);
-                            (description.brands || []).forEach(brand => { if (brand) brands.add(brand); });
-                            productNames.add(description.name);
-                        }
-                    });
-                }
-            } catch (e) {
-                console.warn('Could not load product descriptions:', e);
+    // 1. Exact equality checks
+    if (pCat === catLower || pProdName === catLower || pName === catLower || pCatalogDesc === catLower) {
+        return true;
+    }
+
+    // 2. Direct string containment
+    if (pProdName.includes(catLower) || (pProdName.length > 2 && catLower.includes(pProdName))) {
+        return true;
+    }
+    if (pDesc.includes(catLower) || pCatalogDesc.includes(catLower)) {
+        return true;
+    }
+    if (pName.includes(catLower) || pCompatibility.includes(catLower) || pSku.includes(catLower)) {
+        return true;
+    }
+
+    // 3. Category aliases and synonyms
+    const categoryAliases = {
+        'exhaust': ['pipe', 'exhaust', 'muffler', 'silencer'],
+        'helmets': ['helmet', 'helmets'],
+        'tires': ['tire', 'tires', 'fdr'],
+        'brakes': ['brake', 'brakes', 'caliper', 'disc'],
+        'oils': ['oil', 'oils', 'lubricant'],
+        'engine oil': ['engine oil', 'oil', '4t', 'gear oil'],
+        'batteries': ['battery', 'batteries']
+    };
+
+    if (categoryAliases[catLower]) {
+        const aliases = categoryAliases[catLower];
+        const matchesAlias = aliases.some(alias => 
+            pProdName.includes(alias) || pCat.includes(alias) || pDesc.includes(alias) || pName.includes(alias)
+        );
+        if (matchesAlias) return true;
+    }
+
+    // 4. Product description brands matching
+    const catObj = window.categoryDescriptionsMap
+        ? (window.categoryDescriptionsMap[categoryName] || window.categoryDescriptionsMap[catLower])
+        : null;
+
+    if (catObj && Array.isArray(catObj.brands) && catObj.brands.length > 0) {
+        const pBrand = String(product.brand || '').trim().toLowerCase();
+        const catBrands = catObj.brands.map(b => String(b).trim().toLowerCase());
+        if (pBrand && catBrands.includes(pBrand)) {
+            const words = catLower.split(/[\s\-_]+/).filter(w => w.length > 2);
+            if (words.length === 0) return true;
+            const matchesWord = words.some(w => 
+                pProdName.includes(w) || pName.includes(w) || pDesc.includes(w) || pCat.includes(w) || pCompatibility.includes(w)
+            );
+            if (matchesWord) return true;
+        }
+    }
+
+    return false;
+}
+
+// Update dependent filter dropdowns (Product Name & Brand) based on selected category & product
+function updateDependentFilterDropdowns(selectedCategory, selectedProductName) {
+    selectedCategory = selectedCategory !== undefined ? selectedCategory : (currentFilters.category || '');
+    selectedProductName = selectedProductName !== undefined ? selectedProductName : (currentFilters.product_name || '');
+
+    const productNameDropdown = document.getElementById('productNameFilterDropdown');
+    const brandDropdown = document.getElementById('brandFilterDropdown');
+
+    // 1. Determine products matching the selected category
+    let matchingProducts = window.allInventoryProducts || [];
+    if (selectedCategory && selectedCategory !== 'All' && selectedCategory !== 'All Categories') {
+        matchingProducts = matchingProducts.filter(p => productMatchesCategory(p, selectedCategory));
+    }
+
+    // 2. Populate Product Name dropdown
+    if (productNameDropdown) {
+        const productNames = new Set();
+        matchingProducts.forEach(product => {
+            const pName = String(product.name || '').trim();
+            const pProdName = String(product.product_name || '').trim();
+            if (pName) productNames.add(pName);
+            if (pProdName) productNames.add(pProdName);
+        });
+
+        productNameDropdown.innerHTML = '';
+        const defaultProdBtn = document.createElement('button');
+        defaultProdBtn.type = 'button';
+        defaultProdBtn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition cursor-pointer';
+        defaultProdBtn.textContent = 'All Products';
+        defaultProdBtn.onclick = (e) => selectDropdownOption('productNameFilter', '', 'All Products', 'productNameFilterDropdown', e);
+        productNameDropdown.appendChild(defaultProdBtn);
+
+        Array.from(productNames).sort((a, b) => a.localeCompare(b)).forEach(name => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition cursor-pointer';
+            btn.textContent = name;
+            btn.onclick = (e) => selectDropdownOption('productNameFilter', name, name, 'productNameFilterDropdown', e);
+            productNameDropdown.appendChild(btn);
+        });
+    }
+
+    // 3. Determine brands matching the selected category (and optionally selected product)
+    let matchingForBrand = matchingProducts;
+    if (selectedProductName && selectedProductName !== 'All' && selectedProductName !== 'All Products') {
+        const prodLower = selectedProductName.trim().toLowerCase();
+        matchingForBrand = matchingForBrand.filter(p => {
+            const pName = String(p.name || '').trim().toLowerCase();
+            const pProdName = String(p.product_name || '').trim().toLowerCase();
+            return pName === prodLower || pProdName === prodLower;
+        });
+    }
+
+    if (brandDropdown) {
+        const brands = new Set();
+
+        // Include predefined brands from ProductDescription for the selected category
+        if (selectedCategory && selectedCategory !== 'All' && selectedCategory !== 'All Categories') {
+            const catObj = window.categoryDescriptionsMap
+                ? (window.categoryDescriptionsMap[selectedCategory] || window.categoryDescriptionsMap[selectedCategory.toLowerCase()])
+                : null;
+            if (catObj && Array.isArray(catObj.brands)) {
+                catObj.brands.forEach(b => {
+                    if (b && String(b).trim()) brands.add(String(b).trim());
+                });
             }
         }
 
+        // Add brands found on the matching products
+        matchingForBrand.forEach(p => {
+            if (p.brand && String(p.brand).trim()) {
+                brands.add(String(p.brand).trim());
+            }
+        });
+
+        // Fallback: If no category and no product is selected, display all brands
+        if (!selectedCategory && !selectedProductName && window.allAvailableBrands) {
+            window.allAvailableBrands.forEach(b => brands.add(b));
+        }
+
+        brandDropdown.innerHTML = '';
+        const defaultBrandBtn = document.createElement('button');
+        defaultBrandBtn.type = 'button';
+        defaultBrandBtn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition cursor-pointer';
+        defaultBrandBtn.textContent = 'All Brands';
+        defaultBrandBtn.onclick = (e) => selectDropdownOption('brandFilter', '', 'All Brands', 'brandFilterDropdown', e);
+        brandDropdown.appendChild(defaultBrandBtn);
+
+        Array.from(brands).sort((a, b) => a.localeCompare(b)).forEach(brand => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition cursor-pointer';
+            btn.textContent = brand;
+            btn.onclick = (e) => selectDropdownOption('brandFilter', brand, brand, 'brandFilterDropdown', e);
+            brandDropdown.appendChild(btn);
+        });
+    }
+}
+
+// Load filter options (Category, Product Name, Brand, Size)
+async function loadFilterOptions() {
+    try {
+        window.allCategories = [];
+        window.categoryDescriptionsMap = {};
+
+        // 1. Load category descriptions (from window.AllStocks or API)
+        let descriptions = Array.isArray(window.AllStocks?.categories) ? window.AllStocks.categories : [];
+        if (descriptions.length === 0 && (window.AllStocks?.routes?.apiProductDescriptions || true)) {
+            try {
+                const descUrl = window.AllStocks?.routes?.apiProductDescriptions || '/api/product-descriptions';
+                const descRes = await fetch(descUrl);
+                if (descRes.ok) {
+                    const descJson = await descRes.json();
+                    if (Array.isArray(descJson)) descriptions = descJson;
+                }
+            } catch (e) {
+                console.warn('Could not fetch product descriptions:', e);
+            }
+        }
+
+        descriptions.forEach(desc => {
+            if (desc && desc.name) {
+                window.allCategories.push(desc);
+                window.categoryDescriptionsMap[desc.name] = desc;
+                window.categoryDescriptionsMap[desc.name.toLowerCase()] = desc;
+            }
+        });
+
+        // Populate Category Filter dropdown with POS categories
+        const categoryDropdown = document.getElementById('categoryFilterDropdown');
+        if (categoryDropdown) {
+            categoryDropdown.innerHTML = '';
+            const defaultCatBtn = document.createElement('button');
+            defaultCatBtn.type = 'button';
+            defaultCatBtn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition cursor-pointer';
+            defaultCatBtn.textContent = 'All Categories';
+            defaultCatBtn.onclick = (e) => selectDropdownOption('categoryFilter', '', 'All Categories', 'categoryFilterDropdown', e);
+            categoryDropdown.appendChild(defaultCatBtn);
+
+            window.allCategories.sort((a, b) => a.name.localeCompare(b.name)).forEach(cat => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition cursor-pointer';
+                btn.textContent = cat.name;
+                btn.onclick = (e) => selectDropdownOption('categoryFilter', cat.name, cat.name, 'categoryFilterDropdown', e);
+                categoryDropdown.appendChild(btn);
+            });
+        }
+
+        // 2. Fetch all products to index brands and compatibility names
         const productsResponse = await fetch(window.AllStocks.routes.apiProducts + '?per_page=1000');
         const productsResult = await productsResponse.json();
+        window.allInventoryProducts = productsResult.data || [];
 
-        if (productsResult.data && productsResult.data.length > 0) {
-            productsResult.data.forEach(product => {
-                if (product.size) sizes.add(product.size);
-                if (product.brand) brands.add(product.brand);
-                const name = product.product_name || product.name;
-                if (name) productNames.add(name);
+        let brandsSet = new Set();
+        let sizesSet = new Set();
+
+        window.allInventoryProducts.forEach(product => {
+            if (product.size && String(product.size).trim()) sizesSet.add(String(product.size).trim());
+            if (product.brand && String(product.brand).trim()) brandsSet.add(String(product.brand).trim());
+        });
+
+        window.allCategories.forEach(cat => {
+            (cat.brands || []).forEach(b => {
+                if (b && String(b).trim()) brandsSet.add(String(b).trim());
             });
-        }
+        });
 
-        window.allAvailableBrands = Array.from(brands);
+        window.allAvailableBrands = Array.from(brandsSet).sort();
 
-        // Populate Product Name dropdown
-        const productNameDropdown = document.getElementById('productNameFilterDropdown');
-        if (productNameDropdown) {
-            productNameDropdown.innerHTML = '';
-            const defaultBtn = document.createElement('button');
-            defaultBtn.type = 'button';
-            defaultBtn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition cursor-pointer';
-            defaultBtn.textContent = 'All Products';
-            defaultBtn.onclick = (e) => selectDropdownOption('productNameFilter', '', 'All Products', 'productNameFilterDropdown', e);
-            productNameDropdown.appendChild(defaultBtn);
-
-            Array.from(productNames).sort().forEach(name => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition cursor-pointer';
-                btn.textContent = name;
-                btn.onclick = (e) => selectDropdownOption('productNameFilter', name, name, 'productNameFilterDropdown', e);
-                productNameDropdown.appendChild(btn);
-            });
-        }
-
-        // Populate Brand dropdown
-        const brandDropdown = document.getElementById('brandFilterDropdown');
-        if (brandDropdown) {
-            brandDropdown.innerHTML = '';
-            const defaultBtn = document.createElement('button');
-            defaultBtn.type = 'button';
-            defaultBtn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition cursor-pointer';
-            defaultBtn.textContent = 'All Brands';
-            defaultBtn.onclick = (e) => selectDropdownOption('brandFilter', '', 'All Brands', 'brandFilterDropdown', e);
-            brandDropdown.appendChild(defaultBtn);
-
-            Array.from(brands).sort().forEach(brand => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition cursor-pointer';
-                btn.textContent = brand;
-                btn.onclick = (e) => selectDropdownOption('brandFilter', brand, brand, 'brandFilterDropdown', e);
-                brandDropdown.appendChild(btn);
-            });
-        }
-
-        // Populate Size dropdown
+        // 3. Populate Size dropdown
         const sizeDropdown = document.getElementById('sizeFilterDropdown');
         if (sizeDropdown) {
             sizeDropdown.innerHTML = '';
@@ -613,7 +770,7 @@ async function loadFilterOptions() {
             defaultBtn.onclick = (e) => selectDropdownOption('sizeFilter', '', 'All Sizes', 'sizeFilterDropdown', e);
             sizeDropdown.appendChild(defaultBtn);
 
-            Array.from(sizes).sort().forEach(size => {
+            Array.from(sizesSet).sort().forEach(size => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition cursor-pointer';
@@ -622,44 +779,11 @@ async function loadFilterOptions() {
                 sizeDropdown.appendChild(btn);
             });
         }
+
+        // 4. Initialize dependent Product Name & Brand dropdowns
+        updateDependentFilterDropdowns(currentFilters.category, currentFilters.product_name);
     } catch (error) {
         console.error('Error loading filter options:', error);
-    }
-}
-
-function updateBrandDropdown() {
-    const productNameFilter = document.getElementById('productNameFilter');
-    const brandDropdown = document.getElementById('brandFilterDropdown');
-
-    if (!brandDropdown) return;
-
-    const selectedProductName = productNameFilter ? productNameFilter.value : '';
-    let brandsToShow = [];
-
-    if (selectedProductName && window.productNameToBrands && window.productNameToBrands[selectedProductName] && window.productNameToBrands[selectedProductName].size > 0) {
-        brandsToShow = Array.from(window.productNameToBrands[selectedProductName]);
-    } else if (window.allAvailableBrands && window.allAvailableBrands.length > 0) {
-        brandsToShow = Array.from(window.allAvailableBrands);
-    }
-
-    if (brandsToShow.length > 0) {
-        brandDropdown.innerHTML = '';
-
-        const defaultBtn = document.createElement('button');
-        defaultBtn.type = 'button';
-        defaultBtn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition cursor-pointer';
-        defaultBtn.textContent = 'All Brands';
-        defaultBtn.onclick = (e) => selectDropdownOption('brandFilter', '', 'All Brands', 'brandFilterDropdown', e);
-        brandDropdown.appendChild(defaultBtn);
-
-        brandsToShow.sort().forEach(brand => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition cursor-pointer';
-            btn.textContent = brand;
-            btn.onclick = (e) => selectDropdownOption('brandFilter', brand, brand, 'brandFilterDropdown', e);
-            brandDropdown.appendChild(btn);
-        });
     }
 }
 
@@ -710,6 +834,7 @@ function resetFilters() {
         restock_date: ''
     };
 
+    updateDependentFilterDropdowns('', '');
     currentPage = 1;
     loadProducts(1);
 }
@@ -731,24 +856,64 @@ function attachUIEvents() {
     if (warehouseEl) warehouseEl.addEventListener('change', function (e) { currentFilters.warehouse = e.target.value; performSearch(); });
 
     const categoryEl = document.getElementById('categoryFilter');
-    if (categoryEl) categoryEl.addEventListener('change', function (e) { currentFilters.category = e.target.value; performSearch(); });
+    if (categoryEl) {
+        categoryEl.addEventListener('change', function (e) {
+            currentFilters.category = e.target.value;
+
+            // Reset child filters: product_name and brand
+            currentFilters.product_name = '';
+            currentFilters.brand = '';
+
+            const prodInput = document.getElementById('productNameFilter');
+            if (prodInput) {
+                prodInput.value = '';
+                const wrapper = prodInput.closest('[data-dropdown-wrapper]');
+                if (wrapper) {
+                    const span = wrapper.querySelector('button span');
+                    if (span) span.textContent = 'All Products';
+                }
+            }
+
+            const brandInput = document.getElementById('brandFilter');
+            if (brandInput) {
+                brandInput.value = '';
+                const wrapper = brandInput.closest('[data-dropdown-wrapper]');
+                if (wrapper) {
+                    const span = wrapper.querySelector('button span');
+                    if (span) span.textContent = 'All Brands';
+                }
+            }
+
+            // Update dependent dropdown options for the selected category
+            updateDependentFilterDropdowns(currentFilters.category, '');
+
+            performSearch();
+        });
+    }
 
     const productNameEl = document.getElementById('productNameFilter');
-    if (productNameEl) productNameEl.addEventListener('change', function (e) {
-        updateBrandDropdown();
-        currentFilters.product_name = e.target.value;
-        currentFilters.brand = '';
-        const brandInput = document.getElementById('brandFilter');
-        if (brandInput) {
-            brandInput.value = '';
-            const wrapper = brandInput.closest('[data-dropdown-wrapper]');
-            if (wrapper) {
-                const span = wrapper.querySelector('button span');
-                if (span) span.textContent = 'All Brands';
+    if (productNameEl) {
+        productNameEl.addEventListener('change', function (e) {
+            currentFilters.product_name = e.target.value;
+
+            // Reset brand filter
+            currentFilters.brand = '';
+            const brandInput = document.getElementById('brandFilter');
+            if (brandInput) {
+                brandInput.value = '';
+                const wrapper = brandInput.closest('[data-dropdown-wrapper]');
+                if (wrapper) {
+                    const span = wrapper.querySelector('button span');
+                    if (span) span.textContent = 'All Brands';
+                }
             }
-        }
-        performSearch();
-    });
+
+            // Narrow brand dropdown to the selected product within category
+            updateDependentFilterDropdowns(currentFilters.category, currentFilters.product_name);
+
+            performSearch();
+        });
+    }
 
     const brandEl = document.getElementById('brandFilter');
     if (brandEl) brandEl.addEventListener('change', function (e) { currentFilters.brand = e.target.value; performSearch(); });
