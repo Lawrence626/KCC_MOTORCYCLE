@@ -136,6 +136,7 @@
                             <button type="button" onclick="selectDropdownOption('warehouseFilter', 'Warehouse A', 'Warehouse A', 'warehouseFilterDropdown', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Warehouse A</button>
                             <button type="button" onclick="selectDropdownOption('warehouseFilter', 'Warehouse B', 'Warehouse B', 'warehouseFilterDropdown', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Warehouse B</button>
                             <button type="button" onclick="selectDropdownOption('warehouseFilter', 'Warehouse C', 'Warehouse C', 'warehouseFilterDropdown', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Warehouse C</button>
+                            <button type="button" onclick="selectDropdownOption('warehouseFilter', 'Warehouse D', 'Warehouse D', 'warehouseFilterDropdown', event)" class="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 rounded-[10px] transition">Warehouse D</button>
                         </div>
                     </div>
                     

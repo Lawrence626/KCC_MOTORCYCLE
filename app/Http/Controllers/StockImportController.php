@@ -363,12 +363,15 @@ class StockImportController extends Controller
 
         $activeWarehouseLocationsByProductId = [];
         $activeWarehouseLocationsBySku = [];
+        $nonShopShelvesProductIds = [];
+        $nonShopShelvesSkus = [];
 
         foreach ($activeShelves as $shelf) {
             $whName = $shelf->warehouse->name ?? null;
             if (!$whName) {
                 continue;
             }
+            $isShopShelf = (strcasecmp($whName, 'shop') === 0);
 
             $shelfProducts = is_string($shelf->products)
                 ? json_decode($shelf->products, true)
@@ -398,6 +401,9 @@ class StockImportController extends Controller
                     if (!in_array($whName, $activeWarehouseLocationsByProductId[$pId])) {
                         $activeWarehouseLocationsByProductId[$pId][] = $whName;
                     }
+                    if (!$isShopShelf) {
+                        $nonShopShelvesProductIds[] = $pId;
+                    }
                 }
 
                 if ($sku) {
@@ -407,9 +413,46 @@ class StockImportController extends Controller
                     if (!in_array($whName, $activeWarehouseLocationsBySku[$sku])) {
                         $activeWarehouseLocationsBySku[$sku][] = $whName;
                     }
+                    if (!$isShopShelf) {
+                        $nonShopShelvesSkus[] = $sku;
+                    }
                 }
             }
         }
+
+        // Fetch products that have stock in Shop (from ShopInventory and ProductWarehouseStock)
+        $shopInventoryProductIds = [];
+        try {
+            $shopInventoryProductIds = \App\Models\ShopInventory::where('quantity', '>', 0)
+                ->pluck('product_id')
+                ->filter()
+                ->unique()
+                ->toArray();
+        } catch (\Throwable $e) {}
+
+        $shopWarehouseStockProductIds = [];
+        try {
+            $shopWarehouseStockProductIds = \App\Models\ProductWarehouseStock::whereIn('warehouse', ['Shop', 'SHOP'])
+                ->where('quantity', '>', 0)
+                ->pluck('product_id')
+                ->filter()
+                ->unique()
+                ->toArray();
+        } catch (\Throwable $e) {}
+
+        $allShopProductIds = array_values(array_unique(array_merge(
+            $shopInventoryProductIds,
+            $shopWarehouseStockProductIds
+        )));
+
+        // Warehouse stocks for specific warehouses (Warehouse A, Warehouse B, etc.)
+        $warehouseStockProductIdsByWarehouse = [];
+        try {
+            $warehouseStocks = \App\Models\ProductWarehouseStock::where('quantity', '>', 0)->get();
+            foreach ($warehouseStocks as $ws) {
+                $warehouseStockProductIdsByWarehouse[$ws->warehouse][] = $ws->product_id;
+            }
+        } catch (\Throwable $e) {}
 
         $query = Product::with('warehouseStocks');
 
@@ -443,17 +486,36 @@ class StockImportController extends Controller
         if ($request->filled('warehouse')) {
             $warehouse = trim($request->input('warehouse'));
             if (strcasecmp($warehouse, 'shop') === 0) {
-                $warehouseProductIds = [];
-                foreach ($activeWarehouseLocationsByProductId as $pId => $whs) {
-                    if (!in_array('Shop', $whs) && !empty($whs)) {
-                        $warehouseProductIds[] = $pId;
+                $nonShopShelvesSkus = array_values(array_unique($nonShopShelvesSkus));
+                $nonShopShelvesProductIds = array_values(array_unique($nonShopShelvesProductIds));
+
+                $nonShopStockIds = [];
+                foreach ($warehouseStockProductIdsByWarehouse as $whName => $ids) {
+                    if (strcasecmp($whName, 'shop') !== 0) {
+                        $nonShopStockIds = array_merge($nonShopStockIds, $ids);
                     }
                 }
-                $query->where(function ($q) use ($warehouseProductIds) {
-                    $q->where('warehouse', 'Shop')
-                      ->orWhere('warehouse', 'SHOP')
-                      ->orWhereNull('warehouse')
-                      ->orWhereNotIn('id', $warehouseProductIds);
+                $nonShopProductIds = array_values(array_unique(array_merge($nonShopShelvesProductIds, $nonShopStockIds)));
+
+                $query->where(function ($q) use ($allShopProductIds, $nonShopProductIds, $nonShopShelvesSkus) {
+                    $q->whereIn('warehouse', ['Shop', 'SHOP']);
+
+                    if (!empty($allShopProductIds)) {
+                        $q->orWhereIn('id', $allShopProductIds);
+                    }
+
+                    // Include unassigned/default items only if they are NOT allocated to any other warehouse
+                    $q->orWhere(function ($subQ) use ($nonShopProductIds, $nonShopShelvesSkus) {
+                        $subQ->where(function ($wQ) {
+                            $wQ->whereNull('warehouse')->orWhere('warehouse', '');
+                        });
+                        if (!empty($nonShopProductIds)) {
+                            $subQ->whereNotIn('id', $nonShopProductIds);
+                        }
+                        if (!empty($nonShopShelvesSkus)) {
+                            $subQ->whereNotIn('sku', $nonShopShelvesSkus);
+                        }
+                    });
                 });
             } else {
                 $matchingProductIds = [];
@@ -468,11 +530,14 @@ class StockImportController extends Controller
                         $matchingSkus[] = $sku;
                     }
                 }
+                $matchingStockProductIds = $warehouseStockProductIdsByWarehouse[$warehouse] ?? [];
 
-                $query->where(function ($q) use ($warehouse, $matchingProductIds, $matchingSkus) {
+                $allMatchingIds = array_values(array_unique(array_merge($matchingProductIds, $matchingStockProductIds)));
+
+                $query->where(function ($q) use ($warehouse, $allMatchingIds, $matchingSkus) {
                     $q->where('warehouse', $warehouse);
-                    if (!empty($matchingProductIds)) {
-                        $q->orWhereIn('id', $matchingProductIds);
+                    if (!empty($allMatchingIds)) {
+                        $q->orWhereIn('id', $allMatchingIds);
                     }
                     if (!empty($matchingSkus)) {
                         $q->orWhereIn('sku', $matchingSkus);
@@ -543,32 +608,79 @@ class StockImportController extends Controller
 
         $products = $query->paginate($perPage, ['*'], 'page', $page);
 
-        $formattedProducts = collect($products->items())->map(function ($product) use ($activeWarehouseLocationsByProductId, $activeWarehouseLocationsBySku) {
+        $formattedProducts = collect($products->items())->map(function ($product) use (
+            $activeWarehouseLocationsByProductId,
+            $activeWarehouseLocationsBySku,
+            $allShopProductIds
+        ) {
             $productArray = $product->toArray();
-            
+
             $locations = [];
+
+            // Check active warehouse shelf locations
             if (isset($activeWarehouseLocationsByProductId[$product->id])) {
-                $locations = $activeWarehouseLocationsByProductId[$product->id];
-            } elseif (!empty($product->sku) && isset($activeWarehouseLocationsBySku[strtolower(trim($product->sku))])) {
-                $locations = $activeWarehouseLocationsBySku[strtolower(trim($product->sku))];
+                $locations = array_merge($locations, $activeWarehouseLocationsByProductId[$product->id]);
+            }
+            if (!empty($product->sku) && isset($activeWarehouseLocationsBySku[strtolower(trim($product->sku))])) {
+                $locations = array_merge($locations, $activeWarehouseLocationsBySku[strtolower(trim($product->sku))]);
             }
 
-            $productArray['warehouse_locations'] = array_values(array_unique($locations));
+            // Check if product has stock in Shop
+            $isInShop = in_array($product->id, $allShopProductIds)
+                || in_array(strtolower(trim($product->warehouse ?? '')), ['shop', 'main store']);
 
             // Map location quantities from warehouseStocks
             $productArray['shop_qty'] = 0;
             $productArray['warehouse_a_qty'] = 0;
             $productArray['warehouse_b_qty'] = 0;
             $productArray['warehouse_c_qty'] = 0;
-            
+
             if (isset($product->warehouseStocks)) {
                 foreach ($product->warehouseStocks as $stock) {
-                    if ($stock->warehouse === 'SHOP') $productArray['shop_qty'] = $stock->quantity;
-                    elseif ($stock->warehouse === 'Warehouse A') $productArray['warehouse_a_qty'] = $stock->quantity;
-                    elseif ($stock->warehouse === 'Warehouse B') $productArray['warehouse_b_qty'] = $stock->quantity;
-                    elseif ($stock->warehouse === 'Warehouse C') $productArray['warehouse_c_qty'] = $stock->quantity;
+                    $wh = trim($stock->warehouse ?? '');
+                    if (strcasecmp($wh, 'shop') === 0) {
+                        $productArray['shop_qty'] = (int) $stock->quantity;
+                        if ($stock->quantity > 0) {
+                            $locations[] = 'Shop';
+                            $isInShop = true;
+                        }
+                    } elseif ($wh === 'Warehouse A') {
+                        $productArray['warehouse_a_qty'] = (int) $stock->quantity;
+                        if ($stock->quantity > 0) {
+                            $locations[] = 'Warehouse A';
+                        }
+                    } elseif ($wh === 'Warehouse B') {
+                        $productArray['warehouse_b_qty'] = (int) $stock->quantity;
+                        if ($stock->quantity > 0) {
+                            $locations[] = 'Warehouse B';
+                        }
+                    } elseif ($wh === 'Warehouse C') {
+                        $productArray['warehouse_c_qty'] = (int) $stock->quantity;
+                        if ($stock->quantity > 0) {
+                            $locations[] = 'Warehouse C';
+                        }
+                    } elseif (!empty($wh) && $stock->quantity > 0) {
+                        $locations[] = $wh;
+                    }
                 }
             }
+
+            // If product has direct warehouse column set to non-shop
+            if (!empty($product->warehouse) && !in_array(strtolower(trim($product->warehouse)), ['shop', 'main store'])) {
+                $locations[] = $product->warehouse;
+            }
+
+            if ($isInShop) {
+                $locations[] = 'Shop';
+            }
+
+            // Default to Shop if no specific warehouse was allocated anywhere
+            if (empty($locations)) {
+                $locations[] = 'Shop';
+            }
+
+            $productArray['warehouse_locations'] = array_values(array_unique($locations));
+
             return $productArray;
         });
 
@@ -1085,6 +1197,18 @@ class StockImportController extends Controller
         }
         if ($request->has('size') && !empty($request->input('size'))) {
             $query->where('size', $request->input('size'));
+        }
+
+        if ($request->filled('warehouse')) {
+            $warehouse = trim($request->input('warehouse'));
+            if (strcasecmp($warehouse, 'shop') === 0) {
+                $query->where(function ($q) {
+                    $q->whereIn('warehouse', ['Shop', 'SHOP'])
+                      ->orWhereNull('warehouse');
+                });
+            } else {
+                $query->where('warehouse', $warehouse);
+            }
         }
 
         $filename = 'products_export_' . date('Ymd_His') . '.csv';

@@ -109,7 +109,11 @@ function renderMonitoringProductImageHtml(p) {
 
 // Warehouse badge and location summary
 function getWarehouseBadge(warehouse) {
-    return `<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-800 border border-slate-200">${escapeHtml(warehouse)}</span>`;
+    const isShop = String(warehouse).toLowerCase() === 'shop';
+    const colorClasses = isShop
+        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+        : 'bg-slate-100 text-slate-800 border-slate-200';
+    return `<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold ${colorClasses} border">${escapeHtml(warehouse)}</span>`;
 }
 
 function getLocationSummary(product) {
@@ -121,7 +125,7 @@ function getLocationSummary(product) {
     }
 
     if (locations.length === 0) {
-        return '<span class="text-slate-400 font-medium">Shop</span>';
+        return getWarehouseBadge('Shop');
     }
 
     const uniqueLocations = [...new Set(locations)];
