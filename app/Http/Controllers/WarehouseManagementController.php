@@ -15,6 +15,73 @@ use Throwable;
 
 class WarehouseManagementController extends Controller
 {
+    /**
+     * Categorize product to its proper warehouse (Warehouse A, B, or C).
+     */
+    public static function resolveTargetWarehouseName(?string $desc, ?string $cat, ?string $name): string
+    {
+        $text = strtoupper(trim(($desc ?? '') . ' ' . ($cat ?? '') . ' ' . ($name ?? '')));
+
+        // Warehouse A: Heavy, Exterior, Body, Suspension, Exhaust, Wheels
+        $patternsA = [
+            'TIRE', 'TYP', 'MAGS', 'MAG', 'WHEEL', 'RIM',
+            'PIPE', 'PIP', 'EXHAUST', 'MUFFLER',
+            'FRONT SHOCK', 'MONOSHOCK', 'SHOCK', 'SHK', 'FSK', 'MSK',
+            'SWING ARM', 'SWA', 'TIRE HUGGER', 'THG', 'MONORACK', 'MNF', 'FRAME',
+            'RADIATOR COVER', 'RADIATOR CAP', 'RADIATOR', 'RAD', 'RDC', 'RCV',
+            'FLAT SEAT', 'INDO SEAT', 'SEAT', 'FLS', 'IDS',
+        ];
+
+        // Warehouse B: Transmission, Engine, Drivetrain, Fuel System
+        $patternsB = [
+            'CVT HALF', 'CVT', 'CVH',
+            'ENGINE SUPPORT', 'ENS', 'ENGINE', 'ENG',
+            'CHAIN', 'SPROCKET', 'BEARING', 'BUSHING', 'GASKET',
+            'PISTON', 'CYLINDER', 'CRANKSHAFT', 'CAMSHAFT', 'VALVE', 'ROCKER',
+            'CARBURETOR', 'CARB', 'FUEL PUMP', 'INJECTOR', 'FUEL',
+        ];
+
+        // Warehouse C: Brakes, Controls, Handles, Mirrors, Electrical & Accessories
+        $patternsC = [
+            'BRAKE MASTER PAIR', 'BRAKE MASTER PUMP', 'BRAKE MASTER', 'BKM', 'BMP', 'BPP',
+            'CALIPER', 'CAL', 'DISC', 'DSC', 'ROTOR',
+            'CLUTCH PERCH', 'CLP', 'CLUTCH',
+            'QUICK THROTTLE', 'THROTTLE', 'QTR',
+            'LEVER', 'LVR',
+            'FOOT REST', 'FTR',
+            'SIDE MIRROR', 'MIRROR', 'SMI',
+            'LIGHT', 'BULB', 'HORN', 'BATTERY', 'FUSE', 'SWITCH', 'CABLE',
+        ];
+
+        foreach ($patternsA as $p) {
+            if (str_contains($text, $p)) return 'Warehouse A';
+        }
+        foreach ($patternsB as $p) {
+            if (str_contains($text, $p)) return 'Warehouse B';
+        }
+        foreach ($patternsC as $p) {
+            if (str_contains($text, $p)) return 'Warehouse C';
+        }
+
+        return 'Warehouse C';
+    }
+
+    /**
+     * Check if a product is an expirable consumable (belongs to Shop).
+     */
+    public static function isExpirableProduct(?string $desc, ?string $cat, ?string $name): bool
+    {
+        $text = strtoupper(trim(($desc ?? '') . ' ' . ($cat ?? '') . ' ' . ($name ?? '')));
+        $expirables = [
+            'ENGINE OIL', 'BRAKE FLUID', 'GEAR OIL',
+            'COOLANT', 'CVT CLEANER', 'TIRE SEALANT'
+        ];
+        foreach ($expirables as $e) {
+            if (str_contains($text, $e)) return true;
+        }
+        return false;
+    }
+
     public function index()
     {
         // Ensure default warehouses exist (Warehouse A, B, C, D)
@@ -41,7 +108,7 @@ class WarehouseManagementController extends Controller
             ->get();
 
         $warehouses = Warehouse::active()
-            ->where('name', '!=', 'SHOP')
+            ->whereRaw('LOWER(name) != ?', ['shop'])
             ->orderBy('name')
             ->get();
         $totalWarehouses = $warehouses->count();
@@ -58,13 +125,9 @@ class WarehouseManagementController extends Controller
 
         // Use actual warehouse stock data from product_warehouse_stock table
         $warehouseAssignments = [];
-        for ($i = 0; $i < $totalWarehouses; $i++) {
-            $warehouseAssignments[] = collect();
-        }
-
-        // Map warehouse names to indices
         $warehouseNameToIndex = [];
         foreach ($warehouses as $index => $warehouse) {
+            $warehouseAssignments[$index] = collect();
             $warehouseNameToIndex[$warehouse->name] = $index;
         }
 
@@ -81,13 +144,18 @@ class WarehouseManagementController extends Controller
                 $sku = $product->sku;
                 $compatibility = $product->compatibility;
             }
+
+            // Expirables (oils, fluids, coolants, sealants) belong to SHOP, not warehouse shelves
+            if (self::isExpirableProduct($productDescription, $product->category, $product->name)) {
+                continue;
+            }
             
             // Get warehouse stocks for this product
             $warehouseStocks = $product->warehouseStocks ?? [];
             
             // Distribute based on actual warehouse stocks
             foreach ($warehouseStocks as $stock) {
-                if ($stock->warehouse === 'SHOP') {
+                if (strtoupper($stock->warehouse) === 'SHOP') {
                     continue; // Skip SHOP products
                 }
                 
@@ -110,41 +178,53 @@ class WarehouseManagementController extends Controller
             }
         }
 
-        // Fallback: If no products were assigned via product_warehouse_stock, distribute products evenly across warehouses
-        $totalAssigned = 0;
-        foreach ($warehouseAssignments as $assignment) {
-            $totalAssigned += $assignment->count();
+        // Check if any warehouse has 0 products assigned
+        $anyWarehouseEmpty = false;
+        foreach ($warehouses as $index => $warehouse) {
+            if ($warehouseAssignments[$index]->isEmpty()) {
+                $anyWarehouseEmpty = true;
+                break;
+            }
         }
 
-        if ($totalAssigned === 0 && $products->isNotEmpty() && $totalWarehouses > 0) {
-            $chunkSize = max(1, (int) ceil($totalProducts / $totalWarehouses));
-            foreach ($warehouses as $index => $warehouse) {
-                $slice = $products->slice($index * $chunkSize, $chunkSize)->values();
-                foreach ($slice as $product) {
-                    if ($product->productCatalog) {
-                        $pDesc = $product->productCatalog->product_description;
-                        $pBrand = $product->productCatalog->brand;
-                        $pSku = $product->productCatalog->sku;
-                        $pCompat = $product->productCatalog->product_name;
-                    } else {
-                        $pDesc = $product->description ?? $product->product_name ?? $product->name;
-                        $pBrand = $product->brand;
-                        $pSku = $product->sku;
-                        $pCompat = $product->compatibility;
-                    }
-                    if (isset($warehouseAssignments[$index])) {
-                        $warehouseAssignments[$index]->push((object) [
-                            'id' => $product->id,
-                            'sku' => $pSku,
-                            'name' => $pDesc,
-                            'description' => $pDesc,
-                            'brand' => $pBrand,
-                            'compatible_model' => $pCompat,
-                            'stock_quantity' => max(1, (int)($product->stock_quantity ?? 1)),
-                            'unit_price' => $product->unit_price ?? 0,
-                            'category' => $pDesc,
-                        ]);
-                    }
+        // If any warehouse has 0 products, redistribute strictly by business category
+        if ($anyWarehouseEmpty && $products->isNotEmpty() && $totalWarehouses > 0) {
+            for ($i = 0; $i < $totalWarehouses; $i++) {
+                $warehouseAssignments[$i] = collect();
+            }
+
+            foreach ($products as $product) {
+                if ($product->productCatalog) {
+                    $pDesc = $product->productCatalog->product_description;
+                    $pBrand = $product->productCatalog->brand;
+                    $pSku = $product->productCatalog->sku;
+                    $pCompat = $product->productCatalog->product_name;
+                } else {
+                    $pDesc = $product->description ?? $product->product_name ?? $product->name;
+                    $pBrand = $product->brand;
+                    $pSku = $product->sku;
+                    $pCompat = $product->compatibility;
+                }
+
+                if (self::isExpirableProduct($pDesc, $product->category, $product->name)) {
+                    continue;
+                }
+
+                $targetWh = self::resolveTargetWarehouseName($pDesc, $product->category, ($product->name ?? '') . ' ' . ($pCompat ?? ''));
+                $targetIndex = $warehouseNameToIndex[$targetWh] ?? 0;
+
+                if (isset($warehouseAssignments[$targetIndex])) {
+                    $warehouseAssignments[$targetIndex]->push((object) [
+                        'id' => $product->id,
+                        'sku' => $pSku,
+                        'name' => $pDesc,
+                        'description' => $pDesc,
+                        'brand' => $pBrand,
+                        'compatible_model' => $pCompat,
+                        'stock_quantity' => max(1, (int)($product->stock_quantity ?? 1)),
+                        'unit_price' => $product->unit_price ?? 0,
+                        'category' => $pDesc,
+                    ]);
                 }
             }
         }
@@ -243,8 +323,15 @@ class WarehouseManagementController extends Controller
                 return !$shelf->archived;
             })->sortBy('slot_index');
 
-            // If this warehouse has allocated products but no saved shelves in DB yet, auto-create initial shelves
-            if ($visibleSavedShelves->isEmpty() && $warehouseProducts->isNotEmpty()) {
+            // Count total products stored across visible shelves in this warehouse
+            $totalProductsOnSavedShelves = $visibleSavedShelves->sum(function ($shelf) {
+                $p = $shelf->products;
+                if (is_string($p)) $p = json_decode($p, true);
+                return is_array($p) ? count($p) : 0;
+            });
+
+            // If this warehouse has allocated products but saved shelves are empty or don't exist yet, auto-create/update initial shelves
+            if (($visibleSavedShelves->isEmpty() || $totalProductsOnSavedShelves === 0) && $warehouseProducts->isNotEmpty()) {
                 $slotIdx = 0;
                 foreach ($chunkedProducts as $chunk) {
                     $shelfProducts = $chunk->map(function ($p) {
@@ -262,7 +349,7 @@ class WarehouseManagementController extends Controller
                     })->values()->toArray();
 
                     try {
-                        WarehouseShelf::firstOrCreate(
+                        WarehouseShelf::updateOrCreate(
                             [
                                 'warehouse_id' => $warehouse->id,
                                 'slot_index'   => $slotIdx,
@@ -271,7 +358,7 @@ class WarehouseManagementController extends Controller
                                 'warehouse_code'  => $warehouse->code ?: ('WH-' . $warehouse->id),
                                 'warehouse_index' => $warehouseIndex,
                                 'sort_order'      => $slotIdx,
-                                'name'            => $warehouse->name . ' - Shelf ' . ($slotIdx + 1),
+                                'name'            => 'Shelf ' . ($slotIdx + 1),
                                 'capacity'        => 10,
                                 'products'        => $shelfProducts,
                                 'archived'        => false,
@@ -283,7 +370,7 @@ class WarehouseManagementController extends Controller
                     $slotIdx++;
                 }
 
-                // Re-fetch saved shelves if created
+                // Re-fetch saved shelves if created/updated
                 $refreshedShelves = WarehouseShelf::where('warehouse_id', $warehouse->id)->get();
                 if ($refreshedShelves->isNotEmpty()) {
                     $warehouseSavedShelves = $refreshedShelves;
@@ -328,7 +415,7 @@ class WarehouseManagementController extends Controller
                     })->values()->toArray();
                     $enrichedProducts = array_map($enrichProduct, $shelfProducts);
                     return [
-                        'name'       => $warehouse->name . ' - Shelf ' . ($slotIndex + 1),
+                        'name'       => 'Shelf ' . ($slotIndex + 1),
                         'products'   => $enrichedProducts,
                         'archived'   => false,
                         'slot_index' => $slotIndex,
