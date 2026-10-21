@@ -319,6 +319,14 @@ class WarehouseManagementController extends Controller
             $warehouseProducts = ($warehouseAssignments[$warehouseIndex] ?? collect())->values();
             $chunkedProducts = $warehouseProducts->chunk(10);
             $warehouseSavedShelves = $savedShelvesByWarehouse->get($warehouse->id, collect());
+            if ($warehouseSavedShelves->isEmpty()) {
+                $warehouseSavedShelves = WarehouseShelf::where('warehouse_id', $warehouse->id)
+                    ->orWhere('warehouse_index', $warehouseIndex)
+                    ->orWhere('warehouse_code', $warehouse->code)
+                    ->get()
+                    ->keyBy('slot_index');
+            }
+
             $visibleSavedShelves = $warehouseSavedShelves->filter(function ($shelf) {
                 return !$shelf->archived;
             })->sortBy('slot_index');
@@ -330,10 +338,10 @@ class WarehouseManagementController extends Controller
                 return is_array($p) ? count($p) : 0;
             });
 
-            // If this warehouse has allocated products but saved shelves are empty or don't exist yet, auto-create/update initial shelves
-            if (($visibleSavedShelves->isEmpty() || $totalProductsOnSavedShelves === 0) && $warehouseProducts->isNotEmpty()) {
-                $slotIdx = 0;
-                foreach ($chunkedProducts as $chunk) {
+            // If visible shelves in DB have NO products at all, but we have allocated products for this warehouse:
+            // Immediately populate locations with chunked products so the page is guaranteed to display them!
+            if ($totalProductsOnSavedShelves === 0 && $warehouseProducts->isNotEmpty()) {
+                $locations = $chunkedProducts->values()->map(function ($chunk, $slotIndex) use ($warehouse, $warehouseIndex, $enrichProduct, $visibleSavedShelves) {
                     $shelfProducts = $chunk->map(function ($p) {
                         return [
                             'id'               => $p->id ?? null,
@@ -348,40 +356,44 @@ class WarehouseManagementController extends Controller
                         ];
                     })->values()->toArray();
 
+                    $shelfName = 'Shelf ' . ($slotIndex + 1);
+
+                    // Sync database row safely
                     try {
-                        WarehouseShelf::updateOrCreate(
-                            [
-                                'warehouse_id' => $warehouse->id,
-                                'slot_index'   => $slotIdx,
-                            ],
-                            [
+                        $existingShelf = $visibleSavedShelves->firstWhere('slot_index', $slotIndex);
+                        if ($existingShelf) {
+                            $existingShelf->update([
+                                'name'            => $shelfName,
+                                'products'        => $shelfProducts,
+                                'warehouse_id'    => $warehouse->id,
                                 'warehouse_code'  => $warehouse->code ?: ('WH-' . $warehouse->id),
                                 'warehouse_index' => $warehouseIndex,
-                                'sort_order'      => $slotIdx,
-                                'name'            => 'Shelf ' . ($slotIdx + 1),
-                                'capacity'        => 10,
+                            ]);
+                        } else {
+                            WarehouseShelf::create([
+                                'warehouse_id'    => $warehouse->id,
+                                'warehouse_code'  => $warehouse->code ?: ('WH-' . $warehouse->id),
+                                'warehouse_index' => $warehouseIndex,
+                                'slot_index'      => $slotIndex,
+                                'sort_order'      => $slotIndex,
+                                'name'            => $shelfName,
                                 'products'        => $shelfProducts,
                                 'archived'        => false,
-                            ]
-                        );
+                            ]);
+                        }
                     } catch (\Throwable $e) {
-                        \Illuminate\Support\Facades\Log::warning('Auto shelf creation skipped: ' . $e->getMessage());
+                        \Illuminate\Support\Facades\Log::warning('Shelf DB sync skipped: ' . $e->getMessage());
                     }
-                    $slotIdx++;
-                }
 
-                // Re-fetch saved shelves if created/updated
-                $refreshedShelves = WarehouseShelf::where('warehouse_id', $warehouse->id)->get();
-                if ($refreshedShelves->isNotEmpty()) {
-                    $warehouseSavedShelves = $refreshedShelves;
-                    $visibleSavedShelves = $warehouseSavedShelves->filter(function ($shelf) {
-                        return !$shelf->archived;
-                    })->sortBy('slot_index');
-                }
-            }
-
-            // If shelves exist in DB, map them. Otherwise, fall back to chunked product locations
-            if ($visibleSavedShelves->isNotEmpty()) {
+                    $enrichedProducts = array_map($enrichProduct, $shelfProducts);
+                    return [
+                        'name'       => $shelfName,
+                        'products'   => $enrichedProducts,
+                        'archived'   => false,
+                        'slot_index' => $slotIndex,
+                    ];
+                })->values()->toArray();
+            } elseif ($visibleSavedShelves->isNotEmpty()) {
                 $locations = $visibleSavedShelves->map(function ($shelf) use ($enrichProduct) {
                     $products = $shelf->products ?? [];
                     if (is_string($products)) {
@@ -390,11 +402,17 @@ class WarehouseManagementController extends Controller
                     if (!is_array($products)) {
                         $products = [];
                     }
+
+                    $shelfCleanName = $shelf->name;
+                    if (preg_match('/(?:Warehouse\s+[A-Za-z0-9]+\s*-\s*)?Shelf\s+(\d+)/i', $shelfCleanName, $m)) {
+                        $shelfCleanName = 'Shelf ' . $m[1];
+                    }
+
                     $enrichedProducts = array_map($enrichProduct, array_values($products));
                     return [
-                        'name'       => $shelf->name,
+                        'name'       => $shelfCleanName,
                         'products'   => $enrichedProducts,
-                        'archived'   => $shelf->archived,
+                        'archived'   => (bool)$shelf->archived,
                         'slot_index' => $shelf->slot_index,
                     ];
                 })->values()->toArray();
