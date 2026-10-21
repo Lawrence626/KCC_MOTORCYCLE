@@ -22,29 +22,24 @@ class WarehouseManagementController extends Controller
     {
         $text = strtoupper(trim(($desc ?? '') . ' ' . ($cat ?? '') . ' ' . ($name ?? '')));
 
-        // Warehouse A: Heavy, Exterior, Body, Suspension, Exhaust, Wheels
-        $patternsA = [
-            'TIRE', 'TYP', 'MAGS', 'MAG', 'WHEEL', 'RIM',
-            'PIPE', 'PIP', 'EXHAUST', 'MUFFLER',
-            'FRONT SHOCK', 'MONOSHOCK', 'SHOCK', 'SHK', 'FSK', 'MSK',
-            'SWING ARM', 'SWA', 'TIRE HUGGER', 'THG', 'MONORACK', 'MNF', 'FRAME',
-            'RADIATOR COVER', 'RADIATOR CAP', 'RADIATOR', 'RAD', 'RDC', 'RCV',
-            'FLAT SEAT', 'INDO SEAT', 'SEAT', 'FLS', 'IDS',
-        ];
-
-        // Warehouse B: Transmission, Engine, Drivetrain, Fuel System
+        // Warehouse B: Fluids, Oils, Coolants, Sealants, Flat Seats, Engine, Transmission & General
         $patternsB = [
-            'CVT HALF', 'CVT', 'CVH',
+            'BRAKE FLUID', 'COOLANT', 'ENGINE OIL', 'GEAR OIL', 'TIRE SEALANT', 'SEALANT', 'FLUID',
+            'FLAT SEAT', 'INDO SEAT', 'SEAT', 'FLS', 'IDS',
+            'CVT HALF', 'CVT', 'CVH', 'CVT CLEANER',
             'ENGINE SUPPORT', 'ENS', 'ENGINE', 'ENG',
             'CHAIN', 'SPROCKET', 'BEARING', 'BUSHING', 'GASKET',
             'PISTON', 'CYLINDER', 'CRANKSHAFT', 'CAMSHAFT', 'VALVE', 'ROCKER',
             'CARBURETOR', 'CARB', 'FUEL PUMP', 'INJECTOR', 'FUEL',
+            'GENERAL',
         ];
 
-        // Warehouse C: Brakes, Controls, Handles, Mirrors, Electrical & Accessories
+        // Warehouse C: Brakes, Controls, Calipers, Levers, Front Shocks, Quick Throttle & Accessories
         $patternsC = [
             'BRAKE MASTER PAIR', 'BRAKE MASTER PUMP', 'BRAKE MASTER', 'BKM', 'BMP', 'BPP',
             'CALIPER', 'CAL', 'DISC', 'DSC', 'ROTOR',
+            'FRONT SHOCK', 'FSK',
+            'E3+', 'E3', 'E2',
             'CLUTCH PERCH', 'CLP', 'CLUTCH',
             'QUICK THROTTLE', 'THROTTLE', 'QTR',
             'LEVER', 'LVR',
@@ -53,17 +48,26 @@ class WarehouseManagementController extends Controller
             'LIGHT', 'BULB', 'HORN', 'BATTERY', 'FUSE', 'SWITCH', 'CABLE',
         ];
 
-        foreach ($patternsA as $p) {
-            if (str_contains($text, $p)) return 'Warehouse A';
-        }
+        // Warehouse A: Tires, Mags, Pipes, Shocks, Monoshock, Swing Arm, Monorack, Exhaust
+        $patternsA = [
+            'TIRE', 'TYP', 'MAGS', 'MAG', 'WHEEL', 'RIM',
+            'PIPE', 'PIP', 'EXHAUST', 'MUFFLER',
+            'MONOSHOCK', 'SHOCK', 'SHK', 'MSK',
+            'SWING ARM', 'SWA', 'TIRE HUGGER', 'THG', 'MONORACK', 'MNF', 'FRAME',
+            'RADIATOR COVER', 'RADIATOR CAP', 'RADIATOR', 'RAD', 'RDC', 'RCV',
+        ];
+
         foreach ($patternsB as $p) {
             if (str_contains($text, $p)) return 'Warehouse B';
         }
         foreach ($patternsC as $p) {
             if (str_contains($text, $p)) return 'Warehouse C';
         }
+        foreach ($patternsA as $p) {
+            if (str_contains($text, $p)) return 'Warehouse A';
+        }
 
-        return 'Warehouse C';
+        return 'Warehouse A';
     }
 
     /**
@@ -145,11 +149,6 @@ class WarehouseManagementController extends Controller
                 $compatibility = $product->compatibility;
             }
 
-            // Expirables (oils, fluids, coolants, sealants) belong to SHOP, not warehouse shelves
-            if (self::isExpirableProduct($productDescription, $product->category, $product->name)) {
-                continue;
-            }
-            
             // Get warehouse stocks for this product
             $warehouseStocks = $product->warehouseStocks ?? [];
             
@@ -204,10 +203,6 @@ class WarehouseManagementController extends Controller
                     $pBrand = $product->brand;
                     $pSku = $product->sku;
                     $pCompat = $product->compatibility;
-                }
-
-                if (self::isExpirableProduct($pDesc, $product->category, $product->name)) {
-                    continue;
                 }
 
                 $targetWh = self::resolveTargetWarehouseName($pDesc, $product->category, ($product->name ?? '') . ' ' . ($pCompat ?? ''));
