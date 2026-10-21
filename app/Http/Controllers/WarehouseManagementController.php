@@ -322,7 +322,6 @@ class WarehouseManagementController extends Controller
             if ($warehouseSavedShelves->isEmpty()) {
                 $warehouseSavedShelves = WarehouseShelf::where('warehouse_id', $warehouse->id)
                     ->orWhere('warehouse_index', $warehouseIndex)
-                    ->orWhere('warehouse_code', $warehouse->code)
                     ->get()
                     ->keyBy('slot_index');
             }
@@ -360,26 +359,22 @@ class WarehouseManagementController extends Controller
 
                     // Sync database row safely
                     try {
+                        $updateData = [
+                            'name'            => $shelfName,
+                            'products'        => $shelfProducts,
+                            'warehouse_id'    => $warehouse->id,
+                            'warehouse_index' => $warehouseIndex,
+                        ];
+
                         $existingShelf = $visibleSavedShelves->firstWhere('slot_index', $slotIndex);
                         if ($existingShelf) {
-                            $existingShelf->update([
-                                'name'            => $shelfName,
-                                'products'        => $shelfProducts,
-                                'warehouse_id'    => $warehouse->id,
-                                'warehouse_code'  => $warehouse->code ?: ('WH-' . $warehouse->id),
-                                'warehouse_index' => $warehouseIndex,
-                            ]);
+                            $existingShelf->update($updateData);
                         } else {
-                            WarehouseShelf::create([
-                                'warehouse_id'    => $warehouse->id,
-                                'warehouse_code'  => $warehouse->code ?: ('WH-' . $warehouse->id),
-                                'warehouse_index' => $warehouseIndex,
-                                'slot_index'      => $slotIndex,
-                                'sort_order'      => $slotIndex,
-                                'name'            => $shelfName,
-                                'products'        => $shelfProducts,
-                                'archived'        => false,
+                            $insertData = array_merge($updateData, [
+                                'slot_index' => $slotIndex,
+                                'archived'   => false,
                             ]);
+                            WarehouseShelf::create($insertData);
                         }
                     } catch (\Throwable $e) {
                         \Illuminate\Support\Facades\Log::warning('Shelf DB sync skipped: ' . $e->getMessage());

@@ -194,18 +194,24 @@ return new class extends Migration
 
                     $shelfNumber = $slotIdx + 1;
                     $shelfData = [
-                        'warehouse_id'    => $wh->id,
-                        'warehouse_code'  => $wh->code,
-                        'slot_index'      => $slotIdx,
-                        'sort_order'      => $slotIdx,
-                        'name'            => "Shelf {$shelfNumber}",
-                        'capacity'        => 10,
-                        'products'        => $shelfItems,
-                        'archived'        => false,
+                        'warehouse_id' => $wh->id,
+                        'slot_index'   => $slotIdx,
+                        'name'         => "Shelf {$shelfNumber}",
+                        'products'     => $shelfItems,
+                        'archived'     => false,
                     ];
 
                     if (Schema::hasColumn('warehouse_shelves', 'warehouse_index')) {
                         $shelfData['warehouse_index'] = max(0, $wh->id - 1);
+                    }
+                    if (Schema::hasColumn('warehouse_shelves', 'warehouse_code')) {
+                        $shelfData['warehouse_code'] = $wh->code;
+                    }
+                    if (Schema::hasColumn('warehouse_shelves', 'sort_order')) {
+                        $shelfData['sort_order'] = $slotIdx;
+                    }
+                    if (Schema::hasColumn('warehouse_shelves', 'capacity')) {
+                        $shelfData['capacity'] = 10;
                     }
 
                     WarehouseShelf::create($shelfData);
