@@ -364,25 +364,8 @@ class WarehouseManagementController extends Controller
             ];
         })->toArray();
 
-        $pendingArrivals = StockArrivalNotice::pending()
-            ->orderByDesc('arrived_at')
-            ->get()
-            ->map(fn ($notice) => [
-                'id'                     => $notice->id,
-                'product_id'             => $notice->product_id,
-                'product_name'           => $notice->product_name,
-                'sku'                    => $notice->sku,
-                'quantity'               => $notice->quantity,
-                'purchase_order_number'  => $notice->purchase_order_number,
-                'supplier_name'          => $notice->supplier_name,
-                'arrived_at'             => $notice->arrived_at?->format('Y-m-d H:i'),
-            ])
-            ->values()
-            ->toArray();
-
         return view('warehouse_management.warehouse_manage', [
             'warehouses' => $warehousesData,
-            'pendingArrivals' => $pendingArrivals,
             'products' => $products->map(function ($product) {
                 // Always prioritize ProductCatalog data for correct product information
                 if ($product->productCatalog) {
